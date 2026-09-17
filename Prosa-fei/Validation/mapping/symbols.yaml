@@ -1,0 +1,27 @@
+provenance:
+  rts_commit: 845f156a6a75f704361c230870d97566a14b6913
+  prosa_release: v0.6
+  prosa_commit: 414e66760333eaa4ef78c685bcf53291c527a548
+
+symbols:
+  - rocq: prosa.behavior.schedule.scheduled_in
+    lean: Prosa.Behavior.Schedule.ProcessorState.scheduled_in
+    relation: BoolRel
+    dependencies:
+      Core: finite-enumeration bijection
+      scheduled_on: pointwise BoolRel on related job/state/core values
+    status: BLOCKED
+    blocker: actual Lean declaration is exported but not imported into Rocq
+
+  - rocq: prosa.behavior.service.completed_by
+    lean: Prosa.Behavior.Service.completed_by
+    relation: BoolPropRel
+    dependencies:
+      instant: NatRel
+      work: NatRel
+      job_cost: FunRel JobRel NatRel
+      service: FunRel over schedule/job/time with NatRel result
+      nat_le: nat_ge_bool_prop_bridge
+      processor_service: aggregate refinement from Rocq per-core sum to Lean service_in
+    status: BLOCKED
+    blocker: actual Lean declaration is not imported and aggregate service refinement is uncertified

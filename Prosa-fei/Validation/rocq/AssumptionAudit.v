@@ -1,0 +1,12 @@
+Require Import Relations NatBridge BoolBridge FiniteBridge.
+Require Import ProcessorStateBridge CompletedByCertificate MutationFixtures.
+
+Print Assumptions nat_le_bridge.
+Print Assumptions nat_ge_bool_prop_bridge.
+Print Assumptions finite_exists_bridge.
+Print Assumptions scheduled_in_observable_bridge.
+Print Assumptions completed_by_compositional_bridge.
+Print Assumptions scheduled_exists_forall_mutation_detected.
+Print Assumptions scheduled_polarity_mutation_detected.
+Print Assumptions completed_ge_le_mutation_detected.
+Print Assumptions completed_ge_gt_mutation_detected.
