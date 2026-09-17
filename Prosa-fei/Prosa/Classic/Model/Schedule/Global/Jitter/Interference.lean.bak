@@ -1,0 +1,124 @@
+-- Translated from: ../rt-proofs/classic/model/schedule/global/jitter/interference.v
+import Prosa.Classic.Util.All
+import Prosa.Classic.Model.Arrival.Basic.Task
+import Prosa.Classic.Model.Schedule.Global.Jitter.Job
+import Prosa.Classic.Model.Schedule.Global.Basic.Interference
+import Prosa.Classic.Model.Schedule.Global.Jitter.Schedule
+import Prosa.Classic.Model.Schedule.Global.Workload
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.BigOperators.Intervals
+import Mathlib.Tactic
+
+namespace Prosa.Classic.Model.Schedule.Global.Jitter.Interference
+
+open Classical
+open Prosa.Classic.Model.Time
+open Prosa.Classic.Model.Schedule.Global.Basic.Schedule
+open Prosa.Classic.Model.Schedule.Global.Basic.Schedule.Schedule
+open Prosa.Classic.Model.Schedule.Global.Jitter.Schedule.ScheduleWithJitter
+open Prosa.Classic.Model.Schedule.Global.Jitter.Schedule.ScheduleOfSporadicTaskWithJitter
+open Prosa.Classic.Model.Schedule.Global.Workload
+open Prosa.Classic.Model.Arrival.Basic.Job
+
+section InterferenceDefs
+
+variable {sporadic_task : Type} [DecidableEq sporadic_task]
+variable {Job : Type} [DecidableEq Job]
+variable (job_arrival : Job → Time)
+variable (job_cost : Job → Time)
+variable (job_task : Job → sporadic_task)
+variable (job_jitter : Job → Time)
+variable (arr_seq : arrival_sequence Job)
+variable {num_cpus : ℕ}
+variable (sched : schedule Job num_cpus)
+variable (j : Job)
+
+section TotalInterference
+
+noncomputable def total_interference (t1 t2 : Time) : ℕ :=
+  ∑ t ∈ Finset.Ico t1 t2,
+    if backlogged job_arrival job_cost job_jitter sched j t then 1 else 0
+
+end TotalInterference
+
+section JobInterference
+
+variable (job_other : Job)
+
+noncomputable def job_interference (t1 t2 : Time) : ℕ :=
+  ∑ t ∈ Finset.Ico t1 t2,
+    ∑ cpu : Fin num_cpus,
+      if backlogged job_arrival job_cost job_jitter sched j t ∧
+         scheduled_on sched job_other cpu t = true then 1 else 0
+
+end JobInterference
+
+section TaskInterference
+
+variable (tsk_other : sporadic_task)
+
+noncomputable def task_interference (t1 t2 : Time) : ℕ :=
+  ∑ t ∈ Finset.Ico t1 t2,
+    ∑ cpu : Fin num_cpus,
+      if backlogged job_arrival job_cost job_jitter sched j t ∧
+         task_scheduled_on job_task sched tsk_other cpu t = true then 1 else 0
+
+end TaskInterference
+
+section TaskInterferenceJobList
+
+variable (tsk_other : sporadic_task)
+
+noncomputable def task_interference_joblist (t1 t2 : Time) : ℕ :=
+  ∑ j' ∈ ((jobs_scheduled_between sched t1 t2).filter
+    (fun j' => decide (job_task j' = tsk_other))).toFinset,
+    job_interference job_arrival job_cost job_jitter sched j j' t1 t2
+
+end TaskInterferenceJobList
+
+section BasicLemmas
+
+theorem total_interference_le_delta :
+    ∀ t1 t2,
+      total_interference job_arrival job_cost job_jitter sched j t1 t2 ≤ t2 - t1 := by
+  sorry
+
+theorem job_interference_le_service :
+    ∀ j_other t1 t2,
+      job_interference job_arrival job_cost job_jitter sched j j_other t1 t2 ≤
+        service_during sched j_other t1 t2 := by
+  sorry
+
+theorem task_interference_le_workload :
+    ∀ tsk t1 t2,
+      task_interference job_arrival job_cost job_task job_jitter sched j tsk t1 t2 ≤
+        workload job_task sched tsk t1 t2 := by
+  sorry
+
+end BasicLemmas
+
+section InterferenceSequentialJobs
+
+variable (H_sequential_jobs : sequential_jobs sched)
+include H_sequential_jobs
+
+theorem job_interference_le_delta :
+    ∀ j_other t1 delta,
+      job_interference job_arrival job_cost job_jitter sched j j_other t1 (t1 + delta) ≤ delta := by
+  sorry
+
+end InterferenceSequentialJobs
+
+section BoundUsingPerJobInterference
+
+theorem interference_le_interference_joblist :
+    ∀ tsk t1 t2,
+      task_interference job_arrival job_cost job_task job_jitter sched j tsk t1 t2 ≤
+        task_interference_joblist job_arrival job_cost job_task job_jitter sched j tsk t1 t2 := by
+  sorry
+
+end BoundUsingPerJobInterference
+
+end InterferenceDefs
+
+end Prosa.Classic.Model.Schedule.Global.Jitter.Interference

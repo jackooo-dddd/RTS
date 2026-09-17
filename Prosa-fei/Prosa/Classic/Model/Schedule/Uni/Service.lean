@@ -1,0 +1,504 @@
+-- Translated from: ../rt-proofs/classic/model/schedule/uni/service.v
+import Prosa.Classic.Util.Sum
+import Prosa.Classic.Util.Step_function
+import Prosa.Classic.Model.Time
+import Prosa.Classic.Model.Schedule.Uni.Schedule
+import Prosa.Classic.Model.Schedule.Uni.Workload
+import Prosa.Classic.Model.Priority
+import Prosa.Classic.Model.Arrival.Basic.Arrival_sequence
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.BigOperators.Intervals
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
+import Mathlib.Tactic
+
+namespace Prosa.Classic.Model.Schedule.Uni.Service
+
+open Prosa.Classic.Model.Time
+open Prosa.Classic.Model.Schedule.Uni.Schedule
+open Prosa.Classic.Model.Schedule.Uni.Workload
+open Prosa.Classic.Model.Arrival.Basic.Arrival_sequence
+open Prosa.Classic.Model.Priority
+open Prosa.Classic.Util.Sum
+open Prosa.Util.Sum
+
+section ServiceOverSets
+
+variable {Job : Type _} [DecidableEq Job]
+variable (job_arrival : Job → Time)
+variable (job_cost : Job → Time)
+variable (arr_seq : arrival_sequence Job)
+variable (sched : schedule Job)
+variable (jobs : List Job)
+
+section Definitions
+
+section ServiceOfJobs
+
+variable (P : Job → Bool)
+
+def service_of_jobs (t1 t2 : Time) : Nat :=
+  ((jobs.filter P).map (fun j => service_during sched j t1 t2)).sum
+
+end ServiceOfJobs
+
+section PerTaskPriority
+
+variable {Task : Type _} [DecidableEq Task]
+variable (job_task : Job → Task)
+variable (higher_eq_priority : FP_policy Task)
+variable (tsk : Task)
+
+def service_of_higher_or_equal_priority_tasks (t1 t2 : Time) : Nat :=
+  service_of_jobs sched jobs (fun j => higher_eq_priority (job_task j) tsk) t1 t2
+
+end PerTaskPriority
+
+section PerJobPriority
+
+variable (higher_eq_priority : JLFP_policy Job)
+variable (j : Job)
+
+def service_of_higher_or_equal_priority_jobs (t1 t2 : Time) : Nat :=
+  service_of_jobs sched jobs (fun j_hp => higher_eq_priority j_hp j) t1 t2
+
+end PerJobPriority
+
+end Definitions
+
+section Lemmas
+
+variable (P : Job → Bool)
+
+section ServiceBoundedByWorkload
+
+theorem service_of_jobs_le_workload
+    (H_completed_jobs_dont_execute : completed_jobs_dont_execute job_cost sched)
+    (t1 t2 : Time) :
+    service_of_jobs sched jobs P t1 t2 ≤ workload_of_jobs job_cost jobs P := by
+  unfold service_of_jobs workload_of_jobs
+  exact Prosa.Util.Sum.leq_sum_seq jobs P (fun j => service_during sched j t1 t2) job_cost
+    (fun j _ _ => cumulative_service_le_job_cost job_cost sched j H_completed_jobs_dont_execute t1 t2)
+
+end ServiceBoundedByWorkload
+
+section ServiceBoundedByIntervalLength
+
+theorem service_of_jobs_le_delta
+    (H_completed_jobs_dont_execute : completed_jobs_dont_execute job_cost sched)
+    (H_no_duplicate_jobs : jobs.Nodup)
+    (t1 t2 : Time) :
+    service_of_jobs sched jobs P t1 t2 ≤ t2 - t1 := by
+  by_cases h_le : t1 ≤ t2
+  · unfold service_of_jobs; simp only [service_during]
+    have h_swap : ∀ (l : List Job),
+        (l.map (fun j => ∑ t ∈ Finset.Ico t1 t2, service_at sched j t)).sum =
+        ∑ t ∈ Finset.Ico t1 t2, (l.map (fun j => service_at sched j t)).sum := by
+      intro l; induction l with
+      | nil => simp
+      | cons a l ih => simp only [List.map_cons, List.sum_cons]; rw [ih, ← Finset.sum_add_distrib]
+    rw [h_swap]
+    have h_le1 : ∀ (l : List Job) (t : Time), l.Nodup →
+        (l.map (fun j => service_at sched j t)).sum ≤ 1 := by
+      intro l t hl; cases hsched : sched t with
+      | none =>
+        suffices hh : (l.map (fun j => service_at sched j t)).sum = 0 by omega
+        apply List.sum_eq_zero; intro x hx; rw [List.mem_map] at hx
+        obtain ⟨j, _, rfl⟩ := hx; simp only [service_at, scheduled_at, hsched]; simp [Bool.toNat]
+      | some j0 =>
+        induction l with
+        | nil => simp
+        | cons a l' ihl =>
+          rw [List.nodup_cons] at hl; simp only [List.map_cons, List.sum_cons]
+          by_cases ha : a = j0
+          · have h_rest : (l'.map (fun j => service_at sched j t)).sum = 0 := by
+              apply List.sum_eq_zero; intro x hx; rw [List.mem_map] at hx
+              obtain ⟨j, hj, rfl⟩ := hx
+              have hne : j ≠ a := fun heq => hl.1 (heq ▸ hj)
+              simp only [service_at, scheduled_at, hsched]
+              have : (some j0 == some j) = false := by
+                rw [beq_eq_false_iff_ne]; intro heq
+                exact hne (ha ▸ (Option.some_injective _ heq.symm))
+              rw [this]; simp [Bool.toNat]
+            rw [h_rest]; exact Nat.add_le_of_le_sub (by omega) (service_at_most_one sched a t)
+          · have : service_at sched a t = 0 := by
+              simp only [service_at, scheduled_at, hsched]
+              have : (some j0 == some a) = false := by
+                rw [beq_eq_false_iff_ne]; intro heq
+                exact ha (Option.some_injective _ heq.symm)
+              rw [this]; simp [Bool.toNat]
+            rw [this, Nat.zero_add]; exact ihl hl.2
+    calc ∑ t ∈ Finset.Ico t1 t2, ((jobs.filter P).map (fun j => service_at sched j t)).sum
+        ≤ ∑ _t ∈ Finset.Ico t1 t2, 1 :=
+          Finset.sum_le_sum (fun t _ => h_le1 _ t (List.Nodup.filter _ H_no_duplicate_jobs))
+      _ = t2 - t1 := by simp [Finset.sum_const, smul_eq_mul, mul_one, Nat.card_Ico]
+  · push_neg at h_le; unfold service_of_jobs service_during
+    have : ∀ j, ∑ t ∈ Finset.Ico t1 t2, service_at sched j t = 0 := by
+      intro j; rw [Finset.Ico_eq_empty (by simp only [Time] at *; omega)]; simp
+    simp [this]
+
+end ServiceBoundedByIntervalLength
+
+end Lemmas
+
+end ServiceOverSets
+
+section ExtraDefinitions
+
+variable {Task : Type _} [DecidableEq Task]
+variable {Job : Type _} [DecidableEq Job]
+variable (job_arrival : Job → Time)
+variable (job_cost : Job → Time)
+variable (job_task : Job → Task)
+variable (arr_seq : arrival_sequence Job)
+variable (sched : schedule Job)
+variable (tsk : Task)
+
+def task_service_of_jobs_received_in (ta1 ta2 t1 t2 : Time) : Nat :=
+  service_of_jobs sched (jobs_arrived_between arr_seq ta1 ta2)
+    (fun j => decide (job_task j = tsk)) t1 t2
+
+def task_service_between (t1 t2 : Time) : Nat :=
+  task_service_of_jobs_received_in job_task arr_seq sched tsk t1 t2 t1 t2
+
+end ExtraDefinitions
+
+section ExtraLemmas
+
+variable {Job : Type _} [DecidableEq Job]
+variable (job_arrival : Job → Time)
+variable (job_cost : Job → Time)
+variable (arr_seq : arrival_sequence Job)
+variable (H_arrival_times_are_consistent : arrival_times_are_consistent job_arrival arr_seq)
+variable (H_arr_seq_is_a_set : arrival_sequence_is_a_set arr_seq)
+variable (sched : schedule Job)
+variable (H_jobs_must_arrive_to_execute : jobs_must_arrive_to_execute job_arrival sched)
+variable (H_completed_jobs_dont_execute : completed_jobs_dont_execute job_cost sched)
+variable (H_jobs_come_from_arrival_sequence : jobs_come_from_arrival_sequence sched arr_seq)
+
+theorem service_monotonic (j : Job) (t1 t2 : Time) (h : t1 ≤ t2) :
+    service sched j t1 ≤ service sched j t2 := by
+  unfold service service_during
+  apply Finset.sum_le_sum_of_subset
+  intro x hx
+  rw [Finset.mem_Ico] at hx ⊢
+  exact ⟨hx.1, lt_of_lt_of_le hx.2 h⟩
+
+theorem service_during_cat (j : Job) (t t1 t2 : Time) (h : t1 ≤ t ∧ t ≤ t2) :
+    service_during sched j t1 t2 =
+    service_during sched j t1 t + service_during sched j t t2 := by
+  unfold service_during
+  rw [← Finset.sum_union (Finset.Ico_disjoint_Ico_consecutive t1 t t2),
+      Finset.Ico_union_Ico_eq_Ico h.1 h.2]
+
+theorem incremental_service_during (j : Job) (t1 t2 k : Time)
+    (h : service_during sched j t1 t2 > k) :
+    ∃ t, t1 ≤ t ∧ t < t2 ∧ scheduled_at sched j t = true ∧ service_during sched j t1 t = k := by
+  have h_le : t1 ≤ t2 := by
+    by_contra h_neg; push_neg at h_neg
+    simp only [service_during] at h
+    rw [Finset.Ico_eq_empty (by simp only [Time] at *; omega)] at h; simp at h
+  induction k using Nat.strongRecOn with
+  | _ k ih =>
+  cases k with
+  | zero =>
+    have h_pos : 0 < service_during sched j t1 t2 := by omega
+    obtain ⟨t, ht1, ht2, hsched⟩ := cumulative_service_implies_scheduled sched j t1 t2 h_pos
+    have h_nonempty : ((Finset.Ico t1 t2).filter (fun t => scheduled_at sched j t)).Nonempty :=
+      ⟨t, Finset.mem_filter.mpr ⟨Finset.mem_Ico.mpr ⟨ht1, ht2⟩, hsched⟩⟩
+    let t_min := ((Finset.Ico t1 t2).filter (fun t => scheduled_at sched j t)).min' h_nonempty
+    have ht_min_mem := Finset.min'_mem _ h_nonempty
+    rw [Finset.mem_filter] at ht_min_mem
+    have ht_min_ico := Finset.mem_Ico.mp ht_min_mem.1
+    use t_min
+    refine ⟨ht_min_ico.1, ht_min_ico.2, ht_min_mem.2, ?_⟩
+    simp only [service_during]; apply Finset.sum_eq_zero
+    intro i hi; rw [Finset.mem_Ico] at hi; simp only [service_at]
+    have h_not_sched : scheduled_at sched j i = false := by
+      by_contra h_neg; push_neg at h_neg; simp only [Bool.not_eq_false] at h_neg
+      have h_mem : i ∈ (Finset.Ico t1 t2).filter (fun t => scheduled_at sched j t) :=
+        Finset.mem_filter.mpr ⟨Finset.mem_Ico.mpr ⟨hi.1, lt_trans hi.2 ht_min_ico.2⟩, h_neg⟩
+      have h_min_le := Finset.min'_le _ _ h_mem
+      exact absurd (lt_of_lt_of_le hi.2 h_min_le) (lt_irrefl i)
+    rw [h_not_sched]; simp [Bool.toNat]
+  | succ n =>
+    have h_gt_n : service_during sched j t1 t2 > n := by omega
+    obtain ⟨t0, ht0_ge, ht0_lt, ht0_sched, ht0_serv⟩ := ih n (by omega) h_gt_n
+    have ht0_le1 : t0 + 1 ≤ t2 := by
+      exact ht0_lt
+    have h_serv_succ : service_during sched j t1 (t0 + 1) = n + 1 := by
+      rw [service_during_cat sched j t0 t1 (t0 + 1) ⟨ht0_ge, Nat.le_succ t0⟩, ht0_serv]
+      unfold service_during
+      have h_single : Finset.Ico t0 (t0 + 1) = {t0} := Nat.Ico_succ_singleton t0
+      rw [h_single, Finset.sum_singleton, service_at, ht0_sched]; simp [Bool.toNat]
+    have h_cat := service_during_cat sched j (t0 + 1) t1 t2 ⟨le_trans ht0_ge (Nat.le_succ t0), ht0_le1⟩
+    have h_rest : service_during sched j (t0 + 1) t2 > 0 := by
+      have : service_during sched j t1 t2 = n + 1 + service_during sched j (t0 + 1) t2 := by
+        rw [h_cat, h_serv_succ]
+      omega
+    obtain ⟨t', ht'_ge, ht'_lt, ht'_sched⟩ := cumulative_service_implies_scheduled sched j (t0 + 1) t2 h_rest
+    have h_nonempty : ((Finset.Ico (t0 + 1) t2).filter (fun t => scheduled_at sched j t)).Nonempty :=
+      ⟨t', Finset.mem_filter.mpr ⟨Finset.mem_Ico.mpr ⟨ht'_ge, ht'_lt⟩, ht'_sched⟩⟩
+    let t_min := ((Finset.Ico (t0 + 1) t2).filter (fun t => scheduled_at sched j t)).min' h_nonempty
+    have ht_min_mem := Finset.min'_mem _ h_nonempty
+    rw [Finset.mem_filter] at ht_min_mem
+    have ht_min_ico := Finset.mem_Ico.mp ht_min_mem.1
+    use t_min
+    have ht_min_ge : t0 + 1 ≤ t_min := ht_min_ico.1
+    refine ⟨le_trans ht0_ge (le_trans (Nat.le_succ t0) ht_min_ge), ht_min_ico.2, ht_min_mem.2, ?_⟩
+    have h_cat2 := service_during_cat sched j (t0 + 1) t1 t_min ⟨le_trans ht0_ge (Nat.le_succ t0), ht_min_ge⟩
+    rw [h_cat2, h_serv_succ]
+    have h_zero : service_during sched j (t0 + 1) t_min = 0 := by
+      simp only [service_during]; apply Finset.sum_eq_zero
+      intro i hi; rw [Finset.mem_Ico] at hi; simp only [service_at]
+      have h_not_sched : scheduled_at sched j i = false := by
+        by_contra h_neg; push_neg at h_neg; simp only [Bool.not_eq_false] at h_neg
+        have h_mem : i ∈ (Finset.Ico (t0 + 1) t2).filter (fun t => scheduled_at sched j t) :=
+          Finset.mem_filter.mpr ⟨Finset.mem_Ico.mpr ⟨hi.1, lt_trans hi.2 ht_min_ico.2⟩, h_neg⟩
+        have h_min_le := Finset.min'_le _ _ h_mem
+        exact absurd (lt_of_lt_of_le hi.2 h_min_le) (lt_irrefl i)
+      rw [h_not_sched]; simp [Bool.toNat]
+    omega
+
+include H_arrival_times_are_consistent H_arr_seq_is_a_set H_jobs_come_from_arrival_sequence in
+theorem service_of_jobs_le_1 (t1 t2 t : Time) (P : Job → Bool) :
+    ((jobs_arrived_between arr_seq t1 t2).filter P |>.map (fun j => service_at sched j t)).sum ≤ 1 := by
+  have h_nodup : (jobs_arrived_between arr_seq t1 t2).Nodup :=
+    arrivals_uniq job_arrival arr_seq H_arrival_times_are_consistent H_arr_seq_is_a_set t1 t2
+  cases hsched : sched t with
+  | none =>
+    suffices hh : ((jobs_arrived_between arr_seq t1 t2).filter P |>.map (fun j => service_at sched j t)).sum = 0 by omega
+    apply List.sum_eq_zero; intro x hx; rw [List.mem_map] at hx
+    obtain ⟨j, _, rfl⟩ := hx; simp only [service_at, scheduled_at, hsched]; simp [Bool.toNat]
+  | some j0 =>
+    have h_le1 : ∀ (l : List Job), l.Nodup →
+        (l.map (fun j => service_at sched j t)).sum ≤ 1 := by
+      intro l hl
+      induction l with
+      | nil => simp
+      | cons a l' ihl =>
+        rw [List.nodup_cons] at hl; simp only [List.map_cons, List.sum_cons]
+        by_cases ha : a = j0
+        · have h_rest : (l'.map (fun j => service_at sched j t)).sum = 0 := by
+            apply List.sum_eq_zero; intro x hx; rw [List.mem_map] at hx
+            obtain ⟨j, hj, rfl⟩ := hx
+            have hne : j ≠ a := fun heq => hl.1 (heq ▸ hj)
+            simp only [service_at, scheduled_at, hsched]
+            have : (some j0 == some j) = false := by
+              rw [beq_eq_false_iff_ne]; intro heq
+              exact hne (ha ▸ (Option.some_injective _ heq.symm))
+            rw [this]; simp [Bool.toNat]
+          rw [h_rest]; exact Nat.add_le_of_le_sub (by omega) (service_at_most_one sched a t)
+        · have : service_at sched a t = 0 := by
+            simp only [service_at, scheduled_at, hsched]
+            have : (some j0 == some a) = false := by
+              rw [beq_eq_false_iff_ne]; intro heq
+              exact ha (Option.some_injective _ heq.symm)
+            rw [this]; simp [Bool.toNat]
+          rw [this, Nat.zero_add]; exact ihl hl.2
+    exact h_le1 _ (List.Nodup.filter _ h_nodup)
+
+include H_arrival_times_are_consistent H_arr_seq_is_a_set H_jobs_come_from_arrival_sequence in
+theorem total_service_of_jobs_le_delta (t Δ : Time) (P : Job → Bool) :
+    service_of_jobs sched (jobs_arrived_between arr_seq t (t + Δ)) P t (t + Δ) ≤ Δ := by
+  unfold service_of_jobs; simp only [service_during]
+  have h_swap : ∀ (l : List Job),
+      (l.map (fun j => ∑ t' ∈ Finset.Ico t (t + Δ), service_at sched j t')).sum =
+      ∑ t' ∈ Finset.Ico t (t + Δ), (l.map (fun j => service_at sched j t')).sum := by
+    intro l; induction l with
+    | nil => simp
+    | cons a l ih => simp only [List.map_cons, List.sum_cons]; rw [ih, ← Finset.sum_add_distrib]
+  rw [h_swap]
+  calc ∑ t' ∈ Finset.Ico t (t + Δ), ((jobs_arrived_between arr_seq t (t + Δ)).filter P |>.map (fun j => service_at sched j t')).sum
+      ≤ ∑ _t' ∈ Finset.Ico t (t + Δ), 1 :=
+        Finset.sum_le_sum (fun t' _ => service_of_jobs_le_1 job_arrival arr_seq H_arrival_times_are_consistent H_arr_seq_is_a_set sched H_jobs_come_from_arrival_sequence t (t + Δ) t' P)
+    _ = Δ := by simp [Finset.sum_const, smul_eq_mul, mul_one, Nat.card_Ico]
+
+include H_jobs_must_arrive_to_execute H_jobs_come_from_arrival_sequence H_arrival_times_are_consistent H_arr_seq_is_a_set H_completed_jobs_dont_execute in
+theorem low_service_implies_existence_of_idle_time (t1 t2 : Time) (h_le : t1 ≤ t2)
+    (h_serv : service_of_jobs sched (jobs_arrived_between arr_seq 0 t2) (fun _ => true) t1 t2 < t2 - t1) :
+    ∃ t, t1 ≤ t ∧ t < t2 ∧ is_idle sched t = true := by
+  -- Rewrite t2 as t1 + δ
+  obtain ⟨δ, rfl⟩ : ∃ δ, t2 = t1 + δ := ⟨t2 - t1, (Nat.add_sub_cancel' h_le).symm⟩
+  rw [show t1 + δ - t1 = δ from Nat.add_sub_cancel_left t1 δ] at h_serv
+  -- Swap sum order: ∑_j ∑_t service_at → ∑_t ∑_j service_at
+  unfold service_of_jobs service_during at h_serv
+  have h_swap : ∀ (l : List Job),
+      (l.map (fun j => ∑ t' ∈ Finset.Ico t1 (t1 + δ), service_at sched j t')).sum =
+      ∑ t' ∈ Finset.Ico t1 (t1 + δ), (l.map (fun j => service_at sched j t')).sum := by
+    intro l; induction l with
+    | nil => simp
+    | cons a l ih => simp only [List.map_cons, List.sum_cons]; rw [ih, ← Finset.sum_add_distrib]
+  rw [h_swap] at h_serv
+  -- Apply sum_le_summation_range to find a time x where the inner sum = 0
+  obtain ⟨x, hx_ge, hx_lt, hx_zero⟩ := Prosa.Util.Sum.sum_le_summation_range
+    (fun t' => ((jobs_arrived_between arr_seq 0 (t1 + δ)).filter (fun _ => true) |>.map (fun j => service_at sched j t')).sum)
+    t1 δ h_serv
+  use x
+  refine ⟨hx_ge, hx_lt, ?_⟩
+  -- Show is_idle sched x = true, i.e., sched x = none
+  simp only [is_idle]
+  rw [beq_iff_eq]
+  by_contra h_not_idle
+  -- sched x is some job s
+  push_neg at h_not_idle
+  obtain ⟨s, hs⟩ : ∃ s, sched x = some s := by
+    cases heq : sched x with
+    | none => exact absurd heq h_not_idle
+    | some j => exact ⟨j, rfl⟩
+  -- s must come from the arrival sequence
+  have h_sched_s : scheduled_at sched s x = true := by
+    simp [scheduled_at, hs]
+  have h_arrives : arrives_in arr_seq s := H_jobs_come_from_arrival_sequence s x h_sched_s
+  have h_arr : has_arrived job_arrival s x := H_jobs_must_arrive_to_execute s x h_sched_s
+  -- s ∈ jobs_arrived_between arr_seq 0 (t1 + δ)
+  have h_in_arrivals : s ∈ jobs_arrived_between arr_seq 0 (t1 + δ) := by
+    apply arrived_between_implies_in_arrivals job_arrival arr_seq H_arrival_times_are_consistent
+    · exact h_arrives
+    · constructor
+      · exact Nat.zero_le _
+      · exact Nat.lt_of_le_of_lt h_arr hx_lt
+  -- s passes the filter (fun _ => true)
+  have h_in_filtered : s ∈ (jobs_arrived_between arr_seq 0 (t1 + δ)).filter (fun _ => true) := by
+    rw [List.mem_filter]; exact ⟨h_in_arrivals, rfl⟩
+  -- service_at sched s x ≥ 1
+  have h_sa_pos : service_at sched s x = 1 := by
+    simp only [service_at, scheduled_at, hs]; simp [Bool.toNat]
+  -- But the sum is 0, contradiction
+  have h_sa_in_map : service_at sched s x ∈ ((jobs_arrived_between arr_seq 0 (t1 + δ)).filter (fun _ => true) |>.map (fun j => service_at sched j x)) :=
+    List.mem_map.mpr ⟨s, h_in_filtered, rfl⟩
+  have h_sa_le : service_at sched s x ≤ ((jobs_arrived_between arr_seq 0 (t1 + δ)).filter (fun _ => true) |>.map (fun j => service_at sched j x)).sum :=
+    List.le_sum_of_mem h_sa_in_map
+  omega
+
+section ServiceCat
+
+include H_arrival_times_are_consistent H_jobs_must_arrive_to_execute in
+theorem service_of_jobs_cat_scheduling_interval (P : Job → Bool) (t1 t2 t : Time)
+    (h : t1 ≤ t ∧ t ≤ t2) :
+    service_of_jobs sched (jobs_arrived_between arr_seq t1 t2) P t1 t2 =
+    service_of_jobs sched (jobs_arrived_between arr_seq t1 t) P t1 t
+    + service_of_jobs sched (jobs_arrived_between arr_seq t1 t) P t t2
+    + service_of_jobs sched (jobs_arrived_between arr_seq t t2) P t t2 := by
+  have h_list_sum_split : ∀ (L : List Job),
+      (L.map (fun j => ∑ t' ∈ Finset.Ico t1 t2, service_at sched j t')).sum =
+      (L.map (fun j => ∑ t' ∈ Finset.Ico t1 t, service_at sched j t')).sum +
+      (L.map (fun j => ∑ t' ∈ Finset.Ico t t2, service_at sched j t')).sum := by
+    intro L; induction L with
+    | nil => simp
+    | cons a l ih =>
+      simp only [List.map_cons, List.sum_cons]; rw [ih]
+      have : ∑ t' ∈ Finset.Ico t1 t2, service_at sched a t' =
+          ∑ t' ∈ Finset.Ico t1 t, service_at sched a t' +
+          ∑ t' ∈ Finset.Ico t t2, service_at sched a t' := by
+        rw [← Finset.sum_union (Finset.Ico_disjoint_Ico_consecutive t1 t t2),
+            Finset.Ico_union_Ico_eq_Ico h.1 h.2]
+      omega
+  unfold service_of_jobs
+  rw [job_arrived_between_cat arr_seq t1 t t2 h.1 h.2, List.filter_append, List.map_append, List.sum_append]
+  simp only [service_during]
+  rw [h_list_sum_split ((jobs_arrived_between arr_seq t1 t).filter P)]
+  rw [h_list_sum_split ((jobs_arrived_between arr_seq t t2).filter P)]
+  suffices h_zero : (((jobs_arrived_between arr_seq t t2).filter P).map
+      (fun j => ∑ t' ∈ Finset.Ico t1 t, service_at sched j t')).sum = 0 by omega
+  apply List.sum_eq_zero; intro x hx; rw [List.mem_map] at hx
+  obtain ⟨j, hj, rfl⟩ := hx
+  apply Finset.sum_eq_zero; intro i hi; rw [Finset.mem_Ico] at hi
+  simp only [service_at, scheduled_at]
+  cases heq : (sched i == some j)
+  · simp [Bool.toNat]
+  · exfalso
+    have hsched_j : scheduled_at sched j i = true := by simp [scheduled_at, beq_iff_eq.mp heq]
+    have h_arr := H_jobs_must_arrive_to_execute j i hsched_j
+    rw [List.mem_filter] at hj
+    have h_between := in_arrivals_implies_arrived_between job_arrival arr_seq H_arrival_times_are_consistent j t t2 hj.1
+    unfold has_arrived at h_arr; unfold arrived_between at h_between; simp only [Time] at *; omega
+
+theorem service_of_jobs_cat_arrival_interval (P : Job → Bool) (t1 t2 t : Time)
+    (h : t1 ≤ t ∧ t ≤ t2) :
+    service_of_jobs sched (jobs_arrived_between arr_seq t1 t2) P t t2 =
+    service_of_jobs sched (jobs_arrived_between arr_seq t1 t) P t t2 +
+    service_of_jobs sched (jobs_arrived_between arr_seq t t2) P t t2 := by
+  unfold service_of_jobs
+  rw [job_arrived_between_cat arr_seq t1 t t2 h.1 h.2,
+      List.filter_append, List.map_append, List.sum_append]
+
+end ServiceCat
+
+section WorkloadServiceAndCompletion
+
+variable (P : Job → Bool)
+variable (t1 t2 : Time)
+
+include H_arrival_times_are_consistent H_jobs_must_arrive_to_execute H_completed_jobs_dont_execute in
+theorem workload_eq_service_impl_all_jobs_have_completed (t_compl : Time)
+    (h : workload_of_jobs job_cost (jobs_arrived_between arr_seq t1 t2) P =
+         service_of_jobs sched (jobs_arrived_between arr_seq t1 t2) P t1 t_compl) :
+    ∀ j, j ∈ jobs_arrived_between arr_seq t1 t2 → P j = true →
+      completed_by job_cost sched j t_compl := by
+  intro j hj hPj
+  have h_between := in_arrivals_implies_arrived_between job_arrival arr_seq H_arrival_times_are_consistent j t1 t2 hj
+  have h_eq : service_during sched j t1 t_compl = job_cost j :=
+    Prosa.Util.Sum.sum_majorant_eqn (jobs_arrived_between arr_seq t1 t2)
+      (fun j' => service_during sched j' t1 t_compl) job_cost P
+      (fun x _ _ => cumulative_service_le_job_cost job_cost sched x H_completed_jobs_dont_execute t1 t_compl)
+      h.symm j hj hPj
+  unfold completed_by service service_during at *
+  by_cases h_le : t1 ≤ t_compl
+  · calc job_cost j = ∑ i ∈ Finset.Ico t1 t_compl, service_at sched j i := h_eq.symm
+      _ ≤ ∑ i ∈ Finset.Ico 0 t_compl, service_at sched j i := by
+          apply Finset.sum_le_sum_of_subset
+          intro x hx; rw [Finset.mem_Ico] at hx ⊢; exact ⟨Nat.zero_le _, hx.2⟩
+  · push_neg at h_le
+    have h_empty : Finset.Ico t1 t_compl = ∅ := Finset.Ico_eq_empty (by simp only [Time] at *; omega)
+    rw [h_empty] at h_eq; simp at h_eq
+    -- h_eq may be : 0 = job_cost j or similar. Use omega.
+    simp only [Time] at *; omega
+
+include H_arrival_times_are_consistent H_jobs_must_arrive_to_execute H_completed_jobs_dont_execute in
+theorem all_jobs_have_completed_impl_workload_eq_service (t_compl : Time)
+    (h : ∀ j, j ∈ jobs_arrived_between arr_seq t1 t2 → P j = true →
+      completed_by job_cost sched j t_compl) :
+    workload_of_jobs job_cost (jobs_arrived_between arr_seq t1 t2) P =
+    service_of_jobs sched (jobs_arrived_between arr_seq t1 t2) P t1 t_compl := by
+  apply le_antisymm
+  · unfold workload_of_jobs service_of_jobs
+    apply Prosa.Util.Sum.leq_sum_seq
+    intro j hj hPj
+    have h_compl := h j hj hPj
+    unfold completed_by service at h_compl
+    have h_between := in_arrivals_implies_arrived_between job_arrival arr_seq H_arrival_times_are_consistent j t1 t2 hj
+    simp only [service_during] at h_compl ⊢
+    have h_arr_ge : t1 ≤ job_arrival j := by exact h_between.1
+    by_cases h_le : t1 ≤ t_compl
+    · have h_zero : ∑ i ∈ Finset.Ico 0 t1, service_at sched j i = 0 :=
+        cumulative_service_before_job_arrival_zero job_arrival sched H_jobs_must_arrive_to_execute j 0 t1 h_arr_ge
+      have h_split : ∑ i ∈ Finset.Ico 0 t_compl, service_at sched j i =
+          ∑ i ∈ Finset.Ico 0 t1, service_at sched j i + ∑ i ∈ Finset.Ico t1 t_compl, service_at sched j i := by
+        rw [← Finset.sum_union (Finset.Ico_disjoint_Ico_consecutive 0 t1 t_compl),
+            Finset.Ico_union_Ico_eq_Ico (Nat.zero_le _) h_le]
+      rw [h_zero, Nat.zero_add] at h_split; rw [h_split] at h_compl; exact h_compl
+    · push_neg at h_le
+      have h_compl_zero : job_cost j = 0 := by
+        have h_tc_le : t_compl ≤ job_arrival j := le_trans (le_of_lt h_le) h_arr_ge
+        have h_zero : ∑ i ∈ Finset.Ico 0 t_compl, service_at sched j i = 0 :=
+          cumulative_service_before_job_arrival_zero job_arrival sched H_jobs_must_arrive_to_execute j 0 t_compl h_tc_le
+        rw [h_zero] at h_compl; exact Nat.le_zero.mp h_compl
+      rw [Finset.Ico_eq_empty (by simp only [Time] at *; omega)]; simp; omega
+  · exact service_of_jobs_le_workload job_cost sched (jobs_arrived_between arr_seq t1 t2) P H_completed_jobs_dont_execute t1 t_compl
+
+include H_arrival_times_are_consistent H_jobs_must_arrive_to_execute H_completed_jobs_dont_execute in
+theorem all_jobs_have_completed_equiv_workload_eq_service (t_compl : Time) :
+    (∀ j, j ∈ jobs_arrived_between arr_seq t1 t2 → P j = true →
+      completed_by job_cost sched j t_compl) ↔
+    workload_of_jobs job_cost (jobs_arrived_between arr_seq t1 t2) P =
+    service_of_jobs sched (jobs_arrived_between arr_seq t1 t2) P t1 t_compl := by
+  exact ⟨all_jobs_have_completed_impl_workload_eq_service job_arrival job_cost arr_seq
+    H_arrival_times_are_consistent sched H_jobs_must_arrive_to_execute H_completed_jobs_dont_execute P t1 t2 t_compl,
+    workload_eq_service_impl_all_jobs_have_completed job_arrival job_cost arr_seq
+    H_arrival_times_are_consistent sched H_jobs_must_arrive_to_execute H_completed_jobs_dont_execute P t1 t2 t_compl⟩
+
+end WorkloadServiceAndCompletion
+
+end ExtraLemmas
+
+end Prosa.Classic.Model.Schedule.Uni.Service

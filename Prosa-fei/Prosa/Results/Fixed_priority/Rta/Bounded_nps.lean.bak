@@ -1,0 +1,181 @@
+-- Translated from: ../rt-proofs/results/fixed_priority/rta/bounded_nps.v
+import Prosa.Analysis.Definitions.Schedulability
+import Prosa.Analysis.Definitions.Request_bound_function
+import Prosa.Analysis.Facts.Model.Sequential
+import Prosa.Analysis.Facts.Busy_interval.Priority_inversion
+import Prosa.Results.Fixed_priority.Rta.Bounded_pi
+import Prosa.Model.Processor.Ideal
+import Prosa.Model.Readiness.Basic
+import Prosa.Model.Task.Arrival.Curves
+
+namespace Prosa.Results.Fixed_priority.Rta.Bounded_nps
+
+open Prosa.Behavior.Job
+open Prosa.Behavior.Time
+open Prosa.Behavior.Schedule
+open Prosa.Behavior.Service
+open Prosa.Behavior.Arrival_sequence
+open Prosa.Behavior.Ready
+open Prosa.Model.Task.Concept
+open Prosa.Model.Task.Sequentiality
+open Prosa.Model.Processor.Ideal
+open Prosa.Model.Priority.Classes
+open Prosa.Model.Preemption.Parameter
+open Prosa.Model.Task.Preemption.Parameters
+open Prosa.Model.Task.Arrivals
+open Prosa.Model.Task.Arrival.Curves
+open Prosa.Model.Schedule.Work_conserving
+open Prosa.Model.Schedule.Priority_driven
+open Prosa.Analysis.Definitions.Priority_inversion
+open Prosa.Analysis.Definitions.Job_properties
+open Prosa.Analysis.Definitions.Schedulability
+open Prosa.Analysis.Definitions.Request_bound_function
+open Prosa.Analysis.Facts.Busy_interval.Priority_inversion
+open Prosa.Util.Epsilon
+open Prosa.Util.Minmax
+
+section RTAforFPwithBoundedNonpreemptiveSegmentsWithArrivalCurves
+
+variable {Task : TaskType}
+variable [TaskCost Task]
+variable [TaskRunToCompletionThreshold Task]
+variable [TaskMaxNonpreemptiveSegment Task]
+variable [DecidableEq Task]
+
+variable {Job : JobType}
+variable [DecidableEq Job]
+variable [JobTask Job Task]
+variable [JobArrival Job]
+variable [JobCost Job]
+
+variable (arr_seq : arrival_sequence Job)
+variable (H_arrival_times_are_consistent : consistent_arrival_times arr_seq)
+variable (H_arr_seq_is_a_set : arrival_sequence_uniq arr_seq)
+
+attribute [local instance] pstate_instance
+
+variable (sched : schedule (processor_state Job))
+variable (H_jobs_come_from_arrival_sequence :
+  jobs_come_from_arrival_sequence (Job := Job) sched arr_seq)
+
+variable (H_jobs_must_arrive_to_execute : jobs_must_arrive_to_execute (Job := Job) sched)
+variable (H_completed_jobs_dont_execute : completed_jobs_dont_execute (Job := Job) sched)
+
+variable [JobPreemptable Job]
+
+variable (H_valid_model_with_bounded_nonpreemptive_segments :
+  valid_model_with_bounded_nonpreemptive_segments (Task := Task) arr_seq sched)
+
+variable [FP_policy Task]
+
+set_option synthInstance.checkSynthOrder false in
+noncomputable local instance : JLFP_policy Job := FP_to_JLFP Job Task
+set_option synthInstance.checkSynthOrder false in
+noncomputable local instance : JLDP_policy Job := JLFP_to_JLDP Job
+
+variable (H_priority_is_reflexive : reflexive_priorities (Job := Job))
+variable (H_priority_is_transitive : transitive_priorities (Job := Job))
+
+variable (H_sequential_tasks : sequential_tasks (Job := Job) (Task := Task) sched)
+
+variable (H_work_conserving : work_conserving arr_seq sched)
+
+variable (H_respects_policy :
+  respects_policy_at_preemption_point arr_seq sched)
+
+variable (ts : List Task)
+
+variable (H_all_jobs_from_taskset : all_jobs_from_taskset arr_seq ts)
+
+variable (H_valid_job_cost : arrivals_have_valid_job_costs (Task := Task) arr_seq)
+
+variable [MaxArrivals Task]
+variable (H_valid_arrival_curve : valid_taskset_arrival_curve ts max_arrivals)
+variable (H_is_arrival_curve : taskset_respects_max_arrivals arr_seq ts)
+
+variable (tsk : Task)
+variable (H_tsk_in_ts : tsk ∈ ts)
+
+variable (H_valid_preemption_model : valid_preemption_model arr_seq sched)
+
+variable (H_valid_run_to_completion_threshold :
+  valid_task_run_to_completion_threshold arr_seq tsk)
+
+noncomputable def blocking_bound : Nat :=
+  bigMaxListCond ts
+    (fun tsk_other => ¬(hep_task tsk_other tsk = true))
+    (fun tsk_other => task_max_nonpreemptive_segment tsk_other - ε)
+
+section PriorityInversionIsBounded
+
+include H_valid_model_with_bounded_nonpreemptive_segments
+  H_all_jobs_from_taskset in
+theorem priority_inversion_is_bounded_by_blocking :
+    ∀ j t,
+      arrives_in arr_seq j →
+      job_task j = tsk →
+      max_length_of_priority_inversion arr_seq j t ≤ blocking_bound ts tsk := by sorry
+
+include H_arrival_times_are_consistent H_arr_seq_is_a_set
+  H_jobs_come_from_arrival_sequence H_jobs_must_arrive_to_execute
+  H_completed_jobs_dont_execute
+  H_valid_model_with_bounded_nonpreemptive_segments
+  H_priority_is_reflexive H_priority_is_transitive
+  H_work_conserving H_respects_policy
+  H_all_jobs_from_taskset in
+theorem priority_inversion_is_bounded :
+    priority_inversion_is_bounded_by
+      arr_seq sched tsk (blocking_bound ts tsk) := by sorry
+
+end PriorityInversionIsBounded
+
+section ResponseTimeBound
+
+variable (L : duration)
+variable (H_L_positive : L > 0)
+variable (H_fixed_point : L = blocking_bound ts tsk + total_hep_request_bound_function_FP ts tsk L)
+
+variable (R : duration)
+variable (H_R_is_maximum :
+  ∀ (A : duration),
+    (A < L) && (task_request_bound_function tsk A != task_request_bound_function tsk (A + ε)) = true →
+    ∃ (F : duration),
+      A + F = blocking_bound ts tsk
+              + (task_request_bound_function tsk (A + ε) - (task_cost tsk - task_run_to_completion_threshold tsk))
+              + total_ohep_request_bound_function_FP ts tsk (A + F) ∧
+      F + (task_cost tsk - task_run_to_completion_threshold tsk) ≤ R)
+
+include H_arrival_times_are_consistent H_arr_seq_is_a_set
+  H_jobs_come_from_arrival_sequence H_jobs_must_arrive_to_execute
+  H_completed_jobs_dont_execute
+  H_valid_model_with_bounded_nonpreemptive_segments
+  H_priority_is_reflexive H_priority_is_transitive
+  H_sequential_tasks H_work_conserving H_respects_policy
+  H_all_jobs_from_taskset H_valid_job_cost
+  H_valid_arrival_curve H_is_arrival_curve
+  H_tsk_in_ts H_valid_preemption_model
+  H_valid_run_to_completion_threshold
+  H_L_positive H_fixed_point H_R_is_maximum in
+theorem uniprocessor_response_time_bound_fp_with_bounded_nonpreemptive_segments :
+    task_response_time_bound arr_seq sched tsk R := by
+  exact Prosa.Results.Fixed_priority.Rta.Bounded_pi.uniprocessor_response_time_bound_fp
+    arr_seq H_arrival_times_are_consistent H_arr_seq_is_a_set sched
+    H_jobs_come_from_arrival_sequence H_jobs_must_arrive_to_execute
+    H_completed_jobs_dont_execute H_work_conserving H_sequential_tasks
+    H_valid_job_cost ts H_all_jobs_from_taskset H_valid_arrival_curve
+    H_is_arrival_curve tsk H_tsk_in_ts H_valid_preemption_model
+    H_valid_run_to_completion_threshold H_priority_is_reflexive
+    (blocking_bound ts tsk)
+    (priority_inversion_is_bounded arr_seq H_arrival_times_are_consistent
+      H_arr_seq_is_a_set sched H_jobs_come_from_arrival_sequence
+      H_jobs_must_arrive_to_execute H_completed_jobs_dont_execute
+      H_valid_model_with_bounded_nonpreemptive_segments H_priority_is_reflexive
+      H_priority_is_transitive H_work_conserving H_respects_policy ts
+      H_all_jobs_from_taskset tsk)
+    L H_L_positive H_fixed_point R H_R_is_maximum
+
+end ResponseTimeBound
+
+end RTAforFPwithBoundedNonpreemptiveSegmentsWithArrivalCurves
+
+end Prosa.Results.Fixed_priority.Rta.Bounded_nps

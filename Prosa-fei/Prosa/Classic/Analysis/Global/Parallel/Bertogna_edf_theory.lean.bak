@@ -1,0 +1,559 @@
+-- Translated from: ../rt-proofs/classic/analysis/global/parallel/bertogna_edf_theory.v
+import Prosa.Classic.Util.All
+import Prosa.Classic.Model.Arrival.Basic.Task
+import Prosa.Classic.Model.Schedule.Global.Workload
+import Prosa.Classic.Model.Schedule.Global.Basic.Schedule
+import Prosa.Classic.Analysis.Global.Parallel.Workload_bound
+import Prosa.Classic.Model.Schedule.Global.Schedulability
+import Prosa.Classic.Model.Schedule.Global.Response_time
+import Prosa.Classic.Model.Schedule.Global.Basic.Platform
+import Prosa.Classic.Model.Schedule.Global.Basic.Interference_edf
+import Prosa.Classic.Model.Priority
+import Prosa.Classic.Model.Arrival.Basic.Task_arrival
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.BigOperators.Intervals
+import Mathlib.Tactic
+
+set_option autoImplicit false
+
+namespace Prosa.Classic.Analysis.Global.Parallel.Bertogna_edf_theory
+
+open Prosa.Classic.Model.Time
+open Prosa.Classic.Model.Arrival.Basic.Arrival_sequence
+open Prosa.Classic.Model.Arrival.Basic.Job hiding arrival_sequence arrives_in
+open Prosa.Classic.Model.Arrival.Basic.Task
+open Prosa.Classic.Model.Arrival.Basic.Task.SporadicTask
+open Prosa.Classic.Model.Arrival.Basic.Task.SporadicTaskset
+open Prosa.Classic.Model.Arrival.Basic.Task_arrival
+open Prosa.Classic.Model.Schedule.Global.Basic.Schedule
+open Prosa.Classic.Model.Schedule.Global.Basic.Schedule.Schedule
+open Prosa.Classic.Model.Schedule.Global.Basic.Schedule.ScheduleOfSporadicTask
+open Prosa.Classic.Model.Schedule.Global.Basic.Platform.Platform
+open Prosa.Classic.Model.Schedule.Global.Basic.Interference_edf.InterferenceEDF
+open Prosa.Classic.Model.Schedule.Global.Response_time.ResponseTime
+open Prosa.Classic.Model.Schedule.Global.Schedulability.Schedulability
+open Prosa.Classic.Model.Priority
+open Prosa.Classic.Analysis.Global.Parallel.Workload_bound.WorkloadBound
+open Prosa.Util.Div_mod
+
+attribute [local instance] Classical.propDecidable
+
+namespace ResponseTimeAnalysisEDF
+
+noncomputable def total_interference
+    {Job : Type} [DecidableEq Job]
+    (job_arrival : Job → Time) (job_cost : Job → Time)
+    {num_cpus : ℕ} (sched : schedule Job num_cpus)
+    (j : Job) (t1 t2 : Time) : ℕ :=
+  ∑ t ∈ Finset.Ico t1 t2,
+    if backlogged job_arrival job_cost sched j t then 1 else 0
+
+noncomputable def task_interference
+    {sporadic_task : Type} [DecidableEq sporadic_task]
+    {Job : Type} [DecidableEq Job]
+    (job_arrival : Job → Time) (job_cost : Job → Time)
+    (job_task : Job → sporadic_task)
+    {num_cpus : ℕ} (sched : schedule Job num_cpus)
+    (j : Job) (tsk_other : sporadic_task) (t1 t2 : Time) : ℕ :=
+  ∑ t ∈ Finset.Ico t1 t2,
+    ∑ cpu : Fin num_cpus,
+      if (backlogged job_arrival job_cost sched j t ∧
+          task_scheduled_on job_task sched tsk_other cpu t = true) then 1 else 0
+
+def interference_bound_generic
+    {sporadic_task : Type} [DecidableEq sporadic_task]
+    (task_cost : sporadic_task → Time) (task_period : sporadic_task → Time)
+    (delta : Time) (tsk_R : sporadic_task × Time) : ℕ :=
+  W task_cost task_period tsk_R.1 tsk_R.2 delta
+
+def edf_specific_interference_bound
+    {sporadic_task : Type} [DecidableEq sporadic_task]
+    (task_cost : sporadic_task → Time) (task_period : sporadic_task → Time)
+    (task_deadline : sporadic_task → Time)
+    (tsk tsk_other : sporadic_task) (R_other : Time) : ℕ :=
+  let d_tsk := task_deadline tsk
+  let e_other := task_cost tsk_other
+  let p_other := task_period tsk_other
+  let d_other := task_deadline tsk_other
+  (div_ceil (d_tsk + R_other - d_other + 1) p_other) * e_other
+
+def interference_bound_edf
+    {sporadic_task : Type} [DecidableEq sporadic_task]
+    (task_cost : sporadic_task → Time) (task_period : sporadic_task → Time)
+    (task_deadline : sporadic_task → Time)
+    (tsk : sporadic_task) (delta : Time) (tsk_R : sporadic_task × Time) : ℕ :=
+  min (interference_bound_generic task_cost task_period delta tsk_R)
+      (edf_specific_interference_bound task_cost task_period task_deadline tsk tsk_R.1 tsk_R.2)
+
+def total_interference_bound_edf
+    {sporadic_task : Type} [DecidableEq sporadic_task]
+    (task_cost : sporadic_task → Time) (task_period : sporadic_task → Time)
+    (task_deadline : sporadic_task → Time)
+    (tsk : sporadic_task) (R_prev : List (sporadic_task × Time)) (delta : Time) : ℕ :=
+  (R_prev.filter (fun p => different_task tsk p.1)).map
+    (fun tsk_R => interference_bound_edf task_cost task_period task_deadline tsk delta tsk_R) |>.sum
+
+section ResponseTimeBound
+
+variable {sporadic_task : Type} [DecidableEq sporadic_task]
+variable (task_cost : sporadic_task → Time)
+variable (task_period : sporadic_task → Time)
+variable (task_deadline : sporadic_task → Time)
+
+variable {Job : Type} [DecidableEq Job]
+variable (job_arrival : Job → Time)
+variable (job_cost : Job → Time)
+variable (job_deadline : Job → Time)
+variable (job_task : Job → sporadic_task)
+
+variable (arr_seq : arrival_sequence Job)
+
+variable (H_sporadic_tasks :
+  sporadic_task_model task_period job_arrival job_task arr_seq)
+variable (H_valid_job_parameters :
+  ∀ j,
+    arrives_in arr_seq j →
+    valid_sporadic_job task_cost task_deadline job_cost job_deadline job_task j)
+
+variable (ts : List sporadic_task)
+variable (H_valid_task_parameters :
+  valid_sporadic_taskset task_cost task_period task_deadline ts)
+variable (H_constrained_deadlines :
+  ∀ tsk, tsk ∈ ts → task_deadline tsk ≤ task_period tsk)
+
+variable (H_all_jobs_from_taskset :
+  ∀ j, arrives_in arr_seq j → job_task j ∈ ts)
+
+variable {num_cpus : ℕ}
+variable (sched : schedule Job num_cpus)
+variable (H_jobs_come_from_arrival_sequence :
+  jobs_come_from_arrival_sequence sched arr_seq)
+
+variable (H_jobs_must_arrive_to_execute :
+  jobs_must_arrive_to_execute job_arrival sched)
+variable (H_completed_jobs_dont_execute :
+  completed_jobs_dont_execute job_cost sched)
+
+variable (H_at_least_one_cpu : num_cpus > 0)
+
+variable (H_work_conserving : work_conserving job_arrival job_cost arr_seq sched)
+variable (H_edf_policy : respects_JLFP_policy job_arrival job_cost arr_seq sched
+                                              (EDF job_arrival job_deadline))
+
+variable (rt_bounds : List (sporadic_task × Time))
+
+variable (H_rt_bounds_contains_all_tasks : rt_bounds.map Prod.fst = ts)
+
+variable (H_response_time_is_fixed_point :
+  ∀ tsk R,
+    (tsk, R) ∈ rt_bounds →
+    R = task_cost tsk + div_floor
+      (total_interference_bound_edf task_cost task_period task_deadline tsk rt_bounds R) num_cpus)
+
+variable (H_tasks_miss_no_deadlines :
+  ∀ tsk_other R,
+    (tsk_other, R) ∈ rt_bounds → R ≤ task_deadline tsk_other)
+
+section Lemmas
+
+variable (tsk : sporadic_task)
+variable (R : Time)
+variable (H_tsk_R_in_rt_bounds : (tsk, R) ∈ rt_bounds)
+
+variable (j : Job)
+variable (H_j_arrives : arrives_in arr_seq j)
+variable (H_job_of_tsk : job_task j = tsk)
+
+variable (H_j_not_completed : ¬ completed job_cost sched j (job_arrival j + R))
+
+variable (H_all_previous_jobs_completed_on_time :
+  ∀ j_other tsk_other R_other,
+    arrives_in arr_seq j_other →
+    job_task j_other = tsk_other →
+    (tsk_other, R_other) ∈ rt_bounds →
+    job_arrival j_other + R_other < job_arrival j + R →
+    completed job_cost sched j_other (job_arrival j_other + R_other))
+
+section LemmasAboutInterferingTasks
+
+variable (tsk_other : sporadic_task)
+variable (R_other : Time)
+variable (H_response_time_of_tsk_other : (tsk_other, R_other) ∈ rt_bounds)
+
+include H_rt_bounds_contains_all_tasks H_response_time_of_tsk_other in
+theorem bertogna_edf_tsk_other_in_ts : tsk_other ∈ ts := by
+    rw [← H_rt_bounds_contains_all_tasks, List.mem_map]
+    exact ⟨(tsk_other, R_other), H_response_time_of_tsk_other, rfl⟩
+
+include H_response_time_is_fixed_point H_response_time_of_tsk_other in
+theorem bertogna_edf_R_other_ge_cost :
+    R_other ≥ task_cost tsk_other := by
+    have h := H_response_time_is_fixed_point tsk_other R_other H_response_time_of_tsk_other
+    rw [h]; exact Nat.le_add_right _ _
+
+include H_valid_job_parameters H_valid_task_parameters H_constrained_deadlines
+  H_all_jobs_from_taskset H_jobs_come_from_arrival_sequence
+  H_jobs_must_arrive_to_execute H_completed_jobs_dont_execute
+  H_sporadic_tasks H_tasks_miss_no_deadlines
+  H_all_previous_jobs_completed_on_time
+  H_rt_bounds_contains_all_tasks H_response_time_of_tsk_other
+  H_j_arrives H_job_of_tsk in
+theorem bertogna_edf_workload_bounds_interference :
+    task_interference job_arrival job_cost job_task sched j
+      tsk_other (job_arrival j) (job_arrival j + R) ≤
+      W task_cost task_period tsk_other R_other R := by
+    have INts : tsk_other ∈ ts :=
+      bertogna_edf_tsk_other_in_ts ts rt_bounds H_rt_bounds_contains_all_tasks tsk_other R_other H_response_time_of_tsk_other
+    -- Step 1: task_interference ≤ workload
+    have step1 : task_interference job_arrival job_cost job_task sched j tsk_other
+        (job_arrival j) (job_arrival j + R) ≤
+        workload job_task sched tsk_other (job_arrival j) (job_arrival j + R) := by
+      unfold task_interference workload service_of_task
+      apply Finset.sum_le_sum
+      intro t _
+      apply Finset.sum_le_sum
+      intro cpu _
+      unfold task_scheduled_on
+      cases h_sched : sched cpu t with
+      | none =>
+        by_cases h_back : backlogged job_arrival job_cost sched j t <;> simp [h_back, h_sched]
+      | some j' =>
+        simp only [h_sched]
+        by_cases h_back : backlogged job_arrival job_cost sched j t
+        · simp only [h_back, true_and]
+          by_cases h_task : job_task j' = tsk_other
+          · simp [h_task]
+          · simp [h_task]
+        · simp only [h_back, false_and, ite_false]
+          exact Nat.zero_le _
+    -- Step 2: workload ≤ W
+    have step2 : workload job_task sched tsk_other (job_arrival j) (job_arrival j + R) ≤
+        W task_cost task_period tsk_other R_other R := by
+      exact workload_bounded_by_W task_cost task_period task_deadline job_arrival job_cost
+        job_task job_deadline arr_seq H_valid_job_parameters sched
+        H_jobs_come_from_arrival_sequence H_jobs_must_arrive_to_execute
+        H_completed_jobs_dont_execute H_sporadic_tasks tsk_other
+        (H_valid_task_parameters tsk_other INts) (job_arrival j) R R_other
+        (fun j_k h_arr h_tsk h_lt =>
+          H_all_previous_jobs_completed_on_time j_k tsk_other R_other h_arr h_tsk
+            H_response_time_of_tsk_other h_lt)
+    exact le_trans step1 step2
+
+include H_valid_job_parameters H_all_jobs_from_taskset
+  H_jobs_come_from_arrival_sequence
+  H_jobs_must_arrive_to_execute H_completed_jobs_dont_execute
+  H_sporadic_tasks H_work_conserving H_edf_policy
+  H_constrained_deadlines H_tasks_miss_no_deadlines
+  H_all_previous_jobs_completed_on_time
+  H_rt_bounds_contains_all_tasks H_response_time_of_tsk_other
+  H_j_arrives H_job_of_tsk in
+theorem bertogna_edf_specific_bound_holds :
+    task_interference job_arrival job_cost job_task sched j
+      tsk_other (job_arrival j) (job_arrival j + R) ≤
+      edf_specific_interference_bound task_cost task_period task_deadline
+        tsk tsk_other R_other := by
+    have INts_tsk : tsk ∈ ts := by
+      rw [← H_rt_bounds_contains_all_tasks, List.mem_map]
+      exact ⟨(tsk, R), H_tsk_R_in_rt_bounds, rfl⟩
+    have INts_other : tsk_other ∈ ts :=
+      bertogna_edf_tsk_other_in_ts ts rt_bounds H_rt_bounds_contains_all_tasks tsk_other R_other H_response_time_of_tsk_other
+    have h_R_le_dl : R_other ≤ task_deadline tsk_other :=
+      H_tasks_miss_no_deadlines tsk_other R_other H_response_time_of_tsk_other
+    have h_delta_le_dl : R ≤ task_deadline tsk :=
+      H_tasks_miss_no_deadlines tsk R H_tsk_R_in_rt_bounds
+    show Prosa.Classic.Analysis.Global.Parallel.Interference_bound_edf.InterferenceBoundEDF.x_val
+      job_arrival job_cost job_task sched j tsk_other R ≤ _
+    exact Prosa.Classic.Analysis.Global.Parallel.Interference_bound_edf.InterferenceBoundEDF.interference_bound_edf_bounds_interference
+      task_cost task_period task_deadline job_arrival job_cost job_deadline job_task
+      H_sporadic_tasks H_valid_job_parameters sched
+      H_jobs_come_from_arrival_sequence H_jobs_must_arrive_to_execute H_completed_jobs_dont_execute
+      ts H_valid_task_parameters H_constrained_deadlines H_work_conserving H_edf_policy
+      tsk INts_tsk j H_j_arrives H_job_of_tsk
+      tsk_other INts_other R_other h_R_le_dl
+      R h_delta_le_dl
+      (fun j_k h_arr h_tsk h_lt =>
+        H_all_previous_jobs_completed_on_time j_k tsk_other R_other h_arr h_tsk H_response_time_of_tsk_other h_lt)
+
+end LemmasAboutInterferingTasks
+
+section DerivingContradiction
+
+include H_completed_jobs_dont_execute H_valid_job_parameters
+  H_response_time_is_fixed_point H_j_arrives H_job_of_tsk
+  H_j_not_completed H_tsk_R_in_rt_bounds in
+theorem bertogna_edf_too_much_interference :
+    total_interference job_arrival job_cost sched j
+      (job_arrival j) (job_arrival j + R) ≥ R - task_cost tsk + 1 := by
+    -- R ≥ task_cost tsk (from the fixed-point equation)
+    have h_R_ge_cost : R ≥ task_cost tsk := by
+      have h := H_response_time_is_fixed_point tsk R H_tsk_R_in_rt_bounds
+      rw [h]; exact Nat.le_add_right _ _
+    -- j has valid parameters
+    have h_valid := H_valid_job_parameters j H_j_arrives
+    unfold valid_sporadic_job at h_valid
+    obtain ⟨h_cost_pos, h_cost_le, h_dl_eq⟩ := h_valid
+    unfold valid_job_cost at h_cost_pos
+    unfold job_cost_le_task_cost at h_cost_le
+    unfold job_deadline_eq_task_deadline at h_dl_eq
+    rw [H_job_of_tsk] at h_cost_le
+    -- Not completed means service < job_cost j
+    unfold completed at H_j_not_completed
+    push_neg at H_j_not_completed
+    -- service sched j (a_j + R) < job_cost j
+    have h_serv_lt : service sched j (job_arrival j + R) < job_cost j := by
+      exact Nat.not_le.mp H_j_not_completed
+    -- service(j, [0, a_j + R)) = service_during(j, [a_j, a_j + R)) (no service before arrival)
+    have h_serv_eq : service sched j (job_arrival j + R) =
+        service_during sched j (job_arrival j) (job_arrival j + R) := by
+      exact service_before_arrival_eq_service_during job_arrival sched
+        H_jobs_must_arrive_to_execute j (job_arrival j + R) (Nat.le_add_right _ _)
+    rw [h_serv_eq] at h_serv_lt
+    -- For each t in [a_j, a_j+R): backlogged t + service_at t ≥ 1
+    -- (because if not backlogged, then either not pending or scheduled)
+    -- If pending and scheduled: service_at ≥ 1
+    -- If not pending: either not arrived (impossible since t ≥ a_j) or completed (impossible since completion is monotonic and j not completed at a_j + R)
+    -- Sum: total_interference + service_during ≥ R
+    -- Prove: total_interference + service_during ≥ R
+    -- Actually prove the contrapositive: R - task_cost tsk + 1 ≤ total_interference
+    -- i.e., total_interference ≥ R - task_cost tsk + 1
+    -- Equivalently: total_interference + task_cost tsk ≥ R + 1
+    -- We know: total_interference + service_during ≥ R
+    -- And: service_during < job_cost j ≤ task_cost tsk
+    -- So: total_interference ≥ R - service_during > R - task_cost tsk
+    -- Hence total_interference ≥ R - task_cost tsk + 1
+    suffices h_sum_ge : total_interference job_arrival job_cost sched j (job_arrival j) (job_arrival j + R) +
+        service_during sched j (job_arrival j) (job_arrival j + R) ≥ R by
+      omega
+    -- Prove total_interference + service_during ≥ R
+    -- This follows from: at each t, backlogged_indicator + service_at ≥ 1
+    -- when pending at t (which is true for all t in [a_j, a_j+R))
+    unfold total_interference service_during
+    rw [← Finset.sum_add_distrib]
+    calc R = ∑ t ∈ Finset.Ico (job_arrival j) (job_arrival j + R), 1 := by
+            simp [Finset.sum_const, Finset.card_Ico]
+      _ ≤ ∑ t ∈ Finset.Ico (job_arrival j) (job_arrival j + R),
+          ((if backlogged job_arrival job_cost sched j t then 1 else 0) + service_at sched j t) := by
+        apply Finset.sum_le_sum
+        intro t ht
+        rw [Finset.mem_Ico] at ht
+        -- At time t: either backlogged or not
+        by_cases h_back : backlogged job_arrival job_cost sched j t
+        · simp [h_back]
+        · simp only [h_back, ite_false, Nat.zero_add]
+          -- Not backlogged means: not pending or scheduled
+          unfold backlogged at h_back
+          push_neg at h_back
+          -- j is pending at t (arrived and not completed)
+          have h_arrived : has_arrived job_arrival j t := by
+            unfold has_arrived; exact ht.1
+          have h_not_completed : ¬ completed job_cost sched j t := by
+            intro h_comp
+            apply Nat.not_lt.mpr (completion_monotonic job_cost sched j t (job_arrival j + R) (Nat.le_of_lt ht.2) h_comp)
+            exact h_serv_lt ▸ (h_serv_eq ▸ (Nat.not_le.mp H_j_not_completed))
+          have h_pending : pending job_arrival job_cost sched j t :=
+            ⟨h_arrived, h_not_completed⟩
+          -- Since pending and not backlogged, j must be scheduled
+          have h_sched : scheduled sched j t := by
+            rcases h_back h_pending with h_sched
+            exact h_sched
+          -- If scheduled, service_at ≥ 1
+          obtain ⟨cpu, h_cpu⟩ := h_sched
+          unfold service_at
+          calc 1 = ∑ c : Fin num_cpus, if c = cpu then 1 else 0 := by
+                simp [Finset.sum_ite_eq', Finset.mem_univ]
+            _ ≤ ∑ c : Fin num_cpus, if scheduled_on sched j c t then 1 else 0 := by
+                apply Finset.sum_le_sum
+                intro c _
+                by_cases h_eq : c = cpu
+                · subst h_eq; simp [h_cpu]
+                · simp [h_eq]
+
+include H_all_jobs_from_taskset H_valid_task_parameters
+  H_constrained_deadlines H_jobs_come_from_arrival_sequence
+  H_sporadic_tasks H_work_conserving H_edf_policy
+  H_tsk_R_in_rt_bounds H_all_previous_jobs_completed_on_time
+  H_tasks_miss_no_deadlines H_rt_bounds_contains_all_tasks
+  H_j_arrives H_job_of_tsk in
+include H_sporadic_tasks H_valid_job_parameters H_valid_task_parameters H_constrained_deadlines H_all_jobs_from_taskset H_jobs_come_from_arrival_sequence H_jobs_must_arrive_to_execute H_completed_jobs_dont_execute H_at_least_one_cpu H_work_conserving H_edf_policy H_rt_bounds_contains_all_tasks H_response_time_is_fixed_point H_tasks_miss_no_deadlines H_tsk_R_in_rt_bounds H_j_arrives H_job_of_tsk H_j_not_completed H_all_previous_jobs_completed_on_time in
+theorem bertogna_edf_interference_on_all_cpus :
+    ((ts.filter (different_task tsk)).map
+      (fun tsk_k => task_interference job_arrival job_cost job_task sched j
+        tsk_k (job_arrival j) (job_arrival j + R))).sum =
+      total_interference job_arrival job_cost sched j
+        (job_arrival j) (job_arrival j + R) * num_cpus := by
+    -- The key insight: at each time t, if j is backlogged, all cpus are busy
+    -- (work conserving). The sum over other_tasks of task_interference at t
+    -- equals num_cpus (each cpu runs exactly one task from other_tasks).
+    -- When not backlogged, both sides are 0.
+    unfold total_interference task_interference
+    -- Both sides are sums over Finset.Ico (job_arrival j) (job_arrival j + R).
+    -- We show pointwise equality after factoring.
+    simp only [Finset.mul_sum]
+    rw [← Finset.sum_comm']
+    -- Exchange the sum order: ∑_t ∑_tsk = ∑_t (f t)
+    -- Now both sides sum over t ∈ Ico
+    congr 1
+    ext t
+    -- At each time t, we need:
+    -- (if backlogged j t then 1 else 0) * num_cpus =
+    -- ∑_{tsk_k ∈ filter(different_task)} ∑_cpu (if backlogged ∧ task_scheduled_on ... then 1 else 0)
+    by_cases h_back : backlogged job_arrival job_cost sched j t
+    · -- j is backlogged: all cpus busy with tasks from other_tasks
+      simp only [h_back, ite_true, Nat.one_mul]
+      -- Need: num_cpus = ∑_{tsk_k ∈ filter(different_task)} ∑_cpu (if task_scheduled_on ... then 1 else 0)
+      -- By work conserving, each cpu has some job scheduled
+      -- Each such job's task ∈ ts and ≠ tsk (since j is backlogged, j is not scheduled,
+      -- so no cpu runs j, and j's task is tsk)
+      rw [show num_cpus = ∑ cpu : Fin num_cpus, (1 : ℕ) from by simp [Finset.sum_const, Finset.card_univ, Fintype.card_fin]]
+      -- Exchange: ∑_cpu 1 = ∑_tsk_k ∑_cpu (if task_on tsk_k cpu then 1 else 0)
+      -- This is because the tasks in other_tasks partition the cpus
+      sorry
+    · -- j is not backlogged: both sides are 0
+      simp only [h_back, ite_false, Nat.zero_mul]
+      apply Finset.sum_eq_zero
+      intro tsk_k _
+      apply Finset.sum_eq_zero
+      intro cpu _
+      simp only [h_back, false_and, ite_false]
+
+include H_completed_jobs_dont_execute H_valid_job_parameters
+  H_response_time_is_fixed_point H_j_arrives H_job_of_tsk
+  H_j_not_completed H_tsk_R_in_rt_bounds
+  H_all_jobs_from_taskset H_valid_task_parameters
+  H_constrained_deadlines H_jobs_come_from_arrival_sequence
+  H_sporadic_tasks H_work_conserving H_edf_policy
+  H_all_previous_jobs_completed_on_time
+  H_tasks_miss_no_deadlines H_rt_bounds_contains_all_tasks
+  H_at_least_one_cpu in
+include H_sporadic_tasks H_valid_job_parameters H_valid_task_parameters H_constrained_deadlines H_all_jobs_from_taskset H_jobs_come_from_arrival_sequence H_jobs_must_arrive_to_execute H_completed_jobs_dont_execute H_at_least_one_cpu H_work_conserving H_edf_policy H_rt_bounds_contains_all_tasks H_response_time_is_fixed_point H_tasks_miss_no_deadlines H_tsk_R_in_rt_bounds H_j_arrives H_job_of_tsk H_j_not_completed H_all_previous_jobs_completed_on_time in
+theorem bertogna_edf_sum_exceeds_total_interference :
+    ((rt_bounds.filter (fun p => different_task tsk p.1)).map
+      (fun p => task_interference job_arrival job_cost job_task sched j
+        p.1 (job_arrival j) (job_arrival j + R))).sum >
+      total_interference_bound_edf task_cost task_period task_deadline tsk rt_bounds R := by
+    -- Uses: interference_on_all_cpus, too_much_interference, and the fixed-point equation.
+    -- The idea: sum of task_interference = X * num_cpus (by interference_on_all_cpus)
+    -- X ≥ R - task_cost tsk + 1 (by too_much_interference)
+    -- R = task_cost tsk + div_floor(I(tsk,R)) num_cpus (fixed point)
+    -- So sum ≥ (R - task_cost tsk + 1) * num_cpus > I(tsk,R) = total_interference_bound_edf
+    sorry
+
+include H_completed_jobs_dont_execute H_valid_job_parameters
+  H_response_time_is_fixed_point H_j_arrives H_job_of_tsk
+  H_j_not_completed H_tsk_R_in_rt_bounds
+  H_all_jobs_from_taskset H_valid_task_parameters
+  H_constrained_deadlines H_jobs_come_from_arrival_sequence
+  H_sporadic_tasks H_work_conserving H_edf_policy
+  H_all_previous_jobs_completed_on_time
+  H_tasks_miss_no_deadlines H_rt_bounds_contains_all_tasks
+  H_at_least_one_cpu in
+include H_sporadic_tasks H_valid_job_parameters H_valid_task_parameters H_constrained_deadlines H_all_jobs_from_taskset H_jobs_come_from_arrival_sequence H_jobs_must_arrive_to_execute H_completed_jobs_dont_execute H_at_least_one_cpu H_work_conserving H_edf_policy H_rt_bounds_contains_all_tasks H_response_time_is_fixed_point H_tasks_miss_no_deadlines H_tsk_R_in_rt_bounds H_j_arrives H_job_of_tsk H_j_not_completed H_all_previous_jobs_completed_on_time in
+theorem bertogna_edf_exists_task_that_exceeds_bound :
+    ∃ tsk_other R_other,
+      (tsk_other, R_other) ∈ rt_bounds ∧
+      task_interference job_arrival job_cost job_task sched j
+        tsk_other (job_arrival j) (job_arrival j + R) >
+        interference_bound_edf task_cost task_period task_deadline tsk R
+          (tsk_other, R_other) := by
+    -- From sum_exceeds, we know the sum exceeds the total bound.
+    -- By pigeonhole, at least one task must exceed its individual bound.
+    sorry
+
+end DerivingContradiction
+
+end Lemmas
+
+section MainProof
+
+variable (tsk : sporadic_task)
+variable (R : Time)
+variable (H_tsk_R_in_rt_bounds : (tsk, R) ∈ rt_bounds)
+
+include H_sporadic_tasks H_valid_job_parameters H_valid_task_parameters
+  H_constrained_deadlines H_all_jobs_from_taskset
+  H_jobs_come_from_arrival_sequence H_jobs_must_arrive_to_execute
+  H_completed_jobs_dont_execute H_at_least_one_cpu
+  H_work_conserving H_edf_policy H_rt_bounds_contains_all_tasks
+  H_response_time_is_fixed_point H_tasks_miss_no_deadlines
+  H_tsk_R_in_rt_bounds in
+theorem bertogna_cirinei_response_time_bound_edf :
+    is_response_time_bound_of_task job_arrival job_cost job_task arr_seq sched tsk R := by
+    -- The proof follows by strong induction on the absolute response-time bound.
+    -- We need: for all j, arrives_in arr_seq j → job_task j = tsk → completed j (a_j + R)
+    unfold is_response_time_bound_of_task
+    intro j ARRj JOBtsk
+    -- Strong induction on ctime = job_arrival j + R
+    -- We generalize tsk, R, j and induct on job_arrival j + R
+    revert H_tsk_R_in_rt_bounds
+    revert R tsk j ARRj JOBtsk
+    intro j ARRj tsk JOBtsk R
+    apply Prosa.Classic.Util.Induction.strong_ind
+      (P := fun ctime => ∀ (H_in : (tsk, R) ∈ rt_bounds), ctime = job_arrival j + R → completed job_cost sched j (job_arrival j + R))
+      (n := job_arrival j + R)
+    · intro ctime IH H_in h_eq
+      subst h_eq
+      -- All previous jobs completed on time
+      have BEFOREok : ∀ j_other tsk_other R_other,
+          arrives_in arr_seq j_other →
+          job_task j_other = tsk_other →
+          (tsk_other, R_other) ∈ rt_bounds →
+          job_arrival j_other + R_other < job_arrival j + R →
+          completed job_cost sched j_other (job_arrival j_other + R_other) := by
+        intro j_other tsk_other R_other h_arr h_task h_bounds h_lt
+        exact IH (job_arrival j_other + R_other) h_lt h_bounds rfl
+      -- By cases: either j completes or not
+      by_cases h_comp : completed job_cost sched j (job_arrival j + R)
+      · exact h_comp
+      · -- j does not complete: derive contradiction
+        exfalso
+        have EX := bertogna_edf_exists_task_that_exceeds_bound
+          task_cost task_period task_deadline job_arrival job_cost job_deadline job_task
+          arr_seq H_sporadic_tasks H_valid_job_parameters
+          ts H_valid_task_parameters H_constrained_deadlines H_all_jobs_from_taskset
+          sched H_jobs_come_from_arrival_sequence H_jobs_must_arrive_to_execute
+          H_completed_jobs_dont_execute H_at_least_one_cpu
+          H_work_conserving H_edf_policy rt_bounds H_rt_bounds_contains_all_tasks
+          H_response_time_is_fixed_point H_tasks_miss_no_deadlines
+          tsk R H_in j ARRj JOBtsk h_comp BEFOREok
+        obtain ⟨tsk_other, R_other, h_in_bounds, h_exceeds⟩ := EX
+        -- h_exceeds: task_interference > interference_bound_edf
+        -- But we know task_interference ≤ workload_bound (by bertogna_edf_workload_bounds_interference)
+        -- and task_interference ≤ edf_specific_bound (by bertogna_edf_specific_bound_holds)
+        -- interference_bound_edf = min(workload_bound, edf_specific_bound)
+        -- So task_interference ≤ interference_bound_edf, contradiction
+        have h_wb := bertogna_edf_workload_bounds_interference
+          task_cost task_period task_deadline job_arrival job_cost job_deadline job_task
+          arr_seq H_sporadic_tasks H_valid_job_parameters
+          ts H_valid_task_parameters H_constrained_deadlines H_all_jobs_from_taskset
+          sched H_jobs_come_from_arrival_sequence H_jobs_must_arrive_to_execute
+          H_completed_jobs_dont_execute
+          rt_bounds H_rt_bounds_contains_all_tasks H_tasks_miss_no_deadlines
+          tsk R j ARRj JOBtsk BEFOREok tsk_other R_other h_in_bounds
+        have h_edf := bertogna_edf_specific_bound_holds
+          task_cost task_period task_deadline job_arrival job_cost job_deadline job_task
+          arr_seq H_sporadic_tasks H_valid_job_parameters
+          ts H_valid_task_parameters H_constrained_deadlines H_all_jobs_from_taskset
+          sched H_jobs_come_from_arrival_sequence H_jobs_must_arrive_to_execute
+          H_completed_jobs_dont_execute
+          H_work_conserving H_edf_policy rt_bounds H_rt_bounds_contains_all_tasks
+          H_response_time_is_fixed_point H_tasks_miss_no_deadlines
+          tsk R H_in j ARRj JOBtsk BEFOREok tsk_other R_other h_in_bounds
+        -- interference_bound_edf = min(W, edf_specific)
+        -- task_interference ≤ W and task_interference ≤ edf_specific
+        -- So task_interference ≤ min(W, edf_specific) = interference_bound_edf
+        have h_le_min : task_interference job_arrival job_cost job_task sched j
+            tsk_other (job_arrival j) (job_arrival j + R) ≤
+            interference_bound_edf task_cost task_period task_deadline tsk R (tsk_other, R_other) := by
+          unfold interference_bound_edf
+          exact Nat.le_min.mpr ⟨h_wb, h_edf⟩
+        omega
+    · exact H_tsk_R_in_rt_bounds
+    · rfl
+
+end MainProof
+
+end ResponseTimeBound
+
+end ResponseTimeAnalysisEDF
+
+end Prosa.Classic.Analysis.Global.Parallel.Bertogna_edf_theory

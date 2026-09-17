@@ -1,0 +1,87 @@
+-- Translated from: ../rt-proofs/classic/model/schedule/partitioned/schedulability.v
+import Prosa.Classic.Util.All
+import Prosa.Classic.Model.Arrival.Basic.Arrival_sequence
+import Prosa.Classic.Model.Schedule.Global.Schedulability
+import Prosa.Classic.Model.Schedule.Global.Basic.Schedule
+import Prosa.Classic.Model.Schedule.Partitioned.Schedule
+import Prosa.Classic.Model.Schedule.Uni.Schedule
+import Prosa.Classic.Model.Schedule.Uni.Schedulability
+import Mathlib.Tactic
+
+namespace Prosa.Classic.Model.Schedule.Partitioned.Schedulability
+
+open Prosa.Classic.Model.Time
+open Prosa.Classic.Model.Arrival.Basic.Arrival_sequence
+open Prosa.Classic.Model.Schedule.Global.Basic.Schedule
+open Prosa.Classic.Model.Schedule.Global.Basic.Schedule.Schedule
+open Prosa.Classic.Model.Schedule.Global.Schedulability.Schedulability
+open Prosa.Classic.Model.Schedule.Partitioned.Schedule.Partitioned
+
+namespace PartitionSchedulability
+
+section PartitionedAsUniprocessor
+
+variable {Task : Type} [DecidableEq Task]
+variable {Job : Type} [DecidableEq Job]
+variable (job_arrival : Job → Time)
+variable (job_cost : Job → Time)
+variable (job_deadline : Job → Time)
+variable (job_task : Job → Task)
+variable (arr_seq : arrival_sequence Job)
+variable {num_cpus : ℕ}
+variable (sched : schedule Job num_cpus)
+variable (ts : List Task)
+variable (H_all_jobs_from_ts : ∀ j, arrives_in arr_seq j → job_task j ∈ ts)
+variable (assigned_cpu : Task → processor num_cpus)
+variable (H_partitioned : partitioned_schedule job_task sched ts assigned_cpu)
+
+section SameService
+
+private def partition_of (assigned_cpu : Task → processor num_cpus) (job_task : Job → Task) (j : Job) :
+    processor num_cpus :=
+  assigned_cpu (job_task j)
+
+variable (j : Job)
+variable (H_j_arrives : arrives_in arr_seq j)
+
+theorem same_per_processor_service :
+    ∀ t1 t2,
+      service_during sched j t1 t2 =
+      Prosa.Classic.Model.Schedule.Uni.Schedule.service_during
+        (fun t => sched (partition_of assigned_cpu job_task j) t) j t1 t2 := by
+  sorry
+
+end SameService
+
+section Schedulability
+
+private def schedulable_on
+    (job_arrival : Job → Time) (job_cost : Job → Time) (job_deadline : Job → Time)
+    (job_task : Job → Task) (arr_seq : arrival_sequence Job)
+    {num_cpus : ℕ} (sched : schedule Job num_cpus)
+    (tsk : Task) (cpu : processor num_cpus) : Prop :=
+  Prosa.Classic.Model.Schedule.Uni.Schedulability.task_misses_no_deadline
+    job_arrival job_cost job_deadline job_task arr_seq (fun t => sched cpu t) tsk
+
+private def schedulable
+    (job_arrival : Job → Time) (job_cost : Job → Time) (job_deadline : Job → Time)
+    (job_task : Job → Task) (arr_seq : arrival_sequence Job)
+    {num_cpus : ℕ} (sched : schedule Job num_cpus) (tsk : Task) : Prop :=
+  task_misses_no_deadline job_arrival job_cost job_deadline job_task arr_seq sched tsk
+
+variable (H_locally_schedulable :
+  ∀ tsk, tsk ∈ ts →
+    schedulable_on job_arrival job_cost job_deadline job_task arr_seq sched tsk (assigned_cpu tsk))
+
+theorem schedulable_at_system_level :
+    ∀ tsk, tsk ∈ ts →
+      schedulable job_arrival job_cost job_deadline job_task arr_seq sched tsk := by
+  sorry
+
+end Schedulability
+
+end PartitionedAsUniprocessor
+
+end PartitionSchedulability
+
+end Prosa.Classic.Model.Schedule.Partitioned.Schedulability

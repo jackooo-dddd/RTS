@@ -1,0 +1,143 @@
+-- Translated from: ../rt-proofs/analysis/facts/busy_interval/carry_in.v
+import Prosa.Analysis.Facts.Model.Workload
+import Prosa.Analysis.Definitions.Carry_in
+import Prosa.Analysis.Facts.Busy_interval.Busy_interval
+import Prosa.Model.Processor.Ideal
+import Prosa.Model.Readiness.Basic
+
+namespace Prosa.Analysis.Facts.Busy_interval.Carry_in
+
+open Prosa.Behavior.Job
+open Prosa.Behavior.Time
+open Prosa.Behavior.Arrival_sequence
+open Prosa.Behavior.Schedule
+open Prosa.Behavior.Service
+open Prosa.Behavior.Ready
+open Prosa.Model.Task.Concept
+open Prosa.Model.Priority.Classes
+open Prosa.Model.Processor.Ideal
+open Prosa.Model.Schedule.Work_conserving
+open Prosa.Model.Aggregate.Workload
+open Prosa.Model.Aggregate.Service_of_jobs
+open Prosa.Analysis.Definitions.Carry_in
+open Prosa.Analysis.Definitions.Busy_interval
+open Prosa.Analysis.Definitions.Job_properties
+open Prosa.Analysis.Facts.Busy_interval.Busy_interval
+open Prosa.Analysis.Facts.Behavior.Completion
+open Prosa.Analysis.Facts.Model.Service_of_jobs
+
+set_option linter.dupNamespace false
+
+section ExistsNoCarryIn
+
+variable {Task : TaskType}
+variable [TaskCost Task]
+
+variable {Job : JobType}
+variable [DecidableEq Job]
+variable [JobTask Job Task]
+variable [JobArrival Job]
+variable [JobCost Job]
+
+variable (arr_seq : arrival_sequence Job)
+variable (H_arrival_times_are_consistent : consistent_arrival_times arr_seq)
+
+variable (sched : schedule (processor_state Job))
+variable (H_jobs_come_from_arrival_sequence :
+  jobs_come_from_arrival_sequence sched arr_seq)
+
+variable (H_jobs_must_arrive_to_execute : jobs_must_arrive_to_execute (Job := Job) sched)
+variable (H_completed_jobs_dont_execute : completed_jobs_dont_execute (Job := Job) sched)
+
+variable [JLFP_policy Job]
+
+attribute [local instance] JLFP_to_JLDP
+
+theorem no_carry_in_implies_quiet_time :
+    ∀ (j : Job) (t : instant),
+      no_carry_in arr_seq sched t →
+      quiet_time arr_seq sched j t := by
+  sorry
+
+variable (H_work_conserving : work_conserving arr_seq sched)
+
+variable (H_arrival_sequence_is_a_set : arrival_sequence_uniq arr_seq)
+
+theorem idle_instant_implies_no_carry_in_at_t :
+    ∀ (t : instant),
+      is_idle sched t →
+      no_carry_in arr_seq sched t := by
+  sorry
+
+theorem idle_instant_implies_no_carry_in_at_t_pl_1 :
+    ∀ (t : instant),
+      is_idle sched t →
+      no_carry_in arr_seq sched (t + 1) := by
+  sorry
+
+variable (H_priority_is_reflexive : reflexive_priorities (Job := Job))
+
+section ProcessorIsNotTooBusy
+
+theorem no_carry_in_at_the_beginning :
+    no_carry_in arr_seq sched 0 := by
+  sorry
+
+section ProcessorIsNotTooBusyInduction
+
+variable (Δ : duration)
+variable (H_delta_positive : Δ > 0)
+variable (H_workload_is_bounded :
+  ∀ t, workload_of_jobs (fun _ => true) (arrivals_between arr_seq t (t + Δ)) ≤ Δ)
+
+variable (t : duration)
+variable (H_no_carry_in : no_carry_in arr_seq sched t)
+
+theorem total_service_is_bounded_by_Δ :
+    service_of_jobs sched (fun _ => true) (arrivals_between arr_seq 0 (t + Δ)) t (t + Δ) ≤ Δ := by
+  sorry
+
+theorem low_total_service_implies_existence_of_time_with_no_carry_in :
+    service_of_jobs sched (fun _ => true) (arrivals_between arr_seq 0 (t + Δ)) t (t + Δ) < Δ →
+    ∃ δ, δ < Δ ∧ no_carry_in arr_seq sched (t + 1 + δ) := by
+  sorry
+
+theorem completion_of_all_jobs_implies_no_carry_in :
+    service_of_jobs sched (fun _ => true) (arrivals_between arr_seq 0 (t + Δ)) t (t + Δ) = Δ →
+    no_carry_in arr_seq sched (t + Δ) := by
+  sorry
+
+end ProcessorIsNotTooBusyInduction
+
+variable (Δ : duration)
+variable (H_delta_positive : Δ > 0)
+variable (H_workload_is_bounded :
+  ∀ t, workload_of_jobs (fun _ => true) (arrivals_between arr_seq t (t + Δ)) ≤ Δ)
+
+theorem processor_is_not_too_busy :
+    ∀ t, ∃ δ, δ < Δ ∧ no_carry_in arr_seq sched (t + δ) := by
+  sorry
+
+end ProcessorIsNotTooBusy
+
+variable (Δ : duration)
+variable (H_delta_positive : Δ > 0)
+variable (H_workload_is_bounded :
+  ∀ t, workload_of_jobs (fun _ => true) (arrivals_between arr_seq t (t + Δ)) ≤ Δ)
+
+variable (H_priority_is_reflexive : reflexive_priorities (Job := Job))
+
+variable (j : Job)
+variable (H_from_arrival_sequence : arrives_in arr_seq j)
+variable (H_job_cost_positive : job_cost_positive j)
+
+theorem exists_busy_interval_from_total_workload_bound :
+    ∃ t1 t2,
+      t1 ≤ job_arrival j ∧ job_arrival j < t2 ∧
+      t2 ≤ t1 + Δ ∧
+      busy_interval arr_seq sched j t1 t2 := by
+  sorry
+
+end ExistsNoCarryIn
+
+end Prosa.Analysis.Facts.Busy_interval.Carry_in

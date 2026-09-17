@@ -1,0 +1,127 @@
+-- Translated from: ../rt-proofs/analysis/facts/preemption/job/limited.v
+import Prosa.Model.Schedule.Limited_preemptive
+import Prosa.Analysis.Definitions.Job_properties
+import Prosa.Analysis.Facts.Behavior.All
+import Prosa.Analysis.Facts.Model.Sequential
+import Prosa.Analysis.Facts.Model.Ideal_schedule
+import Prosa.Model.Preemption.Limited_preemptive
+
+namespace Prosa.Analysis.Facts.Preemption.Job.Limited
+
+open Prosa.Behavior.Job
+open Prosa.Behavior.Time
+open Prosa.Behavior.Service
+open Prosa.Behavior.Schedule
+open Prosa.Behavior.Arrival_sequence
+open Prosa.Behavior.Ready
+open Prosa.Model.Processor.Ideal
+open Prosa.Model.Preemption.Parameter
+open Prosa.Model.Preemption.Limited_preemptive
+open Prosa.Model.Schedule.Limited_preemptive
+open Prosa.Model.Task.Concept
+open Prosa.Analysis.Definitions.Job_properties
+open Prosa.Analysis.Facts.Model.Ideal_schedule
+open Prosa.Util.List
+open Prosa.Util.Nondecreasing
+open Prosa.Util.Epsilon
+
+section ModelWithLimitedPreemptions
+
+variable {Task : TaskType}
+variable [TaskCost Task]
+
+variable {Job : JobType}
+variable [JobTask Job Task]
+variable [JobArrival Job]
+variable [JobCost Job]
+variable [DecidableEq Job]
+
+variable [JobPreemptionPoints Job]
+
+variable (arr_seq : arrival_sequence Job)
+
+variable (sched : schedule (processor_state Job))
+variable (H_schedule_respects_preemption_model :
+    schedule_respects_preemption_model arr_seq sched)
+variable (H_completed_jobs_dont_execute :
+    completed_jobs_dont_execute (Job := Job) sched)
+variable (H_valid_limited_preemptions_job_model :
+    valid_limited_preemptions_job_model arr_seq)
+
+attribute [local instance] pstate_instance
+attribute [local instance] limited_preemptions_model
+
+section AuxiliaryLemmas
+
+variable (j : Job)
+variable (H_j_arrives : arrives_in arr_seq j)
+
+include H_valid_limited_preemptions_job_model H_j_arrives in
+theorem zero_in_preemption_points :
+    (0 : work) ∈ Prosa.Model.Preemption.Limited_preemptive.job_preemption_points j := by
+  sorry
+
+include H_valid_limited_preemptions_job_model H_j_arrives in
+lemma zero_is_first_element :
+    first0 (Prosa.Model.Preemption.Limited_preemptive.job_preemption_points j) = 0 := by
+  sorry
+
+include H_valid_limited_preemptions_job_model H_j_arrives in
+lemma list_of_preemption_point_is_not_empty :
+    0 < (Prosa.Model.Preemption.Limited_preemptive.job_preemption_points j).length := by
+  sorry
+
+include H_valid_limited_preemptions_job_model H_j_arrives in
+lemma job_cost_in_nonpreemptive_points :
+    job_cost j ∈ Prosa.Model.Preemption.Limited_preemptive.job_preemption_points j := by
+  sorry
+
+include H_valid_limited_preemptions_job_model H_j_arrives in
+theorem number_of_preemption_points_at_least_two :
+    job_cost_positive j →
+    2 ≤ (Prosa.Model.Preemption.Limited_preemptive.job_preemption_points j).length := by
+  sorry
+
+include H_valid_limited_preemptions_job_model H_j_arrives in
+lemma antidensity_of_preemption_points :
+    ∀ (ρ : work),
+      ρ ≤ job_cost j →
+      ¬ (ρ ∈ Prosa.Model.Preemption.Limited_preemptive.job_preemption_points j) →
+      first0 (Prosa.Model.Preemption.Limited_preemptive.job_preemption_points j) ≤ ρ ∧
+      ρ < last0 (Prosa.Model.Preemption.Limited_preemptive.job_preemption_points j) := by
+  sorry
+
+include H_valid_limited_preemptions_job_model H_j_arrives in
+lemma work_belongs_to_some_nonpreemptive_segment :
+    ∀ (ρ : work),
+      ρ ≤ job_cost j →
+      ¬ (ρ ∈ Prosa.Model.Preemption.Limited_preemptive.job_preemption_points j) →
+      ∃ n,
+        n + 1 < (Prosa.Model.Preemption.Limited_preemptive.job_preemption_points j).length ∧
+        nthD (Prosa.Model.Preemption.Limited_preemptive.job_preemption_points j) n < ρ ∧
+        ρ < nthD (Prosa.Model.Preemption.Limited_preemptive.job_preemption_points j) (n + 1) := by
+  sorry
+
+include H_valid_limited_preemptions_job_model H_j_arrives in
+lemma job_parameters_last_np_to_job_limited :
+    last0 (Prosa.Util.Nondecreasing.distances (Prosa.Model.Preemption.Parameter.job_preemption_points j)) =
+    last0 ((Prosa.Util.Nondecreasing.distances (Prosa.Model.Preemption.Limited_preemptive.job_preemption_points j)).filter (· > 0)) := by
+  sorry
+
+include H_valid_limited_preemptions_job_model H_j_arrives in
+lemma job_parameters_max_np_to_job_limited :
+    max0 (Prosa.Util.Nondecreasing.distances (Prosa.Model.Preemption.Parameter.job_preemption_points j)) =
+    max0 (Prosa.Util.Nondecreasing.distances (Prosa.Model.Preemption.Limited_preemptive.job_preemption_points j)) := by
+  sorry
+
+end AuxiliaryLemmas
+
+include H_schedule_respects_preemption_model H_completed_jobs_dont_execute
+  H_valid_limited_preemptions_job_model in
+lemma valid_fixed_preemption_points_model_lemma :
+    valid_preemption_model arr_seq sched := by
+  sorry
+
+end ModelWithLimitedPreemptions
+
+end Prosa.Analysis.Facts.Preemption.Job.Limited

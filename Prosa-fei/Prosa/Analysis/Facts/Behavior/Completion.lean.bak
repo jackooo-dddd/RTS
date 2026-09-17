@@ -1,0 +1,186 @@
+-- Translated from: ../rt-proofs/analysis/facts/behavior/completion.v
+import Prosa.Analysis.Facts.Behavior.Service
+import Prosa.Analysis.Facts.Behavior.Arrivals
+
+namespace Prosa.Analysis.Facts.Behavior.Completion
+
+open Prosa.Behavior.Job
+open Prosa.Behavior.Time
+open Prosa.Behavior.Schedule
+open Prosa.Behavior.Service
+open Prosa.Behavior.Arrival_sequence
+open Prosa.Behavior.Ready
+open Prosa.Model.Processor.Platform_properties
+open Prosa.Analysis.Facts.Behavior.Service
+open Prosa.Analysis.Facts.Behavior.Arrivals
+
+section CompletionFacts
+
+variable {Job : JobType}
+variable [JobCost Job]
+variable {PState : Type}
+variable [ProcessorState Job PState]
+variable (sched : schedule PState)
+variable (j : Job)
+
+theorem completion_monotonic :
+    ∀ t t',
+      t ≤ t' →
+      completed_by sched j t →
+      completed_by sched j t' := by
+  sorry
+
+theorem less_service_than_cost_is_incomplete :
+    ∀ t,
+      service sched j t < job_cost j ↔
+      ¬ completed_by sched j t := by
+  sorry
+
+theorem incomplete_is_positive_remaining_cost :
+    ∀ t,
+      ¬ completed_by sched j t ↔
+      remaining_cost sched j t > 0 := by
+  sorry
+
+variable (H_completed_jobs : completed_jobs_dont_execute (Job := Job) sched)
+
+include H_completed_jobs in
+theorem serviced_implies_positive_remaining_cost :
+    ∀ t,
+      service_at sched j t > 0 →
+      remaining_cost sched j t > 0 := by
+  sorry
+
+variable (H_scheduled_implies_serviced : ideal_progress_proc_model (Job := Job) PState)
+
+include H_completed_jobs H_scheduled_implies_serviced in
+theorem scheduled_implies_positive_remaining_cost :
+    ∀ t,
+      scheduled_at sched j t = true →
+      remaining_cost sched j t > 0 := by
+  sorry
+
+include H_completed_jobs in
+theorem completed_implies_not_scheduled :
+    ∀ t,
+      completed_by sched j t →
+      scheduled_at sched j t = false := by
+  sorry
+
+include H_completed_jobs H_scheduled_implies_serviced in
+theorem scheduled_implies_not_completed :
+    ∀ t,
+      scheduled_at sched j t = true →
+      ¬ completed_by sched j t := by
+  sorry
+
+end CompletionFacts
+
+section ServiceAndCompletionFacts
+
+variable {Job : JobType}
+variable [JobCost Job]
+variable {PState : Type}
+variable [ProcessorState Job PState]
+variable (sched : schedule PState)
+variable (H_completed_jobs : completed_jobs_dont_execute (Job := Job) sched)
+variable (j : Job)
+variable (H_unit_service : unit_service_proc_model (Job := Job) PState)
+
+include H_completed_jobs H_unit_service in
+theorem service_at_most_cost :
+    ∀ t,
+      service sched j t ≤ job_cost j := by
+  sorry
+
+include H_completed_jobs H_unit_service in
+theorem service_cost_invariant :
+    ∀ t,
+      (service sched j t) + (remaining_cost sched j t) = job_cost j := by
+  sorry
+
+include H_completed_jobs H_unit_service in
+theorem cumulative_service_le_job_cost :
+    ∀ t t',
+      service_during sched j t t' ≤ job_cost j := by
+  sorry
+
+include H_completed_jobs H_unit_service in
+theorem job_doesnt_complete_before_remaining_cost :
+    ∀ t,
+      ¬ completed_by sched j t →
+      ¬ completed_by sched j (t + remaining_cost sched j t - 1) := by
+  sorry
+
+section GuaranteedService
+
+variable (H_scheduled_implies_serviced : ideal_progress_proc_model (Job := Job) PState)
+variable [JobArrival Job]
+variable (H_jobs_must_arrive : jobs_must_arrive_to_execute (Job := Job) sched)
+
+include H_completed_jobs H_scheduled_implies_serviced H_jobs_must_arrive in
+theorem scheduled_implies_pending :
+    ∀ t,
+      scheduled_at sched j t = true →
+      pending sched j t := by
+  sorry
+
+end GuaranteedService
+
+end ServiceAndCompletionFacts
+
+section PositiveCost
+
+variable {Job : JobType}
+variable [JobCost Job]
+variable [JobArrival Job]
+variable {PState : Type}
+variable [ProcessorState Job PState]
+variable (sched : schedule PState)
+variable (j : Job)
+variable (H_positive_cost : job_cost j > 0)
+variable (H_jobs_must_arrive : jobs_must_arrive_to_execute (Job := Job) sched)
+
+include H_positive_cost H_jobs_must_arrive in
+theorem completed_implies_scheduled_before :
+    ∀ t,
+      completed_by sched j t →
+      ∃ t',
+        job_arrival j ≤ t' ∧ t' < t ∧
+        scheduled_at sched j t' = true := by
+  sorry
+
+include H_positive_cost H_jobs_must_arrive in
+theorem job_pending_at_arrival :
+    pending sched j (job_arrival j) := by
+  sorry
+
+end PositiveCost
+
+section CompletedJobs
+
+variable {Job : JobType} {PState : Type}
+variable [ProcessorState Job PState]
+variable (sched : schedule PState)
+variable [JobCost Job]
+variable [JobArrival Job]
+variable [JobReady Job PState]
+
+theorem ready_implies_incomplete :
+    ∀ (j : Job) t, job_ready sched j t = true → ¬ completed_by sched j t := by
+  sorry
+
+theorem completed_jobs_are_not_ready :
+    jobs_must_be_ready_to_execute (Job := Job) sched →
+    completed_jobs_dont_execute (Job := Job) sched := by
+  sorry
+
+theorem ideal_progress_completed_jobs :
+    ideal_progress_proc_model (Job := Job) PState →
+    (∀ (j : Job) t, service sched j t ≤ job_cost j) →
+    completed_jobs_dont_execute (Job := Job) sched := by
+  sorry
+
+end CompletedJobs
+
+end Prosa.Analysis.Facts.Behavior.Completion

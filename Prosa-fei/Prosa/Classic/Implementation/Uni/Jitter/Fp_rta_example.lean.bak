@@ -1,0 +1,102 @@
+-- Translated from: ../rt-proofs/classic/implementation/uni/jitter/fp_rta_example.v
+import Prosa.Classic.Util.All
+import Prosa.Classic.Model.Priority
+import Prosa.Classic.Model.Arrival.Basic.Task
+import Prosa.Classic.Model.Schedule.Uni.Schedulability
+import Prosa.Classic.Model.Arrival.Jitter.Job
+import Prosa.Classic.Model.Schedule.Uni.Jitter.Schedule
+import Prosa.Classic.Analysis.Uni.Jitter.Workload_bound_fp
+import Prosa.Classic.Analysis.Uni.Jitter.Fp_rta_comp
+import Prosa.Classic.Implementation.Uni.Jitter.Job
+import Prosa.Classic.Implementation.Uni.Jitter.Task
+import Prosa.Classic.Implementation.Uni.Jitter.Arrival_sequence
+import Prosa.Classic.Implementation.Uni.Jitter.Schedule
+
+namespace Prosa.Classic.Implementation.Uni.Jitter.Fp_rta_example
+
+open Prosa.Classic.Model.Time
+open Prosa.Classic.Model.Priority
+open Prosa.Classic.Model.Arrival.Basic.Task.SporadicTaskset
+open Prosa.Classic.Model.Schedule.Uni.Schedulability
+open Prosa.Classic.Model.Arrival.Jitter.Job
+open Prosa.Classic.Model.Schedule.Uni.Jitter.Schedule
+open Prosa.Classic.Analysis.Uni.Jitter.Workload_bound_fp.WorkloadBoundFP
+open Prosa.Classic.Analysis.Uni.Jitter.Fp_rta_comp.ResponseTimeIterationFP
+open Prosa.Classic.Implementation.Uni.Jitter.Task.ConcreteTask
+open Prosa.Classic.Implementation.Uni.Jitter.Arrival_sequence
+open Prosa.Classic.Implementation.Uni.Jitter.Arrival_sequence.ConcreteArrivalSequence
+open Prosa.Classic.Implementation.Uni.Jitter.Arrival_sequence.ConcreteJob
+open Prosa.Classic.Implementation.Uni.Jitter.Schedule.ConcreteScheduler
+open Prosa.Classic.Model.Arrival.Basic.Arrival_sequence
+
+namespace ResponseTimeAnalysisFP
+
+section ExampleRTA
+
+  private def tsk1 : concrete_task := ⟨1, 1, 5, 6, 1⟩
+  private def tsk2 : concrete_task := ⟨2, 1, 5, 6, 0⟩
+  private def tsk3 : concrete_task := ⟨3, 1, 6, 6, 1⟩
+
+  private def ts : List concrete_task := [tsk1, tsk2, tsk3]
+
+  theorem ts_has_positive_costs :
+      ∀ tsk, tsk ∈ ts → tsk.task_cost > 0 := by
+    intro tsk h
+    simp only [ts, List.mem_cons, List.mem_nil_iff, or_false] at h
+    rcases h with rfl | rfl | rfl <;> decide
+
+  theorem ts_has_positive_periods :
+      ∀ tsk, tsk ∈ ts → tsk.task_period > 0 := by
+    intro tsk h
+    simp only [ts, List.mem_cons, List.mem_nil_iff, or_false] at h
+    rcases h with rfl | rfl | rfl <;> decide
+
+  private def RTA_claimed_bounds :=
+    fp_claimed_bounds
+      (fun t => t.task_cost) (fun t => t.task_period) (fun t => t.task_deadline)
+      (fun t => t.task_jitter) (RM (fun t => t.task_period)) ts
+
+  private def schedulability_test :=
+    fp_schedulable
+      (fun t => t.task_cost) (fun t => t.task_period) (fun t => t.task_deadline)
+      (fun t => t.task_jitter) (RM (fun t => t.task_period)) ts
+
+  theorem RTA_yields_these_bounds :
+      RTA_claimed_bounds = some [(tsk1, 2), (tsk2, 2), (tsk3, 3)] := by native_decide
+
+  theorem schedulability_test_succeeds :
+      schedulability_test = true := by native_decide
+
+  private def arr_seq := periodic_arrival_sequence ts
+
+  private def higher_eq_priority :=
+    FP_to_JLDP (fun j : concrete_job => j.job_task) (RM (fun t => t.task_period))
+
+  variable (job_jitter : concrete_job → Time)
+  variable (H_jitter_is_bounded :
+    ∀ j,
+      arrives_in arr_seq j →
+      job_jitter_leq_task_jitter
+        (fun t => t.task_jitter) job_jitter (fun j => j.job_task) j)
+
+  private noncomputable def sched :=
+    scheduler (fun j : concrete_job => j.job_arrival) (fun j => j.job_cost)
+      job_jitter arr_seq higher_eq_priority
+
+  private def no_deadline_missed_by :=
+    task_misses_no_deadline
+      (fun j : concrete_job => j.job_arrival) (fun j => j.job_cost)
+      (fun j => j.job_deadline) (fun j => j.job_task) arr_seq (sched job_jitter)
+
+  include H_jitter_is_bounded in
+  theorem ts_is_schedulable :
+      ∀ tsk,
+        tsk ∈ ts →
+        no_deadline_missed_by job_jitter tsk := by
+    sorry
+
+end ExampleRTA
+
+end ResponseTimeAnalysisFP
+
+end Prosa.Classic.Implementation.Uni.Jitter.Fp_rta_example

@@ -1,0 +1,473 @@
+-- Translated from: ../rt-proofs/classic/analysis/uni/susp/dynamic/oblivious/reduction.v
+import Prosa.Classic.Util.All
+import Prosa.Classic.Model.Arrival.Basic.Job
+import Prosa.Classic.Model.Arrival.Basic.Task
+import Prosa.Classic.Model.Arrival.Basic.Arrival_sequence
+import Prosa.Classic.Model.Priority
+import Prosa.Classic.Model.Suspension
+import Prosa.Classic.Model.Schedule.Uni.Schedule
+import Prosa.Classic.Model.Schedule.Uni.Schedulability
+import Prosa.Classic.Model.Schedule.Uni.Basic.Platform
+import Prosa.Classic.Model.Schedule.Uni.Susp.Suspension_intervals
+import Prosa.Classic.Model.Schedule.Uni.Transformation.Construction
+import Prosa.Classic.Implementation.Uni.Basic.Schedule
+import Mathlib.Tactic
+
+namespace Prosa.Classic.Analysis.Uni.Susp.Dynamic.Oblivious.Reduction
+
+open Prosa.Classic.Model.Time
+open Prosa.Classic.Model.Arrival.Basic.Arrival_sequence
+open Prosa.Classic.Model.Arrival.Basic.Task.SporadicTaskset
+open Prosa.Classic.Model.Priority
+open Prosa.Classic.Model.Suspension
+open Prosa.Classic.Model.Schedule.Uni.Susp.Suspension_intervals
+open Prosa.Classic.Model.Schedule.Uni.Transformation.Construction.ScheduleConstruction
+open Prosa.Classic.Util.Minmax
+
+open Prosa.Classic.Model.Schedule.Uni.Schedule
+
+set_option autoImplicit false
+set_option linter.unusedSectionVars false
+
+open Classical in
+attribute [local instance] propDecidable
+
+noncomputable section
+
+namespace ReductionToBasicSchedule
+
+namespace susp
+
+def backlogged {Job : Type*} [DecidableEq Job]
+    (job_arrival : Job → Time) (job_cost : Job → Time)
+    (next_suspension : job_suspension Job)
+    (sched : schedule Job)
+    (j : Job) (t : Time) : Prop :=
+  pending job_arrival job_cost sched j t ∧
+  ¬ (scheduled_at sched j t = true) ∧
+  ¬ suspended_at job_arrival job_cost next_suspension sched j t
+
+end susp
+
+namespace susp_aware
+
+def work_conserving {Job : Type*} [DecidableEq Job]
+    (job_arrival : Job → Time) (job_cost : Job → Time)
+    (next_suspension : job_suspension Job)
+    (arr_seq : arrival_sequence Job)
+    (sched : schedule Job) : Prop :=
+  ∀ j t,
+    arrives_in arr_seq j →
+    susp.backlogged job_arrival job_cost next_suspension sched j t →
+    ∃ j_other, scheduled_at sched j_other t = true
+
+def respects_JLDP_policy {Job : Type*} [DecidableEq Job]
+    (job_arrival : Job → Time) (job_cost : Job → Time)
+    (next_suspension : job_suspension Job)
+    (arr_seq : arrival_sequence Job)
+    (sched : schedule Job)
+    (higher_eq_priority : JLDP_policy Job) : Prop :=
+  ∀ j j_hp t,
+    arrives_in arr_seq j →
+    susp.backlogged job_arrival job_cost next_suspension sched j t →
+    scheduled_at sched j_hp t = true →
+    higher_eq_priority t j_hp j = true
+
+end susp_aware
+
+def inflated_job_cost {Job : Type*} [DecidableEq Job]
+    (original_job_cost : Job → Time) (next_suspension : job_suspension Job) (j : Job) : Time :=
+  original_job_cost j + total_suspension original_job_cost next_suspension j
+
+def inflated_task_cost {Task : Type*}
+    (original_task_cost : Task → Time) (task_suspension_bound : Task → Time) (tsk : Task) : Time :=
+  original_task_cost tsk + task_suspension_bound tsk
+
+def reduction_pending_jobs {Job : Type*} [DecidableEq Job]
+    (job_arrival : Job → Time) (original_job_cost : Job → Time)
+    (next_suspension : job_suspension Job)
+    (arr_seq : arrival_sequence Job)
+    (sched_prefix : schedule Job)
+    (t : Time) : List Job :=
+  (jobs_arrived_up_to arr_seq t).filter
+    (fun j => decide (has_arrived job_arrival j t) &&
+              !decide (inflated_job_cost original_job_cost next_suspension j ≤
+                       service sched_prefix j t))
+
+def reduction_highest_priority_job {Job : Type*} [DecidableEq Job]
+    (job_arrival : Job → Time) (original_job_cost : Job → Time)
+    (next_suspension : job_suspension Job)
+    (arr_seq : arrival_sequence Job)
+    (higher_eq_priority : JLDP_policy Job)
+    (sched_prefix : schedule Job)
+    (t : Time) : Option Job :=
+  seq_min (higher_eq_priority t) (reduction_pending_jobs job_arrival original_job_cost
+    next_suspension arr_seq sched_prefix t)
+
+def reduction_build_schedule {Job : Type*} [DecidableEq Job]
+    (job_arrival : Job → Time) (original_job_cost : Job → Time)
+    (next_suspension : job_suspension Job)
+    (arr_seq : arrival_sequence Job)
+    (higher_eq_priority : JLDP_policy Job)
+    (sched_susp : schedule Job)
+    (sched_prefix : schedule Job)
+    (t : Time) : Option Job :=
+  let hp := reduction_highest_priority_job job_arrival original_job_cost next_suspension arr_seq
+              higher_eq_priority sched_prefix t
+  match hp with
+  | some j_hp =>
+    match sched_susp t with
+    | some j_sched =>
+      if (decide (has_arrived job_arrival j_sched t) &&
+          !decide (inflated_job_cost original_job_cost next_suspension j_sched ≤
+                   service sched_prefix j_sched t))
+         && higher_eq_priority t j_sched j_hp then
+        some j_sched
+      else hp
+    | none => hp
+  | none => hp
+
+def sched_new {Job : Type*} [DecidableEq Job]
+    (job_arrival : Job → Time) (original_job_cost : Job → Time)
+    (next_suspension : job_suspension Job)
+    (arr_seq : arrival_sequence Job)
+    (higher_eq_priority : JLDP_policy Job)
+    (sched_susp : schedule Job) :
+    schedule Job :=
+  build_schedule_from_prefixes
+    (reduction_build_schedule job_arrival original_job_cost next_suspension arr_seq
+      higher_eq_priority sched_susp)
+    (fun _ => none)
+
+section Reduction
+
+variable {Task : Type*} [DecidableEq Task]
+variable (task_period : Task → Time)
+variable (task_deadline : Task → Time)
+
+variable {Job : Type*} [DecidableEq Job]
+variable (job_arrival : Job → Time)
+variable (job_deadline : Job → Time)
+variable (job_task : Job → Task)
+
+variable (ts : List Task)
+
+variable (arr_seq : arrival_sequence Job)
+variable (H_arrival_times_are_consistent :
+  arrival_times_are_consistent job_arrival arr_seq)
+
+variable (H_jobs_from_taskset :
+  ∀ j, arrives_in arr_seq j → job_task j ∈ ts)
+
+variable (higher_eq_priority : JLDP_policy Job)
+variable (H_priority_is_reflexive : JLDP_is_reflexive higher_eq_priority)
+variable (H_priority_is_transitive : JLDP_is_transitive higher_eq_priority)
+variable (H_priority_is_total : JLDP_is_total arr_seq higher_eq_priority)
+
+variable (original_job_cost : Job → Time)
+variable (original_task_cost : Task → Time)
+
+variable (next_suspension : job_suspension Job)
+variable (task_suspension_bound : Task → Time)
+variable (H_dynamic_suspensions :
+  dynamic_suspension_model original_job_cost job_task next_suspension task_suspension_bound)
+
+variable (sched_susp : schedule Job)
+variable (H_jobs_come_from_arrival_sequence :
+  jobs_come_from_arrival_sequence sched_susp arr_seq)
+
+variable (H_jobs_must_arrive_to_execute :
+  jobs_must_arrive_to_execute job_arrival sched_susp)
+
+variable (H_completed_jobs_dont_execute :
+  completed_jobs_dont_execute original_job_cost sched_susp)
+
+variable (H_work_conserving :
+  susp_aware.work_conserving job_arrival original_job_cost next_suspension arr_seq sched_susp)
+
+variable (H_respects_priority :
+  susp_aware.respects_JLDP_policy job_arrival original_job_cost next_suspension
+    arr_seq sched_susp higher_eq_priority)
+
+variable (H_respects_self_suspensions :
+  respects_self_suspensions job_arrival original_job_cost next_suspension sched_susp)
+
+section CostInflation
+
+section NewParametersAreValid
+
+variable (H_inflated_cost_le_deadline_and_period :
+  ∀ tsk,
+    tsk ∈ ts →
+    inflated_task_cost original_task_cost task_suspension_bound tsk ≤ task_deadline tsk ∧
+    inflated_task_cost original_task_cost task_suspension_bound tsk ≤ task_period tsk)
+
+theorem suspension_oblivious_job_parameters_remain_valid :
+    (∀ j, arrives_in arr_seq j →
+      (original_job_cost j > 0 ∧ original_job_cost j ≤ job_deadline j ∧ job_deadline j > 0) ∧
+      original_job_cost j ≤ original_task_cost (job_task j) ∧
+      job_deadline j = task_deadline (job_task j)) →
+    (∀ j, arrives_in arr_seq j →
+      (inflated_job_cost original_job_cost next_suspension j > 0 ∧
+       inflated_job_cost original_job_cost next_suspension j ≤ job_deadline j ∧
+       job_deadline j > 0) ∧
+      inflated_job_cost original_job_cost next_suspension j ≤
+        inflated_task_cost original_task_cost task_suspension_bound (job_task j) ∧
+      job_deadline j = task_deadline (job_task j)) := by
+  sorry
+
+theorem suspension_oblivious_task_parameters_remain_valid :
+    valid_sporadic_taskset original_task_cost task_period task_deadline ts →
+    valid_sporadic_taskset (inflated_task_cost original_task_cost task_suspension_bound)
+        task_period task_deadline ts := by
+  sorry
+
+end NewParametersAreValid
+
+end CostInflation
+
+section ScheduleConstruction
+
+theorem sched_new_depends_only_on_service :
+    ∀ sched1 sched2 t,
+      (∀ j, service sched1 j t = service sched2 j t) →
+      reduction_build_schedule job_arrival original_job_cost next_suspension arr_seq
+        higher_eq_priority sched_susp sched1 t =
+      reduction_build_schedule job_arrival original_job_cost next_suspension arr_seq
+        higher_eq_priority sched_susp sched2 t := by
+  intro sched1 sched2 t0 ALL
+  -- Show the two pending job lists are equal
+  have SAME_PEND : reduction_pending_jobs job_arrival original_job_cost next_suspension arr_seq sched1 t0 =
+    reduction_pending_jobs job_arrival original_job_cost next_suspension arr_seq sched2 t0 := by
+    simp only [reduction_pending_jobs]
+    apply List.filter_congr; intro j0 _; rw [ALL j0]
+  -- Show the two highest priority jobs are equal
+  have SAME_HP : reduction_highest_priority_job job_arrival original_job_cost next_suspension arr_seq higher_eq_priority sched1 t0 =
+    reduction_highest_priority_job job_arrival original_job_cost next_suspension arr_seq higher_eq_priority sched2 t0 := by
+    simp only [reduction_highest_priority_job]; rw [SAME_PEND]
+  -- Now show the whole build_schedule is equal
+  simp only [reduction_build_schedule]
+  rw [SAME_HP]
+  -- Now we only differ in the if-condition service part
+  match reduction_highest_priority_job job_arrival original_job_cost next_suspension arr_seq higher_eq_priority sched2 t0 with
+  | none => rfl
+  | some j_hp =>
+    match sched_susp t0 with
+    | none => rfl
+    | some j_sched => simp [ALL j_sched]
+
+theorem sched_new_uses_construction_function :
+    ∀ t,
+      sched_new job_arrival original_job_cost next_suspension arr_seq higher_eq_priority sched_susp t =
+      reduction_build_schedule job_arrival original_job_cost next_suspension arr_seq
+        higher_eq_priority sched_susp
+        (sched_new job_arrival original_job_cost next_suspension arr_seq higher_eq_priority sched_susp) t := by
+  intro t0
+  exact service_dependent_schedule_construction
+    (reduction_build_schedule job_arrival original_job_cost next_suspension arr_seq higher_eq_priority sched_susp)
+    (fun _ => none)
+    (sched_new_depends_only_on_service job_arrival arr_seq higher_eq_priority original_job_cost next_suspension sched_susp)
+    t0
+
+end ScheduleConstruction
+
+section GeneratedScheduleIsValid
+
+theorem sched_new_jobs_come_from_arrival_sequence :
+    jobs_come_from_arrival_sequence
+      (sched_new job_arrival original_job_cost next_suspension arr_seq higher_eq_priority sched_susp)
+      arr_seq := by
+  sorry
+
+theorem sched_new_jobs_must_arrive_to_execute :
+    jobs_must_arrive_to_execute job_arrival
+      (sched_new job_arrival original_job_cost next_suspension arr_seq higher_eq_priority sched_susp) := by
+  sorry
+
+theorem sched_new_completed_jobs_dont_execute :
+    completed_jobs_dont_execute (inflated_job_cost original_job_cost next_suspension)
+      (sched_new job_arrival original_job_cost next_suspension arr_seq higher_eq_priority sched_susp) := by
+  sorry
+
+theorem sched_new_work_conserving :
+    Prosa.Classic.Model.Schedule.Uni.Basic.Platform.Platform.work_conserving
+      job_arrival (inflated_job_cost original_job_cost next_suspension) arr_seq
+      (sched_new job_arrival original_job_cost next_suspension arr_seq higher_eq_priority sched_susp) := by
+  sorry
+
+theorem sched_new_respects_policy :
+    Prosa.Classic.Model.Schedule.Uni.Basic.Platform.Platform.respects_JLDP_policy
+      job_arrival (inflated_job_cost original_job_cost next_suspension) arr_seq
+      (sched_new job_arrival original_job_cost next_suspension arr_seq higher_eq_priority sched_susp)
+      higher_eq_priority := by
+  sorry
+
+theorem sched_new_breaks_ties :
+    ∀ j1 j2 t,
+      higher_eq_priority t j1 j2 = true →
+      higher_eq_priority t j2 j1 = true →
+      scheduled_at sched_susp j1 t = true →
+      pending job_arrival (inflated_job_cost original_job_cost next_suspension)
+        (sched_new job_arrival original_job_cost next_suspension arr_seq higher_eq_priority sched_susp) j1 t →
+      scheduled_at
+        (sched_new job_arrival original_job_cost next_suspension arr_seq higher_eq_priority sched_susp) j2 t = true →
+      j1 = j2 := by
+  sorry
+
+section Service
+
+section InductiveStep
+
+variable (t : Time)
+variable (H_induction_hypothesis :
+  ∀ j,
+    arrives_in arr_seq j →
+    service (sched_new job_arrival original_job_cost next_suspension arr_seq higher_eq_priority sched_susp) j t ≤
+    service sched_susp j t +
+    cumulative_suspension job_arrival original_job_cost next_suspension sched_susp j t)
+
+variable (j : Job)
+variable (H_comes_from_arrival_sequence : arrives_in arr_seq j)
+
+theorem reduction_inductive_step_not_arrived
+    (H_not_arrived : ¬ has_arrived job_arrival j t) :
+    service (sched_new job_arrival original_job_cost next_suspension arr_seq higher_eq_priority sched_susp) j (t + 1) ≤
+    service sched_susp j (t + 1) +
+    cumulative_suspension job_arrival original_job_cost next_suspension sched_susp j (t + 1) := by
+  sorry
+
+variable (H_j_has_arrived : has_arrived job_arrival j t)
+
+section CompletedInSuspensionAwareSchedule
+
+variable (H_j_has_completed : completed_by original_job_cost sched_susp j t)
+
+theorem reduction_inductive_step_case1_completed :
+    service (sched_new job_arrival original_job_cost next_suspension arr_seq higher_eq_priority sched_susp) j (t + 1) ≤
+    service sched_susp j (t + 1) +
+    cumulative_suspension job_arrival original_job_cost next_suspension sched_susp j (t + 1) := by
+  sorry
+
+end CompletedInSuspensionAwareSchedule
+
+section PendingInSuspensionAwareSchedule
+
+variable (H_j_is_pending : ¬ completed_by original_job_cost sched_susp j t)
+
+theorem reduction_inductive_step_not_scheduled_in_new
+    (H_not_sched : ¬ (scheduled_at
+      (sched_new job_arrival original_job_cost next_suspension arr_seq higher_eq_priority sched_susp) j t = true)) :
+    (scheduled_at
+      (sched_new job_arrival original_job_cost next_suspension arr_seq higher_eq_priority sched_susp) j t).toNat ≤
+    (if suspended_at job_arrival original_job_cost next_suspension sched_susp j t then 1 else 0) +
+    (scheduled_at sched_susp j t).toNat := by
+  have hf := Bool.eq_false_of_not_eq_true H_not_sched
+  simp [hf]
+
+theorem reduction_inductive_step_scheduled_in_susp
+    (H_sched_susp : scheduled_at sched_susp j t = true) :
+    (scheduled_at
+      (sched_new job_arrival original_job_cost next_suspension arr_seq higher_eq_priority sched_susp) j t).toNat ≤
+    (if suspended_at job_arrival original_job_cost next_suspension sched_susp j t then 1 else 0) +
+    (scheduled_at sched_susp j t).toNat := by
+  simp [H_sched_susp]
+  cases scheduled_at (sched_new job_arrival original_job_cost next_suspension arr_seq higher_eq_priority sched_susp) j t <;> simp [Bool.toNat]
+
+section NotScheduledInSuspensionAware
+
+variable (H_j_scheduled_in_new :
+  scheduled_at (sched_new job_arrival original_job_cost next_suspension arr_seq higher_eq_priority sched_susp) j t = true)
+variable (H_j_not_scheduled_in_susp : ¬ (scheduled_at sched_susp j t = true))
+
+section ProofByContradiction
+
+variable (H_j_is_not_suspended :
+  ¬ suspended_at job_arrival original_job_cost next_suspension sched_susp j t)
+
+theorem reduction_inductive_step_j_is_backlogged :
+    susp.backlogged job_arrival original_job_cost next_suspension sched_susp j t := by
+  sorry
+
+theorem reduction_inductive_step_exists_hep_job :
+    ∃ j_hp,
+      arrives_in arr_seq j_hp ∧
+      scheduled_at sched_susp j_hp t = true ∧
+      higher_eq_priority t j_hp j = true := by
+  sorry
+
+variable (j_hp : Job)
+variable (H_j_hp_comes_from_sequence : arrives_in arr_seq j_hp)
+variable (H_j_hp_is_scheduled : scheduled_at sched_susp j_hp t = true)
+variable (H_higher_or_equal_priority : higher_eq_priority t j_hp j = true)
+
+theorem reduction_inductive_step_j_hp_completed_in_new :
+    completed_by (inflated_job_cost original_job_cost next_suspension)
+      (sched_new job_arrival original_job_cost next_suspension arr_seq higher_eq_priority sched_susp) j_hp t := by
+  sorry
+
+theorem reduction_inductive_step_j_hp_completed_in_susp :
+    completed_by original_job_cost sched_susp j_hp t := by
+  sorry
+
+theorem reduction_inductive_step_contradiction : False := by
+  sorry
+
+end ProofByContradiction
+
+end NotScheduledInSuspensionAware
+
+theorem reduction_inductive_step_case2_pending :
+    service (sched_new job_arrival original_job_cost next_suspension arr_seq higher_eq_priority sched_susp) j (t + 1) ≤
+    service sched_susp j (t + 1) +
+    cumulative_suspension job_arrival original_job_cost next_suspension sched_susp j (t + 1) := by
+  sorry
+
+end PendingInSuspensionAwareSchedule
+
+end InductiveStep
+
+theorem suspension_oblivious_preserves_service :
+    ∀ j t,
+      arrives_in arr_seq j →
+      service (sched_new job_arrival original_job_cost next_suspension arr_seq higher_eq_priority sched_susp) j t ≤
+      service sched_susp j t +
+      cumulative_suspension job_arrival original_job_cost next_suspension sched_susp j t := by
+  sorry
+
+theorem suspension_oblivious_preserves_completion :
+    ∀ j t,
+      arrives_in arr_seq j →
+      completed_by (inflated_job_cost original_job_cost next_suspension)
+        (sched_new job_arrival original_job_cost next_suspension arr_seq higher_eq_priority sched_susp) j t →
+      completed_by original_job_cost sched_susp j t := by
+  sorry
+
+end Service
+
+end GeneratedScheduleIsValid
+
+section Schedulability
+
+variable (H_schedulable_without_suspensions :
+  ∀ j,
+    arrives_in arr_seq j →
+    Prosa.Classic.Model.Schedule.Uni.Schedulability.job_misses_no_deadline
+      job_arrival (inflated_job_cost original_job_cost next_suspension) job_deadline
+      (sched_new job_arrival original_job_cost next_suspension arr_seq higher_eq_priority sched_susp) j)
+
+theorem suspension_oblivious_preserves_schedulability :
+    ∀ j,
+      arrives_in arr_seq j →
+      Prosa.Classic.Model.Schedule.Uni.Schedulability.job_misses_no_deadline
+        job_arrival original_job_cost job_deadline sched_susp j := by
+  sorry
+
+end Schedulability
+
+end Reduction
+
+end ReductionToBasicSchedule
+
+end
+
+end Prosa.Classic.Analysis.Uni.Susp.Dynamic.Oblivious.Reduction

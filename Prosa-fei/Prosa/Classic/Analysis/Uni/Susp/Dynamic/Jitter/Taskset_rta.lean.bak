@@ -1,0 +1,130 @@
+-- Translated from: ../rt-proofs/classic/analysis/uni/susp/dynamic/jitter/taskset_rta.v
+import Prosa.Classic.Util.All
+import Prosa.Classic.Model.Priority
+import Prosa.Classic.Model.Arrival.Basic.Task
+import Prosa.Classic.Model.Arrival.Jitter.Job
+import Prosa.Classic.Model.Schedule.Uni.Response_time
+import Prosa.Classic.Model.Schedule.Uni.Susp.Schedule
+import Prosa.Classic.Model.Schedule.Uni.Jitter.Valid_schedule
+import Prosa.Classic.Analysis.Uni.Susp.Dynamic.Jitter.Rta_by_reduction
+
+noncomputable section
+
+namespace Prosa.Classic.Analysis.Uni.Susp.Dynamic.Jitter.Taskset_rta
+
+open Prosa.Classic.Model.Time
+open Prosa.Classic.Model.Priority
+open Prosa.Classic.Model.Arrival.Basic.Task.SporadicTaskset
+open Prosa.Classic.Model.Arrival.Basic.Task_arrival
+open Prosa.Classic.Model.Arrival.Basic.Arrival_sequence
+open Prosa.Classic.Model.Suspension
+open Prosa.Classic.Model.Schedule.Uni.Schedule
+open Prosa.Classic.Model.Schedule.Uni.Response_time.ResponseTime
+open Prosa.Classic.Model.Schedule.Uni.Jitter.Valid_schedule.ValidJitterAwareSchedule
+open Prosa.Classic.Analysis.Uni.Susp.Dynamic.Jitter.Rta_by_reduction
+open Prosa.Classic.Analysis.Uni.Susp.Dynamic.Jitter.Rta_by_reduction.RTAByReduction
+open Prosa.Classic.Analysis.Uni.Susp.Dynamic.Jitter.Jitter_taskset_generation.JitterTaskSetGeneration
+open Prosa.Classic.Analysis.Uni.Susp.Dynamic.Jitter.Jitter_schedule.JitterScheduleConstruction
+
+namespace TaskSetRTA
+
+section PerTaskAnalysis
+
+variable {Task : Type*} [DecidableEq Task]
+variable (task_cost : Task → Time)
+variable (task_period : Task → Time)
+variable (task_deadline : Task → Time)
+variable {Job : Type*} [DecidableEq Job]
+variable (job_arrival : Job → Time)
+variable (job_deadline : Job → Time)
+variable (job_task : Job → Task)
+
+variable (ts : List Task)
+variable (H_constrained_deadlines :
+  constrained_deadline_model task_period task_deadline ts)
+
+variable (arr_seq : arrival_sequence Job)
+variable (H_arrival_times_are_consistent :
+  arrival_times_are_consistent job_arrival arr_seq)
+variable (H_arrival_sequence_is_a_set : arrival_sequence_is_a_set arr_seq)
+
+variable (H_sporadic_arrivals :
+  sporadic_task_model task_period job_arrival job_task arr_seq)
+
+variable (H_jobs_come_from_taskset :
+  ∀ j, arrives_in arr_seq j → job_task j ∈ ts)
+
+variable (H_job_deadline_eq_task_deadline :
+  ∀ j, arrives_in arr_seq j → job_deadline j = task_deadline (job_task j))
+
+variable (job_suspension_duration : job_suspension Job)
+variable (task_suspension_bound : Task → Time)
+
+variable (higher_eq_priority : FP_policy Task)
+variable (H_priority_is_reflexive : FP_is_reflexive higher_eq_priority)
+variable (H_priority_is_transitive : FP_is_transitive higher_eq_priority)
+variable (H_priority_is_total : FP_is_total_over_task_set higher_eq_priority ts)
+
+variable (tsk_i : Task)
+variable (H_tsk_in_ts : tsk_i ∈ ts)
+
+variable (R : Task → Time)
+
+variable (H_valid_response_time_bound_of_hp_tasks_in_all_schedules :
+  ∀ job_cost sched,
+    valid_suspension_aware_schedule (Task := Task) job_arrival arr_seq
+      (FP_to_JLDP job_task higher_eq_priority)
+      job_suspension_duration job_cost sched →
+    ∀ tsk_hp,
+      tsk_hp ∈ ts →
+      (higher_eq_priority tsk_hp tsk_i && decide (tsk_hp ≠ tsk_i)) = true →
+      is_response_time_bound_of_task job_arrival job_cost job_task arr_seq sched tsk_hp (R tsk_hp))
+
+variable (H_R_le_deadline : R tsk_i ≤ task_deadline tsk_i)
+
+def valid_jobs_with_jitter
+    (job_cost : Job → Time)
+    (job_jitter : Job → Time)
+    (inflated_task_cost : Task → Time)
+    (task_jitter : Task → Time) : Prop :=
+  (∀ j, arrives_in arr_seq j → job_cost j > 0) ∧
+  (∀ j, arrives_in arr_seq j → job_cost j ≤ inflated_task_cost (job_task j)) ∧
+  (∀ j, arrives_in arr_seq j → job_jitter j ≤ task_jitter (job_task j))
+
+variable (H_valid_response_time_bound_of_tsk_i :
+  ∀ job_cost' job_jitter sched,
+    valid_jobs_with_jitter job_task arr_seq job_cost' job_jitter
+      (inflated_task_cost task_cost task_suspension_bound tsk_i)
+      (task_jitter task_cost higher_eq_priority tsk_i R) →
+    valid_jitter_aware_schedule job_arrival arr_seq
+      (FP_to_JLDP job_task higher_eq_priority) job_cost' job_jitter sched →
+    is_response_time_bound_of_task job_arrival job_cost' job_task arr_seq sched tsk_i (R tsk_i))
+
+variable (job_cost : Job → Time)
+
+variable (sched_susp : schedule Job)
+variable (H_valid_schedule :
+  valid_suspension_aware_schedule (Task := Task) job_arrival arr_seq
+    (FP_to_JLDP job_task higher_eq_priority)
+    job_suspension_duration job_cost sched_susp)
+
+variable (H_job_cost_positive :
+  ∀ j, arrives_in arr_seq j → job_cost j > 0)
+
+variable (H_job_cost_le_task_cost :
+  ∀ j, arrives_in arr_seq j → job_cost j ≤ task_cost (job_task j))
+
+variable (H_dynamic_suspensions :
+  dynamic_suspension_model job_cost job_task job_suspension_duration task_suspension_bound)
+
+theorem valid_response_time_bound_of_tsk_i :
+    is_response_time_bound_of_task job_arrival job_cost job_task arr_seq sched_susp tsk_i (R tsk_i) := by
+  sorry
+
+end PerTaskAnalysis
+
+end TaskSetRTA
+
+end Prosa.Classic.Analysis.Uni.Susp.Dynamic.Jitter.Taskset_rta
+
+end

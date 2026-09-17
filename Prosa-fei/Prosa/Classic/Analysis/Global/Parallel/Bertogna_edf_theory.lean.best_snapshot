@@ -1,0 +1,47 @@
+-- Translated from: ../rt-proofs/classic/analysis/global/parallel/bertogna_edf_theory.v
+import Prosa.Classic.Util.All
+import Prosa.Classic.Model.Arrival.Basic.Task
+import Prosa.Classic.Model.Schedule.Global.Workload
+import Prosa.Classic.Model.Schedule.Global.Basic.Schedule
+import Prosa.Classic.Analysis.Global.Parallel.Workload_bound
+import Prosa.Classic.Model.Schedule.Global.Schedulability
+import Prosa.Classic.Model.Schedule.Global.Response_time
+import Prosa.Classic.Model.Schedule.Global.Basic.Platform
+import Prosa.Classic.Model.Schedule.Global.Basic.Interference
+import Prosa.Classic.Model.Schedule.Global.Basic.Interference_edf
+import Prosa.Classic.Model.Priority
+import Prosa.Classic.Model.Arrival.Basic.Task_arrival
+import Prosa.Classic.Analysis.Global.Parallel.Interference_bound_edf
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.BigOperators.Intervals
+import Mathlib.Tactic
+
+set_option autoImplicit false
+set_option linter.unusedSectionVars false
+
+namespace Prosa.Classic.Analysis.Global.Parallel.Bertogna_edf_theory
+
+open Prosa.Classic.Model.Time
+open Prosa.Classic.Model.Arrival.Basic.Arrival_sequence
+open Prosa.Classic.Model.Arrival.Basic.Job hiding arrival_sequence arrives_in
+open Prosa.Classic.Model.Arrival.Basic.Task
+open Prosa.Classic.Model.Arrival.Basic.Task.SporadicTask
+open Prosa.Classic.Model.Arrival.Basic.Task.SporadicTaskset
+open Prosa.Classic.Model.Arrival.Basic.Task_arrival
+open Prosa.Classic.Model.Schedule.Global.Basic.Schedule
+open Prosa.Classic.Model.Schedule.Global.Basic.Schedule.Schedule
+open Prosa.Classic.Model.Schedule.Global.Basic.Schedule.ScheduleOfSporadicTask
+open Prosa.Classic.Model.Schedule.Global.Basic.Platform.Platform
+open Prosa.Classic.Model.Schedule.Global.Basic.Interference
+open Prosa.Classic.Model.Schedule.Global.Basic.Interference_edf.InterferenceEDF
+open Prosa.Classic.Model.Schedule.Global.Response_time.ResponseTime
+open Prosa.Classic.Model.Schedule.Global.Schedulability.Schedulability
+open Prosa.Classic.Model.Priority
+open Prosa.Classic.Analysis.Global.Parallel.Workload_bound.WorkloadBound
+open Prosa.Classic.Analysis.Global.Parallel.Interference_bound_edf.InterferenceBoundEDF
+open Prosa.Util.Div_mod
+
+attribute [local instance] Classical.propDecidable
+
+namespace ResponseTimeAnalysisEDF
+

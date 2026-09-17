@@ -1,0 +1,195 @@
+-- Translated from: ../rt-proofs/classic/model/schedule/global/basic/constrained_deadlines.v
+import Prosa.Classic.Util.All
+import Prosa.Classic.Model.Arrival.Basic.Task
+import Prosa.Classic.Model.Arrival.Basic.Job
+import Prosa.Classic.Model.Arrival.Basic.Arrival_sequence
+import Prosa.Classic.Model.Arrival.Basic.Task_arrival
+import Prosa.Classic.Model.Priority
+import Prosa.Classic.Model.Schedule.Global.Basic.Schedule
+import Prosa.Classic.Model.Schedule.Global.Basic.Interference
+import Prosa.Classic.Model.Schedule.Global.Basic.Platform
+import Mathlib.Tactic
+
+namespace Prosa.Classic.Model.Schedule.Global.Basic.Constrained_deadlines
+
+open Prosa.Classic.Model.Time
+open Prosa.Classic.Model.Arrival.Basic.Job hiding arrival_sequence arrives_in
+open Prosa.Classic.Model.Arrival.Basic.Task.SporadicTask
+open Prosa.Classic.Model.Arrival.Basic.Task.SporadicTaskset
+open Prosa.Classic.Model.Arrival.Basic.Arrival_sequence
+open Prosa.Classic.Model.Arrival.Basic.Task_arrival
+open Prosa.Classic.Model.Priority
+open Prosa.Classic.Model.Schedule.Global.Basic.Schedule.Schedule
+open Prosa.Classic.Model.Schedule.Global.Basic.Schedule.ScheduleOfSporadicTask
+open Prosa.Classic.Model.Schedule.Global.Basic.Interference
+open Prosa.Classic.Model.Schedule.Global.Basic.Platform.Platform
+
+namespace ConstrainedDeadlines
+
+  section Lemmas
+
+    variable {sporadic_task : Type} [DecidableEq sporadic_task]
+    variable (task_cost : sporadic_task → Time)
+    variable (task_period : sporadic_task → Time)
+    variable (task_deadline : sporadic_task → Time)
+
+    variable {Job : Type} [DecidableEq Job]
+    variable (job_arrival : Job → Time)
+    variable (job_cost : Job → Time)
+    variable (job_deadline : Job → Time)
+    variable (job_task : Job → sporadic_task)
+
+    variable (arr_seq : arrival_sequence Job)
+
+    variable {num_cpus : ℕ}
+    variable (sched : schedule Job num_cpus)
+    variable (H_jobs_come_from_arrival_sequence :
+      jobs_come_from_arrival_sequence sched arr_seq)
+
+    variable (H_valid_job_parameters :
+      ∀ j,
+        arrives_in arr_seq j →
+        valid_sporadic_job task_cost task_deadline job_cost job_deadline job_task j)
+
+    section NoMultipleJobs
+
+      variable (higher_eq_priority : JLDP_policy Job)
+      variable (H_work_conserving : work_conserving job_arrival job_cost arr_seq sched)
+      variable (H_respects_JLDP_policy :
+        respects_JLDP_policy job_arrival job_cost arr_seq sched higher_eq_priority)
+
+      variable (ts : List sporadic_task)
+
+      variable (H_all_jobs_from_taskset :
+        ∀ j, arrives_in arr_seq j → job_task j ∈ ts)
+
+      variable (H_sequential_jobs : sequential_jobs sched)
+      variable (H_completed_jobs_dont_execute :
+        completed_jobs_dont_execute job_cost sched)
+      variable (H_jobs_must_arrive_to_execute :
+        jobs_must_arrive_to_execute job_arrival sched)
+
+      variable (H_sporadic_tasks :
+        sporadic_task_model task_period job_arrival job_task arr_seq)
+
+      variable (tsk : sporadic_task)
+      variable (H_valid_task : is_valid_sporadic_task task_cost task_period task_deadline tsk)
+
+      variable (j : Job)
+      variable (H_j_arrives : arrives_in arr_seq j)
+      variable (H_job_of_tsk : job_task j = tsk)
+
+      variable (t : Time)
+      variable (H_j_backlogged : backlogged job_arrival job_cost sched j t)
+
+      variable (H_all_previous_jobs_completed :
+        ∀ j_other tsk_other,
+          arrives_in arr_seq j_other →
+          job_task j_other = tsk_other →
+          job_arrival j_other + task_period tsk_other ≤ t →
+          completed job_cost sched j_other
+            (job_arrival j_other + task_period (job_task j_other)))
+
+      def scheduled_task_other_than (tsk tsk_other : sporadic_task) : Bool :=
+        decide (∃ cpu : Fin num_cpus, task_scheduled_on job_task sched tsk_other cpu t = true) &&
+        decide (tsk_other ≠ tsk)
+
+      theorem platform_at_most_one_pending_job_of_each_task :
+          ∀ j1 j2,
+            arrives_in arr_seq j1 →
+            arrives_in arr_seq j2 →
+            pending job_arrival job_cost sched j1 t →
+            pending job_arrival job_cost sched j2 t →
+            job_task j1 = job_task j2 →
+            j1 = j2 := by
+        sorry
+
+      theorem platform_cpus_busy_with_interfering_tasks :
+          (ts.filter (scheduled_task_other_than job_task sched t tsk)).length = num_cpus := by
+        sorry
+
+    end NoMultipleJobs
+
+    section NoMultipleJobsFP
+
+      variable (higher_eq_priority : FP_policy sporadic_task)
+      variable (H_work_conserving : work_conserving job_arrival job_cost arr_seq sched)
+      variable (H_respects_FP_policy :
+        respects_FP_policy job_arrival job_cost job_task arr_seq sched higher_eq_priority)
+
+      variable (ts : List sporadic_task)
+
+      variable (H_all_jobs_from_taskset :
+        ∀ j, arrives_in arr_seq j → job_task j ∈ ts)
+
+      variable (H_sequential_jobs : sequential_jobs sched)
+      variable (H_completed_jobs_dont_execute :
+        completed_jobs_dont_execute job_cost sched)
+      variable (H_jobs_must_arrive_to_execute :
+        jobs_must_arrive_to_execute job_arrival sched)
+
+      variable (H_sporadic_tasks :
+        sporadic_task_model task_period job_arrival job_task arr_seq)
+
+      variable (tsk : sporadic_task)
+      variable (H_valid_task : is_valid_sporadic_task task_cost task_period task_deadline tsk)
+
+      variable (j : Job)
+      variable (H_j_arrives : arrives_in arr_seq j)
+      variable (H_job_of_tsk : job_task j = tsk)
+
+      variable (t : Time)
+      variable (H_j_backlogged : backlogged job_arrival job_cost sched j t)
+      variable (H_t_before_period : t < job_arrival j + task_period tsk)
+
+      variable (H_all_previous_jobs_completed :
+        ∀ j_other tsk_other,
+          arrives_in arr_seq j_other →
+          job_task j_other = tsk_other →
+          higher_priority_task higher_eq_priority tsk tsk_other = true →
+          completed job_cost sched j_other
+            (job_arrival j_other + task_period tsk_other))
+
+      variable (H_all_previous_jobs_of_tsk_completed :
+        ∀ j0,
+          arrives_in arr_seq j0 →
+          job_task j0 = tsk →
+          job_arrival j0 < job_arrival j →
+          completed job_cost sched j0 (job_arrival j0 + task_period tsk))
+
+      def scheduled_task_with_higher_eq_priority
+          (tsk tsk_other : sporadic_task) : Bool :=
+        decide (∃ cpu : Fin num_cpus, task_scheduled_on job_task sched tsk_other cpu t = true) &&
+        higher_priority_task higher_eq_priority tsk tsk_other
+
+      theorem platform_fp_no_multiple_jobs_of_interfering_tasks :
+          ∀ j1 j2,
+            arrives_in arr_seq j1 →
+            arrives_in arr_seq j2 →
+            pending job_arrival job_cost sched j1 t →
+            pending job_arrival job_cost sched j2 t →
+            job_task j1 = job_task j2 →
+            higher_priority_task higher_eq_priority tsk (job_task j1) = true →
+            j1 = j2 := by
+        sorry
+
+      theorem platform_fp_no_multiple_jobs_of_tsk :
+          ∀ j',
+            arrives_in arr_seq j' →
+            pending job_arrival job_cost sched j' t →
+            job_task j' = tsk →
+            j' = j := by
+        sorry
+
+      theorem platform_fp_cpus_busy_with_interfering_tasks :
+          (ts.filter (scheduled_task_with_higher_eq_priority job_task sched
+            higher_eq_priority t tsk)).length = num_cpus := by
+        sorry
+
+    end NoMultipleJobsFP
+
+  end Lemmas
+
+end ConstrainedDeadlines
+
+end Prosa.Classic.Model.Schedule.Global.Basic.Constrained_deadlines

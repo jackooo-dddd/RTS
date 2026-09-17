@@ -1,0 +1,324 @@
+-- Translated from: ../rt-proofs/classic/analysis/uni/basic/tdma_rta_theory.v
+import Prosa.Classic.Model.Schedule.Uni.Basic.Platform_tdma
+import Prosa.Classic.Model.Arrival.Basic.Job
+import Prosa.Classic.Model.Arrival.Basic.Task
+import Prosa.Classic.Model.Arrival.Basic.Task_arrival
+import Prosa.Classic.Model.Schedule.Uni.Schedule
+import Prosa.Classic.Model.Schedule.Uni.Schedulability
+import Prosa.Classic.Model.Schedule.Uni.Schedule_of_task
+import Prosa.Classic.Model.Schedule.Uni.Response_time
+import Prosa.Classic.Model.Policy_tdma
+import Prosa.Util.Div_mod
+import Prosa.Util.Seqset
+
+namespace Prosa.Classic.Analysis.Uni.Basic.Tdma_rta_theory
+
+open Prosa.Classic.Model.Time
+open Prosa.Classic.Model.Arrival.Basic.Arrival_sequence
+open Prosa.Classic.Model.Arrival.Basic.Task_arrival
+open Prosa.Classic.Model.Arrival.Basic.Task.SporadicTask
+open Prosa.Classic.Model.Arrival.Basic.Task.SporadicTaskset
+open Prosa.Classic.Model.Schedule.Uni.Schedule
+open Prosa.Classic.Model.Schedule.Uni.Schedule_of_task
+open Prosa.Classic.Model.Schedule.Uni.Basic.Platform_tdma
+open Prosa.Classic.Model.Policy_tdma
+open Prosa.Util.Seqset
+open Prosa.Util.Div_mod
+
+namespace ResponseTimeAnalysisTDMA
+
+section WCRT_Defs
+
+variable {sporadic_task : Type*} [DecidableEq sporadic_task]
+variable (task_cost : sporadic_task → Time)
+variable (task_time_slot : TDMA_slot sporadic_task)
+variable (ts : SeqSet sporadic_task)
+variable (slot_order : TDMA_slot_order sporadic_task)
+variable (tsk : sporadic_task)
+
+def WCRT_formula (cycle s wcet : ℕ) : ℕ :=
+  (div_ceil wcet s) * (cycle - s) + wcet
+
+def WCRT : ℕ :=
+  WCRT_formula (TDMA_cycle ts task_time_slot) (task_time_slot tsk) (task_cost tsk)
+
+private def from_start_of_slot (t : Time) : ℕ :=
+  (t + TDMA_cycle ts task_time_slot -
+    Task_slot_offset ts slot_order tsk task_time_slot % TDMA_cycle ts task_time_slot) %
+  TDMA_cycle ts task_time_slot
+
+private def to_next_slot' (t : Time) : ℕ :=
+  TDMA_cycle ts task_time_slot - from_start_of_slot task_time_slot ts slot_order tsk t
+
+private def to_end_of_slot (t : Time) : ℕ :=
+  task_time_slot tsk - from_start_of_slot task_time_slot ts slot_order tsk t
+
+private def duration_to_finish_from_start_of_slot_with (c : Duration) : ℕ :=
+  (div_ceil c (task_time_slot tsk) - 1) *
+    (TDMA_cycle ts task_time_slot - task_time_slot tsk) + c
+
+noncomputable def formula_rt (arr : Instant) (c : Duration) : ℕ :=
+  if c = 0 then 0
+  else if @decide _ (Classical.dec (Task_in_time_slot ts slot_order tsk task_time_slot arr))
+    then
+      if c ≤ to_end_of_slot task_time_slot ts slot_order tsk arr then c
+      else to_next_slot' task_time_slot ts slot_order tsk arr +
+           duration_to_finish_from_start_of_slot_with task_time_slot ts tsk
+             (c - to_end_of_slot task_time_slot ts slot_order tsk arr)
+  else
+    to_next_slot' task_time_slot ts slot_order tsk arr +
+    duration_to_finish_from_start_of_slot_with task_time_slot ts tsk c
+
+variable {Job : Type*} [DecidableEq Job]
+variable (job_arrival : Job → Time)
+variable (job_cost : Job → Time)
+
+noncomputable def job_response_time_tdma_in_at_most_one_job_is_pending
+    (j : Job) : ℕ :=
+  @formula_rt sporadic_task _ task_time_slot ts slot_order tsk (job_arrival j) (job_cost j)
+
+end WCRT_Defs
+
+section ResponseTimeBound
+
+variable {sporadic_task : Type*} [DecidableEq sporadic_task]
+variable (task_cost : sporadic_task → Time)
+variable (task_period : sporadic_task → Time)
+variable (task_deadline : sporadic_task → Time)
+
+variable {Job : Type*} [DecidableEq Job]
+variable (job_arrival : Job → Time)
+variable (job_cost : Job → Time)
+variable (job_deadline : Job → Time)
+variable (job_task : Job → sporadic_task)
+
+variable (arr_seq : arrival_sequence Job)
+variable (H_arrival_times_are_consistent :
+  arrival_times_are_consistent job_arrival arr_seq)
+variable (H_sporadic_tasks :
+  sporadic_task_model task_period job_arrival job_task arr_seq)
+
+variable (sched : schedule Job)
+variable (H_jobs_must_arrive_to_execute :
+  jobs_must_arrive_to_execute job_arrival sched)
+variable (H_completed_jobs_dont_execute :
+  completed_jobs_dont_execute job_cost sched)
+
+variable (task_time_slot : TDMA_slot sporadic_task)
+variable (slot_order : TDMA_slot_order sporadic_task)
+
+variable (ts : SeqSet sporadic_task)
+variable (H_valid_task_parameters :
+  valid_sporadic_taskset task_cost task_period task_deadline ts._set_seq)
+
+variable (tsk : sporadic_task)
+variable (H_task_in_task_set : tsk ∈ ts)
+
+variable (WCRT_le_period :
+  WCRT task_cost task_time_slot ts tsk ≤ task_period tsk)
+
+def is_valid_tdma_bound (bound : Time) : Prop :=
+  bound ≤ task_deadline tsk
+
+variable (TDMA_policy :
+  Respects_TDMA_policy job_arrival job_cost job_task arr_seq sched ts task_time_slot slot_order)
+
+variable (H_valid_time_slot :
+  is_valid_time_slot tsk task_time_slot)
+
+variable (H_valid_job_parameters :
+  ∀ j, arrives_in arr_seq j →
+    job_cost j > 0 ∧ job_cost j ≤ job_deadline j ∧ job_deadline j > 0 ∧
+    job_cost j ≤ task_cost (job_task j) ∧
+    job_deadline j = task_deadline (job_task j))
+
+variable (H_job_cost_le_task_cost :
+  ∀ j, arrives_in arr_seq j →
+    job_cost j ≤ task_cost (job_task j))
+
+include H_arrival_times_are_consistent H_sporadic_tasks
+  H_jobs_must_arrive_to_execute H_completed_jobs_dont_execute
+  H_valid_task_parameters H_task_in_task_set WCRT_le_period
+  TDMA_policy H_valid_time_slot H_valid_job_parameters H_job_cost_le_task_cost
+
+include H_arrival_times_are_consistent H_sporadic_tasks H_jobs_must_arrive_to_execute H_completed_jobs_dont_execute H_valid_task_parameters H_task_in_task_set WCRT_le_period H_valid_time_slot H_valid_job_parameters H_job_cost_le_task_cost in
+theorem any_job_completed_before_period :
+    ∀ j,
+      arrives_in arr_seq j →
+      job_task j = tsk →
+      completed_by job_cost sched j (job_arrival j + task_period (job_task j)) := by
+  intro j h_arr h_tsk
+  obtain ⟨t, h_in⟩ := h_arr
+  revert j
+  induction t using Nat.strong_rec_on with
+  | _ t IHt =>
+    intro j h_in h_tsk
+    have h_arr : arrives_in arr_seq j := ⟨t, h_in⟩
+    -- Show completed_by job_cost sched j (job_arrival j + WCRT ...)
+    -- then use completion_monotonic to get completed_by at period
+    have h_wcrt_le : WCRT task_cost task_time_slot ts tsk ≤ task_period tsk := WCRT_le_period
+    have h_wcrt_le' : job_arrival j + WCRT task_cost task_time_slot ts tsk ≤ job_arrival j + task_period (job_task j) := by
+      rw [h_tsk]; omega
+    -- Build the valid_job for j
+    have h_vjp := H_valid_job_parameters j h_arr
+    have h_valid_job : Prosa.Classic.Model.Arrival.Basic.Job.valid_realtime_job job_cost job_deadline j ∧
+        job_cost j ≤ task_cost (job_task j) ∧ job_deadline j = task_deadline (job_task j) := by
+      exact ⟨⟨h_vjp.1, h_vjp.2.1, h_vjp.2.2.1⟩, h_vjp.2.2.2.1, h_vjp.2.2.2.2⟩
+    -- Build all_previous_jobs_of_same_task_completed for j
+    have h_prev : ∀ j_other,
+        arrives_in arr_seq j_other →
+        job_task j = job_task j_other →
+        job_arrival j_other < job_arrival j →
+        completed_by job_cost sched j_other (job_arrival j) := by
+      intro j_other h_arr_other h_same_task h_lt
+      have h_neq : j ≠ j_other := by
+        intro h_eq; subst h_eq; exact Nat.lt_irrefl _ h_lt
+      have h_le : job_arrival j_other ≤ job_arrival j := Nat.le_of_lt h_lt
+      have h_period : job_arrival j_other + task_period (job_task j_other) ≤ job_arrival j :=
+        H_sporadic_tasks j_other j h_neq.symm h_arr_other h_arr h_same_task.symm h_le
+      obtain ⟨t_other, h_in_other⟩ := h_arr_other
+      have h_consist_j : job_arrival j = t := H_arrival_times_are_consistent j t h_in
+      have h_consist_other : job_arrival j_other = t_other := H_arrival_times_are_consistent j_other t_other h_in_other
+      have h_t_lt : t_other < t := by omega
+      have h_tsk_other : job_task j_other = tsk := h_same_task.symm ▸ h_tsk
+      have h_comp_period : completed_by job_cost sched j_other (job_arrival j_other + task_period (job_task j_other)) :=
+        IHt t_other h_t_lt j_other h_in_other h_tsk_other
+      exact completion_monotonic job_cost sched j_other
+        (job_arrival j_other + task_period (job_task j_other)) (job_arrival j) h_period h_comp_period
+    -- Now call job_completed_by_WCRT
+    have h_completed_wcrt : completed_by job_cost sched j (job_arrival j + WCRT_fn ts task_cost tsk task_time_slot) :=
+      Tdma_wcrt_analysis.WCRT_OneJobTDMA.job_completed_by_WCRT
+        task_cost task_period task_deadline job_arrival job_cost job_deadline job_task
+        arr_seq H_sporadic_tasks sched H_jobs_must_arrive_to_execute H_completed_jobs_dont_execute
+        task_time_slot slot_order ts H_valid_task_parameters tsk H_task_in_task_set
+        j h_tsk h_arr h_valid_job H_valid_time_slot TDMA_policy h_prev
+        (H_job_cost_le_task_cost j h_arr)
+    -- WCRT and WCRT_fn should be definitionally equal
+    have h_eq : WCRT task_cost task_time_slot ts tsk = WCRT_fn ts task_cost tsk task_time_slot := by
+      unfold WCRT WCRT_formula WCRT_fn WCRT_formula_fn
+      ring
+    rw [h_eq] at h_wcrt_le'
+    exact completion_monotonic job_cost sched j
+      (job_arrival j + WCRT_fn ts task_cost tsk task_time_slot)
+      (job_arrival j + task_period (job_task j)) h_wcrt_le' h_completed_wcrt
+
+theorem all_previous_jobs_of_same_task_completed :
+    ∀ j j_other,
+      arrives_in arr_seq j →
+      job_task j = tsk →
+      arrives_in arr_seq j_other →
+      job_task j = job_task j_other →
+      job_arrival j_other < job_arrival j →
+      completed_by job_cost sched j_other (job_arrival j) := by
+  intro j j_other h_arr h_tsk h_arr_other h_same_task h_lt
+  have h_neq : j ≠ j_other := by
+    intro h_eq; subst h_eq; exact Nat.lt_irrefl _ h_lt
+  have h_period : job_arrival j_other + task_period (job_task j_other) ≤ job_arrival j := by
+    have h_le : job_arrival j_other ≤ job_arrival j := Nat.le_of_lt h_lt
+    exact H_sporadic_tasks j_other j h_neq.symm h_arr_other h_arr h_same_task.symm h_le
+  have h_comp : completed_by job_cost sched j_other (job_arrival j_other + task_period (job_task j_other)) := by
+    have h_tsk_other : job_task j_other = tsk := h_same_task.symm ▸ h_tsk
+    exact any_job_completed_before_period task_cost task_period task_deadline job_arrival job_cost job_deadline job_task arr_seq H_arrival_times_are_consistent H_sporadic_tasks sched H_jobs_must_arrive_to_execute H_completed_jobs_dont_execute task_time_slot slot_order ts H_valid_task_parameters tsk H_task_in_task_set WCRT_le_period TDMA_policy H_valid_time_slot H_valid_job_parameters H_job_cost_le_task_cost j_other h_arr_other h_tsk_other
+  exact completion_monotonic job_cost sched j_other (job_arrival j_other + task_period (job_task j_other)) (job_arrival j) h_period h_comp
+
+include H_arrival_times_are_consistent H_sporadic_tasks H_jobs_must_arrive_to_execute H_completed_jobs_dont_execute H_valid_task_parameters H_task_in_task_set WCRT_le_period H_valid_time_slot H_valid_job_parameters H_job_cost_le_task_cost in
+theorem uniprocessor_response_time_bound_TDMA :
+    Prosa.Classic.Model.Schedule.Uni.Response_time.ResponseTime.is_response_time_bound_of_task
+      job_arrival job_cost job_task arr_seq sched tsk
+      (WCRT task_cost task_time_slot ts tsk) := by
+  intro j h_arr h_tsk
+  unfold Prosa.Classic.Model.Schedule.Uni.Response_time.ResponseTime.is_response_time_bound_of_job
+  -- Build the valid_job for j
+  have h_vjp := H_valid_job_parameters j h_arr
+  have h_valid_job : Prosa.Classic.Model.Arrival.Basic.Job.valid_realtime_job job_cost job_deadline j ∧
+      job_cost j ≤ task_cost (job_task j) ∧ job_deadline j = task_deadline (job_task j) := by
+    exact ⟨⟨h_vjp.1, h_vjp.2.1, h_vjp.2.2.1⟩, h_vjp.2.2.2.1, h_vjp.2.2.2.2⟩
+  -- Build all_previous_jobs_of_same_task_completed for j
+  have h_prev : ∀ j_other,
+      arrives_in arr_seq j_other →
+      job_task j = job_task j_other →
+      job_arrival j_other < job_arrival j →
+      completed_by job_cost sched j_other (job_arrival j) := by
+    intro j_other h_arr_other h_same_task h_lt
+    exact all_previous_jobs_of_same_task_completed task_cost task_period task_deadline
+      job_arrival job_cost job_deadline job_task arr_seq H_arrival_times_are_consistent
+      H_sporadic_tasks sched H_jobs_must_arrive_to_execute H_completed_jobs_dont_execute
+      task_time_slot slot_order ts H_valid_task_parameters tsk H_task_in_task_set
+      WCRT_le_period TDMA_policy H_valid_time_slot H_valid_job_parameters H_job_cost_le_task_cost
+      j j_other h_arr h_tsk h_arr_other h_same_task h_lt
+  -- Call job_completed_by_WCRT
+  have h_completed : completed_by job_cost sched j (job_arrival j + WCRT_fn ts task_cost tsk task_time_slot) :=
+    Tdma_wcrt_analysis.WCRT_OneJobTDMA.job_completed_by_WCRT
+      task_cost task_period task_deadline job_arrival job_cost job_deadline job_task
+      arr_seq H_sporadic_tasks sched H_jobs_must_arrive_to_execute H_completed_jobs_dont_execute
+      task_time_slot slot_order ts H_valid_task_parameters tsk H_task_in_task_set
+      j h_tsk h_arr h_valid_job H_valid_time_slot TDMA_policy h_prev
+      (H_job_cost_le_task_cost j h_arr)
+  -- WCRT = WCRT_fn
+  have h_eq : WCRT task_cost task_time_slot ts tsk = WCRT_fn ts task_cost tsk task_time_slot := by
+    unfold WCRT WCRT_formula WCRT_fn WCRT_formula_fn
+    ring
+  rw [h_eq]
+  exact h_completed
+
+
+section AnalysisIsSufficient
+
+variable (H_is_valid_bound :
+  is_valid_tdma_bound task_deadline tsk (WCRT task_cost task_time_slot ts tsk))
+
+include H_is_valid_bound
+
+theorem taskset_schedulable_by_tdma :
+    Prosa.Classic.Model.Schedule.Uni.Schedulability.task_misses_no_deadline
+      job_arrival job_cost job_deadline job_task arr_seq sched tsk := by
+  have h_jd_eq : ∀ j, arrives_in arr_seq j → job_deadline j = task_deadline (job_task j) := by
+    intro j h_arr; exact (H_valid_job_parameters j h_arr).2.2.2.2
+  have h_cjde : Prosa.Classic.Model.Schedule.Uni.Schedulability.completed_jobs_dont_execute job_cost sched := by
+    intro j t
+    have h1 := H_completed_jobs_dont_execute j t
+    show Prosa.Classic.Model.Schedule.Uni.Schedulability.service sched j t ≤ job_cost j
+    have h_serv : service sched j t = Prosa.Classic.Model.Schedule.Uni.Schedulability.service sched j t := by
+      unfold service Prosa.Classic.Model.Schedule.Uni.Schedulability.service
+      unfold service_during Prosa.Classic.Model.Schedule.Uni.Schedulability.service_during
+      congr 1; ext t'
+      unfold service_at scheduled_at
+      unfold Prosa.Classic.Model.Schedule.Uni.Schedulability.service_at Prosa.Classic.Model.Schedule.Uni.Schedulability.scheduled_at
+      simp [Bool.toNat, beq_iff_eq]
+    rw [← h_serv]; exact h1
+  have h_bound : Prosa.Classic.Model.Schedule.Uni.Schedulability.is_response_time_bound_of_task
+      job_arrival job_cost job_task arr_seq sched tsk (WCRT task_cost task_time_slot ts tsk) := by
+    intro j h_arr h_tsk
+    unfold Prosa.Classic.Model.Schedule.Uni.Schedulability.is_response_time_bound_of_job
+    unfold Prosa.Classic.Model.Schedule.Uni.Schedulability.completed_by
+    have h_rt := uniprocessor_response_time_bound_TDMA task_cost task_period task_deadline job_arrival job_cost job_deadline job_task arr_seq H_arrival_times_are_consistent H_sporadic_tasks sched H_jobs_must_arrive_to_execute H_completed_jobs_dont_execute task_time_slot slot_order ts H_valid_task_parameters tsk H_task_in_task_set WCRT_le_period TDMA_policy H_valid_time_slot H_valid_job_parameters H_job_cost_le_task_cost j h_arr h_tsk
+    unfold Prosa.Classic.Model.Schedule.Uni.Response_time.ResponseTime.is_response_time_bound_of_job at h_rt
+    unfold completed_by at h_rt
+    have h_serv : service sched j (job_arrival j + WCRT task_cost task_time_slot ts tsk) =
+        Prosa.Classic.Model.Schedule.Uni.Schedulability.service sched j (job_arrival j + WCRT task_cost task_time_slot ts tsk) := by
+      unfold service Prosa.Classic.Model.Schedule.Uni.Schedulability.service
+      unfold service_during Prosa.Classic.Model.Schedule.Uni.Schedulability.service_during
+      congr 1; ext t'
+      unfold service_at scheduled_at
+      unfold Prosa.Classic.Model.Schedule.Uni.Schedulability.service_at Prosa.Classic.Model.Schedule.Uni.Schedulability.scheduled_at
+      simp [Bool.toNat, beq_iff_eq]
+    rw [← h_serv]; exact h_rt
+  exact Prosa.Classic.Model.Schedule.Uni.Schedulability.task_completes_before_deadline
+    job_arrival job_cost job_deadline job_task arr_seq sched task_deadline h_jd_eq h_cjde tsk
+    (WCRT task_cost task_time_slot ts tsk) H_is_valid_bound h_bound
+
+theorem jobs_schedulable_by_tdma_rta :
+    ∀ j,
+      arrives_in arr_seq j ∧ job_task j = tsk →
+      Prosa.Classic.Model.Schedule.Uni.Schedulability.job_misses_no_deadline
+        job_arrival job_cost job_deadline sched j := by
+  intro j ⟨h_arr, h_tsk⟩
+  exact taskset_schedulable_by_tdma task_cost task_period task_deadline job_arrival job_cost job_deadline job_task arr_seq H_arrival_times_are_consistent H_sporadic_tasks sched H_jobs_must_arrive_to_execute H_completed_jobs_dont_execute task_time_slot slot_order ts H_valid_task_parameters tsk H_task_in_task_set WCRT_le_period TDMA_policy H_valid_time_slot H_valid_job_parameters H_job_cost_le_task_cost H_is_valid_bound j h_arr h_tsk
+
+end AnalysisIsSufficient
+
+end ResponseTimeBound
+
+end ResponseTimeAnalysisTDMA
+
+end Prosa.Classic.Analysis.Uni.Basic.Tdma_rta_theory

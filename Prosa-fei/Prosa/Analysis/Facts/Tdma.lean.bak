@@ -1,0 +1,68 @@
+-- Translated from: ../rt-proofs/analysis/facts/tdma.v
+import Prosa.Model.Schedule.Tdma
+import Prosa.Util.All
+
+namespace Prosa.Analysis.Facts.Tdma
+
+open Prosa.Model.Schedule.Tdma
+open Prosa.Util.Seqset
+open Prosa.Util.Rel
+open Prosa.Behavior.Time
+
+section TDMAFacts
+
+  variable {Task : Type} [DecidableEq Task]
+
+  variable (ts : SeqSet Task)
+
+  variable [TDMAPolicy Task]
+
+  section TimeSlotFacts
+
+    variable (task : Task)
+    variable (H_task_in_ts : task ∈ ts)
+    variable (time_slot_positive : valid_time_slot ts)
+
+    theorem TDMA_cycle_ge_each_time_slot :
+      TDMA_cycle ts ≥ task_time_slot task := by sorry
+
+    theorem TDMA_cycle_positive :
+      TDMA_cycle ts > 0 := by sorry
+
+    theorem Offset_lt_cycle :
+      task_slot_offset ts task < TDMA_cycle ts := by sorry
+
+    theorem Offset_add_slot_leq_cycle :
+      task_slot_offset ts task + task_time_slot task ≤ TDMA_cycle ts := by sorry
+
+  end TimeSlotFacts
+
+  section TimeSlotOrderFacts
+
+    variable (task : Task)
+    variable (H_task_in_ts : task ∈ ts)
+    variable (time_slot_positive : valid_time_slot ts)
+    variable (slot_order_total : total_slot_order ts)
+    variable (slot_order_antisymmetric : antisymmetric_slot_order ts)
+    variable (slot_order_transitive : transitive_slot_order (Task := Task))
+
+    theorem relation_offset :
+      ∀ tsk1 tsk2, tsk1 ∈ ts →
+        tsk2 ∈ ts →
+        slot_order tsk1 tsk2 = true →
+        tsk1 ≠ tsk2 →
+        task_slot_offset ts tsk2 ≥
+          task_slot_offset ts tsk1 + task_time_slot tsk1 := by sorry
+
+    theorem task_in_time_slot_uniq :
+      ∀ tsk1 tsk2 t, tsk1 ∈ ts → task_time_slot tsk1 > 0 →
+        tsk2 ∈ ts → task_time_slot tsk2 > 0 →
+        task_in_time_slot ts tsk1 t →
+        task_in_time_slot ts tsk2 t →
+        tsk1 = tsk2 := by sorry
+
+  end TimeSlotOrderFacts
+
+end TDMAFacts
+
+end Prosa.Analysis.Facts.Tdma

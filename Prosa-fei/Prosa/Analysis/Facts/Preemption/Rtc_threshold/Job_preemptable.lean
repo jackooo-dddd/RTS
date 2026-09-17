@@ -1,0 +1,277 @@
+-- Translated from: ../rt-proofs/analysis/facts/preemption/rtc_threshold/job_preemptable.v
+import Prosa.Analysis.Definitions.Job_properties
+import Prosa.Analysis.Facts.Behavior.All
+import Prosa.Model.Task.Preemption.Parameters
+import Prosa.Util.Nondecreasing
+
+namespace Prosa.Analysis.Facts.Preemption.Rtc_threshold.Job_preemptable
+
+open Prosa.Behavior.Job
+open Prosa.Behavior.Time
+open Prosa.Behavior.Service
+open Prosa.Behavior.Schedule
+open Prosa.Behavior.Arrival_sequence
+open Prosa.Model.Preemption.Parameter
+open Prosa.Util.List
+open Prosa.Util.Epsilon
+open Prosa.Util.Nondecreasing
+open Prosa.Analysis.Definitions.Job_properties
+open Prosa.Analysis.Facts.Behavior.Service
+
+section RunToCompletionThreshold
+
+variable {Job : JobType}
+variable [JobArrival Job]
+variable [JobCost Job]
+variable [JobPreemptable Job]
+variable {PState : Type _}
+variable [ProcessorState Job PState]
+variable (arr_seq : arrival_sequence Job)
+variable (sched : schedule PState)
+variable (H_valid_preemption_model : valid_preemption_model arr_seq sched)
+variable (j : Job)
+variable (H_j_arrives : arrives_in arr_seq j)
+
+section AuxiliaryLemmas
+
+include H_valid_preemption_model H_j_arrives
+
+theorem preemption_points_of_zero_cost_job :
+    job_cost j = 0 →
+    job_preemption_points j = [0] := by
+  intro ZERO
+  obtain ⟨A1, A2, A3, A4⟩ := H_valid_preemption_model j H_j_arrives
+  unfold job_preemption_points range
+  rw [ZERO]
+  unfold job_cannot_become_nonpreemptive_before_execution at A1
+  simp only [Nat.sub_zero, List.range', List.filter, List.cons_append, List.nil_append, A1]
+
+theorem zero_in_preemption_points :
+    0 < job_cost j →
+    0 ∈ job_preemption_points j := by
+  intro POS
+  obtain ⟨A1, A2, A3, A4⟩ := H_valid_preemption_model j H_j_arrives
+  unfold job_cannot_become_nonpreemptive_before_execution at A1
+  exact (conversion_preserves_equivalence j 0 (Nat.le_of_lt POS)).mp A1
+
+theorem job_cost_in_preemption_points :
+    0 < job_cost j →
+    job_cost j ∈ job_preemption_points j := by
+  intro POS
+  obtain ⟨A1, A2, A3, A4⟩ := H_valid_preemption_model j H_j_arrives
+  unfold job_cannot_be_nonpreemptive_after_completion at A2
+  exact (conversion_preserves_equivalence j (job_cost j) (Nat.le_refl _)).mp A2
+
+theorem size_of_preemption_points :
+    0 < job_cost j →
+    2 ≤ (job_preemption_points j).length := by
+  intro POS
+  have h0 := zero_in_preemption_points arr_seq sched H_valid_preemption_model j H_j_arrives POS
+  have hc := job_cost_in_preemption_points arr_seq sched H_valid_preemption_model j H_j_arrives POS
+  have hnodup : [0, job_cost j].Nodup := by
+    simp only [List.nodup_cons, List.mem_cons, List.mem_nil_iff, or_false, List.nodup_nil,
+               and_true, List.not_mem_nil, not_false_eq_true, and_self]
+    intro h; exact absurd POS (h ▸ Nat.lt_irrefl 0)
+  have hsub : ∀ x, x ∈ [0, job_cost j] → x ∈ job_preemption_points j := by
+    intro x hx
+    simp only [List.mem_cons, List.mem_nil_iff, or_false] at hx
+    rcases hx with rfl | rfl
+    · exact h0
+    · exact hc
+  exact subseq_leq_size [0, job_cost j] (job_preemption_points j) hnodup hsub
+
+omit H_valid_preemption_model H_j_arrives
+
+theorem preemption_points_nondecreasing :
+    nondecreasing_sequence (job_preemption_points j) := by
+  apply increasing_implies_nondecreasing
+  apply iota_is_increasing_sequence
+
+include H_valid_preemption_model H_j_arrives
+
+theorem job_cost_is_last_element_of_preemption_points :
+    job_cost j = last0 (job_preemption_points j) := by
+  obtain ⟨A1, A2, A3, A4⟩ := H_valid_preemption_model j H_j_arrives
+  unfold job_cannot_be_nonpreemptive_after_completion at A2
+  unfold job_preemption_points
+  symm
+  apply last0_filter (job_cost j) (range 0 (job_cost j))
+  · -- range 0 (job_cost j) ≠ []
+    unfold range
+    intro h
+    have : (List.range' 0 (job_cost j + 1 - 0)).length = 0 := by rw [h]; simp
+    simp [List.length_range'] at this
+  · -- last0 (range 0 (job_cost j)) = job_cost j
+    unfold range
+    show last0 (List.range' 0 (job_cost j + 1 - 0)) = job_cost j
+    have heq : job_cost j + 1 - 0 = job_cost j + 1 := Nat.sub_zero _
+    rw [heq]
+    have hsplit : List.range' 0 (job_cost j + 1) = List.range' 0 (job_cost j) ++ [job_cost j] := by
+      induction (job_cost j) with
+      | zero => simp [List.range']
+      | succ n ih =>
+        rw [show n + 1 + 1 = (n + 1) + 1 from by omega]
+        rw [show List.range' 0 ((n + 1) + 1) = List.range' 0 (n + 1) ++ [n + 1] from by
+          rw [← List.range'_append (s := 0) (n := 1)]
+          simp [List.range']]
+    rw [hsplit, last0_cat _ _ (by simp)]
+    simp [last0, List.getLastD]
+  · exact A2
+
+theorem job_last_nonpreemptive_segment_positive :
+    job_cost_positive j →
+    0 < job_last_nonpreemptive_segment j := by
+  intro COST
+  unfold job_last_nonpreemptive_segment lengths_of_segments
+  show 0 < last0 (Prosa.Model.Preemption.Parameter.distances (job_preemption_points j))
+  have hdist_eq : Prosa.Model.Preemption.Parameter.distances (job_preemption_points j) =
+      Prosa.Util.Nondecreasing.distances (job_preemption_points j) := by
+    simp only [Prosa.Model.Preemption.Parameter.distances, Prosa.Util.Nondecreasing.distances]
+  rw [hdist_eq]
+  have hsize := size_of_preemption_points arr_seq sched H_valid_preemption_model j H_j_arrives COST
+  have hincr : Prosa.Util.Nondecreasing.increasing_sequence (job_preemption_points j) := by
+    unfold job_preemption_points range
+    exact Prosa.Util.Nondecreasing.iota_is_increasing_sequence 0 (job_cost j + 1) (fun ρ => job_preemptable j ρ)
+  set pp := job_preemption_points j
+  rw [last0_nth]
+  have hsize_dist : pp.length = (Prosa.Util.Nondecreasing.distances pp).length + 1 :=
+    Prosa.Util.Nondecreasing.size_of_seq_of_distances pp hsize
+  set dpp := Prosa.Util.Nondecreasing.distances pp
+  rw [Prosa.Util.Nondecreasing.function_of_distances_is_correct]
+  have hdpp_pos : 0 < dpp.length := by omega
+  have hstep : nthD pp (dpp.length - 1) < nthD pp dpp.length := by
+    apply hincr
+    exact ⟨by omega, by omega⟩
+  have heq : dpp.length - 1 + 1 = dpp.length := by omega
+  rw [heq]
+  omega
+
+theorem job_max_nonpreemptive_segment_positive :
+    job_cost_positive j →
+    0 < job_max_nonpreemptive_segment j := by
+  intro COST
+  exact Nat.lt_of_lt_of_le
+    (job_last_nonpreemptive_segment_positive arr_seq sched H_valid_preemption_model j H_j_arrives COST)
+    (last_of_seq_le_max_of_seq _)
+
+theorem job_max_nonpreemptive_segment_le_job_cost :
+    job_max_nonpreemptive_segment j ≤ job_cost j := by
+  -- max0(distances(pp)) ≤ last0(pp) ≤ job_cost j
+  have hnd : nondecreasing_sequence (job_preemption_points j) := preemption_points_nondecreasing j
+  -- Step 1: max0(distances(pp)) ≤ last0(pp)
+  have h_max_le_last : job_max_nonpreemptive_segment j ≤ last0 (job_preemption_points j) := by
+    unfold job_max_nonpreemptive_segment lengths_of_segments
+    show max0 (Prosa.Model.Preemption.Parameter.distances (job_preemption_points j)) ≤ last0 (job_preemption_points j)
+    have hdist_eq : Prosa.Model.Preemption.Parameter.distances (job_preemption_points j) =
+        Prosa.Util.Nondecreasing.distances (job_preemption_points j) := by
+      simp only [Prosa.Model.Preemption.Parameter.distances, Prosa.Util.Nondecreasing.distances]
+    rw [hdist_eq]
+    exact Prosa.Util.Nondecreasing.max_distance_in_seq_le_last_element_of_seq _ hnd
+  -- Step 2: last0(pp) ≤ job_cost j
+  have h_last_le_cost : last0 (job_preemption_points j) ≤ job_cost j := by
+    by_cases hpos : 0 < job_cost j
+    · have heq := job_cost_is_last_element_of_preemption_points arr_seq sched H_valid_preemption_model j H_j_arrives
+      exact Nat.le_of_eq heq.symm
+    · push_neg at hpos
+      have hzero : job_cost j = 0 := Nat.le_zero.mp hpos
+      have hppz := preemption_points_of_zero_cost_job arr_seq sched H_valid_preemption_model j H_j_arrives hzero
+      rw [hppz]
+      simp [last0, List.getLastD]
+  exact Nat.le_trans h_max_le_last h_last_le_cost
+
+theorem job_last_nonpreemptive_segment_le_job_cost :
+    job_last_nonpreemptive_segment j ≤ job_cost j := by
+  exact Nat.le_trans (last_of_seq_le_max_of_seq _) (job_max_nonpreemptive_segment_le_job_cost arr_seq sched H_valid_preemption_model j H_j_arrives)
+
+end AuxiliaryLemmas
+
+include H_valid_preemption_model H_j_arrives
+
+theorem job_run_to_completion_threshold_positive :
+    job_cost_positive j →
+    0 < job_run_to_completion_threshold j := by
+  intro COST
+  have N1 := job_last_nonpreemptive_segment_positive arr_seq sched H_valid_preemption_model j H_j_arrives COST
+  have N2 := job_last_nonpreemptive_segment_le_job_cost arr_seq sched H_valid_preemption_model j H_j_arrives
+  unfold job_run_to_completion_threshold ε job_last_nonpreemptive_segment lengths_of_segments at *
+  omega
+
+omit H_valid_preemption_model H_j_arrives
+
+theorem job_run_to_completion_threshold_le_job_cost :
+    job_run_to_completion_threshold j ≤ job_cost j := by
+  unfold job_run_to_completion_threshold
+  omega
+
+include H_valid_preemption_model H_j_arrives
+
+theorem job_cannot_be_preempted_within_last_segment :
+    ∀ (ρ : duration),
+      job_run_to_completion_threshold j ≤ ρ ∧ ρ < job_cost j →
+      ¬(job_preemptable j ρ = true) := by
+  intro ρ h
+  obtain ⟨GE, LT⟩ := h
+  intro C
+  have POS : 0 < job_cost j := Nat.lt_of_le_of_lt (Nat.zero_le ρ) LT
+  set pp := job_preemption_points j with hpp_def
+  have hnd : nondecreasing_sequence pp := preemption_points_nondecreasing j
+  have hsize : 2 ≤ pp.length :=
+    size_of_preemption_points arr_seq sched H_valid_preemption_model j H_j_arrives POS
+  have hcost_last : job_cost j = last0 pp :=
+    job_cost_is_last_element_of_preemption_points arr_seq sched H_valid_preemption_model j H_j_arrives
+  have hlast_pos : 0 < job_last_nonpreemptive_segment j :=
+    job_last_nonpreemptive_segment_positive arr_seq sched H_valid_preemption_model j H_j_arrives POS
+  have hlast_le : job_last_nonpreemptive_segment j ≤ job_cost j :=
+    job_last_nonpreemptive_segment_le_job_cost arr_seq sched H_valid_preemption_model j H_j_arrives
+  have hdist_eq : Prosa.Model.Preemption.Parameter.distances pp = Prosa.Util.Nondecreasing.distances pp := by
+    simp only [Prosa.Model.Preemption.Parameter.distances, Prosa.Util.Nondecreasing.distances]
+  have hlsmd : last0 pp - last0 (Prosa.Util.Nondecreasing.distances pp) = nthD pp (pp.length - 2) :=
+    last_seq_minus_last_distance_seq pp hnd
+  have hlast_seg_eq : job_last_nonpreemptive_segment j = last0 (Prosa.Util.Nondecreasing.distances pp) := by
+    unfold job_last_nonpreemptive_segment lengths_of_segments
+    rw [← hpp_def, hdist_eq]
+  have hdist_le_last : last0 (Prosa.Util.Nondecreasing.distances pp) ≤ last0 pp :=
+    Nat.le_trans (last_of_seq_le_max_of_seq _) (max_distance_in_seq_le_last_element_of_seq pp hnd)
+  have hlast_dist_val : last0 (Prosa.Util.Nondecreasing.distances pp) = last0 pp - nthD pp (pp.length - 2) := by
+    omega
+  have h_dist_pos : 0 < last0 pp - nthD pp (pp.length - 2) := by
+    rw [← hlast_dist_val, ← hlast_seg_eq]; exact hlast_pos
+  -- Establish nthD pp (pp.length - 2) < last0 pp
+  have hnthd_lt_last : nthD pp (pp.length - 2) < last0 pp := by omega
+  -- rtct = job_cost j - (job_last_nonpreemptive_segment j - ε)
+  -- Rewrite everything in terms of last0 pp and nthD
+  have hrtct_eq : job_run_to_completion_threshold j = nthD pp (pp.length - 2) + 1 := by
+    unfold job_run_to_completion_threshold ε
+    rw [hlast_seg_eq, hlast_dist_val, hcost_last]
+    -- Goal: last0 pp - (last0 pp - nthD pp (pp.length - 2) - 1) = nthD pp (pp.length - 2) + 1
+    omega
+  have hge_nth : nthD pp (pp.length - 2) < ρ := by
+    rw [hrtct_eq] at GE; omega
+  have hlt_last : ρ < nthD pp (pp.length - 1) := by
+    rw [← last0_nth pp, ← hcost_last]; exact LT
+  have hlen_eq : pp.length - 2 + 1 = pp.length - 1 := by omega
+  have hnotin : ρ ∉ pp := by
+    apply antidensity_of_nondecreasing_seq pp ρ (pp.length - 2) hnd
+    rw [hlen_eq]; exact ⟨hge_nth, hlt_last⟩
+  have hin : ρ ∈ pp := (conversion_preserves_equivalence j ρ (Nat.le_of_lt LT)).mp C
+  exact hnotin hin
+
+theorem job_nonpreemptive_after_run_to_completion_threshold :
+    ∀ t t',
+      t ≤ t' →
+      job_run_to_completion_threshold j ≤ service sched j t →
+      ¬ completed_by sched j t' →
+      scheduled_at sched j t' = true := by
+  intro t t' LE TH COM
+  obtain ⟨A1, A2, A3, A4⟩ := H_valid_preemption_model j H_j_arrives
+  apply A3
+  apply job_cannot_be_preempted_within_last_segment arr_seq sched H_valid_preemption_model j H_j_arrives
+  constructor
+  · exact Nat.le_trans TH (service_monotonic sched j t t' LE)
+  · unfold completed_by at COM
+    push_neg at COM
+    omega
+
+end RunToCompletionThreshold
+
+end Prosa.Analysis.Facts.Preemption.Rtc_threshold.Job_preemptable

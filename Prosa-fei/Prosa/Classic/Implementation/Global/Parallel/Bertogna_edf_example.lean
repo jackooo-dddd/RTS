@@ -1,0 +1,273 @@
+-- Translated from: ../rt-proofs/classic/implementation/global/parallel/bertogna_edf_example.v
+import Prosa.Classic.Util.All
+import Prosa.Classic.Model.Arrival.Basic.Job
+import Prosa.Classic.Model.Schedule.Global.Schedulability
+import Prosa.Classic.Model.Schedule.Global.Basic.Schedule
+import Prosa.Classic.Analysis.Global.Parallel.Workload_bound
+import Prosa.Classic.Analysis.Global.Parallel.Bertogna_edf_comp
+import Prosa.Classic.Implementation.Job
+import Prosa.Classic.Implementation.Global.Basic.Schedule
+import Prosa.Classic.Implementation.Task
+import Prosa.Classic.Implementation.Arrival_sequence
+import Prosa.Classic.Model.Priority
+import Prosa.Classic.Model.Arrival.Basic.Task
+import Prosa.Classic.Model.Schedule.Global.Basic.Platform
+import Mathlib.Tactic
+
+namespace Prosa.Classic.Implementation.Global.Parallel.Bertogna_edf_example
+
+open Prosa.Classic.Model.Time
+open Prosa.Classic.Model.Arrival.Basic.Job
+open Prosa.Classic.Model.Arrival.Basic.Task.SporadicTask
+open Prosa.Classic.Model.Arrival.Basic.Task.SporadicTaskset
+open Prosa.Classic.Model.Schedule.Global.Basic.Schedule.Schedule
+open Prosa.Classic.Model.Schedule.Global.Schedulability.Schedulability
+open Prosa.Classic.Model.Schedule.Global.Basic.Platform.Platform
+open Prosa.Classic.Model.Priority
+open Prosa.Classic.Analysis.Global.Parallel.Workload_bound.WorkloadBound
+open Prosa.Classic.Implementation.Task.ConcreteTask
+open Prosa.Classic.Implementation.Job.ConcreteJob
+open Prosa.Classic.Implementation.Arrival_sequence.ConcreteArrivalSequence
+open Prosa.Classic.Implementation.Global.Basic.Schedule.ConcreteScheduler
+open Prosa.Classic.Model.Arrival.Basic.Arrival_sequence
+open Prosa.Util.Div_mod
+
+namespace ResponseTimeAnalysisEDF
+
+section InterferenceBoundDefs
+
+variable {sporadic_task : Type} [DecidableEq sporadic_task]
+variable (task_cost : sporadic_task → Time)
+variable (task_period : sporadic_task → Time)
+variable (task_deadline : sporadic_task → Time)
+
+def interference_bound_generic (delta : Time) (tsk_R : sporadic_task × Time) : ℕ :=
+  W task_cost task_period tsk_R.1 tsk_R.2 delta
+
+def edf_specific_interference_bound
+    (tsk tsk_other : sporadic_task) (R_other : Time) : ℕ :=
+  let d_tsk := task_deadline tsk
+  let e_other := task_cost tsk_other
+  let p_other := task_period tsk_other
+  let d_other := task_deadline tsk_other
+  (div_ceil (d_tsk + R_other - d_other + 1) p_other) * e_other
+
+def interference_bound_edf
+    (tsk : sporadic_task) (delta : Time) (tsk_R : sporadic_task × Time) : ℕ :=
+  min (interference_bound_generic task_cost task_period delta tsk_R)
+      (edf_specific_interference_bound task_cost task_period task_deadline tsk tsk_R.1 tsk_R.2)
+
+def total_interference_bound_edf
+    (tsk : sporadic_task) (R_prev : List (sporadic_task × Time)) (delta : Time) : ℕ :=
+  (R_prev.filter (fun p => different_task tsk p.1)).map
+    (fun tsk_R => interference_bound_edf task_cost task_period task_deadline tsk delta tsk_R) |>.sum
+
+end InterferenceBoundDefs
+
+section ResponseTimeIterationEDF
+
+variable {sporadic_task : Type} [DecidableEq sporadic_task]
+variable (task_cost : sporadic_task → Time)
+variable (task_period : sporadic_task → Time)
+variable (task_deadline : sporadic_task → Time)
+variable (num_cpus : ℕ)
+def edf_response_time_bound
+    (rt_bounds : List (sporadic_task × Time))
+    (tsk : sporadic_task) (delta : Time) : Time :=
+  task_cost tsk + div_floor
+    (total_interference_bound_edf task_cost task_period task_deadline tsk rt_bounds delta)
+    num_cpus
+
+def R_le_deadline (pair : sporadic_task × Time) : Bool :=
+  decide (pair.2 ≤ task_deadline pair.1)
+
+def update_bound
+    (rt_bounds : List (sporadic_task × Time))
+    (pair : sporadic_task × Time) : sporadic_task × Time :=
+  (pair.1, edf_response_time_bound task_cost task_period task_deadline num_cpus rt_bounds pair.1 pair.2)
+
+def initial_state (ts : List sporadic_task) : List (sporadic_task × Time) :=
+  ts.map (fun t => (t, task_cost t))
+
+def edf_rta_iteration
+    (rt_bounds : List (sporadic_task × Time)) : List (sporadic_task × Time) :=
+  rt_bounds.map (update_bound task_cost task_period task_deadline num_cpus rt_bounds)
+
+def max_steps (ts : List sporadic_task) : ℕ :=
+  (ts.map (fun tsk => task_deadline tsk - task_cost tsk)).sum + 1
+
+def edf_claimed_bounds (ts : List sporadic_task) :
+    Option (List (sporadic_task × Time)) :=
+  let R_values := (max_steps task_deadline task_cost ts).iterate
+    (edf_rta_iteration task_cost task_period task_deadline num_cpus)
+    (initial_state task_cost ts)
+  if R_values.all (R_le_deadline task_deadline) then
+    some R_values
+  else none
+
+def edf_schedulable (ts : List sporadic_task) : Bool :=
+  (edf_claimed_bounds task_cost task_period task_deadline num_cpus ts).isSome
+
+end ResponseTimeIterationEDF
+
+section TasksetSchedulableByEdfRta
+
+variable {sporadic_task : Type} [DecidableEq sporadic_task]
+variable (task_cost : sporadic_task → Time)
+variable (task_period : sporadic_task → Time)
+variable (task_deadline : sporadic_task → Time)
+variable {Job : Type} [DecidableEq Job]
+variable (job_arrival : Job → Time)
+variable (job_cost : Job → Time)
+variable (job_deadline : Job → Time)
+variable (job_task : Job → sporadic_task)
+variable (num_cpus : ℕ)
+variable (ts : List sporadic_task)
+variable (arr_seq : arrival_sequence Job)
+variable {num_cpus' : ℕ}
+variable (sched : schedule Job num_cpus')
+
+theorem taskset_schedulable_by_edf_rta
+    (H_valid_task_parameters :
+      valid_sporadic_taskset task_cost task_period task_deadline ts)
+    (H_constrained_deadlines :
+      ∀ tsk, tsk ∈ ts → task_deadline tsk ≤ task_period tsk)
+    (H_all_jobs_from_taskset :
+      ∀ j, arrives_in arr_seq j → job_task j ∈ ts)
+    (H_valid_job_parameters :
+      ∀ j,
+        arrives_in arr_seq j →        valid_sporadic_job task_cost task_deadline job_cost job_deadline job_task j)
+    (H_sporadic_tasks :
+      Prosa.Classic.Model.Arrival.Basic.Task_arrival.sporadic_task_model task_period job_arrival job_task arr_seq)
+    (H_at_least_one_cpu : num_cpus' > 0)
+    (H_jobs_come_from_arrival_sequence :
+      jobs_come_from_arrival_sequence sched arr_seq)
+    (H_jobs_must_arrive_to_execute :
+      jobs_must_arrive_to_execute job_arrival sched)
+    (H_completed_jobs_dont_execute :
+      completed_jobs_dont_execute job_cost sched)
+    (H_work_conserving : work_conserving job_arrival job_cost arr_seq sched)
+    (H_edf_policy : respects_JLFP_policy job_arrival job_cost arr_seq sched
+                                         (EDF job_arrival job_deadline))
+    (H_test_succeeds : edf_schedulable task_cost task_period task_deadline num_cpus' ts = true) :
+    ∀ tsk, tsk ∈ ts →      task_misses_no_deadline job_arrival job_cost job_deadline job_task arr_seq sched tsk := by
+  have h_upstream : Prosa.Classic.Analysis.Global.Parallel.Bertogna_edf_comp.ResponseTimeIterationEDF.edf_schedulable task_cost task_period task_deadline num_cpus' ts := by
+    unfold Prosa.Classic.Analysis.Global.Parallel.Bertogna_edf_comp.ResponseTimeIterationEDF.edf_schedulable
+    unfold edf_schedulable at H_test_succeeds
+    simp [Option.isSome_iff_ne_none] at H_test_succeeds
+    exact H_test_succeeds
+  exact Prosa.Classic.Analysis.Global.Parallel.Bertogna_edf_comp.ResponseTimeIterationEDF.taskset_schedulable_by_edf_rta
+    task_cost task_period task_deadline job_arrival job_cost job_deadline job_task ts
+    H_valid_task_parameters H_constrained_deadlines arr_seq
+    H_all_jobs_from_taskset H_valid_job_parameters H_sporadic_tasks
+    sched H_at_least_one_cpu H_jobs_come_from_arrival_sequence
+    H_jobs_must_arrive_to_execute H_completed_jobs_dont_execute
+    H_work_conserving H_edf_policy h_upstream
+
+end TasksetSchedulableByEdfRta
+
+section ExampleRTA
+
+private def tsk1 : concrete_task :=
+  { task_id := 1, task_cost := 2, task_period := 6, task_deadline := 6 }
+
+private def tsk2 : concrete_task :=
+  { task_id := 2, task_cost := 3, task_period := 8, task_deadline := 6 }
+
+private def tsk3 : concrete_task :=
+  { task_id := 3, task_cost := 2, task_period := 12, task_deadline := 12 }
+
+private def ts : List concrete_task := [tsk1, tsk2, tsk3]
+
+section FactsAboutTaskset
+
+theorem ts_has_valid_parameters :
+    valid_sporadic_taskset
+      (fun t => t.task_cost) (fun t => t.task_period) (fun t => t.task_deadline) ts := by
+  intro tsk h_mem
+  simp [ts, tsk1, tsk2, tsk3, List.mem_cons] at h_mem
+  rcases h_mem with rfl | rfl | rfl <;>
+    simp [is_valid_sporadic_task, task_cost_positive, task_period_positive,
+          task_deadline_positive, task_cost_le_deadline, task_cost_le_period]
+
+theorem ts_has_constrained_deadlines :
+    ∀ tsk,
+      tsk ∈ ts →      tsk.task_deadline ≤ tsk.task_period := by
+  intro tsk h_mem
+  simp [ts, tsk1, tsk2, tsk3, List.mem_cons] at h_mem
+  rcases h_mem with rfl | rfl | rfl <;> simp
+
+end FactsAboutTaskset
+
+private def num_cpus : ℕ := 2
+
+private def schedulability_test :=
+  edf_schedulable
+    (fun t : concrete_task => t.task_cost)
+    (fun t : concrete_task => t.task_period)
+    (fun t : concrete_task => t.task_deadline)
+    num_cpus
+
+theorem schedulability_test_succeeds :
+    schedulability_test ts = true := by
+  native_decide
+
+private def arr_seq := periodic_arrival_sequence ts
+
+private noncomputable def sched :=
+  scheduler
+    (fun j : concrete_job => j.job_arrival)
+    (fun j : concrete_job => j.job_cost)
+    num_cpus
+    arr_seq
+    (JLFP_to_JLDP (EDF (fun j : concrete_job => j.job_arrival) (fun j : concrete_job => j.job_deadline)))
+
+private def no_deadline_missed_by :=
+  task_misses_no_deadline
+    (fun j : concrete_job => j.job_arrival)
+    (fun j : concrete_job => j.job_cost)
+    (fun j : concrete_job => j.job_deadline)
+    (fun j : concrete_job => j.job_task)
+    arr_seq
+    sched
+
+theorem ts_is_schedulable :
+    ∀ tsk,
+      tsk ∈ ts →      no_deadline_missed_by tsk := by
+  intro tsk h_mem
+  unfold no_deadline_missed_by
+  apply taskset_schedulable_by_edf_rta
+    (task_cost := fun t : concrete_task => t.task_cost)
+    (task_period := fun t : concrete_task => t.task_period)
+    (task_deadline := fun t : concrete_task => t.task_deadline)
+    (job_arrival := fun j : concrete_job => j.job_arrival)
+    (job_cost := fun j : concrete_job => j.job_cost)
+    (job_deadline := fun j : concrete_job => j.job_deadline)
+    (job_task := fun j : concrete_job => j.job_task)
+    (ts := ts)
+    (arr_seq := arr_seq)
+    (sched := sched)
+  · exact ts_has_valid_parameters
+  · exact ts_has_constrained_deadlines
+  · exact periodic_arrivals_all_jobs_from_taskset ts
+  · exact periodic_arrivals_valid_job_parameters ts ts_has_valid_parameters
+  · exact periodic_arrivals_are_sporadic ts
+  · exact (by decide : num_cpus > 0)
+  · unfold sched arr_seq
+    exact scheduler_jobs_come_from_arrival_sequence _ _ _ (by decide) _ (periodic_arrivals_are_consistent ts) (periodic_arrivals_is_a_set ts (by native_decide)) _ (by intro t y x z hxy hyz; exact EDF_is_transitive _ _ y x z hxy hyz) (by intro t x y; unfold JLFP_to_JLDP; simp only [EDF, decide_eq_true_eq]; exact le_total _ _)
+  · unfold sched arr_seq
+    exact scheduler_jobs_must_arrive_to_execute _ _ _ (by decide) _ (periodic_arrivals_are_consistent ts) (periodic_arrivals_is_a_set ts (by native_decide)) _ (by intro t y x z hxy hyz; exact EDF_is_transitive _ _ y x z hxy hyz) (by intro t x y; unfold JLFP_to_JLDP; simp only [EDF, decide_eq_true_eq]; exact le_total _ _)
+  · unfold sched arr_seq
+    exact scheduler_completed_jobs_dont_execute _ _ _ (by decide) _ (periodic_arrivals_are_consistent ts) (periodic_arrivals_is_a_set ts (by native_decide)) _ (by intro t y x z hxy hyz; exact EDF_is_transitive _ _ y x z hxy hyz) (by intro t x y; unfold JLFP_to_JLDP; simp only [EDF, decide_eq_true_eq]; exact le_total _ _)
+  · unfold sched arr_seq
+    exact scheduler_work_conserving _ _ _ (by decide) _ (periodic_arrivals_are_consistent ts) (periodic_arrivals_is_a_set ts (by native_decide)) _ (by intro t y x z hxy hyz; exact EDF_is_transitive _ _ y x z hxy hyz) (by intro t x y; unfold JLFP_to_JLDP; simp only [EDF, decide_eq_true_eq]; exact le_total _ _)
+  · unfold sched arr_seq
+    exact scheduler_respects_policy _ _ _ (by decide) _ (periodic_arrivals_are_consistent ts) (periodic_arrivals_is_a_set ts (by native_decide)) _ (by intro t y x z hxy hyz; exact EDF_is_transitive _ _ y x z hxy hyz) (by intro t x y; unfold JLFP_to_JLDP; simp only [EDF, decide_eq_true_eq]; exact le_total _ _)
+  · exact schedulability_test_succeeds
+  · exact h_mem
+
+end ExampleRTA
+
+end ResponseTimeAnalysisEDF
+
+end Prosa.Classic.Implementation.Global.Parallel.Bertogna_edf_example

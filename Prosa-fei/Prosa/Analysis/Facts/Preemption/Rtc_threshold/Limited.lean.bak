@@ -1,0 +1,78 @@
+-- Translated from: ../rt-proofs/analysis/facts/preemption/rtc_threshold/limited.v
+import Prosa.Analysis.Facts.Preemption.Task.Limited
+import Prosa.Analysis.Facts.Preemption.Rtc_threshold.Job_preemptable
+import Prosa.Model.Preemption.Limited_preemptive
+import Prosa.Model.Task.Preemption.Limited_preemptive
+
+namespace Prosa.Analysis.Facts.Preemption.Rtc_threshold.Limited
+
+open Prosa.Behavior.Job
+open Prosa.Behavior.Time
+open Prosa.Behavior.Service
+open Prosa.Behavior.Schedule
+open Prosa.Behavior.Arrival_sequence
+open Prosa.Behavior.Ready
+open Prosa.Model.Preemption.Parameter
+open Prosa.Model.Preemption.Limited_preemptive
+open Prosa.Model.Task.Preemption.Parameters
+open Prosa.Model.Task.Preemption.Limited_preemptive
+open Prosa.Model.Task.Concept
+open Prosa.Model.Processor.Ideal
+open Prosa.Model.Schedule.Limited_preemptive
+open Prosa.Analysis.Facts.Preemption.Job.Limited
+open Prosa.Analysis.Facts.Preemption.Rtc_threshold.Job_preemptable
+open Prosa.Util.List
+open Prosa.Util.Nondecreasing
+open Prosa.Util.Epsilon
+
+section TaskRTCThresholdLimitedPreemptions
+
+variable {Task : TaskType}
+variable [TaskCost Task]
+variable [TaskPreemptionPoints Task]
+
+variable {Job : JobType}
+variable [JobTask Job Task]
+variable [JobArrival Job]
+variable [JobCost Job]
+variable [DecidableEq Job]
+variable [JobPreemptionPoints Job]
+
+attribute [local instance] pstate_instance
+attribute [local instance] limited_preemptions_model
+attribute [local instance] limited_preemptions
+
+variable (arr_seq : arrival_sequence Job)
+variable (H_arrival_times_are_consistent : consistent_arrival_times arr_seq)
+
+variable (sched : schedule (processor_state Job))
+variable (H_schedule_respects_preemption_model :
+    schedule_respects_preemption_model arr_seq sched)
+
+variable (H_jobs_must_arrive_to_execute : jobs_must_arrive_to_execute (Job := Job) sched)
+variable (H_completed_jobs_dont_execute : completed_jobs_dont_execute (Job := Job) sched)
+
+variable (ts : TaskSet Task)
+
+variable (H_valid_job_cost :
+    arrivals_have_valid_job_costs (Task := Task) arr_seq)
+
+variable (H_valid_fixed_preemption_points_model :
+    valid_fixed_preemption_points_model arr_seq ts)
+
+variable (tsk : Task)
+variable (H_tsk_in_ts : tsk ∈ ts)
+variable (H_positive_cost : 0 < task_cost tsk)
+
+include H_valid_fixed_preemption_points_model H_tsk_in_ts H_positive_cost in
+theorem number_of_preemption_points_in_task_at_least_two :
+    2 ≤ (task_preemption_points tsk).length := by
+    sorry
+include H_valid_fixed_preemption_points_model H_valid_job_cost
+    H_tsk_in_ts H_positive_cost in
+lemma limited_valid_task_run_to_completion_threshold :
+    valid_task_run_to_completion_threshold arr_seq tsk := by
+    sorry
+end TaskRTCThresholdLimitedPreemptions
+
+end Prosa.Analysis.Facts.Preemption.Rtc_threshold.Limited

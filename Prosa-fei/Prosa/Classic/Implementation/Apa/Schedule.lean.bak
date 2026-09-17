@@ -1,0 +1,664 @@
+-- Translated from: ../rt-proofs/classic/implementation/apa/schedule.v
+import Prosa.Classic.Util.All
+import Prosa.Classic.Model.Priority
+import Prosa.Classic.Model.Arrival.Basic.Arrival_sequence
+import Prosa.Classic.Model.Schedule.Global.Basic.Schedule
+import Prosa.Classic.Model.Schedule.Apa.Affinity
+import Prosa.Classic.Model.Schedule.Global.Transformation.Construction
+import Mathlib.Data.Fin.Basic
+import Mathlib.Data.List.Basic
+import Mathlib.Tactic
+
+set_option autoImplicit false
+
+namespace Prosa.Classic.Implementation.Apa.Schedule
+
+open Prosa.Classic.Model.Time
+open Prosa.Classic.Model.Arrival.Basic.Arrival_sequence
+open Prosa.Classic.Model.Arrival.Basic.Task
+open Prosa.Classic.Model.Schedule.Global.Basic.Schedule
+open Prosa.Classic.Model.Schedule.Apa.Affinity
+open Prosa.Classic.Model.Priority
+open Prosa.Classic.Model.Schedule.Global.Transformation.Construction
+open Prosa.Classic.Util.List
+open Schedule ScheduleOfSporadicTask ScheduleConstruction
+
+namespace ConcreteScheduler
+
+section Platform
+variable {Job : Type*} [DecidableEq Job]
+variable {sporadic_task : Type*} [DecidableEq sporadic_task]
+variable (job_arrival : Job → Time) (job_cost : Job → Time) (job_task : Job → sporadic_task)
+variable {num_cpus : ℕ} (arr_seq : arrival_sequence Job) (sched_p : schedule Job num_cpus)
+variable (alpha : task_affinity sporadic_task num_cpus)
+
+def apa_work_conserving := ∀ (j : Job) (t : Time), arrives_in arr_seq j →
+  backlogged job_arrival job_cost sched_p j t → ∀ (cpu : processor num_cpus),
+    can_execute_on alpha (job_task j) cpu → ∃ j_other : Job, scheduled_on sched_p j_other cpu t = true
+
+def respects_affinity := ∀ (j : Job) (cpu : processor num_cpus) (t : Time),
+  scheduled_on sched_p j cpu t = true → can_execute_on alpha (job_task j) cpu
+
+variable (higher_eq_priority : JLDP_policy Job)
+
+def respects_JLDP_policy_under_weak_APA := ∀ (j j_hp : Job) (cpu : processor num_cpus) (t : Time),
+  arrives_in arr_seq j → backlogged job_arrival job_cost sched_p j t →
+  scheduled_on sched_p j_hp cpu t = true → can_execute_on alpha (job_task j) cpu →
+  higher_eq_priority t j_hp j = true
+end Platform
+
+section Implementation
+variable {Job : Type*} [DecidableEq Job]
+variable {sporadic_task : Type*} [DecidableEq sporadic_task]
+variable (job_arrival : Job → Time) (job_cost : Job → Time) (job_task : Job → sporadic_task)
+variable {num_cpus : ℕ} (arr_seq : arrival_sequence Job)
+variable (alpha : task_affinity sporadic_task num_cpus) (higher_eq_priority : JLDP_policy Job)
+
+def is_pending (sched_prefix : schedule Job num_cpus) (j : Job) (t : Time) : Bool :=
+  decide (job_arrival j ≤ t) && !decide (service sched_prefix j t ≥ job_cost j)
+
+def pending_jobs (sched_prefix : schedule Job num_cpus) (t : Time) : List Job :=
+  (jobs_arrived_up_to arr_seq t).filter (fun j => is_pending job_arrival job_cost sched_prefix j t)
+
+def sorted_pending_jobs (sched_prefix : schedule Job num_cpus) (t : Time) : List Job :=
+  (pending_jobs job_arrival job_cost arr_seq sched_prefix t).mergeSort (fun a b => higher_eq_priority t a b)
+
+def should_be_scheduled (t : Time) (j : Job) (p : processor num_cpus × Option Job) : Bool :=
+  match p.2 with
+  | some j' => (decide (p.1 ∈ alpha (job_task j))) && !(higher_eq_priority t j' j)
+  | none => decide (p.1 ∈ alpha (job_task j))
+
+def update_available_cpu (t : Time) (allocation : List (processor num_cpus × Option Job))
+    (j : Job) : List (processor num_cpus × Option Job) :=
+  replace_first (should_be_scheduled job_task alpha higher_eq_priority t j) (set_pair_2nd (some j)) allocation
+
+def empty_mapping_ : List (processor num_cpus × Option Job) :=
+  (List.finRange num_cpus).zip (List.replicate num_cpus none)
+
+def schedule_jobs_from_list (t : Time) (l : List Job) : List (processor num_cpus × Option Job) :=
+  l.foldl (update_available_cpu job_task alpha higher_eq_priority t) (empty_mapping_ (num_cpus := num_cpus))
+
+def apa_schedule (sched_prefix : schedule Job num_cpus) (t : Time) (cpu : processor num_cpus) : Option Job :=
+  pairs_to_function none (schedule_jobs_from_list job_task alpha higher_eq_priority t
+    (sorted_pending_jobs job_arrival job_cost arr_seq higher_eq_priority sched_prefix t)) cpu
+
+noncomputable def scheduler : schedule Job num_cpus :=
+  build_schedule_from_prefixes
+    (fun (pfx : schedule Job num_cpus) (cpu : processor num_cpus) (t : Time) =>
+      apa_schedule job_arrival job_cost job_task arr_seq alpha higher_eq_priority pfx t cpu)
+    (fun (_ : processor num_cpus) (_ : Time) => (none : Option Job))
+
+theorem scheduler_depends_only_on_prefix (sched1 sched2 : schedule Job num_cpus) (cpu : processor num_cpus) (t : Time)
+    (ALL : ∀ (t0 : Time) (cpu0 : processor num_cpus), t0 < t → sched1 cpu0 t0 = sched2 cpu0 t0) :
+    apa_schedule job_arrival job_cost job_task arr_seq alpha higher_eq_priority sched1 t cpu =
+    apa_schedule job_arrival job_cost job_task arr_seq alpha higher_eq_priority sched2 t cpu := by
+  simp only [apa_schedule]
+  suffices h : sorted_pending_jobs job_arrival job_cost arr_seq higher_eq_priority sched1 t =
+    sorted_pending_jobs job_arrival job_cost arr_seq higher_eq_priority sched2 t by rw [h]
+  simp only [sorted_pending_jobs]
+  suffices h : pending_jobs job_arrival job_cost arr_seq sched1 t =
+    pending_jobs job_arrival job_cost arr_seq sched2 t by rw [h]
+  simp only [pending_jobs]
+  apply List.filter_congr
+  intro j _
+  have SERV_EQ : service sched1 j t = service sched2 j t := by
+    simp only [service]
+    apply Finset.sum_congr rfl
+    intro i hi
+    rw [Finset.mem_Ico] at hi
+    simp only [service_at, scheduled_on]
+    apply Finset.sum_congr rfl
+    intro cpu' _
+    have := ALL i cpu' hi.2
+    simp [this]
+  simp only [is_pending, SERV_EQ]
+
+theorem scheduler_uses_construction_function (t : Time) (cpu : processor num_cpus) :
+    scheduler job_arrival job_cost job_task arr_seq alpha higher_eq_priority cpu t =
+    apa_schedule job_arrival job_cost job_task arr_seq alpha higher_eq_priority
+      (scheduler job_arrival job_cost job_task arr_seq alpha higher_eq_priority) t cpu := by
+  unfold scheduler
+  rw [prefix_dependent_schedule_construction]
+  intro sched1' sched2' cpu' t' ALL'
+  exact scheduler_depends_only_on_prefix job_arrival job_cost job_task arr_seq alpha higher_eq_priority sched1' sched2' cpu' t' ALL'
+end Implementation
+
+section Proofs
+variable {Job : Type*} [DecidableEq Job]
+variable {sporadic_task : Type*} [DecidableEq sporadic_task]
+variable (job_arrival : Job → Time) (job_cost : Job → Time) (job_task : Job → sporadic_task)
+variable {num_cpus : ℕ} (H_at_least_one_cpu : num_cpus > 0)
+variable (alpha : task_affinity sporadic_task num_cpus) (arr_seq : arrival_sequence Job)
+variable (H_arrival_times_are_consistent : arrival_times_are_consistent job_arrival arr_seq)
+variable (H_arrival_sequence_is_a_set : arrival_sequence_is_a_set arr_seq)
+variable (higher_eq_priority : JLDP_policy Job)
+variable (H_priority_transitive : JLDP_is_transitive higher_eq_priority)
+variable (H_priority_total : ∀ (t : Time), ∀ (x y : Job), higher_eq_priority t x y = true ∨ higher_eq_priority t y x = true)
+
+section HelperLemmas
+
+theorem scheduler_uniq_cpus (t : Time) (l : List Job) :
+    ((schedule_jobs_from_list job_task alpha higher_eq_priority t l).unzip.1).Nodup := by
+  unfold schedule_jobs_from_list
+  have hpres : ∀ (acc : List (processor num_cpus × Option Job)) (j' : Job),
+      (replace_first (should_be_scheduled job_task alpha higher_eq_priority t j')
+        (set_pair_2nd (some j')) acc).unzip.1 = acc.unzip.1 := by
+    intro acc j'; induction acc with
+    | nil => simp [replace_first]
+    | cons a tl ih =>
+      simp only [replace_first]; split
+      · simp [set_pair_2nd, List.unzip_fst]
+      · rw [List.unzip_fst, List.map_cons, List.unzip_fst, List.map_cons]
+        congr 1; rw [← List.unzip_fst, ← List.unzip_fst]; exact ih
+  suffices h : ∀ (acc : List (processor num_cpus × Option Job)),
+      acc.unzip.1.Nodup →
+      (l.foldl (update_available_cpu job_task alpha higher_eq_priority t) acc).unzip.1.Nodup by
+    apply h; unfold empty_mapping_
+    rw [List.unzip_fst, List.map_fst_zip]
+    exact List.nodup_finRange num_cpus
+    simp [List.length_finRange, List.length_replicate]
+  intro acc hacc; induction l generalizing acc with
+  | nil => exact hacc
+  | cons j' tl ih =>
+    simp only [List.foldl]; apply ih
+    unfold update_available_cpu; rw [hpres]; exact hacc
+
+theorem scheduler_job_in_mapping (l : List Job) (j : Job) (t : Time) (cpu : processor num_cpus) :
+    (cpu, some j) ∈ schedule_jobs_from_list job_task alpha higher_eq_priority t l → j ∈ l := by
+  intro SOME
+  induction l using List.reverseRecOn with
+  | nil =>
+    simp only [schedule_jobs_from_list, List.foldl, empty_mapping_] at SOME
+    rw [List.mem_iff_getElem] at SOME
+    obtain ⟨i, hi, hget⟩ := SOME
+    rw [List.getElem_zip] at hget
+    exact absurd (Prod.mk.inj hget).2 (by simp [List.getElem_replicate])
+  | append_singleton l' j_last ih =>
+    unfold schedule_jobs_from_list at SOME ih
+    rw [List.foldl_append, List.foldl_cons, List.foldl_nil] at SOME
+    unfold update_available_cpu at SOME
+    rcases replace_first_cases SOME with h | ⟨y, heq, _, _⟩
+    · exact List.mem_append_left _ (ih h)
+    · simp [set_pair_2nd] at heq
+      exact List.mem_append_right _ (heq.2 ▸ List.mem_cons_self)
+
+theorem scheduler_mapping_respects_affinity (j : Job) (t : Time) (cpu : processor num_cpus) :
+    (cpu, some j) ∈ schedule_jobs_from_list job_task alpha higher_eq_priority t
+      (sorted_pending_jobs job_arrival job_cost arr_seq higher_eq_priority
+        (scheduler job_arrival job_cost job_task arr_seq alpha higher_eq_priority) t) →
+    can_execute_on alpha (job_task j) cpu := by
+  intro SOME
+  suffices h : ∀ (l : List Job), (cpu, some j) ∈ schedule_jobs_from_list job_task alpha higher_eq_priority t l →
+      can_execute_on alpha (job_task j) cpu from h _ SOME
+  intro l
+  induction l using List.reverseRecOn with
+  | nil =>
+    intro SOME'
+    simp only [schedule_jobs_from_list, List.foldl, empty_mapping_] at SOME'
+    rw [List.mem_iff_getElem] at SOME'
+    obtain ⟨i, hi, hget⟩ := SOME'
+    rw [List.getElem_zip] at hget
+    exact absurd (Prod.mk.inj hget).2 (by simp [List.getElem_replicate])
+  | append_singleton l' j_last ih =>
+    intro SOME'
+    unfold schedule_jobs_from_list at SOME'
+    rw [List.foldl_append, List.foldl_cons, List.foldl_nil] at SOME'
+    unfold update_available_cpu at SOME'
+    rcases replace_first_cases SOME' with h | ⟨y, heq, hpy, _⟩
+    · exact ih h
+    · simp [set_pair_2nd] at heq
+      obtain ⟨rfl, rfl⟩ := heq
+      simp only [should_be_scheduled] at hpy
+      cases hy2 : y.2 with
+      | some j' =>
+        rw [hy2] at hpy
+        simp [can_execute_on] at hpy ⊢
+        exact hpy.1
+      | none =>
+        rw [hy2] at hpy
+        simp [can_execute_on] at hpy ⊢
+        exact hpy
+
+theorem scheduler_has_no_duplicate_jobs (j : Job) (t : Time) (cpu1 cpu2 : processor num_cpus) :
+    (cpu1, some j) ∈ schedule_jobs_from_list job_task alpha higher_eq_priority t
+      (sorted_pending_jobs job_arrival job_cost arr_seq higher_eq_priority
+        (scheduler job_arrival job_cost job_task arr_seq alpha higher_eq_priority) t) →
+    (cpu2, some j) ∈ schedule_jobs_from_list job_task alpha higher_eq_priority t
+      (sorted_pending_jobs job_arrival job_cost arr_seq higher_eq_priority
+        (scheduler job_arrival job_cost job_task arr_seq alpha higher_eq_priority) t) →
+    cpu1 = cpu2 := by
+  intro SOME1 SOME2
+  suffices h : ∀ (l : List Job), l.Nodup →
+      (cpu1, some j) ∈ schedule_jobs_from_list job_task alpha higher_eq_priority t l →
+      (cpu2, some j) ∈ schedule_jobs_from_list job_task alpha higher_eq_priority t l →
+      cpu1 = cpu2 by
+    apply h
+    · show (sorted_pending_jobs job_arrival job_cost arr_seq higher_eq_priority
+        (scheduler job_arrival job_cost job_task arr_seq alpha higher_eq_priority) t).Nodup
+      unfold sorted_pending_jobs pending_jobs
+      rw [List.Perm.nodup_iff (List.mergeSort_perm _ _)]
+      exact List.Nodup.filter _
+        (arrivals_uniq job_arrival arr_seq H_arrival_times_are_consistent
+          H_arrival_sequence_is_a_set 0 (t + 1))
+    · exact SOME1
+    · exact SOME2
+  intro l
+  induction l using List.reverseRecOn with
+  | nil =>
+    intro _ SOME1' _
+    simp only [schedule_jobs_from_list, List.foldl, empty_mapping_] at SOME1'
+    rw [List.mem_iff_getElem] at SOME1'
+    obtain ⟨i, _, hget⟩ := SOME1'
+    simp only [List.getElem_zip] at hget
+    exact absurd (Prod.mk.inj hget).2 (by simp [List.getElem_replicate])
+  | append_singleton l' j_last ih =>
+    intro UNIQ SOME1' SOME2'
+    unfold schedule_jobs_from_list at SOME1' SOME2'
+    rw [List.foldl_append, List.foldl_cons, List.foldl_nil] at SOME1' SOME2'
+    unfold update_available_cpu at SOME1' SOME2'
+    have NOTIN : j_last ∉ l' := by
+      have hnd := UNIQ
+      rw [List.nodup_append] at hnd
+      exact fun h => hnd.2.2 (List.mem_product.mpr ⟨h, List.mem_cons_self _ _⟩)
+    have UNIQ' : l'.Nodup := by
+      rw [List.nodup_append] at UNIQ; exact UNIQ.1
+    rcases replace_first_cases SOME1' with h1 | ⟨y1, heq1, _, _⟩
+    · rcases replace_first_cases SOME2' with h2 | ⟨y2, heq2, _, _⟩
+      · exact ih UNIQ' h1 h2
+      · simp [set_pair_2nd] at heq2
+        obtain ⟨_, rfl⟩ := heq2
+        exact absurd (scheduler_job_in_mapping job_task alpha higher_eq_priority l' j t cpu1 h1) NOTIN
+    · rcases replace_first_cases SOME2' with h2 | ⟨y2, heq2, _, _⟩
+      · simp [set_pair_2nd] at heq1
+        obtain ⟨_, rfl⟩ := heq1
+        exact absurd (scheduler_job_in_mapping job_task alpha higher_eq_priority l' j t cpu2 h2) NOTIN
+      · simp [set_pair_2nd] at heq1 heq2
+        obtain ⟨rfl, _⟩ := heq1
+        obtain ⟨rfl, _⟩ := heq2
+        have := replace_first_new
+          (should_be_scheduled job_task alpha higher_eq_priority t j_last)
+          (set_pair_2nd (some j_last))
+          (l'.foldl (update_available_cpu job_task alpha higher_eq_priority t) (empty_mapping_ (num_cpus := num_cpus)))
+          (cpu1, some j) (cpu2, some j)
+          (by intro hmem; exact absurd (scheduler_job_in_mapping job_task alpha higher_eq_priority l' j t cpu1 hmem) NOTIN)
+          (by intro hmem; exact absurd (scheduler_job_in_mapping job_task alpha higher_eq_priority l' j t cpu2 hmem) NOTIN)
+          SOME1' SOME2'
+        exact congrArg Prod.fst this
+
+theorem scheduler_scheduled_on (j : Job) (cpu : processor num_cpus) (t : Time) :
+    scheduled_on (scheduler job_arrival job_cost job_task arr_seq alpha higher_eq_priority) j cpu t =
+    decide ((cpu, some j) ∈ schedule_jobs_from_list job_task alpha higher_eq_priority t
+      (sorted_pending_jobs job_arrival job_cost arr_seq higher_eq_priority
+        (scheduler job_arrival job_cost job_task arr_seq alpha higher_eq_priority) t)) := by
+  simp only [scheduled_on]
+  rw [scheduler_uses_construction_function job_arrival job_cost job_task arr_seq alpha higher_eq_priority t cpu]
+  simp only [apa_schedule]
+  set mapping := schedule_jobs_from_list job_task alpha higher_eq_priority t
+    (sorted_pending_jobs job_arrival job_cost arr_seq higher_eq_priority
+      (scheduler job_arrival job_cost job_task arr_seq alpha higher_eq_priority) t)
+  have UNIQ_CPUS := scheduler_uniq_cpus job_task alpha higher_eq_priority t
+    (sorted_pending_jobs job_arrival job_cost arr_seq higher_eq_priority
+      (scheduler job_arrival job_cost job_task arr_seq alpha higher_eq_priority) t)
+  show (pairs_to_function none mapping cpu == some j) = decide ((cpu, some j) ∈ mapping)
+  apply Bool.eq_iff_iff.mpr; constructor
+  · intro h
+    have heq := eq_of_beq h
+    have hmem := pairs_to_function_neq_default none mapping cpu (some j) heq (by simp)
+    exact decide_eq_true hmem
+  · intro hmem
+    have hmem' := of_decide_eq_true hmem
+    have := pairs_to_function_mem none mapping cpu (some j) UNIQ_CPUS hmem'
+    exact beq_iff_eq.mpr this
+
+theorem scheduler_has_cpus (cpu : processor num_cpus) (t : Time) (l : List Job) :
+    ∃ x, (cpu, x) ∈ schedule_jobs_from_list job_task alpha higher_eq_priority t l := by
+  unfold schedule_jobs_from_list
+  suffices h : ∀ (acc : List (processor num_cpus × Option Job)),
+      (∃ x, (cpu, x) ∈ acc) →
+      ∃ x, (cpu, x) ∈ l.foldl (update_available_cpu job_task alpha higher_eq_priority t) acc by
+    apply h
+    refine ⟨none, ?_⟩
+    unfold empty_mapping_
+    rw [mem_zip_nseq_r _ _ _ _ (by simp [List.length_finRange])]
+    exact List.mem_finRange cpu
+  intro acc ⟨x, hx⟩; induction l generalizing acc x with
+  | nil => exact ⟨x, hx⟩
+  | cons j' tl ih =>
+    simp only [List.foldl]
+    have hprev := @replace_first_previous _ _ (should_be_scheduled job_task alpha higher_eq_priority t j')
+      (set_pair_2nd (some j')) acc (cpu, x) hx
+    rcases hprev with h1 | ⟨hpx, h2⟩
+    · exact ih _ _ h1
+    · exact ih _ _ h2
+
+theorem scheduler_mapping_is_work_conserving (j : Job) (cpu : processor num_cpus) (t : Time) (l : List Job) :
+    j ∈ l → List.IsChain (fun a b => higher_eq_priority t a b = true) l → l.Nodup →
+    (∀ (cpu' : processor num_cpus), (cpu', some j) ∉ schedule_jobs_from_list job_task alpha higher_eq_priority t l) →
+    can_execute_on alpha (job_task j) cpu →
+    ∃ j_other : Job, (cpu, some j_other) ∈ schedule_jobs_from_list job_task alpha higher_eq_priority t l := by
+  intro IN SORT UNIQ NOTSCHED CAN
+  induction l using List.reverseRecOn generalizing cpu with
+  | nil => simp at IN
+  | append_singleton l' j_last ih =>
+    unfold schedule_jobs_from_list at NOTSCHED ⊢
+    rw [List.foldl_append, List.foldl_cons, List.foldl_nil] at NOTSCHED ⊢
+    unfold update_available_cpu at NOTSCHED ⊢
+    set prev := l'.foldl (update_available_cpu job_task alpha higher_eq_priority t) (empty_mapping_ (num_cpus := num_cpus))
+    have NOTIN : j_last ∉ l' := by
+      rw [List.nodup_append] at UNIQ
+      exact fun h => absurd rfl (UNIQ.2.2 j_last h j_last (by simp))
+    have UNIQ' : l'.Nodup := (List.nodup_append.mp UNIQ).1
+    rw [List.mem_append, List.mem_cons, List.mem_nil_iff, or_false] at IN
+    rcases IN with IN | rfl
+    · -- j ∈ l'
+      have SORT' : List.IsChain (fun a b => higher_eq_priority t a b = true) l' :=
+        Prosa.Classic.Util.Sorting.sorted_rcons_prefix (higher_eq_priority t) l' j_last SORT
+      have NOTSCHED' : ∀ (cpu' : processor num_cpus),
+          (cpu', some j) ∉ prev := by
+        intro cpu'; intro BUG
+        have hprev := @replace_first_previous _ _ (should_be_scheduled job_task alpha higher_eq_priority t j_last)
+          (set_pair_2nd (some j_last)) prev (cpu', some j) BUG
+        rcases hprev with h1 | ⟨hpx, _⟩
+        · exact absurd h1 (NOTSCHED cpu')
+        · simp only [should_be_scheduled, Bool.and_eq_true, decide_eq_true_eq,
+            Bool.not_eq_true', Bool.eq_false_iff] at hpx
+          exact hpx.2 (Prosa.Classic.Util.Sorting.order_sorted_rcons (higher_eq_priority t) l' j_last
+            (fun y x z => H_priority_transitive t y x z) SORT j IN)
+      have ⟨j_old, hj_old⟩ := ih IN SORT' UNIQ' NOTSCHED' CAN
+      have hprev2 := @replace_first_previous _ _ (should_be_scheduled job_task alpha higher_eq_priority t j_last)
+        (set_pair_2nd (some j_last)) prev (cpu, some j_old) hj_old
+      rcases hprev2 with h1 | ⟨_, h2⟩
+      · exact ⟨j_old, h1⟩
+      · exact ⟨j_last, h2⟩
+    · -- j = j_last
+      have ALL : ∀ x, x ∈ prev →
+          (should_be_scheduled job_task alpha higher_eq_priority t j_last) x = false := by
+        apply replace_first_failed
+        intro x hx hfx
+        exact NOTSCHED x.1 (by simp [set_pair_2nd] at hfx; exact hfx)
+      have ⟨x, hx⟩ := scheduler_has_cpus job_task alpha higher_eq_priority cpu t l'
+      change (cpu, x) ∈ prev at hx
+      have hALL := ALL (cpu, x) hx
+      cases x with
+      | none =>
+        simp only [should_be_scheduled] at hALL
+        simp only [can_execute_on] at CAN
+        simp only [decide_eq_false_iff_not] at hALL
+        exact absurd CAN hALL
+      | some j' =>
+        have hprev := @replace_first_previous _ _ (should_be_scheduled job_task alpha higher_eq_priority t j_last)
+          (set_pair_2nd (some j_last)) prev (cpu, some j') hx
+        rcases hprev with h1 | ⟨_, h2⟩
+        · exact ⟨j', h1⟩
+        · exact ⟨j_last, h2⟩
+
+theorem scheduler_priority (j j_hp : Job) (cpu : processor num_cpus) (t : Time) :
+    arrives_in arr_seq j →
+    backlogged job_arrival job_cost (scheduler job_arrival job_cost job_task arr_seq alpha higher_eq_priority) j t →
+    can_execute_on alpha (job_task j) cpu →
+    scheduled_on (scheduler job_arrival job_cost job_task arr_seq alpha higher_eq_priority) j_hp cpu t = true →
+    higher_eq_priority t j_hp j = true := by
+  intro ARRj BACK CAN SCHED
+  set sched := scheduler job_arrival job_cost job_task arr_seq alpha higher_eq_priority
+  set l := sorted_pending_jobs job_arrival job_cost arr_seq higher_eq_priority sched t
+  obtain ⟨PENDING, NOTSCHED'⟩ := BACK
+  -- Convert NOTSCHED' to membership form
+  have NOTSCHED : ∀ (cpu' : processor num_cpus),
+      (cpu', some j) ∉ schedule_jobs_from_list job_task alpha higher_eq_priority t l := by
+    intro cpu'
+    push_neg at NOTSCHED'
+    obtain ⟨hnsched⟩ := NOTSCHED'
+    intro hmem
+    apply hnsched cpu'
+    rw [scheduler_scheduled_on]
+    exact decide_eq_true hmem
+  -- Convert SCHED to membership form
+  rw [scheduler_scheduled_on] at SCHED
+  simp only [decide_eq_true_eq] at SCHED
+  change (cpu, some j_hp) ∈ schedule_jobs_from_list job_task alpha higher_eq_priority t l at SCHED
+  -- j ∈ l
+  have IN : j ∈ l := by
+    show j ∈ (pending_jobs job_arrival job_cost arr_seq sched t).mergeSort (higher_eq_priority t)
+    rw [List.mem_mergeSort]
+    unfold pending_jobs
+    rw [List.mem_filter]
+    obtain ⟨harr, hnotcomp⟩ := PENDING
+    constructor
+    · exact arrived_between_implies_in_arrivals job_arrival arr_seq
+        H_arrival_times_are_consistent j 0 (t + 1) ARRj
+        ⟨Nat.zero_le _, Nat.lt_succ_of_le harr⟩
+    · simp only [is_pending, Bool.and_eq_true, decide_eq_true_eq, Bool.not_eq_true',
+        decide_eq_false_iff_not, not_le]
+      constructor
+      · exact harr
+      · unfold completed at hnotcomp; exact Nat.not_le.mp hnotcomp
+  -- j_hp ∈ l
+  have INhp : j_hp ∈ l :=
+    scheduler_job_in_mapping job_task alpha higher_eq_priority l j_hp t cpu SCHED
+  -- l is sorted
+  have SORT : List.IsChain (fun a b => higher_eq_priority t a b = true) l := by
+    show List.IsChain (fun a b => higher_eq_priority t a b = true)
+      ((pending_jobs job_arrival job_cost arr_seq sched t).mergeSort (higher_eq_priority t))
+    have h_total : ∀ a b, (higher_eq_priority t a b || higher_eq_priority t b a) = true := by
+      intro a b; simp only [Bool.or_eq_true]; exact H_priority_total t a b
+    exact List.Pairwise.isChain
+      (List.pairwise_mergeSort (fun a b c h1 h2 => H_priority_transitive t b a c h1 h2) h_total _)
+  -- l has no duplicates
+  have UNIQ : l.Nodup := by
+    show (sorted_pending_jobs job_arrival job_cost arr_seq higher_eq_priority sched t).Nodup
+    unfold sorted_pending_jobs pending_jobs
+    rw [List.Perm.nodup_iff (List.mergeSort_perm _ _)]
+    exact List.Nodup.filter _
+      (arrivals_uniq job_arrival arr_seq H_arrival_times_are_consistent
+        H_arrival_sequence_is_a_set 0 (t + 1))
+  -- Main induction on l
+  change (cpu, some j_hp) ∈ schedule_jobs_from_list job_task alpha higher_eq_priority t l at SCHED
+  change ∀ (cpu' : processor num_cpus),
+      (cpu', some j) ∉ schedule_jobs_from_list job_task alpha higher_eq_priority t l at NOTSCHED
+  -- Induction on l
+  induction l using List.reverseRecOn with
+  | nil => simp at IN
+  | append_singleton l' j_last ih =>
+    unfold schedule_jobs_from_list at SCHED NOTSCHED
+    rw [List.foldl_append, List.foldl_cons, List.foldl_nil] at SCHED NOTSCHED
+    unfold update_available_cpu at SCHED NOTSCHED
+    set prev := l'.foldl (update_available_cpu job_task alpha higher_eq_priority t) (empty_mapping_ (num_cpus := num_cpus))
+      at SCHED NOTSCHED
+    have NOTIN_last : j_last ∉ l' := by
+      rw [List.nodup_append_right_iff] at UNIQ
+      exact fun h => UNIQ.1 h (List.mem_cons_self _ _)
+    have UNIQ' : l'.Nodup := by rw [List.nodup_append] at UNIQ; exact UNIQ.1
+    rw [List.mem_append, List.mem_cons, List.mem_nil_iff, or_false] at IN INhp
+    rcases IN with IN | rfl <;> rcases INhp with INhp | rfl
+    · -- j ∈ l', j_hp ∈ l'
+      apply ih IN INhp (sorted_rcons_prefix (higher_eq_priority t) l' j_last SORT) UNIQ'
+      · -- NOTSCHED for prev
+        intro cpu0; intro BUG
+        have hprev := @replace_first_previous _ _ (should_be_scheduled job_task alpha higher_eq_priority t j_last)
+          (set_pair_2nd (some j_last)) prev (cpu0, some j) BUG
+        rcases hprev with h1 | ⟨hpx, _⟩
+        · exact absurd h1 (NOTSCHED cpu0)
+        · simp only [should_be_scheduled, Bool.and_eq_true, decide_eq_true_eq,
+            Bool.not_eq_true', Bool.eq_false_iff] at hpx
+          exact hpx.2 (order_sorted_rcons (higher_eq_priority t) l' j_last
+            (fun y x z => H_priority_transitive t y x z) SORT j IN)
+      · -- SCHED for prev
+        rcases replace_first_cases SCHED with h | ⟨y, heq, _, _⟩
+        · exact h
+        · simp [set_pair_2nd] at heq
+          obtain ⟨_, rfl⟩ := heq
+          exact absurd INhp NOTIN_last
+    · -- j ∈ l', j_hp = j_last
+      exact order_sorted_rcons (higher_eq_priority t) l' j_last
+        (fun y x z => H_priority_transitive t y x z) SORT j IN
+    · -- j = j_last, j_hp ∈ l'
+      -- SCHED : (cpu, some j_hp) is in replace_first ... prev
+      -- But j_last = j is not scheduled → contradiction or use priority argument
+      rcases replace_first_cases SCHED with hPREV | ⟨y, heq, hpy, hy⟩
+      · -- j_hp ∈ prev → j_hp ∈ l' by scheduler_job_in_mapping
+        -- But j_hp was obtained from prev, so j_hp ∈ l'
+        -- scheduler_job_in_mapping gives j_hp ∈ l'
+        have hj_hp_in_prev := scheduler_job_in_mapping job_task alpha higher_eq_priority l' j_hp t cpu hPREV
+        exact absurd hj_hp_in_prev NOTIN_last
+      · -- (cpu, some j_hp) = set_pair_2nd (some j_last) y
+        simp [set_pair_2nd] at heq
+        obtain ⟨rfl, rfl⟩ := heq
+        -- j_hp = j_last = j, but then j is scheduled at cpu
+        -- which contradicts NOTSCHED cpu
+        -- Actually j_hp = j_last and j = j_last, so j_hp = j
+        -- We have (cpu, some j_last) in replace_first ... prev (via SCHED)
+        -- But NOTSCHED says (cpu, some j) ∉ replace_first ... prev
+        -- and j = j_last, so (cpu, some j_last) ∉ replace_first ... prev
+        -- This contradicts SCHED
+        exfalso
+        exact NOTSCHED cpu SCHED
+    · -- j = j_last, j_hp = j_last → j = j_hp
+      -- But (cpu, some j) ∈ replace_first ... prev contradicts NOTSCHED
+      exfalso
+      exact NOTSCHED cpu SCHED
+end HelperLemmas
+
+theorem scheduler_jobs_come_from_arrival_sequence :
+    jobs_come_from_arrival_sequence (scheduler job_arrival job_cost job_task arr_seq alpha higher_eq_priority) arr_seq := by
+  intro j t ⟨cpu, SCHED⟩
+  rw [scheduler_scheduled_on] at SCHED
+  simp only [decide_eq_true_eq] at SCHED
+  have hmem := scheduler_job_in_mapping job_task alpha higher_eq_priority _ j t cpu SCHED
+  simp only [sorted_pending_jobs, List.mem_mergeSort] at hmem
+  simp only [pending_jobs, List.mem_filter] at hmem
+  obtain ⟨harr, _⟩ := hmem
+  have ⟨i, hi_mem, _, _⟩ := Prosa.Util.Bigcat.mem_bigcat_nat_exists j 0 (t + 1) (jobs_arriving_at arr_seq) harr
+  exact ⟨i, hi_mem⟩
+
+theorem scheduler_jobs_must_arrive_to_execute :
+    jobs_must_arrive_to_execute job_arrival (scheduler job_arrival job_cost job_task arr_seq alpha higher_eq_priority) := by
+  intro j t ⟨cpu, SCHED⟩
+  rw [scheduler_scheduled_on] at SCHED
+  simp only [decide_eq_true_eq] at SCHED
+  have hmem := scheduler_job_in_mapping job_task alpha higher_eq_priority _ j t cpu SCHED
+  simp only [sorted_pending_jobs, List.mem_mergeSort] at hmem
+  simp only [pending_jobs, List.mem_filter] at hmem
+  obtain ⟨_, hpend⟩ := hmem
+  simp only [is_pending, Bool.and_eq_true, decide_eq_true_eq, Bool.not_eq_true',
+    decide_eq_false_iff_not, not_le] at hpend
+  exact hpend.1
+
+theorem scheduler_sequential_jobs :
+    sequential_jobs (scheduler job_arrival job_cost job_task arr_seq alpha higher_eq_priority) := by
+  intro j t cpu1 cpu2 SCHED1 SCHED2
+  have h1 : scheduled_on (scheduler job_arrival job_cost job_task arr_seq alpha higher_eq_priority) j cpu1 t = true := by
+    simp [scheduled_on, SCHED1]
+  have h2 : scheduled_on (scheduler job_arrival job_cost job_task arr_seq alpha higher_eq_priority) j cpu2 t = true := by
+    simp [scheduled_on, SCHED2]
+  rw [scheduler_scheduled_on] at h1 h2
+  simp only [decide_eq_true_eq] at h1 h2
+  exact @scheduler_has_no_duplicate_jobs _ _ _ _ job_arrival job_cost job_task _ alpha arr_seq higher_eq_priority j t cpu1 cpu2 h1 h2
+
+theorem scheduler_completed_jobs_dont_execute :
+    completed_jobs_dont_execute job_cost (scheduler job_arrival job_cost job_task arr_seq alpha higher_eq_priority) := by
+  intro j t
+  induction t with
+  | zero =>
+    unfold service; simp
+  | succ t IHt =>
+    unfold service
+    rw [Finset.sum_Ico_succ_top (Nat.zero_le t)]
+    by_cases hlt : ∑ t_0 ∈ Finset.Ico 0 t, service_at (scheduler job_arrival job_cost job_task arr_seq alpha higher_eq_priority) j t_0 < job_cost j
+    · have hseq := scheduler_sequential_jobs job_arrival job_cost job_task alpha arr_seq higher_eq_priority
+      have hle1 := service_at_most_one (scheduler job_arrival job_cost job_task arr_seq alpha higher_eq_priority) j hseq t
+      omega
+    · push_neg at hlt
+      have heq : ∑ t_0 ∈ Finset.Ico 0 t, service_at (scheduler job_arrival job_cost job_task arr_seq alpha higher_eq_priority) j t_0 = job_cost j := by
+        unfold service at IHt
+        exact Nat.le_antisymm IHt hlt
+      have hnsched : ¬ scheduled (scheduler job_arrival job_cost job_task arr_seq alpha higher_eq_priority) j t := by
+        intro ⟨cpu, hon⟩
+        unfold scheduled_on at hon
+        have hsched_eq := eq_of_beq hon
+        rw [scheduler_uses_construction_function job_arrival job_cost job_task arr_seq alpha higher_eq_priority t cpu] at hsched_eq
+        simp only [apa_schedule] at hsched_eq
+        have hmem := pairs_to_function_neq_default none
+          (schedule_jobs_from_list job_task alpha higher_eq_priority t
+            (sorted_pending_jobs job_arrival job_cost arr_seq higher_eq_priority
+              (scheduler job_arrival job_cost job_task arr_seq alpha higher_eq_priority) t)) cpu (some j) hsched_eq (by simp)
+        have hmem2 := scheduler_job_in_mapping job_task alpha higher_eq_priority _ j t cpu hmem
+        simp only [sorted_pending_jobs, List.mem_mergeSort] at hmem2
+        simp only [pending_jobs, List.mem_filter] at hmem2
+        obtain ⟨_, hpend⟩ := hmem2
+        simp only [is_pending, Bool.and_eq_true, decide_eq_true_eq, Bool.not_eq_true',
+          decide_eq_false_iff_not, not_le] at hpend
+        have hcomp : completed job_cost (scheduler job_arrival job_cost job_task arr_seq alpha higher_eq_priority) j t := by
+          unfold completed service; omega
+        unfold completed at hcomp
+        exact absurd hcomp (not_le.mpr hpend.2)
+      have hzero := (not_scheduled_no_service (scheduler job_arrival job_cost job_task arr_seq alpha higher_eq_priority) j t).mp hnsched
+      omega
+
+theorem scheduler_apa_work_conserving :
+    apa_work_conserving job_arrival job_cost job_task arr_seq
+      (scheduler job_arrival job_cost job_task arr_seq alpha higher_eq_priority) alpha := by
+  intro j t ARRj BACK cpu CAN
+  set sched := scheduler job_arrival job_cost job_task arr_seq alpha higher_eq_priority
+  set l := sorted_pending_jobs job_arrival job_cost arr_seq higher_eq_priority sched t
+  have SORT : List.IsChain (fun a b => higher_eq_priority t a b = true) l := by
+    show List.IsChain (fun a b => higher_eq_priority t a b = true)
+      ((pending_jobs job_arrival job_cost arr_seq sched t).mergeSort (higher_eq_priority t))
+    have h_total : ∀ a b, (higher_eq_priority t a b || higher_eq_priority t b a) = true := by
+      intro a b; simp only [Bool.or_eq_true]; exact H_priority_total t a b
+    exact List.Pairwise.isChain
+      (List.pairwise_mergeSort (fun a b c h1 h2 => H_priority_transitive t b a c h1 h2) h_total _)
+  have UNIQ : l.Nodup := by
+    show (sorted_pending_jobs job_arrival job_cost arr_seq higher_eq_priority sched t).Nodup
+    unfold sorted_pending_jobs pending_jobs
+    rw [List.Perm.nodup_iff (List.mergeSort_perm _ _)]
+    exact List.Nodup.filter _
+      (arrivals_uniq job_arrival arr_seq H_arrival_times_are_consistent
+        H_arrival_sequence_is_a_set 0 (t + 1))
+  obtain ⟨PENDING, NOTSCHED⟩ := BACK
+  have IN : j ∈ l := by
+    show j ∈ (pending_jobs job_arrival job_cost arr_seq sched t).mergeSort (higher_eq_priority t)
+    rw [List.mem_mergeSort]
+    unfold pending_jobs
+    rw [List.mem_filter]
+    obtain ⟨harr, hnotcomp⟩ := PENDING
+    constructor
+    · exact arrived_between_implies_in_arrivals job_arrival arr_seq
+        H_arrival_times_are_consistent j 0 (t + 1) ARRj
+        ⟨Nat.zero_le _, Nat.lt_succ_of_le harr⟩
+    · simp only [is_pending, Bool.and_eq_true, decide_eq_true_eq, Bool.not_eq_true’,
+        decide_eq_false_iff_not, not_le]
+      constructor
+      · exact harr
+      · unfold completed at hnotcomp; exact Nat.not_le.mp hnotcomp
+  have NOTSCHED’ : ∀ (cpu’ : processor num_cpus),
+      (cpu’, some j) ∉ schedule_jobs_from_list job_task alpha higher_eq_priority t l := by
+    intro cpu’
+    have hnsched := NOTSCHED
+    push_neg at hnsched
+    obtain ⟨hnsched⟩ := hnsched
+    intro hmem
+    apply hnsched cpu’
+    rw [scheduler_scheduled_on]
+    exact decide_eq_true hmem
+  obtain ⟨j_other, hin⟩ := scheduler_mapping_is_work_conserving job_task alpha arr_seq
+    higher_eq_priority H_priority_transitive H_priority_total j cpu t l IN SORT UNIQ NOTSCHED’ CAN
+  exact ⟨j_other, by rw [scheduler_scheduled_on]; exact decide_eq_true hin⟩
+
+theorem scheduler_respects_affinity :
+    respects_affinity job_task (scheduler job_arrival job_cost job_task arr_seq alpha higher_eq_priority) alpha := by
+  intro j cpu t SCHED
+  apply scheduler_mapping_respects_affinity
+  rw [scheduler_scheduled_on] at SCHED
+  exact decide_eq_true_eq.mp SCHED
+
+theorem scheduler_respects_policy :
+    respects_JLDP_policy_under_weak_APA job_arrival job_cost job_task arr_seq
+      (scheduler job_arrival job_cost job_task arr_seq alpha higher_eq_priority) alpha higher_eq_priority := by
+  intro j j_hp cpu t ARRj BACK SCHED ALPHA
+  exact @scheduler_priority _ _ _ _ job_arrival job_cost job_task _ alpha arr_seq higher_eq_priority j j_hp cpu t ARRj BACK ALPHA SCHED
+
+end Proofs
+
+end ConcreteScheduler
+
+end Prosa.Classic.Implementation.Apa.Schedule

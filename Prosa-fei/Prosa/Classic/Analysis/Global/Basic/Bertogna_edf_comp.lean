@@ -1,0 +1,385 @@
+-- Translated from: ../rt-proofs/classic/analysis/global/basic/bertogna_edf_comp.v
+import Prosa.Classic.Util.All
+import Prosa.Classic.Analysis.Global.Basic.Bertogna_edf_theory
+import Mathlib.Tactic
+
+set_option autoImplicit false
+
+namespace Prosa.Classic.Analysis.Global.Basic.Bertogna_edf_comp
+
+open Prosa.Classic.Model.Time
+open Prosa.Classic.Model.Arrival.Basic.Arrival_sequence
+open Prosa.Classic.Model.Arrival.Basic.Job
+open Prosa.Classic.Model.Arrival.Basic.Task
+open Prosa.Classic.Model.Arrival.Basic.Task.SporadicTask
+open Prosa.Classic.Model.Arrival.Basic.Task.SporadicTaskset
+open Prosa.Classic.Model.Arrival.Basic.Task_arrival
+open Prosa.Classic.Model.Schedule.Global.Basic.Schedule
+open Prosa.Classic.Model.Schedule.Global.Basic.Schedule.Schedule
+open Prosa.Classic.Model.Schedule.Global.Basic.Schedule.ScheduleOfSporadicTask
+open Prosa.Classic.Model.Schedule.Global.Basic.Platform.Platform
+open Prosa.Classic.Model.Schedule.Global.Basic.Interference_edf.InterferenceEDF
+open Prosa.Classic.Model.Schedule.Global.Response_time.ResponseTime
+open Prosa.Classic.Model.Schedule.Global.Schedulability.Schedulability
+open Prosa.Classic.Model.Priority
+open Prosa.Classic.Analysis.Global.Basic.Bertogna_edf_theory.ResponseTimeAnalysisEDF
+open Prosa.Classic.Analysis.Global.Basic.Interference_bound.InterferenceBoundGeneric
+open Prosa.Util.Div_mod
+open Prosa.Classic.Util.Fixedpoint
+
+attribute [local instance] Classical.propDecidable
+
+namespace ResponseTimeIterationEDF
+
+section Analysis
+
+variable {sporadic_task : Type _} [DecidableEq sporadic_task]
+variable (task_cost : sporadic_task → Time)
+variable (task_period : sporadic_task → Time)
+variable (task_deadline : sporadic_task → Time)
+
+abbrev task_with_response_time (sporadic_task : Type _) := (sporadic_task × Time)
+
+variable {Job : Type _} [DecidableEq Job]
+variable (job_arrival : Job → Time)
+variable (job_cost : Job → Time)
+variable (job_deadline : Job → Time)
+variable (job_task : Job → sporadic_task)
+
+variable (num_cpus : ℕ)
+
+private abbrev I (rt_bounds : List (sporadic_task × Time))
+    (tsk : sporadic_task) (delta : Time) : ℕ :=
+  total_interference_bound_edf task_cost task_period task_deadline tsk delta rt_bounds
+
+def edf_response_time_bound (rt_bounds : List (sporadic_task × Time))
+    (tsk : sporadic_task) (delta : Time) : Time :=
+  task_cost tsk + div_floor (total_interference_bound_edf task_cost task_period task_deadline tsk delta rt_bounds) num_cpus
+
+def R_le_deadline (pair : sporadic_task × Time) : Bool :=
+  decide (pair.2 ≤ task_deadline pair.1)
+
+def update_bound (rt_bounds : List (sporadic_task × Time))
+    (pair : sporadic_task × Time) : sporadic_task × Time :=
+  (pair.1, edf_response_time_bound task_cost task_period task_deadline num_cpus rt_bounds pair.1 pair.2)
+
+private def initial_state (ts : List sporadic_task) : List (sporadic_task × Time) :=
+  ts.map (fun t => (t, task_cost t))
+
+def edf_rta_iteration (rt_bounds : List (sporadic_task × Time)) :
+    List (sporadic_task × Time) :=
+  rt_bounds.map (update_bound task_cost task_period task_deadline num_cpus rt_bounds)
+
+private def max_steps (ts : List sporadic_task) : ℕ :=
+  (ts.map (fun tsk => task_deadline tsk - task_cost tsk)).sum + 1
+
+def edf_claimed_bounds (ts : List sporadic_task) :
+    Option (List (sporadic_task × Time)) :=
+  let R_values := (edf_rta_iteration task_cost task_period task_deadline num_cpus)^[max_steps task_deadline task_cost ts]
+                    (initial_state task_cost ts)
+  if R_values.all (R_le_deadline task_deadline) then
+    some R_values
+  else none
+
+def edf_schedulable (ts : List sporadic_task) : Prop :=
+  edf_claimed_bounds task_cost task_period task_deadline num_cpus ts ≠ none
+
+section SimpleLemmas
+
+theorem edf_claimed_bounds_unzip1_update_bound :
+    ∀ (l rt_bounds : List (sporadic_task × Time)),
+      (l.map (update_bound task_cost task_period task_deadline num_cpus rt_bounds)).map Prod.fst =
+        l.map Prod.fst := by
+  intro l rt_bounds
+  induction l with
+  | nil => simp
+  | cons a tl ih =>
+    simp only [List.map_cons, List.cons.injEq]
+    exact ⟨rfl, ih⟩
+
+theorem edf_claimed_bounds_unzip1_iteration :
+    ∀ (l : List sporadic_task) (k : ℕ),
+      ((edf_rta_iteration task_cost task_period task_deadline num_cpus)^[k]
+        (initial_state task_cost l)).map Prod.fst = l := by
+  intro l k
+  induction k with
+  | zero =>
+    simp only [Function.iterate_zero, id]
+    unfold initial_state
+    simp [List.map_map, Function.comp_def]
+  | succ n ih =>
+    rw [Function.iterate_succ', Function.comp]
+    unfold edf_rta_iteration
+    rw [edf_claimed_bounds_unzip1_update_bound]
+    exact ih
+
+theorem edf_claimed_bounds_size :
+    ∀ (l : List sporadic_task) (k : ℕ),
+      ((edf_rta_iteration task_cost task_period task_deadline num_cpus)^[k]
+        (initial_state task_cost l)).length = l.length := by
+  intro l k
+  have h := edf_claimed_bounds_unzip1_iteration task_cost task_period task_deadline num_cpus l k
+  have : (((edf_rta_iteration task_cost task_period task_deadline num_cpus)^[k]
+        (initial_state task_cost l)).map Prod.fst).length = l.length := by
+    rw [h]
+  simp only [List.length_map] at this
+  exact this
+
+theorem edf_claimed_bounds_ge_cost :
+    ∀ (l : List sporadic_task) (k : ℕ) (tsk : sporadic_task) (R : Time),
+      (tsk, R) ∈ (edf_rta_iteration task_cost task_period task_deadline num_cpus)^[k]
+        (initial_state task_cost l) →
+      R ≥ task_cost tsk := by
+    sorry
+theorem edf_claimed_bounds_le_deadline :
+    ∀ (ts : List sporadic_task) (rt_bounds : List (sporadic_task × Time))
+      (tsk : sporadic_task) (R : Time),
+      edf_claimed_bounds task_cost task_period task_deadline num_cpus ts = some rt_bounds →
+      (tsk, R) ∈ rt_bounds →
+      R ≤ task_deadline tsk := by
+    sorry
+theorem edf_claimed_bounds_has_R_for_every_task :
+    ∀ (ts : List sporadic_task) (rt_bounds : List (sporadic_task × Time))
+      (tsk : sporadic_task),
+      edf_claimed_bounds task_cost task_period task_deadline num_cpus ts = some rt_bounds →
+      tsk ∈ ts →
+      ∃ R, (tsk, R) ∈ rt_bounds := by
+    sorry
+end SimpleLemmas
+
+section Convergence
+
+variable (ts : List sporadic_task)
+variable (H_valid_task_parameters :
+  valid_sporadic_taskset task_cost task_period task_deadline ts)
+
+private abbrev f (k : ℕ) : List (sporadic_task × Time) :=
+  (edf_rta_iteration task_cost task_period task_deadline num_cpus)^[k]
+    (initial_state task_cost ts)
+
+private def all_le (l1 l2 : List (sporadic_task × Time)) : Prop :=
+  l1.map Prod.fst = l2.map Prod.fst ∧
+  ∀ p, p ∈ l1.zip l2 → p.1.2 ≤ p.2.2
+
+private def one_lt (l1 l2 : List (sporadic_task × Time)) : Prop :=
+  l1.map Prod.fst = l2.map Prod.fst ∧
+  ∃ p, p ∈ l1.zip l2 ∧ p.1.2 < p.2.2
+
+section RelationProperties
+
+include H_valid_task_parameters in
+theorem all_le_reflexive :
+    ∀ l : List (sporadic_task × Time),
+      all_le l l := by
+    sorry
+include H_valid_task_parameters in
+theorem all_le_transitive :
+    ∀ x y z : List (sporadic_task × Time),
+      all_le x y → all_le y z → all_le x z := by
+    sorry
+include H_valid_task_parameters in
+theorem bertogna_edf_comp_iteration_preserves_minimum :
+    ∀ step,
+      all_le (initial_state task_cost ts)
+        (f task_cost task_period task_deadline num_cpus ts step) := by
+    sorry
+include H_valid_task_parameters in
+theorem bertogna_edf_comp_iteration_inductive (P : List (sporadic_task × Time) → Prop) :
+    P (initial_state task_cost ts) →
+    (∀ k, P (f task_cost task_period task_deadline num_cpus ts k) →
+      P (f task_cost task_period task_deadline num_cpus ts (k + 1))) →
+    P (f task_cost task_period task_deadline num_cpus ts (max_steps task_deadline task_cost ts)) := by
+  intro P0 Pn
+  -- f k = iter k ... so f 0 = initial_state. By simple induction on max_steps ts
+  suffices h : ∀ n, P (f task_cost task_period task_deadline num_cpus ts n) from h _
+  intro n
+  induction n with
+  | zero => exact P0
+  | succ k ih => exact Pn k ih
+
+include H_valid_task_parameters in
+theorem bertogna_edf_comp_iteration_preserves_order :
+    ∀ l1 l2 : List (sporadic_task × Time),
+      all_le (initial_state task_cost ts) l1 →
+      all_le l1 l2 →
+      all_le (edf_rta_iteration task_cost task_period task_deadline num_cpus l1)
+        (edf_rta_iteration task_cost task_period task_deadline num_cpus l2) := by sorry
+
+include H_valid_task_parameters in
+theorem bertogna_edf_comp_iteration_monotonic :
+    ∀ k, all_le (f task_cost task_period task_deadline num_cpus ts k)
+      (f task_cost task_period task_deadline num_cpus ts (k + 1)) := by
+  intro k
+  -- Use fun_mon_iter_mon_generic with le = all_le, f = edf_rta_iteration, x0 = initial_state
+  show all_le ((edf_rta_iteration task_cost task_period task_deadline num_cpus)^[k] (initial_state task_cost ts))
+    ((edf_rta_iteration task_cost task_period task_deadline num_cpus)^[k + 1] (initial_state task_cost ts))
+  apply fun_mon_iter_mon_helper
+  · exact all_le_reflexive task_cost task_period task_deadline ts H_valid_task_parameters
+  · exact all_le_transitive task_cost task_period task_deadline ts H_valid_task_parameters
+  · exact fun step => bertogna_edf_comp_iteration_preserves_minimum task_cost task_period task_deadline num_cpus ts H_valid_task_parameters step
+  · intro x1 x2 hmin hle
+    exact bertogna_edf_comp_iteration_preserves_order task_cost task_period task_deadline num_cpus ts H_valid_task_parameters x1 x2 hmin hle
+
+end RelationProperties
+
+theorem bertogna_edf_comp_f_converges_with_no_tasks :
+    ts.length = 0 →
+    f task_cost task_period task_deadline num_cpus ts (max_steps task_deadline task_cost ts) =
+      f task_cost task_period task_deadline num_cpus ts (max_steps task_deadline task_cost ts + 1) := by
+    sorry
+theorem bertogna_edf_comp_f_converges_early :
+    (∃ k, k ≤ max_steps task_deadline task_cost ts ∧
+      f task_cost task_period task_deadline num_cpus ts k =
+        f task_cost task_period task_deadline num_cpus ts (k + 1)) →
+    f task_cost task_period task_deadline num_cpus ts (max_steps task_deadline task_cost ts) =
+      f task_cost task_period task_deadline num_cpus ts (max_steps task_deadline task_cost ts + 1) := by
+  intro ⟨k, hle, hfix⟩
+  -- f n = iter n F x0, so this follows from iter_fix
+  show (edf_rta_iteration task_cost task_period task_deadline num_cpus)^[max_steps task_deadline task_cost ts]
+        (initial_state task_cost ts) =
+    (edf_rta_iteration task_cost task_period task_deadline num_cpus)^[max_steps task_deadline task_cost ts + 1]
+        (initial_state task_cost ts)
+  exact iter_fix _ (edf_rta_iteration task_cost task_period task_deadline num_cpus) (initial_state task_cost ts) k (max_steps task_deadline task_cost ts) hfix hle
+
+section DerivingContradiction
+
+variable (H_at_least_one_task : ts.length > 0)
+variable (H_keeps_diverging :
+  ∀ k, k ≤ max_steps task_deadline task_cost ts →
+    f task_cost task_period task_deadline num_cpus ts k ≠
+      f task_cost task_period task_deadline num_cpus ts (k + 1))
+
+include H_valid_task_parameters H_at_least_one_task H_keeps_diverging in
+theorem bertogna_edf_comp_f_increases :
+    ∀ k, k ≤ max_steps task_deadline task_cost ts →
+      one_lt (f task_cost task_period task_deadline num_cpus ts k)
+        (f task_cost task_period task_deadline num_cpus ts (k + 1)) := by
+    sorry
+include H_valid_task_parameters H_at_least_one_task H_keeps_diverging in
+theorem bertogna_edf_comp_rt_grows_too_much :
+    ∀ k, k ≤ max_steps task_deadline task_cost ts →
+      ((f task_cost task_period task_deadline num_cpus ts k).map
+        (fun p => p.2 - task_cost p.1)).sum + 1 > k := by sorry
+
+end DerivingContradiction
+
+include H_valid_task_parameters in
+theorem edf_claimed_bounds_finds_fixed_point_of_list :
+    ∀ rt_bounds : List (sporadic_task × Time),
+      edf_claimed_bounds task_cost task_period task_deadline num_cpus ts = some rt_bounds →
+      valid_sporadic_taskset task_cost task_period task_deadline ts →
+      f task_cost task_period task_deadline num_cpus ts (max_steps task_deadline task_cost ts) =
+        edf_rta_iteration task_cost task_period task_deadline num_cpus
+          (f task_cost task_period task_deadline num_cpus ts (max_steps task_deadline task_cost ts)) := by sorry
+
+include H_valid_task_parameters in
+theorem edf_claimed_bounds_finds_least_fixed_point :
+    ∀ v : List (sporadic_task × Time),
+      all_le (initial_state task_cost ts) v →
+      v = edf_rta_iteration task_cost task_period task_deadline num_cpus v →
+      all_le (f task_cost task_period task_deadline num_cpus ts (max_steps task_deadline task_cost ts)) v := by
+    sorry
+include H_valid_task_parameters in
+theorem edf_claimed_bounds_finds_fixed_point_for_each_bound :
+    ∀ (tsk : sporadic_task) (R : Time) (rt_bounds : List (sporadic_task × Time)),
+      edf_claimed_bounds task_cost task_period task_deadline num_cpus ts = some rt_bounds →
+      (tsk, R) ∈ rt_bounds →
+      R = edf_response_time_bound task_cost task_period task_deadline num_cpus rt_bounds tsk R := by sorry
+
+end Convergence
+
+section MainProof
+
+variable (ts : List sporadic_task)
+
+variable (H_valid_task_parameters :
+  valid_sporadic_taskset task_cost task_period task_deadline ts)
+
+variable (H_constrained_deadlines :
+  ∀ tsk, tsk ∈ ts → task_deadline tsk ≤ task_period tsk)
+
+variable (arr_seq : arrival_sequence Job)
+
+variable (H_all_jobs_from_taskset :
+  ∀ j, arrives_in arr_seq j → job_task j ∈ ts)
+
+variable (H_valid_job_parameters :
+  ∀ j,
+    arrives_in arr_seq j →
+    valid_sporadic_job task_cost task_deadline job_cost job_deadline job_task j)
+
+variable (H_sporadic_tasks :
+  sporadic_task_model task_period job_arrival job_task arr_seq)
+
+variable {num_cpus : ℕ}
+variable (sched : schedule Job num_cpus)
+variable (H_at_least_one_cpu : num_cpus > 0)
+variable (H_jobs_come_from_arrival_sequence :
+  jobs_come_from_arrival_sequence sched arr_seq)
+
+variable (H_jobs_must_arrive_to_execute :
+  jobs_must_arrive_to_execute job_arrival sched)
+variable (H_completed_jobs_dont_execute :
+  completed_jobs_dont_execute job_cost sched)
+
+variable (H_sequential_jobs : sequential_jobs sched)
+
+variable (H_work_conserving : work_conserving job_arrival job_cost arr_seq sched)
+variable (H_edf_policy : respects_JLFP_policy job_arrival job_cost arr_seq sched
+                                             (EDF job_arrival job_deadline))
+
+def no_deadline_missed_by_task (tsk : sporadic_task) :=
+  task_misses_no_deadline job_arrival job_cost job_deadline job_task arr_seq sched tsk
+
+def no_deadline_missed_by_job :=
+  job_misses_no_deadline job_arrival job_cost job_deadline sched
+
+private abbrev response_time_bounded_by_main (tsk : sporadic_task) (R : Time) :=
+  is_response_time_bound_of_task job_arrival job_cost job_task arr_seq sched tsk R
+
+include H_valid_task_parameters H_constrained_deadlines
+  H_all_jobs_from_taskset H_valid_job_parameters
+  H_sporadic_tasks H_at_least_one_cpu
+  H_jobs_come_from_arrival_sequence
+  H_jobs_must_arrive_to_execute H_completed_jobs_dont_execute
+  H_sequential_jobs
+  H_work_conserving H_edf_policy in
+theorem edf_analysis_yields_response_time_bounds :
+    ∀ (tsk : sporadic_task) (R : Time),
+      (match edf_claimed_bounds task_cost task_period task_deadline num_cpus ts with
+       | some rt_bounds => (tsk, R) ∈ rt_bounds
+       | none => False) →
+      response_time_bounded_by_main job_arrival job_cost job_task arr_seq sched tsk R := by sorry
+
+variable (H_test_succeeds :
+  edf_schedulable task_cost task_period task_deadline num_cpus ts)
+
+include H_valid_task_parameters H_constrained_deadlines
+  H_all_jobs_from_taskset H_valid_job_parameters
+  H_sporadic_tasks H_at_least_one_cpu
+  H_jobs_come_from_arrival_sequence
+  H_jobs_must_arrive_to_execute H_completed_jobs_dont_execute
+  H_sequential_jobs
+  H_work_conserving H_edf_policy H_test_succeeds in
+theorem taskset_schedulable_by_edf_rta :
+    ∀ tsk, tsk ∈ ts →
+      no_deadline_missed_by_task job_arrival job_cost job_deadline job_task arr_seq sched tsk := by sorry
+
+include H_valid_task_parameters H_constrained_deadlines
+  H_all_jobs_from_taskset H_valid_job_parameters
+  H_sporadic_tasks H_at_least_one_cpu
+  H_jobs_come_from_arrival_sequence
+  H_jobs_must_arrive_to_execute H_completed_jobs_dont_execute
+  H_sequential_jobs
+  H_work_conserving H_edf_policy H_test_succeeds in
+theorem jobs_schedulable_by_edf_rta :
+    ∀ j, arrives_in arr_seq j →
+      no_deadline_missed_by_job job_arrival job_cost job_deadline sched j := by sorry
+
+end MainProof
+
+end Analysis
+
+end ResponseTimeIterationEDF
+
+end Prosa.Classic.Analysis.Global.Basic.Bertogna_edf_comp

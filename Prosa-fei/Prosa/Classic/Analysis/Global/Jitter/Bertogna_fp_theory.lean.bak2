@@ -1,0 +1,207 @@
+-- Translated from: ../rt-proofs/classic/analysis/global/jitter/bertogna_fp_theory.v
+import Prosa.Classic.Util.All
+import Prosa.Classic.Model.Arrival.Basic.Task
+import Prosa.Classic.Model.Schedule.Global.Workload
+import Prosa.Classic.Model.Schedule.Global.Jitter.Job
+import Prosa.Classic.Analysis.Global.Jitter.Workload_bound
+import Prosa.Classic.Model.Priority
+import Prosa.Classic.Model.Arrival.Basic.Task_arrival
+import Prosa.Classic.Model.Schedule.Global.Basic.Schedule
+import Prosa.Classic.Model.Schedule.Global.Basic.Interference
+import Prosa.Classic.Model.Schedule.Global.Response_time
+import Prosa.Classic.Model.Schedule.Global.Schedulability
+import Prosa.Classic.Model.Schedule.Global.Jitter.Schedule
+import Prosa.Classic.Model.Schedule.Global.Jitter.Constrained_deadlines
+import Prosa.Classic.Util.Div_mod
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.BigOperators.Intervals
+import Mathlib.Tactic
+
+set_option autoImplicit false
+
+namespace Prosa.Classic.Analysis.Global.Jitter.Bertogna_fp_theory
+
+open Classical
+open Prosa.Classic.Model.Time
+open Prosa.Classic.Model.Arrival.Basic.Task
+open Prosa.Classic.Model.Arrival.Basic.Task.SporadicTask
+open Prosa.Classic.Model.Arrival.Basic.Task.SporadicTaskset
+open Prosa.Classic.Model.Arrival.Basic.Arrival_sequence
+open Prosa.Classic.Model.Schedule.Global.Basic.Schedule
+open Prosa.Classic.Model.Schedule.Global.Basic.Schedule.Schedule
+open Prosa.Classic.Model.Schedule.Global.Basic.Schedule.ScheduleOfSporadicTask
+open Prosa.Classic.Model.Schedule.Global.Workload
+open Prosa.Classic.Model.Schedule.Global.Response_time
+open Prosa.Classic.Model.Schedule.Global.Response_time.ResponseTime
+open Prosa.Classic.Model.Schedule.Global.Schedulability
+open Prosa.Classic.Model.Schedule.Global.Schedulability.Schedulability
+open Prosa.Classic.Model.Schedule.Global.Jitter.Job
+open Prosa.Classic.Model.Schedule.Global.Jitter.Schedule
+open Prosa.Classic.Model.Schedule.Global.Jitter.Schedule.ScheduleWithJitter
+open Prosa.Classic.Model.Schedule.Global.Jitter.Schedule.ScheduleOfSporadicTaskWithJitter
+open Prosa.Classic.Model.Schedule.Global.Jitter.Constrained_deadlines
+open Prosa.Classic.Model.Priority
+open Prosa.Classic.Analysis.Global.Jitter.Workload_bound
+open Prosa.Classic.Analysis.Global.Jitter.Workload_bound.WorkloadBoundJitter
+open Prosa.Util.Div_mod
+
+namespace ResponseTimeAnalysisFP
+
+section InterferenceBoundFP
+
+variable {sporadic_task : Type} [DecidableEq sporadic_task]
+variable (task_cost : sporadic_task -> Time)
+variable (task_period : sporadic_task -> Time)
+variable (task_jitter : sporadic_task -> Time)
+variable (tsk : sporadic_task)
+variable (hp_bounds : List (sporadic_task * Time))
+variable (delta : Time)
+
+noncomputable def interference_bound_generic (tsk_R : sporadic_task * Time) : Nat :=
+  min (W_jitter task_cost task_period task_jitter tsk_R.1 tsk_R.2 delta)
+      (delta - task_cost tsk + 1)
+
+noncomputable def total_interference_bound_fp : Nat :=
+  (hp_bounds.map (interference_bound_generic task_cost task_period task_jitter tsk delta)).sum
+
+end InterferenceBoundFP
+
+section JitterInterference
+
+variable {sporadic_task : Type} [DecidableEq sporadic_task]
+variable {Job : Type} [DecidableEq Job]
+variable (job_arrival : Job -> Time)
+variable (job_cost : Job -> Time)
+variable (job_task : Job -> sporadic_task)
+variable (job_jitter : Job -> Time)
+variable {num_cpus : Nat}
+variable (sched : schedule Job num_cpus)
+variable (j : Job)
+
+noncomputable def total_interference (t1 t2 : Time) : Nat :=
+  Finset.sum (Finset.Ico t1 t2) fun t =>
+    if ScheduleWithJitter.backlogged job_arrival job_cost job_jitter sched j t then 1 else 0
+
+noncomputable def task_interference (tsk_other : sporadic_task) (t1 t2 : Time) : Nat :=
+  Finset.sum (Finset.Ico t1 t2) fun t =>
+    Finset.sum Finset.univ fun cpu : Fin num_cpus =>
+      if ScheduleWithJitter.backlogged job_arrival job_cost job_jitter sched j t /\
+         ScheduleOfSporadicTaskWithJitter.task_scheduled_on job_task sched tsk_other cpu t = true
+      then 1 else 0
+
+end JitterInterference
+
+section ResponseTimeBound
+
+variable {sporadic_task : Type} [DecidableEq sporadic_task]
+variable (task_cost : sporadic_task -> Time)
+variable (task_period : sporadic_task -> Time)
+variable (task_deadline : sporadic_task -> Time)
+variable (task_jitter : sporadic_task -> Time)
+
+variable {Job : Type} [DecidableEq Job]
+variable (job_arrival : Job -> Time)
+variable (job_cost : Job -> Time)
+variable (job_deadline : Job -> Time)
+variable (job_task : Job -> sporadic_task)
+variable (job_jitter : Job -> Time)
+
+variable {arr_seq : arrival_sequence Job}
+
+variable (H_sporadic_tasks :
+  Prosa.Classic.Model.Arrival.Basic.Task_arrival.sporadic_task_model task_period job_arrival job_task arr_seq)
+variable (H_valid_job_parameters :
+  forall j,
+    arrives_in arr_seq j ->
+    valid_sporadic_job_with_jitter task_cost task_deadline task_jitter job_cost
+                                   job_deadline job_task job_jitter j)
+
+variable (ts : List sporadic_task)
+variable (H_valid_task_parameters :
+  valid_sporadic_taskset task_cost task_period task_deadline ts)
+variable (H_constrained_deadlines :
+  forall tsk, tsk ∈ ts -> task_deadline tsk <= task_period tsk)
+
+variable (H_all_jobs_from_taskset :
+  forall j,
+    arrives_in arr_seq j -> job_task j ∈ ts)
+
+variable {num_cpus : Nat}
+variable (sched : schedule Job num_cpus)
+variable (H_jobs_come_from_arrival_sequence :
+  jobs_come_from_arrival_sequence sched arr_seq)
+
+variable (H_sequential_jobs : sequential_jobs sched)
+variable (H_jobs_execute_after_jitter :
+  Prosa.Classic.Model.Schedule.Global.Jitter.Schedule.ScheduleWithJitter.jobs_execute_after_jitter
+    job_arrival job_jitter sched)
+variable (H_completed_jobs_dont_execute :
+  completed_jobs_dont_execute job_cost sched)
+
+variable (H_at_least_one_cpu : num_cpus > 0)
+
+variable (higher_eq_priority : FP_policy sporadic_task)
+
+variable (H_work_conserving :
+  Prosa.Classic.Model.Schedule.Global.Jitter.Constrained_deadlines.work_conserving
+    job_arrival job_cost job_jitter arr_seq sched)
+variable (H_respects_priority :
+  respects_FP_policy_jitter job_arrival job_cost job_task job_jitter arr_seq sched higher_eq_priority)
+
+noncomputable def no_deadline_is_missed_by_tsk (tsk : sporadic_task) : Prop :=
+  task_misses_no_deadline job_arrival job_cost job_deadline job_task arr_seq sched tsk
+
+def response_time_bounded_by (tsk : sporadic_task) (R : Time) : Prop :=
+  is_response_time_bound_of_task job_arrival job_cost job_task arr_seq sched tsk R
+
+variable (tsk : sporadic_task)
+variable (task_in_ts : tsk ∈ ts)
+
+noncomputable def is_hp_task_def := higher_priority_task higher_eq_priority tsk
+
+variable (hp_bounds : List (sporadic_task * Time))
+variable (H_response_time_of_interfering_tasks_is_known :
+  forall hp_tsk R,
+    (hp_tsk, R) ∈ hp_bounds ->
+    is_response_time_bound_of_task job_arrival job_cost job_task arr_seq sched hp_tsk (task_jitter hp_tsk + R))
+
+variable (H_hp_bounds_has_interfering_tasks :
+  forall hp_tsk,
+    hp_tsk ∈ ts ->
+    higher_priority_task higher_eq_priority tsk hp_tsk = true ->
+    exists R, (hp_tsk, R) ∈ hp_bounds)
+
+variable (H_response_time_bounds_ge_cost :
+  forall hp_tsk R,
+    (hp_tsk, R) ∈ hp_bounds -> R >= task_cost hp_tsk)
+
+variable (H_interfering_tasks_miss_no_deadlines :
+  forall hp_tsk R,
+    (hp_tsk, R) ∈ hp_bounds ->
+    task_jitter hp_tsk + R <= task_deadline hp_tsk)
+
+variable (R : Time)
+variable (H_response_time_recurrence_holds :
+  R = task_cost tsk +
+      div_floor
+        (total_interference_bound_fp task_cost task_period task_jitter
+                                     tsk hp_bounds R)
+        num_cpus)
+
+variable (H_response_time_no_larger_than_deadline :
+  task_jitter tsk + R <= task_deadline tsk)
+
+section Lemmas
+
+variable (j : Job)
+variable (H_job_arrives : arrives_in arr_seq j)
+variable (H_job_of_tsk : job_task j = tsk)
+
+variable (H_j_not_completed :
+  ¬ completed job_cost sched j (job_arrival j + job_jitter j + R))
+variable (H_previous_jobs_of_tsk_completed :
+  forall j0,
+    arrives_in arr_seq j0 ->
+    job_task j0 = tsk ->
+    job_arrival j0 < job_arrival j ->
+    completed j

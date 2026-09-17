@@ -1,0 +1,393 @@
+-- Translated from: ../rt-proofs/analysis/facts/transform/swaps.v
+import Prosa.Analysis.Facts.Transform.Replace_at
+import Prosa.Analysis.Facts.Behavior.Deadlines
+
+namespace Prosa.Analysis.Facts.Transform.Swaps
+
+open Prosa.Behavior.Time
+open Prosa.Behavior.Job
+open Prosa.Behavior.Schedule
+open Prosa.Behavior.Service
+open Prosa.Behavior.Ready
+open Prosa.Behavior.Arrival_sequence
+open Prosa.Analysis.Transform.Swap
+open Prosa.Analysis.Facts.Transform.Replace_at
+open Prosa.Analysis.Facts.Behavior.Service
+open Prosa.Analysis.Facts.Behavior.Completion
+open Prosa.Analysis.Facts.Behavior.Deadlines
+open Prosa.Model.Processor.Platform_properties
+
+section SwappedFacts
+
+variable {Job : JobType}
+variable {PState : Type _} [DecidableEq PState]
+variable [ProcessorState Job PState]
+
+variable (sched : schedule PState)
+variable (t1 t2 : instant)
+
+private noncomputable def sched' : schedule PState := swapped sched t1 t2
+
+theorem trivial_swap :
+    t1 = t2 →
+    ∀ t, sched t = sched' sched t1 t2 t := by
+  intro h t
+  subst h
+  simp only [sched', swapped, replace_at]
+  split <;> simp_all
+
+theorem trivial_swap_service_invariant :
+    t1 = t2 →
+    ∀ t (j : Job),
+      service sched j t = service (sched' sched t1 t2) j t := by
+  intro h t j
+  simp only [service, service_during, service_at]
+  apply Finset.sum_congr rfl
+  intro x _
+  have := trivial_swap sched t1 t2 h x
+  simp only [sched'] at this ⊢
+  rw [← this]
+
+theorem swap_other_times_invariant :
+    ∀ t,
+      t ≠ t1 →
+      t ≠ t2 →
+      sched t = sched' sched t1 t2 t := by
+  intro t ht1 ht2
+  simp only [sched', swapped, replace_at]
+  simp [Ne.symm ht2, Ne.symm ht1]
+
+theorem swap_job_scheduled_t1 :
+    ∀ (j : Job),
+      scheduled_at (sched' sched t1 t2) j t1 =
+      scheduled_at sched j t2 := by
+  intro j
+  simp only [scheduled_at, sched', swapped, replace_at]
+  by_cases h : t2 = t1
+  · simp [h]
+  · simp [show (t2 == t1) = false from by simp [h]]
+
+theorem swap_job_scheduled_t2 :
+    ∀ (j : Job),
+      scheduled_at (sched' sched t1 t2) j t2 =
+      scheduled_at sched j t1 := by
+  intro j
+  simp only [scheduled_at, sched', swapped, replace_at]
+  simp
+
+theorem swap_job_scheduled_other_times :
+    ∀ (j : Job) t,
+      t1 ≠ t →
+      t2 ≠ t →
+      scheduled_at (sched' sched t1 t2) j t =
+      scheduled_at sched j t := by
+  intro j t ht1 ht2
+  simp only [scheduled_at]
+  have := swap_other_times_invariant sched t1 t2 t (Ne.symm ht1) (Ne.symm ht2)
+  simp only [sched'] at this ⊢
+  rw [← this]
+
+theorem swap_job_scheduled_cases :
+    ∀ (j : Job) t,
+      scheduled_at (sched' sched t1 t2) j t = true →
+      scheduled_at (sched' sched t1 t2) j t = scheduled_at sched j t
+      ∨
+      t = t1 ∧ scheduled_at (sched' sched t1 t2) j t = scheduled_at sched j t2
+      ∨
+      t = t2 ∧ scheduled_at (sched' sched t1 t2) j t = scheduled_at sched j t1 := by
+  intro j t _
+  by_cases ht1 : t1 = t
+  · right; left; exact ⟨ht1.symm, by rw [← ht1]; exact swap_job_scheduled_t1 sched t1 t2 j⟩
+  · by_cases ht2 : t2 = t
+    · right; right; exact ⟨ht2.symm, by rw [← ht2]; exact swap_job_scheduled_t2 sched t1 t2 j⟩
+    · left; exact swap_job_scheduled_other_times sched t1 t2 j t ht1 ht2
+
+theorem swap_job_scheduled :
+    ∀ (j : Job) t,
+      scheduled_at (sched' sched t1 t2) j t = true →
+      ∃ t',
+        scheduled_at sched j t' = true := by
+  intro j t hsched
+  rcases swap_job_scheduled_cases sched t1 t2 j t hsched with h | ⟨_, h⟩ | ⟨_, h⟩
+  · exact ⟨t, h ▸ hsched⟩
+  · exact ⟨t2, h ▸ hsched⟩
+  · exact ⟨t1, h ▸ hsched⟩
+
+theorem swap_job_scheduled_original_cases :
+    ∀ (j : Job) t,
+      scheduled_at sched j t = true →
+      scheduled_at (sched' sched t1 t2) j t = scheduled_at sched j t
+      ∨
+      t = t1 ∧ scheduled_at (sched' sched t1 t2) j t2 = scheduled_at sched j t
+      ∨
+      t = t2 ∧ scheduled_at (sched' sched t1 t2) j t1 = scheduled_at sched j t := by
+  intro j t _
+  by_cases ht1 : t1 = t
+  · right; left; exact ⟨ht1.symm, by rw [swap_job_scheduled_t2 sched t1 t2 j, ht1]⟩
+  · by_cases ht2 : t2 = t
+    · right; right; exact ⟨ht2.symm, by rw [swap_job_scheduled_t1 sched t1 t2 j, ht2]⟩
+    · left; exact swap_job_scheduled_other_times sched t1 t2 j t ht1 ht2
+
+theorem swap_job_scheduled_original :
+    ∀ (j : Job) t,
+      scheduled_at sched j t = true →
+      ∃ t',
+        scheduled_at (sched' sched t1 t2) j t' = true := by
+  intro j t hsched
+  rcases swap_job_scheduled_original_cases sched t1 t2 j t hsched with h | ⟨_, h⟩ | ⟨_, h⟩
+  · exact ⟨t, h.symm ▸ hsched⟩
+  · exact ⟨t2, h ▸ hsched⟩
+  · exact ⟨t1, h ▸ hsched⟩
+
+variable (H_well_ordered : t1 ≤ t2)
+
+include H_well_ordered in
+theorem swap_before_invariant :
+    ∀ t,
+      t < t1 →
+      sched t = sched' sched t1 t2 t := by
+  intro t t_lt_t1
+  have t_lt_t2 : t < t2 := Nat.lt_of_lt_of_le t_lt_t1 H_well_ordered
+  exact swap_other_times_invariant sched t1 t2 t (Nat.ne_of_lt t_lt_t1) (Nat.ne_of_lt t_lt_t2)
+
+include H_well_ordered in
+theorem swap_after_invariant :
+    ∀ t,
+      t2 < t →
+      sched t = sched' sched t1 t2 t := by
+  intro t t2_lt_t
+  have t1_lt_t : t1 < t := Nat.lt_of_le_of_lt H_well_ordered t2_lt_t
+  exact swap_other_times_invariant sched t1 t2 t (Nat.ne_of_lt' t1_lt_t) (Nat.ne_of_lt' t2_lt_t)
+
+include H_well_ordered in
+theorem service_before_swap_invariant :
+    ∀ t,
+      t ≤ t1 →
+      ∀ (j : Job),
+        service sched j t = service (sched' sched t1 t2) j t := by
+  intro t le_tt1 j
+  simp only [service, service_during, service_at]
+  apply Finset.sum_congr rfl
+  intro x hx
+  rw [Finset.mem_Ico] at hx
+  have hxt1 : x < t1 := Nat.lt_of_lt_of_le hx.2 le_tt1
+  have hinv := swap_before_invariant sched t1 t2 H_well_ordered x hxt1
+  simp only [sched'] at hinv ⊢
+  rw [← hinv]
+
+include H_well_ordered in
+theorem service_after_swap_invariant :
+    ∀ t,
+      t2 < t →
+      ∀ (j : Job),
+        service sched j t = service (sched' sched t1 t2) j t := by
+  intro t t2_lt_t j
+  rcases Nat.eq_or_lt_of_le H_well_ordered with rfl | t1_lt_t2
+  · exact trivial_swap_service_invariant sched t1 t1 rfl t j
+  · have ht1_lt_t : t1 < t := Nat.lt_trans t1_lt_t2 t2_lt_t
+    simp only [service, service_during, service_at]
+    have key : ∀ x, x ∈ Finset.Ico 0 t →
+        x ≠ t1 → x ≠ t2 →
+        ProcessorState.service_in j (sched x) = ProcessorState.service_in j (swapped sched t1 t2 x) := by
+      intro x _ hx1 hx2
+      congr 1
+      exact swap_other_times_invariant sched t1 t2 x hx1 hx2
+    have ht1_mem : t1 ∈ Finset.Ico 0 t := Finset.mem_Ico.mpr ⟨Nat.zero_le _, ht1_lt_t⟩
+    have ht2_mem : t2 ∈ Finset.Ico 0 t := Finset.mem_Ico.mpr ⟨Nat.zero_le _, t2_lt_t⟩
+    have hne : t1 ≠ t2 := Nat.ne_of_lt t1_lt_t2
+    have hpair : ({t1, t2} : Finset ℕ) ⊆ Finset.Ico 0 t := by
+      intro x hx; simp at hx; rcases hx with rfl | rfl <;> [exact ht1_mem; exact ht2_mem]
+    have hsplit : Finset.Ico 0 t = (Finset.Ico 0 t \ {t1, t2}) ∪ {t1, t2} :=
+      (Finset.sdiff_union_self_eq_union.trans (Finset.union_eq_left.mpr hpair)).symm
+    conv_lhs => rw [hsplit]
+    conv_rhs => rw [hsplit]
+    rw [Finset.sum_union Finset.sdiff_disjoint,
+        Finset.sum_union Finset.sdiff_disjoint]
+    congr 1
+    · apply Finset.sum_congr rfl
+      intro x hx
+      rw [Finset.mem_sdiff] at hx
+      have hx_not_pair := hx.2
+      simp only [Finset.mem_insert, Finset.mem_singleton] at hx_not_pair
+      push_neg at hx_not_pair
+      exact key x hx.1 hx_not_pair.1 hx_not_pair.2
+    · rw [Finset.sum_pair hne, Finset.sum_pair hne]
+      have hgt1 : ProcessorState.service_in j (sched' sched t1 t2 t1) = ProcessorState.service_in j (sched t2) := by
+        simp only [sched', swapped, replace_at]
+        simp [show (t2 == t1) = false from by simp [Nat.ne_of_lt t1_lt_t2 |>.symm]]
+      have hgt2 : ProcessorState.service_in j (sched' sched t1 t2 t2) = ProcessorState.service_in j (sched t1) := by
+        simp only [sched', swapped, replace_at]; simp
+      rw [hgt1, hgt2]
+      ring
+
+theorem service_of_others_invariant :
+    ∀ t (j : Job),
+      ¬ ProcessorState.scheduled_in j (sched t1) = true →
+      ¬ ProcessorState.scheduled_in j (sched t2) = true →
+      service sched j t = service (sched' sched t1 t2) j t := by
+  intro t j hnot1 hnot2
+  have h1 : ProcessorState.service_in j (sched t1) = 0 := by
+    apply ProcessorState.service_implies_scheduled
+    simp only [ProcessorState.scheduled_in, decide_eq_true_eq] at hnot1; exact hnot1
+  have h2 : ProcessorState.service_in j (sched t2) = 0 := by
+    apply ProcessorState.service_implies_scheduled
+    simp only [ProcessorState.scheduled_in, decide_eq_true_eq] at hnot2; exact hnot2
+  simp only [service, service_during, service_at]
+  apply Finset.sum_congr rfl
+  intro x _
+  by_cases hx1 : x = t1
+  · rw [hx1]
+    simp only [sched', swapped, replace_at]
+    by_cases h : t2 = t1
+    · simp [h, h1]
+    · simp [show (t2 == t1) = false from by simp [h]]
+      rw [h1, h2]
+  · by_cases hx2 : x = t2
+    · rw [hx2]
+      simp only [sched', swapped, replace_at]; simp
+      rw [h2, h1]
+    · have := swap_other_times_invariant sched t1 t2 x hx1 hx2
+      simp only [sched'] at this ⊢; rw [← this]
+
+
+end SwappedFacts
+
+section SwappedScheduleProperties
+
+variable {Job : JobType} [JobCost Job] [JobDeadline Job] [JobArrival Job]
+variable {PState : Type _} [DecidableEq PState]
+variable [ProcessorState Job PState]
+
+variable (sched : schedule PState)
+variable (t1 t2 : instant)
+variable (H_order : t1 ≤ t2)
+
+private noncomputable def sched'2 : schedule PState := swapped sched t1 t2
+
+include H_order in
+theorem swapped_service_bound :
+    (∀ (j : Job) t, service sched j t ≤ job_cost j) →
+    (∀ (j : Job) t, service (sched'2 sched t1 t2) j t ≤ job_cost j) := by
+  intro hcomp j t
+  -- Strategy from Coq: wlog t2 < t; for t ≤ t2 use monotonicity to t2+1
+  suffices hlate : ∀ t', t2 < t' → service (sched'2 sched t1 t2) j t' ≤ job_cost j by
+    by_cases ht : t2 < t
+    · exact hlate t ht
+    · push_neg at ht
+      exact Nat.le_trans
+        (service_monotonic (sched'2 sched t1 t2) j t (t2 + 1) (Nat.le_succ_of_le ht))
+        (hlate (t2 + 1) (Nat.lt_succ_of_le (Nat.le_refl t2)))
+  intro t' ht'
+  have hsched_eq : sched'2 sched t1 t2 = sched' sched t1 t2 := rfl
+  rcases Nat.eq_or_lt_of_le H_order with rfl | hlt
+  · rw [hsched_eq, ← trivial_swap_service_invariant sched t1 t1 rfl t' j]; exact hcomp j t'
+  · rw [hsched_eq, ← service_after_swap_invariant sched t1 t2 (Nat.le_of_lt hlt) t' ht' j]; exact hcomp j t'
+
+include H_order in
+theorem swapped_completed_jobs_dont_execute :
+    unit_service_proc_model (Job := Job) PState →
+    ideal_progress_proc_model (Job := Job) PState →
+    completed_jobs_dont_execute (Job := Job) sched →
+    completed_jobs_dont_execute (Job := Job) (sched'2 sched t1 t2) := by
+  intro hunit hideal hcomp
+  -- Inline ideal_progress_completed_jobs since it requires JobReady which we don't have
+  intro j t hsched
+  have hbound := swapped_service_bound sched t1 t2 H_order (fun j t => service_at_most_cost sched hcomp j hunit t)
+  have hub := hbound j (t + 1)
+  have hpos : service_at (sched'2 sched t1 t2) j t > 0 := by
+    unfold service_at
+    exact hideal j ((sched'2 sched t1 t2) t) hsched
+  have hcat := service_last_plus_before (sched'2 sched t1 t2) j t
+  simp only [work] at hcat hub hpos ⊢
+  omega
+
+variable (arr_seq : arrival_sequence Job)
+variable (H_from_arr_seq : jobs_come_from_arrival_sequence sched arr_seq)
+
+include H_from_arr_seq in
+theorem swapped_jobs_come_from_arrival_sequence :
+    jobs_come_from_arrival_sequence (sched'2 sched t1 t2) arr_seq := by
+  intro j t hsched
+  have ⟨t', hsched'⟩ := swap_job_scheduled sched t1 t2 j t hsched
+  exact H_from_arr_seq j t' hsched'
+
+end SwappedScheduleProperties
+
+section EDFSwap
+
+variable {Job : JobType} [JobCost Job] [JobDeadline Job]
+variable {PState : Type _} [DecidableEq PState]
+variable [ProcessorState Job PState]
+
+variable (sched : schedule PState)
+variable (H_completed_jobs : completed_jobs_dont_execute (Job := Job) sched)
+variable (H_scheduled_implies_serviced : ideal_progress_proc_model (Job := Job) PState)
+variable (t1 t2 : instant)
+variable (H_well_ordered : t1 ≤ t2)
+
+variable (H_not_EDF :
+    ∀ (j1 j2 : Job),
+      scheduled_at sched j1 t1 = true →
+      scheduled_at sched j2 t2 = true →
+      job_deadline j1 ≥ job_deadline j2)
+
+variable (H_no_idle_time_at_t2 :
+    ∀ (j1 : Job),
+      scheduled_at sched j1 t1 = true →
+      ∃ (j2 : Job), scheduled_at sched j2 t2 = true ∧ job_deadline j2 > t2)
+
+private noncomputable def sched'3 : schedule PState := swapped sched t1 t2
+
+section NoNewDeadlineMissesCases
+
+variable (j : Job)
+variable (H_deadline_met : job_meets_deadline sched j)
+
+include H_deadline_met in
+theorem uninvolved_implies_deadline_met :
+    ¬ scheduled_at sched j t1 = true →
+    ¬ scheduled_at sched j t2 = true →
+    job_meets_deadline (sched'3 sched t1 t2) j := by
+  intro hnot_t1 hnot_t2
+  have hinv : service sched j (job_deadline j) = service (swapped sched t1 t2) j (job_deadline j) :=
+    service_of_others_invariant sched t1 t2 (job_deadline j) j hnot_t1 hnot_t2
+  exact (service_invariant_implies_deadline_met sched (sched'3 sched t1 t2) j (by exact hinv)).mp H_deadline_met
+
+include H_deadline_met H_completed_jobs H_scheduled_implies_serviced H_well_ordered in
+theorem moved_earlier_implies_deadline_met :
+    scheduled_at sched j t2 = true →
+    job_meets_deadline (sched'3 sched t1 t2) j := by
+  intro AT_t2
+  have hlt : t2 < job_deadline j :=
+    scheduled_at_implies_later_deadline sched H_completed_jobs H_scheduled_implies_serviced j t2 H_deadline_met AT_t2
+  have hinv : service sched j (job_deadline j) = service (sched'3 sched t1 t2) j (job_deadline j) :=
+    service_after_swap_invariant sched t1 t2 H_well_ordered (job_deadline j) hlt j
+  exact (service_invariant_implies_deadline_met sched (sched'3 sched t1 t2) j hinv).mp H_deadline_met
+
+include H_deadline_met H_well_ordered H_not_EDF H_no_idle_time_at_t2 in
+theorem moved_later_implies_deadline_met :
+    scheduled_at sched j t1 = true →
+    job_meets_deadline (sched'3 sched t1 t2) j := by
+  intro AT_t1
+  obtain ⟨j2, AT_t2, DL2⟩ := H_no_idle_time_at_t2 j AT_t1
+  have DL2_le_DL1 := H_not_EDF j j2 AT_t1 AT_t2
+  have hlt : t2 < job_deadline j := Nat.lt_of_lt_of_le DL2 DL2_le_DL1
+  have hinv : service sched j (job_deadline j) = service (sched'3 sched t1 t2) j (job_deadline j) :=
+    service_after_swap_invariant sched t1 t2 H_well_ordered (job_deadline j) hlt j
+  exact (service_invariant_implies_deadline_met sched (sched'3 sched t1 t2) j hinv).mp H_deadline_met
+
+end NoNewDeadlineMissesCases
+
+include H_completed_jobs H_scheduled_implies_serviced H_well_ordered H_not_EDF H_no_idle_time_at_t2 in
+theorem edf_swap_no_deadline_misses_introduced :
+    ∀ (j : Job), job_meets_deadline sched j → job_meets_deadline (sched'3 sched t1 t2) j := by
+  intro j DL_MET
+  by_cases AT_t1 : scheduled_at sched j t1 = true
+  · exact moved_later_implies_deadline_met sched t1 t2 H_well_ordered H_not_EDF H_no_idle_time_at_t2 j DL_MET AT_t1
+  · by_cases AT_t2 : scheduled_at sched j t2 = true
+    · exact moved_earlier_implies_deadline_met sched H_completed_jobs H_scheduled_implies_serviced t1 t2 H_well_ordered j DL_MET AT_t2
+    · exact uninvolved_implies_deadline_met sched t1 t2 j DL_MET AT_t1 AT_t2
+
+end EDFSwap
+
+end Prosa.Analysis.Facts.Transform.Swaps

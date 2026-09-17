@@ -1,0 +1,80 @@
+-- Translated from: ../rt-proofs/util/supremum.v
+import Mathlib.Data.List.Basic
+
+namespace Prosa.Util.Supremum
+
+section SelectSupremum
+
+variable {T : Type*} [DecidableEq T]
+variable (R : T → T → Bool)
+
+def choose_superior (x : T) (maybe_y : Option T) : Option T :=
+  match maybe_y with
+  | some y => if R x y then some x else some y
+  | none => some x
+
+def supremum (s : List T) : Option T := s.foldr (choose_superior R) none
+
+theorem supremum_unfold :
+    ∀ head tail,
+      supremum R (head :: tail) = choose_superior R head (supremum R tail) := by
+  intros; rfl
+
+theorem supremum_exists :
+    ∀ x s, x ∈ s → supremum R s ≠ none := by
+  intro x s hx
+  induction s with
+  | nil => simp at hx
+  | cons a l _ =>
+    simp only [supremum, List.foldr, choose_superior]
+    match List.foldr (choose_superior R) none l with
+    | none => simp
+    | some b => simp; split <;> simp
+
+theorem supremum_none :
+    ∀ s, supremum R s = none → s = [] := by
+  intro s
+  induction s with
+  | nil => intro _; rfl
+  | cons a l _ =>
+    simp only [supremum, List.foldr, choose_superior]
+    intro h; revert h
+    match List.foldr (choose_superior R) none l with
+    | none => simp
+    | some b => simp; split <;> simp
+
+theorem supremum_in :
+    ∀ x s,
+      supremum R s = some x →
+      x ∈ s := by
+  intro x s
+  induction s with
+  | nil => simp [supremum, List.foldr]
+  | cons a l ih =>
+    simp only [supremum, List.foldr, choose_superior]
+    simp only [List.mem_cons]
+    match hsl : List.foldr (choose_superior R) none l with
+    | none =>
+      intro h; left; exact (Option.some.inj h).symm
+    | some b =>
+      intro h
+      by_cases hR : R a b = true
+      · simp [hR] at h; left; exact h.symm
+      · have hR_false : R a b = false := by cases hb : R a b <;> simp_all
+        simp [hR_false] at h; right
+        exact ih (by simp [supremum]; rw [← h]; exact hsl)
+
+variable (H_R_reflexive : ∀ x, R x x = true)
+variable (H_R_total : ∀ x y, R x y || R y x = true)
+variable (H_R_transitive : ∀ y x z, R x y = true → R y z = true → R x z = true)
+
+theorem supremum_spec :
+    ∀ x s,
+      supremum R s = some x →
+      ∀ y,
+        y ∈ s → R x y = true := by
+  sorry
+
+end SelectSupremum
+
+end Prosa.Util.Supremum

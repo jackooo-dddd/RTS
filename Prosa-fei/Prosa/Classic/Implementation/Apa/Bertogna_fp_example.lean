@@ -1,0 +1,292 @@
+-- Translated from: ../rt-proofs/classic/implementation/apa/bertogna_fp_example.v
+import Prosa.Classic.Util.All
+import Prosa.Classic.Model.Arrival.Basic.Job
+import Prosa.Classic.Model.Schedule.Global.Schedulability
+import Prosa.Classic.Model.Schedule.Global.Basic.Schedule
+import Prosa.Classic.Model.Schedule.Apa.Affinity
+import Prosa.Classic.Analysis.Apa.Workload_bound
+import Prosa.Classic.Implementation.Apa.Job
+import Prosa.Classic.Implementation.Apa.Task
+import Prosa.Classic.Implementation.Apa.Schedule
+import Prosa.Classic.Implementation.Apa.Arrival_sequence
+import Prosa.Classic.Model.Priority
+import Prosa.Classic.Model.Arrival.Basic.Task
+import Prosa.Classic.Model.Schedule.Apa.Interference
+import Prosa.Classic.Analysis.Apa.Interference_bound_fp
+import Mathlib.Tactic
+
+namespace Prosa.Classic.Implementation.Apa.Bertogna_fp_example
+
+open Prosa.Classic.Model.Time
+open Prosa.Classic.Model.Arrival.Basic.Job
+open Prosa.Classic.Model.Arrival.Basic.Task.SporadicTask
+open Prosa.Classic.Model.Arrival.Basic.Task.SporadicTaskset
+open Prosa.Classic.Model.Arrival.Basic.Task_arrival
+open Prosa.Classic.Model.Schedule.Global.Basic.Schedule.Schedule
+open Prosa.Classic.Model.Schedule.Global.Basic.Schedule.ScheduleOfSporadicTask
+open Prosa.Classic.Model.Schedule.Global.Schedulability.Schedulability
+open Prosa.Classic.Model.Schedule.Apa.Affinity
+open Prosa.Classic.Model.Schedule.Apa.Interference
+open Prosa.Classic.Model.Priority
+open Prosa.Classic.Analysis.Apa.Workload_bound.WorkloadBound
+open Prosa.Classic.Analysis.Apa.Interference_bound_fp.InterferenceBoundFP
+open Prosa.Classic.Analysis.Apa.Interference_bound.InterferenceBoundGeneric
+open Prosa.Classic.Implementation.Apa.Task.ConcreteTask
+open Prosa.Classic.Implementation.Apa.Arrival_sequence.ConcreteArrivalSequence
+open Prosa.Classic.Implementation.Apa.Schedule.ConcreteScheduler
+open Prosa.Classic.Model.Arrival.Basic.Arrival_sequence
+open Prosa.Util.Div_mod
+
+namespace ResponseTimeAnalysisFP
+
+section ResponseTimeIterationFP
+
+variable {sporadic_task : Type} [DecidableEq sporadic_task]
+variable (task_cost : sporadic_task → Time)
+variable (task_period : sporadic_task → Time)
+variable (task_deadline : sporadic_task → Time)
+variable {num_cpus : ℕ}
+variable (higher_priority : FP_policy sporadic_task)
+variable (alpha : task_affinity sporadic_task num_cpus)
+variable (alpha' : task_affinity sporadic_task num_cpus)
+
+def per_task_rta (tsk : sporadic_task)
+    (R_prev : List (sporadic_task × Time)) (step : ℕ) : Time :=
+  (fun t => task_cost tsk +
+    div_floor
+      (total_interference_bound_fp task_cost task_period alpha tsk
+        (alpha' tsk) R_prev t higher_priority)
+      (alpha' tsk).card)^[step] (task_cost tsk)
+
+def max_steps (tsk : sporadic_task) : ℕ :=
+  task_deadline tsk - task_cost tsk + 1
+
+def fp_bound_of_task
+    (hp_pairs : Option (List (sporadic_task × Time)))
+    (tsk : sporadic_task) : Option (List (sporadic_task × Time)) :=
+  match hp_pairs with
+  | some rt_bounds =>
+    let R := per_task_rta task_cost task_period higher_priority alpha alpha' tsk
+                rt_bounds (max_steps task_cost task_deadline tsk)
+    if R ≤ task_deadline tsk then
+      some (rt_bounds ++ [(tsk, R)])
+    else none
+  | none => none
+
+def fp_claimed_bounds (ts : List sporadic_task) :
+    Option (List (sporadic_task × Time)) :=
+  ts.foldl (fp_bound_of_task task_cost task_period task_deadline higher_priority alpha alpha') (some [])
+
+def fp_schedulable (ts : List sporadic_task) : Prop :=
+  fp_claimed_bounds task_cost task_period task_deadline higher_priority alpha alpha' ts ≠ none
+
+instance decidable_fp_schedulable (ts : List sporadic_task) :
+    Decidable (fp_schedulable task_cost task_period task_deadline higher_priority alpha alpha' ts) :=
+  inferInstanceAs (Decidable (_ ≠ none))
+
+end ResponseTimeIterationFP
+
+section TasksetSchedulableByFpRta
+
+variable {sporadic_task : Type} [DecidableEq sporadic_task]
+variable (task_cost : sporadic_task → Time)
+variable (task_period : sporadic_task → Time)
+variable (task_deadline : sporadic_task → Time)
+variable {Job : Type} [DecidableEq Job]
+variable (job_arrival : Job → Time)
+variable (job_cost : Job → Time)
+variable (job_deadline : Job → Time)
+variable (job_task : Job → sporadic_task)
+variable (ts : List sporadic_task)
+variable (arr_seq : arrival_sequence Job)
+variable {num_cpus : ℕ}
+variable (sched : schedule Job num_cpus)
+variable (higher_priority : FP_policy sporadic_task)
+variable (alpha : task_affinity sporadic_task num_cpus)
+variable (alpha' : task_affinity sporadic_task num_cpus)
+
+theorem taskset_schedulable_by_fp_rta
+    (H_valid_task_parameters :
+      valid_sporadic_taskset task_cost task_period task_deadline ts)
+    (H_constrained_deadlines :
+      ∀ tsk, tsk ∈ ts → task_deadline tsk ≤ task_period tsk)
+    (H_non_empty_affinity :
+      ∀ tsk, tsk ∈ ts → (alpha' tsk).card > 0)
+    (H_subaffinity :
+      ∀ tsk, tsk ∈ ts → is_subaffinity (alpha' tsk) (alpha tsk))
+    (H_unique_priorities :
+      FP_is_antisymmetric_over_task_set higher_priority ts)
+    (H_total_priority :
+      FP_is_total_over_task_set higher_priority ts)
+    (H_priority_transitive :
+      FP_is_transitive higher_priority)
+    (H_all_jobs_from_taskset :
+      ∀ j, arrives_in arr_seq j → job_task j ∈ ts)
+    (H_valid_job_parameters :
+      ∀ j,
+        arrives_in arr_seq j →        valid_sporadic_job task_cost task_deadline job_cost job_deadline job_task j)
+    (H_sporadic_tasks :
+      sporadic_task_model task_period job_arrival job_task arr_seq)
+    (H_jobs_come_from_arrival_sequence :
+      jobs_come_from_arrival_sequence sched arr_seq)
+    (H_jobs_must_arrive_to_execute :
+      jobs_must_arrive_to_execute job_arrival sched)
+    (H_completed_jobs_dont_execute :
+      completed_jobs_dont_execute job_cost sched)
+    (H_sequential_jobs : sequential_jobs sched)
+    (H_respects_affinity :
+      respects_affinity job_task sched alpha)
+    (H_work_conserving :
+      apa_work_conserving job_arrival job_cost job_task arr_seq sched alpha)
+    (H_respects_FP_policy :
+      respects_JLDP_policy_under_weak_APA job_arrival job_cost job_task arr_seq sched
+        alpha (FP_to_JLDP job_task higher_priority))
+    (H_test_succeeds :
+      fp_schedulable task_cost task_period task_deadline higher_priority alpha alpha' ts) :
+    ∀ tsk, tsk ∈ ts →      task_misses_no_deadline job_arrival job_cost job_deadline job_task arr_seq sched tsk := by
+  sorry
+
+end TasksetSchedulableByFpRta
+
+section ExampleRTA
+
+private def num_cpus : ℕ := 2
+
+private def alpha1 : affinity num_cpus :=
+  {⟨0, by decide⟩, ⟨1, by decide⟩}
+
+private def alpha2 : affinity num_cpus :=
+  {⟨0, by decide⟩}
+
+private def alpha3 : affinity num_cpus :=
+  {⟨1, by decide⟩}
+
+private def tsk1 : concrete_task num_cpus :=
+  { task_id := 1, task_cost := 3, task_period := 5, task_deadline := 3,
+    task_affinity := alpha1 }
+
+private def tsk2 : concrete_task num_cpus :=
+  { task_id := 2, task_cost := 2, task_period := 6, task_deadline := 5,
+    task_affinity := alpha2 }
+
+private def tsk3 : concrete_task num_cpus :=
+  { task_id := 3, task_cost := 2, task_period := 12, task_deadline := 11,
+    task_affinity := alpha3 }
+
+private def ts : List (concrete_task num_cpus) := [tsk1, tsk2, tsk3]
+
+section FactsAboutTaskset
+
+theorem ts_non_empty_affinities :
+    ∀ tsk,
+      tsk ∈ ts →      (tsk.task_affinity).card > 0 := by
+  intro tsk h
+  fin_cases h <;> decide
+
+theorem ts_has_valid_parameters :
+    valid_sporadic_taskset
+      (fun t => t.task_cost) (fun t => t.task_period) (fun t => t.task_deadline) ts := by
+  intro tsk h
+  simp only [ts, List.mem_cons, List.mem_nil_iff, or_false] at h
+  rcases h with rfl | rfl | rfl <;>
+    simp [is_valid_sporadic_task, task_cost_positive, task_period_positive,
+          task_deadline_positive, task_cost_le_deadline, task_cost_le_period,
+          tsk1, tsk2, tsk3]
+
+theorem ts_has_constrained_deadlines :
+    ∀ tsk,
+      tsk ∈ ts →      tsk.task_deadline ≤ tsk.task_period := by
+  intro tsk h
+  simp only [ts, List.mem_cons, List.mem_nil_iff, or_false] at h
+  rcases h with rfl | rfl | rfl <;> simp [tsk1, tsk2, tsk3]
+
+end FactsAboutTaskset
+
+private def arr_seq := periodic_arrival_sequence ts
+
+private def higher_priority : JLDP_policy (concrete_job num_cpus) :=
+  FP_to_JLDP (fun j : concrete_job num_cpus => j.job_task)
+    (RM (fun t : concrete_task num_cpus => t.task_period))
+
+section FactsAboutPriorityOrder
+
+theorem ts_has_unique_priorities :
+    FP_is_antisymmetric_over_task_set
+      (RM (fun t : concrete_task num_cpus => t.task_period)) ts := by
+  intro tsk tsk' h1 h2 hp hp'
+  simp only [ts, List.mem_cons, List.mem_nil_iff, or_false] at h1 h2
+  simp only [RM] at hp hp'
+  rcases h1 with rfl | rfl | rfl <;> rcases h2 with rfl | rfl | rfl <;>
+    simp_all [tsk1, tsk2, tsk3]
+
+theorem priority_is_total :
+    FP_is_total_over_task_set
+      (RM (fun t : concrete_task num_cpus => t.task_period)) ts := by
+  intro tsk1 tsk2 _ _
+  simp only [RM]
+  by_cases h : tsk1.task_period ≤ tsk2.task_period
+  · left; simp [h]
+  · right; push_neg at h; simp [Nat.le_of_lt h]
+
+end FactsAboutPriorityOrder
+
+private def schedulability_test :=
+  fp_schedulable
+    (fun t : concrete_task num_cpus => t.task_cost)
+    (fun t : concrete_task num_cpus => t.task_period)
+    (fun t : concrete_task num_cpus => t.task_deadline)
+    (RM (fun t : concrete_task num_cpus => t.task_period))
+    (fun t : concrete_task num_cpus => t.task_affinity)
+    (fun t : concrete_task num_cpus => t.task_affinity)
+
+-- Provide computable Decidable instances for the propositions used in the schedulability test
+private instance decAffIntersects (a b : affinity num_cpus) :
+    Decidable (affinity_intersects a b) :=
+  if h : (a ∩ b).Nonempty then
+    isTrue (by obtain ⟨x, hx⟩ := h; exact ⟨x, Finset.mem_inter.mp hx |>.1, Finset.mem_inter.mp hx |>.2⟩)
+  else
+    isFalse (by intro ⟨x, ha, hb⟩; exact h ⟨x, Finset.mem_inter.mpr ⟨ha, hb⟩⟩)
+
+private instance decHigherPriorityTaskIn
+    (alpha_fn : concrete_task num_cpus → affinity num_cpus)
+    (hp : FP_policy (concrete_task num_cpus))
+    (tsk : concrete_task num_cpus) (alpha' : affinity num_cpus)
+    (tsk_other : concrete_task num_cpus) :
+    Decidable (higher_priority_task_in alpha_fn hp tsk alpha' tsk_other) := by
+  unfold higher_priority_task_in
+  exact instDecidableAnd
+
+set_option maxHeartbeats 400000 in
+theorem schedulability_test_succeeds :
+    schedulability_test ts := by
+  unfold schedulability_test
+  native_decide
+
+private noncomputable def sched :=
+  scheduler
+    (fun j : concrete_job num_cpus => j.job_arrival)
+    (fun j : concrete_job num_cpus => j.job_cost)
+    (fun j : concrete_job num_cpus => j.job_task)
+    arr_seq
+    (fun t : concrete_task num_cpus => t.task_affinity)
+    higher_priority
+
+private def no_deadline_missed_by :=
+  task_misses_no_deadline
+    (fun j : concrete_job num_cpus => j.job_arrival)
+    (fun j : concrete_job num_cpus => j.job_cost)
+    (fun j : concrete_job num_cpus => j.job_deadline)
+    (fun j : concrete_job num_cpus => j.job_task)
+    arr_seq
+    sched
+
+theorem ts_is_schedulable :
+    ∀ tsk,
+      tsk ∈ ts →      no_deadline_missed_by tsk := by
+  sorry
+
+end ExampleRTA
+
+end ResponseTimeAnalysisFP
+
+end Prosa.Classic.Implementation.Apa.Bertogna_fp_example

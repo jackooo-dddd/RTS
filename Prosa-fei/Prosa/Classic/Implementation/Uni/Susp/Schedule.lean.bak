@@ -1,0 +1,143 @@
+-- Translated from: classic/implementation/uni/susp/schedule.v
+import Prosa.Classic.Util.All
+import Prosa.Classic.Model.Arrival.Basic.Job
+import Prosa.Classic.Model.Arrival.Basic.Arrival_sequence
+import Prosa.Classic.Model.Priority
+import Prosa.Classic.Model.Schedule.Uni.Schedule
+import Prosa.Classic.Model.Schedule.Uni.Susp.Platform
+import Prosa.Classic.Model.Schedule.Uni.Susp.Schedule
+import Prosa.Classic.Model.Schedule.Uni.Susp.Suspension_intervals
+import Prosa.Classic.Model.Schedule.Uni.Transformation.Construction
+import Prosa.Classic.Model.Suspension
+import Prosa.Classic.Util.Minmax
+import Mathlib.Tactic
+
+namespace Prosa.Classic.Implementation.Uni.Susp.Schedule
+
+open Prosa.Classic.Model.Time
+open Prosa.Classic.Model.Arrival.Basic.Job
+open Prosa.Classic.Model.Arrival.Basic.Arrival_sequence
+open Prosa.Classic.Model.Priority
+open Prosa.Classic.Model.Schedule.Uni.Schedule
+open Prosa.Classic.Model.Schedule.Uni.Susp.Platform.PlatformWithSuspensions
+open Prosa.Classic.Model.Schedule.Uni.Susp.Schedule
+open Prosa.Classic.Model.Schedule.Uni.Susp.Suspension_intervals
+open Prosa.Classic.Model.Schedule.Uni.Transformation.Construction.ScheduleConstruction
+open Prosa.Classic.Model.Suspension
+open Prosa.Classic.Util.Minmax
+open Classical
+
+noncomputable section
+
+namespace ConcreteScheduler
+
+section Implementation
+
+variable {Job : Type*} [DecidableEq Job]
+variable (job_arrival : Job → Time)
+variable (job_cost : Job → Time)
+variable (arr_seq : arrival_sequence Job)
+variable (H_arrival_times_are_consistent : arrival_times_are_consistent job_arrival arr_seq)
+variable (next_suspension : job_suspension Job)
+variable (higher_eq_priority : JLDP_policy Job)
+
+section ScheduleConstruction
+
+variable (sched_prefix : schedule Job)
+variable (t : Time)
+
+def pending_jobs : List Job :=
+  (jobs_arrived_up_to arr_seq t).filter
+    (fun j => pending job_arrival job_cost sched_prefix j t ∧
+              ¬ suspended_at job_arrival job_cost next_suspension sched_prefix j t)
+
+def highest_priority_job : Option Job :=
+  seq_min (higher_eq_priority t)
+    (pending_jobs job_arrival job_cost arr_seq next_suspension sched_prefix t)
+
+end ScheduleConstruction
+
+private def empty_schedule : schedule Job := fun _ => none
+
+def scheduler : schedule Job :=
+  build_schedule_from_prefixes
+    (fun sched_prefix t =>
+      highest_priority_job job_arrival job_cost arr_seq next_suspension higher_eq_priority sched_prefix t)
+    empty_schedule
+
+include H_arrival_times_are_consistent in
+theorem scheduler_depends_only_on_prefix :
+    ∀ (sched1 sched2 : schedule Job) (t : Time),
+      (∀ t0, t0 < t → sched1 t0 = sched2 t0) →
+      highest_priority_job job_arrival job_cost arr_seq next_suspension higher_eq_priority sched1 t =
+      highest_priority_job job_arrival job_cost arr_seq next_suspension higher_eq_priority sched2 t := by
+  sorry
+
+include H_arrival_times_are_consistent in
+theorem scheduler_uses_construction_function :
+    ∀ t,
+      scheduler job_arrival job_cost arr_seq next_suspension higher_eq_priority t =
+      highest_priority_job job_arrival job_cost arr_seq next_suspension higher_eq_priority
+        (scheduler job_arrival job_cost arr_seq next_suspension higher_eq_priority) t := by
+  sorry
+
+end Implementation
+
+section Proofs
+
+variable {Job : Type*} [DecidableEq Job]
+variable (job_arrival : Job → Time)
+variable (job_cost : Job → Time)
+variable (arr_seq : arrival_sequence Job)
+variable (H_arrival_times_are_consistent : arrival_times_are_consistent job_arrival arr_seq)
+variable (H_no_duplicate_arrivals : arrival_sequence_is_a_set arr_seq)
+variable (next_suspension : job_suspension Job)
+variable (higher_eq_priority : JLDP_policy Job)
+variable (H_priority_is_transitive : JLDP_is_transitive higher_eq_priority)
+variable (H_priority_is_total : JLDP_is_total arr_seq higher_eq_priority)
+
+include H_arrival_times_are_consistent in
+theorem scheduler_jobs_come_from_arrival_sequence :
+    jobs_come_from_arrival_sequence
+      (scheduler job_arrival job_cost arr_seq next_suspension higher_eq_priority)
+      arr_seq := by
+  sorry
+
+include H_arrival_times_are_consistent in
+theorem scheduler_jobs_must_arrive_to_execute :
+    jobs_must_arrive_to_execute job_arrival
+      (scheduler job_arrival job_cost arr_seq next_suspension higher_eq_priority) := by
+  sorry
+
+include H_arrival_times_are_consistent in
+theorem scheduler_completed_jobs_dont_execute :
+    completed_jobs_dont_execute job_cost
+      (scheduler job_arrival job_cost arr_seq next_suspension higher_eq_priority) := by
+  sorry
+
+include H_arrival_times_are_consistent in
+theorem scheduler_work_conserving :
+    work_conserving job_arrival job_cost next_suspension arr_seq
+      (scheduler job_arrival job_cost arr_seq next_suspension higher_eq_priority) := by
+  sorry
+
+include H_arrival_times_are_consistent H_priority_is_transitive H_priority_is_total in
+theorem scheduler_respects_policy :
+    respects_JLDP_policy job_arrival job_cost next_suspension arr_seq
+      (scheduler job_arrival job_cost arr_seq next_suspension higher_eq_priority)
+      higher_eq_priority := by
+  sorry
+
+include H_arrival_times_are_consistent in
+theorem scheduler_respects_self_suspensions :
+    respects_self_suspensions job_arrival job_cost next_suspension
+      (scheduler job_arrival job_cost arr_seq next_suspension higher_eq_priority) := by
+  sorry
+
+end Proofs
+
+end ConcreteScheduler
+
+end
+
+end Prosa.Classic.Implementation.Uni.Susp.Schedule

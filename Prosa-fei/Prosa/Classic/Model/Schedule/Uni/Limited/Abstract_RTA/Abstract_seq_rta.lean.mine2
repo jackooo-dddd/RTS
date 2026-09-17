@@ -1,0 +1,711 @@
+-- Translated from: ../rt-proofs/classic/model/schedule/uni/limited/abstract_RTA/abstract_seq_rta.v
+import Prosa.Classic.Util.All
+import Prosa.Classic.Model.Arrival.Basic.Job
+import Prosa.Classic.Model.Schedule.Uni.Service
+import Prosa.Classic.Model.Schedule.Uni.Limited.Rbf
+import Prosa.Classic.Model.Arrival.Curves.Bounds
+import Prosa.Classic.Analysis.Uni.Arrival_curves.Workload_bound
+import Prosa.Classic.Model.Schedule.Uni.Limited.Abstract_RTA.Definitions
+import Prosa.Classic.Model.Schedule.Uni.Schedule
+import Prosa.Classic.Model.Schedule.Uni.Response_time
+import Prosa.Classic.Model.Schedule.Uni.Workload
+import Prosa.Classic.Model.Schedule.Uni.Schedule_of_task
+import Prosa.Classic.Model.Schedule.Uni.Limited.Schedule
+import Prosa.Classic.Model.Schedule.Uni.Limited.Abstract_RTA.Reduction_of_search_space
+import Prosa.Classic.Model.Schedule.Uni.Limited.Abstract_RTA.Abstract_rta
+import Prosa.Classic.Model.Arrival.Basic.Task_arrival
+import Mathlib.Tactic
+
+namespace Prosa.Classic.Model.Schedule.Uni.Limited.Abstract_RTA.Abstract_seq_rta
+
+open Prosa.Classic.Model.Time
+open Prosa.Classic.Model.Arrival.Basic.Job hiding arrival_sequence arrives_in
+open Prosa.Classic.Model.Arrival.Basic.Arrival_sequence
+open Prosa.Classic.Model.Arrival.Basic.Task_arrival
+open Prosa.Classic.Model.Arrival.Curves.Bounds.ArrivalCurves
+open Prosa.Classic.Model.Schedule.Uni.Schedule
+open Prosa.Classic.Model.Schedule.Uni.Service
+open Prosa.Classic.Model.Schedule.Uni.Workload
+open Prosa.Classic.Model.Schedule.Uni.Schedule_of_task
+open Prosa.Classic.Model.Schedule.Uni.Response_time.ResponseTime
+open Prosa.Classic.Model.Schedule.Uni.Limited.Schedule
+open Prosa.Classic.Model.Schedule.Uni.Limited.Abstract_RTA.Definitions
+open Prosa.Classic.Model.Schedule.Uni.Limited.Abstract_RTA.Reduction_of_search_space.AbstractRTAReduction
+open Prosa.Classic.Model.Schedule.Uni.Limited.Abstract_RTA.Abstract_rta.AbstractRTA
+open Prosa.Classic.Analysis.Uni.Arrival_curves.Workload_bound.MaxArrivalsWorkloadBound
+open Prosa.Util.Epsilon
+
+namespace AbstractSeqRTA
+
+section Sequential_Abstract_RTA
+
+variable {Task : Type} [DecidableEq Task]
+variable (task_cost : Task → Time)
+
+variable {Job : Type} [DecidableEq Job]
+variable (job_arrival : Job → Time)
+variable (job_cost : Job → Time)
+variable (job_task : Job → Task)
+
+variable (arr_seq : arrival_sequence Job)
+variable (H_arrival_times_are_consistent : arrival_times_are_consistent job_arrival arr_seq)
+variable (H_arr_seq_is_a_set : arrival_sequence_is_a_set arr_seq)
+
+variable (sched : schedule Job)
+variable (H_jobs_come_from_arrival_sequence : jobs_come_from_arrival_sequence sched arr_seq)
+
+variable (H_jobs_must_arrive_to_execute : jobs_must_arrive_to_execute job_arrival sched)
+variable (H_completed_jobs_dont_execute : completed_jobs_dont_execute job_cost sched)
+
+variable (H_job_cost_le_task_cost :
+  cost_of_jobs_from_arrival_sequence_le_task_cost task_cost job_cost job_task arr_seq)
+
+variable (ts : List Task)
+
+variable (H_all_jobs_from_taskset :
+  ∀ j, arrives_in arr_seq j → job_task j ∈ ts)
+
+variable (max_arrivals : Task → Time → Nat)
+variable (H_family_of_proper_arrival_curves :
+  family_of_proper_arrival_curves job_task arr_seq max_arrivals ts)
+
+variable (tsk : Task)
+variable (H_tsk_in_ts : tsk ∈ ts)
+
+variable (job_lock_in_service : Job → Time)
+variable (task_lock_in_service : Task → Time)
+
+variable (H_proper_job_lock_in_service :
+  proper_job_lock_in_service job_cost arr_seq sched job_lock_in_service)
+
+variable (H_proper_task_lock_in_service :
+  proper_task_lock_in_service task_cost job_task arr_seq job_lock_in_service task_lock_in_service tsk)
+
+variable (interference : Job → Time → Bool)
+variable (interfering_workload : Job → Time → Time)
+
+private abbrev task_rbf_val (delta : Time) : Time :=
+  task_request_bound_function task_cost max_arrivals tsk delta
+
+section Definitions
+
+def interference_and_workload_consistent_with_sequential_jobs : Prop :=
+  ∀ j t1 t2,
+    arrives_in arr_seq j →
+    job_task j = tsk →
+    job_cost j > 0 →
+    busy_interval job_arrival job_cost sched interference interfering_workload j t1 t2 →
+    task_workload_between job_cost job_task arr_seq tsk 0 t1 =
+    task_service_between job_task arr_seq sched tsk 0 t1
+
+def task_interference_received_before (tsk' : Task) (upper_bound : Time) (t : Time) : Bool :=
+  !(task_scheduled_at job_task sched tsk' t) &&
+    (arrivals_of_task_before job_task arr_seq tsk' upper_bound).any (fun j => interference j t)
+
+def cumul_task_interference (tsk' : Task) (upper_bound : Time) (t1 t2 : Time) : Nat :=
+  ∑ t ∈ Finset.Ico t1 t2,
+    (task_interference_received_before job_task arr_seq sched interference tsk' upper_bound t).toNat
+
+def task_interference_is_bounded_by
+    (task_interference_bound_function : Task → Time → Time → Time) : Prop :=
+  ∀ j R t1 t2,
+    arrives_in arr_seq j →
+    job_task j = tsk →
+    t1 + R < t2 →
+    ¬ completed_by job_cost sched j (t1 + R) →
+    busy_interval job_arrival job_cost sched interference interfering_workload j t1 t2 →
+    let offset := job_arrival j - t1
+    cumul_task_interference job_task arr_seq sched interference tsk t2 t1 (t1 + R) ≤
+      task_interference_bound_function tsk offset R
+
+end Definitions
+
+section ResponseTimeBound
+
+private abbrev cumul_interference_val :=
+  cumul_interference interference
+
+private abbrev cumul_workload_val :=
+  cumul_interfering_workload interfering_workload
+
+private abbrev cumul_task_interference_val :=
+  cumul_task_interference job_task arr_seq sched interference tsk
+
+variable (H_work_conserving :
+  work_conserving job_arrival job_cost job_task arr_seq sched tsk interference interfering_workload)
+
+variable (H_sequential_jobs : sequential_jobs job_arrival job_cost sched job_task)
+variable (H_interference_and_workload_consistent_with_sequential_jobs :
+  interference_and_workload_consistent_with_sequential_jobs
+    job_arrival job_cost job_task arr_seq sched tsk interference interfering_workload)
+
+variable (L : Time)
+variable (H_busy_interval_exists :
+  busy_intervals_are_bounded_by job_arrival job_cost job_task arr_seq sched tsk
+    interference interfering_workload L)
+
+variable (task_interference_bound_function : Task → Time → Time → Time)
+variable (H_task_interference_is_bounded :
+  task_interference_is_bounded_by job_arrival job_cost job_task arr_seq sched tsk
+    interference interfering_workload task_interference_bound_function)
+
+private abbrev total_interference_bound (tsk' : Task) (A Δ : Time) : Time :=
+  task_request_bound_function task_cost max_arrivals tsk (A + ε) - task_cost tsk +
+    task_interference_bound_function tsk' A Δ
+
+variable (R : Nat)
+variable (H_R_is_maximum_seq :
+  ∀ A,
+    is_in_search_space tsk L
+      (fun tsk' A Δ => task_request_bound_function task_cost max_arrivals tsk (A + ε) - task_cost tsk +
+        task_interference_bound_function tsk' A Δ) A →
+    ∃ F,
+      A + F = (task_request_bound_function task_cost max_arrivals tsk (A + ε) -
+                (task_cost tsk - task_lock_in_service tsk)) +
+              task_interference_bound_function tsk A (A + F) ∧
+      F + (task_cost tsk - task_lock_in_service tsk) ≤ R)
+
+section CompletionOfJobsFromSameTask
+
+variable (j1 j2 : Job)
+variable (H_j1_arrives : arrives_in arr_seq j1)
+variable (H_j2_arrives : arrives_in arr_seq j2)
+variable (H_j1_from_tsk : job_task j1 = tsk)
+variable (H_j2_from_tsk : job_task j2 = tsk)
+variable (H_j1_cost_positive : job_cost_positive job_cost j1)
+
+variable (t1 t2 : Time)
+variable (H_busy_interval :
+  busy_interval job_arrival job_cost sched interference interfering_workload j1 t1 t2)
+
+include H_completed_jobs_dont_execute H_interference_and_workload_consistent_with_sequential_jobs
+  H_j1_arrives H_j2_arrives H_j1_from_tsk H_j2_from_tsk H_j1_cost_positive
+  H_busy_interval H_arrival_times_are_consistent in
+theorem completed_before_beginning_of_busy_interval :
+    job_arrival j2 < t1 →
+    completed_by job_cost sched j2 t1 := by
+  intro JA
+  -- If job_cost j2 = 0, trivially completed
+  by_cases ZERO : job_cost j2 = 0
+  · unfold completed_by service; simp [ZERO]
+  · -- j2 has positive cost
+    -- From the consistency hypothesis, workload = service before t1
+    have SWEQ := H_interference_and_workload_consistent_with_sequential_jobs
+      j1 t1 t2 H_j1_arrives H_j1_from_tsk H_j1_cost_positive H_busy_interval
+    -- j2 ∈ jobs_arrived_between arr_seq 0 t1
+    have j2_in : j2 ∈ jobs_arrived_between arr_seq 0 t1 :=
+      arrived_between_implies_in_arrivals job_arrival arr_seq
+        H_arrival_times_are_consistent j2 0 t1 H_j2_arrives
+        ⟨Nat.zero_le _, JA⟩
+    have h_eq := Prosa.Util.Sum.sum_majorant_eqn
+      (jobs_arrived_between arr_seq 0 t1)
+      (fun j' => service_during sched j' 0 t1)
+      job_cost
+      (fun j => decide (job_task j = tsk))
+      (fun x _ _ => cumulative_service_le_job_cost job_cost sched x H_completed_jobs_dont_execute 0 t1)
+      SWEQ.symm j2 j2_in (by simp [H_j2_from_tsk])
+    -- h_eq : service_during sched j2 0 t1 = job_cost j2
+    change service_during sched j2 0 t1 = job_cost j2 at h_eq
+    unfold completed_by service
+    rw [← h_eq]
+
+include H_completed_jobs_dont_execute H_jobs_must_arrive_to_execute
+  H_interference_and_workload_consistent_with_sequential_jobs
+  H_j1_arrives H_j2_arrives H_j1_from_tsk H_j2_from_tsk H_j1_cost_positive
+  H_busy_interval H_arrival_times_are_consistent in
+theorem arrives_after_beginning_of_busy_interval :
+    ∀ t,
+      t1 ≤ t →
+      pending job_arrival job_cost sched j2 t →
+      arrived_between job_arrival j2 t1 (t + 1) := by
+  intro t GE PEND
+  unfold arrived_between
+  refine ⟨?_, ?_⟩
+  · -- t1 ≤ job_arrival j2
+    by_contra h
+    push_neg at h
+    -- j2 arrived before t1, so it's completed by t1
+    have L12 := completed_before_beginning_of_busy_interval job_arrival job_cost job_task arr_seq
+      H_arrival_times_are_consistent sched H_completed_jobs_dont_execute tsk
+      interference interfering_workload
+      H_interference_and_workload_consistent_with_sequential_jobs
+      j1 j2 H_j1_arrives H_j2_arrives H_j1_from_tsk H_j2_from_tsk H_j1_cost_positive
+      t1 t2 H_busy_interval h
+    -- j2 completed at t1, so completed at t (since t1 ≤ t)
+    have L12' := completion_monotonic job_cost sched j2 t1 t GE L12
+    -- But PEND says j2 is not completed at t — contradiction
+    exact absurd L12' PEND.2
+  · -- job_arrival j2 < t + 1
+    have PEND_ARR := PEND.1
+    unfold has_arrived at PEND_ARR
+    simp only [Time] at *; omega
+
+end CompletionOfJobsFromSameTask
+
+section BoundOfCumulativeJobInterference
+
+variable (j : Job)
+variable (H_j_arrives : arrives_in arr_seq j)
+variable (H_job_of_tsk : job_task j = tsk)
+variable (H_job_cost_positive : job_cost_positive job_cost j)
+
+variable (t1 t2 : Time)
+variable (H_busy_interval :
+  busy_interval job_arrival job_cost sched interference interfering_workload j t1 t2)
+
+private abbrev A_val := job_arrival j - t1
+
+variable (x : Time)
+variable (H_inside_busy_interval : t1 + x < t2)
+variable (H_job_j_is_not_completed : ¬ completed_by job_cost sched j (t1 + x))
+
+include H_work_conserving H_jobs_come_from_arrival_sequence
+  H_interference_and_workload_consistent_with_sequential_jobs
+  H_j_arrives H_job_of_tsk H_job_cost_positive H_busy_interval
+  H_inside_busy_interval H_job_j_is_not_completed H_arrival_times_are_consistent in
+theorem bound_for_cumulative_job_interference_actual :
+    cumul_interference interference j t1 (t1 + x) ≤
+    (task_workload_between job_cost job_task arr_seq tsk t1 (t1 + (job_arrival j - t1) + ε) - job_cost j) +
+    cumul_task_interference job_task arr_seq sched interference tsk t2 t1 (t1 + x) := by
+  set y := t1 + x
+  set A := job_arrival j - t1
+  -- j ∈ arrivals_between t1 (t1 + A + ε)
+  have JAGET1 : t1 ≤ job_arrival j := H_busy_interval.1.1
+  have JALTT2 : job_arrival j < t2 := H_busy_interval.1.2.1
+  have IN : j ∈ jobs_arrived_between arr_seq t1 (t1 + A + ε) := by
+    apply arrived_between_implies_in_arrivals job_arrival arr_seq H_arrival_times_are_consistent
+    · exact H_j_arrives
+    · constructor
+      · exact JAGET1
+      · unfold A ε; simp only [Time] at *; omega
+  -- Fact1: task_service - service j ≤ task_workload - job_cost j
+  have Fact1 :
+      task_service_of_jobs_received_in job_task arr_seq sched tsk t1 (t1 + A + ε) t1 y -
+      service_during sched j t1 y ≤
+      task_workload_between job_cost job_task arr_seq tsk t1 (t1 + A + ε) - job_cost j := by
+    unfold task_workload_between task_workload workload_of_jobs
+      task_service_of_jobs_received_in service_of_jobs
+    set filtered := (jobs_arrived_between arr_seq t1 (t1 + A + ε)).filter (fun j' => decide (job_task j' = tsk))
+    have hj_mem : j ∈ filtered := by
+      simp only [filtered, List.mem_filter]
+      exact ⟨IN, by simp [H_job_of_tsk]⟩
+    have h_perm_cost := (List.perm_cons_erase hj_mem).map job_cost |>.sum_eq
+    have h_perm_serv := (List.perm_cons_erase hj_mem).map (fun j' => service_during sched j' t1 y) |>.sum_eq
+    rw [h_perm_cost, h_perm_serv]
+    simp only [List.map_cons, List.sum_cons]
+    -- Now: (job_cost j + rest_cost) - job_cost j and (service j + rest_serv) - service j
+    rw [Nat.add_sub_cancel_left, Nat.add_sub_cancel_left]
+    -- rest_serv ≤ rest_cost (by service_of_jobs_le_workload on the erased list)
+    apply Prosa.Util.Sum.leq_sum_seq
+    intro j' hj' _
+    have hj'_in := List.mem_of_mem_erase hj'
+    have hj'_in_arrivals := List.mem_of_mem_filter hj'_in
+    exact cumulative_service_le_job_cost job_cost sched j' H_completed_jobs_dont_execute t1 y
+  -- Main step: pointwise inequality
+  -- cumul_interference j t1 y ≤ (task_service - service j) + cumul_task_interference
+  suffices h_main :
+      cumul_interference interference j t1 y ≤
+      (task_service_of_jobs_received_in job_task arr_seq sched tsk t1 (t1 + A + ε) t1 y -
+       service_during sched j t1 y) +
+      cumul_task_interference job_task arr_seq sched interference tsk t2 t1 y by
+    exact le_trans h_main (Nat.add_le_add_right Fact1 _)
+  -- Rewrite as: cumul_interference + service j ≤ task_service + cumul_task_interference
+  -- (using a - b + c ≥ d ↔ a + c ≥ d + b when b ≤ a + c would be the approach)
+  -- Actually, use: d ≤ (a - b) + c ↔ d + b ≤ a + c (when b ≤ a)
+  -- We know service j ≤ task_service (since j is in the filtered list)
+  have h_serv_le : service_during sched j t1 y ≤
+      task_service_of_jobs_received_in job_task arr_seq sched tsk t1 (t1 + A + ε) t1 y := by
+    unfold task_service_of_jobs_received_in service_of_jobs
+    set filtered := (jobs_arrived_between arr_seq t1 (t1 + A + ε)).filter (fun j' => decide (job_task j' = tsk))
+    have hj_mem : j ∈ filtered := by
+      simp only [filtered, List.mem_filter]
+      exact ⟨IN, by simp [H_job_of_tsk]⟩
+    have h_perm := (List.perm_cons_erase hj_mem).map (fun j' => service_during sched j' t1 y) |>.sum_eq
+    rw [h_perm]; simp only [List.map_cons, List.sum_cons]; omega
+  rw [Nat.sub_add_cancel h_serv_le]
+  -- Now need: cumul_interference + service j ≤ task_service + cumul_task_interference
+  -- Expand all as sums over Finset.Ico t1 y and use pointwise inequality
+  unfold cumul_interference Definitions.cumul_interference
+    service_during
+    task_service_of_jobs_received_in service_of_jobs
+    cumul_task_interference task_interference_received_before
+  -- Swap the service_of_jobs sum: ∑_j ∑_t service_at → ∑_t ∑_j service_at
+  simp only [service_during]
+  -- Convert List sum of Finset sums → Finset sum of List sums
+  have h_swap : ∀ (l : List Job),
+      (l.map (fun j' => ∑ t ∈ Finset.Ico t1 y, service_at sched j' t)).sum =
+      ∑ t ∈ Finset.Ico t1 y, (l.map (fun j' => service_at sched j' t)).sum := by
+    intro l; induction l with
+    | nil => simp
+    | cons a l ih => simp only [List.map_cons, List.sum_cons]; rw [ih, ← Finset.sum_add_distrib]
+  rw [h_swap]
+  rw [← Finset.sum_add_distrib]
+  apply Finset.sum_le_sum
+  intro t ht
+  rw [Finset.mem_Ico] at ht
+  -- Pointwise: (interference j t).toNat + service_at j t ≤ filtered_service_at t + (task_interf t).toNat
+  -- Case analysis on sched t
+  cases h_sched_t : sched t with
+  | none =>
+    -- No job scheduled: service_at j t = 0, filtered_service_sum = 0
+    have h_sa_j : service_at sched j t = 0 := by
+      simp only [service_at, scheduled_at, h_sched_t]; simp [Bool.toNat]
+    have h_sa_all : ∀ j', service_at sched j' t = 0 := by
+      intro j'; simp only [service_at, scheduled_at, h_sched_t]; simp [Bool.toNat]
+    have h_sum_zero : (((jobs_arrived_between arr_seq t1 (t1 + A + ε)).filter
+        (fun j' => decide (job_task j' = tsk))).map (fun j' => service_at sched j' t)).sum = 0 := by
+      apply List.sum_eq_zero; intro x hx; rw [List.mem_map] at hx
+      obtain ⟨j', _, rfl⟩ := hx; exact h_sa_all j'
+    rw [h_sa_j, h_sum_zero]; simp only [Nat.add_zero, Nat.zero_add]
+    -- Need: (interference j t).toNat ≤ (task_interf_received_before ...).toNat
+    cases h_int : interference j t
+    · simp [Bool.toNat]
+    · -- interference j t = true
+      simp only [Bool.toNat, Nat.le_refl, ite_true]
+      -- task_interference_received_before = !task_scheduled_at && has
+      -- task_scheduled_at tsk t = false since sched t = none
+      simp only [task_scheduled_at, h_sched_t, Bool.not_false, Bool.true_and]
+      -- need: any of arrivals_of_task_before has interference = true
+      -- j is in arrivals_of_task_before tsk t2
+      apply Bool.le_of_eq
+      rw [show true = true from rfl]
+      symm
+      rw [List.any_eq_true]
+      refine ⟨j, ?_, by simp [h_int]⟩
+      unfold arrivals_of_task_before arrivals_of_task_between
+      rw [List.mem_filter]
+      exact ⟨arrived_between_implies_in_arrivals job_arrival arr_seq H_arrival_times_are_consistent
+          j 0 t2 H_j_arrives ⟨Nat.zero_le _, JALTT2⟩,
+        by simp [is_job_of_task, H_job_of_tsk]⟩
+  | some s =>
+    -- Some job s is scheduled
+    have ARRs : arrives_in arr_seq s := by
+      exact H_jobs_come_from_arrival_sequence s t (by simp [scheduled_at, h_sched_t])
+    cases h_tsk_s : decide (job_task s = tsk) with
+    | isFalse h_neq =>
+      -- s is not from tsk
+      have h_sa_j : service_at sched j t = 0 := by
+        simp only [service_at, scheduled_at, h_sched_t]
+        cases h_js : (some s == some j) with
+        | true =>
+          simp [BEq.beq, beq_iff_eq] at h_js
+          subst h_js; simp [H_job_of_tsk] at h_neq
+        | false => simp [Bool.toNat]
+      have h_sum_zero : (((jobs_arrived_between arr_seq t1 (t1 + A + ε)).filter
+          (fun j' => decide (job_task j' = tsk))).map (fun j' => service_at sched j' t)).sum = 0 := by
+        apply List.sum_eq_zero; intro x hx; rw [List.mem_map] at hx
+        obtain ⟨j', hj'_mem, rfl⟩ := hx
+        rw [List.mem_filter] at hj'_mem
+        have hj'_tsk : job_task j' = tsk := by
+          simp only [decide_eq_true_eq] at hj'_mem; exact hj'_mem.2
+        simp only [service_at, scheduled_at, h_sched_t]
+        cases h_eq : (some s == some j') with
+        | false => simp [Bool.toNat]
+        | true =>
+          simp [BEq.beq, beq_iff_eq] at h_eq
+          subst h_eq; simp [hj'_tsk] at h_neq
+      rw [h_sa_j, h_sum_zero]; simp only [Nat.add_zero, Nat.zero_add]
+      cases h_int : interference j t
+      · simp [Bool.toNat]
+      · simp only [Bool.toNat, ite_true]
+        -- task_scheduled_at tsk t = false since s is not from tsk
+        have h_not_tsk_sched : task_scheduled_at job_task sched tsk t = false := by
+          simp only [task_scheduled_at, h_sched_t]
+          simp only [decide_eq_true_eq] at h_neq
+          simp [BEq.beq, beq_iff_eq, h_neq]
+        simp only [h_not_tsk_sched, Bool.not_false, Bool.true_and]
+        rw [List.any_eq_true]
+        refine ⟨j, ?_, by simp [h_int]⟩
+        unfold arrivals_of_task_before arrivals_of_task_between
+        rw [List.mem_filter]
+        exact ⟨arrived_between_implies_in_arrivals job_arrival arr_seq H_arrival_times_are_consistent
+            j 0 t2 H_j_arrives ⟨Nat.zero_le _, JALTT2⟩,
+          by simp [is_job_of_task, H_job_of_tsk]⟩
+    | isTrue h_tsk_eq =>
+      simp only [decide_eq_true_eq] at h_tsk_eq
+      -- s is from tsk, case j = s vs j ≠ s
+      cases h_js : (j == s) with
+      | true =>
+        -- j = s: j is scheduled, so by work_conserving, interference j t = false
+        simp [BEq.beq, beq_iff_eq] at h_js; subst h_js
+        have h_sched_j : scheduled_at sched j t = true := by
+          simp [scheduled_at, h_sched_t]
+        have WORK := H_work_conserving j t1 t2 t H_j_arrives H_job_of_tsk H_job_cost_positive H_busy_interval
+          ⟨ht.1, lt_trans ht.2 H_inside_busy_interval⟩
+        have h_no_int : ¬ interference j t := WORK.mpr h_sched_j
+        simp only [Bool.eq_false_iff.mpr h_no_int, Bool.toNat, ite_false, Nat.zero_add]
+        -- service_at j t ≤ filtered_service_sum + 0
+        -- j ∈ filtered, so service_at j t ≤ filtered_service_sum
+        set filtered := (jobs_arrived_between arr_seq t1 (t1 + A + ε)).filter (fun j' => decide (job_task j' = tsk))
+        have hj_mem : j ∈ filtered := by
+          simp only [filtered, List.mem_filter]
+          exact ⟨IN, by simp [H_job_of_tsk]⟩
+        have : service_at sched j t ∈ (filtered.map (fun j' => service_at sched j' t)) := by
+          exact List.mem_map_of_mem _ hj_mem
+        omega_nat
+        -- Actually, need: service_at j t ≤ (filtered.map service_at).sum
+        -- This follows since service_at j t is in the sum and all terms are ≥ 0
+      | false =>
+        simp [BEq.beq, beq_iff_eq] at h_js
+        -- j ≠ s: j is not scheduled
+        have h_nsched_j : scheduled_at sched j t = false := by
+          simp only [scheduled_at, h_sched_t]
+          simp [BEq.beq, beq_iff_eq]
+          intro h_eq; exact absurd h_eq.symm h_js
+        have h_sa_j : service_at sched j t = 0 := by
+          simp [service_at, h_nsched_j, Bool.toNat]
+        rw [h_sa_j, Nat.add_zero]
+        -- interference j t must be true (by work_conserving)
+        have h_t_in_busy : t1 ≤ t ∧ t < t2 :=
+          ⟨ht.1, lt_trans ht.2 H_inside_busy_interval⟩
+        have WORK := H_work_conserving j t1 t2 t H_j_arrives H_job_of_tsk H_job_cost_positive H_busy_interval h_t_in_busy
+        have h_int : interference j t = true := by
+          by_contra h_neg
+          simp only [Bool.not_eq_true] at h_neg
+          have h_no_int : ¬ interference j t := by simp [h_neg]
+          have h_sched := WORK.mpr (by exact h_nsched_j ▸ ?_)
+          · rw [h_nsched_j] at h_sched; simp at h_sched
+          · exact absurd (WORK.mp h_no_int) (by simp [h_nsched_j])
+        simp only [h_int, Bool.toNat, ite_true]
+        -- Need: 1 ≤ filtered_service_sum + (task_interf).toNat
+        -- s ∈ filtered and arrived in [t1, t1+A+ε)? Not necessarily.
+        -- But s from tsk and scheduled at t, which is in the busy interval of j.
+        -- s is pending at t (scheduled_implies_pending), so arrived_between t1 (t+1) (by arrives_after_beginning_of_busy_interval)
+        -- Two subcases:
+        --   (a) job_arrival s ≤ job_arrival j: then s ∈ arrivals [t1, t1+A+ε), so s is in filtered
+        --   (b) job_arrival s > job_arrival j: sequential_jobs → j completed by t, contradiction
+        have h_sched_s : scheduled_at sched s t = true := by
+          simp [scheduled_at, h_sched_t]
+        have h_pend_s : pending job_arrival job_cost sched s t := by
+          exact scheduled_implies_pending job_arrival job_cost sched
+            H_jobs_must_arrive_to_execute H_completed_jobs_dont_execute s t h_sched_s
+        have h_s_tsk : job_task s = tsk := h_tsk_eq
+        have h_s_arrives : arrives_in arr_seq s := ARRs
+        -- Does s arrive before or after j?
+        by_cases h_arr_ord : job_arrival s ≤ job_arrival j
+        · -- s arrived before or at j's arrival, so s ∈ [t1, t1+A+ε)
+          have h_s_arr_between : s ∈ jobs_arrived_between arr_seq t1 (t1 + A + ε) := by
+            apply arrived_between_implies_in_arrivals job_arrival arr_seq H_arrival_times_are_consistent
+            · exact h_s_arrives
+            · constructor
+              · -- s arrives after t1: from arrives_after_beginning_of_busy_interval
+                have h_s_arrived := arrives_after_beginning_of_busy_interval job_arrival job_cost
+                  job_task arr_seq H_arrival_times_are_consistent sched
+                  H_completed_jobs_dont_execute tsk interference interfering_workload
+                  H_interference_and_workload_consistent_with_sequential_jobs
+                  j s H_j_arrives h_s_arrives H_job_of_tsk h_s_tsk H_job_cost_positive t1 t2
+                  H_busy_interval t ht.1 h_pend_s
+                exact h_s_arrived.1
+              · -- s arrives before t1 + A + ε = t1 + (job_arrival j - t1) + 1
+                unfold A ε; simp only [Time] at *; omega
+          have h_s_filtered : s ∈ (jobs_arrived_between arr_seq t1 (t1 + A + ε)).filter
+              (fun j' => decide (job_task j' = tsk)) := by
+            rw [List.mem_filter]; exact ⟨h_s_arr_between, by simp [h_tsk_eq]⟩
+          -- service_at s t = 1 is in filtered_sum, so filtered_sum ≥ 1
+          have h_sa_s : service_at sched s t = 1 := by
+            simp [service_at, h_sched_s, Bool.toNat]
+          have : service_at sched s t ∈ (((jobs_arrived_between arr_seq t1 (t1 + A + ε)).filter
+              (fun j' => decide (job_task j' = tsk))).map (fun j' => service_at sched j' t)) := by
+            exact List.mem_map_of_mem _ h_s_filtered
+          have := List.sum_pos_of_exists_pos _ this (by rw [h_sa_s])
+          omega
+        · -- s arrived after j: sequential_jobs → j completed before s is scheduled, contradiction
+          push_neg at h_arr_ord
+          exfalso
+          have h_seq := H_sequential_jobs j s t (by rw [H_job_of_tsk, h_tsk_eq])
+            h_arr_ord h_sched_s
+          -- h_seq: completed_by job_cost sched j t
+          have h_compl_y := completion_monotonic job_cost sched j t y (by omega) h_seq
+          exact H_job_j_is_not_completed h_compl_y
+
+include H_arrival_times_are_consistent H_arr_seq_is_a_set
+  H_job_cost_le_task_cost H_family_of_proper_arrival_curves H_tsk_in_ts
+  H_j_arrives H_job_of_tsk H_busy_interval in
+theorem task_rbf_excl_tsk_bounds_task_workload_excl_j :
+    task_workload_between job_cost job_task arr_seq tsk t1 (t1 + (job_arrival j - t1) + ε) - job_cost j ≤
+    task_request_bound_function task_cost max_arrivals tsk ((job_arrival j - t1) + ε) - task_cost tsk := by
+  set A := job_arrival j - t1
+  have JAGET1 : t1 ≤ job_arrival j := H_busy_interval.1.1
+  have h_j_cost_le : job_cost j ≤ task_cost tsk := by
+    have := H_job_cost_le_task_cost j H_j_arrives
+    simp only [job_cost_le_task_cost] at this
+    rw [H_job_of_tsk] at this; exact this
+  -- num_arrivals_of_task ≤ max_arrivals
+  have h_num_le : num_arrivals_of_task job_task arr_seq tsk t1 (t1 + A + ε) ≤
+      max_arrivals tsk (A + ε) := by
+    have h_pac := H_family_of_proper_arrival_curves tsk H_tsk_in_ts
+    have h_bound := h_pac.1 t1 (t1 + A + ε) (by omega)
+    -- h_bound uses private def num_arrivals_of_tsk which equals num_arrivals_of_task
+    -- Both filter with (fun j => decide (job_task j = tsk))
+    have h_eq : t1 + A + ε - t1 = A + ε := by simp only [Time] at *; omega
+    unfold num_arrivals_of_task arrivals_of_task_between is_job_of_task
+    exact h_eq ▸ h_bound
+  -- j ∈ the arrivals
+  have h_j_in_arrivals : j ∈ arrivals_of_task_between job_task arr_seq tsk t1 (t1 + A + ε) := by
+    unfold arrivals_of_task_between
+    rw [List.mem_filter]
+    constructor
+    · apply arrived_between_implies_in_arrivals job_arrival arr_seq H_arrival_times_are_consistent
+      · exact H_j_arrives
+      · exact ⟨JAGET1, by unfold ε; simp only [Time] at *; omega⟩
+    · simp [is_job_of_task, H_job_of_tsk]
+  -- num_arrivals ≥ 1 (since j is in the list)
+  have h_num_ge_1 : 1 ≤ num_arrivals_of_task job_task arr_seq tsk t1 (t1 + A + ε) := by
+    unfold num_arrivals_of_task
+    exact List.length_pos_of_mem h_j_in_arrivals
+  -- Key step: workload - job_cost j ≤ task_cost tsk * (num_arrivals - 1)
+  have h_workload_minus : task_workload_between job_cost job_task arr_seq tsk t1 (t1 + A + ε) - job_cost j ≤
+      task_cost tsk * (num_arrivals_of_task job_task arr_seq tsk t1 (t1 + A + ε) - 1) := by
+    -- Both unfold to operations on (jobs.filter (is_job_of_task ...))
+    unfold task_workload_between task_workload workload_of_jobs
+    unfold num_arrivals_of_task arrivals_of_task_between is_job_of_task
+    set filtered := (jobs_arrived_between arr_seq t1 (t1 + A + ε)).filter (fun j' => decide (job_task j' = tsk))
+    have h_nodup : filtered.Nodup := List.Nodup.filter _
+      (arrivals_uniq job_arrival arr_seq H_arrival_times_are_consistent H_arr_seq_is_a_set t1 (t1 + A + ε))
+    have h_j_mem : j ∈ filtered := by
+      simp only [filtered, List.mem_filter]; exact ⟨by
+        apply arrived_between_implies_in_arrivals job_arrival arr_seq H_arrival_times_are_consistent
+        · exact H_j_arrives
+        · exact ⟨JAGET1, by unfold ε; simp only [Time] at *; omega⟩, by simp [H_job_of_tsk]⟩
+    have h_perm := List.perm_cons_erase h_j_mem
+    have h_sum_eq : (filtered.map job_cost).sum =
+        job_cost j + ((filtered.erase j).map job_cost).sum :=
+      h_perm.map job_cost |>.sum_eq
+    rw [h_sum_eq, Nat.add_sub_cancel_left]
+    have h_erase_len : (filtered.erase j).length = filtered.length - 1 := by
+      simp [List.length_erase, h_j_mem]
+    rw [← h_erase_len]
+    apply Prosa.Util.Sum.sum_majorant_constant
+    intro j' hj' _
+    have hj'_in_filtered : j' ∈ filtered := List.mem_of_mem_erase hj'
+    have hj'_in := List.mem_of_mem_filter hj'_in_filtered
+    have hj'_arrives := in_arrivals_implies_arrived job_arrival arr_seq
+      H_arrival_times_are_consistent j' t1 (t1 + A + ε) hj'_in
+    have h_cost := H_job_cost_le_task_cost j' hj'_arrives
+    simp only [job_cost_le_task_cost] at h_cost
+    have hj'_task : job_task j' = tsk := by
+      have := List.of_mem_filter hj'_in_filtered
+      simp only [filtered, decide_eq_true_eq] at this; exact this
+    rw [hj'_task] at h_cost; exact h_cost
+  calc task_workload_between job_cost job_task arr_seq tsk t1 (t1 + A + ε) - job_cost j
+      ≤ task_cost tsk * (num_arrivals_of_task job_task arr_seq tsk t1 (t1 + A + ε) - 1) :=
+        h_workload_minus
+    _ ≤ task_cost tsk * (max_arrivals tsk (A + ε) - 1) := by
+        apply Nat.mul_le_mul_left; omega
+    _ = task_cost tsk * max_arrivals tsk (A + ε) - task_cost tsk := by
+        rw [Nat.mul_sub_one]
+    _ = task_request_bound_function task_cost max_arrivals tsk (A + ε) - task_cost tsk := rfl
+
+include H_work_conserving H_jobs_come_from_arrival_sequence
+  H_interference_and_workload_consistent_with_sequential_jobs
+  H_j_arrives H_job_of_tsk H_job_cost_positive H_busy_interval
+  H_inside_busy_interval H_job_j_is_not_completed H_arrival_times_are_consistent
+  H_arr_seq_is_a_set H_job_cost_le_task_cost H_family_of_proper_arrival_curves H_tsk_in_ts in
+  theorem bound_for_cumulative_job_interference :
+    cumul_interference interference j t1 (t1 + x) ≤
+    (task_request_bound_function task_cost max_arrivals tsk ((job_arrival j - t1) + ε) - task_cost tsk) +
+    cumul_task_interference job_task arr_seq sched interference tsk t2 t1 (t1 + x) := by
+  apply le_trans
+  · exact bound_for_cumulative_job_interference_actual
+      _ _ _ _ H_arrival_times_are_consistent
+      _ H_jobs_come_from_arrival_sequence _ _ _
+      H_work_conserving H_interference_and_workload_consistent_with_sequential_jobs
+      _ H_j_arrives H_job_of_tsk H_job_cost_positive _ _ H_busy_interval _
+      H_inside_busy_interval H_job_j_is_not_completed
+  · apply Nat.add_le_add_right
+    exact task_rbf_excl_tsk_bounds_task_workload_excl_j
+      _ _ _ _ H_arrival_times_are_consistent H_arr_seq_is_a_set
+      H_job_cost_le_task_cost _ H_family_of_proper_arrival_curves _ H_tsk_in_ts
+      _ H_j_arrives H_job_of_tsk _ _ H_busy_interval
+
+end BoundOfCumulativeJobInterference
+
+section MaxInSeqHypothesisImpMaxInNonseqHypothesis
+
+variable (j : Job)
+variable (H_j_arrives : arrives_in arr_seq j)
+variable (H_job_of_tsk : job_task j = tsk)
+
+include H_proper_job_lock_in_service H_proper_task_lock_in_service
+  H_R_is_maximum_seq H_arrival_times_are_consistent
+  H_family_of_proper_arrival_curves H_tsk_in_ts
+  H_j_arrives H_job_of_tsk in
+theorem max_in_seq_hypothesis_implies_max_in_nonseq_hypothesis :
+    ∀ A,
+      is_in_search_space tsk L
+        (total_interference_bound task_cost max_arrivals tsk task_interference_bound_function) A →
+      ∃ F,
+        A + F = task_lock_in_service tsk +
+                (task_request_bound_function task_cost max_arrivals tsk (A + ε) - task_cost tsk +
+                 task_interference_bound_function tsk A (A + F)) ∧
+        F + (task_cost tsk - task_lock_in_service tsk) ≤ R := by
+  obtain ⟨PRT1, PRT2⟩ := H_proper_task_lock_in_service
+  intro A INSP
+  obtain ⟨F, FIX, LE⟩ := H_R_is_maximum_seq A INSP
+  refine ⟨F, ?_, LE⟩
+  have h_rbf_ge : task_cost tsk ≤ task_request_bound_function task_cost max_arrivals tsk (A + ε) := by
+    have h1 := Prosa.Classic.Model.Schedule.Uni.Limited.Rbf.RBF.task_rbf_1_ge_task_cost
+      task_cost job_arrival job_task arr_seq H_arrival_times_are_consistent tsk max_arrivals
+      (H_family_of_proper_arrival_curves tsk H_tsk_in_ts) j H_j_arrives H_job_of_tsk
+    have h2 := Prosa.Classic.Model.Schedule.Uni.Limited.Rbf.RBF.task_rbf_monotone
+      task_cost max_arrivals tsk (H_family_of_proper_arrival_curves tsk H_tsk_in_ts)
+    exact le_trans h1 (h2 (by unfold ε; omega))
+  simp only [Time] at *; omega
+
+end MaxInSeqHypothesisImpMaxInNonseqHypothesis
+
+include H_proper_job_lock_in_service H_proper_task_lock_in_service
+  H_jobs_must_arrive_to_execute H_completed_jobs_dont_execute
+  H_job_cost_le_task_cost H_arrival_times_are_consistent H_arr_seq_is_a_set
+  H_jobs_come_from_arrival_sequence H_family_of_proper_arrival_curves H_tsk_in_ts
+  H_work_conserving H_sequential_jobs
+  H_interference_and_workload_consistent_with_sequential_jobs
+  H_busy_interval_exists H_task_interference_is_bounded H_R_is_maximum_seq in
+theorem uniprocessor_response_time_bound_seq :
+    is_response_time_bound_of_task job_arrival job_cost job_task arr_seq sched tsk R := by
+  intro j ARR TSK
+  have H_IBF : job_interference_is_bounded_by job_arrival job_cost job_task arr_seq sched tsk
+      interference interfering_workload
+      (fun tsk' A Δ => task_request_bound_function task_cost max_arrivals tsk (A + ε) - task_cost tsk +
+        task_interference_bound_function tsk' A Δ) := by
+    intro t1 t2 delta j' BUSY NEQ ARR' TSK' COMPL
+    by_cases POS : job_cost j' > 0
+    · apply le_trans (bound_for_cumulative_job_interference
+        _ _ _ _ H_arrival_times_are_consistent H_arr_seq_is_a_set
+        _ H_jobs_come_from_arrival_sequence H_job_cost_le_task_cost _ H_family_of_proper_arrival_curves
+        _ H_tsk_in_ts _ _ H_work_conserving H_interference_and_workload_consistent_with_sequential_jobs
+        _ ARR' TSK' POS _ _ BUSY _ NEQ COMPL)
+      apply Nat.add_le_add_left
+      exact H_task_interference_is_bounded j' delta t1 t2 ARR' TSK' NEQ COMPL BUSY
+    · push_neg at POS
+      exfalso; apply COMPL
+      have : job_cost j' = 0 := by simp only [Time] at *; omega
+      simp only [completed_by, service]; rw [this]; exact Nat.zero_le _
+  have H_MAX : ∀ A, is_in_search_space tsk L
+      (fun tsk' A Δ => task_request_bound_function task_cost max_arrivals tsk (A + ε) - task_cost tsk +
+        task_interference_bound_function tsk' A Δ) A →
+      ∃ F, A + F = task_lock_in_service tsk +
+        (fun tsk' A Δ => task_request_bound_function task_cost max_arrivals tsk (A + ε) - task_cost tsk +
+          task_interference_bound_function tsk' A Δ) tsk A (A + F) ∧
+        F + (task_cost tsk - task_lock_in_service tsk) ≤ R := by
+    intro A INSP
+    exact max_in_seq_hypothesis_implies_max_in_nonseq_hypothesis
+      _ _ _ _ _ H_arrival_times_are_consistent _ _ _ H_tsk_in_ts _ _
+      H_proper_job_lock_in_service H_proper_task_lock_in_service _
+      H_family_of_proper_arrival_curves _ _ H_R_is_maximum_seq
+      _ ARR TSK A INSP
+  exact uniprocessor_response_time_bound
+    _ _ _ _ _ _ _
+    H_jobs_must_arrive_to_execute H_completed_jobs_dont_execute H_job_cost_le_task_cost
+    _ _ _
+    H_proper_job_lock_in_service H_proper_task_lock_in_service
+    _ _ H_work_conserving _ H_busy_interval_exists
+    _ H_IBF _ H_MAX j ARR TSK
+
+end ResponseTimeBound
+
+end Sequential_Abstract_RTA
+
+end AbstractSeqRTA
+
+end Prosa.Classic.Model.Schedule.Uni.Limited.Abstract_RTA.Abstract_seq_rta

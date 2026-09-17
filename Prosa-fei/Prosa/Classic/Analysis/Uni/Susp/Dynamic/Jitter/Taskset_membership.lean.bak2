@@ -1,0 +1,29 @@
+-- Translated from: ../rt-proofs/classic/analysis/uni/susp/dynamic/jitter/taskset_membership.v
+import Prosa.Classic.Util.All
+import Prosa.Classic.Model.Priority
+import Prosa.Classic.Model.Arrival.Basic.Task
+import Prosa.Classic.Model.Arrival.Jitter.Job
+import Prosa.Classic.Model.Schedule.Uni.Response_time
+import Prosa.Classic.Model.Schedule.Uni.Susp.Schedule
+import Prosa.Classic.Analysis.Uni.Susp.Dynamic.Jitter.Jitter_schedule
+import Prosa.Classic.Analysis.Uni.Susp.Dynamic.Jitter.Jitter_taskset_generation
+import Prosa.Classic.Analysis.Uni.Susp.Sustainability.Singlecost.Reduction
+
+noncomputable section
+
+namespace Prosa.Classic.Analysis.Uni.Susp.Dynamic.Jitter.Taskset_membership
+
+open Prosa.Classic.Model.Time
+open Prosa.Classic.Model.Priority
+open Prosa.Classic.Model.Arrival.Basic.Arrival_sequence
+open Prosa.Classic.Model.Suspension
+open Prosa.Classic.Model.Schedule.Uni.Schedule
+open Prosa.Classic.Model.Schedule.Uni.Response_time.ResponseTime
+open Prosa.Classic.Model.Schedule.Uni.Susp.Suspension_intervals
+open Prosa.Classic.Analysis.Uni.Susp.Dynamic.Jitter.Jitter_schedule.JitterScheduleConstruction
+open Prosa.Classic.Analysis.Uni.Susp.Dynamic.Jitter.Jitter_taskset_generation.JitterTaskSetGeneration
+open Prosa.Classic.Analysis.Uni.Susp.Sustainability.Singlecost.Reduction.SustainabilitySingleCost
+open Prosa.Classic.Util.Pick
+
+private abbrev Sched (Job : Type*) [DecidableEq Job] :=
+  Prosa.Classic.Model.Schedule.Uni.Schedule.schedule Job

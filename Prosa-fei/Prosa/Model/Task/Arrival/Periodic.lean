@@ -1,0 +1,91 @@
+-- Translated from: ../rt-proofs/model/task/arrival/periodic.v
+import Prosa.Model.Task.Arrival.Sporadic
+
+namespace Prosa.Model.Task.Arrival.Periodic
+
+open Prosa.Behavior.Job
+open Prosa.Behavior.Time
+open Prosa.Behavior.Arrival_sequence
+open Prosa.Model.Task.Concept
+open Prosa.Model.Task.Arrival.Sporadic
+
+/-- Under the periodic task model, each task is characterized by its period. -/
+class PeriodicModel (Task : TaskType) where
+  task_period : Task → duration
+
+export PeriodicModel (task_period)
+
+section ValidPeriodicTaskModel
+
+variable {Task : TaskType} [PeriodicModel Task]
+
+/-- A valid periodic task has a non-zero period. -/
+def valid_period (tsk : Task) := task_period tsk > 0
+
+variable (ts : TaskSet Task)
+
+/-- Every task in the set must have a valid period. -/
+def valid_periods := ∀ tsk : Task, tsk ∈ ts → valid_period tsk
+
+variable {Job : JobType} [JobTask Job Task] [JobArrival Job]
+variable (arr_seq : arrival_sequence Job)
+
+/-- A task respects the periodic task model if the arrivals of its jobs
+    in the arrival sequence are separated by integer multiples of the period. -/
+def respects_periodic_task_model (tsk : Task) :=
+  ∀ (j j' : Job),
+    j ≠ j' →
+    arrives_in arr_seq j →
+    arrives_in arr_seq j' →
+    job_task j = tsk →
+    job_task j' = tsk →
+    job_arrival j ≤ job_arrival j' →
+    ∃ n, n > 0 ∧ job_arrival j' = n * task_period tsk + job_arrival j
+
+/-- Every task in a set of periodic tasks must satisfy the periodic arrival
+    criterion. -/
+def taskset_respects_periodic_task_model :=
+  ∀ tsk, tsk ∈ ts → respects_periodic_task_model arr_seq tsk
+
+end ValidPeriodicTaskModel
+
+section PeriodicTasksAsSporadicTasks
+
+variable {Task : TaskType} [PeriodicModel Task]
+variable {Job : JobType} [JobTask Job Task] [JobArrival Job]
+
+/-- A periodic task may be interpreted as a sporadic task by using its period
+    as its minimum inter-arrival time. -/
+instance periodic_as_sporadic : SporadicModel Task where
+  task_min_inter_arrival_time := task_period
+
+theorem valid_period_is_valid_inter_arrival_time :
+    ∀ tsk : Task, valid_period tsk → valid_task_min_inter_arrival_time tsk := by
+  intro tsk h
+  exact h
+
+theorem periodic_task_respects_sporadic_task_model :
+    ∀ (arr_seq : arrival_sequence Job) (tsk : Task),
+      respects_periodic_task_model arr_seq tsk → respects_sporadic_task_model arr_seq tsk := by
+  intro arr_seq tsk PERIODIC j j' NEQ ARR_j ARR_j' TSK_j TSK_j' ORDER
+  have ⟨n, GT0, EQ⟩ := PERIODIC j j' NEQ ARR_j ARR_j' TSK_j TSK_j' ORDER
+  show job_arrival j' ≥ job_arrival j + @task_min_inter_arrival_time Task periodic_as_sporadic tsk
+  change job_arrival j' ≥ job_arrival j + task_period tsk
+  rw [EQ, Nat.add_comm (job_arrival j) (task_period tsk)]
+  exact Nat.add_le_add_right (Nat.le_mul_of_pos_left _ GT0) _
+
+theorem valid_periods_are_valid_inter_arrival_times :
+    ∀ (ts : TaskSet Task), valid_periods ts → valid_taskset_inter_arrival_times ts := by
+  intro ts h
+  exact h
+
+theorem periodic_task_sets_respect_sporadic_task_model :
+    ∀ (ts : TaskSet Task) (arr_seq : arrival_sequence Job),
+      taskset_respects_periodic_task_model ts arr_seq →
+      taskset_respects_sporadic_task_model ts arr_seq := by
+  intro ts arr_seq PERIODIC tsk H_IN
+  exact periodic_task_respects_sporadic_task_model arr_seq tsk (PERIODIC tsk H_IN)
+
+end PeriodicTasksAsSporadicTasks
+
+end Prosa.Model.Task.Arrival.Periodic

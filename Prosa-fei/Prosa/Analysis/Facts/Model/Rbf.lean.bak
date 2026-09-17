@@ -1,0 +1,145 @@
+-- Translated from: ../rt-proofs/analysis/facts/model/rbf.v
+import Prosa.Analysis.Facts.Model.Workload
+import Prosa.Analysis.Definitions.Job_properties
+import Prosa.Analysis.Definitions.Request_bound_function
+
+namespace Prosa.Analysis.Facts.Model.Rbf
+
+open Prosa.Behavior.Job
+open Prosa.Behavior.Time
+open Prosa.Behavior.Schedule
+open Prosa.Behavior.Arrival_sequence
+open Prosa.Model.Task.Concept
+open Prosa.Model.Task.Arrivals
+open Prosa.Model.Task.Arrival.Curves
+open Prosa.Model.Aggregate.Workload
+open Prosa.Model.Priority.Classes
+open Prosa.Model.Processor.Ideal
+open Prosa.Analysis.Facts.Model.Workload
+open Prosa.Analysis.Definitions.Job_properties
+open Prosa.Analysis.Definitions.Request_bound_function
+open Prosa.Util.Rel
+
+section ProofWorkloadBound
+
+  variable {Task : TaskType}
+  variable [TaskCost Task]
+  variable [DecidableEq Task]
+
+  variable {Job : JobType}
+  variable [JobTask Job Task]
+  variable [JobArrival Job]
+  variable [JobCost Job]
+  variable [DecidableEq Job]
+
+  variable (arr_seq : arrival_sequence Job)
+  variable (H_arrival_times_are_consistent : consistent_arrival_times arr_seq)
+  variable (H_arr_seq_is_a_set : arrival_sequence_uniq arr_seq)
+
+  variable (sched : schedule (processor_state Job))
+  variable (H_jobs_come_from_arrival_sequence :
+    Prosa.Behavior.Ready.jobs_come_from_arrival_sequence sched arr_seq)
+
+  variable [FP_policy Task]
+
+  variable (ts : List Task)
+
+  variable (tsk : Task)
+  variable (H_tsk_in_ts : tsk ∈ ts)
+
+  variable (H_valid_job_cost : arrivals_have_valid_job_costs (Task := Task) arr_seq)
+
+  variable (H_all_jobs_from_taskset : all_jobs_from_taskset (Task := Task) arr_seq ts)
+
+  variable [MaxArrivals Task]
+  variable (H_is_arrival_bound : taskset_respects_max_arrivals arr_seq ts)
+
+  variable (j : Job)
+  variable (H_j_arrives : arrives_in arr_seq j)
+  variable (H_job_of_tsk : job_task j = tsk)
+
+  section WorkloadIsBoundedByRBF
+
+    variable (t : instant)
+    variable (delta : instant)
+
+    theorem task_workload_le_num_of_arrivals_times_cost :
+        workload_of_jobs (job_of_task tsk) (arrivals_between arr_seq t (t + delta))
+        ≤ task_cost tsk * number_of_task_arrivals arr_seq tsk t (t + delta) := by
+      sorry
+
+    theorem task_workload_le_task_rbf :
+        workload_of_jobs (job_of_task tsk) (arrivals_between arr_seq t (t + delta))
+        ≤ task_request_bound_function tsk delta := by
+      sorry
+
+    theorem total_workload_le_total_rbf :
+        workload_of_jobs
+          (fun (j_other : Job) => (FP_to_JLFP Job Task).hep_job j_other j &&
+            (!same_task (Task := Task) j_other j))
+          (arrivals_between arr_seq t (t + delta))
+        ≤ total_ohep_request_bound_function_FP ts tsk delta := by
+      sorry
+
+    theorem total_workload_le_total_rbf' :
+        workload_of_jobs
+          (fun (j_other : Job) => (FP_to_JLFP Job Task).hep_job j_other j)
+          (arrivals_between arr_seq t (t + delta))
+        ≤ total_hep_request_bound_function_FP ts tsk delta := by
+      sorry
+
+    theorem total_workload_le_total_rbf'' :
+        workload_of_jobs (fun (_ : Job) => true) (arrivals_between arr_seq t (t + delta))
+        ≤ total_request_bound_function ts delta := by
+      sorry
+
+  end WorkloadIsBoundedByRBF
+
+end ProofWorkloadBound
+
+section RequestBoundFunctions
+
+  variable {Task : TaskType}
+  variable [TaskCost Task]
+  variable [DecidableEq Task]
+
+  variable {Job : JobType}
+  variable [JobTask Job Task]
+  variable [JobArrival Job]
+
+  variable (arr_seq : arrival_sequence Job)
+  variable (H_arrival_times_are_consistent : consistent_arrival_times arr_seq)
+
+  variable (tsk : Task)
+
+  variable [MaxArrivals Task]
+  variable (H_valid_arrival_curve : valid_arrival_curve tsk (max_arrivals tsk))
+  variable (H_is_arrival_curve : respects_max_arrivals arr_seq tsk (max_arrivals tsk))
+
+  theorem task_rbf_0_zero :
+      task_request_bound_function tsk 0 = 0 := by
+    sorry
+
+  theorem task_rbf_monotone :
+      Prosa.Util.Rel.monotone (task_request_bound_function tsk) Nat.ble := by
+    sorry
+
+  variable [JobCost Job]
+
+  variable (j : Job)
+  variable (H_j_arrives : arrives_in arr_seq j)
+  variable (H_job_of_tsk : job_task j = tsk)
+
+  theorem task_rbf_1_ge_task_cost
+      (_use_arr := arr_seq)
+      (_use_consist := H_arrival_times_are_consistent)
+      (_use_curve := H_is_arrival_curve)
+      (_use_j := j)
+      (_use_arrives := H_j_arrives)
+      (_use_of_tsk := H_job_of_tsk) :
+      task_request_bound_function tsk 1 ≥ task_cost tsk := by
+    sorry
+
+end RequestBoundFunctions
+
+end Prosa.Analysis.Facts.Model.Rbf

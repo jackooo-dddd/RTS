@@ -1,0 +1,74 @@
+-- Translated from: ../rt-proofs/classic/model/schedule/uni/limited/rbf.v
+import Prosa.Classic.Util.All
+import Prosa.Classic.Model.Time
+import Prosa.Classic.Model.Schedule.Uni.Schedule
+import Prosa.Classic.Model.Arrival.Curves.Bounds
+import Prosa.Classic.Analysis.Uni.Arrival_curves.Workload_bound
+import Mathlib.Tactic
+
+namespace Prosa.Classic.Model.Schedule.Uni.Limited.Rbf
+
+open Prosa.Classic.Model.Time
+open Prosa.Classic.Model.Arrival.Basic.Arrival_sequence
+open Prosa.Classic.Model.Arrival.Curves.Bounds.ArrivalCurves
+open Prosa.Classic.Model.Priority
+open Prosa.Classic.Analysis.Uni.Arrival_curves.Workload_bound.MaxArrivalsWorkloadBound
+
+namespace RBF
+
+section RBFProperties
+
+variable {Task : Type*} [DecidableEq Task]
+variable (task_cost : Task → Time)
+
+variable {Job : Type*} [DecidableEq Job]
+variable (job_arrival : Job → Time)
+variable (job_task : Job → Task)
+
+variable (arr_seq : arrival_sequence Job)
+variable (H_arrival_times_are_consistent : arrival_times_are_consistent job_arrival arr_seq)
+
+variable (higher_eq_priority : FP_policy Task)
+variable (H_priority_is_reflexive : FP_is_reflexive higher_eq_priority)
+variable (H_priority_is_transitive : FP_is_transitive higher_eq_priority)
+
+variable (tsk : Task)
+
+variable (max_arrivals : Task → Time → Nat)
+variable (H_proper_arrival_curve : proper_arrival_curve job_task arr_seq max_arrivals tsk)
+
+private abbrev task_rbf_val (delta : Time) : Time :=
+  task_request_bound_function task_cost max_arrivals tsk delta
+
+include H_proper_arrival_curve in
+theorem task_rbf_0_zero :
+    task_request_bound_function task_cost max_arrivals tsk 0 = 0 := by
+  unfold task_request_bound_function
+  have ⟨_, hzero, _⟩ := H_proper_arrival_curve
+  unfold zero_arrival_curve at hzero
+  rw [hzero]
+  simp
+
+include H_proper_arrival_curve in
+theorem task_rbf_monotone :
+    Monotone (task_request_bound_function task_cost max_arrivals tsk) := by
+  intro a b hab
+  unfold task_request_bound_function
+  have ⟨_, _, hmono⟩ := H_proper_arrival_curve
+  unfold monotonic_arrival_curve at hmono
+  exact Nat.mul_le_mul_left _ (hmono hab)
+
+variable (j : Job)
+variable (H_j_arrives : arrives_in arr_seq j)
+variable (H_job_of_tsk : job_task j = tsk)
+
+include H_arrival_times_are_consistent H_proper_arrival_curve H_j_arrives H_job_of_tsk in
+theorem task_rbf_1_ge_task_cost :
+    task_request_bound_function task_cost max_arrivals tsk 1 ≥ task_cost tsk := by
+  sorry
+
+end RBFProperties
+
+end RBF
+
+end Prosa.Classic.Model.Schedule.Uni.Limited.Rbf

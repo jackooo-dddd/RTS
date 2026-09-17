@@ -1,0 +1,33 @@
+-- Translated from: ../rt-proofs/model/priority/fifo.v
+import Prosa.Model.Priority.Classes
+
+namespace Prosa.Model.Priority.Fifo
+
+open Prosa.Behavior.Job
+open Prosa.Behavior.Time
+open Prosa.Model.Priority.Classes
+
+/-- The FIFO priority policy: jobs are prioritized in order of arrival time. -/
+@[reducible]
+def FIFO (Job : JobType) [JobArrival Job] : JLFP_policy Job where
+  hep_job := fun j1 j2 => Nat.ble (job_arrival j1) (job_arrival j2)
+
+section Properties
+
+  variable {Job : JobType}
+  variable [JobArrival Job]
+
+  attribute [local instance] FIFO
+
+  @[reducible, local instance]
+  noncomputable def fifo_jldp : JLDP_policy Job := JLFP_to_JLDP Job
+
+  lemma FIFO_is_reflexive : reflexive_priorities (Job := Job) := by sorry
+
+  lemma FIFO_is_transitive : transitive_priorities (Job := Job) := by sorry
+
+  lemma FIFO_is_total : total_priorities (Job := Job) := by sorry
+
+end Properties
+
+end Prosa.Model.Priority.Fifo

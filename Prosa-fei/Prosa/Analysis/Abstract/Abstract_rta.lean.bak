@@ -1,0 +1,216 @@
+-- Translated from: ../rt-proofs/analysis/abstract/abstract_rta.v
+import Prosa.Analysis.Definitions.Schedulability
+import Prosa.Analysis.Abstract.Search_space
+import Prosa.Analysis.Abstract.Run_to_completion
+
+namespace Prosa.Analysis.Abstract.Abstract_rta
+
+open Prosa.Behavior.Job
+open Prosa.Behavior.Time
+open Prosa.Behavior.Schedule
+open Prosa.Behavior.Service
+open Prosa.Behavior.Arrival_sequence
+open Prosa.Behavior.Ready
+open Prosa.Model.Task.Concept
+open Prosa.Model.Processor.Ideal
+open Prosa.Model.Processor.Platform_properties
+open Prosa.Model.Preemption.Parameter
+open Prosa.Model.Task.Preemption.Parameters
+open Prosa.Analysis.Abstract.Definitions
+open Prosa.Analysis.Abstract.Search_space
+open Prosa.Analysis.Abstract.Run_to_completion
+open Prosa.Analysis.Definitions.Schedulability
+open Prosa.Analysis.Definitions.Job_properties
+open Prosa.Analysis.Facts.Behavior.Completion
+open Prosa.Analysis.Facts.Behavior.Service
+open Prosa.Analysis.Facts.Preemption.Rtc_threshold.Job_preemptable
+
+section Abstract_RTA
+
+variable {Task : TaskType}
+variable [TaskCost Task]
+variable [TaskRunToCompletionThreshold Task]
+
+variable {Job : JobType}
+variable [DecidableEq Job]
+variable [JobTask Job Task]
+variable [JobArrival Job]
+variable [JobCost Job]
+variable [JobPreemptable Job]
+
+variable (arr_seq : arrival_sequence Job)
+variable (H_arrival_times_are_consistent : consistent_arrival_times arr_seq)
+variable (H_arr_seq_is_a_set : arrival_sequence_uniq arr_seq)
+
+attribute [local instance] pstate_instance
+
+variable (sched : schedule (processor_state Job))
+variable (H_jobs_come_from_arrival_sequence :
+  jobs_come_from_arrival_sequence (Job := Job) sched arr_seq)
+
+variable (H_jobs_must_arrive_to_execute : jobs_must_arrive_to_execute (Job := Job) sched)
+variable (H_completed_jobs_dont_execute : completed_jobs_dont_execute (Job := Job) sched)
+
+variable (H_valid_job_cost : arrivals_have_valid_job_costs (Task := Task) arr_seq)
+
+variable (ts : List Task)
+variable (tsk : Task)
+variable (H_tsk_in_ts : tsk ∈ ts)
+
+variable (H_valid_preemption_model : valid_preemption_model arr_seq sched)
+
+variable (H_valid_run_to_completion_threshold :
+  valid_task_run_to_completion_threshold arr_seq tsk)
+
+variable (interference : Job → instant → Bool)
+variable (interfering_workload : Job → instant → duration)
+
+variable (H_work_conserving :
+  work_conserving arr_seq sched tsk interference interfering_workload)
+
+variable (L : duration)
+variable (H_busy_interval_exists :
+  busy_intervals_are_bounded_by arr_seq sched tsk interference interfering_workload L)
+
+variable (interference_bound_function : Task → duration → duration → duration)
+variable (H_job_interference_is_bounded :
+  job_interference_is_bounded_by arr_seq sched tsk interference interfering_workload
+    interference_bound_function)
+
+variable (R : Nat)
+variable (H_R_is_maximum :
+  ∀ A,
+    is_in_search_space tsk L interference_bound_function A →
+    ∃ F,
+      A + F = task_run_to_completion_threshold tsk
+              + interference_bound_function tsk A (A + F) ∧
+      F + (task_cost tsk - task_run_to_completion_threshold tsk) ≤ R)
+
+section ProofOfTheorem
+
+variable (j : Job)
+variable (H_j_arrives : arrives_in arr_seq j)
+variable (H_job_of_tsk : job_task j = tsk)
+variable (H_job_cost_positive : job_cost_positive j)
+
+variable (t1 t2 : instant)
+variable (H_busy_interval :
+  busy_interval sched interference interfering_workload j t1 t2)
+
+private noncomputable def A_val (j : Job) (t1 : instant) : Nat := job_arrival j - t1
+
+variable (A_sp F_sp : duration)
+
+variable (H_A_gt_Asp : A_sp ≤ A_val j t1)
+variable (H_equivalent :
+  are_equivalent_at_values_less_than
+    (interference_bound_function tsk (A_val j t1))
+    (interference_bound_function tsk A_sp) L)
+variable (H_Asp_is_in_search_space :
+  is_in_search_space tsk L interference_bound_function A_sp)
+variable (H_Asp_Fsp_fixpoint :
+  A_sp + F_sp = task_run_to_completion_threshold tsk
+    + interference_bound_function tsk A_sp (A_sp + F_sp))
+variable (H_R_gt_Fsp :
+  F_sp + (task_cost tsk - task_run_to_completion_threshold tsk) ≤ R)
+
+section FixpointOutsideBusyInterval
+
+variable (H_big_fixpoint_solution : t2 ≤ t1 + (A_sp + F_sp))
+
+include H_busy_interval H_A_gt_Asp H_R_gt_Fsp H_big_fixpoint_solution in
+theorem t2_le_arrival_plus_R :
+    t2 ≤ job_arrival j + R := by sorry
+
+include H_busy_interval H_A_gt_Asp H_R_gt_Fsp H_big_fixpoint_solution
+  H_completed_jobs_dont_execute H_work_conserving H_j_arrives H_job_of_tsk
+  H_job_cost_positive H_arrival_times_are_consistent in
+theorem job_completed_by_arrival_plus_R_1 :
+    completed_by sched j (job_arrival j + R) := by sorry
+
+end FixpointOutsideBusyInterval
+
+section FixpointInsideBusyInterval
+
+variable (H_small_fixpoint_solution : t1 + (A_sp + F_sp) < t2)
+
+section FixpointIsNoLessThanArrival
+
+variable (H_fixpoint_is_no_less_than_relative_arrival_of_j : A_val j t1 ≤ A_sp + F_sp)
+
+section ProofByContradiction
+
+variable (F : duration)
+variable (H_Asp_Fsp_eq_A_F : A_sp + F_sp = A_val j t1 + F)
+variable (H_F_le_Fsp : F ≤ F_sp)
+variable (H_A_F_fixpoint :
+  A_val j t1 + F = task_run_to_completion_threshold tsk
+    + interference_bound_function tsk (A_val j t1) (A_val j t1 + F))
+
+variable (H_j_not_completed : ¬ completed_by sched j (job_arrival j + R))
+
+private noncomputable def job_last_val (j : Job) : Nat :=
+  job_cost j - job_run_to_completion_threshold j
+
+private noncomputable def optimism_val (tsk : Task) (j : Job) : Nat :=
+  task_run_to_completion_threshold tsk - job_run_to_completion_threshold j
+
+include H_busy_interval H_work_conserving H_j_arrives H_job_of_tsk H_job_cost_positive
+  H_arrival_times_are_consistent H_valid_run_to_completion_threshold
+  H_valid_preemption_model H_completed_jobs_dont_execute
+  H_job_interference_is_bounded H_Asp_Fsp_eq_A_F H_A_F_fixpoint
+  H_j_not_completed H_small_fixpoint_solution in
+theorem j_is_completed_by_t1_A_F_optimist_last :
+    completed_by sched j
+      (t1 + (A_val j t1 + F - optimism_val tsk j) + job_last_val j) := by sorry
+
+section AuxiliaryInequalities
+
+include H_busy_interval H_work_conserving H_j_arrives H_job_of_tsk H_job_cost_positive
+  H_arrival_times_are_consistent H_jobs_must_arrive_to_execute
+  H_job_interference_is_bounded H_Asp_Fsp_eq_A_F H_A_F_fixpoint
+  H_j_not_completed H_small_fixpoint_solution H_F_le_Fsp in
+theorem relative_arrival_le_interference_bound :
+    A_val j t1 ≤ interference_bound_function tsk (A_val j t1) (A_val j t1 + F) := by sorry
+
+include H_A_F_fixpoint in
+theorem tsk_run_to_completion_threshold_le_Fsp :
+    task_run_to_completion_threshold tsk ≤ F_sp := by sorry
+
+include H_A_F_fixpoint in
+theorem optimism_le_F :
+    optimism_val tsk j ≤ F := by sorry
+
+end AuxiliaryInequalities
+
+include H_busy_interval H_valid_run_to_completion_threshold H_valid_job_cost
+  H_A_gt_Asp H_R_gt_Fsp H_job_of_tsk H_A_F_fixpoint H_F_le_Fsp in
+theorem t1_A_F_optimist_last_le_arrival_R :
+    t1 + (A_val j t1 + F - optimism_val tsk j) + job_last_val j ≤ job_arrival j + R := by sorry
+
+include H_busy_interval H_work_conserving H_j_arrives H_job_of_tsk H_job_cost_positive
+  H_arrival_times_are_consistent H_valid_run_to_completion_threshold
+  H_valid_preemption_model H_completed_jobs_dont_execute H_valid_job_cost
+  H_jobs_must_arrive_to_execute H_job_interference_is_bounded
+  H_Asp_Fsp_eq_A_F H_A_F_fixpoint H_j_not_completed H_small_fixpoint_solution
+  H_A_gt_Asp H_R_gt_Fsp H_F_le_Fsp in
+theorem j_is_completed_earlier_contradiction :
+    False := by sorry
+
+end ProofByContradiction
+
+include H_busy_interval H_work_conserving H_j_arrives H_job_of_tsk H_job_cost_positive
+  H_arrival_times_are_consistent H_valid_run_to_completion_threshold
+  H_valid_preemption_model H_completed_jobs_dont_execute H_valid_job_cost
+  H_jobs_must_arrive_to_execute H_job_interference_is_bounded
+  H_small_fixpoint_solution H_A_gt_Asp H_R_gt_Fsp
+  H_Asp_Fsp_fixpoint H_equivalent H_Asp_is_in_search_space
+  H_busy_interval_exists in
+theorem job_completed_by_arrival_plus_R_2 :
+    completed_by sched j (job_arrival j + R) := by sorry
+
+end FixpointIsNoLessThanArrival
+
+section FixpointCannotBeSmallerThanArrival
+
+variable (H_fixpoint_is_less_that_relative_arrival_of_j : A_

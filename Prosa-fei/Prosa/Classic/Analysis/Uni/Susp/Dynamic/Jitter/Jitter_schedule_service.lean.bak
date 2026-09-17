@@ -1,0 +1,147 @@
+-- Translated from: ../rt-proofs/classic/analysis/uni/susp/dynamic/jitter/jitter_schedule_service.v
+import Prosa.Classic.Util.All
+import Prosa.Classic.Model.Priority
+import Prosa.Classic.Model.Arrival.Basic.Job
+import Prosa.Classic.Model.Arrival.Jitter.Job
+import Prosa.Classic.Model.Schedule.Uni.Schedulability
+import Prosa.Classic.Model.Schedule.Uni.Jitter.Schedule
+import Prosa.Classic.Model.Schedule.Uni.Susp.Suspension_intervals
+import Prosa.Classic.Analysis.Uni.Susp.Dynamic.Jitter.Jitter_schedule
+import Prosa.Classic.Model.Schedule.Uni.Transformation.Construction
+import Prosa.Classic.Model.Arrival.Basic.Task_arrival
+import Prosa.Classic.Model.Arrival.Basic.Arrival_sequence
+import Prosa.Classic.Model.Arrival.Jitter.Arrival_sequence
+import Prosa.Classic.Model.Schedule.Uni.Schedule
+import Prosa.Classic.Model.Schedule.Uni.Service
+import Prosa.Classic.Model.Schedule.Uni.Workload
+import Prosa.Classic.Model.Suspension
+import Prosa.Classic.Model.Schedule.Uni.Response_time
+noncomputable section
+namespace Prosa.Classic.Analysis.Uni.Susp.Dynamic.Jitter.Jitter_schedule_service
+open Prosa.Classic.Model.Time
+open Prosa.Classic.Model.Priority
+open Prosa.Classic.Model.Suspension
+open Prosa.Classic.Model.Arrival.Basic.Arrival_sequence
+open Prosa.Classic.Model.Arrival.Basic.Task_arrival
+open Prosa.Classic.Model.Arrival.Basic.Task.SporadicTaskset
+open Prosa.Classic.Model.Arrival.Jitter.Arrival_sequence
+open Prosa.Classic.Model.Schedule.Uni.Schedule
+open Prosa.Classic.Model.Schedule.Uni.Jitter.Schedule
+open Prosa.Classic.Model.Schedule.Uni.Susp.Suspension_intervals
+open Prosa.Classic.Model.Schedule.Uni.Workload
+open Prosa.Classic.Model.Schedule.Uni.Service
+open Prosa.Classic.Model.Schedule.Uni.Response_time.ResponseTime
+open Prosa.Classic.Analysis.Uni.Susp.Dynamic.Jitter.Jitter_schedule.JitterScheduleConstruction
+def valid_suspension_aware_schedule {Task : Type*} [DecidableEq Task] {Job : Type*} [DecidableEq Job] (job_arrival : Job → Time) (arr_seq : arrival_sequence Job) (higher_eq_priority : JLDP_policy Job) (job_suspension_duration : job_suspension Job) (job_cost : Job → Time) (sched_susp : schedule Job) : Prop :=
+  jobs_come_from_arrival_sequence sched_susp arr_seq ∧ jobs_must_arrive_to_execute job_arrival sched_susp ∧ completed_jobs_dont_execute job_cost sched_susp ∧
+  (∀ j t, arrives_in arr_seq j → (pending job_arrival job_cost sched_susp j t ∧ ¬ (scheduled_at sched_susp j t = true) ∧ ¬ suspended_at job_arrival job_cost job_suspension_duration sched_susp j t) → ∃ j_other, scheduled_at sched_susp j_other t = true) ∧
+  (∀ j j_hp t, arrives_in arr_seq j → (pending job_arrival job_cost sched_susp j t ∧ ¬ (scheduled_at sched_susp j t = true) ∧ ¬ suspended_at job_arrival job_cost job_suspension_duration sched_susp j t) → scheduled_at sched_susp j_hp t = true → higher_eq_priority t j_hp j = true) ∧
+  respects_self_suspensions job_arrival job_cost job_suspension_duration sched_susp
+section ProvingScheduleProperties
+variable {Task : Type*} [DecidableEq Task]
+variable (task_cost task_period task_deadline : Task → Time)
+variable {Job : Type*} [DecidableEq Job]
+variable (job_arrival job_cost job_deadline : Job → Time) (job_task : Job → Task)
+variable (ts : List Task) (arr_seq : arrival_sequence Job)
+variable (H_arrival_times_are_consistent : arrival_times_are_consistent job_arrival arr_seq)
+variable (H_arrival_sequence_is_a_set : arrival_sequence_is_a_set arr_seq)
+variable (H_jobs_from_taskset : ∀ j, arrives_in arr_seq j → job_task j ∈ ts)
+variable (H_job_deadlines_equal_task_deadlines : ∀ j, arrives_in arr_seq j → job_deadline j = task_deadline (job_task j))
+variable (H_constrained_deadlines : constrained_deadline_model task_period task_deadline ts)
+variable (H_sporadic_arrivals : sporadic_task_model task_period job_arrival job_task arr_seq)
+variable (higher_eq_priority : FP_policy Task)
+variable (H_priority_is_reflexive : FP_is_reflexive higher_eq_priority)
+variable (H_priority_is_transitive : FP_is_transitive higher_eq_priority)
+variable (H_priority_is_total : FP_is_total_over_task_set higher_eq_priority ts)
+variable (job_suspension_duration : job_suspension Job) (sched_susp : schedule Job)
+variable (H_valid_schedule : @valid_suspension_aware_schedule Task _ Job _ job_arrival arr_seq (FP_to_JLDP job_task higher_eq_priority) job_suspension_duration job_cost sched_susp)
+variable (j : Job) (H_from_arrival_sequence : arrives_in arr_seq j) (R_j : Time) (R_hp : Job → Time)
+variable (H_bounded_response_time_of_hp_jobs : ∀ j_hp, arrives_in arr_seq j_hp → (higher_eq_priority (job_task j_hp) (job_task j) && decide (job_task j_hp ≠ job_task j)) = true → is_response_time_bound_of_job job_arrival job_cost sched_susp j_hp (R_hp j_hp))
+variable (H_no_deadline_misses_for_previous_jobs : ∀ j0, arrives_in arr_seq j0 → job_arrival j0 < job_arrival j → job_task j0 = job_task j → Prosa.Classic.Model.Schedule.Uni.Schedulability.job_misses_no_deadline job_arrival job_cost job_deadline sched_susp j0)
+def workload_of_other_hep_jobs_in_sched_susp (t1 t2 : Time) : Nat :=
+  workload_of_jobs job_cost (jobs_arrived_between arr_seq t1 t2) (fun j_hp => higher_eq_priority (job_task j_hp) (job_task j) && decide (j_hp ≠ j))
+def workload_of_other_hep_jobs_in_sched_jitter (t1 t2 : Time) : Nat :=
+  workload_of_jobs (inflated_job_cost job_cost job_suspension_duration j) (actual_arrivals_between job_arrival (job_jitter job_arrival job_task higher_eq_priority job_cost j R_hp) arr_seq t1 t2) (fun j_hp => higher_eq_priority (job_task j_hp) (job_task j) && decide (j_hp ≠ j))
+def service_of_other_hep_jobs_in_sched_susp (t1 t2 : Time) : Nat :=
+  service_of_jobs sched_susp (jobs_arrived_between arr_seq 0 (job_arrival j + R_j)) (fun j_hp => higher_eq_priority (job_task j_hp) (job_task j) && decide (j_hp ≠ j)) t1 t2
+def service_of_other_hep_jobs_in_sched_jitter (t1 t2 : Time) : Nat :=
+  service_of_jobs (sched_jitter job_arrival job_task higher_eq_priority job_cost job_suspension_duration arr_seq j R_hp) (actual_arrivals_between job_arrival (job_jitter job_arrival job_task higher_eq_priority job_cost j R_hp) arr_seq 0 (job_arrival j + R_j)) (fun j_hp => higher_eq_priority (job_task j_hp) (job_task j) && decide (j_hp ≠ j)) t1 t2
+section AuxiliaryLemmas
+section ServiceEqualsWorkload
+variable (t : Time) (H_before_end_of_interval : t ≤ job_arrival j + R_j)
+variable (H_workload_has_finished : ∀ j_hp, arrives_in arr_seq j_hp → actual_arrival_before job_arrival (job_jitter job_arrival job_task higher_eq_priority job_cost j R_hp) j_hp t → (higher_eq_priority (job_task j_hp) (job_task j) && decide (j_hp ≠ j)) = true → completed_by (inflated_job_cost job_cost job_suspension_duration j) (sched_jitter job_arrival job_task higher_eq_priority job_cost job_suspension_duration arr_seq j R_hp) j_hp t)
+theorem jitter_reduction_service_equals_workload_in_jitter : service_of_other_hep_jobs_in_sched_jitter job_arrival job_cost job_task arr_seq higher_eq_priority job_suspension_duration j R_j R_hp 0 t ≥ workload_of_other_hep_jobs_in_sched_jitter job_arrival job_cost job_task arr_seq higher_eq_priority job_suspension_duration j R_hp 0 t := by sorry
+end ServiceEqualsWorkload
+section ServiceBoundedByWorkload
+variable (t : Time) (H_before_end_of_interval : t ≤ job_arrival j + R_j)
+theorem jitter_reduction_service_in_sched_susp_le_workload : service_of_other_hep_jobs_in_sched_susp job_arrival job_task arr_seq higher_eq_priority sched_susp j R_j 0 t ≤ workload_of_other_hep_jobs_in_sched_susp job_cost job_task arr_seq higher_eq_priority j 0 t := by sorry
+end ServiceBoundedByWorkload
+end AuxiliaryLemmas
+section LessServiceBeforeArrival
+section LessServiceForEachJob
+variable (j_hp : Job) (H_arrives : arrives_in arr_seq j_hp)
+variable (H_higher_or_equal_priority : (higher_eq_priority (job_task j_hp) (job_task j) && decide (j_hp ≠ j)) = true)
+section Case1
+variable (H_same_task : job_task j_hp = job_task j)
+theorem jitter_reduction_less_job_service_before_interval_case1 : service (sched_jitter job_arrival job_task higher_eq_priority job_cost job_suspension_duration arr_seq j R_hp) j_hp (job_arrival j) ≤ service sched_susp j_hp (job_arrival j) := by sorry
+end Case1
+section Case2
+variable (H_different_task : job_task j_hp ≠ job_task j) (H_released_no_earlier : job_arrival j ≤ actual_arrival job_arrival (job_jitter job_arrival job_task higher_eq_priority job_cost j R_hp) j_hp)
+theorem jitter_reduction_less_job_service_before_interval_case2 : service (sched_jitter job_arrival job_task higher_eq_priority job_cost job_suspension_duration arr_seq j R_hp) j_hp (job_arrival j) ≤ service sched_susp j_hp (job_arrival j) := by sorry
+end Case2
+section Case3
+variable (H_different_task : job_task j_hp ≠ job_task j) (H_distance_is_smaller : job_arrival j - job_arrival j_hp < R_hp j_hp - job_cost j_hp)
+theorem jitter_reduction_less_job_service_before_interval_case3 : service (sched_jitter job_arrival job_task higher_eq_priority job_cost job_suspension_duration arr_seq j R_hp) j_hp (job_arrival j) ≤ service sched_susp j_hp (job_arrival j) := by sorry
+end Case3
+section Case4
+variable (H_different_task : job_task j_hp ≠ job_task j) (H_completes_before_j_arrives : job_arrival j_hp + R_hp j_hp ≤ job_arrival j)
+theorem jitter_reduction_less_job_service_before_interval_case4 : service (sched_jitter job_arrival job_task higher_eq_priority job_cost job_suspension_duration arr_seq j R_hp) j_hp (job_arrival j) ≤ service sched_susp j_hp (job_arrival j) := by sorry
+end Case4
+section Case5
+variable (H_different_task : job_task j_hp ≠ job_task j) (H_released_before : actual_arrival job_arrival (job_jitter job_arrival job_task higher_eq_priority job_cost j R_hp) j_hp < job_arrival j) (H_j_hp_completes_after_j_arrives : job_arrival j < job_arrival j_hp + R_hp j_hp) (H_distance_is_not_smaller : R_hp j_hp - job_cost j_hp ≤ job_arrival j - job_arrival j_hp)
+theorem jitter_reduction_jitter_equals_R_minus_cost : job_jitter job_arrival job_task higher_eq_priority job_cost j R_hp j_hp = R_hp j_hp - job_cost j_hp := by sorry
+theorem jitter_reduction_less_job_service_before_interval_case5 : service (sched_jitter job_arrival job_task higher_eq_priority job_cost job_suspension_duration arr_seq j R_hp) j_hp (job_arrival j) ≤ service sched_susp j_hp (job_arrival j) := by sorry
+end Case5
+theorem jitter_reduction_less_job_service_before_interval : service (sched_jitter job_arrival job_task higher_eq_priority job_cost job_suspension_duration arr_seq j R_hp) j_hp (job_arrival j) ≤ service sched_susp j_hp (job_arrival j) := by sorry
+end LessServiceForEachJob
+theorem jitter_reduction_less_service_before_the_interval : service_of_other_hep_jobs_in_sched_jitter job_arrival job_cost job_task arr_seq higher_eq_priority job_suspension_duration j R_j R_hp 0 (job_arrival j) ≤ service_of_other_hep_jobs_in_sched_susp job_arrival job_task arr_seq higher_eq_priority sched_susp j R_j 0 (job_arrival j) := by sorry
+end LessServiceBeforeArrival
+section MoreServiceAfterArrival
+section Conservation
+variable (t : Time) (H_no_earlier_than_j : t ≥ job_arrival j)
+theorem jitter_reduction_actual_arrival_before_end_of_interval : ∀ j_hp, (higher_eq_priority (job_task j_hp) (job_task j) && decide (j_hp ≠ j)) = true → job_arrival j_hp ≤ t → actual_arrival job_arrival (job_jitter job_arrival job_task higher_eq_priority job_cost j R_hp) j_hp ≤ t := by sorry
+theorem jitter_reduction_workload_conservation_inside_interval : workload_of_other_hep_jobs_in_sched_susp job_cost job_task arr_seq higher_eq_priority j 0 (t + 1) ≤ workload_of_other_hep_jobs_in_sched_jitter job_arrival job_cost job_task arr_seq higher_eq_priority job_suspension_duration j R_hp 0 (t + 1) := by sorry
+end Conservation
+section MoreServiceInsideTheInterval
+section InductiveStep
+variable (d : Time) (H_d_lt_R : d < R_j)
+variable (H_induction_hypothesis : service_of_other_hep_jobs_in_sched_susp job_arrival job_task arr_seq higher_eq_priority sched_susp j R_j (job_arrival j) (job_arrival j + d) ≤ service_of_other_hep_jobs_in_sched_jitter job_arrival job_cost job_task arr_seq higher_eq_priority job_suspension_duration j R_j R_hp (job_arrival j) (job_arrival j + d))
+section NoPendingJobs
+variable (H_all_jobs_completed_in_sched_jitter : ∀ j_hp, arrives_in arr_seq j_hp → (higher_eq_priority (job_task j_hp) (job_task j) && decide (j_hp ≠ j)) = true → jitter_has_passed job_arrival (job_jitter job_arrival job_task higher_eq_priority job_cost j R_hp) j_hp (job_arrival j + d) → completed_by (inflated_job_cost job_cost job_suspension_duration j) (sched_jitter job_arrival job_task higher_eq_priority job_cost job_suspension_duration arr_seq j R_hp) j_hp (job_arrival j + d))
+theorem jitter_reduction_convert_service_to_workload : service_of_other_hep_jobs_in_sched_susp job_arrival job_task arr_seq higher_eq_priority sched_susp j R_j (job_arrival j) (job_arrival j + d + 1) ≤ workload_of_other_hep_jobs_in_sched_susp job_cost job_task arr_seq higher_eq_priority j 0 (job_arrival j + d + 1) - service_of_other_hep_jobs_in_sched_susp job_arrival job_task arr_seq higher_eq_priority sched_susp j R_j 0 (job_arrival j) := by sorry
+theorem jitter_reduction_compare_workload : workload_of_other_hep_jobs_in_sched_susp job_cost job_task arr_seq higher_eq_priority j 0 (job_arrival j + d + 1) - service_of_other_hep_jobs_in_sched_susp job_arrival job_task arr_seq higher_eq_priority sched_susp j R_j 0 (job_arrival j) ≤ workload_of_other_hep_jobs_in_sched_jitter job_arrival job_cost job_task arr_seq higher_eq_priority job_suspension_duration j R_hp 0 (job_arrival j + d + 1) - service_of_other_hep_jobs_in_sched_susp job_arrival job_task arr_seq higher_eq_priority sched_susp j R_j 0 (job_arrival j) := by sorry
+theorem jitter_reduction_compare_service : workload_of_other_hep_jobs_in_sched_jitter job_arrival job_cost job_task arr_seq higher_eq_priority job_suspension_duration j R_hp 0 (job_arrival j + d + 1) - service_of_other_hep_jobs_in_sched_susp job_arrival job_task arr_seq higher_eq_priority sched_susp j R_j 0 (job_arrival j) ≤ workload_of_other_hep_jobs_in_sched_jitter job_arrival job_cost job_task arr_seq higher_eq_priority job_suspension_duration j R_hp 0 (job_arrival j + d + 1) - service_of_other_hep_jobs_in_sched_jitter job_arrival job_cost job_task arr_seq higher_eq_priority job_suspension_duration j R_j R_hp 0 (job_arrival j) := by sorry
+theorem jitter_reduction_convert_workload_to_service : workload_of_other_hep_jobs_in_sched_jitter job_arrival job_cost job_task arr_seq higher_eq_priority job_suspension_duration j R_hp 0 (job_arrival j + d + 1) - service_of_other_hep_jobs_in_sched_jitter job_arrival job_cost job_task arr_seq higher_eq_priority job_suspension_duration j R_j R_hp 0 (job_arrival j) ≤ service_of_other_hep_jobs_in_sched_jitter job_arrival job_cost job_task arr_seq higher_eq_priority job_suspension_duration j R_j R_hp (job_arrival j) (job_arrival j + d + 1) := by sorry
+theorem jitter_reduction_inductive_step_case1 : service_of_other_hep_jobs_in_sched_susp job_arrival job_task arr_seq higher_eq_priority sched_susp j R_j (job_arrival j) (job_arrival j + d + 1) ≤ service_of_other_hep_jobs_in_sched_jitter job_arrival job_cost job_task arr_seq higher_eq_priority job_suspension_duration j R_j R_hp (job_arrival j) (job_arrival j + d + 1) := by sorry
+end NoPendingJobs
+section ThereArePendingJobs
+variable (H_there_are_pending_jobs_in_sched_jitter : ∃ j_hp, arrives_in arr_seq j_hp ∧ (higher_eq_priority (job_task j_hp) (job_task j) && decide (j_hp ≠ j)) = true ∧ jitter_has_passed job_arrival (job_jitter job_arrival job_task higher_eq_priority job_cost j R_hp) j_hp (job_arrival j + d) ∧ ¬ completed_by (inflated_job_cost job_cost job_suspension_duration j) (sched_jitter job_arrival job_task higher_eq_priority job_cost job_suspension_duration arr_seq j R_hp) j_hp (job_arrival j + d))
+theorem jitter_reduction_inductive_step_case2 : service_of_other_hep_jobs_in_sched_susp job_arrival job_task arr_seq higher_eq_priority sched_susp j R_j (job_arrival j) (job_arrival j + d + 1) ≤ service_of_other_hep_jobs_in_sched_jitter job_arrival job_cost job_task arr_seq higher_eq_priority job_suspension_duration j R_j R_hp (job_arrival j) (job_arrival j + d + 1) := by sorry
+end ThereArePendingJobs
+end InductiveStep
+theorem jitter_reduction_more_service_inside_the_interval : ∀ d, d ≤ R_j → service_of_other_hep_jobs_in_sched_susp job_arrival job_task arr_seq higher_eq_priority sched_susp j R_j (job_arrival j) (job_arrival j + d) ≤ service_of_other_hep_jobs_in_sched_jitter job_arrival job_cost job_task arr_seq higher_eq_priority job_suspension_duration j R_j R_hp (job_arrival j) (job_arrival j + d) := by sorry
+end MoreServiceInsideTheInterval
+end MoreServiceAfterArrival
+section JitterAwareScheduleIsWorse
+theorem jitter_reduction_service_jitter : service_during (sched_jitter job_arrival job_task higher_eq_priority job_cost job_suspension_duration arr_seq j R_hp) j (job_arrival j) (job_arrival j + R_j) ≤ R_j - service_of_other_hep_jobs_in_sched_jitter job_arrival job_cost job_task arr_seq higher_eq_priority job_suspension_duration j R_j R_hp (job_arrival j) (job_arrival j + R_j) := by sorry
+section JobNotCompleted
+variable (H_j_not_completed : ¬ completed_by job_cost sched_susp j (job_arrival j + R_j))
+theorem jitter_reduction_service_susp : R_j - service_of_other_hep_jobs_in_sched_susp job_arrival job_task arr_seq higher_eq_priority sched_susp j R_j (job_arrival j) (job_arrival j + R_j) ≤ service_during sched_susp j (job_arrival j) (job_arrival j + R_j) + cumulative_suspension_during job_arrival job_cost job_suspension_duration sched_susp j (job_arrival j) (job_arrival j + R_j) := by sorry
+theorem jitter_reduction_less_service_for_job_j : service_during (sched_jitter job_arrival job_task higher_eq_priority job_cost job_suspension_duration arr_seq j R_hp) j (job_arrival j) (job_arrival j + R_j) ≤ service_during sched_susp j (job_arrival j) (job_arrival j + R_j) + cumulative_suspension_during job_arrival job_cost job_suspension_duration sched_susp j (job_arrival j) (job_arrival j + R_j) := by sorry
+end JobNotCompleted
+variable (H_response_time_of_j_in_sched_jitter : is_response_time_bound_of_job job_arrival (inflated_job_cost job_cost job_suspension_duration j) (sched_jitter job_arrival job_task higher_eq_priority job_cost job_suspension_duration arr_seq j R_hp) j R_j)
+theorem jitter_reduction_job_j_completes_no_later : is_response_time_bound_of_job job_arrival job_cost sched_susp j R_j := by sorry
+end JitterAwareScheduleIsWorse
+end ProvingScheduleProperties
+end Prosa.Classic.Analysis.Uni.Susp.Dynamic.Jitter.Jitter_schedule_service
+end

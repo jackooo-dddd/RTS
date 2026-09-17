@@ -1,0 +1,272 @@
+-- Translated from: ../rt-proofs/analysis/facts/busy_interval/busy_interval.v
+import Prosa.Model.Schedule.Work_conserving
+import Prosa.Analysis.Definitions.Job_properties
+import Prosa.Analysis.Definitions.Priority_inversion
+import Prosa.Analysis.Facts.Behavior.All
+import Prosa.Analysis.Facts.Model.Service_of_jobs
+import Prosa.Model.Processor.Ideal
+import Prosa.Model.Readiness.Basic
+
+namespace Prosa.Analysis.Facts.Busy_interval.Busy_interval
+
+open Prosa.Behavior.Job
+open Prosa.Behavior.Time
+open Prosa.Behavior.Schedule
+open Prosa.Behavior.Service
+open Prosa.Behavior.Arrival_sequence
+open Prosa.Behavior.Ready
+open Prosa.Model.Task.Concept
+open Prosa.Model.Priority.Classes
+open Prosa.Model.Processor.Ideal
+open Prosa.Model.Schedule.Work_conserving
+open Prosa.Analysis.Definitions.Job_properties
+open Prosa.Analysis.Definitions.Priority_inversion
+open Prosa.Analysis.Definitions.Busy_interval
+open Prosa.Analysis.Facts.Behavior.Completion
+open Prosa.Analysis.Facts.Behavior.Service
+open Prosa.Analysis.Facts.Model.Service_of_jobs
+open Prosa.Model.Aggregate.Service_of_jobs
+open Prosa.Model.Aggregate.Workload
+
+set_option linter.dupNamespace false
+
+section ExistsBusyIntervalJLFP
+
+variable {Task : TaskType}
+variable [TaskCost Task]
+variable [DecidableEq Task]
+
+variable {Job : JobType}
+variable [DecidableEq Job]
+variable [JobTask Job Task]
+variable [JobArrival Job]
+variable [JobCost Job]
+
+variable (arr_seq : arrival_sequence Job)
+variable (H_arrival_times_are_consistent : consistent_arrival_times arr_seq)
+
+variable (sched : schedule (processor_state Job))
+variable (H_jobs_come_from_arrival_sequence :
+  jobs_come_from_arrival_sequence sched arr_seq)
+
+variable (H_jobs_must_arrive_to_execute : jobs_must_arrive_to_execute (Job := Job) sched)
+variable (H_completed_jobs_dont_execute : completed_jobs_dont_execute (Job := Job) sched)
+
+variable [JLFP_policy Job]
+
+attribute [local instance] JLFP_to_JLDP
+
+variable (tsk : Task)
+
+variable (j : Job)
+variable (H_from_arrival_sequence : arrives_in arr_seq j)
+variable (H_job_task : job_of_task tsk j = true)
+variable (H_job_cost_positive : job_cost_positive j)
+
+section BasicLemma
+
+variable (H_priority_is_reflexive : reflexive_priorities (Job := Job))
+
+variable (t1 t2 : instant)
+variable (H_busy_interval : busy_interval arr_seq sched j t1 t2)
+
+theorem job_completes_within_busy_interval :
+    completed_by sched j t2 := by
+  sorry
+
+end BasicLemma
+
+section ExistsPendingJob
+
+variable (t1 t2 : instant)
+variable (H_interval : t1 ≤ t2)
+variable (H_quiet : quiet_time arr_seq sched j t1)
+variable (H_not_quiet : ¬ quiet_time arr_seq sched j t2)
+
+theorem not_quiet_implies_exists_pending_job :
+    ∃ j_hp,
+      arrives_in arr_seq j_hp ∧
+      arrived_between j_hp t1 t2 ∧
+      hep_job j_hp j = true ∧
+      ¬ completed_by sched j_hp t2 := by
+  sorry
+
+end ExistsPendingJob
+
+section ProcessorAlwaysBusy
+
+variable (H_work_conserving : work_conserving arr_seq sched)
+
+variable (H_priority_is_reflexive : reflexive_priorities (Job := Job))
+variable (H_priority_is_transitive : transitive_priorities (Job := Job))
+
+variable (t1 t2 : instant)
+variable (H_busy_interval_prefix : busy_interval_prefix arr_seq sched j t1 t2)
+
+theorem idle_time_implies_quiet_time_at_the_next_time_instant :
+    ∀ (t : instant),
+      is_idle sched t →
+      quiet_time arr_seq sched j (t + 1) := by
+  sorry
+
+theorem pending_hp_job_exists :
+    ∀ t,
+      t1 ≤ t ∧ t < t2 →
+      ∃ jhp,
+        arrives_in arr_seq jhp ∧
+        pending sched jhp t ∧
+        hep_job jhp j = true := by
+  sorry
+
+theorem not_quiet_implies_not_idle :
+    ∀ t,
+      t1 ≤ t ∧ t < t2 →
+      ¬ is_idle sched t := by
+  sorry
+
+end ProcessorAlwaysBusy
+
+section QuietTimeAndServiceOfJobs
+
+variable (H_work_conserving : work_conserving arr_seq sched)
+
+variable (H_arrival_sequence_is_a_set : arrival_sequence_uniq arr_seq)
+
+variable (t1 : instant)
+variable (H_quiet_time : quiet_time arr_seq sched j t1)
+
+variable (Δ : duration)
+variable (H_no_quiet_time : ∀ t, t1 < t ∧ t ≤ t1 + Δ → ¬ quiet_time arr_seq sched j t)
+
+theorem hep_jobs_receive_no_service_before_quiet_time :
+    service_of_higher_or_equal_priority_jobs
+      sched (arrivals_between arr_seq t1 (t1 + Δ)) j t1 (t1 + Δ) =
+    service_of_higher_or_equal_priority_jobs
+      sched (arrivals_between arr_seq 0 (t1 + Δ)) j t1 (t1 + Δ) := by
+  sorry
+
+theorem no_idle_time_within_non_quiet_time_interval :
+    service_of_jobs sched (fun _ => true) (arrivals_between arr_seq 0 (t1 + Δ)) t1 (t1 + Δ) = Δ := by
+  sorry
+
+end QuietTimeAndServiceOfJobs
+
+section BoundingBusyInterval
+
+variable (H_work_conserving : work_conserving arr_seq sched)
+
+variable (H_arrival_sequence_is_a_set : arrival_sequence_uniq arr_seq)
+
+variable (H_priority_is_reflexive : reflexive_priorities (Job := Job))
+variable (H_priority_is_transitive : transitive_priorities (Job := Job))
+
+section BoundingBusyInterval'
+
+variable (t_busy : instant)
+variable (H_j_is_pending : pending sched j t_busy)
+
+section LowerBound
+
+theorem exists_busy_interval_prefix :
+    ∃ t1,
+      busy_interval_prefix arr_seq sched j t1 (t_busy + 1) ∧
+      t1 ≤ job_arrival j ∧ job_arrival j ≤ t_busy := by
+  sorry
+
+end LowerBound
+
+section UpperBound
+
+variable (t1 : instant)
+variable (H_is_busy_prefix : busy_interval_prefix arr_seq sched j t1 (t_busy + 1))
+
+variable (priority_inversion_bound : instant)
+variable (H_priority_inversion_is_bounded :
+  priority_inversion_of_job_is_bounded_by arr_seq sched j priority_inversion_bound)
+
+variable (delta : duration)
+variable (H_delta_positive : delta > 0)
+variable (H_workload_is_bounded :
+  priority_inversion_bound +
+    workload_of_higher_or_equal_priority_jobs j (arrivals_between arr_seq t1 (t1 + delta)) ≤ delta)
+
+section CannotBeBusyForSoLong
+
+variable (H_no_quiet_time :
+  ∀ t, t1 < t ∧ t ≤ t1 + delta → ¬ quiet_time arr_seq sched j t)
+
+theorem busy_interval_has_uninterrupted_service :
+    delta ≤ priority_inversion_bound +
+      service_of_higher_or_equal_priority_jobs
+        sched (arrivals_between arr_seq t1 (t1 + delta)) j t1 (t1 + delta) := by
+  sorry
+
+theorem busy_interval_too_much_workload :
+    workload_of_higher_or_equal_priority_jobs j (arrivals_between arr_seq t1 (t1 + delta)) >
+    service_of_higher_or_equal_priority_jobs
+      sched (arrivals_between arr_seq t1 (t1 + delta)) j t1 (t1 + delta) := by
+  sorry
+
+theorem busy_interval_workload_larger_than_interval :
+    priority_inversion_bound +
+      workload_of_higher_or_equal_priority_jobs j (arrivals_between arr_seq t1 (t1 + delta)) > delta := by
+  sorry
+
+end CannotBeBusyForSoLong
+
+theorem busy_interval_is_bounded :
+    ∃ t2,
+      t2 ≤ t1 + delta ∧
+      busy_interval arr_seq sched j t1 t2 := by
+  sorry
+
+end UpperBound
+
+end BoundingBusyInterval'
+
+section BusyIntervalFromWorkloadBound
+
+variable (priority_inversion_bound : duration)
+variable (H_priority_inversion_is_bounded :
+  priority_inversion_of_job_is_bounded_by arr_seq sched j priority_inversion_bound)
+
+variable (delta : duration)
+variable (H_delta_positive : delta > 0)
+variable (H_workload_is_bounded :
+  ∀ t, priority_inversion_bound +
+    workload_of_higher_or_equal_priority_jobs j (arrivals_between arr_seq t (t + delta)) ≤ delta)
+
+variable (H_positive_cost : job_cost j > 0)
+
+theorem exists_busy_interval :
+    ∃ t1 t2,
+      t1 ≤ job_arrival j ∧ job_arrival j < t2 ∧
+      t2 ≤ t1 + delta ∧
+      busy_interval arr_seq sched j t1 t2 := by
+  sorry
+
+end BusyIntervalFromWorkloadBound
+
+section ResponseTimeBoundFromBusyInterval
+
+variable (priority_inversion_bound : duration)
+variable (H_priority_inversion_is_bounded :
+  priority_inversion_of_job_is_bounded_by arr_seq sched j priority_inversion_bound)
+
+variable (delta : duration)
+variable (H_delta_positive : delta > 0)
+variable (H_workload_is_bounded :
+  ∀ t, priority_inversion_bound +
+    workload_of_higher_or_equal_priority_jobs j (arrivals_between arr_seq t (t + delta)) ≤ delta)
+
+theorem busy_interval_bounds_response_time :
+    completed_by sched j (job_arrival j + delta) := by
+  sorry
+
+end ResponseTimeBoundFromBusyInterval
+
+end BoundingBusyInterval
+
+end ExistsBusyIntervalJLFP
+
+end Prosa.Analysis.Facts.Busy_interval.Busy_interval

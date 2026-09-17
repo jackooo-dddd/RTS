@@ -1,0 +1,150 @@
+-- Translated from: ../rt-proofs/classic/implementation/apa/bertogna_edf_example.v
+import Prosa.Classic.Util.All
+import Prosa.Classic.Model.Arrival.Basic.Job
+import Prosa.Classic.Model.Arrival.Basic.Task
+import Prosa.Classic.Model.Priority
+import Prosa.Classic.Model.Schedule.Global.Schedulability
+import Prosa.Classic.Model.Schedule.Global.Basic.Schedule
+import Prosa.Classic.Model.Schedule.Apa.Affinity
+import Prosa.Classic.Analysis.Apa.Workload_bound
+import Prosa.Classic.Implementation.Apa.Job
+import Prosa.Classic.Implementation.Apa.Task
+import Prosa.Classic.Implementation.Apa.Schedule
+import Prosa.Classic.Implementation.Apa.Arrival_sequence
+import Prosa.Classic.Model.Arrival.Basic.Arrival_sequence
+import Prosa.Classic.Model.Arrival.Basic.Task_arrival
+import Mathlib.Data.Finset.Card
+import Mathlib.Data.Fin.Basic
+import Mathlib.Tactic
+
+set_option autoImplicit false
+
+namespace Prosa.Classic.Implementation.Apa.Bertogna_edf_example
+
+open Prosa.Classic.Model.Time
+open Prosa.Classic.Model.Arrival.Basic.Job hiding arrival_sequence arrives_in
+open Prosa.Classic.Model.Arrival.Basic.Task
+open Prosa.Classic.Model.Arrival.Basic.Task.SporadicTask
+open Prosa.Classic.Model.Arrival.Basic.Task.SporadicTaskset
+open Prosa.Classic.Model.Arrival.Basic.Arrival_sequence
+open Prosa.Classic.Model.Arrival.Basic.Task_arrival
+open Prosa.Classic.Model.Priority
+open Prosa.Classic.Model.Schedule.Global.Schedulability
+open Prosa.Classic.Model.Schedule.Global.Schedulability.Schedulability
+open Prosa.Classic.Model.Schedule.Global.Basic.Schedule
+open Prosa.Classic.Model.Schedule.Global.Basic.Schedule.Schedule
+open Prosa.Classic.Model.Schedule.Global.Basic.Schedule.ScheduleOfSporadicTask
+open Prosa.Classic.Model.Schedule.Apa.Affinity
+open Prosa.Classic.Analysis.Apa.Workload_bound
+open Prosa.Classic.Analysis.Apa.Workload_bound.WorkloadBound
+open Prosa.Classic.Implementation.Apa.Task.ConcreteTask
+open Prosa.Classic.Implementation.Apa.Schedule.ConcreteScheduler
+open Prosa.Classic.Implementation.Apa.Arrival_sequence.ConcreteArrivalSequence
+
+namespace ResponseTimeAnalysisEDF
+
+section ExampleRTA
+
+private def num_cpus : ℕ := 2
+
+private def alpha1 : affinity num_cpus :=
+  {⟨0, by unfold num_cpus; omega⟩, ⟨1, by unfold num_cpus; omega⟩}
+
+private def alpha2 : affinity num_cpus :=
+  {⟨0, by unfold num_cpus; omega⟩}
+
+private def alpha3 : affinity num_cpus :=
+  {⟨1, by unfold num_cpus; omega⟩}
+
+private def tsk1 : concrete_task num_cpus :=
+  { task_id := 1, task_cost := 3, task_period := 5, task_deadline := 3, task_affinity := alpha1 }
+
+private def tsk2 : concrete_task num_cpus :=
+  { task_id := 2, task_cost := 2, task_period := 6, task_deadline := 5, task_affinity := alpha2 }
+
+private def tsk3 : concrete_task num_cpus :=
+  { task_id := 3, task_cost := 2, task_period := 12, task_deadline := 11, task_affinity := alpha3 }
+
+private def ts : List (concrete_task num_cpus) := [tsk1, tsk2, tsk3]
+
+section FactsAboutTaskset
+
+theorem ts_non_empty_affinities :
+    ∀ tsk,
+      tsk ∈ ts →
+      (concrete_task.task_affinity tsk).card > 0 := by
+  intro tsk h_mem
+  simp [ts, tsk1, tsk2, tsk3] at h_mem
+  rcases h_mem with rfl | rfl | rfl <;> decide
+
+theorem ts_has_valid_parameters :
+    valid_sporadic_taskset
+      (fun t : concrete_task num_cpus => t.task_cost)
+      (fun t : concrete_task num_cpus => t.task_period)
+      (fun t : concrete_task num_cpus => t.task_deadline) ts := by
+  intro tsk h_mem
+  simp [ts, tsk1, tsk2, tsk3] at h_mem
+  rcases h_mem with rfl | rfl | rfl <;>
+    simp [is_valid_sporadic_task, task_cost_positive, task_period_positive,
+          task_deadline_positive, task_cost_le_deadline, task_cost_le_period]
+
+theorem ts_has_constrained_deadlines :
+    ∀ tsk,
+      tsk ∈ ts →
+      (concrete_task.task_deadline tsk) ≤ (concrete_task.task_period tsk) := by
+  intro tsk h_mem
+  simp [ts, tsk1, tsk2, tsk3] at h_mem
+  rcases h_mem with rfl | rfl | rfl <;> simp
+
+end FactsAboutTaskset
+
+noncomputable def edf_schedulable
+    (task_cost : concrete_task num_cpus → Time)
+    (task_period : concrete_task num_cpus → Time)
+    (task_deadline : concrete_task num_cpus → Time)
+    (n : ℕ)
+    (alpha : task_affinity (concrete_task n) n)
+    (alpha' : task_affinity (concrete_task n) n)
+    (ts : List (concrete_task n)) : Bool := sorry
+
+private noncomputable def schedulability_test : List (concrete_task num_cpus) → Bool :=
+  edf_schedulable
+    (fun t => t.task_cost) (fun t => t.task_period) (fun t => t.task_deadline)
+    num_cpus
+    (fun t => t.task_affinity) (fun t => t.task_affinity)
+
+theorem schedulability_test_succeeds :
+    schedulability_test ts = true := by sorry
+
+private def arr_seq : arrival_sequence (concrete_job num_cpus) :=
+  periodic_arrival_sequence ts
+
+private noncomputable def sched : schedule (concrete_job num_cpus) num_cpus :=
+  scheduler
+    (fun j : concrete_job num_cpus => j.job_arrival)
+    (fun j : concrete_job num_cpus => j.job_cost)
+    (fun j : concrete_job num_cpus => j.job_task)
+    arr_seq
+    (fun t => t.task_affinity)
+    (JLFP_to_JLDP (EDF
+      (fun j : concrete_job num_cpus => j.job_arrival)
+      (fun j : concrete_job num_cpus => j.job_deadline)))
+
+private def no_deadline_missed_by (tsk : concrete_task num_cpus) : Prop :=
+  task_misses_no_deadline
+    (fun j : concrete_job num_cpus => j.job_arrival)
+    (fun j : concrete_job num_cpus => j.job_cost)
+    (fun j : concrete_job num_cpus => j.job_deadline)
+    (fun j : concrete_job num_cpus => j.job_task)
+    arr_seq sched tsk
+
+theorem ts_is_schedulable :
+    ∀ tsk,
+      tsk ∈ ts →
+      no_deadline_missed_by tsk := by sorry
+
+end ExampleRTA
+
+end ResponseTimeAnalysisEDF
+
+end Prosa.Classic.Implementation.Apa.Bertogna_edf_example

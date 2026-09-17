@@ -1,0 +1,169 @@
+-- Translated from: ../rt-proofs/classic/implementation/apa/arrival_sequence.v
+import Prosa.Classic.Util.All
+import Prosa.Classic.Model.Arrival.Basic.Arrival_sequence
+import Prosa.Classic.Model.Arrival.Basic.Job
+import Prosa.Classic.Model.Arrival.Basic.Task
+import Prosa.Classic.Model.Arrival.Basic.Task_arrival
+import Prosa.Classic.Implementation.Apa.Task
+import Mathlib.Tactic
+
+namespace Prosa.Classic.Implementation.Apa.Arrival_sequence
+
+namespace ConcreteArrivalSequence
+
+open Prosa.Classic.Model.Time
+open Prosa.Classic.Model.Arrival.Basic.Arrival_sequence
+open Prosa.Classic.Model.Arrival.Basic.Job hiding arrival_sequence arrives_in
+open Prosa.Classic.Model.Arrival.Basic.Task.SporadicTask
+open Prosa.Classic.Model.Arrival.Basic.Task.SporadicTaskset
+open Prosa.Classic.Model.Arrival.Basic.Task_arrival
+open Prosa.Classic.Implementation.Apa.Task.ConcreteTask
+
+variable {num_cpus : ℕ}
+
+structure concrete_job (num_cpus : ℕ) where
+  job_id : Nat
+  job_arrival : Time
+  job_cost : Time
+  job_deadline : Time
+  job_task : concrete_task num_cpus
+deriving DecidableEq
+
+def job_eqdef (j1 j2 : concrete_job num_cpus) : Bool :=
+  (j1.job_id == j2.job_id) &&
+  (j1.job_arrival == j2.job_arrival) &&
+  (j1.job_cost == j2.job_cost) &&
+  (j1.job_deadline == j2.job_deadline) &&
+  (j1.job_task == j2.job_task)
+
+theorem eqn_job (x y : concrete_job num_cpus) :
+    job_eqdef x y = true ↔ x = y := by
+  unfold job_eqdef
+  simp only [Bool.and_eq_true, beq_iff_eq]
+  constructor
+  · rintro ⟨⟨⟨⟨hid, harr⟩, hcost⟩, hdl⟩, htsk⟩
+    cases x; cases y; dsimp at *
+    subst hid; subst harr; subst hcost; subst hdl; subst htsk; rfl
+  · rintro rfl
+    exact ⟨⟨⟨⟨rfl, rfl⟩, rfl⟩, rfl⟩, rfl⟩
+
+section PeriodicArrivals
+
+variable {num_cpus : ℕ}
+variable (ts : List (concrete_task num_cpus))
+
+def add_job (arr_time : Time) (tsk : concrete_task num_cpus) : Option (concrete_job num_cpus) :=
+  if tsk.task_period ∣ arr_time then
+    some ⟨arr_time / tsk.task_period, arr_time, tsk.task_cost, tsk.task_deadline, tsk⟩
+  else
+    none
+
+def periodic_arrival_sequence (t : Time) : List (concrete_job num_cpus) :=
+  ts.filterMap (add_job t)
+
+end PeriodicArrivals
+
+section Proofs
+
+variable {num_cpus : ℕ}
+variable (ts : List (concrete_task num_cpus))
+variable (H_valid_task_parameters :
+  valid_sporadic_taskset
+    (fun t => t.task_cost) (fun t => t.task_period) (fun t => t.task_deadline) ts)
+
+private abbrev arr_seq := periodic_arrival_sequence ts
+
+theorem periodic_arrivals_are_consistent :
+    arrival_times_are_consistent
+      (fun j : concrete_job num_cpus => j.job_arrival) (arr_seq ts) := by
+  intro j t hj
+  simp only [arrives_at, jobs_arriving_at, arr_seq, periodic_arrival_sequence] at hj
+  rw [List.mem_filterMap] at hj
+  obtain ⟨tsk, _, htsk⟩ := hj
+  unfold add_job at htsk
+  split at htsk
+  · rw [Option.some.injEq] at htsk; rw [← htsk]
+  · exact absurd htsk nofun
+
+theorem periodic_arrivals_all_jobs_from_taskset :
+    ∀ j,
+      arrives_in (arr_seq ts) j →
+      j.job_task ∈ ts := by
+  intro j ⟨t, hj⟩
+  simp only [jobs_arriving_at, arr_seq, periodic_arrival_sequence] at hj
+  rw [List.mem_filterMap] at hj
+  obtain ⟨tsk, htsk_mem, htsk_add⟩ := hj
+  unfold add_job at htsk_add
+  split at htsk_add
+  · rw [Option.some.injEq] at htsk_add; rw [← htsk_add]; exact htsk_mem
+  · exact absurd htsk_add nofun
+
+include H_valid_task_parameters in
+theorem periodic_arrivals_valid_job_parameters :
+    ∀ j,
+      arrives_in (arr_seq ts) j →
+      valid_sporadic_job
+        (fun t => t.task_cost) (fun t => t.task_deadline)
+        (fun j : concrete_job num_cpus => j.job_cost)
+        (fun j : concrete_job num_cpus => j.job_deadline)
+        (fun j : concrete_job num_cpus => j.job_task) j := by
+  intro j ⟨t, hj⟩
+  simp only [jobs_arriving_at, arr_seq, periodic_arrival_sequence] at hj
+  rw [List.mem_filterMap] at hj
+  obtain ⟨tsk, htsk_mem, htsk_add⟩ := hj
+  unfold add_job at htsk_add
+  split at htsk_add
+  · rw [Option.some.injEq] at htsk_add
+    have PARAMS := H_valid_task_parameters tsk htsk_mem
+    simp only [is_valid_sporadic_task, task_cost_positive, task_period_positive,
+               task_deadline_positive, task_cost_le_deadline, task_cost_le_period] at PARAMS
+    obtain ⟨hcost_pos, _, hdl_pos, hcost_dl, _⟩ := PARAMS
+    rw [← htsk_add]
+    exact ⟨⟨hcost_pos, hcost_dl, hdl_pos⟩, le_refl _, rfl⟩
+  · exact absurd htsk_add nofun
+
+theorem periodic_arrivals_are_sporadic :
+    sporadic_task_model
+      (fun t => t.task_period)
+      (fun j : concrete_job num_cpus => j.job_arrival)
+      (fun j : concrete_job num_cpus => j.job_task)
+      (arr_seq ts) := by
+  intro j j' hneq ⟨arr, hj⟩ ⟨arr', hj'⟩ htsk hle
+  simp only [jobs_arriving_at, arr_seq, periodic_arrival_sequence] at hj hj'
+  rw [List.mem_filterMap] at hj hj'
+  obtain ⟨tsk_j, _, htsk_j⟩ := hj
+  obtain ⟨tsk_j', _, htsk_j'⟩ := hj'
+  unfold add_job at htsk_j htsk_j'
+  split at htsk_j
+  · split at htsk_j'
+    · rename_i hdvd hdvd'
+      rw [Option.some.injEq] at htsk_j htsk_j'
+      subst htsk_j; subst htsk_j'
+      dsimp at htsk hle ⊢
+      -- htsk : tsk_j = tsk_j'
+      subst htsk
+      obtain ⟨k, hk⟩ := hdvd
+      obtain ⟨k', hk'⟩ := hdvd'
+      have harr_ne : arr ≠ arr' := by
+        intro heq; apply hneq; subst heq; rfl
+      have hlt : arr < arr' := Nat.lt_of_le_of_ne hle harr_ne
+      rw [hk, hk'] at hlt hle ⊢
+      by_cases hp : tsk_j.task_period = 0
+      · rw [hp, Nat.zero_mul, Nat.zero_mul] at hlt; exact absurd hlt (lt_irrefl _)
+      · have hp_pos := Nat.pos_of_ne_zero hp
+        have hk_lt : k < k' := (Nat.mul_lt_mul_left hp_pos).mp hlt
+        have : k + 1 ≤ k' := hk_lt
+        calc tsk_j.task_period * k'
+            ≥ tsk_j.task_period * (k + 1) := Nat.mul_le_mul_left _ this
+          _ = tsk_j.task_period * k + tsk_j.task_period := by ring
+    · exact absurd htsk_j' nofun
+  · exact absurd htsk_j nofun
+
+theorem periodic_arrivals_is_a_set :
+    arrival_sequence_is_a_set (arr_seq ts) := by sorry
+
+end Proofs
+
+end ConcreteArrivalSequence
+
+end Prosa.Classic.Implementation.Apa.Arrival_sequence

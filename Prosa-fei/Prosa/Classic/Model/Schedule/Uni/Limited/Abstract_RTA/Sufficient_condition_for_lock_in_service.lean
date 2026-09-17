@@ -1,0 +1,222 @@
+-- Translated from: ../rt-proofs/classic/model/schedule/uni/limited/abstract_RTA/sufficient_condition_for_lock_in_service.v
+import Prosa.Classic.Util.All
+import Prosa.Classic.Model.Arrival.Basic.Job
+import Prosa.Classic.Model.Schedule.Uni.Service
+import Prosa.Classic.Model.Schedule.Uni.Limited.Schedule
+import Prosa.Classic.Model.Schedule.Uni.Limited.Abstract_RTA.Definitions
+import Mathlib.Tactic
+
+namespace Prosa.Classic.Model.Schedule.Uni.Limited.Abstract_RTA.Sufficient_condition_for_lock_in_service
+
+open Prosa.Classic.Model.Time
+open Prosa.Classic.Model.Arrival.Basic.Job
+open Prosa.Classic.Model.Arrival.Basic.Arrival_sequence
+open Prosa.Classic.Model.Schedule.Uni.Schedule
+open Prosa.Classic.Model.Schedule.Uni.Service
+open Prosa.Classic.Model.Schedule.Uni.Limited.Schedule
+open Prosa.Classic.Model.Schedule.Uni.Limited.Abstract_RTA.Definitions
+
+section LockInService
+
+variable {Task : Type _} [DecidableEq Task]
+variable (task_cost : Task → Time)
+
+variable {Job : Type _} [DecidableEq Job]
+variable (job_arrival : Job → Time)
+variable (job_cost : Job → Time)
+variable (job_task : Job → Task)
+
+variable (arr_seq : arrival_sequence Job)
+variable (H_arrival_times_are_consistent : arrival_times_are_consistent job_arrival arr_seq)
+
+variable (sched : schedule Job)
+
+variable (H_job_cost_le_task_cost :
+  cost_of_jobs_from_arrival_sequence_le_task_cost task_cost job_cost job_task arr_seq)
+
+variable (tsk : Task)
+
+variable (interference : Job → Time → Bool)
+variable (interfering_workload : Job → Time → Time)
+
+variable (H_work_conserving :
+  work_conserving job_arrival job_cost job_task arr_seq sched tsk interference interfering_workload)
+
+variable (j : Job)
+variable (H_j_arrives : arrives_in arr_seq j)
+variable (H_job_of_tsk : job_task j = tsk)
+variable (H_job_cost_positive : job_cost_positive job_cost j)
+
+variable (t1 t2 : Time)
+variable (H_busy_interval :
+  busy_interval job_arrival job_cost sched interference interfering_workload j t1 t2)
+
+include H_busy_interval in
+theorem job_completes_within_busy_interval :
+    completed_by job_cost sched j t2 := by
+  obtain ⟨⟨_, h_arr_lt, _, _⟩, _, h_not_pending⟩ := H_busy_interval
+  -- h_not_pending : ¬ pending_earlier_and_at job_arrival job_cost sched j t2
+  -- pending_earlier_and_at = arrived_before ∧ ¬ completed_by
+  -- arrived_before j t2 = job_arrival j < t2, which we have as h_arr_lt
+  -- So ¬(arrived_before ∧ ¬completed_by) with arrived_before gives completed_by
+  by_contra h_not_completed
+  apply h_not_pending
+  exact ⟨h_arr_lt, h_not_completed⟩
+
+section InterferenceIsComplement
+
+variable (t delta : Time)
+variable (H_greater_than_or_equal : t1 ≤ t)
+variable (H_less_or_equal : t + delta ≤ t2)
+
+include H_work_conserving H_j_arrives H_job_of_tsk H_job_cost_positive H_busy_interval
+  H_greater_than_or_equal H_less_or_equal in
+theorem interference_is_complement_to_schedule :
+    service_during sched j t (t + delta) +
+      cumul_interference interference j t (t + delta) = delta := by
+  simp only [service_during, cumul_interference]
+  rw [← Finset.sum_add_distrib]
+  -- Each summand is service_at sched j x + (interference j x).toNat = 1
+  have h_each : ∀ x ∈ Finset.Ico t (t + delta),
+      service_at sched j x + (interference j x).toNat = 1 := by
+    intro x hx
+    rw [Finset.mem_Ico] at hx
+    have hx_range : t1 ≤ x ∧ x < t2 := by
+      constructor
+      · exact le_trans H_greater_than_or_equal hx.1
+      · exact lt_of_lt_of_le hx.2 H_less_or_equal
+    have h_wc := H_work_conserving j t1 t2 x H_j_arrives H_job_of_tsk
+      (show job_cost j > 0 from H_job_cost_positive) H_busy_interval hx_range
+    simp only [service_at]
+    cases h_intf : (interference j x)
+    · -- interference j x = false → scheduled_at = true by work_conserving
+      have h_sched := h_wc.mp (by simp [h_intf])
+      simp [h_sched, Bool.toNat]
+    · -- interference j x = true → scheduled_at = false
+      have h_not_sched : scheduled_at sched j x = false := by
+        by_contra h_s
+        rw [Bool.not_eq_false] at h_s
+        have := h_wc.mpr h_s
+        simp [h_intf] at this
+      simp only [scheduled_at] at h_not_sched ⊢
+      simp [h_not_sched]
+  have h_card : (Finset.Ico t (t + delta)).card = delta := by
+    rw [Nat.card_Ico]; omega
+  calc ∑ x ∈ Finset.Ico t (t + delta), (service_at sched j x + (interference j x).toNat)
+      = ∑ _x ∈ Finset.Ico t (t + delta), 1 := Finset.sum_congr rfl h_each
+    _ = (Finset.Ico t (t + delta)).card := by simp [Finset.sum_const]
+    _ = delta := h_card
+
+end InterferenceIsComplement
+
+section InterferenceBoundedImpliesEnoughService
+
+variable (progress_of_job : Time)
+variable (H_progress_le_job_cost : progress_of_job ≤ job_cost j)
+
+variable (delta : Time)
+variable (H_total_workload_is_bounded :
+  progress_of_job + cumul_interference interference j t1 (t1 + delta) ≤ delta)
+
+include H_work_conserving H_j_arrives H_job_of_tsk H_job_cost_positive H_busy_interval
+  H_progress_le_job_cost H_total_workload_is_bounded in
+theorem j_receives_at_least_lock_in_service :
+    service sched j (t1 + delta) ≥ progress_of_job := by
+  by_cases h_le : t1 + delta ≤ t2
+  · -- Case: t1 + delta ≤ t2
+    -- From interference_is_complement_to_schedule, service_during + cumul_interference = delta
+    have h_compl := interference_is_complement_to_schedule job_arrival job_cost job_task arr_seq
+      sched tsk interference interfering_workload H_work_conserving j H_j_arrives H_job_of_tsk
+      H_job_cost_positive t1 t2 H_busy_interval t1 delta (le_refl t1) h_le
+    -- From h_compl and H_total_workload_is_bounded, progress_of_job ≤ service_during
+    have h_total_le_compl : progress_of_job + cumul_interference interference j t1 (t1 + delta) ≤
+        service_during sched j t1 (t1 + delta) + cumul_interference interference j t1 (t1 + delta) := by
+      rw [h_compl]; exact H_total_workload_is_bounded
+    have h_serv_ge : progress_of_job ≤ service_during sched j t1 (t1 + delta) :=
+      Nat.le_of_add_le_add_right h_total_le_compl
+    -- service sched j (t1 + delta) = service_during 0 (t1+delta) ≥ service_during t1 (t1+delta)
+    unfold service
+    rw [service_during_cat sched j t1 0 (t1 + delta) ⟨Nat.zero_le t1, Nat.le_add_right t1 delta⟩]
+    -- goal: service_during 0 t1 + service_during t1 (t1+delta) ≥ progress_of_job
+    exact le_trans h_serv_ge (Nat.le_add_left _ _)
+  · -- Case: t1 + delta > t2
+    push_neg at h_le
+    have h_compl := job_completes_within_busy_interval job_arrival job_cost sched
+      interference interfering_workload j t1 t2 H_busy_interval
+    -- j is completed by t2, so service j t2 ≥ job_cost j ≥ progress_of_job
+    -- And service is monotonic, so service j (t1+delta) ≥ service j t2
+    apply le_trans H_progress_le_job_cost
+    apply le_trans h_compl
+    exact service_monotonic sched j t2 (t1 + delta) (le_of_lt h_le)
+
+end InterferenceBoundedImpliesEnoughService
+
+section CompletionOfJobAfterLockInService
+
+variable (H_completed_jobs_dont_execute :
+  completed_jobs_dont_execute job_cost sched)
+
+variable (job_lock_in_service : Job → Time)
+
+variable (H_lock_in_service_positive :
+  job_lock_in_service_positive job_cost arr_seq job_lock_in_service)
+
+variable (H_lock_in_service_le_job_cost :
+  job_lock_in_service_le_job_cost job_cost arr_seq job_lock_in_service)
+
+variable (H_job_nonpreemptive_after_lock_in_service :
+  job_nonpreemptive_after_lock_in_service job_cost arr_seq sched job_lock_in_service)
+
+include H_j_arrives H_completed_jobs_dont_execute
+  H_job_nonpreemptive_after_lock_in_service in
+theorem job_completes_after_reaching_lock_in_service :
+    ∀ t,
+      job_lock_in_service j ≤ service sched j t →
+      completed_by job_cost sched j (t + (job_cost j - job_lock_in_service j)) := by
+  intro t ES
+  -- Derive lock_in_service j ≤ job_cost j from ES and completed_jobs_dont_execute
+  have h_lis_le_cost : job_lock_in_service j ≤ job_cost j :=
+    le_trans ES (H_completed_jobs_dont_execute j t)
+  set job_last := job_cost j - job_lock_in_service j with h_job_last_def
+  -- By contradiction
+  by_contra h_not_completed
+  have h_sched_all : ∀ t', t ≤ t' → t' ≤ t + job_last → scheduled_at sched j t' = true := by
+    intro t' h_ge h_le
+    apply H_job_nonpreemptive_after_lock_in_service j t t'
+    · exact H_j_arrives
+    · exact h_ge
+    · exact ES
+    · intro h_compl_t'
+      exact h_not_completed (completion_monotonic job_cost sched j t' (t + job_last) h_le h_compl_t')
+  have h_serv_during : job_last + 1 ≤ service_during sched j t (t + (job_last + 1)) := by
+    simp only [service_during]
+    calc job_last + 1
+        = ∑ _x ∈ Finset.Ico t (t + (job_last + 1)), 1 := by
+          simp [Finset.sum_const, smul_eq_mul, mul_one, Nat.card_Ico]
+      _ ≤ ∑ x ∈ Finset.Ico t (t + (job_last + 1)), service_at sched j x := by
+          apply Finset.sum_le_sum
+          intro x hx
+          rw [Finset.mem_Ico] at hx
+          obtain ⟨hx1, hx2⟩ := hx
+          have h_le_job_last : x ≤ t + job_last := Nat.lt_succ_iff.mp (by rwa [Nat.add_succ] at hx2)
+          have h_sched_x := h_sched_all x hx1 h_le_job_last
+          simp only [service_at]
+          rw [h_sched_x]
+          simp
+  have h_service_bound : job_cost j < service sched j (t + (job_last + 1)) := by
+    unfold service
+    rw [service_during_cat sched j t 0 (t + (job_last + 1)) ⟨Nat.zero_le t, Nat.le_add_right t (job_last + 1)⟩]
+    calc job_cost j
+        = job_lock_in_service j + job_last := (Nat.add_sub_cancel' h_lis_le_cost).symm
+      _ < job_lock_in_service j + (job_last + 1) := Nat.lt_add_of_pos_right Nat.one_pos
+      _ ≤ service_during sched j 0 t + service_during sched j t (t + (job_last + 1)) :=
+          Nat.add_le_add ES h_serv_during
+  have h_bound := H_completed_jobs_dont_execute j (t + (job_last + 1))
+  exact absurd h_bound (not_le.mpr h_service_bound)
+
+
+end CompletionOfJobAfterLockInService
+
+end LockInService
+
+end Prosa.Classic.Model.Schedule.Uni.Limited.Abstract_RTA.Sufficient_condition_for_lock_in_service

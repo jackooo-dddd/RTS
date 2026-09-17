@@ -1,0 +1,41 @@
+-- Translated from: ../rt-proofs/analysis/definitions/progress.v
+import Prosa.Analysis.Facts.Behavior.Service
+
+namespace Prosa.Analysis.Definitions.Progress
+
+open Prosa.Behavior.Job
+open Prosa.Behavior.Time
+open Prosa.Behavior.Schedule
+open Prosa.Behavior.Service
+open Prosa.Analysis.Facts.Behavior.Service
+
+section Progress
+
+variable {Job : JobType}
+variable [JobCost Job]
+variable {PState : Type}
+variable [ProcessorState Job PState]
+variable (sched : schedule PState)
+variable (j : Job)
+
+section NotionsOfProgress
+
+variable (t1 t2 : ℕ)
+variable (H_t1_before_t2 : t1 ≤ t2)
+
+noncomputable def job_has_progressed := service sched j t1 < service sched j t2
+
+noncomputable def no_progress := service sched j t1 == service sched j t2
+
+include H_t1_before_t2 in
+theorem no_progress_equiv :
+    (¬ job_has_progressed sched j t1 t2) ↔ (no_progress sched j t1 t2 = true) := by sorry
+
+end NotionsOfProgress
+
+noncomputable def no_progress_for (t : instant) (delta : duration) :=
+  no_progress sched j (t - delta) t
+
+end Progress
+
+end Prosa.Analysis.Definitions.Progress

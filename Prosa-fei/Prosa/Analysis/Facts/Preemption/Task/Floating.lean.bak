@@ -1,0 +1,68 @@
+-- Translated from: ../rt-proofs/analysis/facts/preemption/task/floating.v
+import Prosa.Analysis.Facts.Preemption.Job.Limited
+import Prosa.Model.Preemption.Limited_preemptive
+import Prosa.Model.Task.Preemption.Floating_nonpreemptive
+
+namespace Prosa.Analysis.Facts.Preemption.Task.Floating
+
+open Prosa.Behavior.Job
+open Prosa.Behavior.Time
+open Prosa.Behavior.Service
+open Prosa.Behavior.Schedule
+open Prosa.Behavior.Arrival_sequence
+open Prosa.Behavior.Ready
+open Prosa.Model.Processor.Ideal
+open Prosa.Model.Preemption.Parameter
+open Prosa.Model.Preemption.Limited_preemptive
+open Prosa.Model.Schedule.Limited_preemptive
+open Prosa.Model.Task.Concept
+open Prosa.Model.Task.Preemption.Parameters
+open Prosa.Model.Task.Preemption.Floating_nonpreemptive
+open Prosa.Analysis.Facts.Preemption.Job.Limited
+open Prosa.Util.List
+open Prosa.Util.Nondecreasing
+open Prosa.Util.Epsilon
+
+section FloatingNonPreemptiveRegionsModel
+
+variable {Task : TaskType}
+variable [TaskCost Task]
+
+variable {Job : JobType}
+variable [JobTask Job Task]
+variable [JobArrival Job]
+variable [JobCost Job]
+variable [DecidableEq Job]
+
+variable [TaskMaxNonpreemptiveSegment Task]
+variable [JobPreemptionPoints Job]
+
+attribute [local instance] pstate_instance
+attribute [local instance] limited_preemptions_model
+
+variable (arr_seq : arrival_sequence Job)
+
+variable (sched : schedule (processor_state Job))
+variable (H_preemption_aware_schedule :
+    schedule_respects_preemption_model arr_seq sched)
+
+variable (H_jobs_must_arrive_to_execute : jobs_must_arrive_to_execute (Job := Job) sched)
+variable (H_completed_jobs_dont_execute : completed_jobs_dont_execute (Job := Job) sched)
+
+variable (H_valid_model_with_floating_nonpreemptive_regions :
+    valid_model_with_floating_nonpreemptive_regions (Task := Task) arr_seq)
+
+include H_valid_model_with_floating_nonpreemptive_regions in
+lemma floating_preemption_points_model_is_model_with_bounded_nonpreemptive_regions :
+    model_with_bounded_nonpreemptive_segments (Task := Task) arr_seq := by
+  sorry
+
+include H_valid_model_with_floating_nonpreemptive_regions
+    H_preemption_aware_schedule H_completed_jobs_dont_execute in
+theorem floating_preemption_points_model_is_valid_model_with_bounded_nonpreemptive_regions :
+    valid_model_with_bounded_nonpreemptive_segments (Task := Task) arr_seq sched := by
+  sorry
+
+end FloatingNonPreemptiveRegionsModel
+
+end Prosa.Analysis.Facts.Preemption.Task.Floating

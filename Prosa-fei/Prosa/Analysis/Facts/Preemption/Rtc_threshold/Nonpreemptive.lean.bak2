@@ -1,0 +1,71 @@
+-- Translated from: ../rt-proofs/analysis/facts/preemption/rtc_threshold/nonpreemptive.v
+import Prosa.Analysis.Facts.Preemption.Job.Nonpreemptive
+import Prosa.Model.Preemption.Fully_nonpreemptive
+import Prosa.Model.Task.Preemption.Fully_nonpreemptive
+
+namespace Prosa.Analysis.Facts.Preemption.Rtc_threshold.Nonpreemptive
+
+open Prosa.Behavior.Job
+open Prosa.Behavior.Time
+open Prosa.Behavior.Service
+open Prosa.Behavior.Schedule
+open Prosa.Behavior.Arrival_sequence
+open Prosa.Behavior.Ready
+open Prosa.Model.Preemption.Parameter
+open Prosa.Model.Task.Preemption.Parameters
+open Prosa.Model.Task.Concept
+open Prosa.Model.Processor.Ideal
+open Prosa.Model.Schedule.Nonpreemptive
+open Prosa.Analysis.Facts.Preemption.Job.Nonpreemptive
+open Prosa.Util.Epsilon
+
+section TaskRTCThresholdFullyNonPreemptive
+
+variable {Task : TaskType}
+variable [TaskCost Task]
+
+variable {Job : JobType}
+variable [DecidableEq Job]
+variable [JobTask Job Task]
+variable [JobArrival Job]
+variable [JobCost Job]
+
+variable (arr_seq : arrival_sequence Job)
+variable (H_arrival_times_are_consistent : consistent_arrival_times arr_seq)
+
+attribute [local instance] pstate_instance
+
+variable (sched : schedule (processor_state Job))
+variable (H_nonpreemptive_sched : nonpreemptive_schedule (Job := Job) sched)
+
+variable (H_jobs_must_arrive_to_execute : jobs_must_arrive_to_execute (Job := Job) sched)
+variable (H_completed_jobs_dont_execute : completed_jobs_dont_execute (Job := Job) sched)
+
+attribute [local instance] Prosa.Model.Preemption.Fully_nonpreemptive.fully_nonpreemptive_model
+
+theorem job_rtc_threshold_is_0 :
+    forall j : Job,
+      job_cost j = 0 ->
+      job_run_to_completion_threshold j = 0 := by sorry
+
+include H_arrival_times_are_consistent H_nonpreemptive_sched
+  H_jobs_must_arrive_to_execute H_completed_jobs_dont_execute in
+theorem job_rtc_threshold_is_ε :
+    forall j : Job,
+      job_cost j > 0 ->
+      arrives_in arr_seq j ->
+      job_run_to_completion_threshold j = ε := by sorry
+
+variable (tsk : Task)
+variable (H_positive_cost : 0 < task_cost tsk)
+
+attribute [local instance] Prosa.Model.Task.Preemption.Fully_nonpreemptive.fully_nonpreemptive
+
+include H_arrival_times_are_consistent H_nonpreemptive_sched
+  H_jobs_must_arrive_to_execute H_completed_jobs_dont_execute H_positive_cost in
+lemma fully_nonpreemptive_valid_task_run_to_completion_threshold :
+    valid_task_run_to_completion_threshold arr_seq tsk := by sorry
+
+end TaskRTCThresholdFullyNonPreemptive
+
+end Prosa.Analysis.Facts.Preemption.Rtc_threshold.Nonpreemptive

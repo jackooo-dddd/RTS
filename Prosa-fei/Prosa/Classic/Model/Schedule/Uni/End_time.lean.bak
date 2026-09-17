@@ -1,0 +1,324 @@
+-- Translated from: ../rt-proofs/classic/model/schedule/uni/end_time.v
+import Prosa.Classic.Model.Arrival.Basic.Task
+import Prosa.Classic.Model.Arrival.Basic.Job
+import Prosa.Classic.Model.Arrival.Basic.Arrival_sequence
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.BigOperators.Intervals
+import Mathlib.Tactic
+
+namespace Prosa.Classic.Model.Schedule.Uni.End_time
+
+open Prosa.Classic.Model.Time
+open Prosa.Classic.Model.Arrival.Basic.Job
+open Prosa.Classic.Model.Arrival.Basic.Arrival_sequence
+
+section UniprocessorScheduleDefs
+
+variable (Job : Type*) [DecidableEq Job]
+
+def schedule := Time → Option Job
+
+end UniprocessorScheduleDefs
+
+section ScheduleProperties
+
+variable {Job : Type*} [DecidableEq Job]
+variable (sched : schedule Job)
+
+def scheduled_at (j : Job) (t : Time) : Bool :=
+  sched t == some j
+
+def service_at (j : Job) (t : Time) : Nat :=
+  if scheduled_at sched j t then 1 else 0
+
+def service_during (j : Job) (t1 t2 : Time) : Nat :=
+  ∑ t ∈ Finset.Ico t1 t2, service_at sched j t
+
+def service (j : Job) (t : Time) : Nat :=
+  service_during sched j 0 t
+
+def completed_by (job_cost : Job → Time) (j : Job) (t : Time) : Prop :=
+  job_cost j ≤ service sched j t
+
+def jobs_must_arrive_to_execute (job_arrival : Job → Time) : Prop :=
+  ∀ j t, scheduled_at sched j t = true → has_arrived job_arrival j t
+
+def completed_jobs_dont_execute (job_cost : Job → Time) : Prop :=
+  ∀ j t, service sched j t ≤ job_cost j
+
+end ScheduleProperties
+
+section IgnoreServiceLemma
+
+variable {Job : Type*} [DecidableEq Job]
+variable (job_arrival : Job → Time)
+variable (sched : schedule Job)
+
+theorem ignore_service_before_arrival
+    (H_must_arrive : jobs_must_arrive_to_execute sched job_arrival)
+    (j : Job) (t1 t2 : Time)
+    (h1 : t1 ≤ job_arrival j) (h2 : job_arrival j ≤ t2) :
+    service_during sched j t1 t2 = service_during sched j (job_arrival j) t2 := by
+  unfold service_during
+  rw [← Finset.sum_Ico_consecutive _ h1 h2]
+  suffices h : ∑ t ∈ Finset.Ico t1 (job_arrival j), service_at sched j t = 0 by
+    rw [h, Nat.zero_add]
+  apply Finset.sum_eq_zero
+  intro t ht
+  have hmem := Finset.mem_Ico.mp ht
+  unfold service_at
+  have hna : ¬(scheduled_at sched j t = true) := by
+    intro hsched
+    have harr := H_must_arrive j t hsched
+    exact Nat.not_le.mpr hmem.2 harr
+  simp [hna]
+
+end IgnoreServiceLemma
+
+namespace end_time
+
+section Task
+  variable {task : Type*} [DecidableEq task]
+  variable (task_cost : task → Time)
+  variable (task_period : task → Time)
+  variable (task_deadline : task → Time)
+
+  variable {Job : Type*} [DecidableEq Job]
+  variable (job_arrival : Job → Time)
+  variable (job_cost : Job → Time)
+  variable (job_deadline : Job → Time)
+  variable (job_task : Job → task)
+
+  inductive diagnosis_option : Type where
+    | OK : Instant → diagnosis_option
+    | Failure : Instant → diagnosis_option
+
+  section Job_end_time_Def
+
+    variable (sched : schedule Job)
+    variable (job : Job)
+
+    def end_time_option : Instant → Duration → Nat → diagnosis_option
+      | t, 0, _ => diagnosis_option.OK t
+      | t, _ + 1, 0 => diagnosis_option.Failure t
+      | t, c + 1, wf + 1 =>
+        if scheduled_at sched job t then end_time_option (t + 1) c wf
+        else end_time_option (t + 1) (c + 1) wf
+
+    inductive end_time_predicate : Instant → Duration → Instant → Prop where
+      | C0_ : ∀ t, end_time_predicate t 0 t
+      | S_C_not_sched : ∀ t c e,
+          ¬(scheduled_at sched job t = true) →
+          end_time_predicate (t + 1) (c + 1) e →
+          end_time_predicate t (c + 1) e
+      | S_C_sched : ∀ t c e,
+          scheduled_at sched job t = true →
+          end_time_predicate (t + 1) c e →
+          end_time_predicate t (c + 1) e
+
+    def completes_at (t : Instant) : Prop :=
+      end_time_predicate sched job (job_arrival job) (job_cost job) t
+
+  end Job_end_time_Def
+
+  section Lemmas
+
+    variable (job : Job)
+    variable (sched : schedule Job)
+
+    variable (H_jobs_must_arrive_to_execute :
+      jobs_must_arrive_to_execute sched job_arrival)
+    variable (H_completed_jobs_dont_execute :
+      completed_jobs_dont_execute sched job_cost)
+
+    variable (H_valid_job :
+      job_cost job > 0 ∧ job_cost job ≤ job_deadline job ∧ job_deadline job > 0)
+
+    theorem end_time_function_predicat_equivalence :
+        ∀ e wf t c,
+          end_time_option sched job t c wf = diagnosis_option.OK e →
+          end_time_predicate sched job t c e := by
+      intro e wf
+      induction wf with
+      | zero =>
+        intro t c h
+        cases c with
+        | zero =>
+          unfold end_time_option at h
+          injection h with h; exact h ▸ end_time_predicate.C0_ t
+        | succ c' =>
+          unfold end_time_option at h
+          exact absurd h (by simp [diagnosis_option.OK, diagnosis_option.Failure])
+      | succ wf' ih =>
+        intro t c h
+        cases c with
+        | zero =>
+          unfold end_time_option at h
+          injection h with h; exact h ▸ end_time_predicate.C0_ t
+        | succ c' =>
+          unfold end_time_option at h
+          by_cases hcases : scheduled_at sched job t = true
+          · rw [if_pos hcases] at h
+            exact end_time_predicate.S_C_sched t c' e hcases (ih _ _ h)
+          · rw [if_neg hcases] at h
+            exact end_time_predicate.S_C_not_sched t c' e hcases (ih _ _ h)
+
+    theorem end_time_predicat_function_equivalence :
+        ∀ t c e,
+          end_time_predicate sched job t c e →
+          ∃ wf, end_time_option sched job t c wf = diagnosis_option.OK e := by
+      intro t c e h
+      induction h with
+      | C0_ t => exact ⟨1, rfl⟩
+      | S_C_not_sched t c e hcase _ ih =>
+        obtain ⟨wf, hwf⟩ := ih
+        refine ⟨wf + 1, ?_⟩
+        show end_time_option sched job t (c + 1) (wf + 1) = _
+        simp [end_time_option]
+        have hcases : ¬(scheduled_at sched job t = true) := hcase
+        rw [if_neg hcases]
+        exact hwf
+      | S_C_sched t c e hcase _ ih =>
+        obtain ⟨wf, hwf⟩ := ih
+        refine ⟨wf + 1, ?_⟩
+        show end_time_option sched job t (c + 1) (wf + 1) = _
+        simp [end_time_option]
+        rw [if_pos hcase]
+        exact hwf
+
+    theorem end_time_predicate_not_sched :
+        ∀ t c e,
+          ¬(scheduled_at sched job t = true) →
+          end_time_predicate sched job t (c + 1) e →
+          end_time_predicate sched job (t + 1) (c + 1) e := by
+      intro t c e hcase hpre
+      cases hpre with
+      | S_C_not_sched t c e h1 h2 => exact h2
+      | S_C_sched t c e h1 h2 => exact absurd h1 hcase
+
+    theorem end_time_predicate_sched :
+        ∀ t c e,
+          scheduled_at sched job t = true →
+          end_time_predicate sched job t (c + 1) e →
+          end_time_predicate sched job (t + 1) c e := by
+      intro t c e hcase hpre
+      cases hpre with
+      | S_C_not_sched t c e h1 h2 => exact absurd hcase h1
+      | S_C_sched t c e h1 h2 => exact h2
+
+    variable (job_end : Instant)
+
+    theorem arrival_le_end :
+        ∀ t c e, end_time_predicate sched job t c e → t ≤ e := by
+      intro t c e h
+      induction h with
+      | C0_ => exact Nat.le_refl _
+      | S_C_not_sched _ _ _ _ _ ih => exact Nat.le_of_succ_le ih
+      | S_C_sched _ _ _ _ _ ih => exact Nat.le_of_succ_le ih
+
+    theorem arrival_add_cost_le_end :
+        ∀ t c e,
+          end_time_predicate sched job t c e →
+          t + c ≤ e := by
+      intro t c e h
+      induction h with
+      | C0_ => simp
+      | S_C_not_sched _ _ _ _ _ ih =>
+        -- ih : t✝ + 1 + (c✝ + 1) ≤ e✝, goal : t✝ + (c✝ + 1) ≤ e✝
+        have h1 : ∀ a b : Nat, a + (b + 1) ≤ a + 1 + (b + 1) := by intro a b; omega
+        exact Nat.le_trans (h1 _ _) ih
+      | S_C_sched _ _ _ _ _ ih =>
+        -- ih : t✝ + 1 + c✝ ≤ e✝, goal : t✝ + (c✝ + 1) ≤ e✝
+        have h1 : ∀ a b : Nat, a + (b + 1) = a + 1 + b := by intro a b; omega
+        rw [h1]; exact ih
+
+    theorem service_eq_cost_at_end_time :
+        completes_at job_arrival job_cost sched job job_end →
+        service_during sched job (job_arrival job) job_end = job_cost job := by
+      intro hcmpl
+      unfold completes_at at hcmpl
+      suffices aux : ∀ t c e, end_time_predicate sched job t c e →
+          ∑ i ∈ Finset.Ico t e, service_at sched job i = c by
+        unfold service_during; exact aux _ _ _ hcmpl
+      intro t c e h
+      induction h with
+      | C0_ t => simp
+      | S_C_not_sched t c e hcase hpre ih =>
+        have hle : t + 1 ≤ e := arrival_le_end job sched (t + 1) (c + 1) e hpre
+        rw [Finset.sum_eq_sum_Ico_succ_bot (show t < e from Nat.lt_of_succ_le hle)]
+        rw [ih]; unfold service_at; simp [show ¬(scheduled_at sched job t = true) from hcase]
+      | S_C_sched t c e hcase hpre ih =>
+        have hle : t + 1 ≤ e := arrival_le_end job sched (t + 1) c e hpre
+        rw [Finset.sum_eq_sum_Ico_succ_bot (show t < e from Nat.lt_of_succ_le hle)]
+        rw [ih]; unfold service_at; simp [hcase]; ring
+
+    theorem completed_by_end_time :
+        completes_at job_arrival job_cost sched job job_end →
+        completed_by sched job_cost job job_end := by
+      intro job_cmplted
+      unfold completed_by service
+      have hserv := service_eq_cost_at_end_time job_arrival job_cost job sched job_end job_cmplted
+      unfold service_during at hserv ⊢
+      rw [← hserv]
+      apply Finset.sum_le_sum_of_subset
+      apply Finset.Ico_subset_Ico (Nat.zero_le _) (le_refl _)
+
+    include H_jobs_must_arrive_to_execute H_completed_jobs_dont_execute H_valid_job in
+    theorem end_time_positive :
+        completes_at job_arrival job_cost sched job job_end →
+        job_end > 0 := by
+      sorry
+
+    theorem job_uncompletes_at_end_time_sub_1 :
+        completes_at job_arrival job_cost sched job job_end →
+        service_during sched job (job_arrival job) (job_end - 1) = (job_cost job) - 1 := by
+      intro job_cmplted
+      unfold completes_at at job_cmplted
+      suffices aux : ∀ t c e, end_time_predicate sched job t c e →
+          ∑ i ∈ Finset.Ico t (e - 1), service_at sched job i = c - 1 by
+        unfold service_during; exact aux _ _ _ job_cmplted
+      intro t c e h
+      induction h with
+      | C0_ t => simp
+      | S_C_not_sched t c e hcase hpre ih =>
+        have hle_tc : t + 1 + (c + 1) ≤ e :=
+          arrival_add_cost_le_end job sched (t + 1) (c + 1) e hpre
+        have hlt : t < e - 1 := by
+          simp only [Instant, Duration, Time] at *; omega
+        rw [Finset.sum_eq_sum_Ico_succ_bot hlt]
+        have hsa : service_at sched job t = 0 := by
+          unfold service_at; simp [show ¬(scheduled_at sched job t = true) from hcase]
+        rw [hsa, Nat.zero_add]
+        exact ih
+      | S_C_sched t c e hcase hpre ih =>
+        cases c with
+        | zero =>
+          cases hpre with
+          | C0_ =>
+            simp
+        | succ c' =>
+          have hle_tc : t + 1 + (c' + 1) ≤ e :=
+            arrival_add_cost_le_end job sched (t + 1) (c' + 1) e hpre
+          have hlt : t < e - 1 := by
+            simp only [Instant, Duration, Time] at *; omega
+          rw [Finset.sum_eq_sum_Ico_succ_bot hlt]
+          have hsa : service_at sched job t = 1 := by
+            unfold service_at; simp [hcase]
+          rw [hsa, ih]
+          simp only [Instant, Duration, Time] at *; omega
+
+    include H_jobs_must_arrive_to_execute H_completed_jobs_dont_execute H_valid_job in
+    theorem job_uncompleted_before_end_time :
+        completes_at job_arrival job_cost sched job job_end →
+        ∀ t', job_arrival job ≤ t' ∧ t' ≤ job_end - 1 →
+          service_during sched job (job_arrival job) t' < job_cost job := by
+      sorry
+
+
+  end Lemmas
+
+end Task
+
+end end_time
+
+end Prosa.Classic.Model.Schedule.Uni.End_time

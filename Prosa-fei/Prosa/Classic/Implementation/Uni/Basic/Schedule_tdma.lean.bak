@@ -1,0 +1,142 @@
+-- Translated from: ../rt-proofs/classic/implementation/uni/basic/schedule_tdma.v
+import Prosa.Classic.Util.All
+import Prosa.Classic.Util.Find_seq
+import Prosa.Classic.Model.Arrival.Basic.Job
+import Prosa.Classic.Model.Arrival.Basic.Arrival_sequence
+import Prosa.Classic.Model.Schedule.Uni.Schedule
+import Prosa.Classic.Model.Schedule.Uni.Basic.Platform_tdma
+import Prosa.Classic.Model.Policy_tdma
+import Prosa.Classic.Model.Schedule.Uni.Transformation.Construction
+import Prosa.Classic.Implementation.Job
+import Prosa.Util.Seqset
+import Mathlib.Tactic
+
+namespace Prosa.Classic.Implementation.Uni.Basic.Schedule_tdma
+
+open Prosa.Classic.Model.Time
+open Prosa.Classic.Model.Arrival.Basic.Arrival_sequence
+open Prosa.Classic.Model.Schedule.Uni.Schedule
+open Prosa.Classic.Model.Schedule.Uni.Basic.Platform_tdma
+open Prosa.Classic.Model.Policy_tdma
+open Prosa.Classic.Model.Schedule.Uni.Transformation.Construction.ScheduleConstruction
+open Prosa.Classic.Util.Find_seq
+open Prosa.Util.Seqset
+
+namespace ConcreteSchedulerTDMA
+
+section ImplementationTDMA
+
+variable {Task : Type*} [DecidableEq Task]
+variable {Job : Type*} [DecidableEq Job]
+variable (job_arrival : Job → Time)
+variable (job_cost : Job → Time)
+variable (job_task : Job → Task)
+
+variable (arr_seq : arrival_sequence Job)
+
+variable (ts : SeqSet Task)
+
+variable (time_slot : TDMA_slot Task)
+
+variable (slot_order : TDMA_slot_order Task)
+
+variable (H_arrival_times_are_consistent :
+    arrival_times_are_consistent job_arrival arr_seq)
+
+section JobSchedule
+
+variable (sched : schedule Job)
+variable (t : Time)
+
+def pending_jobs : List Job :=
+  (jobs_arrived_up_to arr_seq t).filter
+    (fun j => decide (job_arrival j ≤ t) && !decide (job_cost j ≤ service sched j t))
+
+def job_to_schedule : Option Job :=
+  findP (fun job =>
+    decide (((t + TDMA_cycle ts time_slot -
+      Task_slot_offset ts slot_order (job_task job) time_slot %
+        TDMA_cycle ts time_slot) %
+      TDMA_cycle ts time_slot) <
+      time_slot (job_task job)))
+    (pending_jobs job_arrival job_cost arr_seq sched t)
+
+section Lemmas
+
+variable (arr_seq_is_a_set : arrival_sequence_is_a_set arr_seq)
+
+include H_arrival_times_are_consistent arr_seq_is_a_set
+
+theorem pending_jobs_uniq :
+    (pending_jobs job_arrival job_cost arr_seq sched t).Nodup := by
+  sorry
+
+theorem respects_FIFO :
+    ∀ j j',
+    j ∈ pending_jobs job_arrival job_cost arr_seq sched t →
+    j' ∈ pending_jobs job_arrival job_cost arr_seq sched t →
+    (pending_jobs job_arrival job_cost arr_seq sched t).idxOf j' <
+      (pending_jobs job_arrival job_cost arr_seq sched t).idxOf j →
+    job_arrival j' ≤ job_arrival j := by
+  sorry
+
+omit arr_seq_is_a_set in
+theorem pending_job_in_penging_list :
+    ∀ j, arrives_in arr_seq j →
+    pending job_arrival job_cost sched j t →
+    j ∈ pending_jobs job_arrival job_cost arr_seq sched t := by
+  sorry
+
+omit arr_seq_is_a_set in
+theorem pendinglist_jobs_in_arr_seq :
+    ∀ j, j ∈ pending_jobs job_arrival job_cost arr_seq sched t →
+    arrives_in arr_seq j := by
+  sorry
+
+end Lemmas
+
+end JobSchedule
+
+section SchedulerTDMA
+
+private def empty_schedule : schedule Job := fun _ => none
+
+def scheduler_tdma : schedule Job :=
+  build_schedule_from_prefixes
+    (job_to_schedule job_arrival job_cost job_task arr_seq ts time_slot slot_order)
+    empty_schedule
+
+include H_arrival_times_are_consistent in
+theorem scheduler_depends_only_on_prefix :
+    ∀ (sched1 sched2 : schedule Job) (t : Time),
+    (∀ t0, t0 < t → sched1 t0 = sched2 t0) →
+    job_to_schedule job_arrival job_cost job_task arr_seq ts time_slot slot_order sched1 t =
+    job_to_schedule job_arrival job_cost job_task arr_seq ts time_slot slot_order sched2 t := by
+  sorry
+
+include H_arrival_times_are_consistent in
+theorem scheduler_uses_construction_function :
+    ∀ t, scheduler_tdma job_arrival job_cost job_task arr_seq ts time_slot slot_order t =
+    job_to_schedule job_arrival job_cost job_task arr_seq ts time_slot slot_order
+      (scheduler_tdma job_arrival job_cost job_task arr_seq ts time_slot slot_order) t := by
+  sorry
+
+end SchedulerTDMA
+
+include H_arrival_times_are_consistent in
+theorem scheduler_jobs_must_arrive_to_execute :
+    jobs_must_arrive_to_execute job_arrival
+      (scheduler_tdma job_arrival job_cost job_task arr_seq ts time_slot slot_order) := by
+  sorry
+
+include H_arrival_times_are_consistent in
+theorem scheduler_completed_jobs_dont_execute :
+    completed_jobs_dont_execute job_cost
+      (scheduler_tdma job_arrival job_cost job_task arr_seq ts time_slot slot_order) := by
+  sorry
+
+end ImplementationTDMA
+
+end ConcreteSchedulerTDMA
+
+end Prosa.Classic.Implementation.Uni.Basic.Schedule_tdma

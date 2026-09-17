@@ -1,0 +1,323 @@
+-- Translated from: ../rt-proofs/classic/analysis/global/basic/workload_bound.v
+import Prosa.Classic.Util.All
+import Prosa.Classic.Model.Arrival.Basic.Task
+import Prosa.Classic.Model.Schedule.Global.Workload
+import Prosa.Classic.Model.Schedule.Global.Basic.Schedule
+import Prosa.Classic.Model.Arrival.Basic.Task_arrival
+import Prosa.Classic.Model.Schedule.Global.Response_time
+import Prosa.Classic.Model.Schedule.Global.Schedulability
+import Prosa.Classic.Util.Div_mod
+import Prosa.Classic.Util.Sorting
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.BigOperators.Intervals
+import Mathlib.Tactic
+
+set_option autoImplicit false
+
+namespace Prosa.Classic.Analysis.Global.Basic.Workload_bound
+
+open Prosa.Classic.Model.Time
+open Prosa.Classic.Model.Arrival.Basic.Arrival_sequence
+open Prosa.Classic.Model.Arrival.Basic.Task
+open Prosa.Classic.Model.Arrival.Basic.Task.SporadicTask
+open Prosa.Classic.Model.Arrival.Basic.Task_arrival
+open Prosa.Classic.Model.Arrival.Basic.Job
+open Prosa.Classic.Model.Schedule.Global.Basic.Schedule
+open Prosa.Classic.Model.Schedule.Global.Basic.Schedule.Schedule
+open Prosa.Classic.Model.Schedule.Global.Basic.Schedule.ScheduleOfSporadicTask
+open Prosa.Classic.Model.Schedule.Global.Response_time
+open Prosa.Classic.Model.Schedule.Global.Response_time.ResponseTime
+open Prosa.Classic.Model.Schedule.Global.Schedulability
+open Prosa.Classic.Model.Schedule.Global.Workload
+open Prosa.Classic.Util.Sorting
+open Prosa.Util.Div_mod
+
+namespace WorkloadBound
+
+section WorkloadBoundDef
+
+variable {sporadic_task : Type} [DecidableEq sporadic_task]
+variable (task_cost : sporadic_task → Time)
+variable (task_period : sporadic_task → Time)
+
+variable (tsk : sporadic_task)
+variable (R_tsk : Time)
+variable (delta : Time)
+
+def max_jobs : ℕ :=
+  div_floor (delta + R_tsk - task_cost tsk) (task_period tsk)
+
+def W : ℕ :=
+  let e_k := task_cost tsk
+  let p_k := task_period tsk
+  min e_k (delta + R_tsk - e_k - max_jobs task_cost task_period tsk R_tsk delta * p_k) +
+    max_jobs task_cost task_period tsk R_tsk delta * e_k
+
+end WorkloadBoundDef
+
+section BasicLemmas
+
+variable {sporadic_task : Type} [DecidableEq sporadic_task]
+variable (task_cost : sporadic_task → Time)
+variable (task_period : sporadic_task → Time)
+
+variable (tsk : sporadic_task)
+
+variable (H_period_positive : task_period tsk > 0)
+
+variable (R1 R2 : Time)
+variable (H_R_lower_bound : R1 ≥ task_cost tsk)
+variable (H_R1_le_R2 : R1 ≤ R2)
+include H_period_positive H_R_lower_bound H_R1_le_R2
+
+theorem W_monotonic :
+    ∀ (t1 t2 : Time),
+      t1 ≤ t2 →
+      W task_cost task_period tsk R1 t1 ≤
+        W task_cost task_period tsk R2 t2 := by
+  sorry
+
+end BasicLemmas
+
+section ProofWorkloadBound
+
+variable {sporadic_task : Type} [DecidableEq sporadic_task]
+variable (task_cost : sporadic_task → Time)
+variable (task_period : sporadic_task → Time)
+variable (task_deadline : sporadic_task → Time)
+
+variable {Job : Type} [DecidableEq Job]
+variable (job_arrival : Job → Time)
+variable (job_cost : Job → Time)
+variable (job_task : Job → sporadic_task)
+variable (job_deadline : Job → Time)
+
+variable (arr_seq : Prosa.Classic.Model.Arrival.Basic.Arrival_sequence.arrival_sequence Job)
+
+variable (H_jobs_have_valid_parameters :
+  ∀ (j : Job),
+    Prosa.Classic.Model.Arrival.Basic.Arrival_sequence.arrives_in arr_seq j →
+    Prosa.Classic.Model.Arrival.Basic.Job.valid_sporadic_job task_cost task_deadline job_cost job_deadline job_task j)
+
+variable {num_cpus : ℕ}
+variable (sched : schedule Job num_cpus)
+variable (H_jobs_come_from_arrival_sequence :
+  jobs_come_from_arrival_sequence sched arr_seq)
+
+variable (H_jobs_must_arrive_to_execute :
+  jobs_must_arrive_to_execute job_arrival sched)
+
+variable (H_completed_jobs_dont_execute :
+  completed_jobs_dont_execute job_cost sched)
+
+variable (H_sequential_jobs : sequential_jobs sched)
+
+variable (H_sporadic_tasks :
+  sporadic_task_model task_period job_arrival job_task arr_seq)
+
+variable (tsk : sporadic_task)
+
+variable (H_valid_task_parameters :
+  is_valid_sporadic_task task_cost task_period task_deadline tsk)
+
+variable (H_constrained_deadline : task_deadline tsk ≤ task_period tsk)
+
+variable (t1 delta : Time)
+
+variable (R_tsk : Time)
+
+variable (H_response_time_bound :
+  ∀ (j : Job),
+    Prosa.Classic.Model.Arrival.Basic.Arrival_sequence.arrives_in arr_seq j →
+    job_task j = tsk →
+    job_arrival j + R_tsk < t1 + delta →
+    completed job_cost sched j (job_arrival j + R_tsk))
+
+variable (H_response_time_ge_cost : R_tsk ≥ task_cost tsk)
+variable (H_no_deadline_miss : R_tsk ≤ task_deadline tsk)
+
+include H_jobs_have_valid_parameters H_jobs_come_from_arrival_sequence
+  H_jobs_must_arrive_to_execute H_completed_jobs_dont_execute
+  H_sequential_jobs H_sporadic_tasks H_valid_task_parameters
+  H_constrained_deadline H_response_time_bound
+  H_response_time_ge_cost H_no_deadline_miss
+
+section MainProof
+
+private noncomputable def mk_sorted_jobs
+    (ja : Job → Time) (jt : Job → sporadic_task) (s : schedule Job num_cpus)
+    (tk : sporadic_task) (t1' delta' : Time) : List Job :=
+  (jobs_of_task_scheduled_between jt s tk t1' (t1' + delta')).mergeSort
+    (fun x y => decide (ja x ≤ ja y))
+
+theorem workload_bound_simpl_by_sorting_scheduled_jobs :
+    workload_joblist job_task sched tsk t1 (t1 + delta) =
+      ((mk_sorted_jobs job_arrival job_task sched tsk t1 delta).map
+        (fun i => service_during sched i t1 (t1 + delta))).sum := by
+  sorry
+
+theorem workload_bound_job_in_same_sequence :
+    ∀ (j : Job),
+      (j ∈ jobs_of_task_scheduled_between job_task sched tsk t1 (t1 + delta)) =
+        (j ∈ mk_sorted_jobs job_arrival job_task sched tsk t1 delta) := by
+  sorry
+
+theorem workload_bound_all_jobs_from_tsk :
+    ∀ (j_i : Job),
+      j_i ∈ mk_sorted_jobs job_arrival job_task sched tsk t1 delta →
+      Prosa.Classic.Model.Arrival.Basic.Arrival_sequence.arrives_in arr_seq j_i ∧
+      job_task j_i = tsk ∧
+      service_during sched j_i t1 (t1 + delta) ≠ 0 ∧
+      j_i ∈ jobs_scheduled_between sched t1 (t1 + delta) := by
+  sorry
+
+theorem workload_bound_jobs_ordered_by_arrival :
+    ∀ (i : ℕ) (elem : Job),
+      i < (mk_sorted_jobs job_arrival job_task sched tsk t1 delta).length - 1 →
+      decide (job_arrival
+        ((mk_sorted_jobs job_arrival job_task sched tsk t1 delta).getD i elem) ≤
+       job_arrival
+        ((mk_sorted_jobs job_arrival job_task sched tsk t1 delta).getD (i + 1) elem)) = true := by
+  sorry
+
+section WorkloadNotManyJobs
+
+theorem workload_bound_holds_for_at_most_n_k_jobs :
+    (mk_sorted_jobs job_arrival job_task sched tsk t1 delta).length ≤
+      max_jobs task_cost task_period tsk R_tsk delta →
+    ((mk_sorted_jobs job_arrival job_task sched tsk t1 delta).map
+      (fun i => service_during sched i t1 (t1 + delta))).sum ≤
+      W task_cost task_period tsk R_tsk delta := by
+  sorry
+
+end WorkloadNotManyJobs
+
+section WorkloadSingleJob
+
+variable (H_at_least_one_job :
+  (mk_sorted_jobs job_arrival job_task sched tsk t1 delta).length > 0)
+
+variable (elem : Job)
+include H_at_least_one_job
+
+theorem workload_bound_j_fst_is_job_of_tsk :
+    let j_fst := (mk_sorted_jobs job_arrival job_task sched tsk t1 delta).getD 0 elem
+    Prosa.Classic.Model.Arrival.Basic.Arrival_sequence.arrives_in arr_seq j_fst ∧
+    job_task j_fst = tsk ∧
+    service_during sched j_fst t1 (t1 + delta) ≠ 0 ∧
+    j_fst ∈ jobs_scheduled_between sched t1 (t1 + delta) := by
+  sorry
+
+theorem workload_bound_holds_for_a_single_job :
+    ∑ i ∈ Finset.Ico 0 1,
+      service_during sched
+        ((mk_sorted_jobs job_arrival job_task sched tsk t1 delta).getD i elem)
+        t1 (t1 + delta) ≤
+      W task_cost task_period tsk R_tsk delta := by
+  sorry
+
+end WorkloadSingleJob
+
+section WorkloadTwoOrMoreJobs
+
+variable (num_mid_jobs : ℕ)
+variable (H_at_least_two_jobs :
+  (mk_sorted_jobs job_arrival job_task sched tsk t1 delta).length = num_mid_jobs + 2)
+
+variable (elem : Job)
+include H_at_least_two_jobs
+
+theorem workload_bound_j_lst_is_job_of_tsk :
+    let j_lst := (mk_sorted_jobs job_arrival job_task sched tsk t1 delta).getD (num_mid_jobs + 1) elem
+    Prosa.Classic.Model.Arrival.Basic.Arrival_sequence.arrives_in arr_seq j_lst ∧
+    job_task j_lst = tsk ∧
+    service_during sched j_lst t1 (t1 + delta) ≠ 0 ∧
+    j_lst ∈ jobs_scheduled_between sched t1 (t1 + delta) := by
+  sorry
+
+theorem workload_bound_response_time_of_first_job_inside_interval :
+    let j_fst := (mk_sorted_jobs job_arrival job_task sched tsk t1 delta).getD 0 elem
+    t1 ≤ job_arrival j_fst + R_tsk := by
+  sorry
+
+theorem workload_bound_last_job_arrives_before_end_of_interval :
+    let j_lst := (mk_sorted_jobs job_arrival job_task sched tsk t1 delta).getD (num_mid_jobs + 1) elem
+    job_arrival j_lst < t1 + delta := by
+  sorry
+
+theorem workload_bound_service_of_first_and_last_jobs :
+    let j_fst := (mk_sorted_jobs job_arrival job_task sched tsk t1 delta).getD 0 elem
+    let j_lst := (mk_sorted_jobs job_arrival job_task sched tsk t1 delta).getD (num_mid_jobs + 1) elem
+    service_during sched j_fst t1 (t1 + delta) +
+    service_during sched j_lst t1 (t1 + delta) ≤
+      (job_arrival j_fst + R_tsk - t1) +
+      (t1 + delta - job_arrival j_lst) := by
+  sorry
+
+theorem workload_bound_simpl_expression_with_first_and_last :
+    let j_fst := (mk_sorted_jobs job_arrival job_task sched tsk t1 delta).getD 0 elem
+    let j_lst := (mk_sorted_jobs job_arrival job_task sched tsk t1 delta).getD (num_mid_jobs + 1) elem
+    job_arrival j_fst + R_tsk - t1 +
+      (t1 + delta - job_arrival j_lst) =
+    delta + R_tsk -
+      (job_arrival j_lst - job_arrival j_fst) := by
+  sorry
+
+theorem workload_bound_service_of_middle_jobs :
+    ∑ i ∈ Finset.Ico 0 num_mid_jobs,
+      service_during sched
+        ((mk_sorted_jobs job_arrival job_task sched tsk t1 delta).getD (i + 1) elem)
+        t1 (t1 + delta) ≤
+      num_mid_jobs * task_cost tsk := by
+  sorry
+
+theorem workload_bound_many_periods_in_between :
+    let j_fst := (mk_sorted_jobs job_arrival job_task sched tsk t1 delta).getD 0 elem
+    let j_lst := (mk_sorted_jobs job_arrival job_task sched tsk t1 delta).getD (num_mid_jobs + 1) elem
+    job_arrival j_lst - job_arrival j_fst ≥ (num_mid_jobs + 1) * task_period tsk := by
+  sorry
+
+theorem workload_bound_n_k_covers_middle_jobs :
+    max_jobs task_cost task_period tsk R_tsk delta ≥ num_mid_jobs := by
+  sorry
+
+theorem workload_bound_n_k_equals_num_mid_jobs :
+    let j_fst := (mk_sorted_jobs job_arrival job_task sched tsk t1 delta).getD 0 elem
+    let j_lst := (mk_sorted_jobs job_arrival job_task sched tsk t1 delta).getD (num_mid_jobs + 1) elem
+    num_mid_jobs = max_jobs task_cost task_period tsk R_tsk delta →
+    service_during sched j_lst t1 (t1 + delta) +
+      service_during sched j_fst t1 (t1 + delta) +
+      ∑ i ∈ Finset.Ico 0 num_mid_jobs,
+        service_during sched
+          ((mk_sorted_jobs job_arrival job_task sched tsk t1 delta).getD (i + 1) elem)
+          t1 (t1 + delta) ≤
+      W task_cost task_period tsk R_tsk delta := by
+  sorry
+
+theorem workload_bound_n_k_equals_num_mid_jobs_plus_1 :
+    let j_fst := (mk_sorted_jobs job_arrival job_task sched tsk t1 delta).getD 0 elem
+    let j_lst := (mk_sorted_jobs job_arrival job_task sched tsk t1 delta).getD (num_mid_jobs + 1) elem
+    num_mid_jobs + 1 = max_jobs task_cost task_period tsk R_tsk delta →
+    service_during sched j_lst t1 (t1 + delta) +
+      service_during sched j_fst t1 (t1 + delta) +
+      ∑ i ∈ Finset.Ico 0 num_mid_jobs,
+        service_during sched
+          ((mk_sorted_jobs job_arrival job_task sched tsk t1 delta).getD (i + 1) elem)
+          t1 (t1 + delta) ≤
+      W task_cost task_period tsk R_tsk delta := by
+  sorry
+
+end WorkloadTwoOrMoreJobs
+
+theorem workload_bounded_by_W :
+    workload job_task sched tsk t1 (t1 + delta) ≤
+      W task_cost task_period tsk R_tsk delta := by
+  sorry
+
+end MainProof
+
+end ProofWorkloadBound
+
+end WorkloadBound
+
+end Prosa.Classic.Analysis.Global.Basic.Workload_bound

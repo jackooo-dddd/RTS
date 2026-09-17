@@ -1,0 +1,37 @@
+-- Translated from: ../rt-proofs/util/seqset.v
+import Mathlib.Data.List.Basic
+import Mathlib.Data.List.Nodup
+
+namespace Prosa.Util.Seqset
+
+section SeqSet
+
+variable {T : Type*} [DecidableEq T]
+
+structure SeqSet (T : Type*) where
+  _set_seq : List T
+  set_seq_uniq : _set_seq.Nodup
+
+instance : CoeSort (SeqSet T) (List T) where
+  coe s := s._set_seq
+
+instance : Membership T (SeqSet T) where
+  mem s x := x ∈ s._set_seq
+
+instance [BEq T] : BEq (SeqSet T) where
+  beq s₁ s₂ := s₁._set_seq == s₂._set_seq
+
+def set_of (_phant : T) := SeqSet T
+
+end SeqSet
+
+section Lemmas
+
+variable {T : Type*} [DecidableEq T]
+variable (s : SeqSet T)
+
+theorem set_uniq : s._set_seq.Nodup := by sorry
+
+end Lemmas
+
+end Prosa.Util.Seqset

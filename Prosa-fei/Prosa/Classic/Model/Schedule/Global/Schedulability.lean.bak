@@ -1,0 +1,120 @@
+-- Translated from: ../rt-proofs/classic/model/schedule/global/schedulability.v
+import Prosa.Classic.Model.Arrival.Basic.Job
+import Prosa.Classic.Model.Schedule.Global.Basic.Schedule
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.BigOperators.Intervals
+import Mathlib.Tactic
+
+namespace Prosa.Classic.Model.Schedule.Global.Schedulability
+
+open Prosa.Classic.Model.Time
+open Prosa.Classic.Model.Arrival.Basic.Job
+open Prosa.Classic.Model.Schedule.Global.Basic.Schedule
+open Schedule
+
+namespace Schedulability
+
+section SchedulableDefs
+
+variable {sporadic_task : Type} [DecidableEq sporadic_task]
+variable {Job : Type} [DecidableEq Job]
+variable (job_arrival : Job → Time)
+variable (job_cost : Job → Time)
+variable (job_deadline : Job → Time)
+variable (job_task : Job → sporadic_task)
+variable (arr_seq : arrival_sequence Job)
+variable {num_cpus : ℕ}
+variable (sched : schedule Job num_cpus)
+
+section ScheduleOfJobs
+
+variable (j : Job)
+
+def job_misses_no_deadline : Prop :=
+  completed job_cost sched j (job_arrival j + job_deadline j)
+
+end ScheduleOfJobs
+
+section ScheduleOfTasks
+
+variable (tsk : sporadic_task)
+
+def task_misses_no_deadline : Prop :=
+  ∀ j,
+    arrives_in arr_seq j →
+    job_task j = tsk →
+    job_misses_no_deadline job_arrival job_cost job_deadline sched j
+
+def task_misses_no_deadline_before (t' : Time) : Prop :=
+  ∀ j,
+    arrives_in arr_seq j →
+    job_task j = tsk →
+    job_arrival j + job_deadline j < t' →
+    job_misses_no_deadline job_arrival job_cost job_deadline sched j
+
+end ScheduleOfTasks
+
+end SchedulableDefs
+
+section BasicLemmas
+
+variable {sporadic_task : Type} [DecidableEq sporadic_task]
+variable (task_cost : sporadic_task → Time)
+variable (task_period : sporadic_task → Time)
+variable (task_deadline : sporadic_task → Time)
+variable {Job : Type} [DecidableEq Job]
+variable (job_arrival : Job → Time)
+variable (job_cost : Job → Time)
+variable (job_deadline : Job → Time)
+variable (job_task : Job → sporadic_task)
+variable (arr_seq : arrival_sequence Job)
+variable {num_cpus : ℕ}
+variable (sched : schedule Job num_cpus)
+variable (H_completed_jobs_dont_execute : completed_jobs_dont_execute job_cost sched)
+
+section SpecificJob
+
+variable (j : Job)
+variable (H_j_arrives : arrives_in arr_seq j)
+variable (no_deadline_miss : job_misses_no_deadline job_arrival job_cost job_deadline sched j)
+
+theorem service_after_job_deadline_zero :
+    ∀ t',
+      t' ≥ job_arrival j + job_deadline j →
+      service_at sched j t' = 0 := by sorry
+
+theorem cumulative_service_after_job_deadline_zero :
+    ∀ t' t'',
+      t' ≥ job_arrival j + job_deadline j →
+      ∑ t ∈ Finset.Ico t' t'', service_at sched j t = 0 := by sorry
+
+end SpecificJob
+
+section AllJobs
+
+variable (tsk : sporadic_task)
+variable (no_deadline_misses :
+  task_misses_no_deadline job_arrival job_cost job_deadline job_task arr_seq sched tsk)
+variable (j : Job)
+variable (H_j_arrives : arrives_in arr_seq j)
+variable (H_job_of_task : job_task j = tsk)
+variable (H_valid_job :
+  valid_sporadic_job task_cost task_deadline job_cost job_deadline job_task j)
+
+theorem service_after_task_deadline_zero :
+    ∀ t',
+      t' ≥ job_arrival j + task_deadline tsk →
+      service_at sched j t' = 0 := by sorry
+
+theorem cumulative_service_after_task_deadline_zero :
+    ∀ t' t'',
+      t' ≥ job_arrival j + task_deadline tsk →
+      ∑ t ∈ Finset.Ico t' t'', service_at sched j t = 0 := by sorry
+
+end AllJobs
+
+end BasicLemmas
+
+end Schedulability
+
+end Prosa.Classic.Model.Schedule.Global.Schedulability

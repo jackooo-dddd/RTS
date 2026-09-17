@@ -1,0 +1,469 @@
+-- Translated from: ../rt-proofs/results/edf/rta/bounded_pi.v
+import Prosa.Analysis.Facts.Edf
+import Prosa.Model.Schedule.Priority_driven
+import Prosa.Analysis.Facts.Busy_interval.Carry_in
+import Prosa.Analysis.Definitions.Schedulability
+import Prosa.Model.Priority.Edf
+import Prosa.Model.Task.Absolute_deadline
+import Prosa.Analysis.Abstract.Ideal_jlfp_rta
+import Prosa.Model.Processor.Ideal
+import Prosa.Model.Readiness.Basic
+import Prosa.Analysis.Abstract.Abstract_seq_rta
+import Prosa.Analysis.Definitions.Request_bound_function
+import Prosa.Analysis.Definitions.Priority_inversion
+import Prosa.Model.Schedule.Work_conserving
+import Prosa.Util.Epsilon
+
+namespace Prosa.Results.Edf.Rta.Bounded_pi
+
+open Prosa.Behavior.Job
+open Prosa.Behavior.Time
+open Prosa.Behavior.Schedule
+open Prosa.Behavior.Service
+open Prosa.Behavior.Arrival_sequence
+open Prosa.Behavior.Ready
+open Prosa.Model.Task.Concept
+open Prosa.Model.Task.Absolute_deadline
+open Prosa.Model.Task.Sequentiality
+open Prosa.Model.Task.Arrivals
+open Prosa.Model.Task.Arrival.Curves
+open Prosa.Model.Processor.Ideal
+open Prosa.Model.Priority.Classes
+open Prosa.Model.Priority.Edf
+open Prosa.Model.Preemption.Parameter
+open Prosa.Model.Task.Preemption.Parameters
+open Prosa.Model.Aggregate.Workload
+open Prosa.Model.Aggregate.Service_of_jobs
+open Prosa.Model.Schedule.Work_conserving
+open Prosa.Analysis.Abstract.Definitions
+open Prosa.Analysis.Abstract.Ideal_jlfp_rta
+open Prosa.Analysis.Abstract.Abstract_seq_rta
+open Prosa.Analysis.Abstract.Search_space
+open Prosa.Analysis.Definitions.Schedulability
+open Prosa.Analysis.Definitions.Job_properties
+open Prosa.Analysis.Definitions.Request_bound_function
+open Prosa.Analysis.Definitions.Priority_inversion
+open Prosa.Analysis.Definitions.Busy_interval
+open Prosa.Analysis.Definitions.Task_schedule
+open Prosa.Analysis.Facts.Edf
+open Prosa.Analysis.Facts.Busy_interval.Carry_in
+open Prosa.Analysis.Facts.Behavior.Completion
+open Prosa.Analysis.Facts.Model.Rbf
+open Prosa.Analysis.Facts.Model.Task_arrivals
+open Prosa.Analysis.Facts.Model.Service_of_jobs
+open Prosa.Util.Epsilon
+
+section AbstractRTAforEDFwithArrivalCurves
+
+variable {Task : TaskType}
+variable [TaskCost Task]
+variable [TaskDeadline Task]
+variable [TaskRunToCompletionThreshold Task]
+
+variable {Job : JobType}
+variable [DecidableEq Job]
+variable [JobTask Job Task]
+variable [JobArrival Job]
+variable [JobCost Job]
+variable [JobPreemptable Job]
+
+variable [DecidableEq Task]
+
+variable [JobDeadline Job]
+attribute [local instance] pstate_instance
+attribute [local instance] Prosa.Model.Readiness.Basic.basic_ready_instance
+local instance : JLFP_policy Job := EDF Job
+local instance : JLDP_policy Job := JLFP_to_JLDP Job
+
+variable (arr_seq : arrival_sequence Job)
+variable (H_arrival_times_are_consistent : consistent_arrival_times arr_seq)
+variable (H_arr_seq_is_a_set : arrival_sequence_uniq arr_seq)
+
+variable (sched : schedule (processor_state Job))
+variable (H_jobs_come_from_arrival_sequence :
+  jobs_come_from_arrival_sequence (Job := Job) sched arr_seq)
+
+variable (H_jobs_must_arrive_to_execute : jobs_must_arrive_to_execute (Job := Job) sched)
+variable (H_completed_jobs_dont_execute : completed_jobs_dont_execute (Job := Job) sched)
+
+variable (H_work_conserving : work_conserving arr_seq sched)
+
+variable (H_sequential_tasks : sequential_tasks (Job := Job) (Task := Task) sched)
+
+variable (H_valid_job_cost : arrivals_have_valid_job_costs (Task := Task) arr_seq)
+
+variable (ts : List Task)
+
+variable (H_all_jobs_from_taskset : all_jobs_from_taskset arr_seq ts)
+
+variable [MaxArrivals Task]
+variable (H_valid_arrival_curve : valid_taskset_arrival_curve ts max_arrivals)
+variable (H_is_arrival_curve : taskset_respects_max_arrivals arr_seq ts)
+
+variable (tsk : Task)
+variable (H_tsk_in_ts : tsk ∈ ts)
+
+variable (H_valid_preemption_model : valid_preemption_model arr_seq sched)
+
+variable (H_valid_run_to_completion_threshold :
+  valid_task_run_to_completion_threshold arr_seq tsk)
+
+noncomputable def bound_on_total_hep_workload
+    (tsk : Task) [TaskDeadline Task] [TaskCost Task] [MaxArrivals Task]
+    (ts : List Task) (A Δ : duration) : Nat :=
+  (ts.filter (fun tsk_o => decide (tsk_o ≠ tsk))).map
+    (fun tsk_o =>
+      task_request_bound_function tsk_o
+        (min ((A + ε) + task_deadline tsk - task_deadline tsk_o) Δ))
+    |>.sum
+
+def task_rbf_changes_at (tsk : Task) [TaskCost Task] [MaxArrivals Task]
+    (A : duration) : Bool :=
+  decide (task_request_bound_function tsk A ≠ task_request_bound_function tsk (A + ε))
+
+def bound_on_total_hep_workload_changes_at
+    (tsk : Task) [TaskDeadline Task] [TaskCost Task] [MaxArrivals Task]
+    (ts : List Task) (A : duration) : Bool :=
+  ts.any fun tsko =>
+    decide (tsk ≠ tsko) &&
+      decide (task_request_bound_function tsko (A + task_deadline tsk - task_deadline tsko) ≠
+              task_request_bound_function tsko ((A + ε) + task_deadline tsk - task_deadline tsko))
+
+def is_in_search_space_edf
+    (tsk : Task) [TaskDeadline Task] [TaskCost Task] [MaxArrivals Task]
+    (ts : List Task) (L : duration) (A : duration) : Bool :=
+  decide (A < L) &&
+    (task_rbf_changes_at tsk A || bound_on_total_hep_workload_changes_at tsk ts A)
+
+variable (priority_inversion_bound : duration)
+variable (H_priority_inversion_is_bounded :
+  priority_inversion_is_bounded_by arr_seq sched tsk priority_inversion_bound)
+
+variable (L : duration)
+variable (H_L_positive : L > 0)
+variable (H_fixed_point : L = total_request_bound_function ts L)
+
+variable (R : duration)
+variable (H_R_is_maximum :
+  ∀ (A : duration),
+    is_in_search_space_edf tsk ts L A = true →
+    ∃ (F : duration),
+      A + F = priority_inversion_bound
+              + (task_request_bound_function tsk (A + ε) -
+                  (task_cost tsk - task_run_to_completion_threshold tsk))
+              + bound_on_total_hep_workload tsk ts A (A + F) ∧
+      F + (task_cost tsk - task_run_to_completion_threshold tsk) ≤ R)
+
+section FillingOutHypothesesOfAbstractRTATheorem
+
+include H_arrival_times_are_consistent H_arr_seq_is_a_set
+  H_jobs_come_from_arrival_sequence H_jobs_must_arrive_to_execute
+  H_completed_jobs_dont_execute H_work_conserving H_sequential_tasks in
+lemma instantiated_i_and_w_are_coherent_with_schedule :
+    Prosa.Analysis.Abstract.Definitions.work_conserving arr_seq sched tsk
+      (Prosa.Analysis.Abstract.Ideal_jlfp_rta.interference sched)
+      (Prosa.Analysis.Abstract.Ideal_jlfp_rta.interfering_workload arr_seq sched) := by
+  sorry
+
+include H_arrival_times_are_consistent H_arr_seq_is_a_set
+  H_jobs_come_from_arrival_sequence H_jobs_must_arrive_to_execute
+  H_completed_jobs_dont_execute H_sequential_tasks in
+lemma instantiated_interference_and_workload_consistent_with_sequential_tasks :
+    interference_and_workload_consistent_with_sequential_tasks
+      arr_seq sched tsk
+      (Prosa.Analysis.Abstract.Ideal_jlfp_rta.interference sched)
+      (Prosa.Analysis.Abstract.Ideal_jlfp_rta.interfering_workload arr_seq sched) := by
+  sorry
+
+include H_arrival_times_are_consistent H_arr_seq_is_a_set
+  H_jobs_come_from_arrival_sequence H_jobs_must_arrive_to_execute
+  H_completed_jobs_dont_execute H_work_conserving H_sequential_tasks
+  H_L_positive H_fixed_point H_valid_job_cost H_is_arrival_curve in
+lemma instantiated_busy_intervals_are_bounded :
+    busy_intervals_are_bounded_by arr_seq sched tsk
+      (Prosa.Analysis.Abstract.Ideal_jlfp_rta.interference sched)
+      (Prosa.Analysis.Abstract.Ideal_jlfp_rta.interfering_workload arr_seq sched) L := by
+  sorry
+
+section TaskInterferenceIsBoundedByIBF
+
+section Inequalities
+
+variable (j : Job)
+variable (H_j_arrives : arrives_in arr_seq j)
+variable (H_job_of_tsk : job_task j = tsk)
+variable (H_job_cost_positive : job_cost_positive j)
+
+variable (t1 t2 : duration)
+variable (H_busy_interval :
+  Prosa.Analysis.Abstract.Definitions.busy_interval sched
+    (Prosa.Analysis.Abstract.Ideal_jlfp_rta.interference sched)
+    (Prosa.Analysis.Abstract.Ideal_jlfp_rta.interfering_workload arr_seq sched) j t1 t2)
+
+variable (Δ : duration)
+variable (H_Δ_in_busy : t1 + Δ < t2)
+
+include H_priority_inversion_is_bounded H_arrival_times_are_consistent H_arr_seq_is_a_set
+  H_jobs_come_from_arrival_sequence H_jobs_must_arrive_to_execute
+  H_completed_jobs_dont_execute H_sequential_tasks
+  H_j_arrives H_job_of_tsk H_job_cost_positive H_busy_interval H_Δ_in_busy in
+lemma cumulative_priority_inversion_is_bounded :
+    Prosa.Analysis.Abstract.Ideal_jlfp_rta.cumulative_priority_inversion sched j t1 (t1 + Δ) ≤
+      priority_inversion_bound := by
+  sorry
+
+include H_arrival_times_are_consistent H_arr_seq_is_a_set
+  H_jobs_come_from_arrival_sequence H_jobs_must_arrive_to_execute
+  H_completed_jobs_dont_execute H_sequential_tasks
+  H_j_arrives H_job_of_tsk H_job_cost_positive H_busy_interval H_Δ_in_busy in
+lemma cumulative_interference_is_bounded_by_total_service :
+    Prosa.Analysis.Abstract.Ideal_jlfp_rta.cumulative_interference_from_hep_jobs_from_other_tasks
+      (Task := Task) sched j t1 (t1 + Δ) ≤
+    service_of_jobs sched
+      (fun jo => hep_job jo j && decide (job_task (Task := Task) jo ≠ tsk))
+      (arrivals_between arr_seq t1 (t1 + Δ)) t1 (t1 + Δ) := by sorry
+
+include H_jobs_must_arrive_to_execute H_completed_jobs_dont_execute
+  H_j_arrives H_job_of_tsk H_busy_interval H_Δ_in_busy in
+lemma total_service_is_bounded_by_total_workload :
+    service_of_jobs sched
+      (fun jo => hep_job jo j && decide (job_task (Task := Task) jo ≠ tsk))
+      (arrivals_between arr_seq t1 (t1 + Δ)) t1 (t1 + Δ) ≤
+    workload_of_jobs
+      (fun jo => hep_job jo j && decide (job_task (Task := Task) jo ≠ tsk))
+      (arrivals_between arr_seq t1 (t1 + Δ)) := by sorry
+
+include H_all_jobs_from_taskset H_arrival_times_are_consistent
+  H_j_arrives H_job_of_tsk H_busy_interval in
+lemma reorder_summation :
+    workload_of_jobs
+      (fun jo => hep_job jo j && decide (job_task (Task := Task) jo ≠ tsk))
+      (arrivals_between arr_seq t1 (t1 + Δ)) ≤
+    ((ts.filter (fun tsk_o => decide (tsk_o ≠ tsk))).map
+      (fun tsk_o => workload_of_jobs
+        (fun jo => hep_job jo j && decide (job_task (Task := Task) jo = tsk_o))
+        (arrivals_between arr_seq t1 (t1 + Δ)))).sum := by sorry
+
+section Case1
+
+variable (tsk_o : Task)
+variable (H_tsko_in_ts : tsk_o ∈ ts)
+variable (H_neq : tsk_o ≠ tsk)
+variable (H_Δ_le : Δ ≤ (job_arrival j - t1) + ε + task_deadline tsk - task_deadline tsk_o)
+
+include H_valid_job_cost H_is_arrival_curve
+  H_j_arrives H_job_of_tsk H_busy_interval H_tsko_in_ts in
+lemma workload_le_rbf :
+    workload_of_jobs
+      (fun jo => hep_job jo j && decide (job_task (Task := Task) jo = tsk_o))
+      (arrivals_between arr_seq t1 (t1 + Δ)) ≤
+    task_request_bound_function tsk_o Δ := by sorry
+
+end Case1
+
+section Case2
+
+variable (tsk_o : Task)
+variable (H_tsko_in_ts : tsk_o ∈ ts)
+variable (H_neq : tsk_o ≠ tsk)
+variable (H_Δ_ge : (job_arrival j - t1) + ε + task_deadline tsk - task_deadline tsk_o ≤ Δ)
+
+include H_arrival_times_are_consistent H_arr_seq_is_a_set
+  H_jobs_come_from_arrival_sequence H_jobs_must_arrive_to_execute
+  H_completed_jobs_dont_execute H_sequential_tasks
+  H_j_arrives H_job_of_tsk H_job_cost_positive H_busy_interval
+  H_tsko_in_ts H_Δ_ge in
+lemma total_workload_shorten_range :
+    workload_of_jobs
+      (fun jo => hep_job jo j && decide (job_task (Task := Task) jo = tsk_o))
+      (arrivals_between arr_seq t1 (t1 + Δ)) ≤
+    workload_of_jobs
+      (fun jo => hep_job jo j && decide (job_task (Task := Task) jo = tsk_o))
+      (arrivals_between arr_seq t1
+        (t1 + ((job_arrival j - t1) + ε + task_deadline tsk - task_deadline tsk_o))) := by sorry
+
+include H_valid_job_cost H_is_arrival_curve
+  H_j_arrives H_job_of_tsk H_busy_interval H_tsko_in_ts in
+lemma workload_le_rbf' :
+    workload_of_jobs
+      (fun jo => hep_job jo j && decide (job_task (Task := Task) jo = tsk_o))
+      (arrivals_between arr_seq t1
+        (t1 + ((job_arrival j - t1) + ε + task_deadline tsk - task_deadline tsk_o))) ≤
+    task_request_bound_function tsk_o
+      ((job_arrival j - t1) + ε + task_deadline tsk - task_deadline tsk_o) := by sorry
+
+end Case2
+
+include H_arrival_times_are_consistent H_arr_seq_is_a_set
+  H_jobs_come_from_arrival_sequence H_jobs_must_arrive_to_execute
+  H_completed_jobs_dont_execute H_sequential_tasks
+  H_valid_job_cost H_all_jobs_from_taskset H_is_arrival_curve
+  H_j_arrives H_job_of_tsk H_job_cost_positive H_busy_interval H_Δ_in_busy in
+theorem sum_of_workloads_is_at_most_bound_on_total_hep_workload :
+    ((ts.filter (fun tsk_o => decide (tsk_o ≠ tsk))).map
+      (fun tsk_o => workload_of_jobs
+        (fun jo => hep_job jo j && decide (job_task (Task := Task) jo = tsk_o))
+        (arrivals_between arr_seq t1 (t1 + Δ)))).sum ≤
+    bound_on_total_hep_workload tsk ts (job_arrival j - t1) Δ := by sorry
+
+
+
+
+
+
+
+end Inequalities
+
+include H_arrival_times_are_consistent H_arr_seq_is_a_set
+  H_jobs_come_from_arrival_sequence H_jobs_must_arrive_to_execute
+  H_completed_jobs_dont_execute H_sequential_tasks
+  H_valid_job_cost H_all_jobs_from_taskset H_is_arrival_curve
+  H_priority_inversion_is_bounded in
+theorem instantiated_task_interference_is_bounded :
+    task_interference_is_bounded_by
+      arr_seq sched tsk
+      (Prosa.Analysis.Abstract.Ideal_jlfp_rta.interference sched)
+      (Prosa.Analysis.Abstract.Ideal_jlfp_rta.interfering_workload arr_seq sched)
+      (fun _ A R => priority_inversion_bound +
+        bound_on_total_hep_workload tsk ts A R) := by sorry
+
+end TaskInterferenceIsBoundedByIBF
+
+section SolutionOfResponseTimeReccurenceExists
+
+variable (j : Job)
+variable (H_j_arrives : arrives_in arr_seq j)
+variable (H_job_of_tsk : job_of_task tsk j = true)
+variable (H_job_cost_positive : job_cost_positive j)
+
+noncomputable def total_interference_bound_fn
+    (tsk : Task) [TaskDeadline Task] [TaskCost Task] [MaxArrivals Task]
+    [TaskRunToCompletionThreshold Task]
+    (ts : List Task) (priority_inversion_bound : duration)
+    (A Δ : duration) :=
+  task_request_bound_function tsk (A + ε) - task_cost tsk +
+    (priority_inversion_bound + bound_on_total_hep_workload tsk ts A Δ)
+
+variable (A : duration)
+variable (H_A_is_in_abstract_search_space :
+  Prosa.Analysis.Abstract.Search_space.is_in_search_space tsk L
+    (fun tsk' A' R' =>
+      total_interference_bound_fn tsk' ts priority_inversion_bound A' R') A)
+
+include H_R_is_maximum H_A_is_in_abstract_search_space in
+lemma A_is_in_concrete_search_space :
+    is_in_search_space_edf tsk ts L A = true := by
+  rcases H_A_is_in_abstract_search_space with rfl | ⟨⟨hPOS, hLT⟩, x, hx, hNE⟩
+  · -- Case A = 0
+    simp only [is_in_search_space_edf, Bool.and_eq_true, decide_eq_true_eq]
+    constructor
+    · exact H_L_positive
+    · left
+      simp only [task_rbf_changes_at, decide_eq_true_eq]
+      intro h
+      have h0 := task_rbf_0_zero arr_seq H_arrival_times_are_consistent tsk
+                    (H_valid_arrival_curve tsk H_tsk_in_ts).1 (H_is_arrival_curve tsk H_tsk_in_ts)
+      simp [ε] at h
+      rw [h0] at h
+      have h1 := task_rbf_1_ge_task_cost arr_seq H_arrival_times_are_consistent tsk
+                    (max_arrivals := inferInstance)
+                    (H_valid_arrival_curve tsk H_tsk_in_ts).1
+      have hcost : 0 < job_cost j := H_job_cost_positive
+      have hle : job_cost j ≤ task_cost tsk := by
+        have := H_valid_job_cost j (by exact H_j_arrives)
+        rw [show job_of_task tsk j = true from H_job_of_tsk] at this
+        simp at this
+        exact this
+      omega
+  · -- Case A > 0
+    simp only [is_in_search_space_edf, Bool.and_eq_true, decide_eq_true_eq]
+    constructor
+    · exact hLT
+    · by_contra hContra
+      push_neg at hContra
+      obtain ⟨hNotRBF, hNotHep⟩ := hContra
+      apply hNE
+      simp only [total_interference_bound_fn, bound_on_total_hep_workload]
+      simp only [task_rbf_changes_at, decide_eq_true_eq, not_not] at hNotRBF
+      simp only [bound_on_total_hep_workload_changes_at, Bool.not_eq_true] at hNotHep
+      simp only [ε] at *
+      rw [show A - 1 + 1 = A from by omega]
+      rw [hNotRBF]
+      congr 1; congr 1
+      -- Need to show the sums are equal
+      apply List.map_congr_left
+      intro tsk_o htsk_o
+      simp only [List.mem_filter, decide_eq_true_eq] at htsk_o
+      simp only [Bool.any_eq_true, decide_eq_true_eq, Bool.and_eq_true] at hNotHep
+      congr 1
+      have hNotHep' : ¬ ∃ x_1 ∈ ts, tsk ≠ x_1 ∧ (task_request_bound_function x_1 (A + task_deadline tsk - task_deadline x_1) ≠ task_request_bound_function x_1 (A + 1 + task_deadline tsk - task_deadline x_1)) := by
+        push_neg; intro y hy hne; push_neg at hNotHep
+        exact hNotHep y hy hne
+      have := hNotHep' tsk_o htsk_o.1 htsk_o.2.symm
+      push_neg at this
+      -- The min values should be equal
+      congr 1
+      omega
+
+
+include H_R_is_maximum H_A_is_in_abstract_search_space in
+theorem correct_search_space :
+    ∃ F,
+      A + F = task_request_bound_function tsk (A + ε) -
+                (task_cost tsk - task_run_to_completion_threshold tsk) +
+              (priority_inversion_bound +
+                bound_on_total_hep_workload tsk ts A (A + F)) ∧
+      F + (task_cost tsk - task_run_to_completion_threshold tsk) ≤ R := by
+  obtain ⟨F, hFIX, hNEQ⟩ := H_R_is_maximum A (A_is_in_concrete_search_space tsk priority_inversion_bound L R H_R_is_maximum ts A H_A_is_in_abstract_search_space)
+  exact ⟨F, by omega, hNEQ⟩
+
+end SolutionOfResponseTimeReccurenceExists
+
+end FillingOutHypothesesOfAbstractRTATheorem
+
+include H_arrival_times_are_consistent H_arr_seq_is_a_set
+  H_jobs_come_from_arrival_sequence H_jobs_must_arrive_to_execute
+  H_completed_jobs_dont_execute H_work_conserving H_sequential_tasks
+  H_valid_job_cost H_all_jobs_from_taskset H_valid_arrival_curve H_is_arrival_curve
+  H_tsk_in_ts H_valid_preemption_model H_valid_run_to_completion_threshold
+  H_priority_inversion_is_bounded H_L_positive H_fixed_point H_R_is_maximum in
+theorem uniprocessor_response_time_bound_edf :
+    task_response_time_bound arr_seq sched tsk R := by
+  intro js ARRs TSKs
+  by_cases POS : job_cost js > 0
+  · exact Prosa.Analysis.Abstract.Abstract_seq_rta.uniprocessor_response_time_bound_seq
+      arr_seq H_arrival_times_are_consistent H_arr_seq_is_a_set
+      sched H_jobs_come_from_arrival_sequence H_jobs_must_arrive_to_execute
+      H_completed_jobs_dont_execute H_valid_job_cost
+      ts tsk H_tsk_in_ts H_valid_preemption_model H_valid_run_to_completion_threshold
+      H_valid_arrival_curve H_is_arrival_curve
+      (Prosa.Analysis.Abstract.Ideal_jlfp_rta.interference sched)
+      (Prosa.Analysis.Abstract.Ideal_jlfp_rta.interfering_workload arr_seq sched)
+      (instantiated_i_and_w_are_coherent_with_schedule arr_seq H_arrival_times_are_consistent
+        H_arr_seq_is_a_set sched H_jobs_come_from_arrival_sequence H_jobs_must_arrive_to_execute
+        H_completed_jobs_dont_execute H_work_conserving H_sequential_tasks tsk)
+      H_sequential_tasks
+      (instantiated_interference_and_workload_consistent_with_sequential_tasks arr_seq
+        H_arrival_times_are_consistent H_arr_seq_is_a_set sched H_jobs_come_from_arrival_sequence
+        H_jobs_must_arrive_to_execute H_completed_jobs_dont_execute H_sequential_tasks tsk)
+      L
+      (instantiated_busy_intervals_are_bounded arr_seq H_arrival_times_are_consistent
+        H_arr_seq_is_a_set sched H_jobs_come_from_arrival_sequence H_jobs_must_arrive_to_execute
+        H_completed_jobs_dont_execute H_work_conserving H_sequential_tasks H_valid_job_cost
+        ts H_is_arrival_curve tsk H_L_positive H_fixed_point)
+      (fun _ A R => priority_inversion_bound + bound_on_total_hep_workload tsk ts A R)
+      (instantiated_task_interference_is_bounded arr_seq H_arrival_times_are_consistent
+        H_arr_seq_is_a_set sched H_jobs_come_from_arrival_sequence H_jobs_must_arrive_to_execute
+        H_completed_jobs_dont_execute H_sequential_tasks H_valid_job_cost ts H_all_jobs_from_taskset
+        H_is_arrival_curve tsk priority_inversion_bound H_priority_inversion_is_bounded)
+      R
+      (fun A hA => correct_search_space tsk priority_inversion_bound L R H_R_is_maximum ts A
+        (by exact hA))
+      js ARRs TSKs
+  · simp only [not_lt, Nat.le_zero] at POS
+    unfold job_response_time_bound completed_by
+    rw [POS]; simp
+
+end AbstractRTAforEDFwithArrivalCurves
+
+end Prosa.Results.Edf.Rta.Bounded_pi

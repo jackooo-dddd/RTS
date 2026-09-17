@@ -1,0 +1,203 @@
+-- Translated from: ../rt-proofs/classic/analysis/uni/susp/dynamic/jitter/taskset_membership.v
+import Prosa.Classic.Util.All
+import Prosa.Classic.Model.Priority
+import Prosa.Classic.Model.Arrival.Basic.Task
+import Prosa.Classic.Model.Arrival.Jitter.Job
+import Prosa.Classic.Model.Schedule.Uni.Response_time
+import Prosa.Classic.Model.Schedule.Uni.Susp.Schedule
+import Prosa.Classic.Analysis.Uni.Susp.Dynamic.Jitter.Jitter_schedule
+import Prosa.Classic.Analysis.Uni.Susp.Dynamic.Jitter.Jitter_taskset_generation
+import Prosa.Classic.Analysis.Uni.Susp.Sustainability.Singlecost.Reduction
+
+noncomputable section
+
+namespace Prosa.Classic.Analysis.Uni.Susp.Dynamic.Jitter.Taskset_membership
+
+open Prosa.Classic.Model.Time
+open Prosa.Classic.Model.Priority
+open Prosa.Classic.Model.Arrival.Basic.Task.SporadicTaskset
+open Prosa.Classic.Model.Arrival.Basic.Arrival_sequence
+open Prosa.Classic.Model.Suspension
+open Prosa.Classic.Model.Schedule.Uni.Schedule
+open Prosa.Classic.Model.Schedule.Uni.Response_time.ResponseTime
+open Prosa.Classic.Model.Schedule.Uni.Susp.Suspension_intervals
+open Prosa.Classic.Analysis.Uni.Susp.Dynamic.Jitter.Jitter_schedule.JitterScheduleConstruction
+open Prosa.Classic.Analysis.Uni.Susp.Dynamic.Jitter.Jitter_taskset_generation.JitterTaskSetGeneration
+open Prosa.Classic.Analysis.Uni.Susp.Sustainability.Singlecost.Reduction.SustainabilitySingleCost
+open Prosa.Classic.Util.Pick
+
+private abbrev Sched (Job : Type*) [DecidableEq Job] :=
+  Prosa.Classic.Model.Schedule.Uni.Schedule.schedule Job
+
+def valid_suspension_aware_schedule
+    {Task : Type*} [DecidableEq Task]
+    {Job : Type*} [DecidableEq Job]
+    (job_arrival : Job → Time)
+    (arr_seq : arrival_sequence Job)
+    (higher_eq_priority : JLDP_policy Job)
+    (job_suspension_duration : job_suspension Job)
+    (job_cost : Job → Time)
+    (sched_susp : Sched Job) : Prop :=
+  jobs_come_from_arrival_sequence sched_susp arr_seq ∧
+  jobs_must_arrive_to_execute job_arrival sched_susp ∧
+  completed_jobs_dont_execute job_cost sched_susp ∧
+  (∀ j t, arrives_in arr_seq j →
+    (pending job_arrival job_cost sched_susp j t ∧
+     ¬ (scheduled_at sched_susp j t = true) ∧
+     ¬ suspended_at job_arrival job_cost job_suspension_duration sched_susp j t) →
+    ∃ j_other, scheduled_at sched_susp j_other t = true) ∧
+  (∀ j j_hp t, arrives_in arr_seq j →
+    (pending job_arrival job_cost sched_susp j t ∧
+     ¬ (scheduled_at sched_susp j t = true) ∧
+     ¬ suspended_at job_arrival job_cost job_suspension_duration sched_susp j t) →
+    scheduled_at sched_susp j_hp t = true →
+    higher_eq_priority t j_hp j = true) ∧
+  respects_self_suspensions job_arrival job_cost job_suspension_duration sched_susp
+
+namespace TaskSetMembership
+
+section ProvingMembership
+
+variable {Task : Type*} [DecidableEq Task]
+variable (task_period : Task → Time)
+variable (task_deadline : Task → Time)
+variable {Job : Type*} [DecidableEq Job]
+variable (job_arrival : Job → Time)
+variable (job_deadline : Job → Time)
+variable (job_task : Job → Task)
+
+variable (ts : List Task)
+
+variable (arr_seq : arrival_sequence Job)
+variable (H_arrival_times_are_consistent :
+  arrival_times_are_consistent job_arrival arr_seq)
+variable (H_arrival_sequence_is_a_set : arrival_sequence_is_a_set arr_seq)
+
+variable (H_jobs_come_from_taskset :
+  ∀ j, arrives_in arr_seq j → job_task j ∈ ts)
+
+variable (job_cost : Job → Time)
+variable (task_cost : Task → Time)
+
+variable (job_suspension_duration : job_suspension Job)
+variable (task_suspension_bound : Task → Time)
+
+variable (higher_eq_priority : FP_policy Task)
+variable (H_priority_is_reflexive : FP_is_reflexive higher_eq_priority)
+variable (H_priority_is_transitive : FP_is_transitive higher_eq_priority)
+variable (H_priority_is_total : FP_is_total_over_task_set higher_eq_priority ts)
+
+variable (sched_susp : Sched Job)
+variable (H_valid_schedule :
+  valid_suspension_aware_schedule (Task := Task) job_arrival arr_seq
+    (FP_to_JLDP job_task higher_eq_priority)
+    job_suspension_duration job_cost sched_susp)
+
+variable (tsk_i : Task)
+variable (H_tsk_in_ts : tsk_i ∈ ts)
+
+variable (j : Job)
+variable (H_j_arrives : arrives_in arr_seq j)
+variable (H_job_of_tsk_i : job_task j = tsk_i)
+
+variable (R : Task → Time)
+variable (H_valid_response_time_bound_of_hp_tasks_in_all_schedules :
+  ∀ jc s,
+    valid_suspension_aware_schedule (Task := Task) job_arrival arr_seq
+      (FP_to_JLDP job_task higher_eq_priority)
+      job_suspension_duration jc s →
+    ∀ tsk_hp,
+      tsk_hp ∈ ts →
+      (higher_eq_priority tsk_hp tsk_i && decide (tsk_hp ≠ tsk_i)) = true →
+      is_response_time_bound_of_task job_arrival jc job_task arr_seq s tsk_hp (R tsk_hp))
+
+def actual_response_time_fn (j_hp : Job) : Time :=
+  pick_min (R (job_task j_hp) + 1)
+    (fun r => decide (job_cost j_hp ≤ service sched_susp j_hp (job_arrival j_hp + r)))
+
+include H_jobs_come_from_taskset H_valid_schedule
+  H_valid_response_time_bound_of_hp_tasks_in_all_schedules in
+include H_arrival_times_are_consistent H_arrival_sequence_is_a_set H_jobs_come_from_taskset H_priority_is_reflexive H_priority_is_transitive H_priority_is_total H_valid_schedule H_tsk_in_ts H_j_arrives H_job_of_tsk_i H_valid_response_time_bound_of_hp_tasks_in_all_schedules in
+theorem actual_response_time_is_valid :
+    ∀ j_hp,
+      arrives_in arr_seq j_hp →
+      (higher_eq_priority (job_task j_hp) tsk_i && decide (job_task j_hp ≠ tsk_i)) = true →
+      is_response_time_bound_of_job job_arrival job_cost sched_susp j_hp
+        (actual_response_time_fn job_arrival job_task job_cost sched_susp R j_hp) := by
+  sorry
+
+include H_jobs_come_from_taskset
+  H_valid_response_time_bound_of_hp_tasks_in_all_schedules in
+include H_arrival_times_are_consistent H_arrival_sequence_is_a_set H_jobs_come_from_taskset H_priority_is_reflexive H_priority_is_transitive H_priority_is_total H_valid_schedule H_tsk_in_ts H_j_arrives H_job_of_tsk_i H_valid_response_time_bound_of_hp_tasks_in_all_schedules in
+theorem actual_response_time_is_minimum :
+    ∀ j_hp r_hp,
+      arrives_in arr_seq j_hp →
+      (higher_eq_priority (job_task j_hp) tsk_i && decide (job_task j_hp ≠ tsk_i)) = true →
+      is_response_time_bound_of_job job_arrival job_cost sched_susp j_hp r_hp →
+      actual_response_time_fn job_arrival job_task job_cost sched_susp R j_hp ≤ r_hp := by
+  sorry
+
+variable (H_positive_costs :
+  ∀ j, arrives_in arr_seq j → job_cost j > 0)
+variable (H_job_cost_le_task_cost :
+  ∀ j, arrives_in arr_seq j → job_cost j ≤ task_cost (job_task j))
+variable (H_dynamic_suspensions :
+  dynamic_suspension_model job_cost job_task job_suspension_duration task_suspension_bound)
+
+section JobCostPositive
+
+include H_positive_costs H_arrival_times_are_consistent H_arrival_sequence_is_a_set H_jobs_come_from_taskset H_priority_is_reflexive H_priority_is_transitive H_priority_is_total H_valid_schedule H_tsk_in_ts H_j_arrives H_job_of_tsk_i H_valid_response_time_bound_of_hp_tasks_in_all_schedules H_job_cost_le_task_cost H_dynamic_suspensions in
+theorem ts_membership_inflated_job_cost_positive :
+    ∀ j', arrives_in arr_seq j' →
+      inflated_job_cost job_cost job_suspension_duration j j' > 0 := by
+  sorry
+
+end JobCostPositive
+
+section JobCostBoundedByTaskCost
+
+include H_job_cost_le_task_cost H_dynamic_suspensions H_arrival_times_are_consistent H_arrival_sequence_is_a_set H_jobs_come_from_taskset H_priority_is_reflexive H_priority_is_transitive H_priority_is_total H_valid_schedule H_tsk_in_ts H_j_arrives H_job_of_tsk_i H_valid_response_time_bound_of_hp_tasks_in_all_schedules H_positive_costs in
+theorem ts_membership_inflated_job_cost_le_inflated_task_cost :
+    ∀ j', arrives_in arr_seq j' →
+      inflated_job_cost job_cost job_suspension_duration j j' ≤
+        inflated_task_cost task_cost task_suspension_bound tsk_i (job_task j') := by
+  sorry
+
+end JobCostBoundedByTaskCost
+
+section JobJitterBoundedByTaskJitter
+
+variable (any_j : Job)
+variable (H_any_j_arrives : arrives_in arr_seq any_j)
+
+section JitterOfHigherPriorityJobs
+
+variable (H_higher_priority : higher_eq_priority (job_task any_j) tsk_i = true)
+variable (H_different_task : decide (job_task any_j ≠ tsk_i) = true)
+
+private def higher_cost_wcet (j' : Job) : Time :=
+  if j' == any_j then task_cost (job_task any_j) else job_cost j'
+
+include H_jobs_come_from_taskset H_valid_schedule H_priority_is_transitive
+  H_priority_is_total H_valid_response_time_bound_of_hp_tasks_in_all_schedules
+  H_higher_priority H_different_task in
+include H_arrival_times_are_consistent H_arrival_sequence_is_a_set H_jobs_come_from_taskset H_priority_is_reflexive H_priority_is_transitive H_priority_is_total H_valid_schedule H_tsk_in_ts H_j_arrives H_job_of_tsk_i H_valid_response_time_bound_of_hp_tasks_in_all_schedules H_positive_costs H_job_cost_le_task_cost H_dynamic_suspensions H_any_j_arrives H_higher_priority H_different_task in
+theorem response_time_bound_in_sched_susp_highercost :
+    ∀ tsk_hp,
+      tsk_hp ∈ ts →
+      (higher_eq_priority tsk_hp tsk_i && decide (tsk_hp ≠ tsk_i)) = true →
+      is_response_time_bound_of_task job_arrival
+        (higher_cost_wcet job_task job_cost task_cost any_j)
+        job_task arr_seq
+        (sched_susp_highercost job_arrival arr_seq
+          (FP_to_JLDP job_task higher_eq_priority) sched_susp
+          job_suspension_duration (higher_cost_wcet job_task job_cost task_cost any_j))
+        tsk_hp (R tsk_hp) := by
+  sorry
+
+include H_jobs_come_from_taskset H_valid_schedule H_priority_is_reflexive
+  H_priority_is_transitive H_priority_is_total
+  H_valid_response_time_bound_of_hp_tasks_in_all_schedules
+  H_job_cost_le_task_cost H_positive_costs
+  H_higher_priority H_different_task H_any_j_arrives in
+theorem

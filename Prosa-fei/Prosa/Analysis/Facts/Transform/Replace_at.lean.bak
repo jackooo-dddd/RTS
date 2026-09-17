@@ -1,0 +1,63 @@
+-- Translated from: ../rt-proofs/analysis/facts/transform/replace_at.v
+import Prosa.Analysis.Transform.Swap
+import Prosa.Analysis.Facts.Behavior.Completion
+
+namespace Prosa.Analysis.Facts.Transform.Replace_at
+
+open Prosa.Behavior.Time
+open Prosa.Behavior.Job
+open Prosa.Behavior.Schedule
+open Prosa.Behavior.Service
+open Prosa.Analysis.Transform.Swap
+open Prosa.Analysis.Facts.Behavior.Service
+
+section ReplaceAtFacts
+
+variable {Job : JobType}
+variable {PState : Type} [DecidableEq PState]
+variable [ProcessorState Job PState]
+variable (sched : schedule PState)
+variable (t' : instant)
+variable (nstate : PState)
+
+noncomputable def sched' : schedule PState := replace_at sched t' nstate
+
+theorem rest_of_schedule_invariant :
+    ∀ t, t ≠ t' → sched' sched t' nstate t = sched t := by sorry
+
+theorem service_at_other_times_invariant :
+    ∀ t1 t2,
+      t2 ≤ t' ∨ t' < t1 →
+      ∀ (j : Job),
+        service_during sched j t1 t2 =
+        service_during (sched' sched t' nstate) j t1 t2 := by sorry
+
+theorem service_delta :
+    ∀ t1 t2,
+      t1 ≤ t' ∧ t' < t2 →
+      ∀ (j : Job),
+        service_during sched j t1 t2 + service_at (sched' sched t' nstate) j t' =
+        service_during (sched' sched t' nstate) j t1 t2 + service_at sched j t' := by sorry
+
+theorem service_in_replaced :
+    ∀ t1 t2,
+      t1 ≤ t' ∧ t' < t2 →
+      ∀ (j : Job),
+        service_during (sched' sched t' nstate) j t1 t2 =
+        service_during sched j t1 t2 + service_at (sched' sched t' nstate) j t' - service_at sched j t' := by sorry
+
+theorem service_at_of_others_invariant (j : Job) :
+    ¬ ProcessorState.scheduled_in j (sched' sched t' nstate t') = true →
+    ¬ ProcessorState.scheduled_in j (sched t') = true →
+    ∀ t,
+      service_at sched j t = service_at (sched' sched t' nstate) j t := by sorry
+
+theorem service_during_of_others_invariant (j : Job) :
+    ¬ ProcessorState.scheduled_in j (sched' sched t' nstate t') = true →
+    ¬ ProcessorState.scheduled_in j (sched t') = true →
+    ∀ t1 t2,
+      service_during sched j t1 t2 = service_during (sched' sched t' nstate) j t1 t2 := by sorry
+
+end ReplaceAtFacts
+
+end Prosa.Analysis.Facts.Transform.Replace_at

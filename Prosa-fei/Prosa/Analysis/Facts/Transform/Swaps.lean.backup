@@ -1,0 +1,205 @@
+-- Translated from: ../rt-proofs/analysis/facts/transform/swaps.v
+import Prosa.Analysis.Facts.Transform.Replace_at
+import Prosa.Analysis.Facts.Behavior.Deadlines
+
+namespace Prosa.Analysis.Facts.Transform.Swaps
+
+open Prosa.Behavior.Time
+open Prosa.Behavior.Job
+open Prosa.Behavior.Schedule
+open Prosa.Behavior.Service
+open Prosa.Behavior.Ready
+open Prosa.Behavior.Arrival_sequence
+open Prosa.Analysis.Transform.Swap
+open Prosa.Analysis.Facts.Transform.Replace_at
+open Prosa.Analysis.Facts.Behavior.Service
+open Prosa.Analysis.Facts.Behavior.Completion
+open Prosa.Analysis.Facts.Behavior.Deadlines
+open Prosa.Model.Processor.Platform_properties
+
+section SwappedFacts
+
+variable {Job : JobType}
+variable {PState : Type} [DecidableEq PState]
+variable [ProcessorState Job PState]
+
+variable (sched : schedule PState)
+variable (t1 t2 : instant)
+
+private noncomputable def sched' : schedule PState := swapped sched t1 t2
+
+theorem trivial_swap :
+    t1 = t2 →
+    ∀ t, sched t = sched' sched t1 t2 t := by sorry
+
+theorem trivial_swap_service_invariant :
+    t1 = t2 →
+    ∀ t (j : Job),
+      service sched j t = service (sched' sched t1 t2) j t := by sorry
+
+theorem swap_other_times_invariant :
+    ∀ t,
+      t ≠ t1 →
+      t ≠ t2 →
+      sched t = sched' sched t1 t2 t := by sorry
+
+theorem swap_job_scheduled_t1 :
+    ∀ (j : Job),
+      scheduled_at (sched' sched t1 t2) j t1 =
+      scheduled_at sched j t2 := by sorry
+
+theorem swap_job_scheduled_t2 :
+    ∀ (j : Job),
+      scheduled_at (sched' sched t1 t2) j t2 =
+      scheduled_at sched j t1 := by sorry
+
+theorem swap_job_scheduled_other_times :
+    ∀ (j : Job) t,
+      t1 ≠ t →
+      t2 ≠ t →
+      scheduled_at (sched' sched t1 t2) j t =
+      scheduled_at sched j t := by sorry
+
+theorem swap_job_scheduled_cases :
+    ∀ (j : Job) t,
+      scheduled_at (sched' sched t1 t2) j t = true →
+      scheduled_at (sched' sched t1 t2) j t = scheduled_at sched j t
+      ∨
+      t = t1 ∧ scheduled_at (sched' sched t1 t2) j t = scheduled_at sched j t2
+      ∨
+      t = t2 ∧ scheduled_at (sched' sched t1 t2) j t = scheduled_at sched j t1 := by sorry
+
+theorem swap_job_scheduled :
+    ∀ (j : Job) t,
+      scheduled_at (sched' sched t1 t2) j t = true →
+      ∃ t',
+        scheduled_at sched j t' = true := by sorry
+
+theorem swap_job_scheduled_original_cases :
+    ∀ (j : Job) t,
+      scheduled_at sched j t = true →
+      scheduled_at (sched' sched t1 t2) j t = scheduled_at sched j t
+      ∨
+      t = t1 ∧ scheduled_at (sched' sched t1 t2) j t2 = scheduled_at sched j t
+      ∨
+      t = t2 ∧ scheduled_at (sched' sched t1 t2) j t1 = scheduled_at sched j t := by sorry
+
+theorem swap_job_scheduled_original :
+    ∀ (j : Job) t,
+      scheduled_at sched j t = true →
+      ∃ t',
+        scheduled_at (sched' sched t1 t2) j t' = true := by sorry
+
+variable (H_well_ordered : t1 ≤ t2)
+
+theorem swap_before_invariant :
+    ∀ t,
+      t < t1 →
+      sched t = sched' sched t1 t2 t := by sorry
+
+theorem swap_after_invariant :
+    ∀ t,
+      t2 < t →
+      sched t = sched' sched t1 t2 t := by sorry
+
+theorem service_before_swap_invariant :
+    ∀ t,
+      t ≤ t1 →
+      ∀ (j : Job),
+        service sched j t = service (sched' sched t1 t2) j t := by sorry
+
+theorem service_after_swap_invariant :
+    ∀ t,
+      t2 < t →
+      ∀ (j : Job),
+        service sched j t = service (sched' sched t1 t2) j t := by sorry
+
+theorem service_of_others_invariant :
+    ∀ t (j : Job),
+      ¬ ProcessorState.scheduled_in j (sched t1) = true →
+      ¬ ProcessorState.scheduled_in j (sched t2) = true →
+      service sched j t = service (sched' sched t1 t2) j t := by sorry
+
+end SwappedFacts
+
+section SwappedScheduleProperties
+
+variable {Job : JobType} [JobCost Job] [JobDeadline Job] [JobArrival Job]
+variable {PState : Type} [DecidableEq PState]
+variable [ProcessorState Job PState]
+
+variable (sched : schedule PState)
+variable (t1 t2 : instant)
+variable (H_order : t1 ≤ t2)
+
+private noncomputable def sched'2 : schedule PState := swapped sched t1 t2
+
+theorem swapped_service_bound :
+    (∀ (j : Job) t, service sched j t ≤ job_cost j) →
+    (∀ (j : Job) t, service (sched'2 sched t1 t2) j t ≤ job_cost j) := by sorry
+
+theorem swapped_completed_jobs_dont_execute :
+    unit_service_proc_model (Job := Job) PState →
+    ideal_progress_proc_model (Job := Job) PState →
+    completed_jobs_dont_execute (Job := Job) sched →
+    completed_jobs_dont_execute (Job := Job) (sched'2 sched t1 t2) := by sorry
+
+variable (arr_seq : arrival_sequence Job)
+variable (H_from_arr_seq : jobs_come_from_arrival_sequence sched arr_seq)
+
+theorem swapped_jobs_come_from_arrival_sequence :
+    jobs_come_from_arrival_sequence (sched'2 sched t1 t2) arr_seq := by sorry
+
+end SwappedScheduleProperties
+
+section EDFSwap
+
+variable {Job : JobType} [JobCost Job] [JobDeadline Job]
+variable {PState : Type} [DecidableEq PState]
+variable [ProcessorState Job PState]
+
+variable (sched : schedule PState)
+variable (H_completed_jobs : completed_jobs_dont_execute (Job := Job) sched)
+variable (H_scheduled_implies_serviced : ideal_progress_proc_model (Job := Job) PState)
+variable (t1 t2 : instant)
+variable (H_well_ordered : t1 ≤ t2)
+
+variable (H_not_EDF :
+    ∀ (j1 j2 : Job),
+      scheduled_at sched j1 t1 = true →
+      scheduled_at sched j2 t2 = true →
+      job_deadline j1 ≥ job_deadline j2)
+
+variable (H_no_idle_time_at_t2 :
+    ∀ (j1 : Job),
+      scheduled_at sched j1 t1 = true →
+      ∃ (j2 : Job), scheduled_at sched j2 t2 = true ∧ job_deadline j2 > t2)
+
+private noncomputable def sched'3 : schedule PState := swapped sched t1 t2
+
+section NoNewDeadlineMissesCases
+
+variable (j : Job)
+variable (H_deadline_met : job_meets_deadline sched j)
+
+theorem uninvolved_implies_deadline_met :
+    ¬ scheduled_at sched j t1 = true →
+    ¬ scheduled_at sched j t2 = true →
+    job_meets_deadline (sched'3 sched t1 t2) j := by sorry
+
+theorem moved_earlier_implies_deadline_met :
+    scheduled_at sched j t2 = true →
+    job_meets_deadline (sched'3 sched t1 t2) j := by sorry
+
+theorem moved_later_implies_deadline_met :
+    scheduled_at sched j t1 = true →
+    job_meets_deadline (sched'3 sched t1 t2) j := by sorry
+
+end NoNewDeadlineMissesCases
+
+theorem edf_swap_no_deadline_misses_introduced :
+    ∀ (j : Job), job_meets_deadline sched j → job_meets_deadline (sched'3 sched t1 t2) j := by sorry
+
+end EDFSwap
+
+end Prosa.Analysis.Facts.Transform.Swaps

@@ -1,0 +1,204 @@
+-- Translated from: ../rt-proofs/analysis/facts/behavior/arrivals.v
+import Prosa.Behavior.All
+import Prosa.Util.Notation
+import Prosa.Util.Bigcat
+
+namespace Prosa.Analysis.Facts.Behavior.Arrivals
+
+open Prosa.Behavior.Time
+open Prosa.Behavior.Job
+open Prosa.Behavior.Arrival_sequence
+open Prosa.Behavior.Schedule
+open Prosa.Behavior.Service
+open Prosa.Behavior.Ready
+open Prosa.Util.Notation
+open Prosa.Util.Bigcat
+
+section Arrived
+
+variable {Job : JobType} {PState : Type}
+variable [ProcessorState Job PState]
+variable (sched : schedule PState)
+variable [JobCost Job]
+variable [JobArrival Job]
+variable [JobReady Job PState]
+
+theorem any_ready_job_is_pending :
+    ∀ (j : Job) t, job_ready sched j t = true → pending sched j t := by
+  intro j t READY
+  exact JobReady.ready_implies_pending sched j t READY
+
+theorem ready_implies_arrived :
+    ∀ (j : Job) t, job_ready sched j t = true → has_arrived j t := by
+  intro j t READY
+  exact (any_ready_job_is_pending sched j t READY).1
+
+theorem jobs_must_arrive_to_be_ready :
+    jobs_must_be_ready_to_execute (Job := Job) sched →
+    jobs_must_arrive_to_execute (Job := Job) sched := by
+  intro READY_IF_SCHED j t SCHED
+  exact ready_implies_arrived sched j t (READY_IF_SCHED j t SCHED)
+
+end Arrived
+
+section ArrivalSequencePrefix
+
+variable {Job : JobType}
+variable [JobArrival Job]
+variable (arr_seq : arrival_sequence Job)
+
+section Composition
+
+theorem arrivals_between_cat :
+    ∀ t1 t t2,
+      t1 ≤ t →
+      t ≤ t2 →
+      arrivals_between arr_seq t1 t2 =
+      arrivals_between arr_seq t1 t ++ arrivals_between arr_seq t t2 := by
+  intro t1 t t2 h1 h2
+  simp only [arrivals_between, arrivals_at, bigCat]
+  have heq : t2 - t1 = (t - t1) + (t2 - t) := by simp only [instant] at *; omega
+  rw [heq, List.range_add, List.map_append, List.flatten_append]
+  congr 1
+  rw [List.map_map]
+  apply congr_arg
+  apply List.map_congr_left
+  intro i _
+  show arr_seq (t1 + (t - t1 + i)) = arr_seq (t + i)
+  congr 1
+  simp only [instant] at *; omega
+
+theorem arrivals_between_mem_cat :
+    ∀ j t1 t t2,
+      t1 ≤ t →
+      t ≤ t2 →
+      ((j ∈ arrivals_between arr_seq t1 t2) ↔
+       (j ∈ arrivals_between arr_seq t1 t ++ arrivals_between arr_seq t t2)) := by
+  sorry
+
+theorem arrivals_between_sub :
+    ∀ j t1 t1' t2 t2',
+      t1' ≤ t1 →
+      t2 ≤ t2' →
+      j ∈ arrivals_between arr_seq t1 t2 →
+      j ∈ arrivals_between arr_seq t1' t2' := by
+  intro j t1 t1' t2 t2' h1 h2 hIn
+  by_cases hle : t1 ≤ t2
+  · simp only [arrivals_between, arrivals_at, bigCat] at hIn ⊢
+    simp only [List.mem_flatten, List.mem_map] at hIn ⊢
+    obtain ⟨l, ⟨i, hi_range, rfl⟩, hj⟩ := hIn
+    simp only [List.mem_range] at hi_range
+    have hi_lt : t1 + i < t2 := by simp only [instant] at *; omega
+    have hle2 : t1' ≤ t1 + i := by simp only [instant] at *; omega
+    refine ⟨arr_seq (t1 + i), ⟨t1 + i - t1', ?_, ?_⟩, hj⟩
+    · rw [List.mem_range]
+      simp only [instant] at *; omega
+    · show arr_seq (t1' + (t1 + i - t1')) = arr_seq (t1 + i)
+      congr 1
+      simp only [instant] at *; omega
+  · push_neg at hle
+    simp only [arrivals_between, arrivals_at, bigCat] at hIn
+    have : t2 - t1 = 0 := Nat.sub_eq_zero_of_le (Nat.le_of_lt hle)
+    rw [this] at hIn
+    simp at hIn
+
+end Composition
+
+section ArrivalTimes
+
+theorem in_arrivals_implies_arrived
+    (H_consistent_arrival_times : consistent_arrival_times arr_seq) :
+    ∀ j t1 t2,
+      j ∈ arrivals_between arr_seq t1 t2 →
+      arrives_in arr_seq j := by
+  intro j t1 t2 hIn
+  simp only [arrivals_between, arrivals_at, bigCat] at hIn
+  simp only [List.mem_flatten, List.mem_map] at hIn
+  obtain ⟨l, ⟨i, hi_range, rfl⟩, hj⟩ := hIn
+  exact ⟨t1 + i, hj⟩
+
+theorem in_arrivals_implies_arrived_between
+    (H_consistent_arrival_times : consistent_arrival_times arr_seq) :
+    ∀ j t1 t2,
+      j ∈ arrivals_between arr_seq t1 t2 →
+      arrived_between j t1 t2 := by
+  intro j t1 t2 hIn
+  simp only [arrivals_between, arrivals_at, bigCat] at hIn
+  simp only [List.mem_flatten, List.mem_map] at hIn
+  obtain ⟨l, ⟨i, hi_range, rfl⟩, hj⟩ := hIn
+  simp only [List.mem_range] at hi_range
+  have CONS := H_consistent_arrival_times j (t1 + i) hj
+  have hi_lt : t1 + i < t2 := by
+    have : i < t2 - t1 := hi_range
+    simp only [instant] at *; omega
+  constructor
+  · simp only [instant] at *; omega
+  · simp only [instant] at *; omega
+
+theorem in_arrivals_implies_arrived_before
+    (H_consistent_arrival_times : consistent_arrival_times arr_seq) :
+    ∀ j t,
+      j ∈ arrivals_before arr_seq t →
+      arrived_before j t := by
+  intro j t hIn
+  have h := in_arrivals_implies_arrived_between arr_seq H_consistent_arrival_times j 0 t hIn
+  exact h.2
+
+theorem arrived_between_implies_in_arrivals
+    (H_consistent_arrival_times : consistent_arrival_times arr_seq) :
+    ∀ j t1 t2,
+      arrives_in arr_seq j →
+      arrived_between j t1 t2 →
+      j ∈ arrivals_between arr_seq t1 t2 := by
+  intro j t1 t2 ⟨a_j, hArr⟩ ⟨hge, hlt⟩
+  have SAME := H_consistent_arrival_times j a_j hArr
+  subst SAME
+  simp only [arrivals_between, arrivals_at, bigCat]
+  simp only [List.mem_flatten, List.mem_map]
+  refine ⟨arr_seq (job_arrival j), ⟨job_arrival j - t1, ?_, ?_⟩, hArr⟩
+  · rw [List.mem_range]
+    simp only [instant] at *; omega
+  · show arr_seq (t1 + (job_arrival j - t1)) = arr_seq (job_arrival j)
+    congr 1
+    simp only [instant] at *; omega
+
+theorem arrivals_uniq
+    (H_consistent_arrival_times : consistent_arrival_times arr_seq) :
+    arrival_sequence_uniq arr_seq →
+    ∀ t1 t2, (arrivals_between arr_seq t1 t2).Nodup := by
+  intro hUniq t1 t2
+  simp only [arrivals_between, arrivals_at, bigCat]
+  suffices h : ∀ k s, ((List.range k).map (fun i => arr_seq (s + i))).flatten.Nodup from h _ _
+  intro k
+  induction k with
+  | zero => simp
+  | succ d ih =>
+    intro s
+    rw [List.range_succ]
+    simp only [List.map_append, List.flatten_append, List.map_cons, List.map_nil,
+      List.flatten_cons, List.flatten_nil, List.append_nil]
+    rw [List.nodup_append]
+    refine ⟨ih s, hUniq (s + d), ?_⟩
+    intro a ha b hb hab
+    subst hab
+    simp only [List.mem_flatten, List.mem_map] at ha
+    obtain ⟨l, ⟨i, hi_range, rfl⟩, ha_mem⟩ := ha
+    simp only [List.mem_range] at hi_range
+    have h1 : job_arrival a = s + i := H_consistent_arrival_times a (s + i) ha_mem
+    have h2 : job_arrival a = s + d := H_consistent_arrival_times a (s + d) hb
+    simp only [instant] at *; omega
+
+theorem arrivals_between_geq :
+    ∀ t1 t2,
+      t1 ≥ t2 →
+      arrivals_between arr_seq t1 t2 = [] := by
+  intro t1 t2 h
+  simp only [arrivals_between, arrivals_at, bigCat]
+  rw [Nat.sub_eq_zero_of_le h]
+  simp
+
+end ArrivalTimes
+
+end ArrivalSequencePrefix
+
+end Prosa.Analysis.Facts.Behavior.Arrivals

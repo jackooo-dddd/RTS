@@ -1,0 +1,276 @@
+-- Translated from: ../rt-proofs/classic/model/schedule/uni/susp/suspension_intervals.v
+import Prosa.Classic.Util.All
+import Prosa.Classic.Model.Suspension
+import Prosa.Classic.Model.Arrival.Basic.Job
+import Prosa.Classic.Model.Schedule.Uni.Schedule
+import Prosa.Classic.Model.Schedule.Uni.Susp.Last_execution
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.BigOperators.Intervals
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
+import Mathlib.Tactic
+
+namespace Prosa.Classic.Model.Schedule.Uni.Susp.Suspension_intervals
+
+open Prosa.Classic.Model.Time
+open Prosa.Classic.Model.Schedule.Uni.Schedule
+open Prosa.Classic.Model.Suspension
+open Prosa.Classic.Model.Arrival.Basic.Arrival_sequence
+open Prosa.Classic.Model.Schedule.Uni.Susp.Last_execution
+open Classical
+
+noncomputable section
+
+section DefiningSuspensionIntervals
+
+variable {Job : Type*} [DecidableEq Job]
+variable (job_arrival : Job → Time)
+variable (job_cost : Job → Time)
+variable (next_suspension : job_suspension Job)
+variable (sched : schedule Job)
+
+section JobSuspension
+
+variable (j : Job)
+
+section DefiningSuspension
+
+variable (t : Time)
+
+def suspension_duration : Duration :=
+  next_suspension j (service sched j (time_after_last_execution job_arrival sched j t))
+
+def suspended_at : Prop :=
+  ¬ completed_by job_cost sched j t ∧
+  (time_after_last_execution job_arrival sched j t ≤ t ∧
+   t < time_after_last_execution job_arrival sched j t + suspension_duration job_arrival next_suspension sched j t)
+
+end DefiningSuspension
+
+def cumulative_suspension_during (t1 t2 : Time) : Nat :=
+  Finset.sum (Finset.Ico t1 t2) (fun t => if suspended_at job_arrival job_cost next_suspension sched j t then 1 else 0)
+
+def cumulative_suspension (t : Time) : Nat :=
+  cumulative_suspension_during job_arrival job_cost next_suspension sched j 0 t
+
+end JobSuspension
+
+section SuspensionAwareSchedule
+
+def respects_self_suspensions : Prop :=
+  ∀ j t, scheduled_at sched j t = true →
+    ¬ suspended_at job_arrival job_cost next_suspension sched j t
+
+end SuspensionAwareSchedule
+
+section Lemmas
+
+section InsideSuspensionInterval
+
+variable (j : Job)
+variable (t : Time)
+
+section SameService
+
+variable (t_in : Time)
+
+theorem same_service_in_suspension_interval
+    (H_jobs_must_arrive_to_execute : jobs_must_arrive_to_execute job_arrival sched)
+    (H_completed_jobs_dont_execute : completed_jobs_dont_execute job_cost sched)
+    (H_respects_self_suspensions : respects_self_suspensions job_arrival job_cost next_suspension sched)
+    (H_has_arrived : has_arrived job_arrival j t)
+    (H_within_suspension_interval :
+      time_after_last_execution job_arrival sched j t ≤ t_in ∧
+      t_in ≤ time_after_last_execution job_arrival sched j t +
+        suspension_duration job_arrival next_suspension sched j t) :
+    service sched j t_in =
+    service sched j (time_after_last_execution job_arrival sched j t) := by
+  obtain ⟨hGE, hLE⟩ := H_within_suspension_interval
+  suffices h_main : ∀ (d : Nat), d ≤ suspension_duration job_arrival next_suspension sched j t →
+      service sched j (time_after_last_execution job_arrival sched j t + d) =
+      service sched j (time_after_last_execution job_arrival sched j t) by
+    have hd_le : t_in - time_after_last_execution job_arrival sched j t ≤
+        suspension_duration job_arrival next_suspension sched j t :=
+      Nat.sub_le_of_le_add (Nat.add_comm _ _ ▸ hLE)
+    have := h_main (t_in - time_after_last_execution job_arrival sched j t) hd_le
+    rwa [Nat.add_sub_cancel' hGE] at this
+  intro d
+  induction d with
+  | zero => intro _; simp
+  | succ n ih =>
+    intro hnd
+    have hnd' : n ≤ suspension_duration job_arrival next_suspension sched j t := Nat.le_of_succ_le hnd
+    have ih' := ih hnd'
+    have h_not_sched : ¬ (scheduled_at sched j (time_after_last_execution job_arrival sched j t + n) = true) := by
+      intro hsched
+      apply H_respects_self_suspensions j _ hsched
+      have h_same_le : time_after_last_execution job_arrival sched j (time_after_last_execution job_arrival sched j t + n) = time_after_last_execution job_arrival sched j t := by
+        rw [same_service_implies_same_last_execution job_arrival sched H_jobs_must_arrive_to_execute j _ _ ih']
+        exact last_execution_idempotent job_arrival sched H_jobs_must_arrive_to_execute j t
+      refine ⟨?_, ?_, ?_⟩
+      · intro hcomp
+        exact (completed_implies_not_scheduled job_cost sched j H_completed_jobs_dont_execute _ hcomp) hsched
+      · rw [h_same_le]; exact Nat.le_add_right _ _
+      · simp only [suspension_duration]; rw [h_same_le]
+        exact Nat.add_lt_add_left (Nat.lt_of_lt_of_le (Nat.lt_succ_of_le (Nat.le_refl n)) hnd) _
+    have h_serv_succ : service sched j (time_after_last_execution job_arrival sched j t + (n + 1)) =
+        service sched j (time_after_last_execution job_arrival sched j t + n) +
+        service_at sched j (time_after_last_execution job_arrival sched j t + n) := by
+      unfold service service_during
+      conv_lhs => rw [show time_after_last_execution job_arrival sched j t + (n + 1) =
+          (time_after_last_execution job_arrival sched j t + n) + 1 from Nat.add_succ _ _]
+      rw [← Finset.sum_Ico_succ_top (show (0 : Nat) ≤ time_after_last_execution job_arrival sched j t + n from Nat.zero_le _)]
+    rw [h_serv_succ, ih']
+    unfold service_at
+    have h_false : scheduled_at sched j (time_after_last_execution job_arrival sched j t + n) = false :=
+      Bool.eq_false_of_not_eq_true h_not_sched
+    simp [h_false]
+
+end SameService
+
+section JobSuspendedAtAllTimes
+
+variable (t_in : Time)
+
+theorem suspended_in_suspension_interval
+    (H_jobs_must_arrive_to_execute : jobs_must_arrive_to_execute job_arrival sched)
+    (H_completed_jobs_dont_execute : completed_jobs_dont_execute job_cost sched)
+    (H_respects_self_suspensions : respects_self_suspensions job_arrival job_cost next_suspension sched)
+    (H_has_arrived : has_arrived job_arrival j t)
+    (H_not_completed : ¬ completed_by job_cost sched j t_in)
+    (H_within_suspension_interval :
+      time_after_last_execution job_arrival sched j t ≤ t_in ∧
+      t_in < time_after_last_execution job_arrival sched j t +
+        suspension_duration job_arrival next_suspension sched j t) :
+    suspended_at job_arrival job_cost next_suspension sched j t_in := by
+  obtain ⟨hGE, hLT⟩ := H_within_suspension_interval
+  set b := time_after_last_execution job_arrival sched j t with hb_def
+  set dur := suspension_duration job_arrival next_suspension sched j t with hdur_def
+  have hARR : has_arrived job_arrival j t_in :=
+    Nat.le_trans (last_execution_after_arrival job_arrival sched H_jobs_must_arrive_to_execute j t) hGE
+  -- Show same service, hence same last execution
+  have hSameServ : service sched j t_in = service sched j b :=
+    same_service_in_suspension_interval job_arrival job_cost next_suspension sched j t t_in
+      H_jobs_must_arrive_to_execute H_completed_jobs_dont_execute H_respects_self_suspensions
+      H_has_arrived ⟨hGE, Nat.le_of_lt hLT⟩
+  have hSAME : time_after_last_execution job_arrival sched j t =
+               time_after_last_execution job_arrival sched j t_in := by
+    rw [same_service_implies_same_last_execution job_arrival sched H_jobs_must_arrive_to_execute j t_in b hSameServ]
+    exact (last_execution_idempotent job_arrival sched H_jobs_must_arrive_to_execute j t).symm
+  refine ⟨H_not_completed, last_execution_bounded_by_identity job_arrival sched H_jobs_must_arrive_to_execute j t_in hARR, ?_⟩
+  -- t_in < time_after_last_execution ... t_in + suspension_duration ... t_in
+  calc t_in < b + dur := hLT
+    _ = time_after_last_execution job_arrival sched j t_in +
+        next_suspension j (service sched j (time_after_last_execution job_arrival sched j t_in)) := by
+      rw [← hSAME]
+      simp only [suspension_duration] at hdur_def
+      rw [← hdur_def, ← hb_def]
+
+end JobSuspendedAtAllTimes
+
+end InsideSuspensionInterval
+
+section StateOfSuspendedJob
+
+variable (j : Job)
+variable (t : Time)
+
+theorem suspended_implies_arrived
+    (H_jobs_must_arrive_to_execute : jobs_must_arrive_to_execute job_arrival sched)
+    (H_j_is_suspended : suspended_at job_arrival job_cost next_suspension sched j t) :
+    has_arrived job_arrival j t := by
+  obtain ⟨_, hle, _⟩ := H_j_is_suspended
+  exact Nat.le_trans (last_execution_after_arrival job_arrival sched H_jobs_must_arrive_to_execute j t) hle
+
+theorem suspended_implies_not_completed
+    (H_j_is_suspended : suspended_at job_arrival job_cost next_suspension sched j t) :
+    ¬ completed_by job_cost sched j t := by
+  exact H_j_is_suspended.1
+
+end StateOfSuspendedJob
+
+section BoundOnCumulativeSuspension
+
+variable (j : Job)
+
+theorem cumulative_suspension_le_total_suspension
+    (H_jobs_must_arrive_to_execute : jobs_must_arrive_to_execute job_arrival sched)
+    (H_completed_jobs_dont_execute : completed_jobs_dont_execute job_cost sched)
+    (H_respects_self_suspensions : respects_self_suspensions job_arrival job_cost next_suspension sched) :
+    ∀ t1 t2,
+      cumulative_suspension_during job_arrival job_cost next_suspension sched j t1 t2 ≤
+      total_suspension job_cost next_suspension j := by
+  sorry
+
+end BoundOnCumulativeSuspension
+
+section SuspendsForTotalSuspension
+
+variable (j : Job)
+variable (t : Time)
+
+theorem cumulative_suspension_eq_total_suspension
+    (H_jobs_must_arrive_to_execute : jobs_must_arrive_to_execute job_arrival sched)
+    (H_completed_jobs_dont_execute : completed_jobs_dont_execute job_cost sched)
+    (H_respects_self_suspensions : respects_self_suspensions job_arrival job_cost next_suspension sched)
+    (H_j_has_completed : completed_by job_cost sched j t) :
+    cumulative_suspension job_arrival job_cost next_suspension sched j t =
+    total_suspension job_cost next_suspension j := by
+  sorry
+
+end SuspendsForTotalSuspension
+
+section ExecutionBeforeSuspension
+
+variable (j : Job)
+variable (t : Time)
+
+theorem executes_before_suspension
+    (H_jobs_must_arrive_to_execute : jobs_must_arrive_to_execute job_arrival sched)
+    (H_completed_jobs_dont_execute : completed_jobs_dont_execute job_cost sched)
+    (H_respects_self_suspensions : respects_self_suspensions job_arrival job_cost next_suspension sched)
+    (H_arrived : has_arrived job_arrival j t)
+    (H_not_suspended_at_t : ¬ suspended_at job_arrival job_cost next_suspension sched j t)
+    (H_begins_suspension : suspended_at job_arrival job_cost next_suspension sched j (t + 1)) :
+    scheduled_at sched j t = true := by
+  obtain ⟨hNotComp', hGE', hLT'⟩ := H_begins_suspension
+  by_contra hNotSched
+  -- If j is not scheduled at t, then time_after_last_execution at t+1 = time_after_last_execution at t
+  -- because service at t+1 = service at t (no scheduling at t means service_at t = 0)
+  have h_same_serv : service sched j (t + 1) = service sched j t := by
+    unfold service service_during
+    have hsplit : ∑ x ∈ Finset.Ico 0 (t + 1), service_at sched j x =
+        ∑ x ∈ Finset.Ico 0 t, service_at sched j x + service_at sched j t := by
+      rw [← Finset.sum_Ico_succ_top (show (0 : Nat) ≤ t from Nat.zero_le _)]
+    rw [hsplit]
+    have : service_at sched j t = 0 := by
+      unfold service_at scheduled_at at hNotSched ⊢
+      rw [Bool.not_eq_true] at hNotSched; simp [hNotSched]
+    omega
+  -- Hence same last execution
+  have h_same_last := same_service_implies_same_last_execution job_arrival sched H_jobs_must_arrive_to_execute j (t + 1) t h_same_serv
+  -- j is not completed at t (otherwise it would be completed at t+1, contradicting hNotComp')
+  have hNotComp : ¬ completed_by job_cost sched j t := by
+    intro hcomp
+    exact hNotComp' (completion_monotonic job_cost sched j t (t + 1) (Nat.le_succ _) hcomp)
+  -- j is suspended at t, contradiction
+  apply H_not_suspended_at_t
+  constructor
+  · exact hNotComp
+  · constructor
+    · -- time_after_last_execution j t ≤ t
+      exact last_execution_bounded_by_identity job_arrival sched H_jobs_must_arrive_to_execute j t H_arrived
+    · -- t < time_after_last_execution j t + suspension_duration j t
+      have hsd_eq : suspension_duration job_arrival next_suspension sched j (t + 1) =
+          suspension_duration job_arrival next_suspension sched j t := by
+        unfold suspension_duration; rw [h_same_last]
+      rw [← h_same_last, ← hsd_eq]; exact Nat.lt_trans (Nat.lt_succ_of_le (le_refl t)) hLT'  
+
+end ExecutionBeforeSuspension
+
+end Lemmas
+
+end DefiningSuspensionIntervals
+
+end
+
+end Prosa.Classic.Model.Schedule.Uni.Susp.Suspension_intervals

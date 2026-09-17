@@ -1,0 +1,200 @@
+-- Translated from: ../rt-proofs/classic/model/schedule/uni/limited/platform/limited.v
+import Prosa.Classic.Util.All
+import Prosa.Classic.Model.Arrival.Basic.Job
+import Prosa.Classic.Model.Schedule.Uni.Schedule
+import Prosa.Classic.Model.Schedule.Uni.Limited.Platform.Definitions
+import Prosa.Util.Nondecreasing
+import Mathlib.Tactic
+
+namespace Prosa.Classic.Model.Schedule.Uni.Limited.Platform.Limited
+
+open Prosa.Classic.Model.Time
+open Prosa.Classic.Model.Arrival.Basic.Arrival_sequence
+open Prosa.Classic.Model.Schedule.Uni.Schedule
+open Prosa.Classic.Model.Schedule.Uni.Limited.Platform.Definitions.LimitedPreemptionPlatform
+open Prosa.Util.Nondecreasing
+open Prosa.Util.List
+open Prosa.Util.Epsilon
+
+namespace ModelWithLimitedPreemptions
+
+section ModelsWithLimitedPreemptions
+
+  variable {Task : Type*} [DecidableEq Task]
+  variable (task_cost : Task → Time)
+
+  variable {Job : Type*} [DecidableEq Job]
+  variable (job_arrival : Job → Time)
+  variable (job_cost : Job → Time)
+  variable (job_task : Job → Task)
+
+  variable (arr_seq : arrival_sequence Job)
+
+  variable (job_preemption_points : Job → List Time)
+
+  section Definitions
+
+    section ModelWithLimitedPreemptions
+
+      def lengths_of_segments (j : Job) : List ℕ :=
+        distances (job_preemption_points j)
+
+      def job_max_nps (j : Job) : ℕ :=
+        max0 (lengths_of_segments job_preemption_points j)
+
+      def job_last_nps (j : Job) : ℕ :=
+        last0 (lengths_of_segments job_preemption_points j)
+
+      def job_with_zero_cost_consists_of_one_empty_segment : Prop :=
+        ∀ j, arrives_in arr_seq j → job_cost j = 0 → job_preemption_points j = [0, 0]
+
+      def last_segment_is_positive : Prop :=
+        ∀ j, arrives_in arr_seq j → job_cost j > 0 → job_last_nps job_preemption_points j > 0
+
+      def beginning_of_execution_in_preemption_points : Prop :=
+        ∀ j, arrives_in arr_seq j → first0 (job_preemption_points j) = 0
+
+      def end_of_execution_in_preemption_points : Prop :=
+        ∀ j, arrives_in arr_seq j → last0 (job_preemption_points j) = job_cost j
+
+      def preemption_points_is_nondecreasing_sequence : Prop :=
+        ∀ (j : Job),
+          arrives_in arr_seq j →
+          nondecreasing_sequence (job_preemption_points j)
+
+      def limited_preemptions_job_model : Prop :=
+        job_with_zero_cost_consists_of_one_empty_segment job_cost arr_seq job_preemption_points ∧
+        last_segment_is_positive job_cost arr_seq job_preemption_points ∧
+        beginning_of_execution_in_preemption_points arr_seq job_preemption_points ∧
+        end_of_execution_in_preemption_points job_cost arr_seq job_preemption_points ∧
+        preemption_points_is_nondecreasing_sequence arr_seq job_preemption_points
+
+    end ModelWithLimitedPreemptions
+
+    section ModelWithFixedPreemptionPoints
+
+      variable (task_preemption_points : Task → List Time)
+
+      def task_last_nps (tsk : Task) : ℕ :=
+        last0 (distances (task_preemption_points tsk))
+
+      def task_max_nps (tsk : Task) : ℕ :=
+        max0 (distances (task_preemption_points tsk))
+
+      variable (ts : List Task)
+
+      def task_beginning_of_execution_in_preemption_points : Prop :=
+        ∀ tsk, tsk ∈ ts → first0 (task_preemption_points tsk) = 0
+
+      def task_end_of_execution_in_preemption_points : Prop :=
+        ∀ tsk, tsk ∈ ts → last0 (task_preemption_points tsk) = task_cost tsk
+
+      def task_preemption_points_is_nondecreasing_sequence : Prop :=
+        ∀ tsk, tsk ∈ ts → nondecreasing_sequence (task_preemption_points tsk)
+
+      def job_consists_of_the_same_number_of_segments_as_task : Prop :=
+        ∀ j,
+          arrives_in arr_seq j →
+          (job_preemption_points j).length = (task_preemption_points (job_task j)).length
+
+      def lengths_of_task_segments_bound_length_of_job_segments : Prop :=
+        ∀ j n,
+          arrives_in arr_seq j →
+          nthD (distances (job_preemption_points j)) n
+            ≤ nthD (distances (task_preemption_points (job_task j))) n
+
+      def task_segments_are_nonempty : Prop :=
+        ∀ tsk n,
+          tsk ∈ ts →
+          n < (distances (task_preemption_points tsk)).length →
+          ε ≤ nthD (distances (task_preemption_points tsk)) n
+
+      def fixed_preemption_points_task_model : Prop :=
+        task_beginning_of_execution_in_preemption_points task_preemption_points ts ∧
+        task_end_of_execution_in_preemption_points task_cost task_preemption_points ts ∧
+        task_preemption_points_is_nondecreasing_sequence task_preemption_points ts ∧
+        job_consists_of_the_same_number_of_segments_as_task job_task arr_seq job_preemption_points task_preemption_points ∧
+        lengths_of_task_segments_bound_length_of_job_segments job_task arr_seq job_preemption_points task_preemption_points ∧
+        task_segments_are_nonempty task_preemption_points ts
+
+      def fixed_preemption_points_model : Prop :=
+        limited_preemptions_job_model job_cost arr_seq job_preemption_points ∧
+        fixed_preemption_points_task_model task_cost job_task arr_seq job_preemption_points task_preemption_points ts
+
+    end ModelWithFixedPreemptionPoints
+
+    section ModelWithFloatingNonpreemptiveRegions
+
+      variable (task_max_nps_v : Task → Time)
+
+      def job_max_np_segment_le_task_max_np_segment : Prop :=
+        ∀ (j : Job),
+          arrives_in arr_seq j →
+          job_max_nps job_preemption_points j ≤ task_max_nps_v (job_task j)
+
+      def model_with_floating_nonpreemptive_regions : Prop :=
+        limited_preemptions_job_model job_cost arr_seq job_preemption_points ∧
+        job_max_np_segment_le_task_max_np_segment job_task arr_seq job_preemption_points task_max_nps_v
+
+    end ModelWithFloatingNonpreemptiveRegions
+
+    def can_be_preempted_for_model_with_limited_preemptions (j : Job) (progr : Time) : Bool :=
+      decide (progr ∈ job_preemption_points j)
+
+    def is_schedule_with_limited_preemptions (sched : schedule Job) : Prop :=
+      ∀ j t,
+        arrives_in arr_seq j →
+        can_be_preempted_for_model_with_limited_preemptions job_preemption_points j (service sched j t) = false →
+        scheduled_at sched j t = true
+
+  end Definitions
+
+  section Lemmas
+
+    variable (sched : schedule Job)
+    variable (H_is_schedule_with_limited_preemptions :
+      is_schedule_with_limited_preemptions arr_seq job_preemption_points sched)
+
+    variable (H_completed_jobs_dont_execute : completed_jobs_dont_execute job_cost sched)
+
+    variable (task_max_nps_v : Task → Time)
+    variable (H_limited_preemptions_job_model :
+      limited_preemptions_job_model job_cost arr_seq job_preemption_points)
+    variable (H_job_max_np_segment_le_task_max_np_segment :
+      job_max_np_segment_le_task_max_np_segment job_task arr_seq job_preemption_points task_max_nps_v)
+
+    section AuxiliaryLemmas
+
+      variable (j : Job)
+      variable (H_j_arrives : arrives_in arr_seq j)
+
+      theorem list_of_preemption_point_is_not_empty :
+          0 < (job_preemption_points j).length := by sorry
+
+      theorem zero_in_preemption_points :
+          (0 : ℕ) ∈ job_preemption_points j := by sorry
+
+      theorem job_cost_in_nonpreemptive_points :
+          job_cost j ∈ job_preemption_points j := by sorry
+
+      theorem number_of_preemption_points_at_least_two :
+          2 ≤ (job_preemption_points j).length := by sorry
+
+    end AuxiliaryLemmas
+
+    theorem model_with_fixed_preemption_points_is_correct :
+        correct_preemption_model arr_seq sched
+          (can_be_preempted_for_model_with_limited_preemptions job_preemption_points) := by sorry
+
+    theorem model_with_fixed_preemption_points_is_model_with_bounded_nonpreemptive_regions :
+        model_with_bounded_nonpreemptive_segments job_cost job_task arr_seq
+          (can_be_preempted_for_model_with_limited_preemptions job_preemption_points)
+          (job_max_nps job_preemption_points) task_max_nps_v := by sorry
+
+  end Lemmas
+
+end ModelsWithLimitedPreemptions
+
+end ModelWithLimitedPreemptions
+
+end Prosa.Classic.Model.Schedule.Uni.Limited.Platform.Limited

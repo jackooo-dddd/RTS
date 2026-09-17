@@ -1,0 +1,545 @@
+-- Translated from: ../rt-proofs/classic/util/list.v
+import Mathlib
+import Prosa.Util.List
+import Prosa.Classic.Util.Tactics
+
+namespace Prosa.Classic.Util.List
+
+open List
+
+section UniqList
+
+  theorem idx_lt_rcons {T : Type*} [DecidableEq T] (l : List T) (i : ℕ) (x0 : T)
+      (h1 : l.Nodup) (h2 : i < l.length) :
+      l.filter (fun x => decide (l.idxOf x < i + 1)) =
+        (l.filter (fun x => decide (l.idxOf x < i))) ++ [l.getD i x0] := by sorry
+
+  theorem filter_idx_lt_take {T : Type*} [DecidableEq T] (l : List T) (i : ℕ)
+      (h1 : l.Nodup) (h2 : i < l.length) :
+      l.filter (fun x => decide (l.idxOf x < i)) = l.take i := by sorry
+
+  theorem filter_idx_le_takeS {T : Type*} [DecidableEq T] (l : List T) (i : ℕ)
+      (h1 : l.Nodup) (h2 : i < l.length) :
+      l.filter (fun x => decide (l.idxOf x ≤ i)) = l.take (i + 1) := by sorry
+
+  theorem mapP2 (T : Type*) (T' : Type*) [DecidableEq T'] (s : List T) (f : T → T') (y : T') :
+      y ∈ s.map f ↔ ∃ x, x ∈ s ∧ y = f x := by
+    constructor
+    · intro h
+      rw [List.mem_map] at h
+      obtain ⟨x, hx, hfx⟩ := h
+      exact ⟨x, hx, hfx.symm⟩
+    · intro ⟨x, hx, hfx⟩
+      rw [List.mem_map]
+      exact ⟨x, hx, hfx.symm⟩
+
+end UniqList
+
+section Zip
+
+  theorem zipP {T : Type*} [DecidableEq T] (x0 : T) (P : T → T → Bool) (X Y : List T)
+      (h : X.length = Y.length) :
+      (∀ i, i < (X.zip Y).length → P (X.getD i x0) (Y.getD i x0) = true) ↔
+        (X.zip Y).Forall (fun p => P p.1 p.2 = true) := by sorry
+
+  theorem mem_zip_exists (T T' : Type*) [DecidableEq T] [DecidableEq T']
+      (x1 : T) (x2 : T') (l1 : List T) (l2 : List T') (elem : T) (elem' : T')
+      (h1 : l1.length = l2.length) (h2 : (x1, x2) ∈ l1.zip l2) :
+      ∃ idx, idx < l1.length ∧ idx < l2.length ∧
+        x1 = l1.getD idx elem ∧ x2 = l2.getD idx elem' := by
+    rw [List.mem_iff_getElem] at h2
+    obtain ⟨i, hi, hget⟩ := h2
+    have hzl : (l1.zip l2).length = min l1.length l2.length := List.length_zip
+    have hi1 : i < l1.length := by omega
+    have hi2 : i < l2.length := by omega
+    have hzip := @List.getElem_zip _ _ l1 l2 i hi
+    rw [hzip] at hget
+    have h1' := (Prod.ext_iff.mp hget).1
+    have h2' := (Prod.ext_iff.mp hget).2
+    simp at h1' h2'
+    refine ⟨i, hi1, hi2, ?_, ?_⟩
+    · rw [List.getD_eq_getElem l1 elem hi1]; exact h1'.symm
+    · rw [List.getD_eq_getElem l2 elem' hi2]; exact h2'.symm
+
+  theorem mem_zip (T T' : Type*) [DecidableEq T] [DecidableEq T']
+      (x1 : T) (x2 : T') (l1 : List T) (l2 : List T')
+      (h1 : l1.length = l2.length) (h2 : (x1, x2) ∈ l1.zip l2) :
+      x1 ∈ l1 ∧ x2 ∈ l2 := by
+    rw [List.mem_iff_getElem] at h2
+    obtain ⟨i, hi, hget⟩ := h2
+    have hzl : (l1.zip l2).length = min l1.length l2.length := List.length_zip
+    have hzip := @List.getElem_zip _ _ l1 l2 i hi
+    rw [hzip] at hget
+    have h1' := (Prod.ext_iff.mp hget).1
+    have h2' := (Prod.ext_iff.mp hget).2
+    simp at h1' h2'
+    constructor
+    · rw [← h1']; exact List.getElem_mem (by omega : i < l1.length)
+    · rw [← h2']; exact List.getElem_mem (by omega : i < l2.length)
+
+  theorem mem_zip_nseq_r {T1 T2 : Type*} [DecidableEq T1] [DecidableEq T2]
+      (x : T1) (y : T2) (n : ℕ) (l : List T1)
+      (h : l.length = n) :
+      (x, y) ∈ l.zip (List.replicate n y) ↔ x ∈ l := by
+    subst h
+    constructor
+    · intro hmem
+      rw [List.mem_iff_getElem] at hmem
+      obtain ⟨i, hi, hget⟩ := hmem
+      have hzl : (l.zip (List.replicate l.length y)).length = min l.length (List.replicate l.length y).length := List.length_zip
+      have hzip := @List.getElem_zip _ _ l (List.replicate l.length y) i hi
+      rw [hzip] at hget
+      have h1' := (Prod.ext_iff.mp hget).1
+      simp at h1'
+      rw [← h1']; exact List.getElem_mem (by omega : i < l.length)
+    · intro hmem
+      induction l with
+      | nil => simp at hmem
+      | cons a tl ih =>
+        simp only [List.length_cons, List.replicate_succ, List.zip_cons_cons, List.mem_cons] at *
+        rcases hmem with rfl | hmem
+        · left; rfl
+        · right; exact ih hmem
+
+  theorem mem_zip_nseq_l {T1 T2 : Type*} [DecidableEq T1] [DecidableEq T2]
+      (x : T1) (y : T2) (n : ℕ) (l : List T2)
+      (h : l.length = n) :
+      (x, y) ∈ (List.replicate n x).zip l ↔ y ∈ l := by
+    subst h
+    constructor
+    · intro hmem
+      rw [List.mem_iff_getElem] at hmem
+      obtain ⟨i, hi, hget⟩ := hmem
+      have hzl : ((List.replicate l.length x).zip l).length = min (List.replicate l.length x).length l.length := List.length_zip
+      have hzip := @List.getElem_zip _ _ (List.replicate l.length x) l i hi
+      rw [hzip] at hget
+      have h2' := (Prod.ext_iff.mp hget).2
+      simp at h2'
+      rw [← h2']; exact List.getElem_mem (by omega : i < l.length)
+    · intro hmem
+      induction l with
+      | nil => simp at hmem
+      | cons a tl ih =>
+        simp only [List.length_cons, List.replicate_succ, List.zip_cons_cons, List.mem_cons] at *
+        rcases hmem with rfl | hmem
+        · left; rfl
+        · right; exact ih hmem
+
+  theorem unzip1_pair {T1 T2 : Type*} (l : List T1) (f : T1 → T2) :
+      (l.map (fun x => (x, f x))).unzip.1 = l := by
+    rw [List.unzip_fst, List.map_map]
+    simp [Function.comp_def]
+
+  theorem unzip2_pair {T1 T2 : Type*} (l : List T1) (f : T1 → T2) :
+      (l.map (fun x => (f x, x))).unzip.2 = l := by
+    rw [List.unzip_snd, List.map_map]
+    simp [Function.comp_def]
+
+  theorem eq_unzip1 {T1 T2 : Type*}
+      (l1 l2 : List (T1 × T2)) (x0 : T1 × T2)
+      (h1 : l1.length = l2.length)
+      (h2 : ∀ i, i < l1.length → (l1.getD i x0).1 = (l2.getD i x0).1) :
+      l1.unzip.1 = l2.unzip.1 := by
+    rw [List.unzip_fst, List.unzip_fst]
+    apply List.ext_getElem
+    · simp; exact h1
+    · intro i hi1 hi2
+      simp
+      have hi1' : i < l1.length := by simpa using hi1
+      have := h2 i hi1'
+      rw [List.getD_eq_getElem l1 x0 hi1', List.getD_eq_getElem l2 x0 (by omega)] at this
+      exact this
+
+  theorem eq_unzip2 {T1 T2 : Type*}
+      (l1 l2 : List (T1 × T2)) (x0 : T1 × T2)
+      (h1 : l1.length = l2.length)
+      (h2 : ∀ i, i < l1.length → (l1.getD i x0).2 = (l2.getD i x0).2) :
+      l1.unzip.2 = l2.unzip.2 := by
+    rw [List.unzip_snd, List.unzip_snd]
+    apply List.ext_getElem
+    · simp; exact h1
+    · intro i hi1 hi2
+      simp
+      have hi1' : i < l1.length := by simpa using hi1
+      have := h2 i hi1'
+      rw [List.getD_eq_getElem l1 x0 hi1', List.getD_eq_getElem l2 x0 (by omega)] at this
+      exact this
+
+end Zip
+
+def nth_or_none {T : Type*} (l : List T) (n : ℕ) : Option T :=
+  l[n]?
+
+section Nth
+
+  variable {T : Type*} [DecidableEq T]
+
+  theorem nth_in_or_default (l : List T) (x0 : T) (i : ℕ) :
+      l.getD i x0 ∈ l ∨ l.getD i x0 = x0 := by
+    by_cases h : i < l.length
+    · left
+      rw [List.getD_eq_getElem l x0 h]
+      exact List.getElem_mem h
+    · right
+      push_neg at h
+      rw [List.getD_eq_default l x0 h]
+
+  theorem nth_neq_default (l : List T) (x0 : T) (i : ℕ) (y : T)
+      (h1 : l.getD i x0 = y) (h2 : y ≠ x0) :
+      y ∈ l := by
+    have := nth_in_or_default l x0 i
+    rw [h1] at this
+    exact this.resolve_right h2
+
+  theorem nth_or_none_mem (l : List T) (n : ℕ) (x : T)
+      (h : nth_or_none l n = some x) :
+      x ∈ l := by
+    simp [nth_or_none] at h
+    obtain ⟨hn, hx⟩ := List.getElem?_eq_some_iff.mp h
+    rw [← hx]; exact List.getElem_mem hn
+
+  theorem nth_or_none_mem_exists (l : List T) (x : T)
+      (h : x ∈ l) :
+      ∃ n, nth_or_none l n = some x := by
+    simp [nth_or_none]
+    rw [List.mem_iff_getElem] at h
+    obtain ⟨i, hi, hx⟩ := h
+    exact ⟨i, List.getElem?_eq_some_iff.mpr ⟨hi, hx⟩⟩
+
+  theorem nth_or_none_size_none (l : List T) (n : ℕ) :
+      nth_or_none l n = none ↔ n ≥ l.length := by
+    simp [nth_or_none]
+
+  theorem nth_or_none_size_some (l : List T) (n : ℕ) (x : T)
+      (h : nth_or_none l n = some x) :
+      n < l.length := by
+    simp [nth_or_none] at h
+    exact (List.getElem?_eq_some_iff.mp h).1
+
+  theorem nth_or_none_uniq (l : List T) (i j : ℕ) (x : T)
+      (h1 : l.Nodup) (h2 : nth_or_none l i = some x)
+      (h3 : nth_or_none l j = some x) :
+      i = j := by
+    simp [nth_or_none] at h2 h3
+    obtain ⟨hi, hxi⟩ := List.getElem?_eq_some_iff.mp h2
+    obtain ⟨hj, hxj⟩ := List.getElem?_eq_some_iff.mp h3
+    have : l[i] = l[j] := by rw [hxi, hxj]
+    exact (h1.getElem_inj_iff).mp this
+
+  theorem nth_or_none_nth (l : List T) (n : ℕ) (x : T) (x0 : T)
+      (h : nth_or_none l n = some x) :
+      l.getD n x0 = x := by
+    simp [nth_or_none] at h
+    obtain ⟨hlt, hx⟩ := List.getElem?_eq_some_iff.mp h
+    rw [List.getD_eq_getElem l x0 hlt]
+    exact hx
+
+end Nth
+
+section PartialMap
+
+  theorem pmap_inj_in_uniq {T T' : Type*} [DecidableEq T] [DecidableEq T']
+      (s : List T) (f : T → Option T')
+      (h1 : ∀ a b, a ∈ s → b ∈ s → f a = f b → a = b)
+      (h2 : s.Nodup) :
+      (s.filterMap f).Nodup := by
+    induction s with
+    | nil => simp
+    | cons a tl ih =>
+      simp only [List.filterMap_cons]
+      have hnodup_tl : tl.Nodup := (List.nodup_cons.mp h2).2
+      have hnotin : a ∉ tl := (List.nodup_cons.mp h2).1
+      have ih' : (tl.filterMap f).Nodup := by
+        apply ih
+        · intro x y hx hy hfxy
+          exact h1 x y (List.mem_cons_of_mem _ hx) (List.mem_cons_of_mem _ hy) hfxy
+        · exact hnodup_tl
+      cases hfa : f a with
+      | none =>
+        simp only [Option.toList_none, List.nil_append]
+        exact ih'
+      | some val =>
+        simp only [Option.toList_some, List.singleton_append]
+        exact List.nodup_cons.mpr ⟨fun hmem => by
+          rw [List.mem_filterMap] at hmem
+          obtain ⟨b, hb_mem, hb_eq⟩ := hmem
+          have hab : a = b := h1 a b (List.mem_cons_self ..) (List.mem_cons_of_mem _ hb_mem) (by rw [hfa, hb_eq])
+          exact hnotin (hab ▸ hb_mem), ih'⟩
+
+  theorem pmap_inj_uniq {T T' : Type*} [DecidableEq T] [DecidableEq T']
+      (s : List T) (f : T → Option T')
+      (h1 : Function.Injective f)
+      (h2 : s.Nodup) :
+      (s.filterMap f).Nodup := by
+    apply pmap_inj_in_uniq
+    · intro a b _ _ hab
+      exact h1 hab
+    · exact h2
+
+end PartialMap
+
+def set_nth_if_exists {T : Type*} (l : List T) (n : ℕ) (y : T) : List T :=
+  if n < l.length then l.set n y else l
+
+def replace_first {T : Type*} (P : T → Bool) (f : T → T) : List T → List T
+  | [] => []
+  | x0 :: l' => if P x0 then f x0 :: l' else x0 :: replace_first P f l'
+
+def replace_first_const {T : Type*} (P : T → Bool) (y : T) (l : List T) : List T :=
+  replace_first P (fun _ => y) l
+
+def set_pair_1nd {T1 T2 : Type*} (y : T2) (p : T1 × T2) : T1 × T2 :=
+  (p.1, y)
+
+def set_pair_2nd {T1 T2 : Type*} (y : T2) (p : T1 × T2) : T1 × T2 :=
+  (p.1, y)
+
+section Replace
+
+  variable {T : Type*} [DecidableEq T]
+
+  theorem replace_first_size (P : T → Bool) (f : T → T) (l : List T) :
+      (replace_first P f l).length = l.length := by
+    induction l with
+    | nil => simp [replace_first]
+    | cons a tl ih =>
+      simp only [replace_first]
+      split <;> simp [ih]
+
+  theorem replace_first_cases {P : T → Bool} {f : T → T} {l : List T} {x : T}
+      (h : x ∈ replace_first P f l) :
+      x ∈ l ∨ (∃ y, x = f y ∧ P y = true ∧ y ∈ l) := by
+    induction l with
+    | nil => simp [replace_first] at h
+    | cons a tl ih =>
+      simp only [replace_first] at h
+      by_cases hpa : P a = true
+      · simp [hpa] at h
+        rcases h with rfl | h
+        · right; exact ⟨a, rfl, hpa, List.mem_cons_self ..⟩
+        · left; exact List.mem_cons_of_mem _ h
+      · simp [show ¬(P a = true) from hpa] at h
+        rcases h with rfl | h
+        · left; exact List.mem_cons_self ..
+        · rcases ih h with h' | ⟨y, hxy, hpy, hym⟩
+          · left; exact List.mem_cons_of_mem _ h'
+          · right; exact ⟨y, hxy, hpy, List.mem_cons_of_mem _ hym⟩
+
+  theorem replace_first_no_change {P : T → Bool} {f : T → T} {l : List T} {x : T}
+      (h1 : x ∈ l) (h2 : P x = false) :
+      x ∈ replace_first P f l := by
+    induction l with
+    | nil => simp at h1
+    | cons a tl ih =>
+      simp only [replace_first]
+      by_cases hpa : P a = true
+      · simp [hpa]
+        rcases List.mem_cons.mp h1 with rfl | h
+        · simp [h2] at hpa
+        · right; exact h
+      · simp [show ¬(P a = true) from hpa]
+        rcases List.mem_cons.mp h1 with rfl | h
+        · left; rfl
+        · right; exact ih h
+
+  theorem replace_first_idempotent {P : T → Bool} {f : T → T} {l : List T} {x : T}
+      (h1 : x ∈ l) (h2 : f x = x) :
+      x ∈ replace_first P f l := by
+    induction l with
+    | nil => simp at h1
+    | cons a tl ih =>
+      simp only [replace_first]
+      by_cases hpa : P a = true
+      · simp [hpa]
+        rcases List.mem_cons.mp h1 with rfl | h
+        · left; exact h2.symm
+        · right; exact h
+      · simp [show ¬(P a = true) from hpa]
+        rcases List.mem_cons.mp h1 with rfl | h
+        · left; rfl
+        · right; exact ih h
+
+  theorem replace_first_new (P : T → Bool) (f : T → T) (l : List T) (x1 x2 : T)
+      (h1 : x1 ∉ l) (h2 : x2 ∉ l)
+      (h3 : x1 ∈ replace_first P f l) (h4 : x2 ∈ replace_first P f l) :
+      x1 = x2 := by
+    induction l with
+    | nil => simp [replace_first] at h3
+    | cons a tl ih =>
+      simp only [replace_first] at h3 h4
+      rw [List.mem_cons] at h1 h2
+      push_neg at h1 h2
+      by_cases hpa : P a = true
+      · simp [hpa] at h3 h4
+        rcases h3 with rfl | h3
+        · rcases h4 with rfl | h4
+          · rfl
+          · exact absurd h4 h2.2
+        · exact absurd h3 h1.2
+      · simp [show ¬(P a = true) from hpa] at h3 h4
+        rcases h3 with rfl | h3
+        · exact absurd rfl h1.1
+        · rcases h4 with rfl | h4
+          · exact absurd rfl h2.1
+          · exact ih h1.2 h2.2 h3 h4
+
+  theorem replace_first_previous {P : T → Bool} {f : T → T} {l : List T} {x : T}
+      (h : x ∈ l) :
+      (x ∈ replace_first P f l) ∨
+      (P x = true ∧ f x ∈ replace_first P f l) := by
+    induction l with
+    | nil => simp at h
+    | cons a tl ih =>
+      simp only [replace_first]
+      by_cases hpa : P a = true
+      · simp [hpa]
+        rcases List.mem_cons.mp h with rfl | h
+        · right; exact ⟨hpa, Or.inl rfl⟩
+        · left; right; exact h
+      · simp [show ¬(P a = true) from hpa]
+        rcases List.mem_cons.mp h with rfl | h
+        · left; left; rfl
+        · rcases ih h with h' | ⟨hpx, hfx⟩
+          · left; right; exact h'
+          · right; exact ⟨hpx, Or.inr hfx⟩
+
+  theorem replace_first_failed {P : T → Bool} {f : T → T} {l : List T}
+      (h : ∀ x, x ∈ l → f x ∉ replace_first P f l) :
+      ∀ x, x ∈ l → P x = false := by
+    induction l with
+    | nil => intro x hx; simp at hx
+    | cons a tl ih =>
+      intro x hx
+      simp only [replace_first] at h ⊢
+      by_cases hpa : P a = true
+      · exfalso
+        have ha := h a (List.mem_cons_self ..)
+        simp [hpa] at ha
+      · simp [show ¬(P a = true) from hpa] at h
+        rcases List.mem_cons.mp hx with rfl | hx'
+        · exact Bool.eq_false_iff.mpr hpa
+        · apply ih
+          · intro y hy
+            exact fun hfy => (h.2 y hy).2 hfy
+          · exact hx'
+
+end Replace
+
+def pairs_to_function {T1 : Type*} [DecidableEq T1] {T2 : Type*} (y0 : T2)
+    (l : List (T1 × T2)) : T1 → T2 :=
+  fun x => (l.unzip.2).getD (l.unzip.1.idxOf x) y0
+
+section Pairs
+
+  theorem pairs_to_function_neq_default {T1 : Type*} [DecidableEq T1]
+      {T2 : Type*} [DecidableEq T2]
+      (y0 : T2) (l : List (T1 × T2)) (x : T1) (y : T2)
+      (h1 : pairs_to_function y0 l x = y) (h2 : y ≠ y0) :
+      (x, y) ∈ l := by
+    unfold pairs_to_function at h1
+    induction l with
+    | nil => simp [List.unzip] at h1; exact absurd h1.symm h2
+    | cons p tl ih =>
+      rw [List.unzip_fst, List.unzip_snd] at h1
+      simp only [List.map, List.idxOf_cons] at h1
+      by_cases hfst : p.1 = x
+      · simp [show (p.1 == x) = true from by simp [hfst]] at h1
+        rw [← hfst, ← h1, Prod.mk.eta]
+        exact List.mem_cons_self ..
+      · simp [show (p.1 == x) = false from by simp [hfst]] at h1
+        have ih' : (x, y) ∈ tl := by
+          apply ih
+          show tl.unzip.2.getD (tl.unzip.1.idxOf x) y0 = y
+          simp only [List.unzip_fst, List.unzip_snd, List.getD, List.getElem?_map]
+          exact h1
+        exact List.mem_cons_of_mem _ ih'
+
+  theorem pairs_to_function_mem {T1 : Type*} [DecidableEq T1]
+      {T2 : Type*} [DecidableEq T2]
+      (y0 : T2) (l : List (T1 × T2)) (x : T1) (y : T2)
+      (h1 : (l.unzip.1).Nodup) (h2 : (x, y) ∈ l) :
+      pairs_to_function y0 l x = y := by
+    unfold pairs_to_function
+    induction l with
+    | nil => simp at h2
+    | cons p tl ih =>
+      rw [List.unzip_fst] at h1
+      simp only [List.unzip_fst, List.unzip_snd, List.map, List.idxOf_cons]
+      rcases List.mem_cons.mp h2 with rfl | h2
+      · simp
+      · simp only [List.map] at h1
+        rw [List.nodup_cons] at h1
+        by_cases hfst : p.1 = x
+        · exfalso
+          apply h1.1
+          rw [List.mem_map]
+          exact ⟨(x, y), h2, by rw [← hfst]⟩
+        · simp [show (p.1 == x) = false from by simp [hfst]]
+          have key : tl.unzip.2.getD (tl.unzip.1.idxOf x) y0 = y := by
+            exact ih (by rw [List.unzip_fst]; exact h1.2) h2
+          simp only [List.unzip_fst, List.unzip_snd] at key
+          -- key : (List.map Prod.snd tl).getD ... = y
+          -- goal : (Option.map Prod.snd tl[...]?).getD y0 = y
+          rw [← key]
+          simp [List.getD, List.getElem?_map]
+
+end Pairs
+
+section Order
+
+  variable {T : Type*} [DecidableEq T]
+  variable (rel : T → T → Bool)
+  variable (l : List T)
+
+  def total_over_list : Prop :=
+    ∀ x1 x2, x1 ∈ l → x2 ∈ l → (rel x1 x2 = true ∨ rel x2 x1 = true)
+
+  def antisymmetric_over_list : Prop :=
+    ∀ x1 x2, x1 ∈ l → x2 ∈ l → rel x1 x2 = true → rel x2 x1 = true → x1 = x2
+
+end Order
+
+section AdditionalLemmas
+
+  theorem in_cat {X : Type*} [DecidableEq X] (x : X) (xs : List X)
+      (h : x ∈ xs) :
+      ∃ xsl xsr, xs = xsl ++ [x] ++ xsr := by
+    induction xs with
+    | nil => simp at h
+    | cons a tl ih =>
+      rcases List.mem_cons.mp h with rfl | hmem
+      · exact ⟨[], tl, by simp⟩
+      · obtain ⟨xsl, xsr, hxs⟩ := ih hmem
+        exact ⟨a :: xsl, xsr, by simp [hxs]⟩
+
+  private def seq_max : List ℕ → ℕ := List.foldl Nat.max 0
+
+  theorem seq_max_cons (x : ℕ) (xs : List ℕ) :
+      seq_max (x :: xs) = Nat.max x (seq_max xs) := by
+    simp only [seq_max, List.foldl]
+    suffices h : ∀ (s : ℕ) (a : ℕ) (l : List ℕ),
+        List.foldl Nat.max (Nat.max s a) l = Nat.max a (List.foldl Nat.max s l) by
+      rw [h]
+    intro s a l
+    revert s a
+    induction l with
+    | nil => intros; simp [Nat.max_comm]
+    | cons b tl ih =>
+      intros s a
+      simp only [List.foldl]
+      rw [ih, ih s b]
+      rfl
+
+  theorem subseq_leq_size {X : Type*} [DecidableEq X] (xs ys : List X)
+      (h1 : xs.Nodup) (h2 : ∀ x, x ∈ xs → x ∈ ys) :
+      xs.length ≤ ys.length := by
+    have hsub : xs.toFinset ⊆ ys.toFinset := by
+      intro x; simp only [List.mem_toFinset]; exact h2 x
+    calc xs.length = xs.toFinset.card :=
+            (List.toFinset_card_of_nodup h1).symm
+      _ ≤ ys.toFinset.card := Finset.card_le_card hsub
+      _ ≤ ys.length := List.toFinset_card_le ys
+
+end AdditionalLemmas
+
+end Prosa.Classic.Util.List

@@ -1,0 +1,311 @@
+-- Translated from: classic/implementation/uni/susp/schedule.v
+import Prosa.Classic.Util.All
+import Prosa.Classic.Model.Arrival.Basic.Job
+import Prosa.Classic.Model.Arrival.Basic.Arrival_sequence
+import Prosa.Classic.Model.Priority
+import Prosa.Classic.Model.Schedule.Uni.Schedule
+import Prosa.Classic.Model.Schedule.Uni.Susp.Platform
+import Prosa.Classic.Model.Schedule.Uni.Susp.Schedule
+import Prosa.Classic.Model.Schedule.Uni.Susp.Suspension_intervals
+import Prosa.Classic.Model.Schedule.Uni.Transformation.Construction
+import Prosa.Classic.Model.Suspension
+import Prosa.Classic.Util.Minmax
+import Mathlib.Tactic
+
+namespace Prosa.Classic.Implementation.Uni.Susp.Schedule
+
+open Prosa.Classic.Model.Time
+open Prosa.Classic.Model.Arrival.Basic.Job
+open Prosa.Classic.Model.Arrival.Basic.Arrival_sequence
+open Prosa.Classic.Model.Priority
+open Prosa.Classic.Model.Schedule.Uni.Schedule
+open Prosa.Classic.Model.Schedule.Uni.Susp.Platform.PlatformWithSuspensions
+open Prosa.Classic.Model.Schedule.Uni.Susp.Schedule
+open Prosa.Classic.Model.Schedule.Uni.Susp.Suspension_intervals
+open Prosa.Classic.Model.Schedule.Uni.Transformation.Construction.ScheduleConstruction
+open Prosa.Classic.Model.Suspension
+open Prosa.Classic.Util.Minmax
+open Classical
+
+noncomputable section
+
+namespace ConcreteScheduler
+
+section Implementation
+
+variable {Job : Type*} [DecidableEq Job]
+variable (job_arrival : Job → Time)
+variable (job_cost : Job → Time)
+variable (arr_seq : arrival_sequence Job)
+variable (H_arrival_times_are_consistent : arrival_times_are_consistent job_arrival arr_seq)
+variable (next_suspension : job_suspension Job)
+variable (higher_eq_priority : JLDP_policy Job)
+
+section ScheduleConstruction
+
+variable (sched_prefix : schedule Job)
+variable (t : Time)
+
+def pending_jobs : List Job :=
+  (jobs_arrived_up_to arr_seq t).filter
+    (fun j => pending job_arrival job_cost sched_prefix j t ∧
+              ¬ suspended_at job_arrival job_cost next_suspension sched_prefix j t)
+
+def highest_priority_job : Option Job :=
+  seq_min (higher_eq_priority t)
+    (pending_jobs job_arrival job_cost arr_seq next_suspension sched_prefix t)
+
+end ScheduleConstruction
+
+private def empty_schedule : schedule Job := fun _ => none
+
+def scheduler : schedule Job :=
+  build_schedule_from_prefixes
+    (fun sched_prefix t =>
+      highest_priority_job job_arrival job_cost arr_seq next_suspension higher_eq_priority sched_prefix t)
+    empty_schedule
+
+include H_arrival_times_are_consistent in
+theorem scheduler_depends_only_on_prefix :
+    ∀ (sched1 sched2 : schedule Job) (t : Time),
+      (∀ t0, t0 < t → sched1 t0 = sched2 t0) →
+      highest_priority_job job_arrival job_cost arr_seq next_suspension higher_eq_priority sched1 t =
+      highest_priority_job job_arrival job_cost arr_seq next_suspension higher_eq_priority sched2 t := by
+  open Prosa.Classic.Model.Schedule.Uni.Susp.Last_execution in
+  intro sched1 sched2 t ALL
+  simp only [highest_priority_job]
+  suffices SAME : pending_jobs job_arrival job_cost arr_seq next_suspension sched1 t =
+      pending_jobs job_arrival job_cost arr_seq next_suspension sched2 t by rw [SAME]
+  simp only [pending_jobs]
+  apply List.filter_congr
+  intro j hj_in
+  have hj_arrived : has_arrived job_arrival j t := by
+    have h := in_arrivals_implies_arrived_between job_arrival arr_seq H_arrival_times_are_consistent j 0 (t + 1) hj_in
+    exact Nat.lt_succ_iff.mp h.2
+  have SERV : service sched1 j t = service sched2 j t := by
+    simp only [service, service_during]
+    apply Finset.sum_congr rfl
+    intro i hi; rw [Finset.mem_Ico] at hi
+    simp only [service_at, scheduled_at]; rw [ALL i hi.2]
+  have SCHED_AT : ∀ t0 : Fin t, scheduled_at sched1 j t0.val = scheduled_at sched2 j t0.val := by
+    intro t0; simp only [scheduled_at]; rw [ALL t0.val t0.isLt]
+  have SB : scheduled_before sched1 j t = scheduled_before sched2 j t := by
+    simp only [scheduled_before]; congr 1; exact propext
+      ⟨fun ⟨⟨t0, ht0⟩, hs⟩ => ⟨⟨t0, ht0⟩, by rw [← SCHED_AT ⟨t0, ht0⟩]; exact hs⟩,
+       fun ⟨⟨t0, ht0⟩, hs⟩ => ⟨⟨t0, ht0⟩, by rw [SCHED_AT ⟨t0, ht0⟩]; exact hs⟩⟩
+  have MNC : max_nat_cond (fun t0 => scheduled_at sched1 j t0) 0 t =
+             max_nat_cond (fun t0 => scheduled_at sched2 j t0) 0 t := by
+    simp only [max_nat_cond]; congr 1
+    apply List.filter_congr
+    intro x hx
+    have hx_lt : x < t := ((mem_values_between 0 t x).mp hx).2
+    simp only [scheduled_at]; rw [ALL x hx_lt]
+  have LTS : last_time_scheduled sched1 j t = last_time_scheduled sched2 j t := by
+    simp only [last_time_scheduled]; rw [MNC]
+  have TAE : time_after_last_execution job_arrival sched1 j t =
+             time_after_last_execution job_arrival sched2 j t := by
+    simp only [time_after_last_execution]; rw [SB, LTS]
+  have TAE_LE_T : time_after_last_execution job_arrival sched2 j t ≤ t := by
+    simp only [time_after_last_execution]
+    split
+    · simp only [last_time_scheduled]
+      cases hmnc : max_nat_cond (fun t0 => scheduled_at sched2 j t0) 0 t with
+      | none =>
+        -- If scheduled_before is true, max_nat_cond can't be none - contradiction
+        rename_i h_sb
+        simp only [scheduled_before, decide_eq_true_eq] at h_sb
+        obtain ⟨⟨t0, ht0⟩, hsched0⟩ := h_sb
+        exfalso
+        have := max_nat_cond_exists (fun t0 => scheduled_at sched2 j t0) 0 t t0 ⟨Nat.zero_le _, ht0⟩ hsched0
+        exact this hmnc
+      | some m =>
+        simp
+        exact Nat.succ_le_of_lt (max_nat_cond_in_seq _ _ _ _ hmnc).2.1
+    · exact hj_arrived
+  have SERV_TAE : service sched1 j (time_after_last_execution job_arrival sched2 j t) =
+                  service sched2 j (time_after_last_execution job_arrival sched2 j t) := by
+    simp only [service, service_during]
+    apply Finset.sum_congr rfl
+    intro i hi; rw [Finset.mem_Ico] at hi
+    simp only [service_at, scheduled_at]; rw [ALL i (Nat.lt_of_lt_of_le hi.2 TAE_LE_T)]
+  have SD : suspension_duration job_arrival next_suspension sched1 j t =
+            suspension_duration job_arrival next_suspension sched2 j t := by
+    simp only [suspension_duration]; rw [TAE, SERV_TAE]
+  have COMP : completed_by job_cost sched1 j t ↔ completed_by job_cost sched2 j t := by
+    simp only [completed_by]; rw [SERV]
+  have PEND : pending job_arrival job_cost sched1 j t ↔ pending job_arrival job_cost sched2 j t := by
+    simp only [pending]; exact ⟨fun ⟨h1, h2⟩ => ⟨h1, fun h => h2 (COMP.mpr h)⟩,
+                                 fun ⟨h1, h2⟩ => ⟨h1, fun h => h2 (COMP.mp h)⟩⟩
+  have SUSP : suspended_at job_arrival job_cost next_suspension sched1 j t ↔
+              suspended_at job_arrival job_cost next_suspension sched2 j t := by
+    simp only [suspended_at]; rw [TAE, SD]
+    exact ⟨fun ⟨h1, h2, h3⟩ => ⟨fun h => h1 (COMP.mpr h), h2, h3⟩,
+           fun ⟨h1, h2, h3⟩ => ⟨fun h => h1 (COMP.mp h), h2, h3⟩⟩
+  simp only [decide_eq_decide]
+  exact ⟨fun ⟨hp, hns⟩ => ⟨PEND.mp hp, fun hs => hns (SUSP.mpr hs)⟩,
+         fun ⟨hp, hns⟩ => ⟨PEND.mpr hp, fun hs => hns (SUSP.mp hs)⟩⟩
+
+include H_arrival_times_are_consistent in
+theorem scheduler_uses_construction_function :
+    ∀ t,
+      scheduler job_arrival job_cost arr_seq next_suspension higher_eq_priority t =
+      highest_priority_job job_arrival job_cost arr_seq next_suspension higher_eq_priority
+        (scheduler job_arrival job_cost arr_seq next_suspension higher_eq_priority) t := by
+  intro t
+  exact prefix_dependent_schedule_construction
+    (fun sched_prefix t => highest_priority_job job_arrival job_cost arr_seq next_suspension higher_eq_priority sched_prefix t)
+    (empty_schedule)
+    (scheduler_depends_only_on_prefix job_arrival job_cost arr_seq H_arrival_times_are_consistent next_suspension higher_eq_priority)
+    t
+
+end Implementation
+
+section Proofs
+
+variable {Job : Type*} [DecidableEq Job]
+variable (job_arrival : Job → Time)
+variable (job_cost : Job → Time)
+variable (arr_seq : arrival_sequence Job)
+variable (H_arrival_times_are_consistent : arrival_times_are_consistent job_arrival arr_seq)
+variable (H_no_duplicate_arrivals : arrival_sequence_is_a_set arr_seq)
+variable (next_suspension : job_suspension Job)
+variable (higher_eq_priority : JLDP_policy Job)
+variable (H_priority_is_transitive : JLDP_is_transitive higher_eq_priority)
+variable (H_priority_is_total : JLDP_is_total arr_seq higher_eq_priority)
+
+include H_arrival_times_are_consistent in
+theorem scheduler_jobs_come_from_arrival_sequence :
+    jobs_come_from_arrival_sequence
+      (scheduler job_arrival job_cost arr_seq next_suspension higher_eq_priority)
+      arr_seq := by
+  intro j t hsched
+  have heq := scheduler_uses_construction_function job_arrival job_cost arr_seq H_arrival_times_are_consistent next_suspension higher_eq_priority t
+  simp only [scheduled_at] at hsched
+  rw [heq] at hsched
+  unfold highest_priority_job at hsched
+  have hmem := seq_min_in_seq (higher_eq_priority t) _ _ (by rw [beq_iff_eq] at hsched; exact hsched)
+  simp only [pending_jobs, List.mem_filter, decide_eq_true_eq] at hmem
+  exact in_arrivals_implies_arrived job_arrival arr_seq H_arrival_times_are_consistent j 0 (t + 1) hmem.1
+
+include H_arrival_times_are_consistent in
+theorem scheduler_jobs_must_arrive_to_execute :
+    jobs_must_arrive_to_execute job_arrival
+      (scheduler job_arrival job_cost arr_seq next_suspension higher_eq_priority) := by
+  intro j t hsched
+  have heq := scheduler_uses_construction_function job_arrival job_cost arr_seq H_arrival_times_are_consistent next_suspension higher_eq_priority t
+  simp only [scheduled_at] at hsched
+  rw [heq] at hsched
+  unfold highest_priority_job at hsched
+  have hmem := seq_min_in_seq (higher_eq_priority t) _ _ (by rw [beq_iff_eq] at hsched; exact hsched)
+  simp only [pending_jobs, List.mem_filter, decide_eq_true_eq] at hmem
+  exact hmem.2.1.1
+
+include H_arrival_times_are_consistent in
+theorem scheduler_completed_jobs_dont_execute :
+    completed_jobs_dont_execute job_cost
+      (scheduler job_arrival job_cost arr_seq next_suspension higher_eq_priority) := by
+  intro j t
+  induction t with
+  | zero =>
+    simp only [service, service_during, Finset.Ico_self, Finset.sum_empty]
+    exact Nat.zero_le _
+  | succ n ih =>
+    simp only [service, service_during] at ih ⊢
+    rw [Finset.sum_Ico_succ_top (Nat.zero_le n)]
+    by_cases h : job_cost j ≤ ∑ x ∈ Finset.Ico 0 n, service_at (scheduler job_arrival job_cost arr_seq next_suspension higher_eq_priority) j x
+    · have h_not_sched : ¬ (scheduled_at (scheduler job_arrival job_cost arr_seq next_suspension higher_eq_priority) j n = true) := by
+        intro hsn
+        have heq := scheduler_uses_construction_function job_arrival job_cost arr_seq H_arrival_times_are_consistent next_suspension higher_eq_priority n
+        simp only [scheduled_at] at hsn
+        rw [heq] at hsn
+        unfold highest_priority_job at hsn
+        have hmem := seq_min_in_seq (higher_eq_priority n) _ _ (by rw [beq_iff_eq] at hsn; exact hsn)
+        simp only [pending_jobs, List.mem_filter, decide_eq_true_eq] at hmem
+        exact hmem.2.1.2 h
+      have hsa0 : service_at (scheduler job_arrival job_cost arr_seq next_suspension higher_eq_priority) j n = 0 := by
+        simp only [service_at]
+        rw [Bool.not_eq_true] at h_not_sched
+        simp [h_not_sched, Bool.toNat]
+      rw [hsa0, add_zero]
+      exact ih
+    · push_neg at h
+      have hsa_le : service_at (scheduler job_arrival job_cost arr_seq next_suspension higher_eq_priority) j n ≤ 1 := service_at_most_one _ j n
+      have h_eq : ∑ x ∈ Finset.Ico 0 n, service_at (scheduler job_arrival job_cost arr_seq next_suspension higher_eq_priority) j x =
+          ∑ x ∈ Finset.Ico 0 n, service_at (scheduler job_arrival job_cost arr_seq next_suspension higher_eq_priority) j x := rfl
+      -- Use h_eq to align: service sched j n = ih's sum = h's sum = goal's sum
+      have h' := h  -- copies with same bound variable
+      rw [show ∀ (f : ℕ → ℕ) (s : Finset ℕ), ∑ x ∈ s, f x = ∑ x ∈ s, f x from fun _ _ => rfl] at h'
+      exact Nat.le_of_lt_succ (by linarith [h, hsa_le, ih])
+
+include H_arrival_times_are_consistent in
+theorem scheduler_work_conserving :
+    work_conserving job_arrival job_cost next_suspension arr_seq
+      (scheduler job_arrival job_cost arr_seq next_suspension higher_eq_priority) := by
+  intro j t hj_in hback
+  obtain ⟨hpend, hnotsched, hnotsusp⟩ := hback
+  obtain ⟨harr, hnotcomp⟩ := hpend
+  have heq := scheduler_uses_construction_function job_arrival job_cost arr_seq H_arrival_times_are_consistent next_suspension higher_eq_priority t
+  have hj_pending : j ∈ pending_jobs job_arrival job_cost arr_seq next_suspension (scheduler job_arrival job_cost arr_seq next_suspension higher_eq_priority) t := by
+    simp only [pending_jobs, List.mem_filter, decide_eq_true_eq]
+    exact ⟨arrived_between_implies_in_arrivals job_arrival arr_seq H_arrival_times_are_consistent j 0 (t + 1) hj_in ⟨Nat.zero_le _, Nat.lt_succ_of_le harr⟩, ⟨⟨harr, hnotcomp⟩, hnotsusp⟩⟩
+  cases hhp : highest_priority_job job_arrival job_cost arr_seq next_suspension higher_eq_priority (scheduler job_arrival job_cost arr_seq next_suspension higher_eq_priority) t with
+  | some j_hp =>
+    refine ⟨j_hp, ?_⟩
+    simp only [scheduled_at, beq_iff_eq]
+    rw [heq, hhp]
+  | none =>
+    exfalso
+    exact seq_min_exists (higher_eq_priority t) _ j hj_pending hhp
+
+include H_arrival_times_are_consistent H_priority_is_transitive H_priority_is_total in
+theorem scheduler_respects_policy :
+    respects_JLDP_policy job_arrival job_cost next_suspension arr_seq
+      (scheduler job_arrival job_cost arr_seq next_suspension higher_eq_priority)
+      higher_eq_priority := by
+  intro j j_hp t harr1 hback hsched_hp
+  obtain ⟨hpend, hnotsched, hnotsusp⟩ := hback
+  obtain ⟨harr_j, hnotcomp⟩ := hpend
+  have heq := scheduler_uses_construction_function job_arrival job_cost arr_seq H_arrival_times_are_consistent next_suspension higher_eq_priority t
+  simp only [scheduled_at] at hsched_hp
+  have hsched_hp' : highest_priority_job job_arrival job_cost arr_seq next_suspension higher_eq_priority (scheduler job_arrival job_cost arr_seq next_suspension higher_eq_priority) t = some j_hp := by
+    rw [beq_iff_eq] at hsched_hp
+    rw [heq] at hsched_hp
+    exact hsched_hp
+  have hj_pending : j ∈ pending_jobs job_arrival job_cost arr_seq next_suspension (scheduler job_arrival job_cost arr_seq next_suspension higher_eq_priority) t := by
+    simp only [pending_jobs, List.mem_filter, decide_eq_true_eq]
+    exact ⟨arrived_between_implies_in_arrivals job_arrival arr_seq H_arrival_times_are_consistent j 0 (t + 1) harr1 ⟨Nat.zero_le _, Nat.lt_succ_of_le harr_j⟩, ⟨⟨harr_j, hnotcomp⟩, hnotsusp⟩⟩
+  unfold highest_priority_job at hsched_hp'
+  have htotal_list : ∀ x y : Job,
+      x ∈ pending_jobs job_arrival job_cost arr_seq next_suspension (scheduler job_arrival job_cost arr_seq next_suspension higher_eq_priority) t →
+      y ∈ pending_jobs job_arrival job_cost arr_seq next_suspension (scheduler job_arrival job_cost arr_seq next_suspension higher_eq_priority) t →
+      higher_eq_priority t x y = true ∨ higher_eq_priority t y x = true := by
+    intro x y hx hy
+    simp only [pending_jobs, List.mem_filter, decide_eq_true_eq] at hx hy
+    exact H_priority_is_total x y t (in_arrivals_implies_arrived job_arrival arr_seq H_arrival_times_are_consistent x 0 (t + 1) hx.1) (in_arrivals_implies_arrived job_arrival arr_seq H_arrival_times_are_consistent y 0 (t + 1) hy.1)
+  exact seq_min_computes_min (higher_eq_priority t)
+    (fun x y z hxy hyz => H_priority_is_transitive t y x z hxy hyz)
+    (pending_jobs job_arrival job_cost arr_seq next_suspension (scheduler job_arrival job_cost arr_seq next_suspension higher_eq_priority) t)
+    htotal_list j_hp j hsched_hp' hj_pending
+
+include H_arrival_times_are_consistent in
+theorem scheduler_respects_self_suspensions :
+    respects_self_suspensions job_arrival job_cost next_suspension
+      (scheduler job_arrival job_cost arr_seq next_suspension higher_eq_priority) := by
+  intro j t hsched
+  have heq := scheduler_uses_construction_function job_arrival job_cost arr_seq H_arrival_times_are_consistent next_suspension higher_eq_priority t
+  simp only [scheduled_at] at hsched
+  rw [heq] at hsched
+  have hsched' : highest_priority_job job_arrival job_cost arr_seq next_suspension higher_eq_priority (scheduler job_arrival job_cost arr_seq next_suspension higher_eq_priority) t = some j := by
+    rw [beq_iff_eq] at hsched; exact hsched
+  unfold highest_priority_job at hsched'
+  have hmem := seq_min_in_seq (higher_eq_priority t) _ _ hsched'
+  simp only [pending_jobs, List.mem_filter, decide_eq_true_eq] at hmem
+  exact hmem.2.2
+
+end Proofs
+
+end ConcreteScheduler
+
+end
+
+end Prosa.Classic.Implementation.Uni.Susp.Schedule

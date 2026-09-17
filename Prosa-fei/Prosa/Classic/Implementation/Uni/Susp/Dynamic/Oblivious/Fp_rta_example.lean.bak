@@ -1,0 +1,125 @@
+-- Translated from: ../rt-proofs/classic/implementation/uni/susp/dynamic/oblivious/fp_rta_example.v
+import Prosa.Classic.Util.All
+import Prosa.Classic.Model.Arrival.Basic.Job
+import Prosa.Classic.Model.Arrival.Basic.Task
+import Prosa.Classic.Model.Priority
+import Prosa.Classic.Model.Schedule.Uni.Schedule
+import Prosa.Classic.Model.Schedule.Uni.Schedulability
+import Prosa.Classic.Model.Schedule.Uni.Susp.Suspension_intervals
+import Prosa.Classic.Model.Suspension
+import Prosa.Classic.Analysis.Uni.Basic.Workload_bound_fp
+import Prosa.Classic.Analysis.Uni.Basic.Fp_rta_comp
+import Prosa.Classic.Analysis.Uni.Susp.Dynamic.Oblivious.Fp_rta
+import Prosa.Classic.Analysis.Uni.Susp.Dynamic.Oblivious.Reduction
+import Prosa.Classic.Implementation.Uni.Susp.Dynamic.Job
+import Prosa.Classic.Implementation.Uni.Susp.Dynamic.Task
+import Prosa.Classic.Implementation.Uni.Susp.Dynamic.Arrival_sequence
+import Prosa.Classic.Implementation.Uni.Susp.Schedule
+import Mathlib.Tactic
+
+namespace Prosa.Classic.Implementation.Uni.Susp.Dynamic.Oblivious.Fp_rta_example
+
+open Prosa.Classic.Model.Time
+open Prosa.Classic.Model.Arrival.Basic.Job hiding arrival_sequence arrives_in
+open Prosa.Classic.Model.Arrival.Basic.Task.SporadicTaskset
+open Prosa.Classic.Model.Arrival.Basic.Arrival_sequence
+open Prosa.Classic.Model.Priority
+open Prosa.Classic.Model.Schedule.Uni.Schedule
+open Prosa.Classic.Model.Schedule.Uni.Schedulability
+  hiding schedule scheduled_at service_at service_during service completed_by
+    completed_jobs_dont_execute completion_monotonic
+open Prosa.Classic.Model.Schedule.Uni.Susp.Suspension_intervals
+open Prosa.Classic.Model.Suspension
+open Prosa.Classic.Analysis.Uni.Basic.Workload_bound_fp.WorkloadBoundFP
+open Prosa.Classic.Analysis.Uni.Basic.Fp_rta_comp.ResponseTimeIterationFP
+open Prosa.Classic.Analysis.Uni.Susp.Dynamic.Oblivious.Fp_rta.SuspensionObliviousFP
+open Prosa.Classic.Analysis.Uni.Susp.Dynamic.Oblivious.Reduction.ReductionToBasicSchedule
+open Prosa.Classic.Implementation.Uni.Susp.Dynamic.Task.ConcreteTask
+open Prosa.Classic.Implementation.Uni.Susp.Dynamic.Arrival_sequence.ConcreteArrivalSequence
+open Prosa.Classic.Implementation.Uni.Susp.Schedule.ConcreteScheduler
+
+set_option autoImplicit false
+set_option linter.unusedSectionVars false
+
+noncomputable section
+
+namespace ResponseTimeAnalysisFP
+
+section ExampleRTA
+
+private def tsk1 : concrete_task :=
+  { task_id := 1, task_cost := 1, task_period := 5,
+    task_deadline := 5, task_suspension_bound := 1 }
+
+private def tsk2 : concrete_task :=
+  { task_id := 2, task_cost := 1, task_period := 5,
+    task_deadline := 5, task_suspension_bound := 0 }
+
+private def tsk3 : concrete_task :=
+  { task_id := 3, task_cost := 1, task_period := 6,
+    task_deadline := 6, task_suspension_bound := 1 }
+
+private def ts : List concrete_task := [tsk1, tsk2, tsk3]
+
+theorem ts_has_valid_parameters :
+    valid_sporadic_taskset
+      concrete_task.task_cost concrete_task.task_period concrete_task.task_deadline ts := by
+  sorry
+
+private def inflated_cost :=
+  inflated_task_cost concrete_task.task_cost concrete_task.task_suspension_bound
+
+theorem inflated_cost_le_deadline_and_period :
+    forall tsk,
+      tsk ∈ ts →
+      inflated_cost tsk ≤ concrete_task.task_deadline tsk ∧
+      inflated_cost tsk ≤ concrete_task.task_period tsk := by
+  sorry
+
+private def RTA_claimed_bounds :=
+  fp_claimed_bounds inflated_cost concrete_task.task_period concrete_task.task_deadline
+    (RM concrete_task.task_period)
+
+private def schedulability_test :=
+  fp_schedulable inflated_cost concrete_task.task_period concrete_task.task_deadline
+    (RM concrete_task.task_period)
+
+theorem RTA_yields_these_bounds :
+    RTA_claimed_bounds ts = some [(tsk1, 3), (tsk2, 3), (tsk3, 5)] := by
+  sorry
+
+theorem schedulability_test_succeeds :
+    schedulability_test ts := by
+  sorry
+
+private abbrev arr_seq := periodic_arrival_sequence ts
+
+variable (next_suspension : job_suspension concrete_job)
+variable (H_dynamic_suspensions :
+  dynamic_suspension_model concrete_job.job_cost concrete_job.job_task
+    next_suspension concrete_task.task_suspension_bound)
+
+private abbrev higher_eq_priority :=
+  FP_to_JLDP concrete_job.job_task (RM concrete_task.task_period)
+
+private abbrev sched' (ns : job_suspension concrete_job) :=
+  scheduler concrete_job.job_arrival concrete_job.job_cost arr_seq ns higher_eq_priority
+
+private abbrev no_deadline_missed_by (ns : job_suspension concrete_job) :=
+  task_misses_no_deadline concrete_job.job_arrival concrete_job.job_cost
+    concrete_job.job_deadline concrete_job.job_task arr_seq (sched' ns)
+
+include H_dynamic_suspensions in
+theorem ts_is_schedulable :
+    forall tsk,
+      tsk ∈ ts →
+      no_deadline_missed_by next_suspension tsk := by
+  sorry
+
+end ExampleRTA
+
+end ResponseTimeAnalysisFP
+
+end
+
+end Prosa.Classic.Implementation.Uni.Susp.Dynamic.Oblivious.Fp_rta_example

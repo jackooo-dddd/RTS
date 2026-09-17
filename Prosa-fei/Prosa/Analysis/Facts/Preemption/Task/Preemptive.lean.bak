@@ -1,0 +1,42 @@
+-- Translated from: ../rt-proofs/analysis/facts/preemption/task/preemptive.v
+import Prosa.Analysis.Definitions.Job_properties
+import Prosa.Analysis.Facts.Preemption.Job.Preemptive
+import Prosa.Model.Task.Preemption.Fully_preemptive
+
+namespace Prosa.Analysis.Facts.Preemption.Task.Preemptive
+
+open Prosa.Behavior.Job
+open Prosa.Behavior.Time
+open Prosa.Behavior.Service
+open Prosa.Behavior.Schedule
+open Prosa.Behavior.Arrival_sequence
+open Prosa.Model.Preemption.Parameter
+open Prosa.Model.Task.Preemption.Parameters
+open Prosa.Model.Task.Preemption.Fully_preemptive
+open Prosa.Model.Task.Concept
+open Prosa.Analysis.Facts.Preemption.Job.Preemptive
+
+section FullyPreemptiveModel
+
+variable {Task : TaskType}
+variable [TaskCost Task]
+variable {Job : JobType}
+variable [JobTask Job Task]
+variable [JobArrival Job]
+variable [JobCost Job]
+variable {PState : Type}
+variable [ProcessorState Job PState]
+variable (arr_seq : arrival_sequence Job)
+variable (sched : schedule PState)
+
+lemma fully_preemptive_model_is_model_with_bounded_nonpreemptive_regions :
+    model_with_bounded_nonpreemptive_segments (Task := Task) arr_seq := by
+  sorry
+
+lemma fully_preemptive_model_is_valid_model_with_bounded_nonpreemptive_segments :
+    valid_model_with_bounded_nonpreemptive_segments (Task := Task) arr_seq sched := by
+  sorry
+
+end FullyPreemptiveModel
+
+end Prosa.Analysis.Facts.Preemption.Task.Preemptive

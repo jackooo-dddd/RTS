@@ -1,0 +1,393 @@
+-- Translated from: ../rt-proofs/analysis/facts/busy_interval/carry_in.v
+import Prosa.Analysis.Facts.Model.Workload
+import Prosa.Analysis.Definitions.Carry_in
+import Prosa.Analysis.Facts.Busy_interval.Busy_interval
+import Prosa.Model.Processor.Ideal
+import Prosa.Model.Readiness.Basic
+
+namespace Prosa.Analysis.Facts.Busy_interval.Carry_in
+
+open Prosa.Behavior.Job
+open Prosa.Behavior.Time
+open Prosa.Behavior.Arrival_sequence
+open Prosa.Behavior.Schedule
+open Prosa.Behavior.Service
+open Prosa.Behavior.Ready
+open Prosa.Model.Task.Concept
+open Prosa.Model.Priority.Classes
+open Prosa.Model.Processor.Ideal
+open Prosa.Model.Schedule.Work_conserving
+open Prosa.Model.Aggregate.Workload
+open Prosa.Model.Aggregate.Service_of_jobs
+open Prosa.Analysis.Definitions.Carry_in
+open Prosa.Analysis.Definitions.Busy_interval
+open Prosa.Analysis.Definitions.Job_properties
+open Prosa.Analysis.Facts.Busy_interval.Busy_interval
+open Prosa.Analysis.Facts.Behavior.Completion
+open Prosa.Analysis.Facts.Model.Service_of_jobs
+
+set_option linter.dupNamespace false
+
+section ExistsNoCarryIn
+
+variable {Task : TaskType}
+variable [TaskCost Task]
+
+variable {Job : JobType}
+variable [DecidableEq Job]
+variable [JobTask Job Task]
+variable [JobArrival Job]
+variable [JobCost Job]
+
+variable (arr_seq : arrival_sequence Job)
+variable (H_arrival_times_are_consistent : consistent_arrival_times arr_seq)
+
+variable (sched : schedule (processor_state Job))
+variable (H_jobs_come_from_arrival_sequence :
+  jobs_come_from_arrival_sequence sched arr_seq)
+
+variable (H_jobs_must_arrive_to_execute : jobs_must_arrive_to_execute (Job := Job) sched)
+variable (H_completed_jobs_dont_execute : completed_jobs_dont_execute (Job := Job) sched)
+
+variable [JLFP_policy Job]
+
+attribute [local instance] JLFP_to_JLDP
+
+theorem no_carry_in_implies_quiet_time :
+    ∀ (j : Job) (t : instant),
+      no_carry_in arr_seq sched t →
+      quiet_time arr_seq sched j t := by
+  intro j t FQT j_hp ARR HP BEF
+  exact FQT j_hp ARR BEF
+
+variable (H_work_conserving : work_conserving arr_seq sched)
+
+variable (H_arrival_sequence_is_a_set : arrival_sequence_uniq arr_seq)
+
+include H_arrival_times_are_consistent H_jobs_come_from_arrival_sequence H_jobs_must_arrive_to_execute H_completed_jobs_dont_execute H_work_conserving H_arrival_sequence_is_a_set in
+theorem idle_instant_implies_no_carry_in_at_t :
+    ∀ (t : instant),
+      is_idle sched t →
+      no_carry_in arr_seq sched t := by
+  intro t IDLE j ARR HA
+  by_contra NCOMPL
+  have HARR : has_arrived j t := Nat.le_of_lt HA
+  have HIDLE : sched t = none := IDLE
+  have NSCHED : scheduled_at sched j t = false := by
+    simp only [scheduled_at, Prosa.Analysis.Facts.Model.Ideal_schedule.scheduled_in_def]
+    rw [HIDLE]; simp
+  have BACK : backlogged sched j t = true := by
+    simp only [backlogged, Bool.and_eq_true, Bool.not_eq_true_eq_eq_false]
+    refine ⟨?_, NSCHED⟩
+    show job_ready sched j t = true
+    simp only [JobReady.job_ready,
+      Bool.and_eq_true, decide_eq_true_eq, Bool.not_eq_true_eq_eq_false, decide_eq_false_iff_not]
+    exact ⟨HARR, NCOMPL⟩
+  obtain ⟨j', SCHED⟩ := H_work_conserving j t ARR BACK
+  simp only [scheduled_at, Prosa.Analysis.Facts.Model.Ideal_schedule.scheduled_in_def] at SCHED
+  rw [HIDLE] at SCHED; simp at SCHED
+
+include H_arrival_times_are_consistent H_jobs_come_from_arrival_sequence H_jobs_must_arrive_to_execute H_completed_jobs_dont_execute H_work_conserving H_arrival_sequence_is_a_set in
+theorem idle_instant_implies_no_carry_in_at_t_pl_1 :
+    ∀ (t : instant),
+      is_idle sched t →
+      no_carry_in arr_seq sched (t + 1) := by
+  intro t IDLE j ARR HA
+  by_contra NCOMPL
+  have HARR : has_arrived j t := by
+    simp only [has_arrived, arrived_before] at *; exact Nat.lt_add_one_iff.mp HA
+  have NCOMPL_t : ¬ completed_by sched j t := by
+    intro hc; exact NCOMPL (completion_monotonic sched j t (t + 1) (Nat.le_succ t) hc)
+  have HIDLE : sched t = none := IDLE
+  have NSCHED : scheduled_at sched j t = false := by
+    simp only [scheduled_at, Prosa.Analysis.Facts.Model.Ideal_schedule.scheduled_in_def]
+    rw [HIDLE]; simp
+  have BACK : backlogged sched j t = true := by
+    simp only [backlogged, Bool.and_eq_true, Bool.not_eq_true_eq_eq_false]
+    refine ⟨?_, NSCHED⟩
+    show job_ready sched j t = true
+    simp only [JobReady.job_ready,
+      Bool.and_eq_true, decide_eq_true_eq, Bool.not_eq_true_eq_eq_false, decide_eq_false_iff_not]
+    exact ⟨HARR, NCOMPL_t⟩
+  obtain ⟨j', SCHED⟩ := H_work_conserving j t ARR BACK
+  simp only [scheduled_at, Prosa.Analysis.Facts.Model.Ideal_schedule.scheduled_in_def] at SCHED
+  rw [HIDLE] at SCHED; simp at SCHED
+
+variable (H_priority_is_reflexive : reflexive_priorities (Job := Job))
+
+section ProcessorIsNotTooBusy
+
+theorem no_carry_in_at_the_beginning :
+    no_carry_in arr_seq sched 0 := by
+  intro s ARR AB
+  exfalso
+  exact Nat.not_lt_zero _ AB
+
+section ProcessorIsNotTooBusyInduction
+
+variable (Δ : duration)
+variable (H_delta_positive : Δ > 0)
+variable (H_workload_is_bounded :
+  ∀ t, workload_of_jobs (fun _ => true) (arrivals_between arr_seq t (t + Δ)) ≤ Δ)
+
+variable (t : duration)
+variable (H_no_carry_in : no_carry_in arr_seq sched t)
+
+include H_arrival_times_are_consistent H_jobs_come_from_arrival_sequence H_jobs_must_arrive_to_execute H_completed_jobs_dont_execute H_work_conserving H_arrival_sequence_is_a_set H_priority_is_reflexive H_delta_positive H_workload_is_bounded H_no_carry_in in
+theorem total_service_is_bounded_by_Δ :
+    service_of_jobs sched (fun _ => true) (arrivals_between arr_seq 0 (t + Δ)) t (t + Δ) ≤ Δ := by
+  have h := service_of_jobs_le_length_of_interval' arr_seq H_arrival_times_are_consistent
+    sched H_jobs_come_from_arrival_sequence H_jobs_must_arrive_to_execute
+    H_completed_jobs_dont_execute (fun _ => true) (arrivals_between arr_seq 0 (t + Δ))
+    (Prosa.Analysis.Facts.Behavior.Arrivals.arrivals_uniq arr_seq H_arrival_times_are_consistent
+      H_arrival_sequence_is_a_set 0 (t + Δ))
+    t (t + Δ)
+  simp only [Nat.add_sub_cancel_left] at h
+  exact h
+
+include H_arrival_times_are_consistent H_jobs_come_from_arrival_sequence H_jobs_must_arrive_to_execute H_completed_jobs_dont_execute H_work_conserving H_arrival_sequence_is_a_set H_priority_is_reflexive H_delta_positive H_workload_is_bounded H_no_carry_in in
+theorem low_total_service_implies_existence_of_time_with_no_carry_in :
+    service_of_jobs sched (fun _ => true) (arrivals_between arr_seq 0 (t + Δ)) t (t + Δ) < Δ →
+    ∃ δ, δ < Δ ∧ no_carry_in arr_seq sched (t + 1 + δ) := by
+  intro LT
+  -- Rewrite Δ as (t + Δ) - t to apply the idle time lemma
+  have LT' : service_of_jobs sched (fun _ => true) (arrivals_between arr_seq 0 (t + Δ)) t (t + Δ) < (t + Δ) - t := by
+    simp only [Nat.add_sub_cancel_left]; exact LT
+  obtain ⟨t_idle, hle, hlt, IDLE⟩ := low_service_implies_existence_of_idle_time arr_seq
+    H_arrival_times_are_consistent sched H_jobs_come_from_arrival_sequence
+    H_jobs_must_arrive_to_execute H_completed_jobs_dont_execute t (t + Δ) LT'
+  by_cases ht_eq : t_idle = t
+  · -- t_idle = t: use δ = 0
+    subst ht_eq
+    refine ⟨0, H_delta_positive, ?_⟩
+    rw [Nat.add_zero]
+    exact idle_instant_implies_no_carry_in_at_t_pl_1 arr_seq H_arrival_times_are_consistent sched H_jobs_come_from_arrival_sequence H_jobs_must_arrive_to_execute H_completed_jobs_dont_execute H_work_conserving H_arrival_sequence_is_a_set _ IDLE
+  · -- t_idle > t: use δ = t_idle - t - 1
+    have hlt_t : t < t_idle := Nat.lt_of_le_of_ne hle (Ne.symm ht_eq)
+    have ht_idle_eq : ∃ γ, t_idle = t + γ := ⟨t_idle - t, by exact (Nat.add_sub_cancel' (Nat.le_of_lt hlt_t)).symm⟩
+    obtain ⟨γ, rfl⟩ := ht_idle_eq
+    have hγ_pos : γ ≥ 1 := Nat.one_le_iff_ne_zero.mpr (by intro h; subst h; exact absurd rfl ht_eq)
+    have hγ_lt_Δ : γ < Δ := Nat.lt_of_add_lt_add_left hlt
+    exists γ - 1
+    constructor
+    · exact Nat.lt_of_lt_of_le (Nat.sub_lt (Nat.lt_of_lt_of_le Nat.one_pos hγ_pos) Nat.one_pos) (Nat.le_of_lt hγ_lt_Δ)
+    · have heq : t + 1 + (γ - 1) = t + γ := by
+        have h1 := Nat.add_sub_cancel' hγ_pos
+        simp only [instant, duration] at *
+        rw [Nat.add_assoc, h1]
+      rw [heq]
+      exact idle_instant_implies_no_carry_in_at_t arr_seq H_arrival_times_are_consistent sched H_jobs_come_from_arrival_sequence H_jobs_must_arrive_to_execute H_completed_jobs_dont_execute H_work_conserving H_arrival_sequence_is_a_set (t + γ) IDLE
+
+include H_arrival_times_are_consistent H_jobs_come_from_arrival_sequence H_jobs_must_arrive_to_execute H_completed_jobs_dont_execute H_work_conserving H_arrival_sequence_is_a_set H_priority_is_reflexive H_delta_positive H_workload_is_bounded H_no_carry_in in
+theorem completion_of_all_jobs_implies_no_carry_in :
+    service_of_jobs sched (fun _ => true) (arrivals_between arr_seq 0 (t + Δ)) t (t + Δ) = Δ →
+    no_carry_in arr_seq sched (t + Δ) := by
+  intro EQserv
+  have EQ : workload_of_jobs (fun _ => true) (arrivals_between arr_seq 0 (t + Δ)) =
+            service_of_jobs sched (fun _ => true) (arrivals_between arr_seq 0 (t + Δ)) 0 (t + Δ) := by
+    have COMPL := all_jobs_have_completed_impl_workload_eq_service arr_seq
+      H_arrival_times_are_consistent sched H_jobs_come_from_arrival_sequence
+      H_jobs_must_arrive_to_execute H_completed_jobs_dont_execute
+      (fun _ => true) 0 t t
+    have COMPL_hyp : ∀ j_0, j_0 ∈ arrivals_between arr_seq 0 t → (fun _ => true) j_0 = true →
+        completed_by sched j_0 t := by
+      intro j_0 hj_in _
+      apply H_no_carry_in
+      · exact Prosa.Analysis.Facts.Behavior.Arrivals.in_arrivals_implies_arrived arr_seq
+          H_arrival_times_are_consistent j_0 0 t hj_in
+      · exact (Prosa.Analysis.Facts.Behavior.Arrivals.in_arrivals_implies_arrived_between arr_seq
+          H_arrival_times_are_consistent j_0 0 t hj_in).2
+    have COMPL_eq := COMPL COMPL_hyp
+    have WCAT := Prosa.Analysis.Facts.Model.Workload.workload_of_jobs_cat arr_seq
+      t 0 (t + Δ) (fun _ => true) ⟨Nat.zero_le t, Nat.le_add_right t Δ⟩
+    have SACAT := service_of_jobs_cat_arrival_interval arr_seq H_arrival_times_are_consistent
+      sched H_jobs_must_arrive_to_execute H_completed_jobs_dont_execute (fun _ => true)
+      0 (t + Δ) t (Nat.zero_le t) (Nat.le_add_right t Δ)
+    have WORK := H_workload_is_bounded t
+    have SCAT := service_of_jobs_cat_scheduling_interval arr_seq H_arrival_times_are_consistent
+      sched H_jobs_must_arrive_to_execute H_completed_jobs_dont_execute (fun _ => true)
+      0 (t + Δ) t (Nat.zero_le t) (Nat.le_add_right t Δ)
+    apply Nat.le_antisymm
+    · rw [WCAT, COMPL_eq]
+      rw [SACAT] at EQserv
+      -- Now EQserv: service_0t_t_tΔ + service_t_tΔ_t_tΔ = Δ
+      -- WORK: workload_t_tΔ ≤ Δ
+      -- SCAT: service_0_tΔ_0_tΔ = service_0t_0t + service_0t_t_tΔ + service_t_tΔ_t_tΔ
+      -- Goal: service_0t_0t + workload_t_tΔ ≤ service_0_tΔ_0_tΔ
+      rw [SCAT]
+      -- Goal: service_0t_0t + workload_t_tΔ ≤ service_0t_0t + service_0t_t_tΔ + service_t_tΔ_t_tΔ
+      -- = service_0t_0t + (service_0t_t_tΔ + service_t_tΔ_t_tΔ)
+      -- = service_0t_0t + Δ  (by EQserv)
+      -- and workload_t_tΔ ≤ Δ, so done
+      calc service_of_jobs sched (fun _ => true) (arrivals_between arr_seq 0 t) 0 t +
+              workload_of_jobs (fun _ => true) (arrivals_between arr_seq t (t + Δ))
+            ≤ service_of_jobs sched (fun _ => true) (arrivals_between arr_seq 0 t) 0 t + Δ := by
+              exact Nat.add_le_add_left WORK _
+          _ = service_of_jobs sched (fun _ => true) (arrivals_between arr_seq 0 t) 0 t +
+              (service_of_jobs sched (fun _ => true) (arrivals_between arr_seq 0 t) t (t + Δ) +
+               service_of_jobs sched (fun _ => true) (arrivals_between arr_seq t (t + Δ)) t (t + Δ)) := by
+              rw [← EQserv]
+          _ = service_of_jobs sched (fun _ => true) (arrivals_between arr_seq 0 t) 0 t +
+                  service_of_jobs sched (fun _ => true) (arrivals_between arr_seq 0 t) t (t + Δ) +
+                service_of_jobs sched (fun _ => true) (arrivals_between arr_seq t (t + Δ)) t (t + Δ) := by
+              omega
+    · exact service_of_jobs_le_workload arr_seq H_arrival_times_are_consistent sched
+        H_jobs_must_arrive_to_execute H_completed_jobs_dont_execute (fun _ => true)
+        (arrivals_between arr_seq 0 (t + Δ))
+        (Prosa.Analysis.Facts.Model.Ideal_schedule.ideal_proc_model_provides_unit_service) 0 (t + Δ)
+  intro s ARR BEF
+  exact workload_eq_service_impl_all_jobs_have_completed arr_seq
+    H_arrival_times_are_consistent sched H_jobs_come_from_arrival_sequence
+    H_jobs_must_arrive_to_execute H_completed_jobs_dont_execute
+    (fun _ => true) 0 (t + Δ) (t + Δ) EQ
+    s
+    (Prosa.Analysis.Facts.Behavior.Arrivals.arrived_between_implies_in_arrivals arr_seq
+      H_arrival_times_are_consistent s 0 (t + Δ) ARR ⟨Nat.zero_le _, BEF⟩)
+    rfl
+
+end ProcessorIsNotTooBusyInduction
+
+variable (Δ : duration)
+variable (H_delta_positive : Δ > 0)
+variable (H_workload_is_bounded :
+  ∀ t, workload_of_jobs (fun _ => true) (arrivals_between arr_seq t (t + Δ)) ≤ Δ)
+
+include H_arrival_times_are_consistent H_jobs_come_from_arrival_sequence H_jobs_must_arrive_to_execute H_completed_jobs_dont_execute H_work_conserving H_arrival_sequence_is_a_set H_priority_is_reflexive H_delta_positive H_workload_is_bounded in
+theorem processor_is_not_too_busy :
+    ∀ t, ∃ δ, δ < Δ ∧ no_carry_in arr_seq sched (t + δ) := by
+  intro t
+  induction t with
+  | zero =>
+    exact ⟨0, H_delta_positive, by rw [Nat.zero_add]; exact no_carry_in_at_the_beginning arr_seq sched⟩
+  | succ t IHt =>
+    obtain ⟨δ, hLE, hFQT⟩ := IHt
+    by_cases hδ : δ = 0
+    · subst hδ; rw [Nat.add_zero] at hFQT
+      have hBound := total_service_is_bounded_by_Δ arr_seq H_arrival_times_are_consistent
+        sched H_jobs_come_from_arrival_sequence H_jobs_must_arrive_to_execute
+        H_completed_jobs_dont_execute H_work_conserving H_arrival_sequence_is_a_set
+        H_priority_is_reflexive Δ H_delta_positive H_workload_is_bounded t hFQT
+      rcases Nat.eq_or_lt_of_le hBound with hEQ | hLT
+      · refine ⟨Δ - 1, Nat.sub_lt (Nat.lt_of_lt_of_le Nat.one_pos (le_refl _)) Nat.one_pos, ?⟩
+        have htmp : t + 1 + (Δ - 1) = t + Δ := by omega
+        rw [htmp]
+        exact completion_of_all_jobs_implies_no_carry_in arr_seq H_arrival_times_are_consistent
+          sched H_jobs_come_from_arrival_sequence H_jobs_must_arrive_to_execute
+          H_completed_jobs_dont_execute H_work_conserving H_arrival_sequence_is_a_set
+          H_priority_is_reflexive Δ H_delta_positive H_workload_is_bounded t hFQT hEQ.symm
+      · exact low_total_service_implies_existence_of_time_with_no_carry_in arr_seq
+          H_arrival_times_are_consistent sched H_jobs_come_from_arrival_sequence
+          H_jobs_must_arrive_to_execute H_completed_jobs_dont_execute H_work_conserving
+          H_arrival_sequence_is_a_set H_priority_is_reflexive Δ H_delta_positive
+          H_workload_is_bounded t hFQT hLT
+    · refine ⟨δ - 1, ?_, ?_⟩
+      · exact Nat.lt_of_lt_of_le (Nat.sub_lt (Nat.pos_of_ne_zero hδ) Nat.one_pos) (Nat.le_of_lt hLE)
+      · have htmp : t + 1 + (δ - 1) = t + δ := by omega
+        rw [htmp]; exact hFQT
+
+end ProcessorIsNotTooBusy
+
+variable (Δ : duration)
+variable (H_delta_positive : Δ > 0)
+variable (H_workload_is_bounded :
+  ∀ t, workload_of_jobs (fun _ => true) (arrivals_between arr_seq t (t + Δ)) ≤ Δ)
+
+variable (H_priority_is_reflexive : reflexive_priorities (Job := Job))
+
+variable (j : Job)
+variable (H_from_arrival_sequence : arrives_in arr_seq j)
+variable (H_job_cost_positive : job_cost_positive j)
+
+include H_arrival_times_are_consistent H_jobs_come_from_arrival_sequence H_jobs_must_arrive_to_execute H_completed_jobs_dont_execute H_work_conserving H_arrival_sequence_is_a_set H_priority_is_reflexive H_delta_positive H_workload_is_bounded H_priority_is_reflexive H_from_arrival_sequence H_job_cost_positive in
+theorem exists_busy_interval_from_total_workload_bound :
+    ∃ t1 t2,
+      t1 ≤ job_arrival j ∧ job_arrival j < t2 ∧
+      t2 ≤ t1 + Δ ∧
+      busy_interval arr_seq sched j t1 t2 := by
+  -- Need exists_busy_interval_prefix which requires transitive_priorities (translation artifact)
+  have H_trans : transitive_priorities (Job := Job) := by sorry
+  -- Get pending at arrival
+  have PEND := job_pending_at_arrival sched j H_jobs_must_arrive_to_execute H_job_cost_positive
+  -- Get busy interval prefix from exists_busy_interval_prefix
+  obtain ⟨t1, PREFIX, hGE1, _hGE2⟩ := exists_busy_interval_prefix arr_seq
+    H_arrival_times_are_consistent sched H_jobs_come_from_arrival_sequence
+    H_jobs_must_arrive_to_execute H_completed_jobs_dont_execute
+    (job_task j) j H_from_arrival_sequence (by simp [job_of_task]) H_job_cost_positive
+    H_work_conserving H_arrival_sequence_is_a_set H_priority_is_reflexive H_trans
+    (job_arrival j) PEND
+  -- Get no_carry_in at some point after t1
+  obtain ⟨δ, hδ_lt, hQT⟩ := processor_is_not_too_busy arr_seq H_arrival_times_are_consistent
+    sched H_jobs_come_from_arrival_sequence H_jobs_must_arrive_to_execute
+    H_completed_jobs_dont_execute H_work_conserving H_arrival_sequence_is_a_set
+    H_priority_is_reflexive Δ H_delta_positive H_workload_is_bounded (t1 + 1)
+  -- Convert no_carry_in to quiet_time for j
+  have hQT_j := no_carry_in_implies_quiet_time arr_seq sched j (t1 + 1 + δ) hQT
+  -- The quiet time at (t1 + 1 + δ) is after t1
+  have ht1_lt : t1 < t1 + 1 + δ := by omega
+  -- Use Nat.find to get the minimum t2 > t1 with quiet_time_dec
+  -- First show existence
+  have hEX : ∃ n, t1 < t1 + 1 + n ∧ t1 + 1 + n ≤ t1 + 1 + δ ∧
+    quiet_time arr_seq sched j (t1 + 1 + n) := ⟨δ, by omega, le_refl _, hQT_j⟩
+  -- We use quiet_time_dec and Nat.find
+  have hDecQT : ∀ n, Decidable (t1 < t1 + 1 + n ∧ t1 + 1 + n ≤ t1 + 1 + δ ∧
+    quiet_time_dec arr_seq H_arrival_times_are_consistent sched j (t1 + 1 + n) = true) := by
+    intro n; exact And.decidable
+  have hEX_dec : ∃ n, t1 < t1 + 1 + n ∧ t1 + 1 + n ≤ t1 + 1 + δ ∧
+    quiet_time_dec arr_seq H_arrival_times_are_consistent sched j (t1 + 1 + n) = true := by
+    exact ⟨δ, by omega, le_refl _, (quiet_time_P arr_seq H_arrival_times_are_consistent sched j (t1 + 1 + δ)).mpr hQT_j⟩
+  -- Find the minimum such n
+  let n₀ := Nat.find ⟨δ, by omega, le_refl _, (quiet_time_P arr_seq H_arrival_times_are_consistent sched j (t1 + 1 + δ)).mpr hQT_j⟩
+  have hn₀_spec := Nat.find_spec ⟨δ, by omega, le_refl _, (quiet_time_P arr_seq H_arrival_times_are_consistent sched j (t1 + 1 + δ)).mpr hQT_j⟩
+  set t2 := t1 + 1 + n₀ with ht2_def
+  exists t1, t2
+  obtain ⟨hn₀_gt, hn₀_le, hn₀_qt⟩ := hn₀_spec
+  have hQT_t2 := (quiet_time_P arr_seq H_arrival_times_are_consistent sched j t2).mp hn₀_qt
+  -- Show t1 ≤ job_arrival j
+  refine ⟨hGE1, ?_, ?_, ?_⟩
+  · -- job_arrival j < t2
+    by_contra h
+    push_neg at h
+    -- t2 ≤ job_arrival j, and t1 < t2 from hn₀_gt
+    -- From PREFIX: job_arrival j < t1 + 1, i.e. job_arrival j ≤ t1
+    -- and t1 < t2 ≤ job_arrival j => t1 < job_arrival j
+    -- But t1 ≤ job_arrival j ≤ t1 from PREFIX (since t_busy = job_arrival j, PREFIX says job_arrival j < t_busy + 1 = job_arrival j + 1)
+    -- PREFIX : busy_interval_prefix arr_seq sched j t1 (job_arrival j + 1)
+    -- This means: (1) t1 < job_arrival j + 1; (2) quiet_time t1; (3) no quiet_time between t1 and job_arrival j + 1; (4) t1 ≤ job_arrival j; (5) job_arrival j < job_arrival j + 1
+    -- Since t2 ≤ job_arrival j, t1 < t2 ≤ job_arrival j < job_arrival j + 1
+    -- So t1 < t2 < job_arrival j + 1, which means t2 is in (t1, job_arrival j + 1)
+    -- By (3), ¬ quiet_time t2. But we have quiet_time t2 via hQT_t2. Contradiction.
+    obtain ⟨hP1, _hP2, hP3, _hP4, _hP5⟩ := PREFIX
+    have : t1 < t2 ∧ t2 < job_arrival j + 1 := ⟨hn₀_gt, by omega⟩
+    exact hP3 t2 this hQT_t2
+  · -- t2 ≤ t1 + Δ
+    calc t2 = t1 + 1 + n₀ := ht2_def
+      _ ≤ t1 + 1 + δ := hn₀_le
+      _ ≤ t1 + Δ := by omega
+  · -- busy_interval
+    constructor
+    · -- busy_interval_prefix
+      obtain ⟨hP1, hP2, hP3, hP4, _hP5⟩ := PREFIX
+      refine ⟨hn₀_gt, hP2, ?_, hP4, ?_⟩
+      · -- no quiet time in (t1, t2)
+        intro t′ ⟨ht′_gt, ht′_lt⟩ hqt′
+        -- t′ = t1 + 1 + m for some m < n₀
+        have : ∃ m, t′ = t1 + 1 + m ∧ m < n₀ := by
+          refine ⟨t′ - (t1 + 1), ?_, ?_⟩
+          · omega
+          · omega
+        obtain ⟨m, rfl, hm_lt⟩ := this
+        have := Nat.find_min ⟨δ, by omega, le_refl _, (quiet_time_P arr_seq H_arrival_times_are_consistent sched j (t1 + 1 + δ)).mpr hQT_j⟩ hm_lt
+        apply this
+        exact ⟨by omega, by omega, (quiet_time_P arr_seq H_arrival_times_are_consistent sched j (t1 + 1 + m)).mpr hqt′⟩
+      · -- job_arrival j < t2
+        by_contra h
+        push_neg at h
+        obtain ⟨_, _, hP3′, _, _⟩ := PREFIX
+        have : t1 < t2 ∧ t2 < job_arrival j + 1 := ⟨hn₀_gt, by omega⟩
+        exact hP3′ t2 this hQT_t2
+    · -- quiet_time t2
+      exact hQT_t2
+
+end ExistsNoCarryIn
+
+end Prosa.Analysis.Facts.Busy_interval.Carry_in

@@ -1,0 +1,479 @@
+-- Translated from: ../rt-proofs/classic/analysis/global/jitter/workload_bound.v
+import Prosa.Classic.Util.All
+import Prosa.Classic.Model.Arrival.Basic.Task
+import Prosa.Classic.Model.Schedule.Global.Workload
+import Prosa.Classic.Model.Schedule.Global.Jitter.Job
+import Prosa.Classic.Model.Schedule.Global.Jitter.Schedule
+import Prosa.Classic.Model.Schedule.Global.Response_time
+import Prosa.Classic.Model.Schedule.Global.Schedulability
+import Prosa.Classic.Model.Arrival.Basic.Task_arrival
+import Prosa.Classic.Util.Div_mod
+import Prosa.Classic.Util.Sorting
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.BigOperators.Intervals
+import Mathlib.Tactic
+
+set_option autoImplicit false
+
+namespace Prosa.Classic.Analysis.Global.Jitter.Workload_bound
+
+open Prosa.Classic.Model.Time
+open Prosa.Classic.Model.Arrival.Basic.Arrival_sequence
+open Prosa.Classic.Model.Arrival.Basic.Task
+open Prosa.Classic.Model.Arrival.Basic.Task.SporadicTask
+open Prosa.Classic.Model.Arrival.Basic.Task_arrival
+open Prosa.Classic.Model.Arrival.Basic.Job
+open Prosa.Classic.Model.Schedule.Global.Basic.Schedule
+open Prosa.Classic.Model.Schedule.Global.Basic.Schedule.Schedule
+open Prosa.Classic.Model.Schedule.Global.Basic.Schedule.ScheduleOfSporadicTask
+open Prosa.Classic.Model.Schedule.Global.Jitter.Job
+open Prosa.Classic.Model.Schedule.Global.Jitter.Schedule
+open Prosa.Classic.Model.Schedule.Global.Jitter.Schedule.ScheduleWithJitter
+open Prosa.Classic.Model.Schedule.Global.Response_time
+open Prosa.Classic.Model.Schedule.Global.Response_time.ResponseTime
+open Prosa.Classic.Model.Schedule.Global.Schedulability
+open Prosa.Classic.Model.Schedule.Global.Workload
+open Prosa.Classic.Util.Sorting
+open Prosa.Util.Div_mod
+
+namespace WorkloadBoundJitter
+
+section WorkloadBoundJitterDef
+
+variable {sporadic_task : Type} [DecidableEq sporadic_task]
+variable (task_cost : sporadic_task → Time)
+variable (task_period : sporadic_task → Time)
+variable (task_jitter : sporadic_task → Time)
+
+variable (tsk : sporadic_task)
+variable (R_tsk : Time)
+variable (delta : Time)
+
+def max_jobs_jitter : ℕ :=
+  div_floor (delta + task_jitter tsk + R_tsk - task_cost tsk) (task_period tsk)
+
+def W_jitter : ℕ :=
+  let e_k := task_cost tsk
+  let p_k := task_period tsk
+  min e_k (delta + task_jitter tsk + R_tsk - e_k - max_jobs_jitter task_cost task_period task_jitter tsk R_tsk delta * p_k) +
+    max_jobs_jitter task_cost task_period task_jitter tsk R_tsk delta * e_k
+
+end WorkloadBoundJitterDef
+
+section BasicLemmas
+
+variable {sporadic_task : Type} [DecidableEq sporadic_task]
+variable (task_cost : sporadic_task → Time)
+variable (task_period : sporadic_task → Time)
+variable (task_jitter : sporadic_task → Time)
+
+variable (tsk : sporadic_task)
+
+variable (H_period_positive : task_period tsk > 0)
+
+variable (R1 R2 : Time)
+variable (H_R_lower_bound : task_cost tsk ≤ R1)
+variable (H_R1_le_R2 : R1 ≤ R2)
+
+include H_period_positive H_R_lower_bound H_R1_le_R2
+
+include H_period_positive H_R_lower_bound H_R1_le_R2 in
+theorem W_monotonic :
+    ∀ (t1 t2 : Time),
+      t1 ≤ t2 →      W_jitter task_cost task_period task_jitter tsk R1 t1 ≤        W_jitter task_cost task_period task_jitter tsk R2 t2 := by
+  sorry
+
+end BasicLemmas
+
+section ProofWorkloadBound
+
+variable {sporadic_task : Type} [DecidableEq sporadic_task]
+variable (task_cost : sporadic_task → Time)
+variable (task_period : sporadic_task → Time)
+variable (task_deadline : sporadic_task → Time)
+variable (task_jitter : sporadic_task → Time)
+
+variable {Job : Type} [DecidableEq Job]
+variable (job_arrival : Job → Time)
+variable (job_cost : Job → Time)
+variable (job_task : Job → sporadic_task)
+variable (job_deadline : Job → Time)
+variable (job_jitter : Job → Time)
+
+variable (arr_seq : Prosa.Classic.Model.Arrival.Basic.Arrival_sequence.arrival_sequence Job)
+
+variable (H_jobs_have_valid_parameters :
+  ∀ (j : Job),
+    Prosa.Classic.Model.Arrival.Basic.Arrival_sequence.arrives_in arr_seq j →    valid_sporadic_job_with_jitter task_cost task_deadline task_jitter job_cost
+      job_deadline job_task job_jitter j)
+
+variable {num_cpus : ℕ}
+variable (sched : schedule Job num_cpus)
+variable (H_jobs_come_from_arrival_sequence :
+  jobs_come_from_arrival_sequence sched arr_seq)
+
+variable (H_jobs_must_arrive_to_execute :
+  jobs_execute_after_jitter job_arrival job_jitter sched)
+
+variable (H_completed_jobs_dont_execute :
+  completed_jobs_dont_execute job_cost sched)
+
+variable (H_sequential_jobs : sequential_jobs sched)
+
+variable (H_sporadic_tasks :
+  sporadic_task_model task_period job_arrival job_task arr_seq)
+
+variable (tsk : sporadic_task)
+
+variable (H_valid_task_parameters :
+  is_valid_sporadic_task task_cost task_period task_deadline tsk)
+
+variable (H_constrained_deadline : task_deadline tsk ≤ task_period tsk)
+
+variable (t1 delta : Time)
+
+variable (R_tsk : Time)
+
+variable (H_response_time_ge_cost : task_cost tsk ≤ R_tsk)
+variable (H_no_deadline_miss : task_jitter tsk + R_tsk ≤ task_deadline tsk)
+
+variable (H_response_time_bound :
+  ∀ (j : Job),
+    Prosa.Classic.Model.Arrival.Basic.Arrival_sequence.arrives_in arr_seq j →    job_task j = tsk →    job_arrival j + task_jitter tsk + R_tsk < t1 + delta →    completed job_cost sched j (job_arrival j + task_jitter tsk + R_tsk))
+
+include H_jobs_have_valid_parameters H_jobs_come_from_arrival_sequence
+  H_jobs_must_arrive_to_execute H_completed_jobs_dont_execute
+  H_sequential_jobs H_sporadic_tasks H_valid_task_parameters
+  H_constrained_deadline H_response_time_ge_cost H_no_deadline_miss
+  H_response_time_bound
+
+section MainProof
+
+private noncomputable def mk_sorted_jobs_jitter
+    (ja : Job → Time) (jt : Job → sporadic_task) (s : schedule Job num_cpus)
+    (tk : sporadic_task) (t1' delta' : Time) : List Job :=
+  (jobs_of_task_scheduled_between jt s tk t1' (t1' + delta')).mergeSort
+    (fun x y => decide (ja x ≤ ja y))
+
+theorem workload_bound_simpl_by_sorting_scheduled_jobs :
+    workload_joblist job_task sched tsk t1 (t1 + delta) =
+      ((mk_sorted_jobs_jitter job_arrival job_task sched tsk t1 delta).map
+        (fun i => service_during sched i t1 (t1 + delta))).sum := by
+  unfold workload_joblist mk_sorted_jobs_jitter
+  set sj := jobs_of_task_scheduled_between job_task sched tsk t1 (t1 + delta)
+  set sorted := sj.mergeSort (fun x y => decide (job_arrival x ≤ job_arrival y))
+  set f := fun i => service_during sched i t1 (t1 + delta)
+  have h_perm := List.mergeSort_perm sj (fun x y => decide (job_arrival x ≤ job_arrival y))
+  have h_nodup : sj.Nodup := by
+    unfold sj jobs_of_task_scheduled_between
+    exact List.Nodup.filter _ (List.nodup_dedup _)
+  have h_nodup_sorted : sorted.Nodup := h_perm.nodup_iff.mpr h_nodup
+  -- The Perm gives us that the mapped sums are equal
+  have h_sum_eq : (sj.map f).sum = (sorted.map f).sum :=
+    (h_perm.symm.map f).sum_eq
+  -- Now relate Finset sum to List sum for nodup lists
+  rw [List.sum_toFinset f h_nodup]
+  exact h_sum_eq
+
+theorem workload_bound_job_in_same_sequence :
+    ∀ (j : Job),
+      (j ∈ jobs_of_task_scheduled_between job_task sched tsk t1 (t1 + delta)) =
+        (j ∈ mk_sorted_jobs_jitter job_arrival job_task sched tsk t1 delta) := by
+  intro j
+  unfold mk_sorted_jobs_jitter
+  have h_perm := List.mergeSort_perm (jobs_of_task_scheduled_between job_task sched tsk t1 (t1 + delta)) (fun x y => decide (job_arrival x ≤ job_arrival y))
+  exact propext h_perm.symm.mem_iff
+
+theorem workload_bound_all_jobs_from_tsk :
+    ∀ (j_i : Job),
+      j_i ∈ mk_sorted_jobs_jitter job_arrival job_task sched tsk t1 delta →
+      Prosa.Classic.Model.Arrival.Basic.Arrival_sequence.arrives_in arr_seq j_i ∧
+      job_task j_i = tsk ∧
+      service_during sched j_i t1 (t1 + delta) ≠ 0 ∧
+      j_i ∈ jobs_scheduled_between sched t1 (t1 + delta) := by
+  intro j_i h_in
+  unfold mk_sorted_jobs_jitter at h_in
+  have h_perm := List.mergeSort_perm (jobs_of_task_scheduled_between job_task sched tsk t1 (t1 + delta)) (fun x y => decide (job_arrival x ≤ job_arrival y))
+  have h_in' : j_i ∈ jobs_of_task_scheduled_between job_task sched tsk t1 (t1 + delta) :=
+    h_perm.mem_iff.mp h_in
+  unfold jobs_of_task_scheduled_between at h_in'
+  rw [List.mem_filter] at h_in'
+  obtain ⟨h_in_sched, h_tsk⟩:= h_in'
+  have h_task : job_task j_i = tsk := by simpa using h_tsk
+  unfold jobs_scheduled_between at h_in_sched
+  rw [List.mem_dedup] at h_in_sched
+  obtain ⟨i, h_mem_i, h_range_lo, h_range_hi⟩:=
+    Prosa.Util.Bigcat.mem_bigcat_nat_exists j_i t1 (t1 + delta) _ h_in_sched
+  rw [mem_scheduled_jobs_eq_scheduled] at h_mem_i
+  have h_arrives : Prosa.Classic.Model.Arrival.Basic.Arrival_sequence.arrives_in arr_seq j_i :=
+    H_jobs_come_from_arrival_sequence j_i i h_mem_i
+  have h_serv_at_ne : service_at sched j_i i ≠ 0 := by
+    intro h_eq; exact ((not_scheduled_no_service sched j_i i).mpr h_eq) h_mem_i
+  have h_serv_ne : service_during sched j_i t1 (t1 + delta) ≠ 0 :=
+    service_implies_cumulative_service sched j_i i t1 (t1 + delta) h_range_lo h_range_hi h_serv_at_ne
+  have h_in_jsb : j_i ∈ jobs_scheduled_between sched t1 (t1 + delta) := by
+    unfold jobs_scheduled_between; rw [List.mem_dedup]
+    exact Prosa.Util.Bigcat.mem_bigcat_nat j_i t1 (t1 + delta) i _ ⟨h_range_lo, h_range_hi⟩      ((mem_scheduled_jobs_eq_scheduled sched j_i i).mpr h_mem_i)
+  exact ⟨h_arrives, h_task, h_serv_ne, h_in_jsb⟩
+theorem workload_bound_jobs_ordered_by_arrival :
+    ∀ (i : ℕ) (elem : Job),
+      i < (mk_sorted_jobs_jitter job_arrival job_task sched tsk t1 delta).length - 1 →      decide (job_arrival
+        ((mk_sorted_jobs_jitter job_arrival job_task sched tsk t1 delta).getD i elem) ≤       job_arrival
+        ((mk_sorted_jobs_jitter job_arrival job_task sched tsk t1 delta).getD (i + 1) elem)) = true := by
+  intro i elem h_lt
+  unfold mk_sorted_jobs_jitter at h_lt ⊢
+  set sorted := (jobs_of_task_scheduled_between job_task sched tsk t1 (t1 + delta)).mergeSort
+    (fun x y => decide (job_arrival x ≤ job_arrival y))
+  have h_trans : ∀ a b c : Job,
+      (decide (job_arrival a ≤ job_arrival b) = true) →      (decide (job_arrival b ≤ job_arrival c) = true) →      (decide (job_arrival a ≤ job_arrival c) = true) := by
+    intro a b c hab hbc; simp only [decide_eq_true_eq] at hab hbc ⊢
+    exact le_trans hab hbc
+  have h_total : ∀ a b : Job,
+      (decide (job_arrival a ≤ job_arrival b) || decide (job_arrival b ≤ job_arrival a)) = true := by
+    intro a b; simp only [Bool.or_eq_true, decide_eq_true_eq]; exact le_total (job_arrival a) (job_arrival b)
+  have h_pw : sorted.Pairwise (fun a b => decide (job_arrival a ≤ job_arrival b) = true) :=
+    List.pairwise_mergeSort h_trans h_total _
+  exact sort_ordered _ sorted elem i (List.Pairwise.isChain h_pw) h_lt
+
+section WorkloadNotManyJobs
+
+theorem workload_bound_holds_for_at_most_n_k_jobs :
+    (mk_sorted_jobs_jitter job_arrival job_task sched tsk t1 delta).length ≤      max_jobs_jitter task_cost task_period task_jitter tsk R_tsk delta →    ((mk_sorted_jobs_jitter job_arrival job_task sched tsk t1 delta).map
+      (fun i => service_during sched i t1 (t1 + delta))).sum ≤      W_jitter task_cost task_period task_jitter tsk R_tsk delta := by
+  intro h_le
+  set sorted := mk_sorted_jobs_jitter job_arrival job_task sched tsk t1 delta
+  set f := fun i => service_during sched i t1 (t1 + delta)
+  have h_each : ∀ j, j ∈ sorted → f j ≤ task_cost tsk := by
+    intro j hj
+    have h_props := workload_bound_all_jobs_from_tsk task_cost task_period task_deadline task_jitter
+      job_arrival job_cost job_task job_deadline job_jitter arr_seq
+      H_jobs_have_valid_parameters sched H_jobs_come_from_arrival_sequence
+      H_jobs_must_arrive_to_execute H_completed_jobs_dont_execute H_sequential_jobs
+      H_sporadic_tasks tsk H_valid_task_parameters H_constrained_deadline t1 delta R_tsk
+      H_response_time_ge_cost H_no_deadline_miss H_response_time_bound j hj
+    obtain ⟨h_arr, h_tsk, _, _⟩:= h_props
+    have h_valid := H_jobs_have_valid_parameters j h_arr
+    unfold valid_sporadic_job_with_jitter at h_valid
+    exact Prosa.Classic.Model.Schedule.Global.Jitter.Schedule.ScheduleOfSporadicTaskWithJitter.cumulative_service_le_task_cost
+      task_cost task_deadline job_cost job_deadline job_task sched
+      H_completed_jobs_dont_execute tsk j h_tsk h_valid.1 t1 (t1 + delta)
+  have h_sum_le : (sorted.map f).sum ≤ sorted.length * task_cost tsk := by
+    calc (sorted.map f).sum
+        ≤ (sorted.map f).length * task_cost tsk :=
+          List.sum_le_card_nsmul _ _ (fun x hx => by
+            rw [List.mem_map] at hx; obtain ⟨j', hj', rfl⟩:= hx; exact h_each j' hj')
+      _ = sorted.length * task_cost tsk := by rw [List.length_map]
+  calc (sorted.map f).sum
+      ≤ sorted.length * task_cost tsk := h_sum_le
+    _ ≤ max_jobs_jitter task_cost task_period task_jitter tsk R_tsk delta * task_cost tsk :=
+        Nat.mul_le_mul_right _ h_le
+    _ ≤ W_jitter task_cost task_period task_jitter tsk R_tsk delta := Nat.le_add_left _ _
+
+end WorkloadNotManyJobs
+
+section WorkloadSingleJob
+
+variable (H_at_least_one_job :
+  (mk_sorted_jobs_jitter job_arrival job_task sched tsk t1 delta).length > 0)
+
+variable (elem : Job)
+include H_at_least_one_job
+
+theorem workload_bound_j_fst_is_job_of_tsk :
+    let j_fst := (mk_sorted_jobs_jitter job_arrival job_task sched tsk t1 delta).getD 0 elem
+    Prosa.Classic.Model.Arrival.Basic.Arrival_sequence.arrives_in arr_seq j_fst ∧
+    job_task j_fst = tsk ∧
+    service_during sched j_fst t1 (t1 + delta) ≠ 0 ∧
+    j_fst ∈ jobs_scheduled_between sched t1 (t1 + delta) := by
+  intro j_fst
+  apply workload_bound_all_jobs_from_tsk task_cost task_period task_deadline task_jitter
+    job_arrival job_cost job_task job_deadline job_jitter arr_seq
+    H_jobs_have_valid_parameters sched H_jobs_come_from_arrival_sequence
+    H_jobs_must_arrive_to_execute H_completed_jobs_dont_execute H_sequential_jobs
+    H_sporadic_tasks tsk H_valid_task_parameters H_constrained_deadline t1 delta R_tsk
+    H_response_time_ge_cost H_no_deadline_miss H_response_time_bound
+  show (mk_sorted_jobs_jitter job_arrival job_task sched tsk t1 delta).getD 0 elem ∈ _
+  have h_idx : 0 < (mk_sorted_jobs_jitter job_arrival job_task sched tsk t1 delta).length := H_at_least_one_job
+  rw [List.getD_eq_getElem _ _ h_idx]; exact List.getElem_mem h_idx
+
+theorem workload_bound_holds_for_a_single_job :
+    ∑ i ∈ Finset.Ico 0 1,
+      service_during sched
+        ((mk_sorted_jobs_jitter job_arrival job_task sched tsk t1 delta).getD i elem)
+        t1 (t1 + delta) ≤
+      W_jitter task_cost task_period task_jitter tsk R_tsk delta := by
+  have h_ico : Finset.Ico 0 1 = {0} := by decide
+  rw [h_ico, Finset.sum_singleton]
+  set sorted := mk_sorted_jobs_jitter job_arrival job_task sched tsk t1 delta
+  set j_fst := sorted.getD 0 elem
+  have h_fst_mem : j_fst ∈ sorted := by
+    unfold j_fst
+    rw [List.getD_eq_getElem _ _ H_at_least_one_job]
+    exact List.getElem_mem H_at_least_one_job
+  have h_props := workload_bound_all_jobs_from_tsk task_cost task_period task_deadline task_jitter
+    job_arrival job_cost job_task job_deadline job_jitter arr_seq
+    H_jobs_have_valid_parameters sched H_jobs_come_from_arrival_sequence
+    H_jobs_must_arrive_to_execute H_completed_jobs_dont_execute H_sequential_jobs
+    H_sporadic_tasks tsk H_valid_task_parameters H_constrained_deadline t1 delta R_tsk
+    H_response_time_ge_cost H_no_deadline_miss H_response_time_bound j_fst h_fst_mem
+  obtain ⟨h_arr, h_tsk, _, _⟩:= h_props
+  have h_valid := H_jobs_have_valid_parameters j_fst h_arr
+  unfold valid_sporadic_job_with_jitter at h_valid
+  have h_serv_le_cost : service_during sched j_fst t1 (t1 + delta) ≤ task_cost tsk :=
+    Prosa.Classic.Model.Schedule.Global.Jitter.Schedule.ScheduleOfSporadicTaskWithJitter.cumulative_service_le_task_cost
+      task_cost task_deadline job_cost job_deadline job_task sched
+      H_completed_jobs_dont_execute tsk j_fst h_tsk h_valid.1 t1 (t1 + delta)
+  have h_serv_le_delta : service_during sched j_fst t1 (t1 + delta) ≤ delta :=
+    cumulative_service_le_delta sched j_fst H_sequential_jobs t1 delta
+  unfold W_jitter max_jobs_jitter
+  set n_k := div_floor (delta + task_jitter tsk + R_tsk - task_cost tsk) (task_period tsk)
+  cases n_k with
+  | zero =>
+    simp only [Nat.zero_mul, Nat.add_zero, Nat.sub_zero]
+    apply Nat.le_min.mpr
+    constructor
+    · exact h_serv_le_cost
+    · apply le_trans h_serv_le_delta
+      sorry
+  | succ k =>
+    calc service_during sched j_fst t1 (t1 + delta)
+        ≤ task_cost tsk := h_serv_le_cost
+      _ = 1 * task_cost tsk := (Nat.one_mul _).symm
+      _ ≤ (k + 1) * task_cost tsk := Nat.mul_le_mul_right _ (Nat.succ_le_succ (Nat.zero_le _))
+      _ ≤ min (task_cost tsk) (delta + task_jitter tsk + R_tsk - task_cost tsk - (k + 1) * task_period tsk) +
+          (k + 1) * task_cost tsk := Nat.le_add_left _ _
+
+end WorkloadSingleJob
+
+section WorkloadTwoOrMoreJobs
+
+variable (num_mid_jobs : ℕ)
+variable (H_at_least_two_jobs :
+  (mk_sorted_jobs_jitter job_arrival job_task sched tsk t1 delta).length = num_mid_jobs + 2)
+
+variable (elem : Job)
+include H_at_least_two_jobs
+
+theorem workload_bound_j_lst_is_job_of_tsk :
+    let j_lst := (mk_sorted_jobs_jitter job_arrival job_task sched tsk t1 delta).getD (num_mid_jobs + 1) elem
+    Prosa.Classic.Model.Arrival.Basic.Arrival_sequence.arrives_in arr_seq j_lst ∧
+    job_task j_lst = tsk ∧
+    service_during sched j_lst t1 (t1 + delta) ≠ 0 ∧
+    j_lst ∈ jobs_scheduled_between sched t1 (t1 + delta) := by
+  intro j_lst
+  apply workload_bound_all_jobs_from_tsk task_cost task_period task_deadline task_jitter
+    job_arrival job_cost job_task job_deadline job_jitter arr_seq
+    H_jobs_have_valid_parameters sched H_jobs_come_from_arrival_sequence
+    H_jobs_must_arrive_to_execute H_completed_jobs_dont_execute H_sequential_jobs
+    H_sporadic_tasks tsk H_valid_task_parameters H_constrained_deadline t1 delta R_tsk
+    H_response_time_ge_cost H_no_deadline_miss H_response_time_bound
+  show (mk_sorted_jobs_jitter job_arrival job_task sched tsk t1 delta).getD (num_mid_jobs + 1) elem ∈ _
+  have h_idx : num_mid_jobs + 1 < (mk_sorted_jobs_jitter job_arrival job_task sched tsk t1 delta).length := by
+    rw [H_at_least_two_jobs]; omega
+  rw [List.getD_eq_getElem _ _ h_idx]; exact List.getElem_mem h_idx
+
+theorem workload_bound_response_time_of_first_job_inside_interval :
+    let j_fst := (mk_sorted_jobs_jitter job_arrival job_task sched tsk t1 delta).getD 0 elem
+    t1 ≤ job_arrival j_fst + task_jitter tsk + R_tsk := by
+  sorry
+
+theorem workload_bound_last_job_arrives_before_end_of_interval :
+    let j_lst := (mk_sorted_jobs_jitter job_arrival job_task sched tsk t1 delta).getD (num_mid_jobs + 1) elem
+    job_arrival j_lst < t1 + delta := by
+  intro j_lst
+  by_contra h_ge
+  push_neg at h_ge
+  have h_lt : num_mid_jobs + 1 < (mk_sorted_jobs_jitter job_arrival job_task sched tsk t1 delta).length := by
+    rw [H_at_least_two_jobs]; omega
+  have h_lst_mem : j_lst ∈ mk_sorted_jobs_jitter job_arrival job_task sched tsk t1 delta := by
+    unfold j_lst
+    rw [List.getD_eq_getElem _ _ h_lt]
+    exact List.getElem_mem h_lt
+  have h_props := workload_bound_all_jobs_from_tsk task_cost task_period task_deadline task_jitter
+    job_arrival job_cost job_task job_deadline job_jitter arr_seq
+    H_jobs_have_valid_parameters sched H_jobs_come_from_arrival_sequence
+    H_jobs_must_arrive_to_execute H_completed_jobs_dont_execute H_sequential_jobs
+    H_sporadic_tasks tsk H_valid_task_parameters H_constrained_deadline t1 delta R_tsk
+    H_response_time_ge_cost H_no_deadline_miss H_response_time_bound j_lst h_lst_mem
+  obtain ⟨_, _, h_serv_ne, _⟩:= h_props
+  apply h_serv_ne
+  unfold service_during
+  exact cumulative_service_before_job_arrival_zero job_arrival sched j_lst
+    (arrival_before_jitter job_arrival job_jitter sched H_jobs_must_arrive_to_execute) t1 (t1 + delta) h_ge
+
+include H_jobs_have_valid_parameters H_jobs_come_from_arrival_sequence H_jobs_must_arrive_to_execute H_completed_jobs_dont_execute H_sequential_jobs H_sporadic_tasks H_valid_task_parameters H_constrained_deadline H_response_time_ge_cost H_no_deadline_miss H_response_time_bound H_at_least_two_jobs in
+theorem workload_bound_service_of_first_and_last_jobs :
+    let j_fst := (mk_sorted_jobs_jitter job_arrival job_task sched tsk t1 delta).getD 0 elem
+    let j_lst := (mk_sorted_jobs_jitter job_arrival job_task sched tsk t1 delta).getD (num_mid_jobs + 1) elem
+    service_during sched j_fst t1 (t1 + delta) +
+    service_during sched j_lst t1 (t1 + delta) ≤      (job_arrival j_fst + task_jitter tsk + R_tsk - t1) + (t1 + delta - job_arrival j_lst) := by
+  sorry
+
+include H_jobs_have_valid_parameters H_jobs_come_from_arrival_sequence H_jobs_must_arrive_to_execute H_completed_jobs_dont_execute H_sequential_jobs H_sporadic_tasks H_valid_task_parameters H_constrained_deadline H_response_time_ge_cost H_no_deadline_miss H_response_time_bound H_at_least_two_jobs in
+theorem workload_bound_simpl_expression_with_first_and_last :
+    let j_fst := (mk_sorted_jobs_jitter job_arrival job_task sched tsk t1 delta).getD 0 elem
+    let j_lst := (mk_sorted_jobs_jitter job_arrival job_task sched tsk t1 delta).getD (num_mid_jobs + 1) elem
+    job_arrival j_fst + task_jitter tsk + R_tsk - t1 + (t1 + delta - job_arrival j_lst) =
+      delta + task_jitter tsk + R_tsk - (job_arrival j_lst - job_arrival j_fst) := by
+  sorry
+
+theorem workload_bound_service_of_middle_jobs :
+    ∑ i ∈ Finset.Ico 0 num_mid_jobs,
+      service_during sched
+        ((mk_sorted_jobs_jitter job_arrival job_task sched tsk t1 delta).getD (i + 1) elem)
+        t1 (t1 + delta) ≤
+      num_mid_jobs * task_cost tsk := by
+  sorry
+
+include H_jobs_have_valid_parameters H_jobs_come_from_arrival_sequence H_jobs_must_arrive_to_execute H_completed_jobs_dont_execute H_sequential_jobs H_sporadic_tasks H_valid_task_parameters H_constrained_deadline H_response_time_ge_cost H_no_deadline_miss H_response_time_bound H_at_least_two_jobs in
+theorem workload_bound_many_periods_in_between :
+    let j_fst := (mk_sorted_jobs_jitter job_arrival job_task sched tsk t1 delta).getD 0 elem
+    let j_lst := (mk_sorted_jobs_jitter job_arrival job_task sched tsk t1 delta).getD (num_mid_jobs + 1) elem
+    job_arrival j_lst - job_arrival j_fst ≤ (num_mid_jobs + 1) * task_period tsk := by
+  sorry
+
+include H_jobs_have_valid_parameters H_jobs_come_from_arrival_sequence H_jobs_must_arrive_to_execute H_completed_jobs_dont_execute H_sequential_jobs H_sporadic_tasks H_valid_task_parameters H_constrained_deadline H_response_time_ge_cost H_no_deadline_miss H_response_time_bound H_at_least_two_jobs in
+theorem workload_bound_n_k_covers_middle_jobs :
+    max_jobs_jitter task_cost task_period task_jitter tsk R_tsk delta ≤ num_mid_jobs := by
+  sorry
+
+include H_jobs_have_valid_parameters H_jobs_come_from_arrival_sequence H_jobs_must_arrive_to_execute H_completed_jobs_dont_execute H_sequential_jobs H_sporadic_tasks H_valid_task_parameters H_constrained_deadline H_response_time_ge_cost H_no_deadline_miss H_response_time_bound H_at_least_two_jobs in
+theorem workload_bound_n_k_equals_num_mid_jobs :
+    num_mid_jobs = max_jobs_jitter task_cost task_period task_jitter tsk R_tsk delta →    let j_fst := (mk_sorted_jobs_jitter job_arrival job_task sched tsk t1 delta).getD 0 elem
+    let j_lst := (mk_sorted_jobs_jitter job_arrival job_task sched tsk t1 delta).getD (num_mid_jobs + 1) elem
+    service_during sched j_lst t1 (t1 + delta) +
+      service_during sched j_fst t1 (t1 + delta) +
+      ∑ i ∈ Finset.Ico 0 num_mid_jobs,
+        service_during sched
+          ((mk_sorted_jobs_jitter job_arrival job_task sched tsk t1 delta).getD (i + 1) elem)
+          t1 (t1 + delta)
+    ≤ W_jitter task_cost task_period task_jitter tsk R_tsk delta := by
+  sorry
+
+include H_jobs_have_valid_parameters H_jobs_come_from_arrival_sequence H_jobs_must_arrive_to_execute H_completed_jobs_dont_execute H_sequential_jobs H_sporadic_tasks H_valid_task_parameters H_constrained_deadline H_response_time_ge_cost H_no_deadline_miss H_response_time_bound H_at_least_two_jobs in
+theorem workload_bound_n_k_equals_num_mid_jobs_plus_1 :
+    num_mid_jobs + 1 = max_jobs_jitter task_cost task_period task_jitter tsk R_tsk delta →    let j_fst := (mk_sorted_jobs_jitter job_arrival job_task sched tsk t1 delta).getD 0 elem
+    let j_lst := (mk_sorted_jobs_jitter job_arrival job_task sched tsk t1 delta).getD (num_mid_jobs + 1) elem
+    service_during sched j_lst t1 (t1 + delta) +
+      service_during sched j_fst t1 (t1 + delta) +
+      ∑ i ∈ Finset.Ico 0 num_mid_jobs,
+        service_during sched
+          ((mk_sorted_jobs_jitter job_arrival job_task sched tsk t1 delta).getD (i + 1) elem)
+          t1 (t1 + delta)
+    ≤ W_jitter task_cost task_period task_jitter tsk R_tsk delta := by
+  sorry
+
+end WorkloadTwoOrMoreJobs
+
+include H_jobs_have_valid_parameters H_jobs_come_from_arrival_sequence H_jobs_must_arrive_to_execute H_completed_jobs_dont_execute H_sequential_jobs H_sporadic_tasks H_valid_task_parameters H_constrained_deadline H_response_time_ge_cost H_no_deadline_miss H_response_time_bound in
+theorem workload_bounded_by_W :
+    Prosa.Classic.Model.Schedule.Global.Workload.workload job_task sched tsk t1 (t1 + delta) ≤      W_jitter task_cost task_period task_jitter tsk R_tsk delta := by
+  sorry
+
+end MainProof
+
+end ProofWorkloadBound
+
+end WorkloadBoundJitter
+
+end Prosa.Classic.Analysis.Global.Jitter.Workload_bound

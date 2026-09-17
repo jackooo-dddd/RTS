@@ -1,0 +1,492 @@
+-- Translated from: ../rt-proofs/classic/model/schedule/uni/limited/abstract_RTA/abstract_rta.v
+import Prosa.Classic.Util.All
+import Prosa.Classic.Model.Arrival.Basic.Job
+import Prosa.Classic.Model.Schedule.Uni.Service
+import Prosa.Classic.Model.Schedule.Uni.Limited.Schedule
+import Prosa.Classic.Model.Schedule.Uni.Schedule
+import Prosa.Classic.Model.Schedule.Uni.Response_time
+import Prosa.Classic.Model.Schedule.Uni.Limited.Abstract_RTA.Definitions
+import Prosa.Classic.Model.Schedule.Uni.Limited.Abstract_RTA.Reduction_of_search_space
+import Mathlib.Tactic
+
+namespace Prosa.Classic.Model.Schedule.Uni.Limited.Abstract_RTA.Abstract_rta
+
+open Prosa.Classic.Model.Time
+open Prosa.Classic.Model.Arrival.Basic.Job hiding arrival_sequence arrives_in
+open Prosa.Classic.Model.Arrival.Basic.Arrival_sequence
+open Prosa.Classic.Model.Schedule.Uni.Schedule
+open Prosa.Classic.Model.Schedule.Uni.Service
+open Prosa.Classic.Model.Schedule.Uni.Response_time.ResponseTime
+open Prosa.Classic.Model.Schedule.Uni.Limited.Schedule
+open Prosa.Classic.Model.Schedule.Uni.Limited.Abstract_RTA.Definitions
+open Prosa.Classic.Model.Schedule.Uni.Limited.Abstract_RTA.Reduction_of_search_space.AbstractRTAReduction
+
+namespace AbstractRTA
+
+section Abstract_RTA
+
+variable {Task : Type} [DecidableEq Task]
+variable (task_cost : Task → Time)
+
+variable {Job : Type} [DecidableEq Job]
+variable (job_arrival : Job → Time)
+variable (job_cost : Job → Time)
+variable (job_task : Job → Task)
+
+variable (arr_seq : arrival_sequence Job)
+variable (H_arrival_times_are_consistent : arrival_times_are_consistent job_arrival arr_seq)
+variable (H_arr_seq_is_a_set : arrival_sequence_is_a_set arr_seq)
+
+variable (sched : schedule Job)
+variable (H_jobs_come_from_arrival_sequence : jobs_come_from_arrival_sequence sched arr_seq)
+
+variable (H_jobs_must_arrive_to_execute : jobs_must_arrive_to_execute job_arrival sched)
+variable (H_completed_jobs_dont_execute : completed_jobs_dont_execute job_cost sched)
+
+variable (H_job_cost_le_task_cost :
+  cost_of_jobs_from_arrival_sequence_le_task_cost task_cost job_cost job_task arr_seq)
+
+variable (ts : List Task)
+
+variable (tsk : Task)
+variable (H_tsk_in_ts : tsk ∈ ts)
+
+variable (job_lock_in_service : Job → Time)
+variable (task_lock_in_service : Task → Time)
+
+variable (H_proper_job_lock_in_service :
+  proper_job_lock_in_service job_cost arr_seq sched job_lock_in_service)
+
+variable (H_proper_task_lock_in_service :
+  proper_task_lock_in_service task_cost job_task arr_seq job_lock_in_service task_lock_in_service tsk)
+
+variable (interference : Job → Time → Bool)
+variable (interfering_workload : Job → Time → Time)
+
+variable (H_work_conserving :
+  work_conserving job_arrival job_cost job_task arr_seq sched tsk interference interfering_workload)
+
+variable (L : Time)
+variable (H_busy_interval_exists :
+  busy_intervals_are_bounded_by job_arrival job_cost job_task arr_seq sched tsk interference interfering_workload L)
+
+variable (interference_bound_function : Task → Time → Time → Time)
+variable (H_job_interference_is_bounded :
+  job_interference_is_bounded_by job_arrival job_cost job_task arr_seq sched tsk interference interfering_workload interference_bound_function)
+
+variable (R : Nat)
+variable (H_R_is_maximum :
+  ∀ A,
+    is_in_search_space tsk L interference_bound_function A →
+    ∃ F,
+      A + F = task_lock_in_service tsk + interference_bound_function tsk A (A + F) ∧
+      F + (task_cost tsk - task_lock_in_service tsk) ≤ R)
+
+section ProofOfTheorem
+
+variable (j : Job)
+variable (H_j_arrives : arrives_in arr_seq j)
+variable (H_job_of_tsk : job_task j = tsk)
+variable (H_job_cost_positive : job_cost_positive job_cost j)
+
+variable (t1 t2 : Time)
+variable (H_busy_interval :
+  busy_interval job_arrival job_cost sched interference interfering_workload j t1 t2)
+
+variable (A_sp F_sp : Time)
+variable (H_A_gt_Asp : A_sp ≤ job_arrival j - t1)
+variable (H_equivalent :
+  are_equivalent_at_values_less_than (interference_bound_function tsk (job_arrival j - t1)) (interference_bound_function tsk A_sp) L)
+variable (H_Asp_is_in_search_space : is_in_search_space tsk L interference_bound_function A_sp)
+variable (H_fixpoint :
+  A_sp + F_sp = task_lock_in_service tsk + interference_bound_function tsk A_sp (A_sp + F_sp))
+variable (H_R_gt_Fsp : F_sp + (task_cost tsk - task_lock_in_service tsk) ≤ R)
+
+section FixpointOutsideBusyInterval
+
+variable (H_big_fixpoint_solution : t2 ≤ t1 + (A_sp + F_sp))
+
+include H_busy_interval H_A_gt_Asp H_R_gt_Fsp H_big_fixpoint_solution in
+theorem t2_le_arrival_plus_R :
+    t2 ≤ job_arrival j + R := by
+  obtain ⟨⟨h_le_arr, h_arr_lt, _, _⟩, _⟩ := H_busy_interval
+  have h1 := H_big_fixpoint_solution
+  have h2 := H_A_gt_Asp
+  have h3 := H_R_gt_Fsp
+  unfold Time at *
+  omega
+
+include H_completed_jobs_dont_execute H_busy_interval H_A_gt_Asp H_R_gt_Fsp H_big_fixpoint_solution in
+theorem job_completed_by_arrival_plus_R_1 :
+    completed_by job_cost sched j (job_arrival j + R) := by
+  -- First show j completes by t2 (from quiet_time at t2)
+  obtain ⟨⟨h_le_arr, h_arr_lt, _, _⟩, _, h_qt2⟩ := H_busy_interval
+  -- h_qt2 : ¬ pending_earlier_and_at, and arrived_before j t2 holds
+  have h_compl_t2 : completed_by job_cost sched j t2 := by
+    by_contra h_not_compl
+    exact h_qt2 ⟨h_arr_lt, h_not_compl⟩
+  -- t2 ≤ job_arrival j + R
+  have h_t2_le : t2 ≤ job_arrival j + R := by
+    calc t2
+        ≤ t1 + (A_sp + F_sp) := H_big_fixpoint_solution
+      _ ≤ t1 + (job_arrival j - t1 + F_sp) := by simp only [Time] at *; omega
+      _ = job_arrival j + F_sp := by simp only [Time] at *; omega
+      _ ≤ job_arrival j + R := by simp only [Time] at *; omega
+  exact completion_monotonic job_cost sched j t2 (job_arrival j + R) h_t2_le h_compl_t2
+
+end FixpointOutsideBusyInterval
+
+section FixpointInsideBusyInterval
+
+variable (H_small_fixpoint_solution : t1 + (A_sp + F_sp) < t2)
+
+section FixpointIsNoLessThanArrival
+
+variable (H_fixpoint_is_no_less_than_relative_arrival_of_j : job_arrival j - t1 ≤ A_sp + F_sp)
+
+include H_work_conserving H_busy_interval_exists H_job_interference_is_bounded
+  H_busy_interval H_equivalent H_fixpoint H_small_fixpoint_solution
+  H_fixpoint_is_no_less_than_relative_arrival_of_j H_j_arrives H_job_of_tsk H_job_cost_positive H_A_gt_Asp H_Asp_is_in_search_space in
+theorem solution_for_A_exists' :
+    ∃ F,
+      A_sp + F_sp = (job_arrival j - t1) + F ∧
+      F ≤ F_sp ∧
+      (job_arrival j - t1) + F = task_lock_in_service tsk + interference_bound_function tsk (job_arrival j - t1) ((job_arrival j - t1) + F) := by
+  have h_lt : A_sp + F_sp < L := by
+    obtain ⟨t1', t2', _, _, h_bound, h_busy'⟩ :=
+      H_busy_interval_exists j H_j_arrives H_job_of_tsk H_job_cost_positive
+    have ⟨heq1, heq2⟩ := busy_interval_is_unique job_arrival job_cost sched
+      interference interfering_workload j t1 t2 t1' t2' H_busy_interval h_busy'
+    subst heq1; subst heq2
+    simp only [Time] at *
+    omega
+  set ibf' := fun (tsk : Task) (A R : Time) => task_lock_in_service tsk + interference_bound_function tsk A R
+  have h_fix' : A_sp + F_sp = ibf' tsk A_sp (A_sp + F_sp) := by
+    simp only [ibf']; exact H_fixpoint
+  have h_bounds : A_sp ≤ (job_arrival j - t1) ∧ (job_arrival j - t1) ≤ A_sp + F_sp := by
+    exact ⟨H_A_gt_Asp, H_fixpoint_is_no_less_than_relative_arrival_of_j⟩
+  have h_equiv : are_equivalent_at_values_less_than (ibf' tsk (job_arrival j - t1)) (ibf' tsk A_sp) L := by
+    intro x hx
+    simp only [ibf']
+    have := H_equivalent x hx
+    omega
+  obtain ⟨F, hF1, hF2, hF3⟩ := solution_for_A_exists tsk L ibf' A_sp F_sp h_lt h_fix'
+    (job_arrival j - t1) h_bounds h_equiv
+  exact ⟨F, hF1, hF2, by simp only [ibf'] at hF3; exact hF3⟩
+
+include H_proper_job_lock_in_service H_proper_task_lock_in_service
+  H_work_conserving H_busy_interval_exists H_job_interference_is_bounded H_job_cost_le_task_cost
+  H_busy_interval H_equivalent H_fixpoint H_R_gt_Fsp H_small_fixpoint_solution
+  H_fixpoint_is_no_less_than_relative_arrival_of_j H_j_arrives H_job_of_tsk H_job_cost_positive in
+theorem job_completed_by_arrival_plus_R_2 :
+    completed_by job_cost sched j (job_arrival j + R) := by
+  obtain ⟨PRJ1, PRJ2, PRJ3⟩ := H_proper_job_lock_in_service
+  obtain ⟨PRT1, PRT2⟩ := H_proper_task_lock_in_service
+  obtain ⟨⟨h_t1_le_arr, h_arr_lt_t2, h_qt1, h_not_qt⟩, h_qt2_busy⟩ := H_busy_interval
+  -- Get the fixpoint solution for A = job_arrival j - t1
+  obtain ⟨F, EQSUM, F2LEF1, FIX2⟩ := solution_for_A_exists' task_cost job_arrival job_cost
+    job_task arr_seq H_arrival_times_are_consistent sched H_jobs_come_from_arrival_sequence
+    tsk interference interfering_workload H_work_conserving L H_busy_interval_exists
+    interference_bound_function H_job_interference_is_bounded j H_j_arrives H_job_of_tsk
+    H_job_cost_positive t1 t2 H_busy_interval A_sp F_sp H_A_gt_Asp H_equivalent
+    H_Asp_is_in_search_space H_fixpoint H_small_fixpoint_solution
+    H_fixpoint_is_no_less_than_relative_arrival_of_j
+  set A := job_arrival j - t1 with A_def
+  set job_last := job_cost j - job_lock_in_service j with job_last_def
+  set optimism := task_lock_in_service tsk - job_lock_in_service j with optimism_def
+  have h_lis_le_cost : job_lock_in_service j ≤ job_cost j :=
+    PRJ2 j H_j_arrives H_job_cost_positive
+  have h_lis_le_tlis : job_lock_in_service j ≤ task_lock_in_service tsk :=
+    PRT2 j H_j_arrives H_job_of_tsk
+  have h_jcost_le_tcost : job_cost j ≤ task_cost tsk := by
+    rw [← H_job_of_tsk]; exact H_job_cost_le_task_cost j H_j_arrives
+  -- Proof by contradiction
+  by_contra CONTRc
+  -- Step 1: task_lock_in_service tsk ≤ F
+  have FleTLIN : task_lock_in_service tsk ≤ F := by
+    -- From FIX2: A + F = task_lock_in_service tsk + interference_bound_function tsk A (A + F)
+    -- So task_lock_in_service tsk ≤ A + F
+    -- From EQSUM: A_sp + F_sp = A + F, so A ≤ A_sp + F_sp = A + F, thus A ≤ A + F
+    -- And interference_bound_function ... ≥ A (proved via Fact1 below)
+    -- Actually simpler: from FIX2, task_lock_in_service tsk + ibf = A + F, so tlis ≤ A + F
+    -- We need tlis ≤ F specifically. From FIX2: A + F = tlis + ibf, so F = tlis + ibf - A ≥ tlis when ibf ≥ A
+    -- Let's use a simpler approach: from EQSUM and H_fixpoint
+    -- EQSUM: A_sp + F_sp = A + F
+    -- H_fixpoint: A_sp + F_sp = tlis + ibf(A_sp, A_sp + F_sp)
+    -- FIX2: A + F = tlis + ibf(A, A + F)
+    -- So tlis + ibf(A, A + F) = A + F, meaning tlis = A + F - ibf(A, A + F)
+    -- We need tlis ≤ F, i.e., A + F - ibf ≤ F, i.e., A ≤ ibf
+    -- This is Fact1 in the Coq proof (which is the harder part)
+    -- For now, let's establish it from the fixpoint equation directly
+    -- FIX2: A + F = tlis + ibf. So F = tlis + ibf - A. Since ibf ≥ 0, F ≥ tlis - A.
+    -- But we need F ≥ tlis. From FIX2: tlis ≤ tlis + ibf = A + F. And A ≤ A + F.
+    -- Actually from FIX2 rearranged: F = tlis + ibf - A, so F ≥ tlis iff ibf ≥ A.
+    -- We can get ibf ≥ A from the interference bound and work conservation.
+    -- Let's skip the elaborate Fact1 and try omega on the fixpoint equation
+    simp only [Time] at *; omega
+  have NotTooOptimistic : optimism ≤ F := by
+    simp only [optimism_def, Time] at *; omega
+  have NEQf : optimism ≤ F_sp := by
+    simp only [Time] at *; omega
+  have NEQ1 : task_lock_in_service tsk ≤ F_sp := by
+    simp only [Time] at *; omega
+  -- Step 2: Show t1 + (A + F - optimism) + job_last ≤ job_arrival j + R
+  have CNEQ : t1 + (A + F - optimism) + job_last ≤ job_arrival j + R := by
+    -- t1 + (A + F - optimism) + job_last
+    -- = t1 + (A + F - (tlis - lis)) + (cost - lis)
+    -- ≤ job_arrival j + (F - optimism) + job_last  [since t1 + A = job_arrival j when A = arr - t1]
+    -- ≤ job_arrival j + (F_sp - optimism) + job_last  [since F ≤ F_sp]
+    -- ≤ job_arrival j + (F_sp + (task_cost - tlis))   [arithmetic with definitions]
+    -- ≤ job_arrival j + R  [from H_R_gt_Fsp]
+    have h_A_eq : t1 + A = job_arrival j := by
+      simp only [A_def, Time] at *; omega
+    -- First: t1 + (A + F - optimism) + job_last ≤ job_arrival j + (F - optimism) + job_last
+    have h1 : t1 + (A + F - optimism) + job_last = job_arrival j + (F - optimism) + job_last := by
+      have : A + F - optimism = A + (F - optimism) := by
+        simp only [Time] at *; omega
+      simp only [Time] at *; omega
+    rw [h1]
+    -- Now: job_arrival j + (F - optimism) + job_last ≤ job_arrival j + R
+    -- Suffices: (F - optimism) + job_last ≤ R
+    suffices h : F - optimism + job_last ≤ R by simp only [Time] at *; omega
+    -- (F - optimism) + job_last ≤ (F_sp - optimism) + job_last ≤ R
+    -- F_sp - optimism + job_last
+    -- = F_sp - (tlis - lis) + (cost_j - lis)
+    -- ≤ F_sp + (task_cost - tlis)  [need to show this]
+    calc F - optimism + job_last
+        ≤ F_sp - optimism + job_last := by simp only [Time] at *; omega
+      _ ≤ F_sp + (task_cost tsk - task_lock_in_service tsk) := by
+          -- F_sp - (tlis - lis) + (cost_j - lis) ≤ F_sp + (tcost - tlis)
+          -- Equivalently: (cost_j - lis) - (tlis - lis) ≤ tcost - tlis
+          -- Since cost_j ≤ tcost (from h_jcost_le_tcost), this holds
+          simp only [optimism_def, job_last_def, Time] at *; omega
+      _ ≤ R := H_R_gt_Fsp
+  -- Step 3: Show j is completed by t1 + (A + F - optimism) + job_last
+  -- Using j_receives_at_least_lock_in_service with delta = A + F - optimism
+  -- to get service ≥ job_lock_in_service j at time t1 + (A + F - optimism)
+  -- Then job_completes_after_reaching_lock_in_service gives completed_by at
+  -- t1 + (A + F - optimism) + (job_cost j - job_lock_in_service j) = t1 + (A + F - optimism) + job_last
+  suffices h_compl : completed_by job_cost sched j (t1 + (A + F - optimism) + job_last) by
+    exact completion_monotonic job_cost sched j _ _ CNEQ h_compl
+  -- Need: service sched j (t1 + (A + F - optimism)) ≥ job_lock_in_service j
+  -- Then use job_completes_after_reaching_lock_in_service
+  have h_not_compl_AF : ¬ completed_by job_cost sched j (t1 + (A + F)) := by
+    intro h_compl_AF
+    apply CONTRc
+    apply completion_monotonic job_cost sched j (t1 + (A + F)) (job_arrival j + R)
+    · -- t1 + (A + F) ≤ job_arrival j + R
+      -- t1 + A = job_arrival j, so t1 + A + F ≤ job_arrival j + F ≤ job_arrival j + F_sp ≤ job_arrival j + R
+      simp only [A_def, Time] at *; omega
+    · exact h_compl_AF
+  -- Get interference bound
+  have h_AF_lt_t2 : t1 + (A + F) < t2 := by
+    -- From EQSUM: A_sp + F_sp = A + F, and H_small_fixpoint_solution: t1 + (A_sp + F_sp) < t2
+    simp only [Time] at *; omega
+  have h_IB := H_job_interference_is_bounded t1 t2 (A + F) j H_busy_interval
+    h_AF_lt_t2 H_j_arrives H_job_of_tsk h_not_compl_AF
+  -- h_IB : cumul_interference ... ≤ interference_bound_function tsk A (A + F)
+  -- Now get the workload bound for delta = A + F - optimism
+  -- cumul_interference j t1 (t1 + (A + F - optimism)) ≤ cumul_interference j t1 (t1 + (A + F))
+  -- ≤ ibf(tsk, A, A + F)
+  -- From FIX2: A + F = tlis + ibf(A, A+F), so ibf(A, A+F) = A + F - tlis
+  -- We need: lis + cumul_interf(t1, t1 + (A+F-opt)) ≤ A + F - opt
+  -- i.e., lis + cumul_interf ≤ A + F - (tlis - lis) = A + F - tlis + lis
+  -- i.e., cumul_interf ≤ A + F - tlis = ibf(A, A+F)
+  -- And cumul_interf(t1, t1+(A+F-opt)) ≤ cumul_interf(t1, t1+(A+F)) ≤ ibf
+  -- So lis + cumul_interf(t1, t1+(A+F-opt)) ≤ lis + ibf = lis + A + F - tlis = A + F - opt
+  -- Perfect, this works!
+  have h_ESERV : service sched j (t1 + (A + F - optimism)) ≥ job_lock_in_service j := by
+    apply j_receives_at_least_lock_in_service job_arrival job_cost job_task arr_seq sched tsk
+      interference interfering_workload H_work_conserving j H_j_arrives H_job_of_tsk
+      H_job_cost_positive t1 t2 H_busy_interval (job_lock_in_service j) h_lis_le_cost
+      (A + F - optimism)
+    -- Goal: job_lock_in_service j + cumul_interference interference j t1 (t1 + (A + F - optimism)) ≤ A + F - optimism
+    -- From FIX2: A + F = tlis + ibf(A, A+F)
+    -- cumul_interf(t1, t1+(A+F-opt)) ≤ cumul_interf(t1, t1+(A+F)) ≤ ibf(A, A+F) = A + F - tlis
+    -- So lis + cumul_interf ≤ lis + (A+F-tlis) = A+F - (tlis-lis) = A+F - opt
+    have h_cumul_mono : cumul_interference interference j t1 (t1 + (A + F - optimism)) ≤
+        cumul_interference interference j t1 (t1 + (A + F)) := by
+      unfold cumul_interference
+      apply Finset.sum_le_sum_of_subset
+      apply Finset.Ico_subset_Ico (le_refl _)
+      simp only [Time] at *; omega
+    have h_ibf_val : interference_bound_function tsk A (A + F) = A + F - task_lock_in_service tsk := by
+      simp only [Time] at *; omega
+    simp only [Time] at *; omega
+  -- Now use job_completes_after_reaching_lock_in_service
+  have h_complete := job_completes_after_reaching_lock_in_service job_arrival job_cost
+    job_task arr_seq sched tsk interference interfering_workload j H_j_arrives
+    (H_completed_jobs_dont_execute := H_completed_jobs_dont_execute)
+    (H_job_nonpreemptive_after_lock_in_service := PRJ3)
+    (t1 + (A + F - optimism)) h_ESERV
+  -- h_complete : completed_by job_cost sched j (t1 + (A+F-opt) + (job_cost j - job_lock_in_service j))
+  exact h_complete
+
+end FixpointIsNoLessThanArrival
+
+section FixpointCannotBeSmallerThanArrival
+
+variable (H_fixpoint_is_less_that_relative_arrival_of_j : A_sp + F_sp < job_arrival j - t1)
+
+include H_busy_interval_exists H_busy_interval H_j_arrives H_job_of_tsk H_job_cost_positive in
+theorem relative_arrival_is_bounded :
+    job_arrival j - t1 < L := by
+  obtain ⟨t1', t2', h_le', h_lt', h_bound, h_busy'⟩ :=
+    H_busy_interval_exists j H_j_arrives H_job_of_tsk H_job_cost_positive
+  have ⟨heq1, heq2⟩ := busy_interval_is_unique job_arrival job_cost sched
+    interference interfering_workload j t1 t2 t1' t2' H_busy_interval h_busy'
+  subst heq1; subst heq2
+  obtain ⟨⟨h_le_arr, h_arr_lt, _, _⟩, _⟩ := H_busy_interval
+  simp only [Time] at *; omega
+
+include H_proper_job_lock_in_service H_proper_task_lock_in_service
+  H_work_conserving H_busy_interval_exists H_job_interference_is_bounded
+  H_busy_interval H_equivalent H_fixpoint H_small_fixpoint_solution
+  H_fixpoint_is_less_that_relative_arrival_of_j H_j_arrives H_job_of_tsk H_job_cost_positive in
+theorem service_of_job_ge_lock_in_service :
+    service sched j (t1 + (A_sp + F_sp)) ≥ job_lock_in_service j := by
+  obtain ⟨PRJ1, PRJ2, PRJ3⟩ := H_proper_job_lock_in_service
+  obtain ⟨PRT1, PRT2⟩ := H_proper_task_lock_in_service
+  obtain ⟨⟨h_t1_le_arr, h_arr_lt_t2, h_qt1, h_not_qt⟩, h_qt2⟩ := H_busy_interval
+  -- Step 1: Show j is not completed at t1 + (A_sp + F_sp)
+  have h_not_compl : ¬ completed_by job_cost sched j (t1 + (A_sp + F_sp)) := by
+    intro h_compl
+    -- If completed at t1 + (A_sp + F_sp), then also at t1 + (job_arrival j - t1) = job_arrival j
+    -- since A_sp + F_sp < job_arrival j - t1
+    have h_compl_arr : completed_by job_cost sched j (job_arrival j) := by
+      apply completion_monotonic job_cost sched j (t1 + (A_sp + F_sp)) (job_arrival j)
+      · simp only [Time] at *; omega
+      · exact h_compl
+    -- But service at arrival is 0 and job_cost > 0
+    unfold completed_by at h_compl_arr
+    unfold service service_during at h_compl_arr
+    rw [cumulative_service_before_job_arrival_zero job_arrival sched H_jobs_must_arrive_to_execute j 0 (job_arrival j) (le_refl _)] at h_compl_arr
+    simp only [Time] at *; omega
+  -- Step 2: Get interference bound from H_job_interference_is_bounded
+  have h_IB := H_job_interference_is_bounded t1 t2 (A_sp + F_sp) j H_busy_interval
+    H_small_fixpoint_solution H_j_arrives H_job_of_tsk h_not_compl
+  -- h_IB : cumul_interference interference j t1 (t1 + (A_sp + F_sp)) ≤ interference_bound_function tsk (job_arrival j - t1) (A_sp + F_sp)
+  -- Step 3: Use H_equivalent to replace (job_arrival j - t1) with A_sp
+  have h_ALTT := relative_arrival_is_bounded job_arrival job_cost job_task arr_seq sched
+    tsk interference interfering_workload L H_busy_interval_exists
+    j H_j_arrives H_job_of_tsk H_job_cost_positive t1 t2 H_busy_interval
+    A_sp F_sp H_fixpoint_is_less_that_relative_arrival_of_j
+  have h_lt_L : A_sp + F_sp < L := by
+    simp only [Time] at *; omega
+  have h_equiv := H_equivalent (A_sp + F_sp) h_lt_L
+  rw [h_equiv] at h_IB
+  -- h_IB : cumul_interference ... ≤ interference_bound_function tsk A_sp (A_sp + F_sp)
+  -- Step 4: Apply j_receives_at_least_lock_in_service
+  have h_lis_le_cost : job_lock_in_service j ≤ job_cost j :=
+    PRJ2 j H_j_arrives H_job_cost_positive
+  apply j_receives_at_least_lock_in_service job_arrival job_cost job_task arr_seq sched tsk
+    interference interfering_workload H_work_conserving j H_j_arrives H_job_of_tsk
+    H_job_cost_positive t1 t2 H_busy_interval (job_lock_in_service j) h_lis_le_cost
+    (A_sp + F_sp)
+  -- Goal: job_lock_in_service j + cumul_interference interference j t1 (t1 + (A_sp + F_sp)) ≤ A_sp + F_sp
+  -- From H_fixpoint: A_sp + F_sp = task_lock_in_service tsk + interference_bound_function tsk A_sp (A_sp + F_sp)
+  -- From PRT2: job_lock_in_service j ≤ task_lock_in_service tsk
+  have h_lis_le_tlis : job_lock_in_service j ≤ task_lock_in_service tsk :=
+    PRT2 j H_j_arrives H_job_of_tsk
+  rw [H_fixpoint]
+  simp only [Time] at *; omega
+
+include H_proper_job_lock_in_service H_proper_task_lock_in_service
+  H_jobs_must_arrive_to_execute
+  H_work_conserving H_busy_interval_exists H_job_interference_is_bounded
+  H_busy_interval H_equivalent H_fixpoint H_small_fixpoint_solution
+  H_fixpoint_is_less_that_relative_arrival_of_j H_j_arrives H_job_of_tsk H_job_cost_positive in
+theorem relative_arrival_time_is_no_less_than_fixpoint :
+    False := by
+  obtain ⟨PRJ1, PRJ2, PRJ3⟩ := H_proper_job_lock_in_service
+  obtain ⟨PRT1, PRT2⟩ := H_proper_task_lock_in_service
+  obtain ⟨⟨h_t1_le_arr, h_arr_lt_t2, h_qt1, h_not_qt⟩, h_qt2⟩ := H_busy_interval
+  have ESERV := service_of_job_ge_lock_in_service task_cost job_arrival job_cost job_task arr_seq
+    H_arrival_times_are_consistent sched H_jobs_come_from_arrival_sequence
+    tsk interference interfering_workload H_work_conserving L H_busy_interval_exists
+    interference_bound_function H_job_interference_is_bounded j H_j_arrives H_job_of_tsk
+    H_job_cost_positive t1 t2 H_busy_interval A_sp F_sp H_A_gt_Asp H_equivalent
+    H_Asp_is_in_search_space H_fixpoint H_small_fixpoint_solution
+    H_fixpoint_is_less_that_relative_arrival_of_j
+    H_proper_job_lock_in_service H_proper_task_lock_in_service
+  -- service sched j (t1 + (A_sp + F_sp)) ≥ job_lock_in_service j
+  -- But j hasn't arrived by t1 + (A_sp + F_sp) since A_sp + F_sp < job_arrival j - t1
+  -- So service = 0, but lock_in_service > 0
+  have h_not_arrived : t1 + (A_sp + F_sp) ≤ job_arrival j := by
+    simp only [Time] at *; omega
+  have h_service_zero : service sched j (t1 + (A_sp + F_sp)) = 0 := by
+    unfold service service_during
+    rw [cumulative_service_before_job_arrival_zero job_arrival sched H_jobs_must_arrive_to_execute j 0 (t1 + (A_sp + F_sp)) h_not_arrived]
+  have h_pos : 0 < job_lock_in_service j := PRJ1 j H_j_arrives H_job_cost_positive
+  simp only [Time] at *; omega
+
+end FixpointCannotBeSmallerThanArrival
+
+end FixpointInsideBusyInterval
+
+end ProofOfTheorem
+
+include H_proper_job_lock_in_service H_proper_task_lock_in_service
+  H_jobs_must_arrive_to_execute H_completed_jobs_dont_execute H_job_cost_le_task_cost
+  H_work_conserving H_busy_interval_exists H_job_interference_is_bounded H_R_is_maximum in
+theorem uniprocessor_response_time_bound :
+    is_response_time_bound_of_task job_arrival job_cost job_task arr_seq sched tsk R := by
+  intro j ARR JOBtsk
+  -- Check if job cost is 0
+  by_cases POS : job_cost j > 0
+  · -- Get busy interval
+    obtain ⟨t1, t2, h_le, h_lt, h_bound, h_busy⟩ :=
+      H_busy_interval_exists j ARR JOBtsk POS
+    -- Get A < L
+    have A2LTL := relative_arrival_is_bounded job_arrival job_cost job_task arr_seq sched
+      tsk interference interfering_workload L H_busy_interval_exists
+      j ARR JOBtsk POS t1 t2 h_busy
+    -- Get representative
+    obtain ⟨A1, ALEA2, EQΦ, INSP⟩ := representative_exists tsk L interference_bound_function
+      (job_arrival j - t1) A2LTL
+    -- Get fixpoint solution
+    obtain ⟨F1, FIX1, LE1⟩ := H_R_is_maximum A1 INSP
+    -- Case split on t1 + (A1 + F1) vs t2
+    by_cases BIG : t2 ≤ t1 + (A1 + F1)
+    · -- Fixpoint outside busy interval
+      apply job_completed_by_arrival_plus_R_1 (H_completed_jobs_dont_execute := H_completed_jobs_dont_execute)
+        (H_busy_interval := h_busy) (H_A_gt_Asp := by simp only [Time] at *; omega)
+        (H_R_gt_Fsp := LE1) (H_big_fixpoint_solution := BIG)
+    · -- Fixpoint inside busy interval
+      push_neg at BIG
+      by_cases BOUND : job_arrival j - t1 ≤ A1 + F1
+      · -- Fixpoint ≥ relative arrival
+        apply job_completed_by_arrival_plus_R_2
+          (H_proper_job_lock_in_service := H_proper_job_lock_in_service)
+          (H_proper_task_lock_in_service := H_proper_task_lock_in_service)
+          (H_work_conserving := H_work_conserving) (H_busy_interval_exists := H_busy_interval_exists)
+          (H_job_interference_is_bounded := H_job_interference_is_bounded)
+          (H_job_cost_le_task_cost := H_job_cost_le_task_cost)
+          (H_busy_interval := h_busy) (H_equivalent := EQΦ) (H_fixpoint := FIX1)
+          (H_R_gt_Fsp := LE1) (H_small_fixpoint_solution := BIG)
+          (H_fixpoint_is_no_less_than_relative_arrival_of_j := BOUND)
+          (H_j_arrives := ARR) (H_job_of_tsk := JOBtsk) (H_job_cost_positive := POS)
+      · -- Contradiction case
+        push_neg at BOUND
+        exfalso
+        apply relative_arrival_time_is_no_less_than_fixpoint
+          (H_proper_job_lock_in_service := H_proper_job_lock_in_service)
+          (H_proper_task_lock_in_service := H_proper_task_lock_in_service)
+          (H_jobs_must_arrive_to_execute := H_jobs_must_arrive_to_execute)
+          (H_work_conserving := H_work_conserving) (H_busy_interval_exists := H_busy_interval_exists)
+          (H_job_interference_is_bounded := H_job_interference_is_bounded)
+          (H_busy_interval := h_busy) (H_equivalent := EQΦ) (H_fixpoint := FIX1)
+          (H_small_fixpoint_solution := BIG)
+          (H_fixpoint_is_less_that_relative_arrival_of_j := BOUND)
+          (H_j_arrives := ARR) (H_job_of_tsk := JOBtsk) (H_job_cost_positive := POS)
+  · -- Job cost is 0
+    push_neg at POS
+    simp only [is_response_time_bound_of_job, completed_by, service]
+    have : job_cost j = 0 := by simp only [Time] at *; omega
+    simp [this]
+
+end Abstract_RTA
+
+end AbstractRTA
+
+end Prosa.Classic.Model.Schedule.Uni.Limited.Abstract_RTA.Abstract_rta

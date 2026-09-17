@@ -1,0 +1,60 @@
+-- Translated from: ../rt-proofs/util/step_function.v
+import Mathlib.Tactic
+import Prosa.Util.Tactics
+
+namespace Prosa.Util.Step_function
+
+namespace StepFunction
+
+section Defs
+
+  variable (f : ℕ → ℕ)
+
+  def is_step_function :=
+    ∀ t, f (t + 1) ≤ f t + 1
+
+end Defs
+
+section Lemmas
+
+  variable (f : ℕ → ℕ)
+  variable (H_step_function : is_step_function f)
+
+  section ExistsIntermediateValue
+
+    variable (x1 x2 : ℕ)
+    variable (H_is_interval : x1 ≤ x2)
+
+    variable (y : ℕ)
+    variable (H_between : f x1 ≤ y ∧ y < f x2)
+
+    include H_step_function H_is_interval H_between
+
+    theorem exists_intermediate_point :
+        ∃ x_mid, x1 ≤ x_mid ∧ x_mid < x2 ∧ f x_mid = y := by sorry
+
+  end ExistsIntermediateValue
+
+end Lemmas
+
+section ExistsIntermediateValuePredicates
+
+  variable (P : ℕ → Bool)
+
+  variable (t1 t2 : ℕ)
+  variable (H_t1_le_t2 : t1 ≤ t2)
+
+  variable (H_not_P_at_t1 : ¬ (P t1 = true))
+
+  variable (H_P_at_t2 : P t2 = true)
+
+  include H_t1_le_t2 H_not_P_at_t1 H_P_at_t2
+
+  theorem exists_first_intermediate_point :
+      ∃ t, (t1 < t ∧ t ≤ t2) ∧ (∀ x, t1 ≤ x ∧ x < t → ¬ (P x = true)) ∧ P t = true := by sorry
+
+end ExistsIntermediateValuePredicates
+
+end StepFunction
+
+end Prosa.Util.Step_function

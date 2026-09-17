@@ -1,0 +1,179 @@
+-- Translated from: ../rt-proofs/analysis/facts/model/service_of_jobs.v
+import Prosa.Model.Aggregate.Workload
+import Prosa.Model.Aggregate.Service_of_jobs
+import Prosa.Analysis.Facts.Behavior.Completion
+import Prosa.Analysis.Facts.Model.Ideal_schedule
+import Prosa.Model.Processor.Ideal
+
+namespace Prosa.Analysis.Facts.Model.Service_of_jobs
+
+open Prosa.Behavior.Job
+open Prosa.Behavior.Time
+open Prosa.Behavior.Schedule
+open Prosa.Behavior.Service
+open Prosa.Behavior.Arrival_sequence
+open Prosa.Behavior.Ready
+open Prosa.Model.Processor.Platform_properties
+open Prosa.Model.Aggregate.Workload
+open Prosa.Model.Aggregate.Service_of_jobs
+open Prosa.Analysis.Facts.Behavior.Completion
+open Prosa.Analysis.Facts.Model.Ideal_schedule
+open Prosa.Model.Processor.Ideal
+open Prosa.Model.Task.Concept
+
+section GenericModelLemmas
+
+variable {Task : TaskType}
+variable {Job : JobType}
+variable [JobTask Job Task]
+variable [JobArrival Job]
+variable [JobCost Job]
+
+variable {PState : Type}
+variable [ProcessorState Job PState]
+
+variable (arr_seq : arrival_sequence Job)
+variable (H_arrival_times_are_consistent : consistent_arrival_times arr_seq)
+
+variable (sched : schedule PState)
+
+variable (H_jobs_must_arrive_to_execute : jobs_must_arrive_to_execute (Job := Job) sched)
+variable (H_completed_jobs_dont_execute : completed_jobs_dont_execute (Job := Job) sched)
+
+variable (P : Job → Bool)
+
+section ServiceBoundedByWorkload
+
+variable (jobs : List Job)
+
+variable (H_unit_service : unit_service_proc_model (Job := Job) PState)
+
+include H_completed_jobs_dont_execute H_unit_service in
+theorem service_of_jobs_le_workload :
+    ∀ t1 t2,
+      service_of_jobs sched P jobs t1 t2 ≤ workload_of_jobs P jobs := by
+  sorry
+
+end ServiceBoundedByWorkload
+
+section ServiceCat
+
+include H_arrival_times_are_consistent H_jobs_must_arrive_to_execute in
+theorem service_of_jobs_cat_scheduling_interval :
+    ∀ t1 t2 t,
+      t1 ≤ t → t ≤ t2 →
+      service_of_jobs sched P (arrivals_between arr_seq t1 t2) t1 t2
+      = service_of_jobs sched P (arrivals_between arr_seq t1 t) t1 t
+        + service_of_jobs sched P (arrivals_between arr_seq t1 t) t t2
+        + service_of_jobs sched P (arrivals_between arr_seq t t2) t t2 := by
+  sorry
+
+include H_arrival_times_are_consistent in
+theorem service_of_jobs_cat_arrival_interval :
+    ∀ t1 t2 t,
+      t1 ≤ t → t ≤ t2 →
+      service_of_jobs sched P (arrivals_between arr_seq t1 t2) t t2 =
+      service_of_jobs sched P (arrivals_between arr_seq t1 t) t t2 +
+      service_of_jobs sched P (arrivals_between arr_seq t t2) t t2 := by
+  sorry
+
+end ServiceCat
+
+end GenericModelLemmas
+
+section IdealModelLemmas
+
+variable {Task : TaskType}
+variable {Job : JobType}
+variable [JobTask Job Task]
+variable [JobArrival Job]
+variable [JobCost Job]
+
+variable (arr_seq : arrival_sequence Job)
+variable (H_arrival_times_are_consistent : consistent_arrival_times arr_seq)
+
+variable [DecidableEq Job]
+
+attribute [local instance] pstate_instance
+
+variable (sched : schedule (processor_state Job))
+variable (H_jobs_come_from_arrival_sequence :
+  jobs_come_from_arrival_sequence sched arr_seq)
+
+variable (H_jobs_must_arrive_to_execute : jobs_must_arrive_to_execute (Job := Job) sched)
+variable (H_completed_jobs_dont_execute : completed_jobs_dont_execute (Job := Job) sched)
+
+variable (P : Job → Bool)
+
+include H_arrival_times_are_consistent H_jobs_come_from_arrival_sequence
+  H_jobs_must_arrive_to_execute H_completed_jobs_dont_execute in
+theorem low_service_implies_existence_of_idle_time :
+    ∀ t1 t2,
+      service_of_jobs sched (fun _ => true) (arrivals_between arr_seq 0 t2) t1 t2 < t2 - t1 →
+      ∃ t, t1 ≤ t ∧ t < t2 ∧ is_idle sched t := by
+  sorry
+
+section ServiceOfJobsIsBoundedByLength
+
+variable (jobs : List Job)
+
+variable (H_no_duplicate_jobs : jobs.Nodup)
+
+include H_completed_jobs_dont_execute H_no_duplicate_jobs in
+theorem service_of_jobs_le_1 :
+    ∀ t,
+      ((jobs.filter (fun j => P j)).map (fun j => service_at sched j t)).sum ≤ 1 := by
+  sorry
+
+include H_completed_jobs_dont_execute H_no_duplicate_jobs in
+theorem service_of_jobs_le_length_of_interval :
+    ∀ (t : instant) (Δ : duration),
+      service_of_jobs sched P jobs t (t + Δ) ≤ Δ := by
+  sorry
+
+include H_completed_jobs_dont_execute H_no_duplicate_jobs in
+theorem service_of_jobs_le_length_of_interval' :
+    ∀ (t1 t2 : instant),
+      service_of_jobs sched P jobs t1 t2 ≤ t2 - t1 := by
+  sorry
+
+end ServiceOfJobsIsBoundedByLength
+
+section WorkloadServiceAndCompletion
+
+variable (t1 t2 : instant)
+
+variable (t_compl : instant)
+
+include H_arrival_times_are_consistent H_jobs_must_arrive_to_execute
+  H_completed_jobs_dont_execute in
+theorem workload_eq_service_impl_all_jobs_have_completed :
+    workload_of_jobs P (arrivals_between arr_seq t1 t2) =
+    service_of_jobs sched P (arrivals_between arr_seq t1 t2) t1 t_compl →
+    ∀ j, j ∈ arrivals_between arr_seq t1 t2 → P j = true →
+      completed_by sched j t_compl := by
+  sorry
+
+include H_arrival_times_are_consistent H_jobs_must_arrive_to_execute
+  H_completed_jobs_dont_execute in
+theorem all_jobs_have_completed_impl_workload_eq_service :
+    (∀ j, j ∈ arrivals_between arr_seq t1 t2 → P j = true →
+      completed_by sched j t_compl) →
+    workload_of_jobs P (arrivals_between arr_seq t1 t2) =
+    service_of_jobs sched P (arrivals_between arr_seq t1 t2) t1 t_compl := by
+  sorry
+
+include H_arrival_times_are_consistent H_jobs_must_arrive_to_execute
+  H_completed_jobs_dont_execute in
+theorem all_jobs_have_completed_equiv_workload_eq_service :
+    (∀ j, j ∈ arrivals_between arr_seq t1 t2 → P j = true →
+      completed_by sched j t_compl) ↔
+    workload_of_jobs P (arrivals_between arr_seq t1 t2) =
+    service_of_jobs sched P (arrivals_between arr_seq t1 t2) t1 t_compl := by
+  sorry
+
+end WorkloadServiceAndCompletion
+
+end IdealModelLemmas
+
+end Prosa.Analysis.Facts.Model.Service_of_jobs

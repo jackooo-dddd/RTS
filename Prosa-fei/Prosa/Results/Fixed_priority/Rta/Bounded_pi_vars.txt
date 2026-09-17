@@ -1,0 +1,77 @@
+
+section AbstractRTAforFPwithArrivalCurves
+
+variable {Task : TaskType}
+variable [TaskCost Task]
+variable [TaskRunToCompletionThreshold Task]
+
+variable {Job : JobType}
+variable [DecidableEq Job]
+variable [JobTask Job Task]
+variable [JobArrival Job]
+variable [JobCost Job]
+variable [JobPreemptable Job]
+
+variable (arr_seq : arrival_sequence Job)
+variable (H_arrival_times_are_consistent : consistent_arrival_times arr_seq)
+variable (H_arr_seq_is_a_set : arrival_sequence_uniq arr_seq)
+
+attribute [local instance] pstate_instance
+
+variable (sched : schedule (processor_state Job))
+variable (H_jobs_come_from_arrival_sequence :
+  jobs_come_from_arrival_sequence (Job := Job) sched arr_seq)
+
+variable (H_jobs_must_arrive_to_execute : jobs_must_arrive_to_execute (Job := Job) sched)
+variable (H_completed_jobs_dont_execute : completed_jobs_dont_execute (Job := Job) sched)
+
+variable [DecidableEq Task]
+
+variable (H_work_conserving :
+  Prosa.Model.Schedule.Work_conserving.work_conserving arr_seq sched)
+
+variable (H_sequential_tasks : sequential_tasks (Job := Job) (Task := Task) sched)
+
+variable (H_valid_job_cost : arrivals_have_valid_job_costs (Task := Task) arr_seq)
+
+variable (ts : List Task)
+
+variable (H_all_jobs_from_taskset : all_jobs_from_taskset arr_seq ts)
+
+variable [MaxArrivals Task]
+variable (H_valid_arrival_curve :
+  valid_taskset_arrival_curve ts (max_arrivals (Task := Task)))
+variable (H_is_arrival_curve : taskset_respects_max_arrivals arr_seq ts)
+
+variable (tsk : Task)
+variable (H_tsk_in_ts : tsk ∈ ts)
+
+variable (H_valid_preemption_model : valid_preemption_model arr_seq sched)
+
+variable (H_valid_run_to_completion_threshold :
+  valid_task_run_to_completion_threshold arr_seq tsk)
+
+variable [FP_policy Task]
+
+attribute [local instance] FP_to_JLFP
+attribute [local instance] JLFP_to_JLDP
+
+variable (H_priority_is_reflexive : reflexive_priorities (Job := Job))
+
+noncomputable def task_rbf_local := task_request_bound_function tsk
+
+noncomputable def total_hep_rbf := total_hep_request_bound_function_FP ts tsk
+
+noncomputable def total_ohep_rbf := total_ohep_request_bound_function_FP ts tsk
+
+variable (priority_inversion_bound : duration)
+variable (H_priority_inversion_is_bounded :
+  priority_inversion_is_bounded_by arr_seq sched tsk priority_inversion_bound)
+
+variable (L : duration)
+variable (H_L_positive : L > 0)
+variable (H_fixed_point : L = priority_inversion_bound + total_hep_rbf ts tsk L)
+
+noncomputable def is_in_search_space_fp (A : duration) : Bool :=
+  (A < L) && (task_request_bound_function tsk A !=
+              task_request_bound_function tsk (A + ε))

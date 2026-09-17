@@ -1,0 +1,128 @@
+-- Translated from: ../rt-proofs/analysis/facts/preemption/rtc_threshold/job_preemptable.v
+import Prosa.Analysis.Definitions.Job_properties
+import Prosa.Analysis.Facts.Behavior.All
+import Prosa.Model.Task.Preemption.Parameters
+import Prosa.Util.Nondecreasing
+
+namespace Prosa.Analysis.Facts.Preemption.Rtc_threshold.Job_preemptable
+
+open Prosa.Behavior.Job
+open Prosa.Behavior.Time
+open Prosa.Behavior.Service
+open Prosa.Behavior.Schedule
+open Prosa.Behavior.Arrival_sequence
+open Prosa.Model.Preemption.Parameter
+open Prosa.Util.List
+open Prosa.Util.Epsilon
+open Prosa.Util.Nondecreasing
+open Prosa.Analysis.Definitions.Job_properties
+open Prosa.Analysis.Facts.Behavior.Service
+
+section RunToCompletionThreshold
+
+variable {Job : JobType}
+variable [JobArrival Job]
+variable [JobCost Job]
+variable [JobPreemptable Job]
+variable {PState : Type}
+variable [ProcessorState Job PState]
+variable (arr_seq : arrival_sequence Job)
+variable (sched : schedule PState)
+variable (H_valid_preemption_model : valid_preemption_model arr_seq sched)
+variable (j : Job)
+variable (H_j_arrives : arrives_in arr_seq j)
+
+section AuxiliaryLemmas
+
+include H_valid_preemption_model H_j_arrives
+
+theorem preemption_points_of_zero_cost_job :
+    job_cost j = 0 →
+    job_preemption_points j = [0] := by
+  intro ZERO
+  obtain ⟨A1, A2, A3, A4⟩ := H_valid_preemption_model j H_j_arrives
+  unfold job_preemption_points range
+  rw [ZERO]
+  unfold job_cannot_become_nonpreemptive_before_execution at A1
+  simp only [Nat.sub_zero, List.range', List.filter, List.cons_append, List.nil_append, A1]
+
+theorem zero_in_preemption_points :
+    0 < job_cost j →
+    0 ∈ job_preemption_points j := by sorry
+
+theorem job_cost_in_preemption_points :
+    0 < job_cost j →
+    job_cost j ∈ job_preemption_points j := by sorry
+
+theorem size_of_preemption_points :
+    0 < job_cost j →
+    2 ≤ (job_preemption_points j).length := by sorry
+
+omit H_valid_preemption_model H_j_arrives
+
+theorem preemption_points_nondecreasing :
+    nondecreasing_sequence (job_preemption_points j) := by
+  apply increasing_implies_nondecreasing
+  apply iota_is_increasing_sequence
+
+include H_valid_preemption_model H_j_arrives
+
+theorem job_cost_is_last_element_of_preemption_points :
+    job_cost j = last0 (job_preemption_points j) := by sorry
+
+theorem job_last_nonpreemptive_segment_positive :
+    job_cost_positive j →
+    0 < job_last_nonpreemptive_segment j := by sorry
+
+theorem job_max_nonpreemptive_segment_positive :
+    job_cost_positive j →
+    0 < job_max_nonpreemptive_segment j := by sorry
+
+theorem job_max_nonpreemptive_segment_le_job_cost :
+    job_max_nonpreemptive_segment j ≤ job_cost j := by sorry
+
+theorem job_last_nonpreemptive_segment_le_job_cost :
+    job_last_nonpreemptive_segment j ≤ job_cost j := by
+  exact Nat.le_trans (last_of_seq_le_max_of_seq _) (job_max_nonpreemptive_segment_le_job_cost arr_seq sched H_valid_preemption_model j H_j_arrives)
+
+end AuxiliaryLemmas
+
+include H_valid_preemption_model H_j_arrives
+
+theorem job_run_to_completion_threshold_positive :
+    job_cost_positive j →
+    0 < job_run_to_completion_threshold j := by sorry
+
+omit H_valid_preemption_model H_j_arrives
+
+theorem job_run_to_completion_threshold_le_job_cost :
+    job_run_to_completion_threshold j ≤ job_cost j := by
+  unfold job_run_to_completion_threshold
+  omega
+
+include H_valid_preemption_model H_j_arrives
+
+theorem job_cannot_be_preempted_within_last_segment :
+    ∀ (ρ : duration),
+      job_run_to_completion_threshold j ≤ ρ ∧ ρ < job_cost j →
+      ¬(job_preemptable j ρ = true) := by sorry
+
+theorem job_nonpreemptive_after_run_to_completion_threshold :
+    ∀ t t',
+      t ≤ t' →
+      job_run_to_completion_threshold j ≤ service sched j t →
+      ¬ completed_by sched j t' →
+      scheduled_at sched j t' = true := by
+  intro t t' LE TH COM
+  obtain ⟨A1, A2, A3, A4⟩ := H_valid_preemption_model j H_j_arrives
+  apply A3
+  apply job_cannot_be_preempted_within_last_segment arr_seq sched H_valid_preemption_model j H_j_arrives
+  constructor
+  · exact Nat.le_trans TH (service_monotonic sched j t t' LE)
+  · unfold completed_by at COM
+    push_neg at COM
+    omega
+
+end RunToCompletionThreshold
+
+end Prosa.Analysis.Facts.Preemption.Rtc_threshold.Job_preemptable

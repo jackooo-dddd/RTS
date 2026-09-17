@@ -1,0 +1,181 @@
+-- Translated from: ../rt-proofs/analysis/abstract/run_to_completion.v
+import Prosa.Analysis.Facts.Model.Service_of_jobs
+import Prosa.Analysis.Facts.Preemption.Rtc_threshold.Job_preemptable
+import Prosa.Analysis.Abstract.Definitions
+
+namespace Prosa.Analysis.Abstract.Run_to_completion
+
+open Prosa.Behavior.Job
+open Prosa.Behavior.Time
+open Prosa.Behavior.Schedule
+open Prosa.Behavior.Service
+open Prosa.Behavior.Arrival_sequence
+open Prosa.Behavior.Ready
+open Prosa.Model.Task.Concept
+open Prosa.Model.Processor.Ideal
+open Prosa.Model.Processor.Platform_properties
+open Prosa.Model.Preemption.Parameter
+open Prosa.Analysis.Abstract.Definitions
+open Prosa.Analysis.Definitions.Job_properties
+open Prosa.Analysis.Facts.Behavior.Service
+open Prosa.Analysis.Facts.Behavior.Completion
+open Prosa.Analysis.Facts.Model.Ideal_schedule
+open Prosa.Analysis.Facts.Preemption.Rtc_threshold.Job_preemptable
+open Prosa.Util.Sum
+
+section AbstractRTARunToCompletionThreshold
+
+variable {Task : TaskType}
+variable [TaskCost Task]
+
+variable {Job : JobType}
+variable [DecidableEq Job]
+variable [JobTask Job Task]
+variable [JobArrival Job]
+variable [JobCost Job]
+variable [JobPreemptable Job]
+
+variable (arr_seq : arrival_sequence Job)
+variable (H_arrival_times_are_consistent : consistent_arrival_times arr_seq)
+
+attribute [local instance] pstate_instance
+
+variable (sched : schedule (processor_state Job))
+
+variable (H_jobs_respect_taskset_costs : arrivals_have_valid_job_costs (Task := Task) arr_seq)
+
+variable (tsk : Task)
+
+variable (interference : Job → instant → Bool)
+variable (interfering_workload : Job → instant → duration)
+
+variable (H_work_conserving : work_conserving arr_seq sched tsk interference interfering_workload)
+
+variable (j : Job)
+variable (H_j_arrives : arrives_in arr_seq j)
+variable (H_job_of_tsk : job_task j = tsk)
+variable (H_job_cost_positive : job_cost_positive j)
+
+variable (t1 t2 : instant)
+variable (H_busy_interval : busy_interval sched interference interfering_workload j t1 t2)
+
+theorem job_completes_within_busy_interval :
+    completed_by sched j t2 := by
+  obtain ⟨⟨⟨_, harr_lt_t2⟩, _, _⟩, ⟨_, hnotpend⟩⟩ := H_busy_interval
+  by_contra hnotcomp
+  exact hnotpend ⟨harr_lt_t2, hnotcomp⟩
+
+section InterferenceIsComplement
+
+variable (t : instant) (delta : duration)
+variable (H_greater_than_or_equal : t1 ≤ t)
+variable (H_less_or_equal : t + delta ≤ t2)
+
+theorem interference_is_complement_to_schedule :
+    service_during sched j t (t + delta) + cumul_interference interference j t (t + delta) = delta := by
+  simp only [service_during, cumul_interference, service_at]
+  rw [← Finset.sum_add_distrib]
+  conv_rhs => rw [← sum_of_ones t delta]
+  apply Finset.sum_congr rfl
+  intro x hx
+  rw [Finset.mem_Ico] at hx
+  have hx_range : t1 ≤ x ∧ x < t2 := ⟨Nat.le_trans H_greater_than_or_equal hx.1, Nat.lt_of_lt_of_le hx.2 H_less_or_equal⟩
+  have hwc := H_work_conserving j t1 t2 x H_j_arrives H_job_of_tsk H_job_cost_positive H_busy_interval hx_range
+  rw [service_at_is_scheduled_at] at hwc
+  cases hintf : interference j x
+  · simp only [Bool.toNat_false, Nat.add_zero]
+    have hsched := hwc.mp (by simp [hintf])
+    rw [service_at_is_scheduled_at, hsched]; simp
+  · simp only [Bool.toNat_true]
+    by_contra hsched_ne
+    push_neg at hsched_ne
+    have : scheduled_at sched j x = true := by
+      by_contra hns
+      simp only [Bool.not_eq_true] at hns
+      have hsa := not_scheduled_implies_no_service sched j x hns
+      simp only [service_at] at hsa
+      omega
+    have := hwc.mpr this
+    simp at this
+
+end InterferenceIsComplement
+
+section InterferenceBoundedImpliesEnoughService
+
+variable (progress_of_job : duration)
+variable (H_progress_le_job_cost : progress_of_job ≤ job_cost j)
+
+variable (delta : duration)
+variable (H_total_workload_is_bounded :
+  progress_of_job + cumul_interference interference j t1 (t1 + delta) ≤ delta)
+
+theorem j_receives_at_least_run_to_completion_threshold :
+    service sched j (t1 + delta) ≥ progress_of_job := by
+  by_cases hle : t1 + delta ≤ t2
+  · -- Case: t1 + delta ≤ t2
+    have hcompl := interference_is_complement_to_schedule sched tsk interference
+      H_work_conserving j H_j_arrives H_job_of_tsk H_job_cost_positive t1 t2 H_busy_interval
+      t1 delta (Nat.le_refl _) hle
+    have hsd : progress_of_job ≤ service_during sched j t1 (t1 + delta) := by omega
+    have hcat := service_cat sched j t1 (t1 + delta) (Nat.le_add_right t1 delta)
+    simp only [service, service_during] at hcat ⊢
+    omega
+  · -- Case: t1 + delta > t2
+    push_neg at hle
+    have hcomp := job_completes_within_busy_interval sched tsk interference
+      interfering_workload H_work_conserving j H_j_arrives H_job_of_tsk H_job_cost_positive
+      t1 t2 H_busy_interval
+    unfold completed_by at hcomp
+    have hmon := service_monotonic sched j t2 (t1 + delta) (Nat.le_of_lt hle)
+    calc progress_of_job ≤ job_cost j := H_progress_le_job_cost
+      _ ≤ service sched j t2 := hcomp
+      _ ≤ service sched j (t1 + delta) := hmon
+
+end InterferenceBoundedImpliesEnoughService
+
+section CompletionOfJobAfterRunToCompletionThreshold
+
+variable (H_completed_jobs_dont_execute : completed_jobs_dont_execute (Job := Job) sched)
+variable (H_valid_preemption_model : valid_preemption_model arr_seq sched)
+
+theorem job_completes_after_reaching_run_to_completion_threshold :
+    ∀ t,
+      job_run_to_completion_threshold j ≤ service sched j t →
+      completed_by sched j (t + (job_cost j - job_run_to_completion_threshold j)) := by
+  intro t hrtc
+  set job_last := job_cost j - job_run_to_completion_threshold j with hjl_def
+  have hrtc_le := job_run_to_completion_threshold_le_job_cost j
+  have hsum : job_run_to_completion_threshold j + job_last = job_cost j := Nat.add_sub_cancel' hrtc_le
+  by_contra hnotcomp
+  have hNP := job_nonpreemptive_after_run_to_completion_threshold arr_seq sched
+    H_valid_preemption_model j H_j_arrives
+  have hsched_all : ∀ t', t ≤ t' → t' < t + job_last + 1 → scheduled_at sched j t' = true := by
+    intro t' hge hlt
+    apply hNP t t' hge hrtc
+    intro hcomp
+    apply hnotcomp
+    exact completion_monotonic sched j t' (t + job_last) (by omega) hcomp
+  have hserv_lb : job_last + 1 ≤ service_during sched j t (t + (job_last + 1)) := by
+    rw [← sum_of_ones t (job_last + 1)]
+    apply Finset.sum_le_sum
+    intro i hi
+    rw [Finset.mem_Ico] at hi
+    have hsched_i := hsched_all i hi.1 hi.2
+    rw [service_at_is_scheduled_at]
+    simp [hsched_i]
+  have hcat := service_cat sched j t (t + (job_last + 1)) (by omega)
+  have htotal : service sched j (t + job_last + 1) ≥ job_run_to_completion_threshold j + (job_last + 1) := by
+    have heq : t + (job_last + 1) = t + job_last + 1 := by omega
+    rw [heq] at hcat
+    simp only [service, service_during] at hcat ⊢
+    omega
+  have hservice_exceeds : service sched j (t + job_last + 1) > job_cost j := by omega
+  have hunit := ideal_proc_model_provides_unit_service (Job := Job)
+  have hbound := service_at_most_cost sched H_completed_jobs_dont_execute j hunit (t + job_last + 1)
+  omega
+
+end CompletionOfJobAfterRunToCompletionThreshold
+
+end AbstractRTARunToCompletionThreshold
+
+end Prosa.Analysis.Abstract.Run_to_completion

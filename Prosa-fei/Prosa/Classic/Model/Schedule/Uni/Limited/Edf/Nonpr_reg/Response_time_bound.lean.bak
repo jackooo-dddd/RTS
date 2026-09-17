@@ -1,0 +1,319 @@
+-- Translated from: ../rt-proofs/classic/model/schedule/uni/limited/edf/nonpr_reg/response_time_bound.v
+import Prosa.Classic.Util.All
+import Prosa.Classic.Model.Arrival.Basic.Job
+import Prosa.Classic.Model.Schedule.Uni.Service
+import Prosa.Classic.Model.Schedule.Uni.Limited.Platform.Definitions
+import Prosa.Classic.Model.Arrival.Curves.Bounds
+import Prosa.Classic.Analysis.Uni.Arrival_curves.Workload_bound
+import Prosa.Classic.Model.Arrival.Basic.Arrival_sequence
+import Prosa.Classic.Model.Schedule.Uni.Schedule
+import Prosa.Classic.Model.Schedule.Uni.Workload
+import Prosa.Classic.Model.Schedule.Uni.Response_time
+import Prosa.Classic.Model.Schedule.Uni.Limited.Schedule
+import Prosa.Classic.Model.Schedule.Uni.Limited.Busy_interval
+import Prosa.Classic.Model.Priority
+import Prosa.Classic.Model.Schedule.Uni.Basic.Platform
+import Prosa.Util.Epsilon
+import Prosa.Classic.Model.Schedule.Uni.Limited.Edf.Response_time_bound
+import Mathlib.Tactic
+
+namespace Prosa.Classic.Model.Schedule.Uni.Limited.Edf.Nonpr_reg.Response_time_bound
+
+open Prosa.Classic.Model.Time
+open Prosa.Classic.Model.Arrival.Curves.Bounds.ArrivalCurves
+open Prosa.Classic.Model.Schedule.Uni.Schedule
+open Prosa.Classic.Model.Schedule.Uni.Workload
+open Prosa.Classic.Model.Schedule.Uni.Service
+open Prosa.Classic.Model.Schedule.Uni.Response_time.ResponseTime
+open Prosa.Classic.Model.Schedule.Uni.Limited.Platform.Definitions.LimitedPreemptionPlatform
+open Prosa.Classic.Model.Schedule.Uni.Limited.Schedule
+open Prosa.Classic.Model.Schedule.Uni.Limited.Busy_interval.BusyIntervalJLFP
+open Prosa.Classic.Model.Priority
+open Prosa.Classic.Analysis.Uni.Arrival_curves.Workload_bound.MaxArrivalsWorkloadBound
+open Prosa.Util.Epsilon
+open Prosa.Classic.Model.Arrival.Basic.Arrival_sequence
+open Prosa.Classic.Model.Schedule.Uni.Limited.Edf.Response_time_bound.AbstractRTAforEDFwithArrivalCurves
+
+namespace RTAforEDFwithBoundedNonpreemptiveSegmentsWithArrivalCurves
+
+noncomputable section
+
+variable {Task : Type} [DecidableEq Task]
+variable {Job : Type} [DecidableEq Job]
+
+def blocking_bound
+    (task_max_nps : Task → Time) (task_deadline : Task → Time)
+    (ts : List Task) (tsk : Task) : Nat :=
+  ((ts.filter (fun tsk_other =>
+    decide (tsk_other ≠ tsk) && decide (task_deadline tsk < task_deadline tsk_other))).map
+    (fun tsk_other => task_max_nps tsk_other - ε)).foldl max 0
+
+def bound_on_total_hep_workload
+    (task_cost : Task → Time) (task_deadline : Task → Time)
+    (max_arrivals : Task → Time → Nat)
+    (ts : List Task) (tsk : Task) (A Δ : Time) : Nat :=
+  ((ts.filter (fun tsk_o => decide (tsk_o ≠ tsk))).map
+    (fun tsk_o => task_request_bound_function task_cost max_arrivals tsk_o
+      (min ((A + ε) + task_deadline tsk - task_deadline tsk_o) Δ))).sum
+
+def max_length_of_priority_inversion
+    (job_max_nps : Job → Time) (task_deadline : Task → Time)
+    (job_arrival : Job → Time) (job_task : Job → Task)
+    (arr_seq : arrival_sequence Job)
+    (j : Job) (t : Time) : Nat :=
+  ((jobs_arrived_before arr_seq t).filter
+    (fun j_lp => !(EDF job_arrival (fun j' => task_deadline (job_task j')) j_lp j))).map
+    (fun j_lp => job_max_nps j_lp - ε) |>.foldl max 0
+
+def task_rbf_changes_at
+    (task_cost : Task → Time) (max_arrivals : Task → Time → Nat)
+    (tsk : Task) (A : Time) : Bool :=
+  decide (task_request_bound_function task_cost max_arrivals tsk A ≠
+          task_request_bound_function task_cost max_arrivals tsk (A + ε))
+
+def bound_on_total_hep_workload_changes_at
+    (task_cost : Task → Time) (task_deadline : Task → Time)
+    (max_arrivals : Task → Time → Nat)
+    (ts : List Task) (tsk : Task) (A : Time) : Bool :=
+  ts.any (fun tsk_o =>
+    decide (tsk ≠ tsk_o) &&
+    decide (task_request_bound_function task_cost max_arrivals tsk_o
+              (A + task_deadline tsk - task_deadline tsk_o) ≠
+            task_request_bound_function task_cost max_arrivals tsk_o
+              ((A + ε) + task_deadline tsk - task_deadline tsk_o)))
+
+section Analysis
+
+  variable (task_max_nps task_cost : Task → Time)
+  variable (task_deadline : Task → Time)
+
+  variable (job_arrival : Job → Time)
+  variable (job_max_nps job_cost : Job → Time)
+  variable (job_task : Job → Task)
+
+  variable (arr_seq : arrival_sequence Job)
+  variable (H_arrival_times_are_consistent :
+    arrival_times_are_consistent job_arrival arr_seq)
+  variable (H_arr_seq_is_a_set :
+    arrival_sequence_is_a_set arr_seq)
+
+  variable (sched : schedule Job)
+  variable (H_jobs_come_from_arrival_sequence : jobs_come_from_arrival_sequence sched arr_seq)
+
+  variable (H_jobs_must_arrive_to_execute : jobs_must_arrive_to_execute job_arrival sched)
+  variable (H_completed_jobs_dont_execute : completed_jobs_dont_execute job_cost sched)
+
+  variable (H_sequential_jobs : sequential_jobs job_arrival job_cost sched job_task)
+
+  variable (can_be_preempted : Job → Time → Bool)
+
+  variable (H_correct_preemption_model :
+    correct_preemption_model arr_seq sched can_be_preempted)
+  variable (H_model_with_bounded_nonpreemptive_segments :
+    model_with_bounded_nonpreemptive_segments
+      job_cost job_task arr_seq can_be_preempted job_max_nps task_max_nps)
+
+  variable (H_work_conserving :
+    Prosa.Classic.Model.Schedule.Uni.Basic.Platform.Platform.work_conserving
+      job_arrival job_cost arr_seq sched)
+
+  variable (H_respects_policy :
+    respects_JLFP_policy_at_preemption_point
+      job_arrival job_cost arr_seq sched can_be_preempted
+      (EDF job_arrival (fun j => task_deadline (job_task j))))
+
+  variable (ts : List Task)
+
+  variable (H_all_jobs_from_taskset :
+    ∀ j, arrives_in arr_seq j → job_task j ∈ ts)
+
+  variable (H_job_cost_le_task_cost :
+    ∀ j, arrives_in arr_seq j →
+      job_cost j ≤ task_cost (job_task j))
+
+  variable (tsk : Task)
+  variable (H_tsk_in_ts : tsk ∈ ts)
+
+  variable (max_arrivals : Task → Time → Nat)
+  variable (H_family_of_proper_arrival_curves :
+    family_of_proper_arrival_curves job_task arr_seq max_arrivals ts)
+
+  variable (job_lock_in_service : Job → Time)
+  variable (task_lock_in_service : Task → Time)
+
+  variable (H_proper_job_lock_in_service :
+    proper_job_lock_in_service job_cost arr_seq sched job_lock_in_service)
+
+  variable (H_proper_task_lock_in_service :
+    proper_task_lock_in_service
+      task_cost job_task arr_seq job_lock_in_service task_lock_in_service tsk)
+
+  section PriorityInversionIsBounded
+
+    include H_arrival_times_are_consistent H_arr_seq_is_a_set H_jobs_come_from_arrival_sequence H_jobs_must_arrive_to_execute H_completed_jobs_dont_execute H_sequential_jobs H_correct_preemption_model H_model_with_bounded_nonpreemptive_segments H_work_conserving H_respects_policy H_all_jobs_from_taskset H_job_cost_le_task_cost H_tsk_in_ts H_family_of_proper_arrival_curves H_proper_job_lock_in_service H_proper_task_lock_in_service in
+    theorem priority_inversion_is_bounded_by_blocking :
+        ∀ (j : Job) (t : Time),
+          arrives_in arr_seq j →
+          job_task j = tsk →
+          t ≤ job_arrival j →
+          max_length_of_priority_inversion job_max_nps task_deadline job_arrival job_task arr_seq j t ≤
+          blocking_bound task_max_nps task_deadline ts tsk := by
+      intro j t ARR TSK LE
+      unfold max_length_of_priority_inversion blocking_bound
+      -- Need: foldl max 0 (filter(not EDF).map(job_max_nps - ε)) ≤ foldl max 0 (filter(...).map(task_max_nps - ε))
+      -- Key helper: foldl max 0 l ≤ m if all elements of l are ≤ m
+      have h_foldl_le : ∀ (l : List ℕ) (m : ℕ),
+          (∀ x, x ∈ l → x ≤ m) → l.foldl max 0 ≤ m := by
+        intro l m h_all
+        induction l with
+        | nil => simp [List.foldl]
+        | cons y ys ih =>
+          simp only [List.foldl_cons]
+          have h_mono : ∀ (acc : ℕ) (l : List ℕ),
+              (∀ x, x ∈ l → x ≤ m) → acc ≤ m → l.foldl max acc ≤ m := by
+            intro acc l
+            induction l generalizing acc with
+            | nil => intro _ h; exact h
+            | cons z zs ihz =>
+              intro h_all' h_acc
+              simp only [List.foldl_cons]
+              apply ihz
+              · intro x hx; exact h_all' x (List.mem_cons_of_mem z hx)
+              · exact max_le h_acc (h_all' z (List.mem_cons.mpr (Or.inl rfl)))
+          exact h_mono _ ys (fun x hx => h_all x (List.mem_cons_of_mem y hx))
+            (max_le (Nat.zero_le m) (h_all y (List.mem_cons.mpr (Or.inl rfl))))
+      -- Key helper: a ∈ l implies a ≤ l.foldl max 0
+      have h_mem_le : ∀ (l : List ℕ) (a : ℕ), a ∈ l → a ≤ l.foldl max 0 := by
+        intro l
+        induction l with
+        | nil => intro a ha; simp at ha
+        | cons y ys ih =>
+          intro a ha
+          simp only [List.foldl_cons]
+          rcases List.mem_cons.mp ha with rfl | h
+          · have h_le_foldl : ∀ (acc : ℕ) (l : List ℕ), acc ≤ l.foldl max acc := by
+              intro acc l
+              induction l generalizing acc with
+              | nil => exact le_refl acc
+              | cons z zs ihz =>
+                simp only [List.foldl_cons]
+                exact le_trans (le_max_left acc z) (ihz _)
+            exact le_trans (le_max_right 0 a) (h_le_foldl _ ys)
+          · have h_mono_foldl : ∀ (acc1 acc2 : ℕ) (l : List ℕ), acc1 ≤ acc2 → l.foldl max acc1 ≤ l.foldl max acc2 := by
+              intro acc1 acc2 l
+              induction l generalizing acc1 acc2 with
+              | nil => exact id
+              | cons z zs ihz =>
+                intro hle; simp only [List.foldl_cons]
+                apply ihz; exact max_le_max_right z hle
+            exact le_trans (ih a h) (h_mono_foldl 0 (max 0 y) ys (Nat.zero_le _))
+      apply h_foldl_le
+      -- Now show each job_max_nps j_lp - ε ≤ blocking_bound for j_lp in the filtered list
+      intro x hx
+      simp only [List.mem_map] at hx
+      obtain ⟨j_lp, hj_lp_mem, rfl⟩ := hx
+      simp only [List.mem_filter] at hj_lp_mem
+      obtain ⟨hj_lp_arrived, hj_lp_not_hep⟩ := hj_lp_mem
+      -- j_lp arrives in arr_seq
+      have hj_lp_arrives : arrives_in arr_seq j_lp := by
+        exact in_arrivals_implies_arrived job_arrival arr_seq H_arrival_times_are_consistent j_lp 0 t hj_lp_arrived
+      -- job_max_nps j_lp ≤ task_max_nps (job_task j_lp)
+      have hj_lp_bounded := H_model_with_bounded_nonpreemptive_segments j_lp hj_lp_arrives
+      obtain ⟨_, _, hj_lp_nps_le, _⟩ := hj_lp_bounded
+      unfold job_max_nonpreemptive_segment_le_task_max_nonpreemptive_segment at hj_lp_nps_le
+      have hj_lp_le : job_max_nps j_lp ≤ task_max_nps (job_task j_lp) := hj_lp_nps_le hj_lp_arrives
+      -- job_task j_lp ∈ ts
+      have hj_lp_task_in_ts : job_task j_lp ∈ ts := H_all_jobs_from_taskset j_lp hj_lp_arrives
+      -- From hj_lp_not_hep: !(EDF j_lp j) = true, meaning EDF j_lp j = false
+      have hj_lp_edf_false : EDF job_arrival (fun j' => task_deadline (job_task j')) j_lp j = false := by
+        simpa using hj_lp_not_hep
+      unfold EDF at hj_lp_edf_false
+      have hj_lp_not_le : ¬ (job_arrival j_lp + task_deadline (job_task j_lp) ≤
+          job_arrival j + task_deadline (job_task j)) := by
+        simp only [decide_eq_false_iff_not] at hj_lp_edf_false
+        exact hj_lp_edf_false
+      have hj_lp_arr_lt : job_arrival j_lp < t := by
+        have := in_arrivals_implies_arrived_between job_arrival arr_seq
+          H_arrival_times_are_consistent j_lp 0 t hj_lp_arrived
+        exact this.2
+      have hj_lp_arr_le_j : job_arrival j_lp < job_arrival j := Nat.lt_of_lt_of_le hj_lp_arr_lt LE
+      rw [TSK] at hj_lp_not_le
+      -- hj_lp_not_le : ¬ (job_arrival j_lp + task_deadline (job_task j_lp) ≤ job_arrival j + task_deadline tsk)
+      have hj_lp_gt : job_arrival j + task_deadline tsk < job_arrival j_lp + task_deadline (job_task j_lp) := by
+        exact Nat.lt_of_not_le hj_lp_not_le
+      -- We have: job_arrival j_lp < job_arrival j  AND  job_arrival j + d_tsk < job_arrival j_lp + d_lp
+      -- So: d_tsk < d_lp
+      have h_deadline_lt : task_deadline tsk < task_deadline (job_task j_lp) := by
+        -- Debug: try exact to understand the types
+        exact sorry
+      have h_task_neq : job_task j_lp ≠ tsk := by
+        intro h; rw [h] at h_deadline_lt; exact Nat.lt_irrefl _ h_deadline_lt
+      -- Now: job_max_nps j_lp - ε ≤ task_max_nps (job_task j_lp) - ε
+      -- and task_max_nps (job_task j_lp) - ε is in the blocking_bound list
+      apply le_trans (Nat.sub_le_sub_right hj_lp_le ε)
+      apply h_mem_le
+      apply List.mem_map.mpr
+      exact ⟨job_task j_lp, List.mem_filter_of_mem hj_lp_task_in_ts (by simp [h_task_neq, h_deadline_lt]), rfl⟩
+
+    include H_arrival_times_are_consistent H_arr_seq_is_a_set H_jobs_come_from_arrival_sequence H_jobs_must_arrive_to_execute H_completed_jobs_dont_execute H_sequential_jobs H_correct_preemption_model H_model_with_bounded_nonpreemptive_segments H_work_conserving H_respects_policy H_all_jobs_from_taskset H_job_cost_le_task_cost H_tsk_in_ts H_family_of_proper_arrival_curves H_proper_job_lock_in_service H_proper_task_lock_in_service in
+    theorem priority_inversion_is_bounded :
+        priority_inversion_is_bounded_by job_arrival job_cost job_task arr_seq sched
+          (EDF job_arrival (fun j' => task_deadline (job_task j'))) tsk
+          (blocking_bound task_max_nps task_deadline ts tsk) := by
+      sorry
+
+  end PriorityInversionIsBounded
+
+  section ResponseTimeBound
+
+    variable (L : Time)
+    variable (H_L_positive : L > 0)
+    variable (H_fixed_point : L = total_request_bound_function task_cost max_arrivals ts L)
+
+    variable (R : Nat)
+    variable (H_R_is_maximum :
+      ∀ (A : Time),
+        (decide (A < L) &&
+          (task_rbf_changes_at task_cost max_arrivals tsk A ||
+           bound_on_total_hep_workload_changes_at task_cost task_deadline max_arrivals ts tsk A)) = true →
+        ∃ F,
+          A + F = blocking_bound task_max_nps task_deadline ts tsk
+                  + (task_request_bound_function task_cost max_arrivals tsk (A + ε) -
+                     (task_cost tsk - task_lock_in_service tsk))
+                  + bound_on_total_hep_workload task_cost task_deadline max_arrivals ts tsk A (A + F) ∧
+          F + (task_cost tsk - task_lock_in_service tsk) ≤ R)
+
+    include H_arrival_times_are_consistent H_arr_seq_is_a_set H_jobs_come_from_arrival_sequence H_jobs_must_arrive_to_execute H_completed_jobs_dont_execute H_sequential_jobs H_correct_preemption_model H_model_with_bounded_nonpreemptive_segments H_work_conserving H_respects_policy H_all_jobs_from_taskset H_job_cost_le_task_cost H_tsk_in_ts H_family_of_proper_arrival_curves H_proper_job_lock_in_service H_proper_task_lock_in_service H_L_positive H_fixed_point H_R_is_maximum in
+    theorem uniprocessor_response_time_bound_edf_with_bounded_nonpreemptive_segments :
+        is_response_time_bound_of_task job_arrival job_cost job_task arr_seq sched tsk R := by
+      exact Prosa.Classic.Model.Schedule.Uni.Limited.Edf.Response_time_bound.AbstractRTAforEDFwithArrivalCurves.uniprocessor_response_time_bound_edf
+        task_cost task_deadline job_arrival job_cost job_task arr_seq
+        H_arrival_times_are_consistent H_arr_seq_is_a_set sched
+        H_jobs_come_from_arrival_sequence H_jobs_must_arrive_to_execute
+        H_completed_jobs_dont_execute H_work_conserving H_sequential_jobs
+        H_job_cost_le_task_cost ts H_all_jobs_from_taskset max_arrivals
+        H_family_of_proper_arrival_curves tsk H_tsk_in_ts
+        job_lock_in_service task_lock_in_service
+        H_proper_job_lock_in_service H_proper_task_lock_in_service
+        (blocking_bound task_max_nps task_deadline ts tsk)
+        (priority_inversion_is_bounded task_max_nps task_cost task_deadline
+          job_arrival job_max_nps job_cost job_task arr_seq
+          H_arrival_times_are_consistent H_arr_seq_is_a_set sched
+          H_jobs_come_from_arrival_sequence H_jobs_must_arrive_to_execute
+          H_completed_jobs_dont_execute H_sequential_jobs can_be_preempted
+          H_correct_preemption_model H_model_with_bounded_nonpreemptive_segments
+          H_work_conserving H_respects_policy ts H_all_jobs_from_taskset
+          H_job_cost_le_task_cost tsk H_tsk_in_ts max_arrivals
+          H_family_of_proper_arrival_curves job_lock_in_service task_lock_in_service
+          H_proper_job_lock_in_service H_proper_task_lock_in_service)
+        L H_L_positive H_fixed_point R H_R_is_maximum
+
+  end ResponseTimeBound
+
+end Analysis
+
+end
+
+end RTAforEDFwithBoundedNonpreemptiveSegmentsWithArrivalCurves
+
+end Prosa.Classic.Model.Schedule.Uni.Limited.Edf.Nonpr_reg.Response_time_bound
