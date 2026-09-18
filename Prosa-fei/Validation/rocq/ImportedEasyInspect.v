@@ -1,0 +1,15 @@
+From LeanImport Require Import Lean.
+Require Import ImportedEasy93.
+
+Check Prosa_Behavior_Time_instant.
+Print Prosa_Behavior_Time_instant.
+Check Prosa_Behavior_Time_duration.
+Print Prosa_Behavior_Time_duration.
+Check Prosa_Behavior_Job_work.
+Print Prosa_Behavior_Job_work.
+Check Prosa_Behavior_Job_JobCost_job_cost.
+Print Prosa_Behavior_Job_JobCost_job_cost.
+Check Prosa_Behavior_Job_JobArrival_job_arrival.
+Print Prosa_Behavior_Job_JobArrival_job_arrival.
+Check Prosa_Behavior_Job_JobDeadline_job_deadline.
+Print Prosa_Behavior_Job_JobDeadline_job_deadline.

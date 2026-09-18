@@ -1,17 +1,138 @@
 provenance:
   rts_commit: 845f156a6a75f704361c230870d97566a14b6913
+  validation_commit_at_phase_start: 49eb92fbe1e0e1cc4e6c049f3f9d7ded9f67e033
   prosa_release: v0.6
   prosa_commit: 414e66760333eaa4ef78c685bcf53291c527a548
 
 symbols:
+  - rocq: prosa.behavior.time.instant
+    lean: Prosa.Behavior.Time.instant
+    imported: Prosa_Behavior_Time_instant
+    relation: nat isomorphism via rocq_nat_to_imported/imported_nat_to_rocq
+    certificate: instant_roundtrip_rocq and instant_roundtrip_imported
+    status: CERTIFIED
+
+  - rocq: prosa.behavior.time.duration
+    lean: Prosa.Behavior.Time.duration
+    imported: Prosa_Behavior_Time_duration
+    relation: nat isomorphism via rocq_nat_to_imported/imported_nat_to_rocq
+    certificate: duration_roundtrip_rocq and duration_roundtrip_imported
+    status: CERTIFIED
+
+  - rocq: prosa.behavior.job.work
+    lean: Prosa.Behavior.Job.work
+    imported: Prosa_Behavior_Job_work
+    relation: nat isomorphism via rocq_nat_to_imported/imported_nat_to_rocq
+    certificate: work_roundtrip_rocq and work_roundtrip_imported
+    status: CERTIFIED
+
+  - rocq: prosa.behavior.job.job_cost
+    lean: Prosa.Behavior.Job.JobCost.job_cost
+    imported: Prosa_Behavior_Job_JobCost_job_cost
+    relation: canonical JobCost record mapping plus ImportedNatRel
+    certificate: job_cost_projection_certificate
+    status: PARAMETRICALLY_CERTIFIED
+
+  - rocq: prosa.behavior.job.job_arrival
+    lean: Prosa.Behavior.Job.JobArrival.job_arrival
+    imported: Prosa_Behavior_Job_JobArrival_job_arrival
+    relation: canonical JobArrival record mapping plus ImportedNatRel
+    certificate: job_arrival_projection_certificate
+    status: PARAMETRICALLY_CERTIFIED
+
+  - rocq: prosa.behavior.job.job_deadline
+    lean: Prosa.Behavior.Job.JobDeadline.job_deadline
+    imported: Prosa_Behavior_Job_JobDeadline_job_deadline
+    relation: canonical JobDeadline record mapping plus ImportedNatRel
+    certificate: job_deadline_projection_certificate
+    status: PARAMETRICALLY_CERTIFIED
+
+  - rocq: prosa.behavior.arrival_sequence.arrival_sequence
+    lean: Prosa.Behavior.Arrival_sequence.arrival_sequence
+    imported: Prosa_Behavior_Arrival_sequence_arrival_sequence
+    relation: pointwise ImportedNatRel input and ImportedListRel output
+    certificate: arrival_sequence_pointwise_certificate
+    status: PARAMETRICALLY_CERTIFIED
+
+  - rocq: prosa.behavior.arrival_sequence.arrivals_at
+    lean: Prosa.Behavior.Arrival_sequence.arrivals_at
+    imported: Prosa_Behavior_Arrival_sequence_arrivals_at
+    relation: ImportedListRel at canonically related instants
+    certificate: arrivals_at_certificate
+    status: PARAMETRICALLY_CERTIFIED
+
+  - rocq: prosa.behavior.arrival_sequence.arrives_at
+    lean: Prosa.Behavior.Arrival_sequence.arrives_at
+    imported: Prosa_Behavior_Arrival_sequence_arrives_at
+    relation: ImportedBoolSPropRel composed with seq/List membership
+    certificate: arrives_at_certificate
+    status: PARAMETRICALLY_CERTIFIED
+
+  - rocq: prosa.behavior.arrival_sequence.has_arrived
+    lean: Prosa.Behavior.Arrival_sequence.has_arrived
+    imported: Prosa_Behavior_Arrival_sequence_has_arrived
+    relation: ImportedBoolSPropRel over imported Nat.le
+    certificate: has_arrived_certificate
+    status: PARAMETRICALLY_CERTIFIED
+
+  - rocq: prosa.behavior.arrival_sequence.arrived_before
+    lean: Prosa.Behavior.Arrival_sequence.arrived_before
+    imported: Prosa_Behavior_Arrival_sequence_arrived_before
+    relation: ImportedBoolSPropRel over imported Nat.lt
+    certificate: arrived_before_certificate
+    status: PARAMETRICALLY_CERTIFIED
+
+  - rocq: prosa.behavior.arrival_sequence.arrived_between
+    lean: Prosa.Behavior.Arrival_sequence.arrived_between
+    imported: Prosa_Behavior_Arrival_sequence_arrived_between
+    relation: Bool conjunction composed with imported SProp And and Nat order bridges
+    certificate: arrived_between_certificate
+    status: PARAMETRICALLY_CERTIFIED
+
+  - rocq: prosa.behavior.arrival_sequence.arrives_in
+    lean: Prosa.Behavior.Arrival_sequence.arrives_in
+    imported: Prosa_Behavior_Arrival_sequence_arrives_in
+    relation: intended existential correspondence over Nat/List membership
+    status: BLOCKED
+    blocker: Rocq kernel forbids eliminating ordinary Prop existential into imported SProp Exists and vice versa
+
+  - rocq: prosa.behavior.arrival_sequence.consistent_arrival_times
+    lean: Prosa.Behavior.Arrival_sequence.consistent_arrival_times
+    imported: Prosa_Behavior_Arrival_sequence_consistent_arrival_times
+    relation: intended predicate correspondence over arrives_at and ImportedNatRel
+    status: BLOCKED
+    blocker: full two-way theorem crosses witness-carrying Prop/SProp membership boundary
+
+  - rocq: prosa.behavior.arrival_sequence.arrival_sequence_uniq
+    lean: Prosa.Behavior.Arrival_sequence.arrival_sequence_uniq
+    imported: Prosa_Behavior_Arrival_sequence_arrival_sequence_uniq
+    relation: intended MathComp uniq to imported List.Nodup correspondence
+    status: BLOCKED
+    blocker: outer Rocq Prop forall versus imported SProp forall prevents two-way declaration-level equivalence without a sort bridge
+
+  - rocq: prosa.behavior.arrival_sequence.valid_arrival_sequence
+    lean: Prosa.Behavior.Arrival_sequence.valid_arrival_sequence
+    imported: Prosa_Behavior_Arrival_sequence_valid_arrival_sequence
+    relation: conjunction of consistent_arrival_times and arrival_sequence_uniq
+    status: BLOCKED
+    blocker: both semantic dependencies are blocked at the Prop/SProp boundary
+
   - rocq: prosa.behavior.schedule.scheduled_in
     lean: Prosa.Behavior.Schedule.ProcessorState.scheduled_in
-    relation: BoolRel
+    relation: ImportedBoolRel
     dependencies:
       Core: finite-enumeration bijection
       scheduled_on: pointwise BoolRel on related job/state/core values
-    status: BLOCKED
-    blocker: actual Lean declaration is exported but not imported into Rocq
+    status: CONDITIONAL
+    actual_artifact_imported: true
+    certificate: scheduled_in_actual_artifact_bridge
+    blocker: generic processor-state theorem remains conditional on core_surjective and scheduled_on_rel
+    concrete_instances:
+      - processor: Prosa.Model.Processor.Ideal.pstate_instance
+        imported_entry: Prosa.Validation.ideal_scheduled_in
+        certificate: ideal_scheduled_in_certificate
+        relation: IdealStateRel plus imported Lean equality on the shared Job carrier
+        status: CERTIFIED
 
   - rocq: prosa.behavior.service.completed_by
     lean: Prosa.Behavior.Service.completed_by

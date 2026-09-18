@@ -4,7 +4,10 @@ set -euo pipefail
 here=$(cd "$(dirname "$0")/.." && pwd)
 rocq_dir="$here/rocq"
 report_dir="$here/reports"
+log_dir="$report_dir/logs"
 switch_name=${PROSA_OPAM_SWITCH:-prosa-0.6}
+
+mkdir -p "$log_dir"
 
 if rg -n '\b(Admitted|Axiom|Parameter)\b|\bsorry\b' "$rocq_dir"/*.v; then
   echo "Forbidden proof escape found." >&2
@@ -26,7 +29,7 @@ for file in "${files[@]}"; do
   opam exec --switch="$switch_name" -- rocq c "$file"
 done
 opam exec --switch="$switch_name" -- rocq c AssumptionAudit.v \
-  | tee "$report_dir/assumptions.log"
+  | tee "$log_dir/assumptions.log"
 
 echo "Bridge scaffolding: PASS"
 echo "Actual-artifact certificates: BLOCKED (run import_lean.sh for the recorded failure)"

@@ -1,0 +1,7 @@
+From LeanImport Require Import Lean.
+Require Import ImportedIdealConcrete93.
+
+Check Prosa_Validation_ideal_scheduled_in.
+Print Prosa_Validation_ideal_scheduled_in.
+Check Prosa_Model_Processor_Ideal_pstate_instance.
+Check Prosa_Behavior_Schedule_ProcessorState_scheduled_in.

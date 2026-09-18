@@ -1,0 +1,52 @@
+Prosa_Behavior_Time_instant
+     : Type
+Prosa_Behavior_Time_instant@{} = Nat
+     : Type
+Prosa_Behavior_Time_duration
+     : Type
+Prosa_Behavior_Time_duration@{} = Nat
+     : Type
+Prosa_Behavior_Job_work
+     : Type
+Prosa_Behavior_Job_work@{} = Nat
+     : Type
+Prosa_Behavior_Job_JobCost_job_cost
+     : forall Job : Prosa_Behavior_Job_JobType,
+       Prosa_Behavior_Job_JobCost Job -> Job -> Prosa_Behavior_Job_work
+Prosa_Behavior_Job_JobCost_job_cost@{} =
+fun (Job : Prosa_Behavior_Job_JobType)
+  (self : Prosa_Behavior_Job_JobCost Job) =>
+job_cost _ self
+     : forall Job : Prosa_Behavior_Job_JobType,
+       Prosa_Behavior_Job_JobCost Job -> Job -> Prosa_Behavior_Job_work
+
+Arguments Prosa_Behavior_Job_JobCost_job_cost Job 
+  self a____at____internal__hyg0
+Prosa_Behavior_Job_JobArrival_job_arrival
+     : forall Job : Prosa_Behavior_Job_JobType,
+       Prosa_Behavior_Job_JobArrival Job ->
+       Job -> Prosa_Behavior_Time_instant
+Prosa_Behavior_Job_JobArrival_job_arrival@{} =
+fun (Job : Prosa_Behavior_Job_JobType)
+  (self : Prosa_Behavior_Job_JobArrival Job) =>
+job_arrival _ self
+     : forall Job : Prosa_Behavior_Job_JobType,
+       Prosa_Behavior_Job_JobArrival Job ->
+       Job -> Prosa_Behavior_Time_instant
+
+Arguments Prosa_Behavior_Job_JobArrival_job_arrival 
+  Job self a____at____internal__hyg0
+Prosa_Behavior_Job_JobDeadline_job_deadline
+     : forall Job : Prosa_Behavior_Job_JobType,
+       Prosa_Behavior_Job_JobDeadline Job ->
+       Job -> Prosa_Behavior_Time_instant
+Prosa_Behavior_Job_JobDeadline_job_deadline@{} =
+fun (Job : Prosa_Behavior_Job_JobType)
+  (self : Prosa_Behavior_Job_JobDeadline Job) =>
+job_deadline _ self
+     : forall Job : Prosa_Behavior_Job_JobType,
+       Prosa_Behavior_Job_JobDeadline Job ->
+       Job -> Prosa_Behavior_Time_instant
+
+Arguments Prosa_Behavior_Job_JobDeadline_job_deadline 
+  Job self a____at____internal__hyg0

@@ -236,7 +236,7 @@ completed_by
 
 ## Assumption audit
 
-The full output is in `reports/assumptions.log`. Rocq printed
+The full output is in `reports/logs/assumptions.log`. Rocq printed
 `Closed under the global context` for all nine audited scaffolding and mutation
 lemmas. No target certificate exists, so there is still no successful actual-
 artifact target assumption closure to report.
@@ -379,7 +379,7 @@ while it is expected to have type
  "UInt32 -> BitVec (OfNat_ofNat_inst1 Nat 32 (instOfNatNat 32))".
 ```
 
-The complete latest attempt is saved in `reports/import_scheduled.log`.
+The complete latest attempt is saved in `reports/logs/import_scheduled.log`.
 This is evidence that the first projection blocker was repairable, but the
 actual target is still not imported. The new failure is a conversion mismatch
 between the predeclared `UInt32` projection and Lean's `BitVec 32` alias. No
@@ -514,7 +514,7 @@ while it is expected to have type
 ```
 
 The full run is recorded in
-`reports/import_scheduled_rocq93_master.log`. This confirms with Rocq 9.3 RC1
+`reports/logs/import_scheduled_rocq93_master.log`. This confirms with Rocq 9.3 RC1
 that importer master contains the required dependent-projection repair, but
 master does not contain upstream branch commit
 `fc148dfa2e8f27e1a9753e9403d26f0d16440279` (`add support for UInt32`). That
@@ -542,7 +542,7 @@ missing String.mk
 ```
 
 The run reached 1,437 imported entries and is saved in
-`reports/import_scheduled_rocq93_uint32.log`. Therefore the upstream UInt32
+`reports/logs/import_scheduled_rocq93_uint32.log`. Therefore the upstream UInt32
 patch is empirically sufficient for the earlier UInt32 blocker; it is still a
 temporary importer-only patch and is not part of the RTS repository. The new
 blocker is resolution of Lean 4.33's `String.mk` constructor after the
@@ -578,7 +578,7 @@ line 91990: _private.Init.Prelude0.isValidChar_UInt32.match_1_1
 Segmentation fault: 11
 ```
 
-The run is saved in `reports/import_scheduled_rocq93_string.log`. Unlike the
+The run is saved in `reports/logs/import_scheduled_rocq93_string.log`. Unlike the
 previous failures, Rocq emitted no ordinary kernel error and no `Done!`
 summary, so this stage is still a failed import. The next task is to isolate
 the crashing declaration with `Lean Import ... From ... Until ...` bounds and
@@ -651,7 +651,7 @@ Segmentation fault: 11
 ```
 
 The current-head log is
-`reports/import_scheduled_rocq_master.log`. This rules out the exact 9.3 RC1
+`reports/logs/import_scheduled_rocq_master.log`. This rules out the exact 9.3 RC1
 revision as the sole cause and shows the crash is reproducible on Rocq master
 `03e4ab26...`. Since the crashing term is a deeply nested dependent match and
 no kernel diagnostic is printed, the next minimal non-semantic experiment is
@@ -674,7 +674,7 @@ line 92064: Char.ofNatAux
 
 It then again terminated with signal 11 while entering the still deeper
 `Char.ofNat` proof immediately following line 92,064. The log is
-`reports/import_scheduled_rocq_master_stack64m.log`. This is strong operational
+`reports/logs/import_scheduled_rocq_master_stack64m.log`. This is strong operational
 evidence of native stack exhaustion in the recursive expression conversion,
 not a Rocq kernel rejection: increasing the stack moved the failure boundary
 forward across the exact declaration that failed at 8 MB. The platform hard
@@ -703,7 +703,7 @@ This confirms that OCaml 5 removes the fixed native-stack failure, but the
 legacy export's missing opacity metadata makes a large proof transparent and
 causes pathological checking/unfolding in the following computational
 definition. The partial log is
-`reports/import_scheduled_rocq_master_ocaml5.log`; it is not a successful
+`reports/logs/import_scheduled_rocq_master_ocaml5.log`; it is not a successful
 import.
 
 Immediately afterward, upstream pull request 78 was identified at commit

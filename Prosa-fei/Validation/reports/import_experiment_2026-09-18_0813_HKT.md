@@ -67,7 +67,7 @@ Command:
 ROCQLI_SRC=/private/tmp/rocq-lean-import-current \
 IMPORT_OPAM_SWITCH=rocq-master-ocaml5 \
 ./scripts/import_lean.sh ImportedScheduled.v \
-  > reports/import_scheduled_pr78_typeopacity.log 2>&1
+  > reports/logs/import_scheduled_pr78_typeopacity.log 2>&1
 ```
 
 At the 08:17 snapshot the process was still CPU-active, with no kernel error,
@@ -133,7 +133,7 @@ beyond `Char.ofNatAux`.
 The run was therefore stopped with interrupt (exit code 130) to avoid machine
 memory exhaustion. This is a definite failed run, not a timeout being counted
 as successful progress. Its log is
-`reports/import_scheduled_pr78_typeopacity.log`.
+`reports/logs/import_scheduled_pr78_typeopacity.log`.
 
 The next importer experiment will mark only `Char.ofNatAux` as a delayed
 opaque declaration. This does **not** skip or admit its body: PR 78 submits the
@@ -160,7 +160,7 @@ The new full import command is:
 ROCQLI_SRC=/private/tmp/rocq-lean-import-current \
 IMPORT_OPAM_SWITCH=rocq-master-ocaml5 \
 ./scripts/import_lean.sh ImportedScheduled.v \
-  > reports/import_scheduled_pr78_charopaque.log 2>&1
+  > reports/logs/import_scheduled_pr78_charopaque.log 2>&1
 ```
 
 After 44 seconds it had passed the former line-92,064 barrier and reached
@@ -232,7 +232,7 @@ The unchanged actual artifact was then imported with:
 ROCQLI_SRC=/private/tmp/rocq-lean-import-current \
 IMPORT_OPAM_SWITCH=rocq-master-ocaml5 \
 ./scripts/import_lean.sh ImportedScheduled.v \
-  > reports/import_scheduled_char_predeclared.log 2>&1
+  > reports/logs/import_scheduled_char_predeclared.log 2>&1
 ```
 
 This command exited with status 0. Its final output was:
@@ -284,7 +284,7 @@ forall (Job : Prosa_Behavior_Job_JobType) (State : Type),
 Its printed body is the actual expected translation: `Decidable_decide` of an
 imported `Exists` over the projected `Core`, whose predicate calls the actual
 imported `scheduled_on` and compares it with `Bool_true`. The independent
-check log is `reports/imported_scheduled_check.log`.
+check log is `reports/logs/imported_scheduled_check.log`.
 
 The target's reported assumptions are the importer's established Lean model
 boundary: definitional UIP for imported equality/HEq/True, `propext`, the
@@ -355,7 +355,7 @@ ulimit -s 65520
 ROCQLI_SRC=/private/tmp/rocq-lean-import-93 \
 IMPORT_OPAM_SWITCH=rocq93rc1 \
 ./scripts/import_lean.sh ImportedScheduled93.v \
-  > reports/import_scheduled_rocq93_predeclared.log 2>&1
+  > reports/logs/import_scheduled_rocq93_predeclared.log 2>&1
 ```
 
 The command exited 0 and printed:
@@ -433,7 +433,7 @@ Print Assumptions scheduled_in_actual_artifact_bridge.
 ```
 
 The output is saved verbatim in
-`reports/scheduled_in_actual_assumptions.log`. It lists only the importer's
+`reports/logs/scheduled_in_actual_assumptions.log`. It lists only the importer's
 established Lean model assumptions: definitional UIP for imported equality,
 HEq, True, and the local STrue representation; `propext`; registered
 `PrimInt63` primitives; `Quot_sound`; and `Classical_choice`. There is no
@@ -473,7 +473,7 @@ opam exec --switch=rocq93rc1 -- rocq c \
 ```
 
 The command exited 0. Its complete output is saved in
-`reports/scheduled_in_mutation.log`. Therefore:
+`reports/logs/scheduled_in_mutation.log`. Therefore:
 
 ```text
 Mutation Detection:

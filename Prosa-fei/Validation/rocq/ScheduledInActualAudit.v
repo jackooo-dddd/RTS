@@ -1,5 +1,5 @@
 From LeanImport Require Import Lean.
-Require Import ImportedScheduled93 ProcessorStateBridge.
+Require Import ImportedEasy93 ProcessorStateBridge.
 
 Check Prosa_Behavior_Schedule_ProcessorState_scheduled_in.
 Print Prosa_Behavior_Schedule_ProcessorState_scheduled_in.

@@ -1,7 +1,7 @@
 From mathcomp Require Import ssreflect ssrfun ssrbool eqtype fintype.
 From prosa Require Import behavior.schedule.
 From LeanImport Require Import Lean.
-Require Import ImportedScheduled93 ProcessorStateBridge.
+Require Import ImportedEasy93 ProcessorStateBridge.
 
 (** Negative test fixture only.  This deliberately changes the polarity of
     the result returned by the actual imported Lean [scheduled_in].  The

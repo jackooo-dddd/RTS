@@ -1,0 +1,92 @@
+Prosa_Model_Processor_Ideal_processor_state
+     : Prosa_Behavior_Job_JobType -> Type
+Prosa_Model_Processor_Ideal_processor_state@{} =
+fun Job : Prosa_Behavior_Job_JobType => Option_inst1 Job
+     : Prosa_Behavior_Job_JobType -> Type
+
+Arguments Prosa_Model_Processor_Ideal_processor_state Job
+Prosa_Model_Processor_Ideal_ideal_scheduled_at
+     : forall Job : Prosa_Behavior_Job_JobType,
+       DecidableEq Job ->
+       Job -> Prosa_Model_Processor_Ideal_processor_state Job -> Bool
+Prosa_Model_Processor_Ideal_ideal_scheduled_at@{} =
+fun (Job : Prosa_Behavior_Job_JobType)
+  (inst____at___Prosa_Model_Processor_Ideal3096836373__hygCtx__hyg3 : 
+   DecidableEq Job)
+  (j : Job) (s : Prosa_Model_Processor_Ideal_processor_state Job) =>
+Decidable_decide (eq s (Option_some_inst1 Job j))
+  (Option_instDecidableEq_inst1 Job
+     inst____at___Prosa_Model_Processor_Ideal3096836373__hygCtx__hyg3 s
+     (Option_some_inst1 Job j))
+     : forall Job : Prosa_Behavior_Job_JobType,
+       DecidableEq Job ->
+       Job -> Prosa_Model_Processor_Ideal_processor_state Job -> Bool
+
+Arguments Prosa_Model_Processor_Ideal_ideal_scheduled_at 
+  Job inst____at___Prosa_Model_Processor_Ideal3096836373__hygCtx__hyg3 
+  j s
+Prosa_Model_Processor_Ideal_pstate_instance
+     : forall Job : Prosa_Behavior_Job_JobType,
+       DecidableEq Job ->
+       Prosa_Behavior_Schedule_ProcessorState_inst1 Job
+         (Prosa_Model_Processor_Ideal_processor_state Job)
+Prosa_Model_Processor_Ideal_pstate_instance@{} =
+fun (Job : Prosa_Behavior_Job_JobType)
+  (inst____at___Prosa_Model_Processor_Ideal3046194812__hygCtx__hyg3 : 
+   DecidableEq Job) =>
+Prosa_Behavior_Schedule_ProcessorState_mk_inst1 Job
+  (Prosa_Model_Processor_Ideal_processor_state Job) Unit
+  (inferInstance (Fintype_inst1 Unit) PUnit_fintype_inst1)
+  (inferInstance (DecidableEq Unit) instDecidableEqPUnit)
+  (fun (j : Job) (s : Prosa_Model_Processor_Ideal_processor_state Job)
+     (_ : Unit) =>
+   Prosa_Model_Processor_Ideal_ideal_scheduled_at Job
+     inst____at___Prosa_Model_Processor_Ideal3046194812__hygCtx__hyg3 j s)
+  (fun (j : Job) (s : Prosa_Model_Processor_Ideal_processor_state Job) =>
+   Prosa_Model_Processor_Ideal_ideal_service_in Job
+     inst____at___Prosa_Model_Processor_Ideal3046194812__hygCtx__hyg3 j s)
+  (Prosa_Model_Processor_Ideal_pstate_instance__proof_1 Job
+     inst____at___Prosa_Model_Processor_Ideal3046194812__hygCtx__hyg3)
+     : forall Job : Prosa_Behavior_Job_JobType,
+       DecidableEq Job ->
+       Prosa_Behavior_Schedule_ProcessorState_inst1 Job
+         (Prosa_Model_Processor_Ideal_processor_state Job)
+
+Arguments Prosa_Model_Processor_Ideal_pstate_instance 
+  Job inst____at___Prosa_Model_Processor_Ideal3046194812__hygCtx__hyg3
+Prosa_Behavior_Schedule_ProcessorState_Core
+     : forall (Job : Prosa_Behavior_Job_JobType) (State : Type),
+       Prosa_Behavior_Schedule_ProcessorState Job State -> Type
+Prosa_Behavior_Schedule_ProcessorState_scheduled_on
+     : forall (Job : Prosa_Behavior_Job_JobType) (State : Type)
+         (self : Prosa_Behavior_Schedule_ProcessorState Job State),
+       Job ->
+       State ->
+       Prosa_Behavior_Schedule_ProcessorState_Core Job State self -> Bool
+Unit
+     : Type
+Unit_unit
+     : Unit
+Option
+     : Type -> Type
+Option_some
+     : forall _UU03b1_ : Type, _UU03b1_ -> Option _UU03b1_
+Option_none
+     : forall _UU03b1_ : Type, Option _UU03b1_
+Decidable
+     : SProp -> Type
+Decidable_isTrue
+     : forall p : SProp, p -> Decidable p
+Decidable_isFalse
+     : forall p : SProp, Not p -> Decidable p
+DecidableEq
+     : Type -> Type
+Classical_propDecidable
+     : forall a : SProp, Decidable a
+File "./ImportedIdealInspect.v", line 22, characters 6-21:
+Error: The reference instDecidableEq was not found in the current
+environment. Did you mean instDecidableOr, instDecidableNot,
+instDecidableIff, instDecidableEqNat, instDecidableAnd, instDecidableTrue,
+instDecidableEqBool, Int_instDecidableEq, DecidableEq, instDecidableFalse,
+instDecidableEqPUnit, instDecidableEqOfIff or instBEqOfDecidableEq?
+

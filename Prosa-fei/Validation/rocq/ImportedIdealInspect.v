@@ -1,0 +1,25 @@
+From LeanImport Require Import Lean.
+Require Import ImportedIdeal93.
+
+Check Prosa_Model_Processor_Ideal_processor_state.
+Print Prosa_Model_Processor_Ideal_processor_state.
+Check Prosa_Model_Processor_Ideal_ideal_scheduled_at.
+Print Prosa_Model_Processor_Ideal_ideal_scheduled_at.
+Check Prosa_Model_Processor_Ideal_pstate_instance.
+Print Prosa_Model_Processor_Ideal_pstate_instance.
+Check Prosa_Behavior_Schedule_ProcessorState_Core.
+Check Prosa_Behavior_Schedule_ProcessorState_scheduled_on.
+Check Unit.
+Check Unit_unit.
+Check Option.
+Check Option_some.
+Check Option_none.
+Check Decidable.
+Check Decidable_isTrue.
+Check Decidable_isFalse.
+Check DecidableEq.
+Check Classical_propDecidable.
+Check instDecidableEq.
+Check Option_inst1.
+Check Option_some_inst1.
+Check Option_none_inst1.

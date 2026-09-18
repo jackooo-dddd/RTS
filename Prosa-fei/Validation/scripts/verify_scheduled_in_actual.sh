@@ -4,6 +4,7 @@ set -euo pipefail
 validation_root=$(cd "$(dirname "$0")/.." && pwd)
 rocq_dir="$validation_root/rocq"
 report_dir="$validation_root/reports"
+log_dir="$report_dir/logs"
 switch_name=${IMPORT_OPAM_SWITCH:-rocq93rc1}
 importer_src=${ROCQLI_SRC:?Set ROCQLI_SRC to the compatible rocq-lean-import source tree}
 switch_prefix=$(opam var --switch="$switch_name" prefix)
@@ -13,6 +14,8 @@ if [[ ! -f "$prosa_src/behavior/schedule.v" ]]; then
   echo "Prosa source not found at $prosa_src" >&2
   exit 1
 fi
+
+mkdir -p "$log_dir"
 
 if rg -n '\b(Admitted|Axiom)\b|\bsorry\b' \
     "$rocq_dir/ProcessorStateBridge.v" \
@@ -45,9 +48,9 @@ rocq_compile Relations.v
 rocq_compile FiniteBridge.v
 rocq_compile ProcessorStateBridge.v
 rocq_compile ScheduledInActualAudit.v \
-  | tee "$report_dir/scheduled_in_actual_assumptions.log"
+  | tee "$log_dir/scheduled_in_actual_assumptions.log"
 rocq_compile ScheduledInPolarityMutation.v \
-  | tee "$report_dir/scheduled_in_mutation.log"
+  | tee "$log_dir/scheduled_in_mutation.log"
 
 echo "scheduled_in actual-artifact certificate: CONDITIONAL PASS"
 echo "scheduled_in polarity mutation rejection: PASS"
