@@ -1,0 +1,96 @@
+Prosa_Behavior_Schedule_ProcessorState_scheduled_in
+     : forall (Job : Prosa_Behavior_Job_JobType) (State : Type),
+       Prosa_Behavior_Schedule_ProcessorState Job State ->
+       Job -> State -> Bool
+Prosa_Behavior_Schedule_ProcessorState_scheduled_in@{u_1 Lean.u_1+1.0} =
+fun (Job : Prosa_Behavior_Job_JobType) (State : Type)
+  (inst____at___Prosa_Behavior_Schedule3523846447__hygCtx__hyg4 : 
+   Prosa_Behavior_Schedule_ProcessorState Job State)
+  (j : Job) (s : State) =>
+let this :=
+  Prosa_Behavior_Schedule_ProcessorState_Core_fintype Job State
+    inst____at___Prosa_Behavior_Schedule3523846447__hygCtx__hyg4
+  in
+let this0 :=
+  Prosa_Behavior_Schedule_ProcessorState_Core_deceq Job State
+    inst____at___Prosa_Behavior_Schedule3523846447__hygCtx__hyg4
+  in
+Decidable_decide
+  (Exists
+     (Prosa_Behavior_Schedule_ProcessorState_Core Job State
+        inst____at___Prosa_Behavior_Schedule3523846447__hygCtx__hyg4)
+     (fun
+        c : Prosa_Behavior_Schedule_ProcessorState_Core Job State
+              inst____at___Prosa_Behavior_Schedule3523846447__hygCtx__hyg4 =>
+      Prosa_Behavior_Schedule_ProcessorState_scheduled_on Job State
+        inst____at___Prosa_Behavior_Schedule3523846447__hygCtx__hyg4 j s c =
+      Bool_true))
+  (Fintype_decidableExistsFintype_inst1
+     (Prosa_Behavior_Schedule_ProcessorState_Core Job State
+        inst____at___Prosa_Behavior_Schedule3523846447__hygCtx__hyg4)
+     (fun
+        c : Prosa_Behavior_Schedule_ProcessorState_Core Job State
+              inst____at___Prosa_Behavior_Schedule3523846447__hygCtx__hyg4 =>
+      Prosa_Behavior_Schedule_ProcessorState_scheduled_on Job State
+        inst____at___Prosa_Behavior_Schedule3523846447__hygCtx__hyg4 j s c =
+      Bool_true)
+     (fun
+        a : Prosa_Behavior_Schedule_ProcessorState_Core Job State
+              inst____at___Prosa_Behavior_Schedule3523846447__hygCtx__hyg4 =>
+      instDecidableEqBool
+        (Prosa_Behavior_Schedule_ProcessorState_scheduled_on Job State
+           inst____at___Prosa_Behavior_Schedule3523846447__hygCtx__hyg4 j s a)
+        Bool_true)
+     this)
+     : forall (Job : Prosa_Behavior_Job_JobType) (State : Type),
+       Prosa_Behavior_Schedule_ProcessorState Job State ->
+       Job -> State -> Bool
+
+Arguments Prosa_Behavior_Schedule_ProcessorState_scheduled_in 
+  Job State%_type_scope
+  inst____at___Prosa_Behavior_Schedule3523846447__hygCtx__hyg4 
+  j a____at____internal__hyg0
+scheduled_in_actual_artifact_bridge
+     : forall
+         (psL : Prosa_Behavior_Schedule_ProcessorState
+                  (eqtype.Equality.sort ?Job) schedule.State)
+         (toL : fintype.Finite.sort schedule.Core ->
+                Prosa_Behavior_Schedule_ProcessorState_Core
+                  (eqtype.Equality.sort ?Job) schedule.State psL)
+         (toR : Prosa_Behavior_Schedule_ProcessorState_Core
+                  (eqtype.Equality.sort ?Job) schedule.State psL ->
+                fintype.Finite.sort schedule.Core),
+       (forall
+          cL : Prosa_Behavior_Schedule_ProcessorState_Core
+                 (eqtype.Equality.sort ?Job) schedule.State psL,
+        toL (toR cL) = cL) ->
+       (forall (j : eqtype.Equality.sort ?Job) (s : schedule.State)
+          (cR : fintype.Finite.sort schedule.Core),
+        ImportedBoolRel (schedule.scheduled_on j s cR)
+          (Prosa_Behavior_Schedule_ProcessorState_scheduled_on
+             (eqtype.Equality.sort ?Job) schedule.State psL j s 
+             (toL cR))) ->
+       forall (j : eqtype.Equality.sort ?Job) (s : schedule.State),
+       ImportedBoolRel (schedule.scheduled_in j s)
+         (Prosa_Behavior_Schedule_ProcessorState_scheduled_in
+            (eqtype.Equality.sort ?Job) schedule.State psL j s)
+where
+?Job : [ |- job.JobType]
+?PState : [ |- schedule.ProcessorState ?Job]
+Axioms:
+eq_inst1 relies on definitional UIP.
+eq relies on definitional UIP.
+Validation_STrue relies on definitional UIP.
+True relies on definitional UIP.
+HEq_inst1 relies on definitional UIP.
+HEq relies on definitional UIP.
+propext : forall a b : SProp, Iff a b -> eq a b
+PrimInt63.lsr : PrimInt63.int -> PrimInt63.int -> PrimInt63.int
+PrimInt63.land : PrimInt63.int -> PrimInt63.int -> PrimInt63.int
+PrimInt63.int : Set
+PrimInt63.eqb : PrimInt63.int -> PrimInt63.int -> bool
+Quot_sound :
+  forall (_UU03b1_ : Type) (r : _UU03b1_ -> _UU03b1_ -> SProp)
+    (a b : _UU03b1_),
+  r a b -> eq (Quot.mk r a) (Quot.mk r b)
+Classical_choice : forall _UU03b1_ : Type, Nonempty _UU03b1_ -> _UU03b1_

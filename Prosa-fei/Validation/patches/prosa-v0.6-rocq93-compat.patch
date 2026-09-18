@@ -1,0 +1,51 @@
+diff --git a/behavior/job.v b/behavior/job.v
+index d9355ee..4ab7cdf 100644
+--- a/behavior/job.v
++++ b/behavior/job.v
+@@ -1,4 +1,4 @@
+-Require Export prosa.util.all.
++From mathcomp Require Export ssreflect ssrnat ssrbool eqtype seq fintype bigop.
+ Require Export prosa.behavior.time.
+ 
+ (** * Notion of a Job Type *)
+diff --git a/util/list.v b/util/list.v
+index a689b55..f91162a 100644
+--- a/util/list.v
++++ b/util/list.v
+@@ -31,8 +31,8 @@ Lemma last0_cat :
+ Proof.
+   elim=> [//|xs xs_l IHxs_l] n NEQ.
+   simpl; rewrite last0_cons.
+-  - by apply IHxs_l.
+   - by intros C; apply: NEQ; destruct xs_l.
++  - by apply IHxs_l.
+ Qed.
+ 
+ (** We also prove that [last0 xs = xs [| size xs -1 |] ]. *)
+diff --git a/util/seqset.v b/util/seqset.v
+index 0af3d62..c35d24c 100644
+--- a/util/seqset.v
++++ b/util/seqset.v
+@@ -21,7 +21,7 @@ Section SeqSet.
+   HB.instance Definition _  setSubType := [isSub for _set_seq].
+   HB.instance Definition _ := [Equality of set by <:].
+   Canonical Structure mem_set_predType := PredType (fun (l : set) => mem_seq (_set_seq l)).
+-  Definition set_of of phant T := set.
++  Definition set_of (_ : phant T) := set.
+ 
+ End SeqSet.
+ Set Warnings "redundant-canonical-projection".
+diff --git a/util/tactics.v b/util/tactics.v
+index 7a31f35..b80e8d3 100644
+--- a/util/tactics.v
++++ b/util/tactics.v
+@@ -122,7 +122,8 @@ Ltac rt_auto := auto 4 with basic_rt_facts.
+ #[deprecated(since="prosa-0.6", note="use by or // instead")]
+ Ltac rt_eauto := eauto 4 with basic_rt_facts.
+ 
+-Ltac done := solve [ ssreflect.done | eauto 4 with basic_rt_facts ].
++Ltac prosa_ssreflect_done := done.
++Ltac done := solve [ prosa_ssreflect_done | eauto 4 with basic_rt_facts ].
+ #[export] Hint Resolve I : basic_rt_facts.
+ 
+ (** Note: [idtac] is a no-op. However, it suppresses the default obligation tactic,

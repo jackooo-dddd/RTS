@@ -1,5 +1,15 @@
 # Prosa 0.6 Rocq→Lean semantic-validation pilot
 
+> **2026-09-18 continuation:** the import blocker recorded below was resolved.
+> The unchanged actual `ScheduledIn.out` now imports fully, and Rocq 9.3
+> accepts a direct actual-artifact `scheduled_in` correspondence theorem plus
+> its mutation-rejection fixture. The honest status is **CONDITIONAL**, because
+> the explicit core mapping and `scheduled_on` preservation premises are not
+> yet instantiated. See
+> `import_experiment_2026-09-18_0813_HKT.md` for the complete append-only
+> continuation, exact patches, logs, assumption audit, hashes, and commands.
+> The older BLOCKED table below is retained as the prior experiment snapshot.
+
 Last updated: 2026-09-17 (Asia/Hong_Kong)
 
 ## Status summary
@@ -375,3 +385,333 @@ actual target is still not imported. The new failure is a conversion mismatch
 between the predeclared `UInt32` projection and Lean's `BitVec 32` alias. No
 temporary importer patch is included in the repository or counted as a
 certificate dependency.
+
+## Stage 9 — import-only recovery task started
+
+Per user direction, all new semantic-bridge work and expansion to other Prosa
+files is paused. The only active objective is to import
+`export/ScheduledIn.out` completely and make the actual imported Lean
+`Prosa.Behavior.Schedule.ProcessorState.scheduled_in` referenceable in Rocq.
+
+Starting state:
+
+- current repository certificate status remains `BLOCKED`;
+- Rocq 9.2 plus the temporary minimal projection/relevance backport reaches
+  `UInt32.toBitVec` at legacy-export line 90,537;
+- the preferred next attempt is an unmodified current `rocq-lean-import` with
+  Rocq ≥9.3;
+- `ProcessorStateBridge.v` will not be changed unless and until the real Lean
+  declaration imports successfully.
+
+### Stage 9.1 — current upstream version resolution
+
+Read-only upstream resolution on 2026-09-17 established:
+
+- current `rocq-lean-import` master:
+  `546979bfd55b94288abfb72583a534b0136d282d`;
+- its opam metadata requires `rocq-core >= 9.3~`;
+- the newest available Rocq 9.3 tag is the release candidate `V9.3+rc1`,
+  peeled commit `67e678adcd0cb911fec4eca313d9843492881956`;
+- the synchronized public opam repository still lists `rocq-core` only through
+  9.2.0.
+
+Accordingly, the preferred-path attempt will build the exact Rocq 9.3 RC1 tag
+in a separate switch and use the unmodified importer master. This is isolated
+tooling work; no bridge or Prosa source is being changed.
+
+### Stage 9.2 — Rocq 9.3 RC1 core built; released stdlib is incompatible
+
+An isolated opam switch `rocq93rc1` (OCaml 4.14.2) was created. The exact
+Rocq `V9.3+rc1` source checkout at
+`67e678adcd0cb911fec4eca313d9843492881956` was pinned as
+`rocq-runtime.dev` and `rocq-core.dev`; both packages built and installed
+successfully.
+
+Installing the newest stdlib package available from the synchronized public
+opam repository (`rocq-stdlib.9.1.0`) failed against this core. Compilation
+reached `Zmod/ZstarBase.v:198` and Rocq reported:
+
+```text
+Error: Multiple "Proof" commands not supported.
+```
+
+This is a source-version incompatibility between the 9.1 stdlib package and
+the 9.3 RC1 proof engine, not an error in `ScheduledIn.out`. The next import
+step is therefore blocked on selecting and building the stdlib revision that
+matches Rocq 9.3 RC1. No repository source or bridge was modified by this
+attempt; the failed package build exists only inside the isolated opam switch.
+
+Commands used in this stage included:
+
+```text
+opam switch create rocq93rc1 ocaml-base-compiler.4.14.2 -y
+opam pin add --switch=rocq93rc1 rocq-runtime.dev /private/tmp/rocq-9.3-rc1 -y
+opam pin add --switch=rocq93rc1 rocq-core.dev /private/tmp/rocq-9.3-rc1 -y
+opam install --switch=rocq93rc1 rocq-stdlib.9.1.0 -y
+```
+
+### Stage 9.3 — exact Rocq 9.3 RC1 stdlib installed
+
+The Rocq 9.3 RC1 source tree records its stdlib CI dependency in
+`dev/ci/ci-basic-overlay.sh` as commit
+`b89635f66d5d5fe3c91a5755b389a30846411888`. That exact stdlib revision was
+checked out at `/private/tmp/rocq-stdlib-93`, pinned as `rocq-stdlib.dev`, and
+built successfully in switch `rocq93rc1`. The installed core now reports:
+
+```text
+The Rocq Prover, version 9.3+rc1
+compiled with OCaml 4.14.2
+```
+
+The switch contains matching pinned `rocq-runtime.dev`, `rocq-core.dev`, and
+`rocq-stdlib.dev`. This resolves the Stage 9.2 stdlib blocker. No validation
+repository or bridge source was modified; all pins point to exact temporary
+source checkouts. The next step is to build unmodified
+`rocq-lean-import` master and test the existing legacy export.
+
+### Stage 9.4 — importer master exposes a post-RC1 API dependency
+
+A clean checkout of current `rocq-lean-import` master at
+`546979bfd55b94288abfb72583a534b0136d282d` was created at
+`/private/tmp/rocq-lean-import-current` and built unmodified in `rocq93rc1`.
+The build failed before any import at `src/lean.ml:305`:
+
+```text
+let sets : Level.t Int.Map.t Summary.Ref.t =
+                                   ^^^^^^^^^^^^^
+Error: Unbound module Summary.Ref
+```
+
+Thus the current importer source uses a Rocq API newer than the exact 9.3 RC1
+tag even though its opam constraint says `rocq-core >= 9.3~ | = dev`. This is
+a tool-version blocker, not a `ScheduledIn.out` failure. The checkout remains
+clean and no importer patch has yet been applied. The next action is to inspect
+importer history for the newest revision that both contains the relevant
+dependent-projection/`UInt32.toBitVec` work and builds with 9.3 RC1; if none
+exists, use a minimal compatibility patch or a newer Rocq development commit.
+
+### Stage 9.5 — master plus RC1 compatibility reaches `UInt32.toBitVec`
+
+The unmodified importer master was made buildable on 9.3 RC1 with one
+temporary compatibility patch: the `Summary.Ref` API migration from importer
+commit `237f9ac` was reversed locally, restoring the ordinary `ref` type and
+operators returned by `Summary.ref`. This changes only importer bookkeeping
+syntax; it does not change expression translation. The patched importer built
+successfully.
+
+Importing the unchanged `export/ScheduledIn.out` then successfully passed the
+previous dependent-projection failure at line 70,220. In particular,
+`Lean.Omega.IntList.dot_sdiv_left` and the projected
+`Nonempty_inst1.(field).val1` were accepted. The run stopped at 1,394 imported
+entries, legacy-export line 90,537, on the already isolated UInt32 mismatch:
+
+```text
+Error at line 90537 (for UInt32.toBitVec): #DEF 9187 79903 79905
+The term "fun self : UInt32 => Lean.val0 self" has type
+ "UInt32 -> Fin UInt32_size"
+while it is expected to have type
+ "UInt32 -> BitVec (OfNat_ofNat_inst1 Nat 32 (instOfNatNat 32))".
+```
+
+The full run is recorded in
+`reports/import_scheduled_rocq93_master.log`. This confirms with Rocq 9.3 RC1
+that importer master contains the required dependent-projection repair, but
+master does not contain upstream branch commit
+`fc148dfa2e8f27e1a9753e9403d26f0d16440279` (`add support for UInt32`). That
+commit is currently present only on upstream branch `fix-UInt32`. The next
+attempt will add that exact upstream patch to the temporary importer checkout,
+on top of the RC1 compatibility patch. The actual Lean artifact and validation
+bridges remain unchanged.
+
+### Stage 9.6 — upstream UInt32 patch works; next blocker is `String.mk`
+
+The exact functional changes from upstream branch commit
+`fc148dfa2e8f27e1a9753e9403d26f0d16440279` were applied to the temporary
+importer checkout. They predeclare Lean `BitVec`, represent `UInt32` through
+its actual `toBitVec : BitVec 32` field, and predeclare the required `Nat.add`,
+`Nat.mul`, and `Nat.pow` operations. Together with the RC1 compatibility
+change, the importer and its Rocq support file built successfully.
+
+The next import passed `UInt32.toBitVec` and continued through
+`UInt32.toNat`, `Char`, UTF-8 helpers, and the imported `String` declaration.
+It stopped at legacy-export line 91,687:
+
+```text
+Error at line 91687 (for String.instInhabited): #DEF 9457 80738 80742
+missing String.mk
+```
+
+The run reached 1,437 imported entries and is saved in
+`reports/import_scheduled_rocq93_uint32.log`. Therefore the upstream UInt32
+patch is empirically sufficient for the earlier UInt32 blocker; it is still a
+temporary importer-only patch and is not part of the RTS repository. The new
+blocker is resolution of Lean 4.33's `String.mk` constructor after the
+predeclared/imported `String` representation. No semantic bridge or translated
+Prosa source has been changed.
+
+### Stage 9.7 — Lean 4.33 string literals imported; native crash is next blocker
+
+A temporary importer adaptation now constructs a Lean 4.33 string literal
+compositionally using the already imported actual declarations:
+
+```text
+List.utf8Encode
+ByteArray.IsValidUTF8.intro
+Eq.refl
+String.ofByteArray
+```
+
+The literal's character list is UTF-8 encoded, and the validity witness is a
+kernel term `ByteArray.IsValidUTF8.intro chars eq_refl`; no axiom or admitted
+proof is introduced. The importer first failed to compile because the equality
+universe was supplied in the importer's internal representation; changing it
+to the legacy-export universe `LeanExpr.U.Succ LeanExpr.U.Prop` fixed that
+local issue, and the importer built successfully.
+
+The unchanged `ScheduledIn.out` import then accepted `String.instInhabited`,
+all subsequent string literals observed in this section, `String.ofList`, and
+continued past line 91,901. It next terminated with native signal 11 while
+processing immediately after:
+
+```text
+line 91990: _private.Init.Prelude0.isValidChar_UInt32.match_1_1
+Segmentation fault: 11
+```
+
+The run is saved in `reports/import_scheduled_rocq93_string.log`. Unlike the
+previous failures, Rocq emitted no ordinary kernel error and no `Done!`
+summary, so this stage is still a failed import. The next task is to isolate
+the crashing declaration with `Lean Import ... From ... Until ...` bounds and
+obtain a native backtrace or a minimal importer-side cause. The string patch is
+temporary and only in `/private/tmp/rocq-lean-import-current`; no bridge or
+Prosa translation file has been changed.
+
+### Stage 9.8 — crash boundary isolated exactly
+
+The importer command accepts optional numeric `from`/`until` bounds. A bounded
+kernel import through (but excluding) legacy line 91,990 was run as:
+
+```text
+Lean Import "/absolute/path/to/ScheduledIn.out" 0 91990.
+```
+
+That bounded import completed successfully and produced a 3.0 MB Rocq `.vo`
+with this summary:
+
+```text
+Done!
+- 1449 entries (2350 possible instances) (including quot).
+- 50 universe expressions
+- 9535 names
+- 80957 expression nodes
+Max universe instance length 5.
+0 inductives have non syntactically arity types.
+```
+
+Consequently the signal-11 boundary is the declaration beginning at line
+91,990 itself, `_private.Init.Prelude0.isValidChar_UInt32.match_1_1`, rather
+than an earlier corrupted string import. This declaration ends at `#DEF 9519`
+and is a large dependent match used by the UInt32 character-validity path.
+The artifact still has not fully imported. Because current importer master also
+targets a post-RC1 `Summary.Ref` API, the preferred next experiment is current
+Rocq development head plus its matching stdlib, removing the RC1 compatibility
+patch and checking whether the native crash is already fixed in Rocq core.
+
+### Stage 9.9 — current Rocq development environment built
+
+The preferred current-head environment was resolved and built from exact
+revisions:
+
+- Rocq master `03e4ab26b741f23cd1e136bc471a222067c08c09`
+  (`9.4+alpha`, 2026-09-17);
+- stdlib master `1593d617cc9496e10be236cda9070d0380c4b252`, as selected
+  by that Rocq tree's CI overlay;
+- importer master remains
+  `546979bfd55b94288abfb72583a534b0136d282d`.
+
+They are installed in isolated switch `rocq-master` with OCaml 4.14.2. The
+importer was restored to its native current `Summary.Ref` implementation, so
+the RC1 compatibility reversal is no longer present in this build. Only the
+upstream `fix-UInt32` functional changes and the temporary Lean 4.33 string
+literal adaptation remain. After regenerating the Rocq makefile and cleaning
+objects compiled under RC1, this importer built successfully against current
+Rocq. The next command is a full import of the unchanged `ScheduledIn.out` to
+test the declaration isolated in Stage 9.8.
+
+### Stage 9.10 — current Rocq reproduces the same native crash
+
+The complete import was rerun with current Rocq master, current matching
+stdlib, importer master plus only the UInt32/string functional fixes, and the
+unchanged `ScheduledIn.out`. It again terminated with signal 11 immediately
+after printing exactly:
+
+```text
+line 91990: _private.Init.Prelude0.isValidChar_UInt32.match_1_1
+Segmentation fault: 11
+```
+
+The current-head log is
+`reports/import_scheduled_rocq_master.log`. This rules out the exact 9.3 RC1
+revision as the sole cause and shows the crash is reproducible on Rocq master
+`03e4ab26...`. Since the crashing term is a deeply nested dependent match and
+no kernel diagnostic is printed, the next minimal non-semantic experiment is
+to raise the native process stack limit and rerun. No declaration will be
+skipped: a skip-based import would not count as successful dependency-closed
+actual-artifact import.
+
+### Stage 9.11 — larger native stack advances past the isolated declaration
+
+The default macOS stack limit was 8,176 KB; its hard limit is 65,520 KB. A
+full current-head import with the stack raised to 65,520 KB accepted the
+previously crashing declaration and advanced through:
+
+```text
+line 91990: _private.Init.Prelude0.isValidChar_UInt32.match_1_1
+line 92040: _private.Init.Prelude0.isValidChar_UInt32
+line 92047: Char.ofNatAux._private_1
+line 92064: Char.ofNatAux
+```
+
+It then again terminated with signal 11 while entering the still deeper
+`Char.ofNat` proof immediately following line 92,064. The log is
+`reports/import_scheduled_rocq_master_stack64m.log`. This is strong operational
+evidence of native stack exhaustion in the recursive expression conversion,
+not a Rocq kernel rejection: increasing the stack moved the failure boundary
+forward across the exact declaration that failed at 8 MB. The platform hard
+limit prevents raising the OCaml 4 native stack further. The next minimal
+attempt is the same current Rocq/importer sources under OCaml 5, whose runtime
+uses dynamically managed stacks, before considering an invasive iterative
+rewrite of importer expression conversion.
+
+### Stage 9.12 — OCaml 5 avoids the crash but exposes legacy-opacity cost
+
+The same current Rocq and stdlib were built under OCaml 5.2.1 in switch
+`rocq-master-ocaml5`, and the importer built successfully. The full import no
+longer crashed at `Char.ofNatAux`; instead it remained CPU-active for over six
+minutes while checking that declaration, with roughly 0.8–1.3 GB resident
+memory. The run was manually interrupted and ended cleanly with:
+
+```text
+Done!
+- 1452 entries (2353 possible instances) (including quot).
+...
+Error at line 92064 (for Char.ofNatAux): ...
+User interrupt.
+```
+
+This confirms that OCaml 5 removes the fixed native-stack failure, but the
+legacy export's missing opacity metadata makes a large proof transparent and
+causes pathological checking/unfolding in the following computational
+definition. The partial log is
+`reports/import_scheduled_rocq_master_ocaml5.log`; it is not a successful
+import.
+
+Immediately afterward, upstream pull request 78 was identified at commit
+`a6b7fbd64c2aec56014850d235c07bafba67239c` (dated 2026-09-17). It is based
+directly on current importer master and explicitly “auto opacif[ies] Prop
+lemmas (needed when using old format dumps)” while checking opaque bodies in
+parallel under OCaml 5. This directly addresses the observed legacy-opacity
+failure mode. The PR requires Rocq API commit
+`7e7615999ae9c9a9e9f7a123910c355d713207dd`. The next attempt will use those
+exact two upstream commits, retaining the already required UInt32 and Lean
+4.33 string-literal patches; no proof will be skipped or admitted.

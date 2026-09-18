@@ -1,0 +1,22 @@
+From LeanImport Require Import Lean.
+Require Import ImportedScheduled.
+
+Check Prosa_Behavior_Schedule_ProcessorState_scheduled_in.
+Print Prosa_Behavior_Schedule_ProcessorState_scheduled_in.
+Print Assumptions Prosa_Behavior_Schedule_ProcessorState_scheduled_in.
+
+Check Prosa_Behavior_Schedule_ProcessorState.
+Print Prosa_Behavior_Schedule_ProcessorState.
+Check Prosa_Behavior_Schedule_ProcessorState_Core.
+Check Prosa_Behavior_Schedule_ProcessorState_scheduled_on.
+Check Prosa_Behavior_Schedule_ProcessorState_Core_fintype.
+Check Prosa_Behavior_Schedule_ProcessorState_Core_deceq.
+Check Fintype_elems.
+Check Fintype_complete.
+Check Decidable_decide.
+Print Decidable_decide.
+Print Decidable.
+Print Exists.
+Print Bool.
+Check eq_refl.
+Check Exists_intro.

@@ -1,0 +1,149 @@
+Prosa_Behavior_Schedule_ProcessorState_scheduled_in
+     : forall (Job : Prosa_Behavior_Job_JobType) (State : Type),
+       Prosa_Behavior_Schedule_ProcessorState Job State ->
+       Job -> State -> Bool
+Prosa_Behavior_Schedule_ProcessorState_scheduled_in@{u_1 Lean.u_1+1.0} =
+fun (Job : Prosa_Behavior_Job_JobType) (State : Type)
+  (inst____at___Prosa_Behavior_Schedule3523846447__hygCtx__hyg4 : 
+   Prosa_Behavior_Schedule_ProcessorState Job State)
+  (j : Job) (s : State) =>
+let this :=
+  Prosa_Behavior_Schedule_ProcessorState_Core_fintype Job State
+    inst____at___Prosa_Behavior_Schedule3523846447__hygCtx__hyg4
+  in
+let this0 :=
+  Prosa_Behavior_Schedule_ProcessorState_Core_deceq Job State
+    inst____at___Prosa_Behavior_Schedule3523846447__hygCtx__hyg4
+  in
+Decidable_decide
+  (Exists
+     (Prosa_Behavior_Schedule_ProcessorState_Core Job State
+        inst____at___Prosa_Behavior_Schedule3523846447__hygCtx__hyg4)
+     (fun
+        c : Prosa_Behavior_Schedule_ProcessorState_Core Job State
+              inst____at___Prosa_Behavior_Schedule3523846447__hygCtx__hyg4 =>
+      Prosa_Behavior_Schedule_ProcessorState_scheduled_on Job State
+        inst____at___Prosa_Behavior_Schedule3523846447__hygCtx__hyg4 j s c =
+      Bool_true))
+  (Fintype_decidableExistsFintype_inst1
+     (Prosa_Behavior_Schedule_ProcessorState_Core Job State
+        inst____at___Prosa_Behavior_Schedule3523846447__hygCtx__hyg4)
+     (fun
+        c : Prosa_Behavior_Schedule_ProcessorState_Core Job State
+              inst____at___Prosa_Behavior_Schedule3523846447__hygCtx__hyg4 =>
+      Prosa_Behavior_Schedule_ProcessorState_scheduled_on Job State
+        inst____at___Prosa_Behavior_Schedule3523846447__hygCtx__hyg4 j s c =
+      Bool_true)
+     (fun
+        a : Prosa_Behavior_Schedule_ProcessorState_Core Job State
+              inst____at___Prosa_Behavior_Schedule3523846447__hygCtx__hyg4 =>
+      instDecidableEqBool
+        (Prosa_Behavior_Schedule_ProcessorState_scheduled_on Job State
+           inst____at___Prosa_Behavior_Schedule3523846447__hygCtx__hyg4 j s a)
+        Bool_true)
+     this)
+     : forall (Job : Prosa_Behavior_Job_JobType) (State : Type),
+       Prosa_Behavior_Schedule_ProcessorState Job State ->
+       Job -> State -> Bool
+
+Arguments Prosa_Behavior_Schedule_ProcessorState_scheduled_in 
+  Job State%_type_scope
+  inst____at___Prosa_Behavior_Schedule3523846447__hygCtx__hyg4 
+  j a____at____internal__hyg0
+Axioms:
+eq_inst1 relies on definitional UIP.
+eq relies on definitional UIP.
+True relies on definitional UIP.
+HEq_inst1 relies on definitional UIP.
+HEq relies on definitional UIP.
+propext : forall a b : SProp, Iff a b -> eq a b
+PrimInt63.lsr : PrimInt63.int -> PrimInt63.int -> PrimInt63.int
+PrimInt63.land : PrimInt63.int -> PrimInt63.int -> PrimInt63.int
+PrimInt63.int : Set
+PrimInt63.eqb : PrimInt63.int -> PrimInt63.int -> bool
+Quot_sound :
+  forall (_UU03b1_ : Type) (r : _UU03b1_ -> _UU03b1_ -> SProp)
+    (a b : _UU03b1_),
+  r a b -> eq (Quot.mk r a) (Quot.mk r b)
+Classical_choice : forall _UU03b1_ : Type, Nonempty _UU03b1_ -> _UU03b1_
+Prosa_Behavior_Schedule_ProcessorState
+     : Prosa_Behavior_Job_JobType -> Type -> Type
+Record
+Prosa_Behavior_Schedule_ProcessorState@{u_1 Lean.u_1+1.0}
+    (Job : Prosa_Behavior_Job_JobType)
+(State : Type) : Type := Prosa_Behavior_Schedule_ProcessorState_mk
+  { Core : Type;
+    Core_fintype : Fintype_inst1 Core;
+    Core_deceq : DecidableEq Core;
+    scheduled_on : Job -> State -> Core -> Bool;
+    service_in : Job -> State -> Prosa_Behavior_Job_work;
+    service_implies_scheduled : forall (j : Job) (s : State),
+                                Not
+                                  (Exists Core
+                                     (fun c : Core =>
+                                      scheduled_on j s c = Bool_true)) ->
+                                eq (service_in j s)
+                                  (OfNat_ofNat_inst1 Prosa_Behavior_Job_work
+                                     0 (instOfNatNat 0)) } as default_proj_id.
+
+Prosa_Behavior_Schedule_ProcessorState has primitive projections with eta conversion.
+Arguments Prosa_Behavior_Schedule_ProcessorState Job State%_type_scope
+Arguments Prosa_Behavior_Schedule_ProcessorState_mk 
+  Job (State Core)%_type_scope Core_fintype Core_deceq
+  (scheduled_on service_in service_implies_scheduled)%_function_scope
+Prosa_Behavior_Schedule_ProcessorState_Core
+     : forall (Job : Prosa_Behavior_Job_JobType) (State : Type),
+       Prosa_Behavior_Schedule_ProcessorState Job State -> Type
+Prosa_Behavior_Schedule_ProcessorState_scheduled_on
+     : forall (Job : Prosa_Behavior_Job_JobType) (State : Type)
+         (self : Prosa_Behavior_Schedule_ProcessorState Job State),
+       Job ->
+       State ->
+       Prosa_Behavior_Schedule_ProcessorState_Core Job State self -> Bool
+Prosa_Behavior_Schedule_ProcessorState_Core_fintype
+     : forall (Job : Prosa_Behavior_Job_JobType) (State : Type)
+         (self : Prosa_Behavior_Schedule_ProcessorState Job State),
+       Fintype_inst1
+         (Prosa_Behavior_Schedule_ProcessorState_Core Job State self)
+Prosa_Behavior_Schedule_ProcessorState_Core_deceq
+     : forall (Job : Prosa_Behavior_Job_JobType) (State : Type)
+         (self : Prosa_Behavior_Schedule_ProcessorState Job State),
+       DecidableEq
+         (Prosa_Behavior_Schedule_ProcessorState_Core Job State self)
+Fintype_elems
+     : forall _UU03b1_ : Type, Fintype _UU03b1_ -> Finset _UU03b1_
+Fintype_complete
+     : forall (_UU03b1_ : Type) (self : Fintype _UU03b1_) (x : _UU03b1_),
+       Membership_mem _UU03b1_ (Finset _UU03b1_)
+         (SetLike_instMembership (Finset _UU03b1_) _UU03b1_
+            (Finset_instSetLike _UU03b1_))
+         (Fintype_elems _UU03b1_ self) x
+Decidable_decide
+     : forall p : SProp, Decidable p -> Bool
+Decidable_decide@{} =
+fun (p : SProp) (h : Decidable p) =>
+Decidable_casesOn p (fun _ : Decidable p => Bool) h
+  (fun _ : Not p => Bool_false) (fun _ : p => Bool_true)
+     : forall p : SProp, Decidable p -> Bool
+
+Arguments Decidable_decide p%_type_scope h
+Variant Decidable@{} (p : SProp) : Type :=
+    Decidable_isFalse : Not p -> Decidable p
+  | Decidable_isTrue : p -> Decidable p.
+
+Arguments Decidable p%_type_scope
+Arguments Decidable_isFalse p%_type_scope h
+Arguments Decidable_isTrue p%_type_scope h
+Variant Exists@{u} (_UU03b1_ : Type) (p : _UU03b1_ -> SProp) : SProp :=
+    Exists_intro : forall w : _UU03b1_, p w -> Exists _UU03b1_ p.
+
+Arguments Exists _UU03b1_%_type_scope p%_function_scope
+Arguments Exists_intro _UU03b1_%_type_scope p%_function_scope w h
+Variant Bool@{} : Type :=  Bool_false : Bool | Bool_true : Bool.
+eq_refl
+     : forall a : ?α, eq a a
+where
+?α : [ |- Type]
+Exists_intro
+     : forall (_UU03b1_ : Type) (p : _UU03b1_ -> SProp) (w : _UU03b1_),
+       p w -> Exists _UU03b1_ p
