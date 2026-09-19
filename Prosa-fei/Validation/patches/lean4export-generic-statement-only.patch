@@ -1,0 +1,28 @@
+--- a/Export.lean
++++ b/Export.lean
+@@ -79,6 +79,10 @@ partial def dumpExpr (e : Expr) : M Nat := do
+     | .lit (.natVal i) => return s!"#ELN {i}"
+     | .lit (.strVal s) => return s!"#ELS {s.toUTF8.toList.map uint8ToHex |> seq}"
+ 
++def statementOnlyTheorem (c : Name) : IO Bool := do
++  let some configured ← IO.getEnv "LEAN4EXPORT_STATEMENT_ONLY" | return false
++  return (configured.splitOn "\n").contains c.toString
++
+ partial def dumpConstant (c : Name) : M Unit := do
+   if (← get).visitedConstants.contains c then
+     return
+@@ -95,7 +99,12 @@ partial def dumpConstant (c : Name) : M Unit := do
+   | .thmInfo val => do
+     dumpDeps val.type
+-    dumpDeps val.value
+-    IO.println s!"#DEF {← dumpName c} {← dumpExpr val.type} {← dumpExpr val.value} {← seq <$> val.levelParams.mapM dumpName}"
++    if ← statementOnlyTheorem c then
++      -- Generic statement-validation mode: names come from configuration.
++      -- Preserve the exact compiled type without traversing the proof body.
++      IO.println s!"#AX {← dumpName c} {← dumpExpr val.type} {← seq <$> val.levelParams.mapM dumpName}"
++    else
++      dumpDeps val.value
++      IO.println s!"#DEF {← dumpName c} {← dumpExpr val.type} {← dumpExpr val.value} {← seq <$> val.levelParams.mapM dumpName}"
+   | .opaqueInfo val  =>
+     if val.isUnsafe then
+       return

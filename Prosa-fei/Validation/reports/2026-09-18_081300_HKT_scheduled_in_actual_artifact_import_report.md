@@ -3,7 +3,8 @@
 Experiment start: **2026-09-18 08:13 HKT**  
 Snapshot written: **2026-09-18 08:17 HKT**
 
-This report is a focused continuation of `pilot_report.md`. It records only
+This report is a focused continuation of
+`2026-09-17_194757_HKT_prosa_0_6_semantic_validation_pilot_report.md`. It records only
 the current attempt to make the unchanged actual Lean export
 `Validation/export/ScheduledIn.out` import completely into Rocq. No semantic
 bridge or translated Prosa file is being extended while this import remains

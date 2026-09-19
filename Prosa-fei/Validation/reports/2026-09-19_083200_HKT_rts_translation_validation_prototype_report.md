@@ -1,4 +1,4 @@
-# Prosa/RTS Rocq→Lean Translation Validation Prototype
+# Prosa/RTS Rocq→Lean Translation Validation Prototype Report
 
 **Experiment started:** 2026-09-19 08:32 HKT  
 

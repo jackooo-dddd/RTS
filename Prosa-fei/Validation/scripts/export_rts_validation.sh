@@ -8,12 +8,13 @@ exporter_src=${LEAN4EXPORT_SRC:-/private/tmp/lean4export}
 toolchain=${LEAN_TOOLCHAIN:-leanprover/lean4:v4.33.1}
 olean_root="$validation_root/.work/rts_olean"
 log_dir="$validation_root/reports/logs"
+mapping="$validation_root/mapping/rts_validation_targets.yaml"
 
 mkdir -p "$olean_root/Prosa/Util" "$log_dir" "$validation_root/export"
 
-if ! rg -q 'Statement-validation mode' "$exporter_src/Export.lean"; then
+if ! rg -q 'def statementOnlyTheorem' "$exporter_src/Export.lean"; then
   patch -d "$exporter_src" -p1 --forward \
-    < "$validation_root/patches/lean4export-scheduled-at-statement-only.patch"
+    < "$validation_root/patches/lean4export-generic-statement-only.patch"
 fi
 ELAN_TOOLCHAIN="$toolchain" lake -d "$exporter_src" build lean4export
 exporter="$exporter_src/.lake/build/bin/lean4export"
@@ -43,8 +44,19 @@ build_module() {
   lean -R "$prosa_root" -o "$output" "$source"
 }
 
-build_module Prosa.Analysis.Facts.Model.Ideal_schedule
-build_module Prosa.Validation.IdealScheduledInFixture
+export_modules=()
+while IFS= read -r theorem_module; do
+  [[ -n "$theorem_module" ]] || continue
+  build_module "$theorem_module"
+  export_modules+=("$theorem_module")
+done < <(python3 "$validation_root/scripts/extract_rocq_declarations.py" \
+  --mapping "$mapping" --source-root /dev/null --list-lean-modules)
+
+mkdir -p "$olean_root/Prosa/Validation"
+lean -R "$prosa_root" \
+  -o "$olean_root/Prosa/Validation/IdealScheduledInFixture.olean" \
+  "$validation_root/lean/IdealScheduledInFixture.lean"
+export_modules+=(Prosa.Validation.IdealScheduledInFixture)
 
 roots=(
   Prosa.Behavior.Time.instant
@@ -70,15 +82,40 @@ roots=(
   Prosa.Validation.ideal_scheduled_in
   Prosa.Behavior.Service.scheduled_at
   Prosa.Validation.ideal_scheduled_at
-  Prosa.Analysis.Facts.Model.Ideal_schedule.scheduled_at_def
   Classical.propDecidable
 )
 
+theorem_names=()
+while IFS= read -r theorem_name; do
+  [[ -n "$theorem_name" ]] || continue
+  theorem_names+=("$theorem_name")
+  roots+=("$theorem_name")
+done < <(python3 "$validation_root/scripts/extract_rocq_declarations.py" \
+  --mapping "$mapping" --source-root /dev/null --list-lean-theorems)
+
+statement_only=$(printf '%s\n' "${theorem_names[@]}")
+export LEAN4EXPORT_STATEMENT_ONLY="$statement_only"
+
 "$exporter" \
-  Prosa.Analysis.Facts.Model.Ideal_schedule \
-  Prosa.Validation.IdealScheduledInFixture -- "${roots[@]}" \
+  "${export_modules[@]}" -- "${roots[@]}" \
   > "$validation_root/export/RTSValidation.out" \
   2> "$log_dir/export_rts_validation.log"
 
-rg -q '#NS .* scheduled_at_def$' "$validation_root/export/RTSValidation.out"
+{
+  echo "Lean 4 toolchain: $toolchain"
+  echo "Exporter: $exporter"
+  echo "Statement-only theorems read from $mapping:"
+  printf '  %s\n' "${theorem_names[@]}"
+  echo "Artifact namespace evidence:"
+  for theorem_name in "${theorem_names[@]}"; do
+    short_name=${theorem_name##*.}
+    rg '#NS .* '"$short_name"'$' "$validation_root/export/RTSValidation.out"
+  done
+  shasum -a 256 "$validation_root/export/RTSValidation.out"
+} > "$log_dir/lean_statement_export_manifest.log"
+
+for theorem_name in "${theorem_names[@]}"; do
+  short_name=${theorem_name##*.}
+  rg -q '#NS .* '"$short_name"'$' "$validation_root/export/RTSValidation.out"
+done
 wc -l -c "$validation_root/export/RTSValidation.out"

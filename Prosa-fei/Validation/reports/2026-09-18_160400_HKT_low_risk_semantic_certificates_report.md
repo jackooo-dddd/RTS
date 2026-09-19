@@ -1,4 +1,4 @@
-# Easy semantic certificates — 2026-09-18
+# Low-risk semantic certificates report — 2026-09-18 16:04 HKT
 
 Experiment start: **2026-09-18 16:04 HKT**
 

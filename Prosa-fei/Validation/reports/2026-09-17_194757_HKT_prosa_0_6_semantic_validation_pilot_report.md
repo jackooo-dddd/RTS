@@ -6,7 +6,7 @@
 > its mutation-rejection fixture. The honest status is **CONDITIONAL**, because
 > the explicit core mapping and `scheduled_on` preservation premises are not
 > yet instantiated. See
-> `import_experiment_2026-09-18_0813_HKT.md` for the complete append-only
+> `2026-09-18_081300_HKT_scheduled_in_actual_artifact_import_report.md` for the complete append-only
 > continuation, exact patches, logs, assumption audit, hashes, and commands.
 > The older BLOCKED table below is retained as the prior experiment snapshot.
 

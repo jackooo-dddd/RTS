@@ -10,7 +10,7 @@ Rocq 9.3 with a minimally updated importer, and Rocq accepts
 `scheduled_in_actual_artifact_bridge`, which directly mentions the imported
 Lean declaration. The status is not yet `CERTIFIED`, because the core mapping
 and `scheduled_on` preservation remain explicit representation-relation
-premises. See `reports/import_experiment_2026-09-18_0813_HKT.md` for the exact
+premises. See `reports/2026-09-18_081300_HKT_scheduled_in_actual_artifact_import_report.md` for the exact
 toolchain, patches, commands, assumption audit, and mutation result.
 
 `ProcessorStateBridge.v` is now an actual-artifact correspondence theorem for
