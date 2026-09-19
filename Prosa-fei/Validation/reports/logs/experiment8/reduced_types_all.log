@@ -1,0 +1,54 @@
+TARGET Prosa.Util.Sum.big_nat_eq0
+ORIGINAL_CONSTANTS 15
+REDUCED_CONSTANTS 14
+REDUCED_CONSTANT And
+REDUCED_CONSTANT Eq
+REDUCED_CONSTANT Iff
+REDUCED_CONSTANT LE.le
+REDUCED_CONSTANT LT.lt
+REDUCED_CONSTANT List.foldr
+REDUCED_CONSTANT List.map
+REDUCED_CONSTANT List.range'
+REDUCED_CONSTANT Nat
+REDUCED_CONSTANT Nat.add
+REDUCED_CONSTANT Nat.sub
+REDUCED_CONSTANT Nat.zero
+REDUCED_CONSTANT instLENat
+REDUCED_CONSTANT instLTNat
+REDUCED_TYPE ∀ (m n : ℕ) (F : ℕ → ℕ),
+  List.foldr (fun x1 x2 => x1.add x2) Nat.zero (List.map (fun i => F i) (List.range' m (n.sub m) 1)) = 0 ↔
+    ∀ (i : ℕ), m ≤ i ∧ i < n → F i = 0
+TARGET Prosa.Util.Sum.sum_of_ones
+ORIGINAL_CONSTANTS 12
+REDUCED_CONSTANTS 8
+REDUCED_CONSTANT Eq
+REDUCED_CONSTANT List.foldr
+REDUCED_CONSTANT List.map
+REDUCED_CONSTANT List.range'
+REDUCED_CONSTANT Nat
+REDUCED_CONSTANT Nat.add
+REDUCED_CONSTANT Nat.sub
+REDUCED_CONSTANT Nat.zero
+REDUCED_TYPE ∀ (t Δ : ℕ),
+  List.foldr (fun x1 x2 => x1.add x2) Nat.zero (List.map (fun _x => 1) (List.range' t ((t.add Δ).sub t) 1)) = Δ
+TARGET Prosa.Util.Sum.sum_le_summation_range
+ORIGINAL_CONSTANTS 18
+REDUCED_CONSTANTS 17
+REDUCED_CONSTANT And
+REDUCED_CONSTANT Eq
+REDUCED_CONSTANT Exists
+REDUCED_CONSTANT Finset.Ico
+REDUCED_CONSTANT Finset.sum
+REDUCED_CONSTANT HAdd.hAdd
+REDUCED_CONSTANT LT.lt
+REDUCED_CONSTANT Nat
+REDUCED_CONSTANT Nat.add
+REDUCED_CONSTANT Nat.instAddCommMonoid
+REDUCED_CONSTANT Nat.instLocallyFiniteOrder
+REDUCED_CONSTANT Nat.instPreorder
+REDUCED_CONSTANT Nat.le
+REDUCED_CONSTANT Nat.succ
+REDUCED_CONSTANT instAddNat
+REDUCED_CONSTANT instHAdd
+REDUCED_CONSTANT instLTNat
+REDUCED_TYPE ∀ (f : ℕ → ℕ) (t Δ : ℕ), ∑ x ∈ Finset.Ico t (t + Δ), f x < Δ → ∃ x, t.le x ∧ x.succ.le (t.add Δ) ∧ f x = 0

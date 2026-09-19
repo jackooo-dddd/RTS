@@ -1,0 +1,1384 @@
+TARGET Prosa.Util.Sum.big_nat_eq0
+ORIGINAL_CONSTANTS 15
+REDUCED_CONSTANTS 18
+REDUCED_CONSTANT And
+REDUCED_CONSTANT Eq
+REDUCED_CONSTANT Iff
+REDUCED_CONSTANT LE.mk
+REDUCED_CONSTANT LT.mk
+REDUCED_CONSTANT List
+REDUCED_CONSTANT List.cons
+REDUCED_CONSTANT List.nil
+REDUCED_CONSTANT List.rec
+REDUCED_CONSTANT Nat
+REDUCED_CONSTANT Nat.le
+REDUCED_CONSTANT Nat.rec
+REDUCED_CONSTANT Nat.succ
+REDUCED_CONSTANT Nat.zero
+REDUCED_CONSTANT PProd
+REDUCED_CONSTANT PProd.mk
+REDUCED_CONSTANT PUnit
+REDUCED_CONSTANT PUnit.unit
+REDUCED_TYPE ∀ (m n : ℕ) (F : ℕ → ℕ),
+  (List.rec ⟨Nat.zero, PUnit.unit⟩
+          (fun head tail tail_ih =>
+            ⟨(Nat.rec ⟨fun x => x, PUnit.unit⟩ (fun n n_ih => ⟨fun x => (n_ih.1 x).succ, n_ih⟩) tail_ih.1).1 head,
+              tail_ih⟩)
+          (List.rec ⟨[], PUnit.unit⟩ (fun head tail tail_ih => ⟨F head :: tail_ih.1, tail_ih⟩)
+              ((Nat.rec ⟨fun x x_1 => [], PUnit.unit⟩
+                    (fun n n_ih =>
+                      ⟨fun x x_1 =>
+                        x ::
+                          n_ih.1
+                            ((Nat.rec ⟨fun x => x, PUnit.unit⟩ (fun n n_ih => ⟨fun x => (n_ih.1 x).succ, n_ih⟩) x_1).1
+                              x)
+                            x_1,
+                        n_ih⟩)
+                    ((Nat.rec ⟨fun x => x, PUnit.unit⟩
+                          (fun n n_ih => ⟨fun x => Nat.rec 0 (fun n n_ih => n) (n_ih.1 x), n_ih⟩) m).1
+                      n)).1
+                m 1)).1).1 =
+      0 ↔
+    ∀ (i : ℕ), { le := Nat.le }.1 m i ∧ { lt := fun n m => n.succ.le m }.1 i n → F i = 0
+TARGET Prosa.Util.Sum.sum_of_ones
+ORIGINAL_CONSTANTS 12
+REDUCED_CONSTANTS 13
+REDUCED_CONSTANT Eq
+REDUCED_CONSTANT List
+REDUCED_CONSTANT List.cons
+REDUCED_CONSTANT List.nil
+REDUCED_CONSTANT List.rec
+REDUCED_CONSTANT Nat
+REDUCED_CONSTANT Nat.rec
+REDUCED_CONSTANT Nat.succ
+REDUCED_CONSTANT Nat.zero
+REDUCED_CONSTANT PProd
+REDUCED_CONSTANT PProd.mk
+REDUCED_CONSTANT PUnit
+REDUCED_CONSTANT PUnit.unit
+REDUCED_TYPE ∀ (t Δ : ℕ),
+  (List.rec ⟨Nat.zero, PUnit.unit⟩
+        (fun head tail tail_ih =>
+          ⟨(Nat.rec ⟨fun x => x, PUnit.unit⟩ (fun n n_ih => ⟨fun x => (n_ih.1 x).succ, n_ih⟩) tail_ih.1).1 head,
+            tail_ih⟩)
+        (List.rec ⟨[], PUnit.unit⟩ (fun head tail tail_ih => ⟨1 :: tail_ih.1, tail_ih⟩)
+            ((Nat.rec ⟨fun x x_1 => [], PUnit.unit⟩
+                  (fun n n_ih =>
+                    ⟨fun x x_1 =>
+                      x ::
+                        n_ih.1
+                          ((Nat.rec ⟨fun x => x, PUnit.unit⟩ (fun n n_ih => ⟨fun x => (n_ih.1 x).succ, n_ih⟩) x_1).1 x)
+                          x_1,
+                      n_ih⟩)
+                  ((Nat.rec ⟨fun x => x, PUnit.unit⟩
+                        (fun n n_ih => ⟨fun x => Nat.rec 0 (fun n n_ih => n) (n_ih.1 x), n_ih⟩) t).1
+                    ((Nat.rec ⟨fun x => x, PUnit.unit⟩ (fun n n_ih => ⟨fun x => (n_ih.1 x).succ, n_ih⟩) Δ).1 t))).1
+              t 1)).1).1 =
+    Δ
+TARGET Prosa.Util.Sum.sum_le_summation_range
+ORIGINAL_CONSTANTS 18
+REDUCED_CONSTANTS 94
+REDUCED_CONSTANT Add.mk
+REDUCED_CONSTANT AddCancelCommMonoid.mk
+REDUCED_CONSTANT AddCommMonoid.mk
+REDUCED_CONSTANT AddMonoid.add_zero
+REDUCED_CONSTANT AddMonoid.mk
+REDUCED_CONSTANT AddMonoid.zero_add
+REDUCED_CONSTANT AddSemigroup.mk
+REDUCED_CONSTANT AddZero.mk
+REDUCED_CONSTANT AddZeroClass.mk
+REDUCED_CONSTANT And
+REDUCED_CONSTANT Bool
+REDUCED_CONSTANT Bool.false
+REDUCED_CONSTANT Bool.rec
+REDUCED_CONSTANT Bool.true
+REDUCED_CONSTANT Decidable
+REDUCED_CONSTANT Decidable.isFalse
+REDUCED_CONSTANT Decidable.isTrue
+REDUCED_CONSTANT Decidable.rec
+REDUCED_CONSTANT Eq
+REDUCED_CONSTANT Eq.rec
+REDUCED_CONSTANT Eq.refl
+REDUCED_CONSTANT Exists
+REDUCED_CONSTANT False
+REDUCED_CONSTANT Finset.mk
+REDUCED_CONSTANT HAdd.mk
+REDUCED_CONSTANT HMul.mk
+REDUCED_CONSTANT HSub.mk
+REDUCED_CONSTANT LE.mk
+REDUCED_CONSTANT LT.mk
+REDUCED_CONSTANT LinearOrder.mk
+REDUCED_CONSTANT List
+REDUCED_CONSTANT List.Perm
+REDUCED_CONSTANT List.Perm.eqv
+REDUCED_CONSTANT List.Perm.foldr_eq
+REDUCED_CONSTANT List.cons
+REDUCED_CONSTANT List.nil
+REDUCED_CONSTANT List.rec
+REDUCED_CONSTANT LocallyFiniteOrder.mk
+REDUCED_CONSTANT Max.mk
+REDUCED_CONSTANT Min.mk
+REDUCED_CONSTANT Mul.mk
+REDUCED_CONSTANT Multiset.map._proof_1
+REDUCED_CONSTANT Multiset.sum._proof_1
+REDUCED_CONSTANT NSMul.mk
+REDUCED_CONSTANT Nat
+REDUCED_CONSTANT Nat.add_assoc
+REDUCED_CONSTANT Nat.add_comm
+REDUCED_CONSTANT Nat.add_zero
+REDUCED_CONSTANT Nat.eq_of_beq_eq_true
+REDUCED_CONSTANT Nat.instAddCancelCommMonoid._proof_1
+REDUCED_CONSTANT Nat.instLinearOrder._proof_1
+REDUCED_CONSTANT Nat.instLinearOrder._proof_2
+REDUCED_CONSTANT Nat.instLinearOrder._proof_3
+REDUCED_CONSTANT Nat.instLocallyFiniteOrder._proof_10
+REDUCED_CONSTANT Nat.instLocallyFiniteOrder._proof_11
+REDUCED_CONSTANT Nat.instLocallyFiniteOrder._proof_12
+REDUCED_CONSTANT Nat.instLocallyFiniteOrder._proof_13
+REDUCED_CONSTANT Nat.instLocallyFiniteOrder._proof_3
+REDUCED_CONSTANT Nat.instLocallyFiniteOrder._proof_5
+REDUCED_CONSTANT Nat.instLocallyFiniteOrder._proof_7
+REDUCED_CONSTANT Nat.instLocallyFiniteOrder._proof_9
+REDUCED_CONSTANT Nat.le
+REDUCED_CONSTANT Nat.le_antisymm
+REDUCED_CONSTANT Nat.le_of_ble_eq_true
+REDUCED_CONSTANT Nat.le_refl
+REDUCED_CONSTANT Nat.le_total
+REDUCED_CONSTANT Nat.le_trans
+REDUCED_CONSTANT Nat.lt_iff_le_and_not_ge
+REDUCED_CONSTANT Nat.ne_of_beq_eq_false
+REDUCED_CONSTANT Nat.not_le_of_not_ble_eq_true
+REDUCED_CONSTANT Nat.rec
+REDUCED_CONSTANT Nat.succ
+REDUCED_CONSTANT Nat.succ_mul
+REDUCED_CONSTANT Nat.zero
+REDUCED_CONSTANT Nat.zero_add
+REDUCED_CONSTANT Nat.zero_mul
+REDUCED_CONSTANT OfNat.mk
+REDUCED_CONSTANT Ord.mk
+REDUCED_CONSTANT Ordering
+REDUCED_CONSTANT Ordering.eq
+REDUCED_CONSTANT Ordering.gt
+REDUCED_CONSTANT Ordering.lt
+REDUCED_CONSTANT PProd
+REDUCED_CONSTANT PProd.mk
+REDUCED_CONSTANT PUnit
+REDUCED_CONSTANT PUnit.unit
+REDUCED_CONSTANT PartialOrder.mk
+REDUCED_CONSTANT Preorder.mk
+REDUCED_CONSTANT Quot
+REDUCED_CONSTANT Quot.lift
+REDUCED_CONSTANT Quot.mk
+REDUCED_CONSTANT Setoid.mk
+REDUCED_CONSTANT Sub.mk
+REDUCED_CONSTANT Zero.mk
+REDUCED_TYPE ∀ (f : ℕ → ℕ) (t Δ : ℕ),
+  { lt := fun n m => n.succ.le m }.1
+      (Quot.lift
+        (fun l =>
+          (List.rec
+              ⟨List.rec
+                  ((fun _ x =>
+                      {
+                          ofNat :=
+                            {
+                                    toZero :=
+                                      {
+                                              add := fun x x_1 =>
+                                                (Nat.rec
+                                                      ⟨fun x =>
+                                                        Nat.rec ((fun a x => a) x)
+                                                          (fun n n_ih => (fun n => (fun a b x => (x.1 a).succ) x n) n)
+                                                          Nat.zero PUnit.unit,
+                                                        PUnit.unit⟩
+                                                      (fun n n_ih =>
+                                                        ⟨fun x =>
+                                                          Nat.rec ((fun a x => a) x)
+                                                            (fun n n_ih => (fun n => (fun a b x => (x.1 a).succ) x n) n)
+                                                            n.succ n_ih,
+                                                          n_ih⟩)
+                                                      x_1).1
+                                                  x,
+                                              add_assoc := Nat.add_assoc, zero := Nat.zero, zero_add := Nat.zero_add,
+                                              add_zero := Nat.add_zero,
+                                              nsmul := fun m n =>
+                                                {
+                                                      hMul := fun a b =>
+                                                        {
+                                                              mul := fun x x_1 =>
+                                                                (Nat.rec
+                                                                      ⟨fun x =>
+                                                                        Nat.rec ((fun x x_2 => { ofNat := 0 }.1) x)
+                                                                          (fun n n_ih =>
+                                                                            (fun n =>
+                                                                                (fun a b x =>
+                                                                                    (Nat.rec
+                                                                                          ⟨fun x =>
+                                                                                            Nat.rec ((fun a x => a) x)
+                                                                                              (fun n n_ih =>
+                                                                                                (fun n => ⋯) n)
+                                                                                              Nat.zero PUnit.unit,
+                                                                                            PUnit.unit⟩
+                                                                                          (fun n n_ih =>
+                                                                                            ⟨fun x =>
+                                                                                              Nat.rec ((fun a x => a) x)
+                                                                                                (fun n n_ih => ⋯ n)
+                                                                                                n.succ n_ih,
+                                                                                              n_ih⟩)
+                                                                                          a).1
+                                                                                      (x.1 a))
+                                                                                  x n)
+                                                                              n)
+                                                                          Nat.zero PUnit.unit,
+                                                                        PUnit.unit⟩
+                                                                      (fun n n_ih =>
+                                                                        ⟨fun x =>
+                                                                          Nat.rec ((fun x x_2 => { ofNat := 0 }.1) x)
+                                                                            (fun n n_ih =>
+                                                                              (fun n =>
+                                                                                  (fun a b x =>
+                                                                                      (Nat.rec
+                                                                                            ⟨fun x =>
+                                                                                              Nat.rec ((fun a x => a) x)
+                                                                                                (fun n n_ih => ⋯ n)
+                                                                                                Nat.zero PUnit.unit,
+                                                                                              PUnit.unit⟩
+                                                                                            (fun n n_ih =>
+                                                                                              ⟨fun x =>
+                                                                                                Nat.rec
+                                                                                                  ((fun a x => a) x)
+                                                                                                  (fun n n_ih => ⋯)
+                                                                                                  n.succ n_ih,
+                                                                                                n_ih⟩)
+                                                                                            a).1
+                                                                                        (x.1 a))
+                                                                                    x n)
+                                                                                n)
+                                                                            n.succ n_ih,
+                                                                          n_ih⟩)
+                                                                      x_1).1
+                                                                  x }.1
+                                                          a b }.1
+                                                  m n,
+                                              nsmul_zero := Nat.zero_mul, nsmul_succ := Nat.succ_mul,
+                                              add_comm := Nat.add_comm,
+                                              toIsLeftCancelAdd := Nat.instAddCancelCommMonoid._proof_1 }.1.1.2,
+                                    toAdd :=
+                                      {
+                                                add := fun x x_1 =>
+                                                  (Nat.rec
+                                                        ⟨fun x =>
+                                                          Nat.rec ((fun a x => a) x)
+                                                            (fun n n_ih => (fun n => (fun a b x => (x.1 a).succ) x n) n)
+                                                            Nat.zero PUnit.unit,
+                                                          PUnit.unit⟩
+                                                        (fun n n_ih =>
+                                                          ⟨fun x =>
+                                                            Nat.rec ((fun a x => a) x)
+                                                              (fun n n_ih =>
+                                                                (fun n => (fun a b x => (x.1 a).succ) x n) n)
+                                                              n.succ n_ih,
+                                                            n_ih⟩)
+                                                        x_1).1
+                                                    x,
+                                                add_assoc := Nat.add_assoc, zero := Nat.zero, zero_add := Nat.zero_add,
+                                                add_zero := Nat.add_zero,
+                                                nsmul := fun m n =>
+                                                  {
+                                                        hMul := fun a b =>
+                                                          {
+                                                                mul := fun x x_1 =>
+                                                                  (Nat.rec
+                                                                        ⟨fun x =>
+                                                                          Nat.rec ((fun x x_2 => { ofNat := 0 }.1) x)
+                                                                            (fun n n_ih =>
+                                                                              (fun n =>
+                                                                                  (fun a b x =>
+                                                                                      (Nat.rec
+                                                                                            ⟨fun x =>
+                                                                                              Nat.rec ((fun a x => a) x)
+                                                                                                (fun n n_ih => ⋯ n)
+                                                                                                Nat.zero PUnit.unit,
+                                                                                              PUnit.unit⟩
+                                                                                            (fun n n_ih =>
+                                                                                              ⟨fun x =>
+                                                                                                Nat.rec
+                                                                                                  ((fun a x => a) x)
+                                                                                                  (fun n n_ih => ⋯)
+                                                                                                  n.succ n_ih,
+                                                                                                n_ih⟩)
+                                                                                            a).1
+                                                                                        (x.1 a))
+                                                                                    x n)
+                                                                                n)
+                                                                            Nat.zero PUnit.unit,
+                                                                          PUnit.unit⟩
+                                                                        (fun n n_ih =>
+                                                                          ⟨fun x =>
+                                                                            Nat.rec ((fun x x_2 => { ofNat := 0 }.1) x)
+                                                                              (fun n n_ih =>
+                                                                                (fun n =>
+                                                                                    (fun a b x =>
+                                                                                        (Nat.rec
+                                                                                              ⟨fun x =>
+                                                                                                Nat.rec
+                                                                                                  ((fun a x => a) x)
+                                                                                                  (fun n n_ih => ⋯)
+                                                                                                  Nat.zero PUnit.unit,
+                                                                                                PUnit.unit⟩
+                                                                                              (fun n n_ih =>
+                                                                                                ⟨fun x =>
+                                                                                                  Nat.rec ⋯ ⋯ n.succ
+                                                                                                    n_ih,
+                                                                                                  n_ih⟩)
+                                                                                              a).1
+                                                                                          (x.1 a))
+                                                                                      x n)
+                                                                                  n)
+                                                                              n.succ n_ih,
+                                                                            n_ih⟩)
+                                                                        x_1).1
+                                                                    x }.1
+                                                            a b }.1
+                                                    m n,
+                                                nsmul_zero := Nat.zero_mul, nsmul_succ := Nat.succ_mul,
+                                                add_comm := Nat.add_comm,
+                                                toIsLeftCancelAdd := Nat.instAddCancelCommMonoid._proof_1 }.1.1.1.1,
+                                    zero_add := ⋯, add_zero := ⋯ }.1.1.1 }.1)
+                    PUnit.unit)
+                  (fun head tail tail_ih =>
+                    (fun head tail =>
+                        (fun a l x =>
+                            (fun x1 x2 =>
+                                {
+                                      hAdd := fun a b =>
+                                        {
+                                                  toZero :=
+                                                    {
+                                                            add := fun x x_1 =>
+                                                              (Nat.rec
+                                                                    ⟨fun x =>
+                                                                      Nat.rec ((fun a x => a) x)
+                                                                        (fun n n_ih =>
+                                                                          (fun n => (fun a b x => (x.1 a).succ) x n) n)
+                                                                        Nat.zero PUnit.unit,
+                                                                      PUnit.unit⟩
+                                                                    (fun n n_ih =>
+                                                                      ⟨fun x =>
+                                                                        Nat.rec ((fun a x => a) x)
+                                                                          (fun n n_ih =>
+                                                                            (fun n => (fun a b x => (x.1 a).succ) x n)
+                                                                              n)
+                                                                          n.succ n_ih,
+                                                                        n_ih⟩)
+                                                                    x_1).1
+                                                                x,
+                                                            add_assoc := Nat.add_assoc, zero := Nat.zero,
+                                                            zero_add := Nat.zero_add, add_zero := Nat.add_zero,
+                                                            nsmul := fun m n =>
+                                                              {
+                                                                    hMul := fun a b =>
+                                                                      {
+                                                                            mul := fun x x_1 =>
+                                                                              (Nat.rec
+                                                                                    ⟨fun x =>
+                                                                                      Nat.rec
+                                                                                        ((fun x x_2 => { ofNat := 0 }.1)
+                                                                                          x)
+                                                                                        (fun n n_ih =>
+                                                                                          (fun n =>
+                                                                                              (fun a b x => ⋯ (x.1 a)) x
+                                                                                                n)
+                                                                                            n)
+                                                                                        Nat.zero PUnit.unit,
+                                                                                      PUnit.unit⟩
+                                                                                    (fun n n_ih =>
+                                                                                      ⟨fun x =>
+                                                                                        Nat.rec
+                                                                                          ((fun x x_2 =>
+                                                                                              { ofNat := 0 }.1)
+                                                                                            x)
+                                                                                          (fun n n_ih =>
+                                                                                            (fun n =>
+                                                                                                (fun a b x => ⋯) x n)
+                                                                                              n)
+                                                                                          n.succ n_ih,
+                                                                                        n_ih⟩)
+                                                                                    x_1).1
+                                                                                x }.1
+                                                                        a b }.1
+                                                                m n,
+                                                            nsmul_zero := Nat.zero_mul, nsmul_succ := Nat.succ_mul,
+                                                            add_comm := Nat.add_comm,
+                                                            toIsLeftCancelAdd :=
+                                                              Nat.instAddCancelCommMonoid._proof_1 }.1.1.2,
+                                                  toAdd :=
+                                                    {
+                                                              add := fun x x_1 =>
+                                                                (Nat.rec
+                                                                      ⟨fun x =>
+                                                                        Nat.rec ((fun a x => a) x)
+                                                                          (fun n n_ih =>
+                                                                            (fun n => (fun a b x => (x.1 a).succ) x n)
+                                                                              n)
+                                                                          Nat.zero PUnit.unit,
+                                                                        PUnit.unit⟩
+                                                                      (fun n n_ih =>
+                                                                        ⟨fun x =>
+                                                                          Nat.rec ((fun a x => a) x)
+                                                                            (fun n n_ih =>
+                                                                              (fun n => (fun a b x => (x.1 a).succ) x n)
+                                                                                n)
+                                                                            n.succ n_ih,
+                                                                          n_ih⟩)
+                                                                      x_1).1
+                                                                  x,
+                                                              add_assoc := Nat.add_assoc, zero := Nat.zero,
+                                                              zero_add := Nat.zero_add, add_zero := Nat.add_zero,
+                                                              nsmul := fun m n =>
+                                                                {
+                                                                      hMul := fun a b =>
+                                                                        {
+                                                                              mul := fun x x_1 =>
+                                                                                (Nat.rec
+                                                                                      ⟨fun x =>
+                                                                                        Nat.rec
+                                                                                          ((fun x x_2 =>
+                                                                                              { ofNat := 0 }.1)
+                                                                                            x)
+                                                                                          (fun n n_ih =>
+                                                                                            (fun n =>
+                                                                                                (fun a b x => ⋯) x n)
+                                                                                              n)
+                                                                                          Nat.zero PUnit.unit,
+                                                                                        PUnit.unit⟩
+                                                                                      (fun n n_ih =>
+                                                                                        ⟨fun x =>
+                                                                                          Nat.rec
+                                                                                            ((fun x x_2 =>
+                                                                                                { ofNat := 0 }.1)
+                                                                                              x)
+                                                                                            (fun n n_ih =>
+                                                                                              (fun n => ⋯ x n) n)
+                                                                                            n.succ n_ih,
+                                                                                          n_ih⟩)
+                                                                                      x_1).1
+                                                                                  x }.1
+                                                                          a b }.1
+                                                                  m n,
+                                                              nsmul_zero := Nat.zero_mul, nsmul_succ := Nat.succ_mul,
+                                                              add_comm := Nat.add_comm,
+                                                              toIsLeftCancelAdd :=
+                                                                Nat.instAddCancelCommMonoid._proof_1 }.1.1.1.1,
+                                                  zero_add := ⋯, add_zero := ⋯ }.1.2.1
+                                          a b }.1
+                                  x1 x2)
+                              a x.1)
+                          head tail)
+                      head tail)
+                  [] PUnit.unit,
+                PUnit.unit⟩
+              (fun head tail tail_ih =>
+                ⟨List.rec
+                    ((fun _ x =>
+                        {
+                            ofNat :=
+                              {
+                                      toZero :=
+                                        {
+                                                add := fun x x_1 =>
+                                                  (Nat.rec
+                                                        ⟨fun x =>
+                                                          Nat.rec ((fun a x => a) x)
+                                                            (fun n n_ih => (fun n => (fun a b x => (x.1 a).succ) x n) n)
+                                                            Nat.zero PUnit.unit,
+                                                          PUnit.unit⟩
+                                                        (fun n n_ih =>
+                                                          ⟨fun x =>
+                                                            Nat.rec ((fun a x => a) x)
+                                                              (fun n n_ih =>
+                                                                (fun n => (fun a b x => (x.1 a).succ) x n) n)
+                                                              n.succ n_ih,
+                                                            n_ih⟩)
+                                                        x_1).1
+                                                    x,
+                                                add_assoc := Nat.add_assoc, zero := Nat.zero, zero_add := Nat.zero_add,
+                                                add_zero := Nat.add_zero,
+                                                nsmul := fun m n =>
+                                                  {
+                                                        hMul := fun a b =>
+                                                          {
+                                                                mul := fun x x_1 =>
+                                                                  (Nat.rec
+                                                                        ⟨fun x =>
+                                                                          Nat.rec ((fun x x_2 => { ofNat := 0 }.1) x)
+                                                                            (fun n n_ih =>
+                                                                              (fun n =>
+                                                                                  (fun a b x =>
+                                                                                      (Nat.rec
+                                                                                            ⟨fun x =>
+                                                                                              Nat.rec ((fun a x => a) x)
+                                                                                                (fun n n_ih => ⋯ n)
+                                                                                                Nat.zero PUnit.unit,
+                                                                                              PUnit.unit⟩
+                                                                                            (fun n n_ih =>
+                                                                                              ⟨fun x =>
+                                                                                                Nat.rec
+                                                                                                  ((fun a x => a) x)
+                                                                                                  (fun n n_ih => ⋯)
+                                                                                                  n.succ n_ih,
+                                                                                                n_ih⟩)
+                                                                                            a).1
+                                                                                        (x.1 a))
+                                                                                    x n)
+                                                                                n)
+                                                                            Nat.zero PUnit.unit,
+                                                                          PUnit.unit⟩
+                                                                        (fun n n_ih =>
+                                                                          ⟨fun x =>
+                                                                            Nat.rec ((fun x x_2 => { ofNat := 0 }.1) x)
+                                                                              (fun n n_ih =>
+                                                                                (fun n =>
+                                                                                    (fun a b x =>
+                                                                                        (Nat.rec
+                                                                                              ⟨fun x =>
+                                                                                                Nat.rec
+                                                                                                  ((fun a x => a) x)
+                                                                                                  (fun n n_ih => ⋯)
+                                                                                                  Nat.zero PUnit.unit,
+                                                                                                PUnit.unit⟩
+                                                                                              (fun n n_ih =>
+                                                                                                ⟨fun x =>
+                                                                                                  Nat.rec ⋯ ⋯ n.succ
+                                                                                                    n_ih,
+                                                                                                  n_ih⟩)
+                                                                                              a).1
+                                                                                          (x.1 a))
+                                                                                      x n)
+                                                                                  n)
+                                                                              n.succ n_ih,
+                                                                            n_ih⟩)
+                                                                        x_1).1
+                                                                    x }.1
+                                                            a b }.1
+                                                    m n,
+                                                nsmul_zero := Nat.zero_mul, nsmul_succ := Nat.succ_mul,
+                                                add_comm := Nat.add_comm,
+                                                toIsLeftCancelAdd := Nat.instAddCancelCommMonoid._proof_1 }.1.1.2,
+                                      toAdd :=
+                                        {
+                                                  add := fun x x_1 =>
+                                                    (Nat.rec
+                                                          ⟨fun x =>
+                                                            Nat.rec ((fun a x => a) x)
+                                                              (fun n n_ih =>
+                                                                (fun n => (fun a b x => (x.1 a).succ) x n) n)
+                                                              Nat.zero PUnit.unit,
+                                                            PUnit.unit⟩
+                                                          (fun n n_ih =>
+                                                            ⟨fun x =>
+                                                              Nat.rec ((fun a x => a) x)
+                                                                (fun n n_ih =>
+                                                                  (fun n => (fun a b x => (x.1 a).succ) x n) n)
+                                                                n.succ n_ih,
+                                                              n_ih⟩)
+                                                          x_1).1
+                                                      x,
+                                                  add_assoc := Nat.add_assoc, zero := Nat.zero,
+                                                  zero_add := Nat.zero_add, add_zero := Nat.add_zero,
+                                                  nsmul := fun m n =>
+                                                    {
+                                                          hMul := fun a b =>
+                                                            {
+                                                                  mul := fun x x_1 =>
+                                                                    (Nat.rec
+                                                                          ⟨fun x =>
+                                                                            Nat.rec ((fun x x_2 => { ofNat := 0 }.1) x)
+                                                                              (fun n n_ih =>
+                                                                                (fun n =>
+                                                                                    (fun a b x =>
+                                                                                        (Nat.rec
+                                                                                              ⟨fun x =>
+                                                                                                Nat.rec
+                                                                                                  ((fun a x => a) x)
+                                                                                                  (fun n n_ih => ⋯)
+                                                                                                  Nat.zero PUnit.unit,
+                                                                                                PUnit.unit⟩
+                                                                                              (fun n n_ih =>
+                                                                                                ⟨fun x =>
+                                                                                                  Nat.rec ⋯ ⋯ n.succ
+                                                                                                    n_ih,
+                                                                                                  n_ih⟩)
+                                                                                              a).1
+                                                                                          (x.1 a))
+                                                                                      x n)
+                                                                                  n)
+                                                                              Nat.zero PUnit.unit,
+                                                                            PUnit.unit⟩
+                                                                          (fun n n_ih =>
+                                                                            ⟨fun x =>
+                                                                              Nat.rec
+                                                                                ((fun x x_2 => { ofNat := 0 }.1) x)
+                                                                                (fun n n_ih =>
+                                                                                  (fun n =>
+                                                                                      (fun a b x =>
+                                                                                          (Nat.rec
+                                                                                                ⟨fun x =>
+                                                                                                  Nat.rec ⋯ ⋯ Nat.zero
+                                                                                                    PUnit.unit,
+                                                                                                  PUnit.unit⟩
+                                                                                                (fun n n_ih =>
+                                                                                                  ⟨fun x => ⋯, n_ih⟩)
+                                                                                                a).1
+                                                                                            (x.1 a))
+                                                                                        x n)
+                                                                                    n)
+                                                                                n.succ n_ih,
+                                                                              n_ih⟩)
+                                                                          x_1).1
+                                                                      x }.1
+                                                              a b }.1
+                                                      m n,
+                                                  nsmul_zero := Nat.zero_mul, nsmul_succ := Nat.succ_mul,
+                                                  add_comm := Nat.add_comm,
+                                                  toIsLeftCancelAdd := Nat.instAddCancelCommMonoid._proof_1 }.1.1.1.1,
+                                      zero_add := ⋯, add_zero := ⋯ }.1.1.1 }.1)
+                      PUnit.unit)
+                    (fun head tail tail_ih =>
+                      (fun head tail =>
+                          (fun a l x =>
+                              (fun x1 x2 =>
+                                  {
+                                        hAdd := fun a b =>
+                                          {
+                                                    toZero :=
+                                                      {
+                                                              add := fun x x_1 =>
+                                                                (Nat.rec
+                                                                      ⟨fun x =>
+                                                                        Nat.rec ((fun a x => a) x)
+                                                                          (fun n n_ih =>
+                                                                            (fun n => (fun a b x => (x.1 a).succ) x n)
+                                                                              n)
+                                                                          Nat.zero PUnit.unit,
+                                                                        PUnit.unit⟩
+                                                                      (fun n n_ih =>
+                                                                        ⟨fun x =>
+                                                                          Nat.rec ((fun a x => a) x)
+                                                                            (fun n n_ih =>
+                                                                              (fun n => (fun a b x => (x.1 a).succ) x n)
+                                                                                n)
+                                                                            n.succ n_ih,
+                                                                          n_ih⟩)
+                                                                      x_1).1
+                                                                  x,
+                                                              add_assoc := Nat.add_assoc, zero := Nat.zero,
+                                                              zero_add := Nat.zero_add, add_zero := Nat.add_zero,
+                                                              nsmul := fun m n =>
+                                                                {
+                                                                      hMul := fun a b =>
+                                                                        {
+                                                                              mul := fun x x_1 =>
+                                                                                (Nat.rec
+                                                                                      ⟨fun x =>
+                                                                                        Nat.rec
+                                                                                          ((fun x x_2 =>
+                                                                                              { ofNat := 0 }.1)
+                                                                                            x)
+                                                                                          (fun n n_ih =>
+                                                                                            (fun n =>
+                                                                                                (fun a b x => ⋯) x n)
+                                                                                              n)
+                                                                                          Nat.zero PUnit.unit,
+                                                                                        PUnit.unit⟩
+                                                                                      (fun n n_ih =>
+                                                                                        ⟨fun x =>
+                                                                                          Nat.rec
+                                                                                            ((fun x x_2 =>
+                                                                                                { ofNat := 0 }.1)
+                                                                                              x)
+                                                                                            (fun n n_ih =>
+                                                                                              (fun n => ⋯ x n) n)
+                                                                                            n.succ n_ih,
+                                                                                          n_ih⟩)
+                                                                                      x_1).1
+                                                                                  x }.1
+                                                                          a b }.1
+                                                                  m n,
+                                                              nsmul_zero := Nat.zero_mul, nsmul_succ := Nat.succ_mul,
+                                                              add_comm := Nat.add_comm,
+                                                              toIsLeftCancelAdd :=
+                                                                Nat.instAddCancelCommMonoid._proof_1 }.1.1.2,
+                                                    toAdd :=
+                                                      {
+                                                                add := fun x x_1 =>
+                                                                  (Nat.rec
+                                                                        ⟨fun x =>
+                                                                          Nat.rec ((fun a x => a) x)
+                                                                            (fun n n_ih =>
+                                                                              (fun n => (fun a b x => (x.1 a).succ) x n)
+                                                                                n)
+                                                                            Nat.zero PUnit.unit,
+                                                                          PUnit.unit⟩
+                                                                        (fun n n_ih =>
+                                                                          ⟨fun x =>
+                                                                            Nat.rec ((fun a x => a) x)
+                                                                              (fun n n_ih =>
+                                                                                (fun n =>
+                                                                                    (fun a b x => (x.1 a).succ) x n)
+                                                                                  n)
+                                                                              n.succ n_ih,
+                                                                            n_ih⟩)
+                                                                        x_1).1
+                                                                    x,
+                                                                add_assoc := Nat.add_assoc, zero := Nat.zero,
+                                                                zero_add := Nat.zero_add, add_zero := Nat.add_zero,
+                                                                nsmul := fun m n =>
+                                                                  {
+                                                                        hMul := fun a b =>
+                                                                          {
+                                                                                mul := fun x x_1 =>
+                                                                                  (Nat.rec
+                                                                                        ⟨fun x =>
+                                                                                          Nat.rec
+                                                                                            ((fun x x_2 =>
+                                                                                                { ofNat := 0 }.1)
+                                                                                              x)
+                                                                                            (fun n n_ih =>
+                                                                                              (fun n => ⋯ x n) n)
+                                                                                            Nat.zero PUnit.unit,
+                                                                                          PUnit.unit⟩
+                                                                                        (fun n n_ih =>
+                                                                                          ⟨fun x =>
+                                                                                            Nat.rec
+                                                                                              ((fun x x_2 =>
+                                                                                                  { ofNat := 0 }.1)
+                                                                                                x)
+                                                                                              (fun n n_ih =>
+                                                                                                (fun n => ⋯) n)
+                                                                                              n.succ n_ih,
+                                                                                            n_ih⟩)
+                                                                                        x_1).1
+                                                                                    x }.1
+                                                                            a b }.1
+                                                                    m n,
+                                                                nsmul_zero := Nat.zero_mul, nsmul_succ := Nat.succ_mul,
+                                                                add_comm := Nat.add_comm,
+                                                                toIsLeftCancelAdd :=
+                                                                  Nat.instAddCancelCommMonoid._proof_1 }.1.1.1.1,
+                                                    zero_add := ⋯, add_zero := ⋯ }.1.2.1
+                                            a b }.1
+                                    x1 x2)
+                                a x.1)
+                            head tail)
+                        head tail)
+                    (head :: tail) tail_ih,
+                  tail_ih⟩)
+              l).1)
+        ⋯
+        (Quot.lift
+          (fun l =>
+            Quot.mk { r := List.Perm, iseqv := ⋯ }.1
+              (List.rec
+                  ⟨List.rec ((fun _ x => []) PUnit.unit)
+                      (fun head tail tail_ih =>
+                        (fun head tail => (fun a as x => (fun x => f x) a :: x.1) head tail) head tail)
+                      [] PUnit.unit,
+                    PUnit.unit⟩
+                  (fun head tail tail_ih =>
+                    ⟨List.rec ((fun _ x => []) PUnit.unit)
+                        (fun head tail tail_ih =>
+                          (fun head tail => (fun a as x => (fun x => f x) a :: x.1) head tail) head tail)
+                        (head :: tail) tail_ih,
+                      tail_ih⟩)
+                  l).1)
+          ⋯
+          ({
+                  finsetIcc := fun a b =>
+                    {
+                      val :=
+                        Quot.mk { r := List.Perm, iseqv := ⋯ }.1
+                          ((Nat.rec
+                                ⟨fun x x_1 =>
+                                  Nat.rec ((fun x x_2 x_3 => []) x x_1)
+                                    (fun n n_ih =>
+                                      (fun n =>
+                                          (fun s n step x =>
+                                              s ::
+                                                x.1
+                                                  ({
+                                                        hAdd := fun a b =>
+                                                          {
+                                                                add := fun x x_2 =>
+                                                                  (Nat.rec
+                                                                        ⟨fun x =>
+                                                                          Nat.rec ((fun a x => a) x)
+                                                                            (fun n n_ih =>
+                                                                              (fun n => (fun a b x => (x.1 a).succ) x n)
+                                                                                n)
+                                                                            Nat.zero PUnit.unit,
+                                                                          PUnit.unit⟩
+                                                                        (fun n n_ih =>
+                                                                          ⟨fun x =>
+                                                                            Nat.rec ((fun a x => a) x)
+                                                                              (fun n n_ih =>
+                                                                                (fun n =>
+                                                                                    (fun a b x => (x.1 a).succ) x n)
+                                                                                  n)
+                                                                              n.succ n_ih,
+                                                                            n_ih⟩)
+                                                                        x_2).1
+                                                                    x }.1
+                                                            a b }.1
+                                                    s step)
+                                                  step)
+                                            x n x_1)
+                                        n)
+                                    Nat.zero PUnit.unit,
+                                  PUnit.unit⟩
+                                (fun n n_ih =>
+                                  ⟨fun x x_1 =>
+                                    Nat.rec ((fun x x_2 x_3 => []) x x_1)
+                                      (fun n n_ih =>
+                                        (fun n =>
+                                            (fun s n step x =>
+                                                s ::
+                                                  x.1
+                                                    ({
+                                                          hAdd := fun a b =>
+                                                            {
+                                                                  add := fun x x_2 =>
+                                                                    (Nat.rec
+                                                                          ⟨fun x =>
+                                                                            Nat.rec ((fun a x => a) x)
+                                                                              (fun n n_ih =>
+                                                                                (fun n =>
+                                                                                    (fun a b x => (x.1 a).succ) x n)
+                                                                                  n)
+                                                                              Nat.zero PUnit.unit,
+                                                                            PUnit.unit⟩
+                                                                          (fun n n_ih =>
+                                                                            ⟨fun x =>
+                                                                              Nat.rec ((fun a x => a) x)
+                                                                                (fun n n_ih =>
+                                                                                  (fun n =>
+                                                                                      (fun a b x => (x.1 a).succ) x n)
+                                                                                    n)
+                                                                                n.succ n_ih,
+                                                                              n_ih⟩)
+                                                                          x_2).1
+                                                                      x }.1
+                                                              a b }.1
+                                                      s step)
+                                                    step)
+                                              x n x_1)
+                                          n)
+                                      n.succ n_ih,
+                                    n_ih⟩)
+                                ({
+                                      hSub := fun a b =>
+                                        {
+                                              sub := fun x x_1 =>
+                                                (Nat.rec
+                                                      ⟨fun x =>
+                                                        Nat.rec ((fun a x => a) x)
+                                                          (fun n n_ih =>
+                                                            (fun n =>
+                                                                (fun a b x =>
+                                                                    Nat.rec ((fun _ => { ofNat := 0 }.1) PUnit.unit)
+                                                                      (fun n n_ih => (fun n => (fun a => a) n) n)
+                                                                      (x.1 a))
+                                                                  x n)
+                                                              n)
+                                                          Nat.zero PUnit.unit,
+                                                        PUnit.unit⟩
+                                                      (fun n n_ih =>
+                                                        ⟨fun x =>
+                                                          Nat.rec ((fun a x => a) x)
+                                                            (fun n n_ih =>
+                                                              (fun n =>
+                                                                  (fun a b x =>
+                                                                      Nat.rec ((fun _ => { ofNat := 0 }.1) PUnit.unit)
+                                                                        (fun n n_ih => (fun n => (fun a => a) n) n)
+                                                                        (x.1 a))
+                                                                    x n)
+                                                                n)
+                                                            n.succ n_ih,
+                                                          n_ih⟩)
+                                                      x_1).1
+                                                  x }.1
+                                          a b }.1
+                                  ({
+                                        hAdd := fun a b =>
+                                          {
+                                                add := fun x x_1 =>
+                                                  (Nat.rec
+                                                        ⟨fun x =>
+                                                          Nat.rec ((fun a x => a) x)
+                                                            (fun n n_ih => (fun n => (fun a b x => (x.1 a).succ) x n) n)
+                                                            Nat.zero PUnit.unit,
+                                                          PUnit.unit⟩
+                                                        (fun n n_ih =>
+                                                          ⟨fun x =>
+                                                            Nat.rec ((fun a x => a) x)
+                                                              (fun n n_ih =>
+                                                                (fun n => (fun a b x => (x.1 a).succ) x n) n)
+                                                              n.succ n_ih,
+                                                            n_ih⟩)
+                                                        x_1).1
+                                                    x }.1
+                                            a b }.1
+                                    b { ofNat := 1 }.1)
+                                  a)).1
+                            a { ofNat := 1 }.1),
+                      nodup := ⋯ },
+                  finsetIco := fun a b =>
+                    {
+                      val :=
+                        Quot.mk { r := List.Perm, iseqv := ⋯ }.1
+                          ((Nat.rec
+                                ⟨fun x x_1 =>
+                                  Nat.rec ((fun x x_2 x_3 => []) x x_1)
+                                    (fun n n_ih =>
+                                      (fun n =>
+                                          (fun s n step x =>
+                                              s ::
+                                                x.1
+                                                  ({
+                                                        hAdd := fun a b =>
+                                                          {
+                                                                add := fun x x_2 =>
+                                                                  (Nat.rec
+                                                                        ⟨fun x =>
+                                                                          Nat.rec ((fun a x => a) x)
+                                                                            (fun n n_ih =>
+                                                                              (fun n => (fun a b x => (x.1 a).succ) x n)
+                                                                                n)
+                                                                            Nat.zero PUnit.unit,
+                                                                          PUnit.unit⟩
+                                                                        (fun n n_ih =>
+                                                                          ⟨fun x =>
+                                                                            Nat.rec ((fun a x => a) x)
+                                                                              (fun n n_ih =>
+                                                                                (fun n =>
+                                                                                    (fun a b x => (x.1 a).succ) x n)
+                                                                                  n)
+                                                                              n.succ n_ih,
+                                                                            n_ih⟩)
+                                                                        x_2).1
+                                                                    x }.1
+                                                            a b }.1
+                                                    s step)
+                                                  step)
+                                            x n x_1)
+                                        n)
+                                    Nat.zero PUnit.unit,
+                                  PUnit.unit⟩
+                                (fun n n_ih =>
+                                  ⟨fun x x_1 =>
+                                    Nat.rec ((fun x x_2 x_3 => []) x x_1)
+                                      (fun n n_ih =>
+                                        (fun n =>
+                                            (fun s n step x =>
+                                                s ::
+                                                  x.1
+                                                    ({
+                                                          hAdd := fun a b =>
+                                                            {
+                                                                  add := fun x x_2 =>
+                                                                    (Nat.rec
+                                                                          ⟨fun x =>
+                                                                            Nat.rec ((fun a x => a) x)
+                                                                              (fun n n_ih =>
+                                                                                (fun n =>
+                                                                                    (fun a b x => (x.1 a).succ) x n)
+                                                                                  n)
+                                                                              Nat.zero PUnit.unit,
+                                                                            PUnit.unit⟩
+                                                                          (fun n n_ih =>
+                                                                            ⟨fun x =>
+                                                                              Nat.rec ((fun a x => a) x)
+                                                                                (fun n n_ih =>
+                                                                                  (fun n =>
+                                                                                      (fun a b x => (x.1 a).succ) x n)
+                                                                                    n)
+                                                                                n.succ n_ih,
+                                                                              n_ih⟩)
+                                                                          x_2).1
+                                                                      x }.1
+                                                              a b }.1
+                                                      s step)
+                                                    step)
+                                              x n x_1)
+                                          n)
+                                      n.succ n_ih,
+                                    n_ih⟩)
+                                ({
+                                      hSub := fun a b =>
+                                        {
+                                              sub := fun x x_1 =>
+                                                (Nat.rec
+                                                      ⟨fun x =>
+                                                        Nat.rec ((fun a x => a) x)
+                                                          (fun n n_ih =>
+                                                            (fun n =>
+                                                                (fun a b x =>
+                                                                    Nat.rec ((fun _ => { ofNat := 0 }.1) PUnit.unit)
+                                                                      (fun n n_ih => (fun n => (fun a => a) n) n)
+                                                                      (x.1 a))
+                                                                  x n)
+                                                              n)
+                                                          Nat.zero PUnit.unit,
+                                                        PUnit.unit⟩
+                                                      (fun n n_ih =>
+                                                        ⟨fun x =>
+                                                          Nat.rec ((fun a x => a) x)
+                                                            (fun n n_ih =>
+                                                              (fun n =>
+                                                                  (fun a b x =>
+                                                                      Nat.rec ((fun _ => { ofNat := 0 }.1) PUnit.unit)
+                                                                        (fun n n_ih => (fun n => (fun a => a) n) n)
+                                                                        (x.1 a))
+                                                                    x n)
+                                                                n)
+                                                            n.succ n_ih,
+                                                          n_ih⟩)
+                                                      x_1).1
+                                                  x }.1
+                                          a b }.1
+                                  b a)).1
+                            a { ofNat := 1 }.1),
+                      nodup := ⋯ },
+                  finsetIoc := fun a b =>
+                    {
+                      val :=
+                        Quot.mk { r := List.Perm, iseqv := ⋯ }.1
+                          ((Nat.rec
+                                ⟨fun x x_1 =>
+                                  Nat.rec ((fun x x_2 x_3 => []) x x_1)
+                                    (fun n n_ih =>
+                                      (fun n =>
+                                          (fun s n step x =>
+                                              s ::
+                                                x.1
+                                                  ({
+                                                        hAdd := fun a b =>
+                                                          {
+                                                                add := fun x x_2 =>
+                                                                  (Nat.rec
+                                                                        ⟨fun x =>
+                                                                          Nat.rec ((fun a x => a) x)
+                                                                            (fun n n_ih =>
+                                                                              (fun n => (fun a b x => (x.1 a).succ) x n)
+                                                                                n)
+                                                                            Nat.zero PUnit.unit,
+                                                                          PUnit.unit⟩
+                                                                        (fun n n_ih =>
+                                                                          ⟨fun x =>
+                                                                            Nat.rec ((fun a x => a) x)
+                                                                              (fun n n_ih =>
+                                                                                (fun n =>
+                                                                                    (fun a b x => (x.1 a).succ) x n)
+                                                                                  n)
+                                                                              n.succ n_ih,
+                                                                            n_ih⟩)
+                                                                        x_2).1
+                                                                    x }.1
+                                                            a b }.1
+                                                    s step)
+                                                  step)
+                                            x n x_1)
+                                        n)
+                                    Nat.zero PUnit.unit,
+                                  PUnit.unit⟩
+                                (fun n n_ih =>
+                                  ⟨fun x x_1 =>
+                                    Nat.rec ((fun x x_2 x_3 => []) x x_1)
+                                      (fun n n_ih =>
+                                        (fun n =>
+                                            (fun s n step x =>
+                                                s ::
+                                                  x.1
+                                                    ({
+                                                          hAdd := fun a b =>
+                                                            {
+                                                                  add := fun x x_2 =>
+                                                                    (Nat.rec
+                                                                          ⟨fun x =>
+                                                                            Nat.rec ((fun a x => a) x)
+                                                                              (fun n n_ih =>
+                                                                                (fun n =>
+                                                                                    (fun a b x => (x.1 a).succ) x n)
+                                                                                  n)
+                                                                              Nat.zero PUnit.unit,
+                                                                            PUnit.unit⟩
+                                                                          (fun n n_ih =>
+                                                                            ⟨fun x =>
+                                                                              Nat.rec ((fun a x => a) x)
+                                                                                (fun n n_ih =>
+                                                                                  (fun n =>
+                                                                                      (fun a b x => (x.1 a).succ) x n)
+                                                                                    n)
+                                                                                n.succ n_ih,
+                                                                              n_ih⟩)
+                                                                          x_2).1
+                                                                      x }.1
+                                                              a b }.1
+                                                      s step)
+                                                    step)
+                                              x n x_1)
+                                          n)
+                                      n.succ n_ih,
+                                    n_ih⟩)
+                                ({
+                                      hSub := fun a b =>
+                                        {
+                                              sub := fun x x_1 =>
+                                                (Nat.rec
+                                                      ⟨fun x =>
+                                                        Nat.rec ((fun a x => a) x)
+                                                          (fun n n_ih =>
+                                                            (fun n =>
+                                                                (fun a b x =>
+                                                                    Nat.rec ((fun _ => { ofNat := 0 }.1) PUnit.unit)
+                                                                      (fun n n_ih => (fun n => (fun a => a) n) n)
+                                                                      (x.1 a))
+                                                                  x n)
+                                                              n)
+                                                          Nat.zero PUnit.unit,
+                                                        PUnit.unit⟩
+                                                      (fun n n_ih =>
+                                                        ⟨fun x =>
+                                                          Nat.rec ((fun a x => a) x)
+                                                            (fun n n_ih =>
+                                                              (fun n =>
+                                                                  (fun a b x =>
+                                                                      Nat.rec ((fun _ => { ofNat := 0 }.1) PUnit.unit)
+                                                                        (fun n n_ih => (fun n => (fun a => a) n) n)
+                                                                        (x.1 a))
+                                                                    x n)
+                                                                n)
+                                                            n.succ n_ih,
+                                                          n_ih⟩)
+                                                      x_1).1
+                                                  x }.1
+                                          a b }.1
+                                  b a)).1
+                            ({
+                                  hAdd := fun a b =>
+                                    {
+                                          add := fun x x_1 =>
+                                            (Nat.rec
+                                                  ⟨fun x =>
+                                                    Nat.rec ((fun a x => a) x)
+                                                      (fun n n_ih => (fun n => (fun a b x => (x.1 a).succ) x n) n)
+                                                      Nat.zero PUnit.unit,
+                                                    PUnit.unit⟩
+                                                  (fun n n_ih =>
+                                                    ⟨fun x =>
+                                                      Nat.rec ((fun a x => a) x)
+                                                        (fun n n_ih => (fun n => (fun a b x => (x.1 a).succ) x n) n)
+                                                        n.succ n_ih,
+                                                      n_ih⟩)
+                                                  x_1).1
+                                              x }.1
+                                      a b }.1
+                              a { ofNat := 1 }.1)
+                            { ofNat := 1 }.1),
+                      nodup := ⋯ },
+                  finsetIoo := fun a b =>
+                    {
+                      val :=
+                        Quot.mk { r := List.Perm, iseqv := ⋯ }.1
+                          ((Nat.rec
+                                ⟨fun x x_1 =>
+                                  Nat.rec ((fun x x_2 x_3 => []) x x_1)
+                                    (fun n n_ih =>
+                                      (fun n =>
+                                          (fun s n step x =>
+                                              s ::
+                                                x.1
+                                                  ({
+                                                        hAdd := fun a b =>
+                                                          {
+                                                                add := fun x x_2 =>
+                                                                  (Nat.rec
+                                                                        ⟨fun x =>
+                                                                          Nat.rec ((fun a x => a) x)
+                                                                            (fun n n_ih =>
+                                                                              (fun n => (fun a b x => (x.1 a).succ) x n)
+                                                                                n)
+                                                                            Nat.zero PUnit.unit,
+                                                                          PUnit.unit⟩
+                                                                        (fun n n_ih =>
+                                                                          ⟨fun x =>
+                                                                            Nat.rec ((fun a x => a) x)
+                                                                              (fun n n_ih =>
+                                                                                (fun n =>
+                                                                                    (fun a b x => (x.1 a).succ) x n)
+                                                                                  n)
+                                                                              n.succ n_ih,
+                                                                            n_ih⟩)
+                                                                        x_2).1
+                                                                    x }.1
+                                                            a b }.1
+                                                    s step)
+                                                  step)
+                                            x n x_1)
+                                        n)
+                                    Nat.zero PUnit.unit,
+                                  PUnit.unit⟩
+                                (fun n n_ih =>
+                                  ⟨fun x x_1 =>
+                                    Nat.rec ((fun x x_2 x_3 => []) x x_1)
+                                      (fun n n_ih =>
+                                        (fun n =>
+                                            (fun s n step x =>
+                                                s ::
+                                                  x.1
+                                                    ({
+                                                          hAdd := fun a b =>
+                                                            {
+                                                                  add := fun x x_2 =>
+                                                                    (Nat.rec
+                                                                          ⟨fun x =>
+                                                                            Nat.rec ((fun a x => a) x)
+                                                                              (fun n n_ih =>
+                                                                                (fun n =>
+                                                                                    (fun a b x => (x.1 a).succ) x n)
+                                                                                  n)
+                                                                              Nat.zero PUnit.unit,
+                                                                            PUnit.unit⟩
+                                                                          (fun n n_ih =>
+                                                                            ⟨fun x =>
+                                                                              Nat.rec ((fun a x => a) x)
+                                                                                (fun n n_ih =>
+                                                                                  (fun n =>
+                                                                                      (fun a b x => (x.1 a).succ) x n)
+                                                                                    n)
+                                                                                n.succ n_ih,
+                                                                              n_ih⟩)
+                                                                          x_2).1
+                                                                      x }.1
+                                                              a b }.1
+                                                      s step)
+                                                    step)
+                                              x n x_1)
+                                          n)
+                                      n.succ n_ih,
+                                    n_ih⟩)
+                                ({
+                                      hSub := fun a b =>
+                                        {
+                                              sub := fun x x_1 =>
+                                                (Nat.rec
+                                                      ⟨fun x =>
+                                                        Nat.rec ((fun a x => a) x)
+                                                          (fun n n_ih =>
+                                                            (fun n =>
+                                                                (fun a b x =>
+                                                                    Nat.rec ((fun _ => { ofNat := 0 }.1) PUnit.unit)
+                                                                      (fun n n_ih => (fun n => (fun a => a) n) n)
+                                                                      (x.1 a))
+                                                                  x n)
+                                                              n)
+                                                          Nat.zero PUnit.unit,
+                                                        PUnit.unit⟩
+                                                      (fun n n_ih =>
+                                                        ⟨fun x =>
+                                                          Nat.rec ((fun a x => a) x)
+                                                            (fun n n_ih =>
+                                                              (fun n =>
+                                                                  (fun a b x =>
+                                                                      Nat.rec ((fun _ => { ofNat := 0 }.1) PUnit.unit)
+                                                                        (fun n n_ih => (fun n => (fun a => a) n) n)
+                                                                        (x.1 a))
+                                                                    x n)
+                                                                n)
+                                                            n.succ n_ih,
+                                                          n_ih⟩)
+                                                      x_1).1
+                                                  x }.1
+                                          a b }.1
+                                  ({
+                                        hSub := fun a b =>
+                                          {
+                                                sub := fun x x_1 =>
+                                                  (Nat.rec
+                                                        ⟨fun x =>
+                                                          Nat.rec ((fun a x => a) x)
+                                                            (fun n n_ih =>
+                                                              (fun n =>
+                                                                  (fun a b x =>
+                                                                      Nat.rec ((fun _ => { ofNat := 0 }.1) PUnit.unit)
+                                                                        (fun n n_ih => (fun n => (fun a => a) n) n)
+                                                                        (x.1 a))
+                                                                    x n)
+                                                                n)
+                                                            Nat.zero PUnit.unit,
+                                                          PUnit.unit⟩
+                                                        (fun n n_ih =>
+                                                          ⟨fun x =>
+                                                            Nat.rec ((fun a x => a) x)
+                                                              (fun n n_ih =>
+                                                                (fun n =>
+                                                                    (fun a b x =>
+                                                                        Nat.rec ((fun _ => { ofNat := 0 }.1) PUnit.unit)
+                                                                          (fun n n_ih => (fun n => (fun a => a) n) n)
+                                                                          (x.1 a))
+                                                                      x n)
+                                                                  n)
+                                                              n.succ n_ih,
+                                                            n_ih⟩)
+                                                        x_1).1
+                                                    x }.1
+                                            a b }.1
+                                    b a)
+                                  { ofNat := 1 }.1)).1
+                            ({
+                                  hAdd := fun a b =>
+                                    {
+                                          add := fun x x_1 =>
+                                            (Nat.rec
+                                                  ⟨fun x =>
+                                                    Nat.rec ((fun a x => a) x)
+                                                      (fun n n_ih => (fun n => (fun a b x => (x.1 a).succ) x n) n)
+                                                      Nat.zero PUnit.unit,
+                                                    PUnit.unit⟩
+                                                  (fun n n_ih =>
+                                                    ⟨fun x =>
+                                                      Nat.rec ((fun a x => a) x)
+                                                        (fun n n_ih => (fun n => (fun a b x => (x.1 a).succ) x n) n)
+                                                        n.succ n_ih,
+                                                      n_ih⟩)
+                                                  x_1).1
+                                              x }.1
+                                      a b }.1
+                              a { ofNat := 1 }.1)
+                            { ofNat := 1 }.1),
+                      nodup := ⋯ },
+                  finset_mem_Icc := ⋯, finset_mem_Ico := ⋯, finset_mem_Ioc := ⋯, finset_mem_Ioo := ⋯ }.2
+              t
+              ({
+                    hAdd := fun a b =>
+                      {
+                            add := fun x x_1 =>
+                              (Nat.rec
+                                    ⟨fun x =>
+                                      Nat.rec ((fun a x => a) x)
+                                        (fun n n_ih => (fun n => (fun a b x => (x.1 a).succ) x n) n) Nat.zero
+                                        PUnit.unit,
+                                      PUnit.unit⟩
+                                    (fun n n_ih =>
+                                      ⟨fun x =>
+                                        Nat.rec ((fun a x => a) x)
+                                          (fun n n_ih => (fun n => (fun a b x => (x.1 a).succ) x n) n) n.succ n_ih,
+                                        n_ih⟩)
+                                    x_1).1
+                                x }.1
+                        a b }.1
+                t Δ)).1))
+      Δ →
+    ∃ x,
+      t.le x ∧
+        x.succ.le ((Nat.rec ⟨fun x => x, PUnit.unit⟩ (fun n n_ih => ⟨fun x => (n_ih.1 x).succ, n_ih⟩) Δ).1 t) ∧ f x = 0

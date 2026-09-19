@@ -1,0 +1,83 @@
+TARGET Prosa.Util.Sum.big_nat_eq0
+ORIGINAL_CONSTANTS 15
+REDUCED_CONSTANTS 15
+REDUCED_CONSTANT And
+REDUCED_CONSTANT Eq
+REDUCED_CONSTANT Iff
+REDUCED_CONSTANT LE.le
+REDUCED_CONSTANT LT.lt
+REDUCED_CONSTANT LT.mk
+REDUCED_CONSTANT List.foldr
+REDUCED_CONSTANT List.map
+REDUCED_CONSTANT List.range'
+REDUCED_CONSTANT Nat
+REDUCED_CONSTANT Nat.add
+REDUCED_CONSTANT Nat.lt
+REDUCED_CONSTANT Nat.sub
+REDUCED_CONSTANT Nat.zero
+REDUCED_CONSTANT instLENat
+REDUCED_TYPE ∀ (m n : ℕ) (F : ℕ → ℕ),
+  List.foldr (fun x1 x2 => x1.add x2) Nat.zero (List.map (fun i => F i) (List.range' m (n.sub m) 1)) = 0 ↔
+    ∀ (i : ℕ), m ≤ i ∧ i < n → F i = 0
+TARGET Prosa.Util.Sum.sum_of_ones
+ORIGINAL_CONSTANTS 12
+REDUCED_CONSTANTS 8
+REDUCED_CONSTANT Eq
+REDUCED_CONSTANT List.foldr
+REDUCED_CONSTANT List.map
+REDUCED_CONSTANT List.range'
+REDUCED_CONSTANT Nat
+REDUCED_CONSTANT Nat.add
+REDUCED_CONSTANT Nat.sub
+REDUCED_CONSTANT Nat.zero
+REDUCED_TYPE ∀ (t Δ : ℕ),
+  List.foldr (fun x1 x2 => x1.add x2) Nat.zero (List.map (fun _x => 1) (List.range' t ((t.add Δ).sub t) 1)) = Δ
+TARGET Prosa.Util.Sum.sum_le_summation_range
+ORIGINAL_CONSTANTS 18
+REDUCED_CONSTANTS 42
+REDUCED_CONSTANT Add.add
+REDUCED_CONSTANT AddCancelCommMonoid.toAddCommMonoid
+REDUCED_CONSTANT AddCommMonoid
+REDUCED_CONSTANT And
+REDUCED_CONSTANT Eq
+REDUCED_CONSTANT Exists
+REDUCED_CONSTANT Finset.mk
+REDUCED_CONSTANT Finset.val
+REDUCED_CONSTANT HAdd.mk
+REDUCED_CONSTANT HSub.hSub
+REDUCED_CONSTANT LT.lt
+REDUCED_CONSTANT LT.mk
+REDUCED_CONSTANT LinearOrder.toPartialOrder
+REDUCED_CONSTANT List.range'
+REDUCED_CONSTANT LocallyFiniteOrder.finsetIco
+REDUCED_CONSTANT LocallyFiniteOrder.mk
+REDUCED_CONSTANT Multiset.map
+REDUCED_CONSTANT Multiset.ofList
+REDUCED_CONSTANT Multiset.sum
+REDUCED_CONSTANT Nat
+REDUCED_CONSTANT Nat.add
+REDUCED_CONSTANT Nat.instAddCancelCommMonoid
+REDUCED_CONSTANT Nat.instLinearOrder
+REDUCED_CONSTANT Nat.instLocallyFiniteOrder._proof_10
+REDUCED_CONSTANT Nat.instLocallyFiniteOrder._proof_11
+REDUCED_CONSTANT Nat.instLocallyFiniteOrder._proof_12
+REDUCED_CONSTANT Nat.instLocallyFiniteOrder._proof_13
+REDUCED_CONSTANT Nat.instLocallyFiniteOrder._proof_3
+REDUCED_CONSTANT Nat.instLocallyFiniteOrder._proof_5
+REDUCED_CONSTANT Nat.instLocallyFiniteOrder._proof_7
+REDUCED_CONSTANT Nat.instLocallyFiniteOrder._proof_9
+REDUCED_CONSTANT Nat.le
+REDUCED_CONSTANT Nat.lt
+REDUCED_CONSTANT Nat.succ
+REDUCED_CONSTANT OfNat.ofNat
+REDUCED_CONSTANT PartialOrder.toPreorder
+REDUCED_CONSTANT Preorder
+REDUCED_CONSTANT inferInstance
+REDUCED_CONSTANT instAddNat
+REDUCED_CONSTANT instHSub
+REDUCED_CONSTANT instOfNatNat
+REDUCED_CONSTANT instSubNat
+REDUCED_TYPE ∀ (f : ℕ → ℕ) (t Δ : ℕ),
+  (Multiset.map (fun x => f x) (LocallyFiniteOrder.finsetIco t ({ hAdd := fun a b => Add.add a b }.1 t Δ)).val).sum <
+      Δ →
+    ∃ x, t.le x ∧ x.succ.le (t.add Δ) ∧ f x = 0

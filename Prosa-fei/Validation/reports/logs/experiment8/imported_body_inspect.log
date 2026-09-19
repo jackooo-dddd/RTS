@@ -1,0 +1,42 @@
+*** [ Nat_add_zero@{} :
+forall n : Lean.Nat,
+Lean.eq
+  (HAdd_hAdd_inst7 Lean.Nat Lean.Nat Lean.Nat
+     (instHAdd_inst1 Lean.Nat instAddNat) n
+     (OfNat_ofNat_inst1 Lean.Nat Lean.Nat_zero (instOfNatNat Lean.Nat_zero)))
+  n ]
+
+Arguments Nat_add_zero n%_Nat_scope
+Axioms:
+Lean.eq relies on definitional UIP.
+Nat_add_zero :
+  forall n : Lean.Nat,
+  Lean.eq
+    (HAdd_hAdd_inst7 Lean.Nat Lean.Nat Lean.Nat
+       (instHAdd_inst1 Lean.Nat instAddNat) n
+       (OfNat_ofNat_inst1 Lean.Nat Lean.Nat_zero (instOfNatNat Lean.Nat_zero)))
+    n
+*** [ Nat_le_refl@{} :
+forall n : Lean.Nat, LE_le_inst1 Lean.Nat instLENat n n ]
+
+Arguments Nat_le_refl n%_Nat_scope
+Axioms:
+Nat_le_refl : forall n : Lean.Nat, LE_le_inst1 Lean.Nat instLENat n n
+*** [ Nat_eq_of_beq_eq_true@{} :
+forall n m : Lean.Nat, Lean.eq (Nat_beq n m) Bool_true -> Lean.eq n m ]
+
+Arguments Nat_eq_of_beq_eq_true (n m)%_Nat_scope a____at____internal__hyg0
+Axioms:
+Lean.eq relies on definitional UIP.
+Nat_eq_of_beq_eq_true :
+  forall n m : Lean.Nat, Lean.eq (Nat_beq n m) Bool_true -> Lean.eq n m
+*** [ Nat_ne_of_beq_eq_false@{} :
+forall n m : Lean.Nat, Lean.eq (Nat_beq n m) Bool_false -> Not (Lean.eq n m) ]
+
+Arguments Nat_ne_of_beq_eq_false (n m)%_Nat_scope 
+  a____at____internal__hyg0 a____at____internal__hyg0
+Axioms:
+Lean.eq relies on definitional UIP.
+Nat_ne_of_beq_eq_false :
+  forall n m : Lean.Nat,
+  Lean.eq (Nat_beq n m) Bool_false -> Not (Lean.eq n m)
