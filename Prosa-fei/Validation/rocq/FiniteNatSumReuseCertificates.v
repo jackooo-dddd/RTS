@@ -1,6 +1,6 @@
 From mathcomp Require Import ssreflect ssrbool ssrnat seq bigop.
 From LeanImport Require Import Lean.
-Require Import ImportedBigNatEq093 PropSPropBridge HardSumCertificate
+Require Import ImportedBigNatEq093 PropSPropFoundation HardSumCertificate
   FiniteNatSumBridge.
 From HardSource Require Import Generated_util__sum.
 
@@ -55,11 +55,11 @@ Theorem sum_of_ones_statement_certificate (t delta : nat) :
 Proof.
   apply prop_sprop_rel_intro.
   - intro Hsource.
-    apply prop_sprop_trusted_eq_intro.
+    apply coq_eq_to_imported_eq.
     rewrite imported_sum_of_ones_value_prop Hsource. reflexivity.
   - intro Htarget. apply strictly_inhabits.
-    have HtargetP := prop_sprop_trusted_elim _
-      (sprop_eq_to_strict_eq _ _ Htarget).
+    have HtargetP := interpret_strict _
+      (imported_eq_to_strict_eq _ _ Htarget).
     apply sum_nat_to_imported_injective_prop.
     rewrite -imported_sum_of_ones_value_prop. exact HtargetP.
 Qed.
@@ -134,7 +134,7 @@ Proof.
       have HlowC := sum_eq_transport
         (fun z => Nat_le (sum_nat_to_imported t) z) _ _
         (sum_eq_sym _ _ Hround) Hlow.
-      exact (prop_sprop_trusted_elim _
+      exact (interpret_strict _
         (sum_le_backward _ _ HlowC)).
     + have Hround := sum_imported_roundtrip xL.
       have HhighX := sum_eq_transport
@@ -145,10 +145,10 @@ Proof.
         (fun z => Nat_lt
           (sum_nat_to_imported (sum_imported_nat_to_rocq xL)) z)
         _ _ (imported_add_canonical t delta) HhighX.
-      exact (prop_sprop_trusted_elim _
+      exact (interpret_strict _
         (sum_lt_backward _ _ HhighC)).
   - unfold canonical_imported_function in Hzero.
-    have Hdecoded := prop_sprop_trusted_elim _
+    have Hdecoded := interpret_strict _
       (sum_decode_zero_strict _ Hzero).
     exact Hdecoded.
 Qed.
@@ -179,14 +179,14 @@ Theorem sum_le_summation_range_statement_certificate
 Proof.
   apply prop_sprop_rel_intro.
   - intro Hsource. intro HltL.
-    have Hvalue := prop_sprop_trusted_eq_intro Nat _ _
+    have Hvalue := coq_eq_to_imported_eq _ _
       (imported_sum_range_value_prop f t delta).
     have HltC := sum_eq_transport
       (fun z => Nat_lt z (sum_nat_to_imported delta)) _ _ Hvalue HltL.
-    have HltR := prop_sprop_trusted_elim _
+    have HltR := interpret_strict _
       (sum_lt_backward _ _ HltC).
     have HexR := Hsource HltR.
-    destruct (prop_sprop_trusted_exists_intro nat
+    destruct (embed_exists nat
       (fun x => (leq t x && ltn x (t + delta)) /\ Logic.eq (f x) O)
       HexR) as [x Hx].
     apply (Exists_intro Nat _ (sum_nat_to_imported x)).
@@ -201,13 +201,13 @@ Proof.
       rewrite sum_rocq_roundtrip (Logic.proj2 Hx).
       exact (eq_refl Nat_zero).
   - intro Htarget. apply strictly_inhabits. intro HltR.
-    have Hvalue := prop_sprop_trusted_eq_intro Nat _ _
+    have Hvalue := coq_eq_to_imported_eq _ _
       (imported_sum_range_value_prop f t delta).
     have HltC := sum_lt_forward _ _ HltR.
     have HltL := sum_eq_transport
       (fun z => Nat_lt z (sum_nat_to_imported delta)) _ _
       (sum_eq_sym _ _ Hvalue) HltC.
-    exact (prop_sprop_trusted_elim _
+    exact (interpret_strict _
       (sum_le_range_exists_backward_strict f t delta (Htarget HltL))).
 Qed.
 

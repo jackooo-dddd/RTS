@@ -1,7 +1,7 @@
 From mathcomp Require Import ssreflect ssrbool eqtype fintype.
 From prosa Require Import behavior.service model.processor.ideal.
 From LeanImport Require Import Lean.
-Require Import ImportedEasy93 PropSPropBridge ProcessorStateBridge.
+Require Import ImportedEasy93 PropSPropFoundation ProcessorStateBridge.
 Require Import EqTypeBridge TimeJobCertificates IdealScheduledInCertificate.
 Require Import ScheduledAtCertificate GeneratedOfficialProsa06.
 

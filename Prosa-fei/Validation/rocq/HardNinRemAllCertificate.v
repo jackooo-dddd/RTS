@@ -1,6 +1,6 @@
 From mathcomp Require Import ssreflect ssrbool eqtype seq.
 From LeanImport Require Import Lean.
-Require Import ImportedHardCore93 PropSPropBridge HardCoreCertificates.
+Require Import ImportedHardCore93 PropSPropFoundation HardCoreCertificates.
 From HardSource Require Import Generated_util__list.
 
 Inductive Nin_STrue : SProp := nin_sI.
@@ -147,10 +147,10 @@ Proof.
     have Htruth := hard_imported_mem_to_seq x
       (Generated_util__list.rem_all x xs) Hdecoded.
     exact (hard_coq_false_to_imported_false
-      (Hnot (prop_sprop_trusted_elim _ (nin_truth_to_strict _ Htruth)))).
+      (Hnot (interpret_strict _ (nin_truth_to_strict _ Htruth)))).
   - intro Hnot.
     apply strictly_inhabits. intro HmemR.
-    exact (prop_sprop_trusted_elim _
+    exact (interpret_strict _
       (nin_false_to_strict_false
         (Hnot
           (nin_imported_mem_transport x _ _

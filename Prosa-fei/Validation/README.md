@@ -4,6 +4,27 @@ This directory is an isolated proof-of-concept validator for the modern Prosa
 0.6 Lean translation. It does not touch `Prosa/Classic/` or modify the existing
 Lean translation.
 
+## Hardened Experiment 7 validator
+
+The current trust-audited representative suite is run with:
+
+```sh
+REEXPORT=1 ./scripts/validate_experiment7_hardened.sh
+```
+
+This performs clean Lean compilation, actual-artifact export/import, Rocq
+certificate compilation, automatic per-certificate assumption classification,
+official-source elaborated-type fidelity checks, cache invalidation, and an
+end-to-end interval-semantic mutation test. Its sole validation-defined axiom
+is the isolated `PropSPropFoundation.interpret_strict`; equality and existential
+forward transport are kernel-proved. See
+`reports/2026-09-19_172311_HKT_validator_trust_and_rebuild_hardening_report.md`
+and `reports/logs/experiment7/assumption_summary.json`.
+
+The concrete Ideal `scheduled_in` certificate is `CERTIFIED`; the older
+generic `ProcessorStateBridge.v` result remains relation-parametric as
+described below.
+
 Current `scheduled_in` outcome: **ACTUAL ARTIFACT IMPORTED; CORRESPONDENCE
 CONDITIONAL**. The unchanged `ScheduledIn.out` now imports completely under
 Rocq 9.3 with a minimally updated importer, and Rocq accepts

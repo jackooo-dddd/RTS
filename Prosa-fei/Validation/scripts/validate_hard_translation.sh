@@ -39,7 +39,7 @@ for artifact in HardCoreValidation.out ExistsFirstIntermediatePoint.out BigNatEq
 done
 
 checked_files=(
-  PropSPropBridge.v HardCoreCertificates.v HardNinRemAllCertificate.v
+  PropSPropFoundation.v PropSPropBridge.v HardCoreCertificates.v HardNinRemAllCertificate.v
   HardStepFunctionCertificate.v HardSumCertificate.v HardSumMutationTest.v
 )
 if rg -n '\b(Admitted|admit|sorry)\b' \
@@ -48,7 +48,7 @@ if rg -n '\b(Admitted|admit|sorry)\b' \
   exit 1
 fi
 unexpected_axioms=$(rg -n '\bAxiom\b' "${checked_files[@]/#/$rocq_dir/}" | \
-  rg -v 'PropSPropBridge\.v:.*(prop_sprop_trusted_elim|prop_sprop_trusted_exists_intro)' || true)
+  rg -v 'PropSPropFoundation\.v:.*interpret_strict' || true)
 if [[ -n "$unexpected_axioms" ]]; then
   echo "unexpected validation axiom" >&2
   echo "$unexpected_axioms" >&2
@@ -66,7 +66,8 @@ compile() {
 cd "$rocq_dir"
 ulimit -s 65520
 
-compile PropSPropBridge.v experiment5_validate_PropSPropBridge.log
+compile PropSPropFoundation.v experiment7_validate_PropSPropFoundation.log
+compile PropSPropBridge.v experiment7_validate_PropSPropBridge.log
 for source_module in Generated_util__list.v Generated_util__sum.v Generated_util__unit_growth.v; do
   compile "$generated/$source_module" "experiment5_validate_${source_module%.v}.log"
 done
@@ -77,23 +78,11 @@ compile ImportedExistsFirstIntermediatePoint93.v experiment5_validate_ImportedEx
 compile HardStepFunctionCertificate.v experiment5_validate_HardStepFunctionCertificate.log
 compile ImportedBigNatEq093.v experiment5_validate_ImportedBigNatEq093.log
 compile HardSumCertificate.v experiment5_validate_HardSumCertificate.log
+compile FiniteNatSumBridge.v experiment7_validate_FiniteNatSumBridge.log
+compile FiniteNatSumReuseCertificates.v experiment7_validate_FiniteNatSumReuseCertificates.log
 compile HardSumMutationTest.v experiment5_validate_HardSumMutationTest.log
 
-echo "Hard RTS Translation Validation — Experiment 5"
-echo
-echo "big_nat_eq0                    PARAMETRICALLY_CERTIFIED"
-echo "sum_diff                       FAILED (no Prosa 0.6 source declaration)"
-echo "sum_seq_gt0P                   FAILED (no Prosa 0.6 source declaration)"
-echo "sum_pred_diff                  FAILED (no Prosa 0.6 source declaration)"
-echo "rem_all                        CERTIFIED"
-echo "nin_rem_all                    CERTIFIED_WITH_PROP_SPROP_BRIDGE"
-echo "exists_first_intermediate_point CERTIFIED_WITH_PROP_SPROP_BRIDGE"
-echo "spin.processor_state           CERTIFIED"
-echo "spin_scheduled_on              CERTIFIED"
-echo
-echo "Mutation Detection"
-echo "big_nat_eq0: sum = 0 -> sum = 1  PASS (certificate rejected)"
-echo
-echo "Overall: 6 / 9 challenge declarations validated; 3 / 9 failed source provenance"
-echo "Open reusable dependency: FiniteNatSumValueBridge"
+echo "Hard certificate compilation completed."
+echo "Authoritative statuses are produced by classify_assumptions.py."
+echo "SOURCE_UNMAPPED (not FAILED): sum_diff, sum_seq_gt0P, sum_pred_diff."
 echo "Logs: $log_dir"

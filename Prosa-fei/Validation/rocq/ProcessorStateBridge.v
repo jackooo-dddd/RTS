@@ -2,7 +2,7 @@ From mathcomp Require Import ssreflect ssrfun ssrbool eqtype fintype.
 From prosa Require Import behavior.schedule.
 From LeanImport Require Import Lean.
 Require Import ImportedEasy93.
-Require Import Relations FiniteBridge PropSPropBridge.
+Require Import Relations FiniteBridge PropSPropFoundation.
 
 (** A relation between the Rocq/MathComp [bool] and the [Bool] type imported
     from the actual Lean artifact.  It deliberately lives in [SProp], matching

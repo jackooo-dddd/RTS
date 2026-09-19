@@ -6,11 +6,17 @@ prosa_root=$(cd "$validation_root/.." && pwd)
 mathlib_dir=${MATHLIB_DIR:-/private/tmp/mathlib4-v4.33.1}
 exporter_src=${LEAN4EXPORT_SRC:-/private/tmp/lean4export}
 toolchain=${LEAN_TOOLCHAIN:-leanprover/lean4:v4.33.1}
-olean_root="$validation_root/.work/rts_olean"
 log_dir="$validation_root/reports/logs"
 mapping="$validation_root/mapping/rts_validation_targets.yaml"
 
-mkdir -p "$olean_root/Prosa/Util" "$log_dir" "$validation_root/export"
+mkdir -p "$validation_root/.work" "$log_dir" "$validation_root/export"
+if [[ -n ${LEAN_VALIDATION_BUILD_DIR:-} ]]; then
+  olean_root=$LEAN_VALIDATION_BUILD_DIR
+  mkdir -p "$olean_root"
+else
+  olean_root=$(mktemp -d "$validation_root/.work/clean_rts_lean_build.XXXXXX")
+fi
+mkdir -p "$olean_root/Prosa/Util"
 
 if ! rg -q 'def statementOnlyTheorem' "$exporter_src/Export.lean"; then
   patch -d "$exporter_src" -p1 --forward \
@@ -103,6 +109,10 @@ export LEAN4EXPORT_STATEMENT_ONLY="$statement_only"
 
 {
   echo "Lean 4 toolchain: $toolchain"
+  echo "Repository commit: $(git -C "$prosa_root" rev-parse HEAD)"
+  git_prefix=$(git -C "$prosa_root" rev-parse --show-prefix)
+  echo "Lean source tree: $(git -C "$prosa_root" rev-parse "HEAD:${git_prefix}Prosa")"
+  echo "Fresh build directory: $olean_root"
   echo "Exporter: $exporter"
   echo "Statement-only theorems read from $mapping:"
   printf '  %s\n' "${theorem_names[@]}"
@@ -112,6 +122,13 @@ export LEAN4EXPORT_STATEMENT_ONLY="$statement_only"
     rg '#NS .* '"$short_name"'$' "$validation_root/export/RTSValidation.out"
   done
   shasum -a 256 "$validation_root/export/RTSValidation.out"
+  echo "Compiled Lean source hashes:"
+  for module in "${export_modules[@]}"; do
+    [[ "$module" == Prosa.Validation.* ]] && continue
+    rel=${module//./\/}
+    shasum -a 256 "$prosa_root/$rel.lean"
+  done
+  shasum -a 256 "$validation_root/lean/IdealScheduledInFixture.lean"
 } > "$log_dir/lean_statement_export_manifest.log"
 
 for theorem_name in "${theorem_names[@]}"; do

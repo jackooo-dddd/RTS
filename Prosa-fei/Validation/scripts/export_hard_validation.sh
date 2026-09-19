@@ -7,7 +7,6 @@ mapping="$validation_root/mapping/hard_validation_targets.yaml"
 mathlib_dir=${MATHLIB_DIR:-/private/tmp/mathlib4-v4.33.1}
 exporter_src=${LEAN4EXPORT_SRC:-/private/tmp/lean4export}
 toolchain=${LEAN_TOOLCHAIN:-leanprover/lean4:v4.33.1}
-olean_root="$validation_root/.work/hard_olean"
 log_dir="$validation_root/reports/logs"
 log_prefix=${HARD_LOG_PREFIX:-experiment5}
 artifact=${HARD_ARTIFACT:-$validation_root/export/HardValidation.out}
@@ -16,7 +15,14 @@ if [[ -n ${HARD_TARGET_KEYS:-} ]]; then
   target_args=(--target-keys "$HARD_TARGET_KEYS")
 fi
 
-mkdir -p "$olean_root/Prosa/Util" "$log_dir" "$validation_root/export"
+mkdir -p "$validation_root/.work" "$log_dir" "$validation_root/export"
+if [[ -n ${LEAN_VALIDATION_BUILD_DIR:-} ]]; then
+  olean_root=$LEAN_VALIDATION_BUILD_DIR
+  mkdir -p "$olean_root"
+else
+  olean_root=$(mktemp -d "$validation_root/.work/clean_lean_build.XXXXXX")
+fi
+mkdir -p "$olean_root/Prosa/Util"
 
 if ! rg -q 'def statementOnlyTheorem' "$exporter_src/Export.lean"; then
   patch -d "$exporter_src" -p1 --forward \
@@ -77,7 +83,11 @@ fi
   2> "$log_dir/${log_prefix}_export_hard_validation.log"
 
 {
+  git_prefix=$(git -C "$prosa_root" rev-parse --show-prefix)
   echo "Lean toolchain: $toolchain"
+  echo "Repository commit: $(git -C "$prosa_root" rev-parse HEAD)"
+  echo "Lean source tree: $(git -C "$prosa_root" rev-parse "HEAD:${git_prefix}Prosa")"
+  echo "Fresh build directory: $olean_root"
   echo "Mapping: $mapping"
   echo "Modules:"
   printf '  %s\n' "${modules[@]}"
@@ -86,6 +96,11 @@ fi
   echo "Artifact: $artifact"
   wc -l -c "$artifact"
   shasum -a 256 "$artifact"
+  echo "Compiled Lean source hashes:"
+  for module in "${modules[@]}"; do
+    rel=${module//./\/}
+    shasum -a 256 "$prosa_root/$rel.lean"
+  done
 } > "$log_dir/${log_prefix}_lean_export_manifest.log"
 
 cat "$log_dir/${log_prefix}_lean_export_manifest.log"

@@ -1,6 +1,14 @@
 schema_version: 1
 artifact: Validation/export/RTSValidation.out
 import_module: ImportedEasy93
+lean_modules:
+  - Prosa.Behavior.Time
+  - Prosa.Behavior.Job
+  - Prosa.Behavior.Arrival_sequence
+  - Prosa.Behavior.Schedule
+  - Prosa.Behavior.Service
+  - Prosa.Model.Processor.Ideal
+  - Prosa.Analysis.Facts.Model.Ideal_schedule
 targets:
   instant:
     rocq: prosa.behavior.time.instant
@@ -156,10 +164,10 @@ targets:
       mode: auto_extract
       source_commit: 414e66760333eaa4ef78c685bcf53291c527a548
       source_hash: c318449873f6ef84227c3aea69e92b504d1296c52c0cb538807abc8241c92c5a
-    dependencies: [scheduled_at_ideal, eqType_equality_observation, Bool_equality_bridge, PropSPropBridge]
+    dependencies: [scheduled_at_ideal, eqType_equality_observation, Bool_equality_bridge, PropSPropFoundation]
     certificate: scheduled_at_def_statement_certificate
-    assumptions: prop_sprop_trusted_elim plus importer foundation
-    status: CERTIFIED_WITH_PROP_SPROP_BRIDGE
+    assumptions: PropSPropFoundation.interpret_strict plus importer foundation
+    status: CERTIFIED_WITH_PROP_SPROP_FOUNDATION
     reason: statement correspondence is compositional; neither theorem proof establishes the equivalence
   scheduled_in_def_theorem:
     rocq: prosa.analysis.facts.model.ideal.schedule.scheduled_in_def
@@ -175,8 +183,8 @@ targets:
       mode: auto_extract
       source_commit: 414e66760333eaa4ef78c685bcf53291c527a548
       source_hash: 4aed796a6e8d4e243ac2104f948e59d1ab5671cd87f04fe873a4dc830480d277
-    dependencies: [scheduled_in_ideal, eqType_equality_observation, Bool_equality_bridge, PropSPropBridge]
+    dependencies: [scheduled_in_ideal, eqType_equality_observation, Bool_equality_bridge, PropSPropFoundation]
     certificate: scheduled_in_def_statement_certificate
-    assumptions: prop_sprop_trusted_elim plus importer foundation
-    status: CERTIFIED_WITH_PROP_SPROP_BRIDGE
+    assumptions: PropSPropFoundation.interpret_strict plus importer foundation
+    status: CERTIFIED_WITH_PROP_SPROP_FOUNDATION
     reason: statement correspondence passed the same mapping-driven pipeline as scheduled_at_def

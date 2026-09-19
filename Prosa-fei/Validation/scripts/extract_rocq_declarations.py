@@ -91,10 +91,12 @@ def main() -> None:
             print(target["lean_declaration"])
         return
     if args.list_lean_modules:
-        modules = {
+        modules = set(config.get("lean_modules", []))
+        modules.update(
             target["lean_source_file"].removesuffix(".lean").replace("/", ".")
             for target in config["targets"].values()
-        }
+            if target.get("lean_source_file")
+        )
         for module in sorted(modules):
             print(module)
         return

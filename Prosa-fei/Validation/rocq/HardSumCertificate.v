@@ -1,6 +1,6 @@
 From mathcomp Require Import ssreflect ssrbool ssrnat bigop.
 From LeanImport Require Import Lean.
-Require Import ImportedBigNatEq093 PropSPropBridge.
+Require Import ImportedBigNatEq093 PropSPropFoundation.
 From HardSource Require Import Generated_util__sum.
 
 Inductive Sum_STrue : SProp := sum_sI.
@@ -195,8 +195,8 @@ Proof.
   have Hi := Hall (sum_imported_nat_to_rocq i).
   have Hi0 : Logic.eq (F (sum_imported_nat_to_rocq i)) O.
   { apply Hi. apply/andP. split.
-    - exact (prop_sprop_trusted_elim _ (sum_le_backward _ _ HlowC)).
-    - exact (prop_sprop_trusted_elim _ (sum_lt_backward _ _ HhighC)). }
+    - exact (interpret_strict _ (sum_le_backward _ _ HlowC)).
+    - exact (interpret_strict _ (sum_lt_backward _ _ HhighC)). }
   unfold canonical_imported_function. rewrite Hi0. exact (eq_refl Nat_zero).
 Qed.
 
@@ -212,7 +212,7 @@ Lemma sum_target_zero_to_source_point_strict (m n : nat) (F : nat -> nat)
     (forall i, leq m i && ltn i n -> Logic.eq (F i) O).
 Proof.
   apply strictly_inhabits. intros i Hi. move/andP: Hi => [Hlow Hhigh].
-  have Hdecoded := prop_sprop_trusted_elim _
+  have Hdecoded := interpret_strict _
     (sum_decode_zero_strict _
       (Hzero (sum_value_zero_forward m n F Hsum HsourceZero)
         (sum_nat_to_imported i)
@@ -250,7 +250,7 @@ Proof.
     + intro HsumZero.
       have Hcanonical := sum_eq_trans _ _ _
         (sum_eq_sym _ _ Hsum) HsumZero.
-      have HsourceZero := prop_sprop_trusted_elim _
+      have HsourceZero := interpret_strict _
         (sum_decode_zero_strict _ Hcanonical).
       intros i Hbounds. destruct Hbounds as [Hlow Hhigh].
       have Hround := sum_imported_roundtrip i.
@@ -263,25 +263,25 @@ Proof.
       have HiZero := Hzero HsourceZero (sum_imported_nat_to_rocq i).
       have HiZero' : Logic.eq (F (sum_imported_nat_to_rocq i)) O.
       { apply HiZero. apply/andP. split.
-        - exact (prop_sprop_trusted_elim _ (sum_le_backward _ _ HlowC)).
-        - exact (prop_sprop_trusted_elim _ (sum_lt_backward _ _ HhighC)). }
+        - exact (interpret_strict _ (sum_le_backward _ _ HlowC)).
+        - exact (interpret_strict _ (sum_lt_backward _ _ HhighC)). }
       unfold canonical_imported_function. rewrite HiZero'. exact (eq_refl Nat_zero).
     + intro Hall.
       have HsourceZero : Logic.eq (\sum_(m <= i < n) F i) O.
       { apply Hpoint. intros i Hi. move/andP: Hi => [Hlow Hhigh].
         have Heq := Hall (sum_nat_to_imported i)
           (And_intro _ _ (sum_le_forward _ _ Hlow) (sum_lt_forward _ _ Hhigh)).
-        have Hdecoded := prop_sprop_trusted_elim _
+        have Hdecoded := interpret_strict _
           (sum_decode_zero_strict _ Heq).
         rewrite sum_rocq_roundtrip in Hdecoded. exact Hdecoded. }
       rewrite HsourceZero in Hsum. exact Hsum.
   - intro Htarget. destruct Htarget as [Hzero Hpoint].
     apply strictly_inhabits. split.
     + intro HsumZero.
-      exact (prop_sprop_trusted_elim _
+      exact (interpret_strict _
         (sum_target_zero_to_source_point_strict m n F Hsum Hzero HsumZero)).
     + intro Hall.
-      exact (prop_sprop_trusted_elim _
+      exact (interpret_strict _
         (sum_target_point_to_source_zero_strict m n F Hsum Hpoint Hall)).
 Qed.
 

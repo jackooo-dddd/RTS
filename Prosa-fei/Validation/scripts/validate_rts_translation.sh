@@ -30,16 +30,16 @@ python3 "$validation_root/scripts/extract_rocq_declarations.py" \
   --output "$rocq_dir/GeneratedOfficialProsa06.v" \
   --metadata "$log_dir/source_fidelity.json"
 
-# No escape hatch is permitted except the one named and isolated Prop/SProp
-# trust boundary.
+# No escape hatch is permitted except the single named and isolated
+# Prop/SProp interpretation principle.
 if rg -n '\b(Admitted|admit)\b|\bsorry\b' \
     "$validation_root/rocq" "$validation_root/lean"; then
   echo "forbidden proof escape found" >&2
   exit 1
 fi
 axioms=$(rg -n '\bAxiom\b' "$validation_root/rocq" --glob '*.v' || true)
-if [[ -n "$axioms" ]] && echo "$axioms" | rg -v 'PropSPropBridge\.v:.*prop_sprop_trusted_elim' >/dev/null; then
-  echo "unexpected Axiom outside PropSPropBridge.v" >&2
+if [[ -n "$axioms" ]] && echo "$axioms" | rg -v 'PropSPropFoundation\.v:.*interpret_strict' >/dev/null; then
+  echo "unexpected Axiom outside PropSPropFoundation.v" >&2
   echo "$axioms" >&2
   exit 1
 fi
@@ -61,6 +61,7 @@ compile ImportedEasy93.v > "$log_dir/import_rts_canonical_rocq93.log" 2>&1
 files=(
   Relations.v
   FiniteBridge.v
+  PropSPropFoundation.v
   PropSPropBridge.v
   ImportedNatBridge.v
   ProcessorStateBridge.v
@@ -81,27 +82,6 @@ for file in "${files[@]}"; do
   compile "$file" > "$log_dir/validate_${file%.v}.log" 2>&1
 done
 
-echo "RTS Translation Validation"
-echo
-echo "instant                  CERTIFIED"
-echo "duration                 CERTIFIED"
-echo "work                     CERTIFIED"
-echo "job_cost                 PARAMETRICALLY_CERTIFIED"
-echo "job_arrival              PARAMETRICALLY_CERTIFIED"
-echo "job_deadline             PARAMETRICALLY_CERTIFIED"
-echo "arrival_sequence         PARAMETRICALLY_CERTIFIED"
-echo "arrivals_at              PARAMETRICALLY_CERTIFIED"
-echo "arrives_at               PARAMETRICALLY_CERTIFIED"
-echo "has_arrived              PARAMETRICALLY_CERTIFIED"
-echo "arrived_before           PARAMETRICALLY_CERTIFIED"
-echo "arrived_between          PARAMETRICALLY_CERTIFIED"
-echo "scheduled_in             CERTIFIED (Ideal)"
-echo "scheduled_at             CERTIFIED (Ideal)"
-echo "scheduled_in_def theorem CERTIFIED_WITH_PROP_SPROP_BRIDGE"
-echo "scheduled_at_def theorem CERTIFIED_WITH_PROP_SPROP_BRIDGE"
-echo
-echo "Mutation Detection"
-echo "scheduled_in polarity    PASS (rejected)"
-echo
-echo "Overall: 16 / 16 selected target declarations semantically validated"
+echo "RTS certificate compilation completed."
+echo "Authoritative theorem statuses are produced by classify_assumptions.py."
 echo "Logs: $log_dir"

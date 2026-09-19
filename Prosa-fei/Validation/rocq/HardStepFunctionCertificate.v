@@ -1,7 +1,7 @@
 From mathcomp Require Import ssreflect ssrbool ssrnat.
 From LeanImport Require Import Lean.
 Require Import ImportedExistsFirstIntermediatePoint93.
-Require Import PropSPropBridge.
+Require Import PropSPropFoundation.
 From HardSource Require Import Generated_util__unit_growth.
 
 Inductive Step_STrue : SProp := step_sI.
@@ -271,14 +271,14 @@ Proof.
   exists (step_imported_nat_to_rocq tL).
   split.
   - apply/andP. split.
-    + exact (prop_sprop_trusted_elim _
+    + exact (interpret_strict _
         (step_lt_backward_strict t1 (step_imported_nat_to_rocq tL)
           (step_imported_eq_transport
             (fun z => Nat_lt (step_nat_to_imported t1) z)
             tL (step_nat_to_imported (step_imported_nat_to_rocq tL))
             (step_imported_eq_sym _ _ (step_imported_nat_roundtrip tL))
             HltL))).
-    + exact (prop_sprop_trusted_elim _
+    + exact (interpret_strict _
         (step_le_backward_strict (step_imported_nat_to_rocq tL) t2
           (step_imported_eq_transport
             (fun z => Nat_le z (step_nat_to_imported t2))
@@ -296,11 +296,11 @@ Proof.
       have HnotL := HallL (step_nat_to_imported x)
         (And_intro _ _ (step_le_forward t1 x HlowR) HhighL).
       have Hpx := Hpred x (step_nat_to_imported x) (eq_refl _).
-      exact (prop_sprop_trusted_elim _
+      exact (interpret_strict _
         (step_bool_neg_backward_strict _ _ Hpx HnotL)).
     + have Hpt := Hpred (step_imported_nat_to_rocq tL) tL
         (step_imported_nat_roundtrip tL).
-      exact (prop_sprop_trusted_elim _
+      exact (interpret_strict _
         (step_bool_truth_backward_strict _ _ Hpt HPtL)).
 Qed.
 
@@ -314,18 +314,18 @@ Theorem exists_first_intermediate_point_statement_certificate
 Proof.
   apply prop_sprop_rel_intro.
   - intros Hsource HleL HnotL HtrueL.
-    have HleR := prop_sprop_trusted_elim _
+    have HleR := interpret_strict _
       (step_le_backward_strict t1 t2 HleL).
     have Hpred1 := Hpred t1 (step_nat_to_imported t1)
       (eq_refl (step_nat_to_imported t1)).
     have Hpred2 := Hpred t2 (step_nat_to_imported t2)
       (eq_refl (step_nat_to_imported t2)).
-    have HnotR := prop_sprop_trusted_elim _
+    have HnotR := interpret_strict _
       (step_bool_neg_backward_strict _ _ Hpred1 HnotL).
-    have HtrueR := prop_sprop_trusted_elim _
+    have HtrueR := interpret_strict _
       (step_bool_truth_backward_strict _ _ Hpred2 HtrueL).
     have HsourceResult := Hsource HleR HnotR HtrueR.
-    destruct (prop_sprop_trusted_exists_intro nat
+    destruct (embed_exists nat
       (fun t => (ltn t1 t && leq t t2) /\
         (forall x, leq t1 x && ltn x t -> ~~ PR x) /\ PR t)
       HsourceResult) as [t Hparts].
@@ -347,9 +347,9 @@ Proof.
           (fun z => Nat_lt z (step_nat_to_imported t))
           xL (step_nat_to_imported (step_imported_nat_to_rocq xL))
           (step_imported_eq_sym _ _ Hround) Hhigh.
-        have HlowR := prop_sprop_trusted_elim _
+        have HlowR := interpret_strict _
           (step_le_backward_strict t1 (step_imported_nat_to_rocq xL) HlowC).
-        have HhighR := prop_sprop_trusted_elim _
+        have HhighR := interpret_strict _
           (step_lt_backward_strict (step_imported_nat_to_rocq xL) t HhighC).
         have HnegR := Logic.proj1 (Logic.proj2 Hparts)
           (step_imported_nat_to_rocq xL).
@@ -370,7 +370,7 @@ Proof.
       (step_le_forward t1 t2 HleR)
       (step_bool_neg_forward _ _ Hpred1 HnotR)
       (step_bool_truth_forward _ _ Hpred2 HtrueR).
-    exact (prop_sprop_trusted_elim _
+    exact (interpret_strict _
       (step_result_backward_strict PR PL t1 t2 Hpred Hresult)).
 
 Qed.

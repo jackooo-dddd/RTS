@@ -33,14 +33,14 @@ artifact="$validation_root/export/FiniteNatSumTargets.out"
   exit 1
 }
 
-checked=(PropSPropBridge.v HardSumCertificate.v FiniteNatSumBridge.v \
+checked=(PropSPropFoundation.v PropSPropBridge.v HardSumCertificate.v FiniteNatSumBridge.v \
   FiniteNatSumReuseCertificates.v HardSumMutationTest.v)
 if rg -n '\b(Admitted|admit|sorry)\b' "${checked[@]/#/$rocq_dir/}"; then
   echo "forbidden proof escape found" >&2
   exit 1
 fi
 unexpected_axioms=$(rg -n '\bAxiom\b' "${checked[@]/#/$rocq_dir/}" | \
-  rg -v 'PropSPropBridge\.v:.*(prop_sprop_trusted_elim|prop_sprop_trusted_exists_intro|prop_sprop_trusted_eq_intro)' || true)
+  rg -v 'PropSPropFoundation\.v:.*interpret_strict' || true)
 if [[ -n "$unexpected_axioms" ]]; then
   echo "unexpected validation axiom" >&2
   echo "$unexpected_axioms" >&2
@@ -57,7 +57,8 @@ compile() {
 
 cd "$rocq_dir"
 ulimit -s 65520
-compile PropSPropBridge.v experiment6_validate_PropSPropBridge.log
+compile PropSPropFoundation.v experiment7_validate_PropSPropFoundation.log
+compile PropSPropBridge.v experiment7_validate_PropSPropBridge.log
 compile "$generated/Generated_util__sum.v" experiment6_validate_official_sum_source.log
 compile ImportedBigNatEq093.v experiment6_validate_actual_sum_artifact.log
 compile HardSumCertificate.v experiment6_validate_HardSumCertificate.log

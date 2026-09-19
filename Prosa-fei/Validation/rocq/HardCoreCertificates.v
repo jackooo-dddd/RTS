@@ -2,7 +2,7 @@ From mathcomp Require Import ssreflect ssrbool eqtype seq.
 From prosa Require Import model.processor.spin.
 From LeanImport Require Import Lean.
 Require Import ImportedHardCore93.
-Require Import PropSPropBridge.
+Require Import PropSPropFoundation.
 From HardSource Require Import Generated_util__list.
 
 Inductive Hard_STrue : SProp := hard_sI.
@@ -21,18 +21,6 @@ Definition HardBoolRel (bR : bool) (bL : Bool) : SProp :=
   | _, _ => Hard_SFalse
   end.
 
-Definition hard_coq_eq_to_imported_eq {T : Type} (x y : T) :
-    Logic.eq x y -> eq x y :=
-  fun H => match H in Logic.eq _ z return eq x z with
-           | Logic.eq_refl => eq_refl x
-           end.
-
-Definition hard_imported_eq_to_coq_eq {T : Type} (x y : T) :
-    eq x y -> Logic.eq x y :=
-  fun H => match H in eq _ z return Logic.eq x z with
-           | eq_refl => Logic.eq_refl x
-           end.
-
 Definition hard_coq_false_to_imported_false (H : Logic.False) : False :=
   match H return False with end.
 
@@ -40,10 +28,10 @@ Definition hard_decidable_eq (T : eqType) : DecidableEq T :=
   fun x y =>
     match @eqP T x y with
     | ReflectT H => Decidable_isTrue (eq x y)
-        (hard_coq_eq_to_imported_eq x y H)
+        (coq_eq_to_imported_eq x y H)
     | ReflectF H => Decidable_isFalse (eq x y)
         (fun imported_H => hard_coq_false_to_imported_false
-          (H (hard_imported_eq_to_coq_eq x y imported_H)))
+          (H (imported_eq_to_coq_eq x y imported_H)))
     end.
 
 Lemma hard_eqtype_bool_bridge (T : eqType) (x y : T) :
@@ -179,14 +167,14 @@ Proof.
       exact (hard_imported_eq_trans _ _ _ IH
         (hard_imported_eq_sym _ _
           (hard_imported_ite_true (eq a x) (hard_decidable_eq T a x)
-            (hard_coq_eq_to_imported_eq a x Heq) _ _))).
+            (coq_eq_to_imported_eq a x Heq) _ _))).
     +
       have Hcons := hard_list_cons_congr a _ _ IH.
       exact (hard_imported_eq_trans _ _ _ Hcons
         (hard_imported_eq_sym _ _
           (hard_imported_ite_false (eq a x) (hard_decidable_eq T a x)
             (fun HeqL => hard_coq_false_to_imported_false
-              (Hneq (hard_imported_eq_to_coq_eq a x HeqL))) _ _))).
+              (Hneq (imported_eq_to_coq_eq a x HeqL))) _ _))).
 Qed.
 
 (* The theorem-level membership bridge below is retained as work in progress.
@@ -327,7 +315,7 @@ Proof.
     have Hdecoded := hard_imported_mem_transport x _ _
       (hard_imported_eq_sym _ _ Hrel) Hmem.
     exact (hard_coq_false_to_imported_false
-      (Hnot (prop_sprop_trusted_elim _
+      (Hnot (interpret_strict _
         (hard_imported_mem_to_strict_seq x
           (Generated_util__list.rem_all x xs) Hdecoded))).
   - intro Hnot.

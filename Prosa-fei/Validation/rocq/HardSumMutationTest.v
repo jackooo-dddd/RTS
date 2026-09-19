@@ -1,6 +1,6 @@
 From mathcomp Require Import ssreflect ssrbool ssrnat bigop.
 From LeanImport Require Import Lean.
-Require Import ImportedBigNatEq093 PropSPropBridge HardSumCertificate
+Require Import ImportedBigNatEq093 PropSPropFoundation HardSumCertificate
   FiniteNatSumBridge.
 
 (** Intentional semantic mutation: the imported sum is compared with one

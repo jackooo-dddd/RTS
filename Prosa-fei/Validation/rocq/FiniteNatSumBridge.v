@@ -1,6 +1,6 @@
 From mathcomp Require Import ssreflect ssrbool ssrnat seq bigop.
 From LeanImport Require Import Lean.
-Require Import ImportedBigNatEq093 PropSPropBridge HardSumCertificate.
+Require Import ImportedBigNatEq093 PropSPropFoundation HardSumCertificate.
 
 Definition imported_one : Nat :=
   OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1).
@@ -275,7 +275,7 @@ Qed.
 Theorem finite_nat_sum_value_bridge_closed (m n : nat) (F : nat -> nat) :
   FiniteNatSumValueBridge m n F.
 Proof.
-  exact (prop_sprop_trusted_eq_intro Nat _ _
+  exact (coq_eq_to_imported_eq _ _
     (finite_nat_sum_value_bridge_prop m n F)).
 Qed.
 

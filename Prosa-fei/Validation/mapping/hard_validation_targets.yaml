@@ -11,10 +11,10 @@ targets:
     kind: theorem
     lean_export_mode: statement_only
     source_acquisition: {mode: auto_extract, source_commit: 414e66760333eaa4ef78c685bcf53291c527a548, source_hash: f1495cda2174236ec363a88811e89998479176ea574d0f7f0d8643cd274114e1}
-    dependencies: [finite_nat_interval_bridge, finite_nat_sum_bridge, nat_order_bridge, PropSPropBridge]
+    dependencies: [finite_nat_interval_bridge, finite_nat_sum_bridge, nat_order_bridge, PropSPropFoundation]
     certificate: big_nat_eq0_closed_certificate
-    assumptions: prop_sprop_trusted_elim, prop_sprop_trusted_eq_intro, importer definitional UIP, statement-only imported theorem dependencies
-    status: CERTIFIED_WITH_PROP_SPROP_BRIDGE
+    assumptions: PropSPropFoundation.interpret_strict, importer definitional UIP
+    status: CERTIFIED_WITH_PROP_SPROP_FOUNDATION_AND_STATEMENT_EXPORT
     reason: the actual imported Finset.Ico/Finset.sum value is compositionally related to MathComp bigop by finite_nat_sum_value_bridge_closed; no validation-specific semantic premise remains; sum-equals-one mutation is rejected
   sum_of_ones:
     rocq_source_file: util/sum.v
@@ -24,10 +24,10 @@ targets:
     kind: theorem
     lean_export_mode: statement_only
     source_acquisition: {mode: auto_extract, source_commit: 414e66760333eaa4ef78c685bcf53291c527a548, source_hash: 1bee82e32e536ca2e790e6a09c2785f90ebc61783eb388111d65a745139f918a}
-    dependencies: [finite_nat_sum_bridge, nat_add_bridge, PropSPropBridge]
+    dependencies: [finite_nat_sum_bridge, nat_add_bridge, PropSPropFoundation]
     certificate: sum_of_ones_statement_certificate
-    assumptions: prop_sprop_trusted_eq_intro, prop_sprop_trusted_elim, importer definitional UIP, statement-only imported theorem dependencies
-    status: CERTIFIED_WITH_PROP_SPROP_BRIDGE
+    assumptions: PropSPropFoundation.interpret_strict, importer definitional UIP
+    status: CERTIFIED_WITH_PROP_SPROP_FOUNDATION_AND_STATEMENT_EXPORT
     reason: bidirectional statement correspondence reuses the closed actual Finset.Ico/Finset.sum bridge and Nat addition; no validation-specific semantic premise remains
   sum_le_summation_range:
     rocq_source_file: util/sum.v
@@ -37,10 +37,10 @@ targets:
     kind: theorem
     lean_export_mode: statement_only
     source_acquisition: {mode: auto_extract, source_commit: 414e66760333eaa4ef78c685bcf53291c527a548, source_hash: 57abcd9d4768e376b9d5198b19b2af15c27577822ac9395cc64667c85c9b4c80}
-    dependencies: [finite_nat_sum_bridge, nat_add_bridge, nat_order_bridge, PropSPropBridge]
+    dependencies: [finite_nat_sum_bridge, nat_add_bridge, nat_order_bridge, PropSPropFoundation]
     certificate: sum_le_summation_range_statement_certificate
-    assumptions: prop_sprop_trusted_exists_intro, prop_sprop_trusted_eq_intro, prop_sprop_trusted_elim, importer definitional UIP, statement-only imported theorem dependencies
-    status: CERTIFIED_WITH_PROP_SPROP_BRIDGE
+    assumptions: PropSPropFoundation.interpret_strict, importer definitional UIP
+    status: CERTIFIED_WITH_PROP_SPROP_FOUNDATION_AND_STATEMENT_EXPORT
     reason: bidirectional statement correspondence reuses the closed finite-sum value bridge, Nat order/addition, canonical function relation, and explicit Prop/SProp witness transfer; no validation-specific semantic premise remains
   sum_diff:
     rocq_source_file: util/sum.v
@@ -53,7 +53,7 @@ targets:
     dependencies: []
     certificate: none
     assumptions: none
-    status: FAILED
+    status: SOURCE_UNMAPPED
     reason: no declaration named sum_diff exists in official Prosa 0.6 source
   sum_seq_gt0P:
     rocq_source_file: util/sum.v
@@ -66,7 +66,7 @@ targets:
     dependencies: []
     certificate: none
     assumptions: none
-    status: FAILED
+    status: SOURCE_UNMAPPED
     reason: no declaration named sum_seq_gt0P exists in official Prosa 0.6 source
   sum_pred_diff:
     rocq_source_file: util/sum.v
@@ -79,7 +79,7 @@ targets:
     dependencies: []
     certificate: none
     assumptions: none
-    status: FAILED
+    status: SOURCE_UNMAPPED
     reason: no declaration named sum_pred_diff exists in official Prosa 0.6 source
   rem_all:
     rocq_source_file: util/list.v
@@ -102,10 +102,10 @@ targets:
     kind: theorem
     lean_export_mode: statement_only
     source_acquisition: {mode: auto_extract, source_commit: 414e66760333eaa4ef78c685bcf53291c527a548, source_hash: 8b449823193e6da906b4f36cdeb215e73023f7cfc493ec2c6c52d795ceec4650}
-    dependencies: [rem_all, seq_List_membership, PropSPropBridge]
+    dependencies: [rem_all, seq_List_membership, PropSPropFoundation]
     certificate: nin_rem_all_statement_certificate
-    assumptions: prop_sprop_trusted_elim, importer definitional UIP
-    status: CERTIFIED_WITH_PROP_SPROP_BRIDGE
+    assumptions: PropSPropFoundation.interpret_strict, importer definitional UIP
+    status: CERTIFIED_WITH_PROP_SPROP_FOUNDATION
     reason: theorem statement is derived compositionally from certified rem_all plus reusable seq/List membership correspondence
   exists_first_intermediate_point:
     rocq_source_file: util/unit_growth.v
@@ -115,11 +115,11 @@ targets:
     kind: theorem
     lean_export_mode: statement_only
     source_acquisition: {mode: auto_extract, source_commit: 414e66760333eaa4ef78c685bcf53291c527a548, source_hash: a382f5f5b8976a9450c83ee6a57f2e50dfa80291a88bc295d5bc80e6af6d066d}
-    dependencies: [higher_order_bool_predicate_relation, nat_order_bridge, PropSPropBridge]
+    dependencies: [higher_order_bool_predicate_relation, nat_order_bridge, PropSPropFoundation]
     certificate: exists_first_intermediate_point_statement_certificate
-    assumptions: prop_sprop_trusted_elim, prop_sprop_trusted_exists_intro, importer definitional UIP
-    status: CERTIFIED_WITH_PROP_SPROP_BRIDGE
-    reason: bidirectional statement relation for related higher-order Bool predicates and Nat inputs; witness-carrying Prop/SProp existential transfer is an explicit trust boundary
+    assumptions: PropSPropFoundation.interpret_strict, importer definitional UIP
+    status: CERTIFIED_WITH_PROP_SPROP_FOUNDATION
+    reason: bidirectional statement relation for related higher-order Bool predicates and Nat inputs; existential forward transport is kernel-proved and only general SProp-to-Prop interpretation remains axiomatic
   spin_processor_state:
     rocq_source_file: model/processor/spin.v
     rocq_declaration: prosa.model.processor.spin.processor_state
