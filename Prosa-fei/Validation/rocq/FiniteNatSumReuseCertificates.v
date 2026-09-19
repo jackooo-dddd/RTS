@@ -1,6 +1,6 @@
 From mathcomp Require Import ssreflect ssrbool ssrnat seq bigop.
 From LeanImport Require Import Lean.
-Require Import ImportedFiniteNatSumNormalized93 ImportedBigNatEq093
+Require Import ImportedBigNatEq093 ImportedFiniteNatSumNormalized93
   PropSPropFoundation HardSumCertificate
   FiniteNatSumBridge.
 From HardSource Require Import Generated_util__sum.
@@ -97,7 +97,7 @@ Definition imported_finset_interval_sum
     (canonical_imported_function f).
 
 Definition old_imported_list_sum
-    (xs : List_inst1 Nat) : Nat :=
+    (xs : ImportedBigNatEq093.List_inst1 Nat) : Nat :=
   ImportedBigNatEq093.List_foldr_inst3 Nat Nat Nat_add Nat_zero xs.
 
 Definition old_imported_one : Nat :=
@@ -188,7 +188,8 @@ Lemma imported_finset_interval_sum_unfold_prop
       (ImportedBigNatEq093.List_map_inst3 Nat Nat
         (canonical_imported_function f)
         (ImportedBigNatEq093.List_range' (sum_nat_to_imported m)
-          (Nat_sub (sum_nat_to_imported n) (sum_nat_to_imported m))
+          (ImportedBigNatEq093.Nat_sub
+            (sum_nat_to_imported n) (sum_nat_to_imported m))
           old_imported_one))).
 Proof. reflexivity. Qed.
 
@@ -251,14 +252,15 @@ Qed.
 
 Definition imported_sum_range_value
     (f : nat -> nat) (t delta : nat) : Nat :=
-  ImportedBigNatEq093.Finset_sum_inst3 Nat Nat
-    ImportedBigNatEq093.Nat_instAddCommMonoid
-    (ImportedBigNatEq093.Finset_Ico_inst1 Nat
-      ImportedBigNatEq093.Nat_instPreorder
-      ImportedBigNatEq093.Nat_instLocallyFiniteOrder
-      (sum_nat_to_imported t)
-      (Nat_add (sum_nat_to_imported t) (sum_nat_to_imported delta)))
-    (canonical_imported_function f).
+  ImportedFiniteNatSumNormalized93.List_foldr_inst3 Nat Nat
+    (fun x y : Nat => Nat_add x y) Nat_zero
+    (ImportedFiniteNatSumNormalized93.List_map_inst3 Nat Nat
+      (canonical_imported_function f)
+      (ImportedFiniteNatSumNormalized93.List_range' (sum_nat_to_imported t)
+        (ImportedFiniteNatSumNormalized93.Nat_sub
+          (Nat_add (sum_nat_to_imported t) (sum_nat_to_imported delta))
+          (sum_nat_to_imported t))
+        imported_one)).
 
 Definition imported_sum_le_range_statement
     (f : nat -> nat) (t delta : nat) : SProp :=
@@ -277,7 +279,7 @@ Definition original_sum_le_range_has_expected_statement
 Definition imported_sum_le_range_has_expected_statement
     (f : nat -> nat) (t delta : nat) :
   imported_sum_le_range_statement f t delta :=
-  ImportedBigNatEq093.Prosa_Util_Sum_sum_le_summation_range
+  ImportedFiniteNatSumNormalized93.Prosa_Util_Sum_sum_le_summation_range
     (canonical_imported_function f)
     (sum_nat_to_imported t) (sum_nat_to_imported delta).
 
@@ -288,11 +290,9 @@ Lemma imported_sum_range_value_prop
 Proof.
   unfold imported_sum_range_value.
   rewrite imported_add_canonical_prop.
-  change (Logic.eq (imported_finset_interval_sum t (t + delta) f)
+  change (Logic.eq (imported_interval_sum t (t + delta) f)
     (sum_nat_to_imported (\sum_(t <= x < t + delta) f x))).
-  (* The old actual Finset artifact remains the semantic target for this
-     theorem until its proof-field-heavy type admits the same normalization. *)
-  exact (imported_finset_interval_sum_bridge_prop t (t + delta) f).
+  exact (finite_nat_sum_value_bridge_prop t (t + delta) f).
 Qed.
 
 Lemma sum_le_range_exists_backward_strict

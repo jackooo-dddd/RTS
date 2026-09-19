@@ -55,11 +55,11 @@ targets:
     lean: Prosa.Behavior.Job.JobArrival.job_arrival
     imported: Prosa_Behavior_Job_JobArrival_job_arrival
     kind: class
-    dependencies: [instant, import_job_arrival, eqType_carrier_relation]
-    certificate: job_arrival_projection_certificate
+    dependencies: [instant, ImportedNatRel, eqType_carrier_relation]
+    certificate: job_arrival_constructor_correspondence, job_arrival_export_correspondence, job_arrival_source_roundtrip, job_arrival_target_roundtrip, job_arrival_projection_complete
     assumptions: importer foundation
-    status: PARAMETRICALLY_CERTIFIED
-    reason: projection commutes for the canonical representation map
+    status: CERTIFIED
+    reason: full bidirectional class correspondence on the shared carrier; source-to-target and target-to-source maps preserve the sole field and both roundtrips hold under complete field-observational equality, avoiding any function-extensionality axiom
   job_deadline:
     rocq: prosa.behavior.job.job_deadline
     lean: Prosa.Behavior.Job.JobDeadline.job_deadline
@@ -188,3 +188,45 @@ targets:
     assumptions: PropSPropFoundation.interpret_strict plus importer foundation
     status: CERTIFIED_WITH_PROP_SPROP_FOUNDATION
     reason: statement correspondence passed the same mapping-driven pipeline as scheduled_at_def
+  completes_at_current:
+    rocq: prosa.behavior.service.completes_at
+    lean: Prosa.Behavior.Service.completes_at
+    rocq_source_file: behavior/service.v
+    rocq_declaration: prosa.behavior.service.completes_at
+    lean_source_file: Prosa/Behavior/Service.lean
+    lean_declaration: Prosa.Behavior.Service.completes_at
+    imported: Prosa_Validation_CompletesAt_production_completes_at_zero
+    kind: definition
+    lean_export_mode: rfl_guarded_definition_body_projection
+    source_acquisition:
+      mode: direct_import
+      source_commit: 414e66760333eaa4ef78c685bcf53291c527a548
+      source_hash: 80487d6bc2e7e4de763c5d67c7a42f67fe524a910db3719043d596710929e76a
+    validation_fixture: Validation/lean_fixtures/completes_at_corrected/CompletesAtCorrected.lean
+    projection_guard: Prosa.Validation.CompletesAt.production_completes_at_zero_defeq
+    dependencies: [official_completes_at, actual_production_completes_at, zero_cost_time_zero_witness]
+    certificate: completes_at_current_counterexample_witness
+    assumptions: no Prop/SProp axiom; actual target body is an Eq.refl-guarded projection; importer foundation
+    status: FAILED_SEMANTIC_EQUIVALENCE
+    reason: at t=0 and job_cost=0 the official source is true while frozen production is Not completed_by(0) and completed_by(0), formally uninhabited
+  completes_at_corrected:
+    rocq: prosa.behavior.service.completes_at
+    lean: Prosa.Validation.CompletesAt.completes_at_corrected
+    rocq_source_file: behavior/service.v
+    rocq_declaration: prosa.behavior.service.completes_at
+    lean_source_file: Validation/lean_fixtures/completes_at_corrected/CompletesAtCorrected.lean
+    lean_declaration: Prosa.Validation.CompletesAt.completes_at_corrected
+    imported: Prosa_Validation_CompletesAt_corrected_completes_at_zero
+    kind: definition
+    lean_export_mode: rfl_guarded_definition_body_projection
+    source_acquisition:
+      mode: direct_import
+      source_commit: 414e66760333eaa4ef78c685bcf53291c527a548
+      source_hash: 80487d6bc2e7e4de763c5d67c7a42f67fe524a910db3719043d596710929e76a
+    validation_fixture: Validation/lean_fixtures/completes_at_corrected/CompletesAtCorrected.lean
+    projection_guard: Prosa.Validation.CompletesAt.corrected_completes_at_zero_defeq
+    dependencies: [official_completes_at, corrected_fixture, zero_cost_time_zero_witness]
+    certificate: completes_at_corrected_certificate
+    assumptions: importer definitional UIP only; no PropSPropFoundation.interpret_strict and no semantic premise
+    status: CERTIFIED
+    reason: the same zero-cost time-zero specification rejected production and is bidirectionally related to the corrected validation-only fixture

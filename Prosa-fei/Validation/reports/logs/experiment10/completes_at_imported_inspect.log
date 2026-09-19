@@ -1,0 +1,42 @@
+Prosa_Validation_CompletesAt_production_completes_at_zero
+     : SProp
+Prosa_Validation_CompletesAt_corrected_completes_at_zero
+     : SProp
+Prosa_Validation_CompletesAt_production_completes_at_zero@{} =
+Lean.And
+  (Not
+     (LE_le_inst1 Lean.Nat instLENat
+        (OfNat_ofNat_inst1 Lean.Nat Lean.Nat_zero
+           (instOfNatNat Lean.Nat_zero))
+        (OfNat_ofNat_inst1 Lean.Nat Lean.Nat_zero
+           (instOfNatNat Lean.Nat_zero))))
+  (LE_le_inst1 Lean.Nat instLENat
+     (OfNat_ofNat_inst1 Lean.Nat Lean.Nat_zero (instOfNatNat Lean.Nat_zero))
+     (OfNat_ofNat_inst1 Lean.Nat Lean.Nat_zero (instOfNatNat Lean.Nat_zero)))
+     : SProp
+Prosa_Validation_CompletesAt_corrected_completes_at_zero@{} =
+Lean.And
+  (Lean.Or
+     (Not
+        (LE_le_inst1 Lean.Nat instLENat
+           (OfNat_ofNat_inst1 Lean.Nat Lean.Nat_zero
+              (instOfNatNat Lean.Nat_zero))
+           (OfNat_ofNat_inst1 Lean.Nat Lean.Nat_zero
+              (instOfNatNat Lean.Nat_zero))))
+     (Lean.eq
+        (OfNat_ofNat_inst1 Lean.Nat Lean.Nat_zero
+           (instOfNatNat Lean.Nat_zero))
+        (OfNat_ofNat_inst1 Lean.Nat Lean.Nat_zero
+           (instOfNatNat Lean.Nat_zero))))
+  (LE_le_inst1 Lean.Nat instLENat
+     (OfNat_ofNat_inst1 Lean.Nat Lean.Nat_zero (instOfNatNat Lean.Nat_zero))
+     (OfNat_ofNat_inst1 Lean.Nat Lean.Nat_zero (instOfNatNat Lean.Nat_zero)))
+     : SProp
+Lean.And_intro
+     : forall a a0 : SProp, a -> a0 -> Lean.And a a0
+Lean.Or_inl
+     : forall a a0 : SProp, a -> Lean.Or a a0
+Lean.Or_inr
+     : forall a a0 : SProp, a0 -> Lean.Or a a0
+Lean.Nat_le_refl
+     : forall n : Lean.Nat, Lean.Nat_le n n

@@ -33,10 +33,29 @@ def declaration_blocks(text: str) -> dict[str, tuple[int, str]]:
     matches = []
     for pattern in (DECL_RE, BODY_RE, INDUCTIVE_RE):
         matches.extend(pattern.finditer(text))
-    return {
+    blocks = {
         match.group(1): (match.start(), match.group(0).lstrip("\n"))
         for match in sorted(matches, key=lambda item: item.start())
     }
+    # The legacy regexp intentionally remains stable for previously hashed
+    # experiment slices.  Add exact line-scanned Definition/Fixpoint blocks
+    # only for declarations it missed (notably a declaration immediately
+    # following another one in behavior/service.v).
+    starts = list(re.finditer(
+        r"(?m)^[ \t]*(?:Fixpoint|Definition)\s+([A-Za-z0-9_']+)\b", text
+    ))
+    for start in starts:
+        name = start.group(1)
+        if name in blocks:
+            continue
+        cursor = start.start()
+        end = cursor
+        for line in text[cursor:].splitlines(keepends=True):
+            end += len(line)
+            if line.rstrip().endswith("."):
+                blocks[name] = (cursor, text[cursor:end].lstrip("\n"))
+                break
+    return blocks
 
 
 def sha256(text: str) -> str:
@@ -67,6 +86,7 @@ def main() -> None:
     ap.add_argument("--metadata", type=Path)
     ap.add_argument("--list-lean-theorems", action="store_true")
     ap.add_argument("--list-lean-normalized-theorems", action="store_true")
+    ap.add_argument("--list-lean-normalization-heads", action="store_true")
     ap.add_argument("--list-lean-modules", action="store_true")
     ap.add_argument("--list-lean-targets", action="store_true")
     ap.add_argument("--target-keys", help="comma-separated mapping keys")
@@ -98,19 +118,30 @@ def main() -> None:
             if target.get("lean_export_mode") == "definitionally_normalized_statement_only":
                 print(target["lean_declaration"])
         return
+    if args.list_lean_normalization_heads:
+        heads = {
+            head
+            for _, target in targets
+            for head in target.get("lean_normalize_subexpression_heads", [])
+        }
+        for head in sorted(heads):
+            print(head)
+        return
     if args.list_lean_modules:
         modules = set(config.get("lean_modules", []))
         modules.update(
             target["lean_source_file"].removesuffix(".lean").replace("/", ".")
             for target in config["targets"].values()
             if target.get("lean_source_file")
+            and target.get("lean_export_mode") != "rfl_guarded_definition_body_projection"
         )
         for module in sorted(modules):
             print(module)
         return
     if args.list_lean_targets:
         for target in config["targets"].values():
-            print(target["lean_declaration"])
+            if target.get("lean_export_mode") != "rfl_guarded_definition_body_projection":
+                print(target["lean_declaration"])
         return
     if args.output_dir:
         source_targets = [

@@ -79,6 +79,12 @@ while IFS= read -r declaration; do
 done < <(python3 "$validation_root/scripts/extract_rocq_declarations.py" \
   --mapping "$mapping" --source-root /dev/null "${target_args[@]}" \
   --list-lean-normalized-theorems)
+normalization_heads=()
+while IFS= read -r head; do
+  [[ -n "$head" ]] && normalization_heads+=("$head")
+done < <(python3 "$validation_root/scripts/extract_rocq_declarations.py" \
+  --mapping "$mapping" --source-root /dev/null "${target_args[@]}" \
+  --list-lean-normalization-heads)
 export LEAN4EXPORT_STATEMENT_ONLY
 export LEAN4EXPORT_BODY_THEOREMS=${HARD_BODY_THEOREMS:-}
 if [[ -n ${HARD_NORMALIZE_THEOREM_TYPES+x} ]]; then
@@ -91,6 +97,16 @@ else
   fi
 fi
 export LEAN4EXPORT_NORMALIZE_THEOREM_TYPES
+if [[ -n ${HARD_NORMALIZE_SUBEXPRESSION_HEADS+x} ]]; then
+  LEAN4EXPORT_NORMALIZE_SUBEXPRESSION_HEADS=$HARD_NORMALIZE_SUBEXPRESSION_HEADS
+elif (( ${#normalization_heads[@]} )); then
+  LEAN4EXPORT_NORMALIZE_SUBEXPRESSION_HEADS=$(printf '%s\n' "${normalization_heads[@]}")
+else
+  LEAN4EXPORT_NORMALIZE_SUBEXPRESSION_HEADS=
+fi
+export LEAN4EXPORT_NORMALIZE_SUBEXPRESSION_HEADS
+export LEAN4EXPORT_NORMALIZE_DEFINITION_BODIES=${HARD_NORMALIZE_DEFINITION_BODIES:-}
+export LEAN4EXPORT_DEFINITION_BODY_PROJECTIONS=${HARD_DEFINITION_BODY_PROJECTIONS:-}
 if [[ ${HARD_ALL_THEOREMS_STATEMENT_ONLY:-0} == 1 ]]; then
   LEAN4EXPORT_STATEMENT_ONLY='*'
 else
@@ -115,6 +131,12 @@ fi
   printf '  %s\n' "$LEAN4EXPORT_BODY_THEOREMS"
   echo "Definitionally normalized target theorem types:"
   printf '  %s\n' "$LEAN4EXPORT_NORMALIZE_THEOREM_TYPES"
+  echo "Definitionally projected subexpression heads:"
+  printf '  %s\n' "$LEAN4EXPORT_NORMALIZE_SUBEXPRESSION_HEADS"
+  echo "Definitionally normalized definition bodies:"
+  printf '  %s\n' "$LEAN4EXPORT_NORMALIZE_DEFINITION_BODIES"
+  echo "Rfl-guarded definition-body projections:"
+  printf '  %s\n' "$LEAN4EXPORT_DEFINITION_BODY_PROJECTIONS"
   echo "Artifact: $artifact"
   wc -l -c "$artifact"
   shasum -a 256 "$artifact"

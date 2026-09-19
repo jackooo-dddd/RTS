@@ -10,7 +10,7 @@ targets:
     lean_declaration: Prosa.Util.Sum.big_nat_eq0
     kind: theorem
     lean_export_mode: definitionally_normalized_statement_only
-    lean_type_provenance: {actual_compiled_type_hash: 3868918011, exported_normalized_type_hash: 2254104721, lean_defeq_checked: true, transitive_statement_exports: 0}
+    lean_type_provenance: {actual_compiled_type_hash: 3868918011, exported_normalized_type_hash: 783880789, lean_defeq_checked: true, transitive_statement_exports: 0}
     source_acquisition: {mode: auto_extract, source_commit: 414e66760333eaa4ef78c685bcf53291c527a548, source_hash: f1495cda2174236ec363a88811e89998479176ea574d0f7f0d8643cd274114e1}
     dependencies: [finite_nat_interval_bridge, finite_nat_sum_bridge, nat_order_bridge, PropSPropFoundation]
     certificate: big_nat_eq0_closed_certificate
@@ -24,7 +24,7 @@ targets:
     lean_declaration: Prosa.Util.Sum.sum_of_ones
     kind: theorem
     lean_export_mode: definitionally_normalized_statement_only
-    lean_type_provenance: {actual_compiled_type_hash: 406666510, exported_normalized_type_hash: 2639695887, lean_defeq_checked: true, transitive_statement_exports: 0}
+    lean_type_provenance: {actual_compiled_type_hash: 406666510, exported_normalized_type_hash: 1612875744, lean_defeq_checked: true, transitive_statement_exports: 0}
     source_acquisition: {mode: auto_extract, source_commit: 414e66760333eaa4ef78c685bcf53291c527a548, source_hash: 1bee82e32e536ca2e790e6a09c2785f90ebc61783eb388111d65a745139f918a}
     dependencies: [finite_nat_sum_bridge, nat_add_bridge, PropSPropFoundation]
     certificate: sum_of_ones_statement_certificate
@@ -37,14 +37,15 @@ targets:
     lean_source_file: Prosa/Util/Sum.lean
     lean_declaration: Prosa.Util.Sum.sum_le_summation_range
     kind: theorem
-    lean_export_mode: statement_only
-    lean_type_provenance: {actual_compiled_type_hash: 1525648494, lean_defeq_normalization_blocked_by_representation: true, transitive_statement_exports: 39}
+    lean_export_mode: definitionally_normalized_statement_only
+    lean_normalize_subexpression_heads: [Finset.sum]
+    lean_type_provenance: {actual_compiled_type_hash: 1525648494, exported_normalized_type_hash: 229062228, lean_defeq_checked: true, transitive_statement_exports: 0}
     source_acquisition: {mode: auto_extract, source_commit: 414e66760333eaa4ef78c685bcf53291c527a548, source_hash: 57abcd9d4768e376b9d5198b19b2af15c27577822ac9395cc64667c85c9b4c80}
     dependencies: [finite_nat_sum_bridge, nat_add_bridge, nat_order_bridge, PropSPropFoundation]
     certificate: sum_le_summation_range_statement_certificate
-    assumptions: PropSPropFoundation.interpret_strict, importer definitional UIP, 39 classified transitive statement-only Lean dependencies
-    status: CERTIFIED_WITH_PROP_SPROP_FOUNDATION_AND_STATEMENT_EXPORT
-    reason: bidirectional statement correspondence reuses the closed finite-sum value bridge, Nat order/addition, canonical function relation, and explicit Prop/SProp witness transfer; no validation-specific semantic premise remains, but this proof-field-heavy type still retains 39 transitive statement-only dependencies
+    assumptions: PropSPropFoundation.interpret_strict, importer definitional UIP
+    status: CERTIFIED_WITH_PROP_SPROP_FOUNDATION
+    reason: Lean-checked local projection replaces the actual Nat Finset.sum/Finset.Ico subexpression by its definitionally equal List.range'/List.map/List.foldr computation while preserving the implication/existential/conjunction/order shell; no transitive statement export or validation-specific semantic premise remains
   sum_diff:
     rocq_source_file: util/sum.v
     rocq_declaration: prosa.util.sum.sum_diff
