@@ -1,0 +1,154 @@
+schema_version: 1
+artifact: Validation/export/RTSValidation.out
+import_module: ImportedEasy93
+targets:
+  instant:
+    rocq: prosa.behavior.time.instant
+    lean: Prosa.Behavior.Time.instant
+    imported: Prosa_Behavior_Time_instant
+    kind: definition
+    dependencies: [rocq_nat_to_imported, imported_nat_to_rocq]
+    certificate: instant_roundtrip_rocq, instant_roundtrip_imported
+    assumptions: importer definitional UIP only on the imported round trip
+    status: CERTIFIED
+    reason: two-sided structural Nat isomorphism
+  duration:
+    rocq: prosa.behavior.time.duration
+    lean: Prosa.Behavior.Time.duration
+    imported: Prosa_Behavior_Time_duration
+    kind: definition
+    dependencies: [rocq_nat_to_imported, imported_nat_to_rocq]
+    certificate: duration_roundtrip_rocq, duration_roundtrip_imported
+    assumptions: importer definitional UIP only on the imported round trip
+    status: CERTIFIED
+    reason: two-sided structural Nat isomorphism
+  work:
+    rocq: prosa.behavior.job.work
+    lean: Prosa.Behavior.Job.work
+    imported: Prosa_Behavior_Job_work
+    kind: definition
+    dependencies: [rocq_nat_to_imported, imported_nat_to_rocq]
+    certificate: work_roundtrip_rocq, work_roundtrip_imported
+    assumptions: importer definitional UIP only on the imported round trip
+    status: CERTIFIED
+    reason: two-sided structural Nat isomorphism
+  job_cost:
+    rocq: prosa.behavior.job.job_cost
+    lean: Prosa.Behavior.Job.JobCost.job_cost
+    imported: Prosa_Behavior_Job_JobCost_job_cost
+    kind: class
+    dependencies: [work, import_job_cost, eqType_carrier_relation]
+    certificate: job_cost_projection_certificate
+    assumptions: importer foundation
+    status: PARAMETRICALLY_CERTIFIED
+    reason: projection commutes for the canonical representation map
+  job_arrival:
+    rocq: prosa.behavior.job.job_arrival
+    lean: Prosa.Behavior.Job.JobArrival.job_arrival
+    imported: Prosa_Behavior_Job_JobArrival_job_arrival
+    kind: class
+    dependencies: [instant, import_job_arrival, eqType_carrier_relation]
+    certificate: job_arrival_projection_certificate
+    assumptions: importer foundation
+    status: PARAMETRICALLY_CERTIFIED
+    reason: projection commutes for the canonical representation map
+  job_deadline:
+    rocq: prosa.behavior.job.job_deadline
+    lean: Prosa.Behavior.Job.JobDeadline.job_deadline
+    imported: Prosa_Behavior_Job_JobDeadline_job_deadline
+    kind: class
+    dependencies: [instant, import_job_deadline, eqType_carrier_relation]
+    certificate: job_deadline_projection_certificate
+    assumptions: importer foundation
+    status: PARAMETRICALLY_CERTIFIED
+    reason: projection commutes for the canonical representation map
+  arrival_sequence:
+    rocq: prosa.behavior.arrival_sequence.arrival_sequence
+    lean: Prosa.Behavior.Arrival_sequence.arrival_sequence
+    imported: Prosa_Behavior_Arrival_sequence_arrival_sequence
+    kind: definition
+    dependencies: [instant, seq_List_relation]
+    certificate: arrival_sequence_pointwise_certificate
+    assumptions: importer foundation
+    status: PARAMETRICALLY_CERTIFIED
+    reason: pointwise correspondence under the canonical function map
+  arrivals_at:
+    rocq: prosa.behavior.arrival_sequence.arrivals_at
+    lean: Prosa.Behavior.Arrival_sequence.arrivals_at
+    imported: Prosa_Behavior_Arrival_sequence_arrivals_at
+    kind: definition
+    dependencies: [arrival_sequence, instant, seq_List_relation]
+    certificate: arrivals_at_certificate
+    assumptions: importer foundation
+    status: PARAMETRICALLY_CERTIFIED
+    reason: direct composition of the pointwise sequence relation
+  arrives_at:
+    rocq: prosa.behavior.arrival_sequence.arrives_at
+    lean: Prosa.Behavior.Arrival_sequence.arrives_at
+    imported: Prosa_Behavior_Arrival_sequence_arrives_at
+    kind: definition
+    dependencies: [arrivals_at, seq_List_membership, eqType_equality_observation]
+    certificate: arrives_at_certificate
+    assumptions: importer foundation
+    status: PARAMETRICALLY_CERTIFIED
+    reason: membership is preserved for related lists and jobs
+  has_arrived:
+    rocq: prosa.behavior.arrival_sequence.has_arrived
+    lean: Prosa.Behavior.Arrival_sequence.has_arrived
+    imported: Prosa_Behavior_Arrival_sequence_has_arrived
+    kind: definition
+    dependencies: [job_arrival, instant, Nat_le_bridge]
+    certificate: has_arrived_certificate
+    assumptions: importer foundation
+    status: PARAMETRICALLY_CERTIFIED
+    reason: Boolean/SProp truth correspondence for Nat order
+  arrived_before:
+    rocq: prosa.behavior.arrival_sequence.arrived_before
+    lean: Prosa.Behavior.Arrival_sequence.arrived_before
+    imported: Prosa_Behavior_Arrival_sequence_arrived_before
+    kind: definition
+    dependencies: [job_arrival, instant, Nat_lt_bridge]
+    certificate: arrived_before_certificate
+    assumptions: importer foundation
+    status: PARAMETRICALLY_CERTIFIED
+    reason: Boolean/SProp truth correspondence for strict Nat order
+  arrived_between:
+    rocq: prosa.behavior.arrival_sequence.arrived_between
+    lean: Prosa.Behavior.Arrival_sequence.arrived_between
+    imported: Prosa_Behavior_Arrival_sequence_arrived_between
+    kind: definition
+    dependencies: [job_arrival, instant, Nat_le_bridge, Nat_lt_bridge, Bool_And_bridge]
+    certificate: arrived_between_certificate
+    assumptions: importer foundation
+    status: PARAMETRICALLY_CERTIFIED
+    reason: compositional conjunction of the two order observations
+  scheduled_in_ideal:
+    rocq: prosa.behavior.schedule.scheduled_in (Ideal processor_state)
+    lean: Prosa.Behavior.Schedule.ProcessorState.scheduled_in
+    imported: Prosa_Behavior_Schedule_ProcessorState_scheduled_in_inst1
+    kind: definition
+    dependencies: [eqType_equality_observation, finite_exists_bridge, IdealStateRel, Unit_core_surjection]
+    certificate: ideal_scheduled_in_certificate
+    assumptions: importer foundation; no validation-specific semantic premise
+    status: CERTIFIED
+    reason: concrete Ideal instance closes core surjectivity and scheduled_on preservation
+  scheduled_at_ideal:
+    rocq: prosa.behavior.service.scheduled_at (Ideal processor_state)
+    lean: Prosa.Behavior.Service.scheduled_at
+    imported: Prosa_Behavior_Service_scheduled_at_inst1
+    kind: definition
+    dependencies: [instant, scheduled_in_ideal, import_ideal_schedule]
+    certificate: ideal_scheduled_at_certificate
+    assumptions: importer foundation; no validation-specific semantic premise
+    status: CERTIFIED
+    reason: wrapper composition over the certified Ideal scheduled_in
+  scheduled_at_def_theorem:
+    rocq: prosa.analysis.facts.model.ideal.schedule.scheduled_at_def
+    lean: Prosa.Analysis.Facts.Model.Ideal_schedule.scheduled_at_def
+    imported: Prosa_Analysis_Facts_Model_Ideal_schedule_scheduled_at_def
+    kind: theorem
+    dependencies: [scheduled_at_ideal, eqType_equality_observation, Bool_equality_bridge, PropSPropBridge]
+    certificate: scheduled_at_def_statement_certificate
+    assumptions: prop_sprop_trusted_elim plus importer foundation
+    status: CERTIFIED_WITH_PROP_SPROP_BRIDGE
+    reason: statement correspondence is compositional; neither theorem proof establishes the equivalence

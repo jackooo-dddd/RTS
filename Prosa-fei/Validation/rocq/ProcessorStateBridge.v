@@ -2,7 +2,7 @@ From mathcomp Require Import ssreflect ssrfun ssrbool eqtype fintype.
 From prosa Require Import behavior.schedule.
 From LeanImport Require Import Lean.
 Require Import ImportedEasy93.
-Require Import Relations FiniteBridge.
+Require Import Relations FiniteBridge PropSPropBridge.
 
 (** A relation between the Rocq/MathComp [bool] and the [Bool] type imported
     from the actual Lean artifact.  It deliberately lives in [SProp], matching
@@ -90,6 +90,47 @@ Definition imported_bool_false_ne_true
   with
   | eq_refl => Validation_sI
   end.
+
+Definition imported_bool_true_ne_false
+    (H : eq Bool_true Bool_false) : Validation_SFalse :=
+  match H in eq _ b return
+    match b with
+    | Bool_true => Validation_STrue
+    | Bool_false => Validation_SFalse
+    end
+  with
+  | eq_refl => Validation_sI
+  end.
+
+(** Equality is preserved by two related Boolean observations. *)
+Definition imported_bool_equality_forward
+    (aR bR : bool) (aL bL : Bool) :
+    ImportedBoolRel aR aL ->
+    ImportedBoolRel bR bL ->
+    Logic.eq aR bR ->
+    eq aL bL.
+Proof.
+  destruct aR, bR, aL, bL; cbn; intros Ha Hb Hab;
+    try exact (Validation_false_elim _ Ha);
+    try exact (Validation_false_elim _ Hb);
+    try discriminate Hab;
+    exact (eq_refl _).
+Defined.
+
+Definition imported_bool_equality_backward_strict
+    (aR bR : bool) (aL bL : Bool) :
+    ImportedBoolRel aR aL ->
+    ImportedBoolRel bR bL ->
+    eq aL bL ->
+    StrictlyInhabited (Logic.eq aR bR).
+Proof.
+  destruct aR, bR, aL, bL; cbn; intros Ha Hb Hab;
+    try exact (Validation_false_elim _ Ha);
+    try exact (Validation_false_elim _ Hb);
+    try exact (Validation_false_elim _ (imported_bool_false_ne_true Hab));
+    try exact (Validation_false_elim _ (imported_bool_true_ne_false Hab));
+    exact (strictly_inhabits (Logic.eq_refl _)).
+Defined.
 
 Lemma imported_bool_true_elim bR bL :
   ImportedBoolRel bR bL -> eq bL Bool_true -> RocqBoolTruth bR.

@@ -2,7 +2,7 @@ From mathcomp Require Import ssreflect ssrbool eqtype.
 From prosa Require Import model.processor.ideal behavior.service.
 From LeanImport Require Import Lean.
 Require Import ImportedEasy93 ImportedNatBridge TimeJobCertificates.
-Require Import IdealScheduledInCertificate.
+Require Import ProcessorStateBridge EqTypeBridge IdealScheduledInCertificate.
 
 Definition import_ideal_schedule (Job : eqType)
     (schedR : prosa.behavior.schedule.schedule
