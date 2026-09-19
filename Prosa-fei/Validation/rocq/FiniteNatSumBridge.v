@@ -1,6 +1,6 @@
 From mathcomp Require Import ssreflect ssrbool ssrnat seq bigop.
 From LeanImport Require Import Lean.
-Require Import ImportedBigNatEq093 PropSPropFoundation HardSumCertificate.
+Require Import ImportedFiniteNatSumNormalized93 PropSPropFoundation HardSumCertificate.
 
 Definition imported_one : Nat :=
   OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1).

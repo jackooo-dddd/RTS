@@ -1,29 +1,57 @@
 --- a/Export.lean
 +++ b/Export.lean
-@@ -79,6 +79,10 @@ partial def dumpExpr (e : Expr) : M Nat := do
+@@ -79,6 +79,35 @@
      | .lit (.natVal i) => return s!"#ELN {i}"
      | .lit (.strVal s) => return s!"#ELS {s.toUTF8.toList.map uint8ToHex |> seq}"
  
 +def statementOnlyTheorem (c : Name) : IO Bool := do
 +  let some configured ← IO.getEnv "LEAN4EXPORT_STATEMENT_ONLY" | return false
 +  let names := configured.splitOn "\n"
-+  return names.contains "*" || names.contains c.toString
++  let bodyNames := (← IO.getEnv "LEAN4EXPORT_BODY_THEOREMS").getD "" |>.splitOn "\n"
++  return (names.contains "*" || names.contains c.toString) &&
++    !bodyNames.contains c.toString
++
++def normalizedTheoremType (c : Name) (type : Expr) : M Expr := do
++  let configured := (← IO.getEnv "LEAN4EXPORT_NORMALIZE_THEOREM_TYPES").getD ""
++  unless configured.splitOn "\n" |>.contains c.toString do
++    return type
++  let env := (← read).env
++  let coreCtx : Core.Context := {
++    fileName := "<lean4export-normalized-theorem-type>"
++    fileMap := FileMap.ofString ""
++    maxRecDepth := 100000
++    maxHeartbeats := 0
++  }
++  let coreState : Core.State := { env }
++  let action : Meta.MetaM (Expr × Bool) := do
++    let reduced ← Meta.reduceAll type
++    let equivalent ← Meta.isDefEq type reduced
++    return (reduced, equivalent)
++  let ((reduced, equivalent), _, _) ← Meta.MetaM.toIO action coreCtx coreState
++  unless equivalent do
++    throw <| IO.userError s!"normalized target type is not definitionally equal: {c}"
++  IO.eprintln s!"NORMALIZED_THEOREM_TYPE {c} original_hash={hash type} normalized_hash={hash reduced} original_constants={type.getUsedConstants.size} normalized_constants={reduced.getUsedConstants.size} defeq=true"
++  return reduced
 +
  partial def dumpConstant (c : Name) : M Unit := do
    if (← get).visitedConstants.contains c then
      return
-@@ -95,7 +99,12 @@ partial def dumpConstant (c : Name) : M Unit := do
+@@ -94,9 +123,15 @@
+     dumpDeps val.value
+     IO.println s!"#DEF {← dumpName c} {← dumpExpr val.type} {← dumpExpr val.value} {← seq <$> val.levelParams.mapM dumpName}"
    | .thmInfo val => do
-     dumpDeps val.type
+-    dumpDeps val.type
 -    dumpDeps val.value
 -    IO.println s!"#DEF {← dumpName c} {← dumpExpr val.type} {← dumpExpr val.value} {← seq <$> val.levelParams.mapM dumpName}"
++    let theoremType ← normalizedTheoremType c val.type
++    dumpDeps theoremType
 +    if ← statementOnlyTheorem c then
 +      -- Generic statement-validation mode: names come from configuration.
 +      -- Preserve the exact compiled type without traversing the proof body.
-+      IO.println s!"#AX {← dumpName c} {← dumpExpr val.type} {← seq <$> val.levelParams.mapM dumpName}"
++      IO.println s!"#AX {← dumpName c} {← dumpExpr theoremType} {← seq <$> val.levelParams.mapM dumpName}"
 +    else
 +      dumpDeps val.value
-+      IO.println s!"#DEF {← dumpName c} {← dumpExpr val.type} {← dumpExpr val.value} {← seq <$> val.levelParams.mapM dumpName}"
++      IO.println s!"#DEF {← dumpName c} {← dumpExpr theoremType} {← dumpExpr val.value} {← seq <$> val.levelParams.mapM dumpName}"
    | .opaqueInfo val  =>
      if val.isUnsafe then
        return

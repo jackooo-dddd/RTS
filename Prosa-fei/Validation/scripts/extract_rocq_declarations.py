@@ -66,6 +66,7 @@ def main() -> None:
     ap.add_argument("--output-dir", type=Path)
     ap.add_argument("--metadata", type=Path)
     ap.add_argument("--list-lean-theorems", action="store_true")
+    ap.add_argument("--list-lean-normalized-theorems", action="store_true")
     ap.add_argument("--list-lean-modules", action="store_true")
     ap.add_argument("--list-lean-targets", action="store_true")
     ap.add_argument("--target-keys", help="comma-separated mapping keys")
@@ -84,11 +85,18 @@ def main() -> None:
     targets = [
         (key, value) for key, value in config["targets"].items()
         if value.get("kind") == "theorem"
-        and value.get("lean_export_mode") == "statement_only"
+        and value.get("lean_export_mode") in {
+            "statement_only", "definitionally_normalized_statement_only"
+        }
     ]
     if args.list_lean_theorems:
         for _, target in targets:
             print(target["lean_declaration"])
+        return
+    if args.list_lean_normalized_theorems:
+        for _, target in targets:
+            if target.get("lean_export_mode") == "definitionally_normalized_statement_only":
+                print(target["lean_declaration"])
         return
     if args.list_lean_modules:
         modules = set(config.get("lean_modules", []))

@@ -1,6 +1,7 @@
 From mathcomp Require Import ssreflect ssrbool ssrnat seq bigop.
 From LeanImport Require Import Lean.
-Require Import ImportedBigNatEq093 PropSPropFoundation HardSumCertificate
+Require Import ImportedFiniteNatSumNormalized93 ImportedBigNatEq093
+  PropSPropFoundation HardSumCertificate
   FiniteNatSumBridge.
 From HardSource Require Import Generated_util__sum.
 
@@ -8,11 +9,19 @@ Definition source_sum_of_ones_statement (t delta : nat) : Prop :=
   Logic.eq (\sum_(t <= x < t + delta) 1) delta.
 
 Definition imported_sum_of_ones_value (t delta : nat) : Nat :=
-  Finset_sum_inst3 Nat Nat Nat_instAddCommMonoid
-    (Finset_Ico_inst1 Nat Nat_instPreorder Nat_instLocallyFiniteOrder
-      (sum_nat_to_imported t)
-      (Nat_add (sum_nat_to_imported t) (sum_nat_to_imported delta)))
-    (fun _ : Nat => imported_one).
+  ImportedFiniteNatSumNormalized93.List_foldr_inst3 Nat Nat
+    (fun x y : Nat => Nat_add x y) Nat_zero
+    (ImportedFiniteNatSumNormalized93.List_map_inst3 Nat Nat
+      (fun _ : Nat =>
+        ImportedFiniteNatSumNormalized93.OfNat_ofNat_inst1 Nat 1
+          (ImportedFiniteNatSumNormalized93.instOfNatNat 1))
+      (ImportedFiniteNatSumNormalized93.List_range' (sum_nat_to_imported t)
+        (ImportedFiniteNatSumNormalized93.Nat_sub
+          (Nat_add
+            (sum_nat_to_imported t) (sum_nat_to_imported delta))
+          (sum_nat_to_imported t))
+        (ImportedFiniteNatSumNormalized93.OfNat_ofNat_inst1 Nat 1
+          (ImportedFiniteNatSumNormalized93.instOfNatNat 1)))).
 
 Definition imported_sum_of_ones_statement (t delta : nat) : SProp :=
   eq (imported_sum_of_ones_value t delta) (sum_nat_to_imported delta).
@@ -21,10 +30,14 @@ Definition original_sum_of_ones_has_expected_statement (t delta : nat) :
     source_sum_of_ones_statement t delta :=
   @Generated_util__sum.sum_of_ones t delta.
 
-Definition imported_sum_of_ones_has_expected_statement (t delta : nat) :
-    imported_sum_of_ones_statement t delta :=
-  Prosa_Util_Sum_sum_of_ones
-    (sum_nat_to_imported t) (sum_nat_to_imported delta).
+Lemma imported_sum_of_ones_has_expected_statement (t delta : nat) :
+  imported_sum_of_ones_statement t delta.
+Proof.
+  unfold imported_sum_of_ones_statement, imported_sum_of_ones_value,
+    imported_one.
+  exact (ImportedFiniteNatSumNormalized93.Prosa_Util_Sum_sum_of_ones
+    (sum_nat_to_imported t) (sum_nat_to_imported delta)).
+Qed.
 
 Lemma imported_sum_of_ones_value_prop (t delta : nat) :
   Logic.eq (imported_sum_of_ones_value t delta)
@@ -73,10 +86,176 @@ Definition source_sum_le_range_statement
   ltn (\sum_(t <= x < t + delta) f x) delta ->
   exists x, (leq t x && ltn x (t + delta)) /\ Logic.eq (f x) O.
 
+Definition imported_finset_interval_sum
+    (m n : nat) (f : nat -> nat) : Nat :=
+  ImportedBigNatEq093.Finset_sum_inst3 Nat Nat
+    ImportedBigNatEq093.Nat_instAddCommMonoid
+    (ImportedBigNatEq093.Finset_Ico_inst1 Nat
+      ImportedBigNatEq093.Nat_instPreorder
+      ImportedBigNatEq093.Nat_instLocallyFiniteOrder
+      (sum_nat_to_imported m) (sum_nat_to_imported n))
+    (canonical_imported_function f).
+
+Definition old_imported_list_sum
+    (xs : List_inst1 Nat) : Nat :=
+  ImportedBigNatEq093.List_foldr_inst3 Nat Nat Nat_add Nat_zero xs.
+
+Definition old_imported_one : Nat :=
+  ImportedBigNatEq093.OfNat_ofNat_inst1 Nat 1
+    (ImportedBigNatEq093.instOfNatNat 1).
+
+Lemma old_imported_range_succ_prop (start len step : Nat) :
+  Logic.eq
+    (ImportedBigNatEq093.List_range' start (Nat_succ len) step)
+    (ImportedBigNatEq093.List_cons_inst1 Nat start
+      (ImportedBigNatEq093.List_range' (Nat_add start step) len step)).
+Proof. reflexivity. Qed.
+
+Lemma old_imported_map_cons_prop {A B : Type} (f : A -> B) (x : A)
+    (xs : ImportedBigNatEq093.List_inst1 A) :
+  Logic.eq
+    (ImportedBigNatEq093.List_map_inst3 A B f
+      (ImportedBigNatEq093.List_cons_inst1 A x xs))
+    (ImportedBigNatEq093.List_cons_inst1 B (f x)
+      (ImportedBigNatEq093.List_map_inst3 A B f xs)).
+Proof. reflexivity. Qed.
+
+Lemma old_imported_foldr_cons_prop {A B : Type} (f : A -> B -> B)
+    (z : B) (x : A) (xs : ImportedBigNatEq093.List_inst1 A) :
+  Logic.eq
+    (ImportedBigNatEq093.List_foldr_inst3 A B f z
+      (ImportedBigNatEq093.List_cons_inst1 A x xs))
+    (f x (ImportedBigNatEq093.List_foldr_inst3 A B f z xs)).
+Proof. reflexivity. Qed.
+
+Lemma old_imported_sub_succ_prop (a b : Nat) :
+  Logic.eq
+    (ImportedBigNatEq093.Nat_sub a (Nat_succ b))
+    (ImportedBigNatEq093.Nat_pred
+      (ImportedBigNatEq093.Nat_sub a b)).
+Proof. reflexivity. Qed.
+
+Lemma old_imported_zero_sub_prop (b : nat) :
+  Logic.eq
+    (ImportedBigNatEq093.Nat_sub Nat_zero (sum_nat_to_imported b))
+    Nat_zero.
+Proof.
+  induction b as [|b IH].
+  - reflexivity.
+  - rewrite old_imported_sub_succ_prop IH. reflexivity.
+Qed.
+
+Lemma old_imported_succ_sub_succ_prop (a b : nat) :
+  Logic.eq
+    (ImportedBigNatEq093.Nat_sub
+      (Nat_succ (sum_nat_to_imported a))
+      (Nat_succ (sum_nat_to_imported b)))
+    (ImportedBigNatEq093.Nat_sub
+      (sum_nat_to_imported a) (sum_nat_to_imported b)).
+Proof.
+  induction b as [|b IH].
+  - reflexivity.
+  - rewrite !old_imported_sub_succ_prop.
+    exact (f_equal ImportedBigNatEq093.Nat_pred IH).
+Qed.
+
+Lemma old_imported_sub_canonical_prop (a b : nat) :
+  Logic.eq
+    (ImportedBigNatEq093.Nat_sub
+      (sum_nat_to_imported a) (sum_nat_to_imported b))
+    (sum_nat_to_imported (a - b)).
+Proof.
+  induction b as [|b IH] in a |- *.
+  - destruct a; reflexivity.
+  - destruct a as [|a].
+    + exact (old_imported_zero_sub_prop b.+1).
+    + rewrite old_imported_succ_sub_succ_prop.
+      exact (IH a).
+Qed.
+
+Fixpoint old_seq_nat_to_imported (xs : seq nat) :
+    ImportedBigNatEq093.List_inst1 Nat :=
+  match xs with
+  | [::] => ImportedBigNatEq093.List_nil_inst1 Nat
+  | x :: xs' => ImportedBigNatEq093.List_cons_inst1 Nat
+      (sum_nat_to_imported x) (old_seq_nat_to_imported xs')
+  end.
+
+Lemma imported_finset_interval_sum_unfold_prop
+    (m n : nat) (f : nat -> nat) :
+  Logic.eq (imported_finset_interval_sum m n f)
+    (old_imported_list_sum
+      (ImportedBigNatEq093.List_map_inst3 Nat Nat
+        (canonical_imported_function f)
+        (ImportedBigNatEq093.List_range' (sum_nat_to_imported m)
+          (Nat_sub (sum_nat_to_imported n) (sum_nat_to_imported m))
+          old_imported_one))).
+Proof. reflexivity. Qed.
+
+Lemma old_imported_range_iota_prop (start len : nat) :
+  Logic.eq
+    (ImportedBigNatEq093.List_range'
+      (sum_nat_to_imported start) (sum_nat_to_imported len) old_imported_one)
+    (old_seq_nat_to_imported (iota start len)).
+Proof.
+  elim: len start => [|len IH] start.
+  - reflexivity.
+  - cbn [sum_nat_to_imported iota old_seq_nat_to_imported].
+    rewrite old_imported_range_succ_prop.
+    have Hstart : Logic.eq
+        (Nat_add (sum_nat_to_imported start) old_imported_one)
+        (sum_nat_to_imported start.+1) by reflexivity.
+    rewrite Hstart (IH start.+1). reflexivity.
+Qed.
+
+Lemma old_imported_map_converted_prop (f : nat -> nat) (xs : seq nat) :
+  Logic.eq
+    (ImportedBigNatEq093.List_map_inst3 Nat Nat
+      (canonical_imported_function f) (old_seq_nat_to_imported xs))
+    (old_seq_nat_to_imported (map f xs)).
+Proof.
+  elim: xs => [|x xs IH].
+  - reflexivity.
+  - cbn [old_seq_nat_to_imported].
+    rewrite old_imported_map_cons_prop.
+    unfold canonical_imported_function.
+    rewrite sum_rocq_roundtrip IH. reflexivity.
+Qed.
+
+Lemma old_imported_list_sum_converted_prop (xs : seq nat) :
+  Logic.eq (old_imported_list_sum (old_seq_nat_to_imported xs))
+    (sum_nat_to_imported (foldr addn O xs)).
+Proof.
+  elim: xs => [|x xs IH].
+  - reflexivity.
+  - cbn [old_seq_nat_to_imported foldr].
+    unfold old_imported_list_sum.
+    unfold old_imported_list_sum in IH.
+    rewrite old_imported_foldr_cons_prop.
+    rewrite IH. exact (imported_add_canonical_prop x (foldr addn O xs)).
+Qed.
+
+Lemma imported_finset_interval_sum_bridge_prop
+    (m n : nat) (f : nat -> nat) :
+  Logic.eq (imported_finset_interval_sum m n f)
+    (sum_nat_to_imported (\sum_(m <= x < n) f x)).
+Proof.
+  rewrite imported_finset_interval_sum_unfold_prop.
+  rewrite old_imported_sub_canonical_prop.
+  rewrite old_imported_range_iota_prop.
+  rewrite old_imported_map_converted_prop.
+  rewrite old_imported_list_sum_converted_prop.
+  rewrite /index_iota mathcomp_big_seq_as_fold.
+  reflexivity.
+Qed.
+
 Definition imported_sum_range_value
     (f : nat -> nat) (t delta : nat) : Nat :=
-  Finset_sum_inst3 Nat Nat Nat_instAddCommMonoid
-    (Finset_Ico_inst1 Nat Nat_instPreorder Nat_instLocallyFiniteOrder
+  ImportedBigNatEq093.Finset_sum_inst3 Nat Nat
+    ImportedBigNatEq093.Nat_instAddCommMonoid
+    (ImportedBigNatEq093.Finset_Ico_inst1 Nat
+      ImportedBigNatEq093.Nat_instPreorder
+      ImportedBigNatEq093.Nat_instLocallyFiniteOrder
       (sum_nat_to_imported t)
       (Nat_add (sum_nat_to_imported t) (sum_nat_to_imported delta)))
     (canonical_imported_function f).
@@ -97,8 +276,8 @@ Definition original_sum_le_range_has_expected_statement
 
 Definition imported_sum_le_range_has_expected_statement
     (f : nat -> nat) (t delta : nat) :
-    imported_sum_le_range_statement f t delta :=
-  Prosa_Util_Sum_sum_le_summation_range
+  imported_sum_le_range_statement f t delta :=
+  ImportedBigNatEq093.Prosa_Util_Sum_sum_le_summation_range
     (canonical_imported_function f)
     (sum_nat_to_imported t) (sum_nat_to_imported delta).
 
@@ -109,10 +288,11 @@ Lemma imported_sum_range_value_prop
 Proof.
   unfold imported_sum_range_value.
   rewrite imported_add_canonical_prop.
-  change (Logic.eq
-    (imported_interval_sum t (t + delta) f)
+  change (Logic.eq (imported_finset_interval_sum t (t + delta) f)
     (sum_nat_to_imported (\sum_(t <= x < t + delta) f x))).
-  exact (finite_nat_sum_value_bridge_prop t (t + delta) f).
+  (* The old actual Finset artifact remains the semantic target for this
+     theorem until its proof-field-heavy type admits the same normalization. *)
+  exact (imported_finset_interval_sum_bridge_prop t (t + delta) f).
 Qed.
 
 Lemma sum_le_range_exists_backward_strict

@@ -1,6 +1,6 @@
 From mathcomp Require Import ssreflect ssrbool ssrnat bigop.
 From LeanImport Require Import Lean.
-Require Import ImportedBigNatEq093 PropSPropFoundation.
+Require Import ImportedFiniteNatSumNormalized93 PropSPropFoundation.
 From HardSource Require Import Generated_util__sum.
 
 Inductive Sum_STrue : SProp := sum_sI.
@@ -135,10 +135,11 @@ Definition source_big_nat_eq0_statement (m n : nat) (F : nat -> nat) : Prop :=
   forall i, leq m i && ltn i n -> Logic.eq (F i) O.
 
 Definition imported_interval_sum (m n : nat) (F : nat -> nat) : Nat :=
-  Finset_sum_inst3 Nat Nat Nat_instAddCommMonoid
-    (Finset_Ico_inst1 Nat Nat_instPreorder Nat_instLocallyFiniteOrder
-      (sum_nat_to_imported m) (sum_nat_to_imported n))
-    (canonical_imported_function F).
+  List_foldr_inst3 Nat Nat Nat_add Nat_zero
+    (List_map_inst3 Nat Nat (canonical_imported_function F)
+      (List_range' (sum_nat_to_imported m)
+        (Nat_sub (sum_nat_to_imported n) (sum_nat_to_imported m))
+        (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1)))).
 
 Definition imported_big_nat_eq0_statement (m n : nat) (F : nat -> nat) : SProp :=
   Iff

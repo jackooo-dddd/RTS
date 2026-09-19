@@ -15,7 +15,8 @@ if [[ -n ${HARD_TARGET_KEYS:-} ]]; then
   target_args=(--target-keys "$HARD_TARGET_KEYS")
 fi
 
-mkdir -p "$validation_root/.work" "$log_dir" "$validation_root/export"
+mkdir -p "$validation_root/.work" "$log_dir/$(dirname "$log_prefix")" \
+  "$validation_root/export"
 if [[ -n ${LEAN_VALIDATION_BUILD_DIR:-} ]]; then
   olean_root=$LEAN_VALIDATION_BUILD_DIR
   mkdir -p "$olean_root"
@@ -72,7 +73,24 @@ while IFS= read -r declaration; do
   [[ -n "$declaration" ]] && theorems+=("$declaration")
 done < <(python3 "$validation_root/scripts/extract_rocq_declarations.py" \
   --mapping "$mapping" --source-root /dev/null "${target_args[@]}" --list-lean-theorems)
+normalized_theorems=()
+while IFS= read -r declaration; do
+  [[ -n "$declaration" ]] && normalized_theorems+=("$declaration")
+done < <(python3 "$validation_root/scripts/extract_rocq_declarations.py" \
+  --mapping "$mapping" --source-root /dev/null "${target_args[@]}" \
+  --list-lean-normalized-theorems)
 export LEAN4EXPORT_STATEMENT_ONLY
+export LEAN4EXPORT_BODY_THEOREMS=${HARD_BODY_THEOREMS:-}
+if [[ -n ${HARD_NORMALIZE_THEOREM_TYPES+x} ]]; then
+  LEAN4EXPORT_NORMALIZE_THEOREM_TYPES=$HARD_NORMALIZE_THEOREM_TYPES
+else
+  if (( ${#normalized_theorems[@]} )); then
+    LEAN4EXPORT_NORMALIZE_THEOREM_TYPES=$(printf '%s\n' "${normalized_theorems[@]}")
+  else
+    LEAN4EXPORT_NORMALIZE_THEOREM_TYPES=
+  fi
+fi
+export LEAN4EXPORT_NORMALIZE_THEOREM_TYPES
 if [[ ${HARD_ALL_THEOREMS_STATEMENT_ONLY:-0} == 1 ]]; then
   LEAN4EXPORT_STATEMENT_ONLY='*'
 else
@@ -93,6 +111,10 @@ fi
   printf '  %s\n' "${modules[@]}"
   echo "Statement-only theorems:"
   printf '  %s\n' "${theorems[@]}"
+  echo "Proof-body exceptions:"
+  printf '  %s\n' "$LEAN4EXPORT_BODY_THEOREMS"
+  echo "Definitionally normalized target theorem types:"
+  printf '  %s\n' "$LEAN4EXPORT_NORMALIZE_THEOREM_TYPES"
   echo "Artifact: $artifact"
   wc -l -c "$artifact"
   shasum -a 256 "$artifact"
