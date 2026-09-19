@@ -9,6 +9,7 @@ exporter_src=${LEAN4EXPORT_SRC:-/private/tmp/lean4export}
 toolchain=${LEAN_TOOLCHAIN:-leanprover/lean4:v4.33.1}
 olean_root="$validation_root/.work/hard_olean"
 log_dir="$validation_root/reports/logs"
+log_prefix=${HARD_LOG_PREFIX:-experiment5}
 artifact=${HARD_ARTIFACT:-$validation_root/export/HardValidation.out}
 target_args=()
 if [[ -n ${HARD_TARGET_KEYS:-} ]]; then
@@ -73,7 +74,7 @@ else
 fi
 
 "$exporter" "${modules[@]}" -- "${roots[@]}" > "$artifact" \
-  2> "$log_dir/experiment5_export_hard_validation.log"
+  2> "$log_dir/${log_prefix}_export_hard_validation.log"
 
 {
   echo "Lean toolchain: $toolchain"
@@ -85,6 +86,6 @@ fi
   echo "Artifact: $artifact"
   wc -l -c "$artifact"
   shasum -a 256 "$artifact"
-} > "$log_dir/experiment5_lean_export_manifest.log"
+} > "$log_dir/${log_prefix}_lean_export_manifest.log"
 
-cat "$log_dir/experiment5_lean_export_manifest.log"
+cat "$log_dir/${log_prefix}_lean_export_manifest.log"

@@ -1,0 +1,782 @@
+File "./HardSumCertificate.v", line 1, characters 0-60:
+Warning: Notation "_ + _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./HardSumCertificate.v", line 1, characters 0-60:
+Warning: Notation "_ - _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./HardSumCertificate.v", line 1, characters 0-60:
+Warning: Notation "_ <= _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./HardSumCertificate.v", line 1, characters 0-60:
+Warning: Notation "_ < _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./HardSumCertificate.v", line 1, characters 0-60:
+Warning: Notation "_ >= _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./HardSumCertificate.v", line 1, characters 0-60:
+Warning: Notation "_ > _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./HardSumCertificate.v", line 1, characters 0-60:
+Warning: Notation "_ <= _ <= _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./HardSumCertificate.v", line 1, characters 0-60:
+Warning: Notation "_ < _ <= _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./HardSumCertificate.v", line 1, characters 0-60:
+Warning: Notation "_ <= _ < _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./HardSumCertificate.v", line 1, characters 0-60:
+Warning: Notation "_ < _ < _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./HardSumCertificate.v", line 1, characters 0-60:
+Warning: Notation "_ * _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./HardSumCertificate.v", line 200, characters 38-45:
+Warning: The 'rewrite' tactic has been renamed 'rw'.
+[rewrite-rw,deprecated-since-9.3,deprecated,default]
+File "./HardSumCertificate.v", line 221, characters 2-9:
+Warning: The 'rewrite' tactic has been renamed 'rw'.
+[rewrite-rw,deprecated-since-9.3,deprecated,default]
+File "./HardSumCertificate.v", line 268, characters 42-49:
+Warning: The 'rewrite' tactic has been renamed 'rw'.
+[rewrite-rw,deprecated-since-9.3,deprecated,default]
+File "./HardSumCertificate.v", line 276, characters 8-15:
+Warning: The 'rewrite' tactic has been renamed 'rw'.
+[rewrite-rw,deprecated-since-9.3,deprecated,default]
+File "./HardSumCertificate.v", line 277, characters 6-13:
+Warning: The 'rewrite' tactic has been renamed 'rw'.
+[rewrite-rw,deprecated-since-9.3,deprecated,default]
+Axioms:
+eq relies on definitional UIP.
+True relies on definitional UIP.
+Sum_STrue relies on definitional UIP.
+HEq_inst1 relies on definitional UIP.
+prop_sprop_trusted_elim : forall P : Prop, StrictlyInhabited P -> P
+noConfusion_of_Nat :
+  forall (_UU03b1_ : Type) (f : _UU03b1_ -> Nat) (a b : _UU03b1_),
+  eq a b ->
+  Bool_recl (fun _ : Bool => SProp) False True (Nat_beq (f a) (f b))
+PrimInt63.lsr : PrimInt63.int -> PrimInt63.int -> PrimInt63.int
+PrimInt63.land : PrimInt63.int -> PrimInt63.int -> PrimInt63.int
+PrimInt63.int : Set
+PrimInt63.eqb : PrimInt63.int -> PrimInt63.int -> bool
+Nat_zero_mul :
+  forall n : Nat,
+  eq
+    (HMul_hMul_inst7 Nat Nat Nat (instHMul_inst1 Nat instMulNat)
+       (OfNat_ofNat_inst1 Nat 0 (instOfNatNat 0)) n)
+    (OfNat_ofNat_inst1 Nat 0 (instOfNatNat 0))
+Nat_zero_add :
+  forall n : Nat,
+  eq
+    (HAdd_hAdd_inst7 Nat Nat Nat (instHAdd_inst1 Nat instAddNat)
+       (OfNat_ofNat_inst1 Nat 0 (instOfNatNat 0)) n)
+    n
+Nat_succ_mul :
+  forall n m : Nat,
+  eq
+    (HMul_hMul_inst7 Nat Nat Nat (instHMul_inst1 Nat instMulNat) 
+       (Nat_succ n) m)
+    (HAdd_hAdd_inst7 Nat Nat Nat (instHAdd_inst1 Nat instAddNat)
+       (HMul_hMul_inst7 Nat Nat Nat (instHMul_inst1 Nat instMulNat) n m) m)
+Nat_not_le_of_not_ble_eq_true :
+  forall n m : Nat,
+  Not (eq (Nat_ble n m) Bool_true) -> Not (LE_le_inst1 Nat instLENat n m)
+Nat_ne_of_beq_eq_false :
+  forall n m : Nat, eq (Nat_beq n m) Bool_false -> Not (eq n m)
+Nat_mod_lt :
+  forall x y : Nat,
+  LT_lt_inst1 Nat instLTNat (OfNat_ofNat_inst1 Nat 0 (instOfNatNat 0)) y ->
+  LT_lt_inst1 Nat instLTNat
+    (HMod_hMod_inst7 Nat Nat Nat (instHMod_inst1 Nat Nat_instMod) x y) y
+Nat_lt_succ_self : forall n : Nat, LT_lt_inst1 Nat instLTNat n (Nat_succ n)
+Nat_lt_iff_le_and_not_ge :
+  forall m n : Nat,
+  Iff (LT_lt_inst1 Nat instLTNat m n)
+    (And (LE_le_inst1 Nat instLENat m n)
+       (Not (LE_le_inst1 Nat instLENat n m)))
+Nat_le_trans :
+  forall n m k : Nat,
+  LE_le_inst1 Nat instLENat n m ->
+  LE_le_inst1 Nat instLENat m k -> LE_le_inst1 Nat instLENat n k
+Nat_le_total :
+  forall m n : Nat,
+  Or (LE_le_inst1 Nat instLENat m n) (LE_le_inst1 Nat instLENat n m)
+Nat_le_refl : forall n : Nat, LE_le_inst1 Nat instLENat n n
+Nat_le_of_ble_eq_true :
+  forall n m : Nat,
+  eq (Nat_ble n m) Bool_true -> LE_le_inst1 Nat instLENat n m
+Nat_le_antisymm :
+  forall n m : Nat,
+  LE_le_inst1 Nat instLENat n m -> LE_le_inst1 Nat instLENat m n -> eq n m
+Nat_instLocallyFiniteOrder__proof_9 :
+  forall a b x : Nat,
+  Iff
+    (Membership_mem_inst3 Nat (Finset_inst1 Nat)
+       (SetLike_instMembership_inst3 (Finset_inst1 Nat) Nat
+          (Finset_instSetLike_inst1 Nat))
+       (Finset_mk_inst1 Nat
+          (Multiset_ofList_inst1 Nat
+             (List_range'
+                (HAdd_hAdd_inst7 Nat Nat Nat (instHAdd_inst1 Nat instAddNat)
+                   a (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1)))
+                (HSub_hSub_inst7 Nat Nat Nat (instHSub_inst1 Nat instSubNat)
+                   (HSub_hSub_inst7 Nat Nat Nat
+                      (instHSub_inst1 Nat instSubNat) b a)
+                   (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1)))
+                (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1))))
+          (List_nodup_range'
+             (HAdd_hAdd_inst7 Nat Nat Nat (instHAdd_inst1 Nat instAddNat) a
+                (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1)))
+             (HSub_hSub_inst7 Nat Nat Nat (instHSub_inst1 Nat instSubNat)
+                (HSub_hSub_inst7 Nat Nat Nat (instHSub_inst1 Nat instSubNat)
+                   b a)
+                (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1)))
+             (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1))
+             Nat_instLocallyFiniteOrder__proof_1))
+       x)
+    (And (LT_lt_inst1 Nat (Preorder_toLT_inst1 Nat Nat_instPreorder) a x)
+       (LT_lt_inst1 Nat (Preorder_toLT_inst1 Nat Nat_instPreorder) x b))
+Nat_instLocallyFiniteOrder__proof_7 :
+  forall a b x : Nat,
+  Iff
+    (Membership_mem_inst3 Nat (Finset_inst1 Nat)
+       (SetLike_instMembership_inst3 (Finset_inst1 Nat) Nat
+          (Finset_instSetLike_inst1 Nat))
+       (Finset_mk_inst1 Nat
+          (Multiset_ofList_inst1 Nat
+             (List_range'
+                (HAdd_hAdd_inst7 Nat Nat Nat (instHAdd_inst1 Nat instAddNat)
+                   a (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1)))
+                (HSub_hSub_inst7 Nat Nat Nat (instHSub_inst1 Nat instSubNat)
+                   b a)
+                (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1))))
+          (List_nodup_range'
+             (HAdd_hAdd_inst7 Nat Nat Nat (instHAdd_inst1 Nat instAddNat) a
+                (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1)))
+             (HSub_hSub_inst7 Nat Nat Nat (instHSub_inst1 Nat instSubNat) b a)
+             (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1))
+             Nat_instLocallyFiniteOrder__proof_1))
+       x)
+    (And (LT_lt_inst1 Nat (Preorder_toLT_inst1 Nat Nat_instPreorder) a x)
+       (LE_le_inst1 Nat (Preorder_toLE_inst1 Nat Nat_instPreorder) x b))
+Nat_instLocallyFiniteOrder__proof_5 :
+  forall a b x : Nat,
+  Iff
+    (Membership_mem_inst3 Nat (Finset_inst1 Nat)
+       (SetLike_instMembership_inst3 (Finset_inst1 Nat) Nat
+          (Finset_instSetLike_inst1 Nat))
+       (Finset_mk_inst1 Nat
+          (Multiset_ofList_inst1 Nat
+             (List_range' a
+                (HSub_hSub_inst7 Nat Nat Nat (instHSub_inst1 Nat instSubNat)
+                   b a)
+                (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1))))
+          (List_nodup_range' a
+             (HSub_hSub_inst7 Nat Nat Nat (instHSub_inst1 Nat instSubNat) b a)
+             (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1))
+             Nat_instLocallyFiniteOrder__proof_1))
+       x)
+    (And (LE_le_inst1 Nat (Preorder_toLE_inst1 Nat Nat_instPreorder) a x)
+       (LT_lt_inst1 Nat (Preorder_toLT_inst1 Nat Nat_instPreorder) x b))
+Nat_instLocallyFiniteOrder__proof_3 :
+  forall a b x : Nat,
+  Iff
+    (Membership_mem_inst3 Nat (Finset_inst1 Nat)
+       (SetLike_instMembership_inst3 (Finset_inst1 Nat) Nat
+          (Finset_instSetLike_inst1 Nat))
+       (Finset_mk_inst1 Nat
+          (Multiset_ofList_inst1 Nat
+             (List_range' a
+                (HSub_hSub_inst7 Nat Nat Nat (instHSub_inst1 Nat instSubNat)
+                   (HAdd_hAdd_inst7 Nat Nat Nat
+                      (instHAdd_inst1 Nat instAddNat) b
+                      (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1)))
+                   a)
+                (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1))))
+          (List_nodup_range' a
+             (HSub_hSub_inst7 Nat Nat Nat (instHSub_inst1 Nat instSubNat)
+                (HAdd_hAdd_inst7 Nat Nat Nat (instHAdd_inst1 Nat instAddNat)
+                   b (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1)))
+                a)
+             (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1))
+             Nat_instLocallyFiniteOrder__proof_1))
+       x)
+    (And (LE_le_inst1 Nat (Preorder_toLE_inst1 Nat Nat_instPreorder) a x)
+       (LE_le_inst1 Nat (Preorder_toLE_inst1 Nat Nat_instPreorder) x b))
+Nat_instLocallyFiniteOrder__proof_13 :
+  forall a b : Nat,
+  List_Nodup_inst1 Nat
+    (List_range'
+       (HAdd_hAdd_inst7 Nat Nat Nat (instHAdd_inst1 Nat instAddNat) a
+          (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1)))
+       (HSub_hSub_inst7 Nat Nat Nat (instHSub_inst1 Nat instSubNat)
+          (HSub_hSub_inst7 Nat Nat Nat (instHSub_inst1 Nat instSubNat) b a)
+          (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1)))
+       (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1)))
+Nat_instLocallyFiniteOrder__proof_12 :
+  forall a b : Nat,
+  List_Nodup_inst1 Nat
+    (List_range'
+       (HAdd_hAdd_inst7 Nat Nat Nat (instHAdd_inst1 Nat instAddNat) a
+          (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1)))
+       (HSub_hSub_inst7 Nat Nat Nat (instHSub_inst1 Nat instSubNat) b a)
+       (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1)))
+Nat_instLocallyFiniteOrder__proof_11 :
+  forall a b : Nat,
+  List_Nodup_inst1 Nat
+    (List_range' a
+       (HSub_hSub_inst7 Nat Nat Nat (instHSub_inst1 Nat instSubNat) b a)
+       (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1)))
+Nat_instLocallyFiniteOrder__proof_10 :
+  forall a b : Nat,
+  List_Nodup_inst1 Nat
+    (List_range' a
+       (HSub_hSub_inst7 Nat Nat Nat (instHSub_inst1 Nat instSubNat)
+          (HAdd_hAdd_inst7 Nat Nat Nat (instHAdd_inst1 Nat instAddNat) b
+             (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1)))
+          a)
+       (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1)))
+Nat_instLocallyFiniteOrder__proof_1 :
+  LT_lt_inst1 (optParam Nat (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1)))
+    instLTNat
+    (OfNat_ofNat_inst1
+       (optParam Nat (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1))) 0
+       (instOfNatNat 0))
+    (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1))
+Nat_instLinearOrder__proof_3 :
+  forall a b : Nat,
+  eq (Ord_compare_inst1 Nat instOrdNat a b)
+    (compareOfLessAndEq_inst1 Nat a b (LT_mk_inst1 Nat Nat_lt)
+       (inferInstance (DecidableLT_inst1 Nat (LT_mk_inst1 Nat Nat_lt))
+          Nat_decLt a b)
+       (inferInstance (DecidableEq Nat) instDecidableEqNat))
+Nat_instLinearOrder__proof_2 :
+  forall a b : Nat,
+  eq (Max_max_inst1 Nat Nat_instMax a b)
+    (ite Nat (a <= b)
+       (inferInstance (DecidableLE_inst1 Nat (LE_mk_inst1 Nat Nat_le))
+          Nat_decLe a b)
+       b a)
+Nat_instLinearOrder__proof_1 :
+  forall a b : Nat,
+  eq (Min_min_inst1 Nat instMinNat a b)
+    (ite Nat (a <= b)
+       (inferInstance (DecidableLE_inst1 Nat (LE_mk_inst1 Nat Nat_le))
+          Nat_decLe a b)
+       a b)
+Nat_instAddCancelCommMonoid__proof_1 :
+  IsLeftCancelAdd_inst1 Nat (Add_mk_inst1 Nat Nat_add)
+Nat_eq_of_beq_eq_true :
+  forall n m : Nat, eq (Nat_beq n m) Bool_true -> eq n m
+Nat_div_rec_fuel_lemma :
+  forall x y fuel : Nat,
+  LT_lt_inst1 Nat instLTNat (OfNat_ofNat_inst1 Nat 0 (instOfNatNat 0)) y ->
+  LE_le_inst1 Nat instLENat y x ->
+  LT_lt_inst1 Nat instLTNat x
+    (HAdd_hAdd_inst7 Nat Nat Nat (instHAdd_inst1 Nat instAddNat) fuel
+       (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1))) ->
+  LT_lt_inst1 Nat instLTNat
+    (HSub_hSub_inst7 Nat Nat Nat (instHSub_inst1 Nat instSubNat) x y) fuel
+Nat_add_zero :
+  forall n : Nat,
+  eq
+    (HAdd_hAdd_inst7 Nat Nat Nat (instHAdd_inst1 Nat instAddNat) n
+       (OfNat_ofNat_inst1 Nat 0 (instOfNatNat 0)))
+    n
+Nat_add_comm :
+  forall n m : Nat,
+  eq (HAdd_hAdd_inst7 Nat Nat Nat (instHAdd_inst1 Nat instAddNat) n m)
+    (HAdd_hAdd_inst7 Nat Nat Nat (instHAdd_inst1 Nat instAddNat) m n)
+Nat_add_assoc :
+  forall n m k : Nat,
+  eq
+    (HAdd_hAdd_inst7 Nat Nat Nat (instHAdd_inst1 Nat instAddNat)
+       (HAdd_hAdd_inst7 Nat Nat Nat (instHAdd_inst1 Nat instAddNat) n m) k)
+    (HAdd_hAdd_inst7 Nat Nat Nat (instHAdd_inst1 Nat instAddNat) n
+       (HAdd_hAdd_inst7 Nat Nat Nat (instHAdd_inst1 Nat instAddNat) m k))
+Multiset_sum__proof_1_inst1 :
+  forall (M : Type)
+    (inst____at___Mathlib_Algebra_BigOperators_Group_Multiset_Defs1557692325__hygCtx__hyg6 : 
+     AddCommMonoid_inst1 M),
+  LeftCommutative M M
+    (fun
+       x1____at___Mathlib_Algebra_BigOperators_Group_Multiset_Defs1557692325__hygCtx__hyg32
+        x2____at___Mathlib_Algebra_BigOperators_Group_Multiset_Defs1557692325__hygCtx__hyg32 : M =>
+     HAdd_hAdd_inst7 M M M
+       (instHAdd_inst1 M
+          (AddZero_toAdd_inst1 M
+             (AddZeroClass_toAddZero_inst1 M
+                (AddMonoid_toAddZeroClass_inst1 M
+                   (AddCommMonoid_toAddMonoid_inst1 M
+                      inst____at___Mathlib_Algebra_BigOperators_Group_Multiset_Defs1557692325__hygCtx__hyg6)))))
+       x1____at___Mathlib_Algebra_BigOperators_Group_Multiset_Defs1557692325__hygCtx__hyg32
+       x2____at___Mathlib_Algebra_BigOperators_Group_Multiset_Defs1557692325__hygCtx__hyg32)
+Multiset_map__proof_1_inst3 :
+  forall (_UU03b1_ _UU03b2_ : Type) (f : _UU03b1_ -> _UU03b2_)
+    (_l_UU2081_ _l_UU2082_ : List_inst1 _UU03b1_),
+  Setoid_r (List_inst1 _UU03b1_) (List_isSetoid_inst1 _UU03b1_) _l_UU2081_
+    _l_UU2082_ ->
+  eq
+    (Quot.mk (Setoid_r (List_inst1 _UU03b2_) (List_isSetoid_inst1 _UU03b2_))
+       (List_map_inst3 _UU03b1_ _UU03b2_ f _l_UU2081_))
+    (Quot.mk (Setoid_r (List_inst1 _UU03b2_) (List_isSetoid_inst1 _UU03b2_))
+       (List_map_inst3 _UU03b1_ _UU03b2_ f _l_UU2082_))
+Multiset_Nodup__proof_1_inst1 :
+  forall (_UU03b1_ : Type)
+    (x____at___Mathlib_Data_Multiset_Defs3805720009__hygCtx__hyg13
+     x____at___Mathlib_Data_Multiset_Defs3805720009__hygCtx__hyg15 : 
+     List_inst1 _UU03b1_),
+  Setoid_r (List_inst1 _UU03b1_) (List_isSetoid_inst1 _UU03b1_)
+    x____at___Mathlib_Data_Multiset_Defs3805720009__hygCtx__hyg13
+    x____at___Mathlib_Data_Multiset_Defs3805720009__hygCtx__hyg15 ->
+  eq
+    (List_Nodup_inst1 _UU03b1_
+       x____at___Mathlib_Data_Multiset_Defs3805720009__hygCtx__hyg13)
+    (List_Nodup_inst1 _UU03b1_
+       x____at___Mathlib_Data_Multiset_Defs3805720009__hygCtx__hyg15)
+Multiset_Mem__proof_1_inst1 :
+  forall (_UU03b1_ : Type) (a : _UU03b1_)
+    (l_UU2081_ l_UU2082_ : List_inst1 _UU03b1_),
+  List_Perm_inst1 _UU03b1_ l_UU2081_ l_UU2082_ ->
+  eq
+    (Membership_mem_inst3 _UU03b1_ (List_inst1 _UU03b1_)
+       (List_instMembership_inst1 _UU03b1_) l_UU2081_ a)
+    (Membership_mem_inst3 _UU03b1_ (List_inst1 _UU03b1_)
+       (List_instMembership_inst1 _UU03b1_) l_UU2082_ a)
+List_nodup_range' :
+  forall (s n : Nat)
+    (step : optParam Nat (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1))),
+  autoParam_inst1
+    (LT_lt_inst1 (optParam Nat (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1)))
+       instLTNat
+       (OfNat_ofNat_inst1
+          (optParam Nat (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1))) 0
+          (instOfNatNat 0))
+       step)
+    List_nodup_range'__auto_1 ->
+  List_Nodup_inst1 Nat (List_range' s n step)
+List_Perm_foldr_eq_inst3 :
+  forall (_UU03b1_ _UU03b2_ : Type) (f : _UU03b1_ -> _UU03b2_ -> _UU03b2_)
+    (l_UU2081_ l_UU2082_ : List_inst1 _UU03b1_),
+  LeftCommutative _UU03b1_ _UU03b2_ f ->
+  List_Perm_inst1 _UU03b1_ l_UU2081_ l_UU2082_ ->
+  forall b : _UU03b2_,
+  eq (List_foldr_inst3 _UU03b1_ _UU03b2_ f b l_UU2081_)
+    (List_foldr_inst3 _UU03b1_ _UU03b2_ f b l_UU2082_)
+List_Perm_eqv_inst1 :
+  forall _UU03b1_ : Type,
+  Equivalence (List_inst1 _UU03b1_) (List_Perm_inst1 _UU03b1_)
+Finset_instSetLike__proof_1_inst1 :
+  forall (_UU03b1_ : Type) (s_UU2081_ s_UU2082_ : Finset_inst1 _UU03b1_),
+  eq
+    (Set_ofPred_inst1 _UU03b1_
+       (fun a : _UU03b1_ =>
+        Membership_mem_inst3 _UU03b1_ (Multiset_inst1 _UU03b1_)
+          (Multiset_instMembership_inst1 _UU03b1_)
+          (Finset_val_inst1 _UU03b1_ s_UU2081_) a))
+    (Set_ofPred_inst1 _UU03b1_
+       (fun a : _UU03b1_ =>
+        Membership_mem_inst3 _UU03b1_ (Multiset_inst1 _UU03b1_)
+          (Multiset_instMembership_inst1 _UU03b1_)
+          (Finset_val_inst1 _UU03b1_ s_UU2082_) a)) ->
+  eq s_UU2081_ s_UU2082_
+BitVec_ofNat__proof_1 :
+  forall n : Nat,
+  LT_lt_inst1 Nat instLTNat (OfNat_ofNat_inst1 Nat 0 (instOfNatNat 0))
+    (HPow_hPow_inst7 Nat Nat Nat
+       (instHPow_inst3 Nat Nat (instPowNat_inst1 Nat instNatPowNat))
+       (OfNat_ofNat_inst1 Nat 2 (instOfNatNat 2)) n)
+AddMonoid_zero_add_inst1 :
+  forall (M : Type) (self : AddMonoid_inst1 M) (a : M),
+  eq
+    (HAdd_hAdd_inst7 M M M
+       (instHAdd_inst1 M
+          (AddSemigroup_toAdd_inst1 M (AddMonoid_toAddSemigroup_inst1 M self)))
+       (OfNat_ofNat_inst1 M 0
+          (Zero_toOfNat0_inst1 M (AddMonoid_toZero_inst1 M self)))
+       a)
+    a
+AddMonoid_add_zero_inst1 :
+  forall (M : Type) (self : AddMonoid_inst1 M) (a : M),
+  eq
+    (HAdd_hAdd_inst7 M M M
+       (instHAdd_inst1 M
+          (AddSemigroup_toAdd_inst1 M (AddMonoid_toAddSemigroup_inst1 M self)))
+       a
+       (OfNat_ofNat_inst1 M 0
+          (Zero_toOfNat0_inst1 M (AddMonoid_toZero_inst1 M self))))
+    a
+Closed under the global context
+Axioms:
+eq relies on definitional UIP.
+True relies on definitional UIP.
+HEq_inst1 relies on definitional UIP.
+noConfusion_of_Nat :
+  forall (_UU03b1_ : Type) (f : _UU03b1_ -> Nat) (a b : _UU03b1_),
+  eq a b ->
+  Bool_recl (fun _ : Bool => SProp) False True (Nat_beq (f a) (f b))
+PrimInt63.lsr : PrimInt63.int -> PrimInt63.int -> PrimInt63.int
+PrimInt63.land : PrimInt63.int -> PrimInt63.int -> PrimInt63.int
+PrimInt63.int : Set
+PrimInt63.eqb : PrimInt63.int -> PrimInt63.int -> bool
+Prosa_Util_Sum_big_nat_eq0 :
+  forall (m n : Nat) (F : Nat -> Nat),
+  Iff
+    (eq
+       (Finset_sum_inst3 Nat Nat Nat_instAddCommMonoid
+          (Finset_Ico_inst1 Nat Nat_instPreorder Nat_instLocallyFiniteOrder m
+             n)
+          (fun n____at___Init_Prelude427477602__hygCtx__hyg40 : Nat =>
+           F n____at___Init_Prelude427477602__hygCtx__hyg40))
+       (OfNat_ofNat_inst1 Nat 0 (instOfNatNat 0)))
+    (forall i : Nat,
+     And (LE_le_inst1 Nat instLENat m i) (LT_lt_inst1 Nat instLTNat i n) ->
+     eq (F i) (OfNat_ofNat_inst1 Nat 0 (instOfNatNat 0)))
+Nat_zero_mul :
+  forall n : Nat,
+  eq
+    (HMul_hMul_inst7 Nat Nat Nat (instHMul_inst1 Nat instMulNat)
+       (OfNat_ofNat_inst1 Nat 0 (instOfNatNat 0)) n)
+    (OfNat_ofNat_inst1 Nat 0 (instOfNatNat 0))
+Nat_zero_add :
+  forall n : Nat,
+  eq
+    (HAdd_hAdd_inst7 Nat Nat Nat (instHAdd_inst1 Nat instAddNat)
+       (OfNat_ofNat_inst1 Nat 0 (instOfNatNat 0)) n)
+    n
+Nat_succ_mul :
+  forall n m : Nat,
+  eq
+    (HMul_hMul_inst7 Nat Nat Nat (instHMul_inst1 Nat instMulNat) 
+       (Nat_succ n) m)
+    (HAdd_hAdd_inst7 Nat Nat Nat (instHAdd_inst1 Nat instAddNat)
+       (HMul_hMul_inst7 Nat Nat Nat (instHMul_inst1 Nat instMulNat) n m) m)
+Nat_not_le_of_not_ble_eq_true :
+  forall n m : Nat,
+  Not (eq (Nat_ble n m) Bool_true) -> Not (LE_le_inst1 Nat instLENat n m)
+Nat_ne_of_beq_eq_false :
+  forall n m : Nat, eq (Nat_beq n m) Bool_false -> Not (eq n m)
+Nat_mod_lt :
+  forall x y : Nat,
+  LT_lt_inst1 Nat instLTNat (OfNat_ofNat_inst1 Nat 0 (instOfNatNat 0)) y ->
+  LT_lt_inst1 Nat instLTNat
+    (HMod_hMod_inst7 Nat Nat Nat (instHMod_inst1 Nat Nat_instMod) x y) y
+Nat_lt_succ_self : forall n : Nat, LT_lt_inst1 Nat instLTNat n (Nat_succ n)
+Nat_lt_iff_le_and_not_ge :
+  forall m n : Nat,
+  Iff (LT_lt_inst1 Nat instLTNat m n)
+    (And (LE_le_inst1 Nat instLENat m n)
+       (Not (LE_le_inst1 Nat instLENat n m)))
+Nat_le_trans :
+  forall n m k : Nat,
+  LE_le_inst1 Nat instLENat n m ->
+  LE_le_inst1 Nat instLENat m k -> LE_le_inst1 Nat instLENat n k
+Nat_le_total :
+  forall m n : Nat,
+  Or (LE_le_inst1 Nat instLENat m n) (LE_le_inst1 Nat instLENat n m)
+Nat_le_refl : forall n : Nat, LE_le_inst1 Nat instLENat n n
+Nat_le_of_ble_eq_true :
+  forall n m : Nat,
+  eq (Nat_ble n m) Bool_true -> LE_le_inst1 Nat instLENat n m
+Nat_le_antisymm :
+  forall n m : Nat,
+  LE_le_inst1 Nat instLENat n m -> LE_le_inst1 Nat instLENat m n -> eq n m
+Nat_instLocallyFiniteOrder__proof_9 :
+  forall a b x : Nat,
+  Iff
+    (Membership_mem_inst3 Nat (Finset_inst1 Nat)
+       (SetLike_instMembership_inst3 (Finset_inst1 Nat) Nat
+          (Finset_instSetLike_inst1 Nat))
+       (Finset_mk_inst1 Nat
+          (Multiset_ofList_inst1 Nat
+             (List_range'
+                (HAdd_hAdd_inst7 Nat Nat Nat (instHAdd_inst1 Nat instAddNat)
+                   a (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1)))
+                (HSub_hSub_inst7 Nat Nat Nat (instHSub_inst1 Nat instSubNat)
+                   (HSub_hSub_inst7 Nat Nat Nat
+                      (instHSub_inst1 Nat instSubNat) b a)
+                   (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1)))
+                (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1))))
+          (List_nodup_range'
+             (HAdd_hAdd_inst7 Nat Nat Nat (instHAdd_inst1 Nat instAddNat) a
+                (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1)))
+             (HSub_hSub_inst7 Nat Nat Nat (instHSub_inst1 Nat instSubNat)
+                (HSub_hSub_inst7 Nat Nat Nat (instHSub_inst1 Nat instSubNat)
+                   b a)
+                (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1)))
+             (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1))
+             Nat_instLocallyFiniteOrder__proof_1))
+       x)
+    (And (LT_lt_inst1 Nat (Preorder_toLT_inst1 Nat Nat_instPreorder) a x)
+       (LT_lt_inst1 Nat (Preorder_toLT_inst1 Nat Nat_instPreorder) x b))
+Nat_instLocallyFiniteOrder__proof_7 :
+  forall a b x : Nat,
+  Iff
+    (Membership_mem_inst3 Nat (Finset_inst1 Nat)
+       (SetLike_instMembership_inst3 (Finset_inst1 Nat) Nat
+          (Finset_instSetLike_inst1 Nat))
+       (Finset_mk_inst1 Nat
+          (Multiset_ofList_inst1 Nat
+             (List_range'
+                (HAdd_hAdd_inst7 Nat Nat Nat (instHAdd_inst1 Nat instAddNat)
+                   a (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1)))
+                (HSub_hSub_inst7 Nat Nat Nat (instHSub_inst1 Nat instSubNat)
+                   b a)
+                (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1))))
+          (List_nodup_range'
+             (HAdd_hAdd_inst7 Nat Nat Nat (instHAdd_inst1 Nat instAddNat) a
+                (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1)))
+             (HSub_hSub_inst7 Nat Nat Nat (instHSub_inst1 Nat instSubNat) b a)
+             (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1))
+             Nat_instLocallyFiniteOrder__proof_1))
+       x)
+    (And (LT_lt_inst1 Nat (Preorder_toLT_inst1 Nat Nat_instPreorder) a x)
+       (LE_le_inst1 Nat (Preorder_toLE_inst1 Nat Nat_instPreorder) x b))
+Nat_instLocallyFiniteOrder__proof_5 :
+  forall a b x : Nat,
+  Iff
+    (Membership_mem_inst3 Nat (Finset_inst1 Nat)
+       (SetLike_instMembership_inst3 (Finset_inst1 Nat) Nat
+          (Finset_instSetLike_inst1 Nat))
+       (Finset_mk_inst1 Nat
+          (Multiset_ofList_inst1 Nat
+             (List_range' a
+                (HSub_hSub_inst7 Nat Nat Nat (instHSub_inst1 Nat instSubNat)
+                   b a)
+                (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1))))
+          (List_nodup_range' a
+             (HSub_hSub_inst7 Nat Nat Nat (instHSub_inst1 Nat instSubNat) b a)
+             (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1))
+             Nat_instLocallyFiniteOrder__proof_1))
+       x)
+    (And (LE_le_inst1 Nat (Preorder_toLE_inst1 Nat Nat_instPreorder) a x)
+       (LT_lt_inst1 Nat (Preorder_toLT_inst1 Nat Nat_instPreorder) x b))
+Nat_instLocallyFiniteOrder__proof_3 :
+  forall a b x : Nat,
+  Iff
+    (Membership_mem_inst3 Nat (Finset_inst1 Nat)
+       (SetLike_instMembership_inst3 (Finset_inst1 Nat) Nat
+          (Finset_instSetLike_inst1 Nat))
+       (Finset_mk_inst1 Nat
+          (Multiset_ofList_inst1 Nat
+             (List_range' a
+                (HSub_hSub_inst7 Nat Nat Nat (instHSub_inst1 Nat instSubNat)
+                   (HAdd_hAdd_inst7 Nat Nat Nat
+                      (instHAdd_inst1 Nat instAddNat) b
+                      (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1)))
+                   a)
+                (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1))))
+          (List_nodup_range' a
+             (HSub_hSub_inst7 Nat Nat Nat (instHSub_inst1 Nat instSubNat)
+                (HAdd_hAdd_inst7 Nat Nat Nat (instHAdd_inst1 Nat instAddNat)
+                   b (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1)))
+                a)
+             (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1))
+             Nat_instLocallyFiniteOrder__proof_1))
+       x)
+    (And (LE_le_inst1 Nat (Preorder_toLE_inst1 Nat Nat_instPreorder) a x)
+       (LE_le_inst1 Nat (Preorder_toLE_inst1 Nat Nat_instPreorder) x b))
+Nat_instLocallyFiniteOrder__proof_13 :
+  forall a b : Nat,
+  List_Nodup_inst1 Nat
+    (List_range'
+       (HAdd_hAdd_inst7 Nat Nat Nat (instHAdd_inst1 Nat instAddNat) a
+          (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1)))
+       (HSub_hSub_inst7 Nat Nat Nat (instHSub_inst1 Nat instSubNat)
+          (HSub_hSub_inst7 Nat Nat Nat (instHSub_inst1 Nat instSubNat) b a)
+          (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1)))
+       (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1)))
+Nat_instLocallyFiniteOrder__proof_12 :
+  forall a b : Nat,
+  List_Nodup_inst1 Nat
+    (List_range'
+       (HAdd_hAdd_inst7 Nat Nat Nat (instHAdd_inst1 Nat instAddNat) a
+          (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1)))
+       (HSub_hSub_inst7 Nat Nat Nat (instHSub_inst1 Nat instSubNat) b a)
+       (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1)))
+Nat_instLocallyFiniteOrder__proof_11 :
+  forall a b : Nat,
+  List_Nodup_inst1 Nat
+    (List_range' a
+       (HSub_hSub_inst7 Nat Nat Nat (instHSub_inst1 Nat instSubNat) b a)
+       (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1)))
+Nat_instLocallyFiniteOrder__proof_10 :
+  forall a b : Nat,
+  List_Nodup_inst1 Nat
+    (List_range' a
+       (HSub_hSub_inst7 Nat Nat Nat (instHSub_inst1 Nat instSubNat)
+          (HAdd_hAdd_inst7 Nat Nat Nat (instHAdd_inst1 Nat instAddNat) b
+             (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1)))
+          a)
+       (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1)))
+Nat_instLocallyFiniteOrder__proof_1 :
+  LT_lt_inst1 (optParam Nat (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1)))
+    instLTNat
+    (OfNat_ofNat_inst1
+       (optParam Nat (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1))) 0
+       (instOfNatNat 0))
+    (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1))
+Nat_instLinearOrder__proof_3 :
+  forall a b : Nat,
+  eq (Ord_compare_inst1 Nat instOrdNat a b)
+    (compareOfLessAndEq_inst1 Nat a b (LT_mk_inst1 Nat Nat_lt)
+       (inferInstance (DecidableLT_inst1 Nat (LT_mk_inst1 Nat Nat_lt))
+          Nat_decLt a b)
+       (inferInstance (DecidableEq Nat) instDecidableEqNat))
+Nat_instLinearOrder__proof_2 :
+  forall a b : Nat,
+  eq (Max_max_inst1 Nat Nat_instMax a b)
+    (ite Nat (a <= b)
+       (inferInstance (DecidableLE_inst1 Nat (LE_mk_inst1 Nat Nat_le))
+          Nat_decLe a b)
+       b a)
+Nat_instLinearOrder__proof_1 :
+  forall a b : Nat,
+  eq (Min_min_inst1 Nat instMinNat a b)
+    (ite Nat (a <= b)
+       (inferInstance (DecidableLE_inst1 Nat (LE_mk_inst1 Nat Nat_le))
+          Nat_decLe a b)
+       a b)
+Nat_instAddCancelCommMonoid__proof_1 :
+  IsLeftCancelAdd_inst1 Nat (Add_mk_inst1 Nat Nat_add)
+Nat_eq_of_beq_eq_true :
+  forall n m : Nat, eq (Nat_beq n m) Bool_true -> eq n m
+Nat_div_rec_fuel_lemma :
+  forall x y fuel : Nat,
+  LT_lt_inst1 Nat instLTNat (OfNat_ofNat_inst1 Nat 0 (instOfNatNat 0)) y ->
+  LE_le_inst1 Nat instLENat y x ->
+  LT_lt_inst1 Nat instLTNat x
+    (HAdd_hAdd_inst7 Nat Nat Nat (instHAdd_inst1 Nat instAddNat) fuel
+       (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1))) ->
+  LT_lt_inst1 Nat instLTNat
+    (HSub_hSub_inst7 Nat Nat Nat (instHSub_inst1 Nat instSubNat) x y) fuel
+Nat_add_zero :
+  forall n : Nat,
+  eq
+    (HAdd_hAdd_inst7 Nat Nat Nat (instHAdd_inst1 Nat instAddNat) n
+       (OfNat_ofNat_inst1 Nat 0 (instOfNatNat 0)))
+    n
+Nat_add_comm :
+  forall n m : Nat,
+  eq (HAdd_hAdd_inst7 Nat Nat Nat (instHAdd_inst1 Nat instAddNat) n m)
+    (HAdd_hAdd_inst7 Nat Nat Nat (instHAdd_inst1 Nat instAddNat) m n)
+Nat_add_assoc :
+  forall n m k : Nat,
+  eq
+    (HAdd_hAdd_inst7 Nat Nat Nat (instHAdd_inst1 Nat instAddNat)
+       (HAdd_hAdd_inst7 Nat Nat Nat (instHAdd_inst1 Nat instAddNat) n m) k)
+    (HAdd_hAdd_inst7 Nat Nat Nat (instHAdd_inst1 Nat instAddNat) n
+       (HAdd_hAdd_inst7 Nat Nat Nat (instHAdd_inst1 Nat instAddNat) m k))
+Multiset_sum__proof_1_inst1 :
+  forall (M : Type)
+    (inst____at___Mathlib_Algebra_BigOperators_Group_Multiset_Defs1557692325__hygCtx__hyg6 : 
+     AddCommMonoid_inst1 M),
+  LeftCommutative M M
+    (fun
+       x1____at___Mathlib_Algebra_BigOperators_Group_Multiset_Defs1557692325__hygCtx__hyg32
+        x2____at___Mathlib_Algebra_BigOperators_Group_Multiset_Defs1557692325__hygCtx__hyg32 : M =>
+     HAdd_hAdd_inst7 M M M
+       (instHAdd_inst1 M
+          (AddZero_toAdd_inst1 M
+             (AddZeroClass_toAddZero_inst1 M
+                (AddMonoid_toAddZeroClass_inst1 M
+                   (AddCommMonoid_toAddMonoid_inst1 M
+                      inst____at___Mathlib_Algebra_BigOperators_Group_Multiset_Defs1557692325__hygCtx__hyg6)))))
+       x1____at___Mathlib_Algebra_BigOperators_Group_Multiset_Defs1557692325__hygCtx__hyg32
+       x2____at___Mathlib_Algebra_BigOperators_Group_Multiset_Defs1557692325__hygCtx__hyg32)
+Multiset_map__proof_1_inst3 :
+  forall (_UU03b1_ _UU03b2_ : Type) (f : _UU03b1_ -> _UU03b2_)
+    (_l_UU2081_ _l_UU2082_ : List_inst1 _UU03b1_),
+  Setoid_r (List_inst1 _UU03b1_) (List_isSetoid_inst1 _UU03b1_) _l_UU2081_
+    _l_UU2082_ ->
+  eq
+    (Quot.mk (Setoid_r (List_inst1 _UU03b2_) (List_isSetoid_inst1 _UU03b2_))
+       (List_map_inst3 _UU03b1_ _UU03b2_ f _l_UU2081_))
+    (Quot.mk (Setoid_r (List_inst1 _UU03b2_) (List_isSetoid_inst1 _UU03b2_))
+       (List_map_inst3 _UU03b1_ _UU03b2_ f _l_UU2082_))
+Multiset_Nodup__proof_1_inst1 :
+  forall (_UU03b1_ : Type)
+    (x____at___Mathlib_Data_Multiset_Defs3805720009__hygCtx__hyg13
+     x____at___Mathlib_Data_Multiset_Defs3805720009__hygCtx__hyg15 : 
+     List_inst1 _UU03b1_),
+  Setoid_r (List_inst1 _UU03b1_) (List_isSetoid_inst1 _UU03b1_)
+    x____at___Mathlib_Data_Multiset_Defs3805720009__hygCtx__hyg13
+    x____at___Mathlib_Data_Multiset_Defs3805720009__hygCtx__hyg15 ->
+  eq
+    (List_Nodup_inst1 _UU03b1_
+       x____at___Mathlib_Data_Multiset_Defs3805720009__hygCtx__hyg13)
+    (List_Nodup_inst1 _UU03b1_
+       x____at___Mathlib_Data_Multiset_Defs3805720009__hygCtx__hyg15)
+Multiset_Mem__proof_1_inst1 :
+  forall (_UU03b1_ : Type) (a : _UU03b1_)
+    (l_UU2081_ l_UU2082_ : List_inst1 _UU03b1_),
+  List_Perm_inst1 _UU03b1_ l_UU2081_ l_UU2082_ ->
+  eq
+    (Membership_mem_inst3 _UU03b1_ (List_inst1 _UU03b1_)
+       (List_instMembership_inst1 _UU03b1_) l_UU2081_ a)
+    (Membership_mem_inst3 _UU03b1_ (List_inst1 _UU03b1_)
+       (List_instMembership_inst1 _UU03b1_) l_UU2082_ a)
+List_nodup_range' :
+  forall (s n : Nat)
+    (step : optParam Nat (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1))),
+  autoParam_inst1
+    (LT_lt_inst1 (optParam Nat (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1)))
+       instLTNat
+       (OfNat_ofNat_inst1
+          (optParam Nat (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1))) 0
+          (instOfNatNat 0))
+       step)
+    List_nodup_range'__auto_1 ->
+  List_Nodup_inst1 Nat (List_range' s n step)
+List_Perm_foldr_eq_inst3 :
+  forall (_UU03b1_ _UU03b2_ : Type) (f : _UU03b1_ -> _UU03b2_ -> _UU03b2_)
+    (l_UU2081_ l_UU2082_ : List_inst1 _UU03b1_),
+  LeftCommutative _UU03b1_ _UU03b2_ f ->
+  List_Perm_inst1 _UU03b1_ l_UU2081_ l_UU2082_ ->
+  forall b : _UU03b2_,
+  eq (List_foldr_inst3 _UU03b1_ _UU03b2_ f b l_UU2081_)
+    (List_foldr_inst3 _UU03b1_ _UU03b2_ f b l_UU2082_)
+List_Perm_eqv_inst1 :
+  forall _UU03b1_ : Type,
+  Equivalence (List_inst1 _UU03b1_) (List_Perm_inst1 _UU03b1_)
+Finset_instSetLike__proof_1_inst1 :
+  forall (_UU03b1_ : Type) (s_UU2081_ s_UU2082_ : Finset_inst1 _UU03b1_),
+  eq
+    (Set_ofPred_inst1 _UU03b1_
+       (fun a : _UU03b1_ =>
+        Membership_mem_inst3 _UU03b1_ (Multiset_inst1 _UU03b1_)
+          (Multiset_instMembership_inst1 _UU03b1_)
+          (Finset_val_inst1 _UU03b1_ s_UU2081_) a))
+    (Set_ofPred_inst1 _UU03b1_
+       (fun a : _UU03b1_ =>
+        Membership_mem_inst3 _UU03b1_ (Multiset_inst1 _UU03b1_)
+          (Multiset_instMembership_inst1 _UU03b1_)
+          (Finset_val_inst1 _UU03b1_ s_UU2082_) a)) ->
+  eq s_UU2081_ s_UU2082_
+BitVec_ofNat__proof_1 :
+  forall n : Nat,
+  LT_lt_inst1 Nat instLTNat (OfNat_ofNat_inst1 Nat 0 (instOfNatNat 0))
+    (HPow_hPow_inst7 Nat Nat Nat
+       (instHPow_inst3 Nat Nat (instPowNat_inst1 Nat instNatPowNat))
+       (OfNat_ofNat_inst1 Nat 2 (instOfNatNat 2)) n)
+AddMonoid_zero_add_inst1 :
+  forall (M : Type) (self : AddMonoid_inst1 M) (a : M),
+  eq
+    (HAdd_hAdd_inst7 M M M
+       (instHAdd_inst1 M
+          (AddSemigroup_toAdd_inst1 M (AddMonoid_toAddSemigroup_inst1 M self)))
+       (OfNat_ofNat_inst1 M 0
+          (Zero_toOfNat0_inst1 M (AddMonoid_toZero_inst1 M self)))
+       a)
+    a
+AddMonoid_add_zero_inst1 :
+  forall (M : Type) (self : AddMonoid_inst1 M) (a : M),
+  eq
+    (HAdd_hAdd_inst7 M M M
+       (instHAdd_inst1 M
+          (AddSemigroup_toAdd_inst1 M (AddMonoid_toAddSemigroup_inst1 M self)))
+       a
+       (OfNat_ofNat_inst1 M 0
+          (Zero_toOfNat0_inst1 M (AddMonoid_toZero_inst1 M self))))
+    a

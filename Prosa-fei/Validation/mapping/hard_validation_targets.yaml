@@ -12,10 +12,36 @@ targets:
     lean_export_mode: statement_only
     source_acquisition: {mode: auto_extract, source_commit: 414e66760333eaa4ef78c685bcf53291c527a548, source_hash: f1495cda2174236ec363a88811e89998479176ea574d0f7f0d8643cd274114e1}
     dependencies: [finite_nat_interval_bridge, finite_nat_sum_bridge, nat_order_bridge, PropSPropBridge]
-    certificate: big_nat_eq0_parametric_certificate
-    assumptions: prop_sprop_trusted_elim, importer definitional UIP, statement-only imported theorem dependencies; FiniteNatSumValueBridge remains a certificate premise
-    status: PARAMETRICALLY_CERTIFIED
-    reason: full logical structure is kernel-checked against the actual imported theorem type, conditional on one explicit reusable interval-sum value bridge; sum-equals-one mutation is rejected
+    certificate: big_nat_eq0_closed_certificate
+    assumptions: prop_sprop_trusted_elim, prop_sprop_trusted_eq_intro, importer definitional UIP, statement-only imported theorem dependencies
+    status: CERTIFIED_WITH_PROP_SPROP_BRIDGE
+    reason: the actual imported Finset.Ico/Finset.sum value is compositionally related to MathComp bigop by finite_nat_sum_value_bridge_closed; no validation-specific semantic premise remains; sum-equals-one mutation is rejected
+  sum_of_ones:
+    rocq_source_file: util/sum.v
+    rocq_declaration: prosa.util.sum.sum_of_ones
+    lean_source_file: Prosa/Util/Sum.lean
+    lean_declaration: Prosa.Util.Sum.sum_of_ones
+    kind: theorem
+    lean_export_mode: statement_only
+    source_acquisition: {mode: auto_extract, source_commit: 414e66760333eaa4ef78c685bcf53291c527a548, source_hash: 1bee82e32e536ca2e790e6a09c2785f90ebc61783eb388111d65a745139f918a}
+    dependencies: [finite_nat_sum_bridge, nat_add_bridge, PropSPropBridge]
+    certificate: sum_of_ones_statement_certificate
+    assumptions: prop_sprop_trusted_eq_intro, prop_sprop_trusted_elim, importer definitional UIP, statement-only imported theorem dependencies
+    status: CERTIFIED_WITH_PROP_SPROP_BRIDGE
+    reason: bidirectional statement correspondence reuses the closed actual Finset.Ico/Finset.sum bridge and Nat addition; no validation-specific semantic premise remains
+  sum_le_summation_range:
+    rocq_source_file: util/sum.v
+    rocq_declaration: prosa.util.sum.sum_le_summation_range
+    lean_source_file: Prosa/Util/Sum.lean
+    lean_declaration: Prosa.Util.Sum.sum_le_summation_range
+    kind: theorem
+    lean_export_mode: statement_only
+    source_acquisition: {mode: auto_extract, source_commit: 414e66760333eaa4ef78c685bcf53291c527a548, source_hash: 57abcd9d4768e376b9d5198b19b2af15c27577822ac9395cc64667c85c9b4c80}
+    dependencies: [finite_nat_sum_bridge, nat_add_bridge, nat_order_bridge, PropSPropBridge]
+    certificate: sum_le_summation_range_statement_certificate
+    assumptions: prop_sprop_trusted_exists_intro, prop_sprop_trusted_eq_intro, prop_sprop_trusted_elim, importer definitional UIP, statement-only imported theorem dependencies
+    status: CERTIFIED_WITH_PROP_SPROP_BRIDGE
+    reason: bidirectional statement correspondence reuses the closed finite-sum value bridge, Nat order/addition, canonical function relation, and explicit Prop/SProp witness transfer; no validation-specific semantic premise remains
   sum_diff:
     rocq_source_file: util/sum.v
     rocq_declaration: prosa.util.sum.sum_diff
