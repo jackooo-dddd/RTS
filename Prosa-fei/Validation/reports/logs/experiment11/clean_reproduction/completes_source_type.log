@@ -1,0 +1,45 @@
+File "./CompletesAtSourceFidelity.v", line 1, characters 0-43:
+Warning: Notation "_ + _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./CompletesAtSourceFidelity.v", line 1, characters 0-43:
+Warning: Notation "_ - _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./CompletesAtSourceFidelity.v", line 1, characters 0-43:
+Warning: Notation "_ <= _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./CompletesAtSourceFidelity.v", line 1, characters 0-43:
+Warning: Notation "_ < _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./CompletesAtSourceFidelity.v", line 1, characters 0-43:
+Warning: Notation "_ >= _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./CompletesAtSourceFidelity.v", line 1, characters 0-43:
+Warning: Notation "_ > _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./CompletesAtSourceFidelity.v", line 1, characters 0-43:
+Warning: Notation "_ <= _ <= _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./CompletesAtSourceFidelity.v", line 1, characters 0-43:
+Warning: Notation "_ < _ <= _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./CompletesAtSourceFidelity.v", line 1, characters 0-43:
+Warning: Notation "_ <= _ < _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./CompletesAtSourceFidelity.v", line 1, characters 0-43:
+Warning: Notation "_ < _ < _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./CompletesAtSourceFidelity.v", line 1, characters 0-43:
+Warning: Notation "_ * _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+@completes_at
+     : forall (Job : JobType) (PState : ProcessorState Job),
+       schedule PState -> JobCost Job -> Job -> instant -> bool
+completes_at =
+fun (Job : JobType) (PState : ProcessorState Job) 
+  (sched : schedule PState) (H : JobCost Job) (j : Job) 
+  (t : instant) =>
+(~~ completed_by sched j t.-1 || (t == 0)) && completed_by sched j t
+     : forall {Job : JobType} {PState : ProcessorState Job},
+       schedule PState -> JobCost Job -> Job -> instant -> bool
+
+Arguments completes_at {Job PState} sched {H} j t

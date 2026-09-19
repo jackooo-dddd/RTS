@@ -1,0 +1,69 @@
+File "./FalsePositiveAuditFixtures.v", line 24, characters 17-54:
+Warning: This interactive proof is not started by the "Proof" command.
+[missing-proof-command,fragile,default]
+AUDIT_BEGIN semantic_premise
+premise_certificate =
+fun (P : Prop) (Q : SProp) (semantic_correspondence : PropSPropRel P Q) =>
+semantic_correspondence
+     : forall (P : Prop) (Q : SProp), PropSPropRel P Q -> PropSPropRel P Q
+
+Arguments premise_certificate (P Q)%_type_scope semantic_correspondence
+Closed under the global context
+File "./FalsePositiveAuditFixtures.v", line 27, characters 17-52:
+Warning: This interactive proof is not started by the "Proof" command.
+[missing-proof-command,fragile,default]
+AUDIT_END semantic_premise
+File "./FalsePositiveAuditFixtures.v", line 29, characters 17-48:
+Warning: This interactive proof is not started by the "Proof" command.
+[missing-proof-command,fragile,default]
+AUDIT_BEGIN fake_axiom
+fake_axiom_certificate = fake_semantic_axiom
+     : True
+Axioms:
+fake_semantic_axiom : True
+File "./FalsePositiveAuditFixtures.v", line 32, characters 17-46:
+Warning: This interactive proof is not started by the "Proof" command.
+[missing-proof-command,fragile,default]
+AUDIT_END fake_axiom
+File "./FalsePositiveAuditFixtures.v", line 34, characters 17-53:
+Warning: This interactive proof is not started by the "Proof" command.
+[missing-proof-command,fragile,default]
+AUDIT_BEGIN circular_target
+circular_target_certificate =
+Prosa_Util_Sum_big_nat_eq0
+     : forall (m n : Lean.Nat) (F : Lean.Nat -> Lean.Nat),
+       Iff
+         (Lean.eq
+            (List_foldr_inst3 Lean.Nat Lean.Nat Lean.Nat_add Lean.Nat_zero
+               (List_map_inst3 Lean.Nat Lean.Nat
+                  (fun
+                     n____at___Init_Prelude427477602__hygCtx__hyg40 : Lean.Nat =>
+                   F n____at___Init_Prelude427477602__hygCtx__hyg40)
+                  (List_range' m (Nat_sub n m) (Lean.Nat_succ Lean.Nat_zero))))
+            Lean.Nat_zero)
+         (forall i : Lean.Nat,
+          Lean.And (LE_le_inst1 Lean.Nat instLENat m i)
+            (LT_lt_inst1 Lean.Nat instLTNat i n) ->
+          Lean.eq (F i) Lean.Nat_zero)
+
+Arguments circular_target_certificate m n F%_function_scope
+Axioms:
+Lean.eq relies on definitional UIP.
+Prosa_Util_Sum_big_nat_eq0 :
+  forall (m n : Lean.Nat) (F : Lean.Nat -> Lean.Nat),
+  Iff
+    (Lean.eq
+       (List_foldr_inst3 Lean.Nat Lean.Nat Lean.Nat_add Lean.Nat_zero
+          (List_map_inst3 Lean.Nat Lean.Nat
+             (fun n____at___Init_Prelude427477602__hygCtx__hyg40 : Lean.Nat =>
+              F n____at___Init_Prelude427477602__hygCtx__hyg40)
+             (List_range' m (Nat_sub n m) (Lean.Nat_succ Lean.Nat_zero))))
+       Lean.Nat_zero)
+    (forall i : Lean.Nat,
+     Lean.And (LE_le_inst1 Lean.Nat instLENat m i)
+       (LT_lt_inst1 Lean.Nat instLTNat i n) ->
+     Lean.eq (F i) Lean.Nat_zero)
+File "./FalsePositiveAuditFixtures.v", line 37, characters 17-51:
+Warning: This interactive proof is not started by the "Proof" command.
+[missing-proof-command,fragile,default]
+AUDIT_END circular_target

@@ -46,6 +46,22 @@ noncomputable def completes_at_corrected
     (j : Job) (t : instant) : Prop :=
   (¬ completed_by sched j (t - 1) ∨ t = 0) ∧ completed_by sched j t
 
+/-- A small semantic projection of the corrected definition.  It separates
+the logical shape of completion-at-time from the implementation of
+`completed_by`; the theorem below ties it back to the actual corrected
+fixture by definitional equality. -/
+def completes_at_formula (completed : Nat → Prop) (t : Nat) : Prop :=
+  (¬ completed (t - 1) ∨ t = 0) ∧ completed t
+
+theorem completes_at_corrected_formula_defeq
+    {Job : JobType} {PState : Type _}
+    [ProcessorState Job PState]
+    (sched : schedule PState)
+    [JobCost Job] [JobDeadline Job] [JobArrival Job]
+    (j : Job) (t : instant) :
+    completes_at_corrected sched j t =
+      completes_at_formula (completed_by sched j) t := rfl
+
 def corrected_completes_at_zero : Prop :=
   completes_at_corrected unitSchedule () 0
 

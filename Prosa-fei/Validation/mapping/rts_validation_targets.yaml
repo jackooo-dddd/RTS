@@ -230,3 +230,24 @@ targets:
     assumptions: importer definitional UIP only; no PropSPropFoundation.interpret_strict and no semantic premise
     status: CERTIFIED
     reason: the same zero-cost time-zero specification rejected production and is bidirectionally related to the corrected validation-only fixture
+  completes_at_corrected_generic:
+    rocq: prosa.behavior.service.completes_at
+    lean: Prosa.Validation.CompletesAt.completes_at_corrected
+    rocq_source_file: behavior/service.v
+    rocq_declaration: prosa.behavior.service.completes_at
+    lean_source_file: Validation/lean_fixtures/completes_at_corrected/CompletesAtCorrected.lean
+    lean_declaration: Prosa.Validation.CompletesAt.completes_at_corrected
+    imported: Prosa_Validation_CompletesAt_completes_at_formula
+    kind: definition
+    lean_export_mode: definition_body_plus_compiled_rfl_projection_guard
+    source_acquisition:
+      mode: direct_import
+      source_commit: 414e66760333eaa4ef78c685bcf53291c527a548
+      source_hash: 80487d6bc2e7e4de763c5d67c7a42f67fe524a910db3719043d596710929e76a
+    validation_fixture: Validation/lean_fixtures/completes_at_corrected/CompletesAtCorrected.lean
+    projection_guard: Prosa.Validation.CompletesAt.completes_at_corrected_formula_defeq
+    dependencies: [official_completes_at, corrected_fixture, completed_by_correspondence, PropSPropFoundation]
+    certificate: official_completes_at_conditional_certificate
+    assumptions: PropSPropFoundation.interpret_strict plus explicit Hcompleted semantic premise
+    status: CONDITIONAL
+    reason: structural correspondence holds for arbitrary jobs, processor states, schedules, costs, and times once pointwise completed_by correspondence is supplied; that service-level dependency is not closed

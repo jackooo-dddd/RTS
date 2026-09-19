@@ -1,0 +1,469 @@
+File "./AssumptionAuditExperiment11Clean.v", line 5, characters 17-49:
+Warning: This interactive proof is not started by the "Proof" command.
+[missing-proof-command,fragile,default]
+AUDIT_BEGIN big_nat_eq0
+big_nat_eq0_closed_certificate =
+fun (m n : nat) (F : nat -> nat) =>
+HardSumCertificate.big_nat_eq0_parametric_certificate m n F
+  (finite_nat_sum_value_bridge_closed m n F)
+     : forall (m n : nat) (F : nat -> nat),
+       PropSPropFoundation.PropSPropRel
+         (HardSumCertificate.source_big_nat_eq0_statement m n F)
+         (HardSumCertificate.imported_big_nat_eq0_statement m n F)
+
+Arguments big_nat_eq0_closed_certificate (m n)%_nat_scope F%_function_scope
+Axioms:
+Lean.eq relies on definitional UIP.
+HardSumCertificate.Sum_STrue relies on definitional UIP.
+PropSPropFoundation.interpret_strict :
+  forall P : Prop, PropSPropFoundation.StrictlyInhabited P -> P
+File "./AssumptionAuditExperiment11Clean.v", line 8, characters 17-47:
+Warning: This interactive proof is not started by the "Proof" command.
+[missing-proof-command,fragile,default]
+AUDIT_END big_nat_eq0
+File "./AssumptionAuditExperiment11Clean.v", line 10, characters 17-60:
+Warning: This interactive proof is not started by the "Proof" command.
+[missing-proof-command,fragile,default]
+AUDIT_BEGIN sum_le_summation_range
+sum_le_summation_range_statement_certificate =
+fun (f : nat -> nat) (t delta : nat) =>
+PropSPropFoundation.prop_sprop_rel_intro
+  (source_sum_le_range_statement f t delta)
+  (imported_sum_le_range_statement f t delta)
+  (fun Hsource : source_sum_le_range_statement f t delta =>
+   (fun
+      HltL : ImportedFiniteNatSumNormalized93.Nat_lt
+               (imported_sum_range_value f t delta)
+               (HardSumCertificate.sum_nat_to_imported delta) =>
+    ssreflect_rw.ssr_have_upoly
+      (PropSPropFoundation.coq_eq_to_imported_eq
+         (imported_sum_range_value f t delta)
+         (HardSumCertificate.sum_nat_to_imported
+            (bigop.bigop 0 (bigop.index_iota t (ssrnat.addn t delta))
+               (fun x : nat => bigop.BigBody x ssrnat.addn true (f x))))
+         (imported_sum_range_value_prop f t delta)
+       :
+       Lean.eq (imported_sum_range_value f t delta)
+         (HardSumCertificate.sum_nat_to_imported
+            (bigop.bigop 0 (bigop.index_iota t (ssrnat.addn t delta))
+               (fun x : nat => bigop.BigBody x ssrnat.addn true (f x)))))
+      (fun
+         Hvalue : Lean.eq (imported_sum_range_value f t delta)
+                    (HardSumCertificate.sum_nat_to_imported
+                       (bigop.bigop 0
+                          (bigop.index_iota t (ssrnat.addn t delta))
+                          (fun x : nat =>
+                           bigop.BigBody x ssrnat.addn true (f x)))) =>
+       ssreflect_rw.ssr_have_upoly
+         (HardSumCertificate.sum_eq_transport
+            (fun z : Lean.Nat =>
+             ImportedFiniteNatSumNormalized93.Nat_lt z
+               (HardSumCertificate.sum_nat_to_imported delta))
+            (imported_sum_range_value f t delta)
+            (HardSumCertificate.sum_nat_to_imported
+               (bigop.bigop 0 (bigop.index_iota t (ssrnat.addn t delta))
+                  (fun x : nat => bigop.BigBody x ssrnat.addn true (f x))))
+            Hvalue HltL
+          :
+          ImportedFiniteNatSumNormalized93.Nat_lt
+            (HardSumCertificate.sum_nat_to_imported
+               (bigop.bigop 0 (bigop.index_iota t (ssrnat.addn t delta))
+                  (fun x : nat => bigop.BigBody x ssrnat.addn true (f x))))
+            (HardSumCertificate.sum_nat_to_imported delta))
+         (fun
+            HltC : ImportedFiniteNatSumNormalized93.Nat_lt
+                     (HardSumCertificate.sum_nat_to_imported
+                        (bigop.bigop 0
+                           (bigop.index_iota t (ssrnat.addn t delta))
+                           (fun x : nat =>
+                            bigop.BigBody x ssrnat.addn true (f x))))
+                     (HardSumCertificate.sum_nat_to_imported delta) =>
+          ssreflect_rw.ssr_have_upoly
+            (PropSPropFoundation.interpret_strict
+               (is_true
+                  (ssrbool.PredOfSimpl.coerce
+                     (ssrnat.ltn
+                        (bigop.bigop 0
+                           (bigop.index_iota t (ssrnat.addn t delta))
+                           (fun x : nat =>
+                            bigop.BigBody x ssrnat.addn true (f x))))
+                     delta))
+               (HardSumCertificate.sum_lt_backward
+                  (bigop.bigop 0 (bigop.index_iota t (ssrnat.addn t delta))
+                     (fun x : nat => bigop.BigBody x ssrnat.addn true (f x)))
+                  delta HltC)
+             :
+             is_true
+               (ssrbool.PredOfSimpl.coerce
+                  (ssrnat.ltn
+                     (bigop.bigop 0
+                        (bigop.index_iota t (ssrnat.addn t delta))
+                        (fun x : nat =>
+                         bigop.BigBody x ssrnat.addn true (f x))))
+                  delta))
+            (fun
+               HltR : is_true
+                        (ssrbool.PredOfSimpl.coerce
+                           (ssrnat.ltn
+                              (bigop.bigop 0
+                                 (bigop.index_iota t (ssrnat.addn t delta))
+                                 (fun x : nat =>
+                                  bigop.BigBody x ssrnat.addn true (f x))))
+                           delta) =>
+             ssreflect_rw.ssr_have_upoly
+               (Hsource HltR
+                :
+                exists x : nat,
+                  is_true
+                    (ssrnat.leq t x &&
+                     ssrbool.PredOfSimpl.coerce (ssrnat.ltn x)
+                       (ssrnat.addn t delta)) /\
+                  f x = 0)
+               (fun
+                  HexR : exists x : nat,
+                           is_true
+                             (ssrnat.leq t x &&
+                              ssrbool.PredOfSimpl.coerce 
+                                (ssrnat.ltn x) (ssrnat.addn t delta)) /\
+                           f x = 0 =>
+                let s :=
+                  PropSPropFoundation.embed_exists nat
+                    (fun x : nat =>
+                     is_true
+                       (ssrnat.leq t x &&
+                        ssrbool.PredOfSimpl.coerce 
+                          (ssrnat.ltn x) (ssrnat.addn t delta)) /\
+                     f x = 0)
+                    HexR
+                  in
+                match s with
+                | PropSPropFoundation.strictly_exists x a =>
+                    (fun (x0 : nat)
+                       (Hx : is_true
+                               (ssrnat.leq t x0 &&
+                                ssrbool.PredOfSimpl.coerce 
+                                  (ssrnat.ltn x0) 
+                                  (ssrnat.addn t delta)) /\
+                             f x0 = 0) =>
+                     ImportedFiniteNatSumNormalized93.Exists_intro Lean.Nat
+                       (fun x1 : Lean.Nat =>
+                        Lean.And
+                          (Lean.Nat_le
+                             (HardSumCertificate.sum_nat_to_imported t) x1)
+                          (Lean.And
+                             (ImportedFiniteNatSumNormalized93.Nat_lt x1
+                                (Lean.Nat_add
+                                   (HardSumCertificate.sum_nat_to_imported t)
+                                   (HardSumCertificate.sum_nat_to_imported
+                                      delta)))
+                             (Lean.eq
+                                (HardSumCertificate.canonical_imported_function
+                                   f x1)
+                                Lean.Nat_zero)))
+                       (HardSumCertificate.sum_nat_to_imported x0)
+                       {|
+                         Lean.left :=
+                           HardSumCertificate.sum_le_forward t x0
+                             (sum_and_left (ssrnat.leq t x0)
+                                (ssrbool.PredOfSimpl.coerce 
+                                   (ssrnat.ltn x0) 
+                                   (ssrnat.addn t delta))
+                                (proj1 Hx));
+                         Lean.right :=
+                           {|
+                             Lean.left :=
+                               HardSumCertificate.sum_eq_transport
+                                 (fun z : Lean.Nat =>
+                                  ImportedFiniteNatSumNormalized93.Nat_lt
+                                    (HardSumCertificate.sum_nat_to_imported
+                                       x0)
+                                    z)
+                                 (HardSumCertificate.sum_nat_to_imported
+                                    (ssrnat.addn t delta))
+                                 (Lean.Nat_add
+                                    (HardSumCertificate.sum_nat_to_imported t)
+                                    (HardSumCertificate.sum_nat_to_imported
+                                       delta))
+                                 (HardSumCertificate.sum_eq_sym
+                                    (Lean.Nat_add
+                                       (HardSumCertificate.sum_nat_to_imported
+                                          t)
+                                       (HardSumCertificate.sum_nat_to_imported
+                                          delta))
+                                    (HardSumCertificate.sum_nat_to_imported
+                                       (ssrnat.addn t delta))
+                                    (imported_add_canonical t delta))
+                                 (HardSumCertificate.sum_lt_forward x0
+                                    (ssrnat.addn t delta)
+                                    (sum_and_right 
+                                       (ssrnat.leq t x0)
+                                       (ssrbool.PredOfSimpl.coerce
+                                          (ssrnat.ltn x0)
+                                          (ssrnat.addn t delta))
+                                       (proj1 Hx)));
+                             Lean.right :=
+                               (fun
+                                  ‗evar_0‗ : Lean.eq
+                                               (HardSumCertificate.sum_nat_to_imported
+                                                 (f x0))
+                                               Lean.Nat_zero =>
+                                eq_sind_r
+                                  (fun ‗pattern_value‗ : nat =>
+                                   Lean.eq
+                                     (HardSumCertificate.sum_nat_to_imported
+                                        (f ‗pattern_value‗))
+                                     Lean.Nat_zero)
+                                  ‗evar_0‗
+                                  (HardSumCertificate.sum_rocq_roundtrip x0))
+                                 ((fun
+                                     ‗evar_0‗ : Lean.eq
+                                                 (HardSumCertificate.sum_nat_to_imported
+                                                 0) Lean.Nat_zero =>
+                                   eq_sind_r
+                                     (fun ‗pattern_value‗ : nat =>
+                                      Lean.eq
+                                        (HardSumCertificate.sum_nat_to_imported
+                                           ‗pattern_value‗)
+                                        Lean.Nat_zero)
+                                     ‗evar_0‗ (proj2 Hx))
+                                    (Lean.eq_refl Lean.Nat_zero))
+                               :
+                               Lean.eq
+                                 (HardSumCertificate.canonical_imported_function
+                                    f
+                                    (HardSumCertificate.sum_nat_to_imported
+                                       x0))
+                                 Lean.Nat_zero
+                           |}
+                       |})
+                      x a
+                end)))))
+   :
+   imported_sum_le_range_statement f t delta)
+  (fun Htarget : imported_sum_le_range_statement f t delta =>
+   PropSPropFoundation.strictly_inhabits
+     ((fun
+         HltR : is_true
+                  (ssrbool.PredOfSimpl.coerce
+                     (ssrnat.ltn
+                        (bigop.bigop 0
+                           (bigop.index_iota t (ssrnat.addn t delta))
+                           (fun x : nat =>
+                            bigop.BigBody x ssrnat.addn true (f x))))
+                     delta) =>
+       ssreflect_rw.ssr_have_upoly
+         (PropSPropFoundation.coq_eq_to_imported_eq
+            (imported_sum_range_value f t delta)
+            (HardSumCertificate.sum_nat_to_imported
+               (bigop.bigop 0 (bigop.index_iota t (ssrnat.addn t delta))
+                  (fun x : nat => bigop.BigBody x ssrnat.addn true (f x))))
+            (imported_sum_range_value_prop f t delta)
+          :
+          Lean.eq (imported_sum_range_value f t delta)
+            (HardSumCertificate.sum_nat_to_imported
+               (bigop.bigop 0 (bigop.index_iota t (ssrnat.addn t delta))
+                  (fun x : nat => bigop.BigBody x ssrnat.addn true (f x)))))
+         (fun
+            Hvalue : Lean.eq (imported_sum_range_value f t delta)
+                       (HardSumCertificate.sum_nat_to_imported
+                          (bigop.bigop 0
+                             (bigop.index_iota t (ssrnat.addn t delta))
+                             (fun x : nat =>
+                              bigop.BigBody x ssrnat.addn true (f x)))) =>
+          ssreflect_rw.ssr_have_upoly
+            (HardSumCertificate.sum_lt_forward
+               (bigop.bigop 0 (bigop.index_iota t (ssrnat.addn t delta))
+                  (fun x : nat => bigop.BigBody x ssrnat.addn true (f x)))
+               delta HltR
+             :
+             ImportedFiniteNatSumNormalized93.Nat_lt
+               (HardSumCertificate.sum_nat_to_imported
+                  (bigop.bigop 0 (bigop.index_iota t (ssrnat.addn t delta))
+                     (fun x : nat => bigop.BigBody x ssrnat.addn true (f x))))
+               (HardSumCertificate.sum_nat_to_imported delta))
+            (fun
+               HltC : ImportedFiniteNatSumNormalized93.Nat_lt
+                        (HardSumCertificate.sum_nat_to_imported
+                           (bigop.bigop 0
+                              (bigop.index_iota t (ssrnat.addn t delta))
+                              (fun x : nat =>
+                               bigop.BigBody x ssrnat.addn true (f x))))
+                        (HardSumCertificate.sum_nat_to_imported delta) =>
+             ssreflect_rw.ssr_have_upoly
+               (HardSumCertificate.sum_eq_transport
+                  (fun z : Lean.Nat =>
+                   ImportedFiniteNatSumNormalized93.Nat_lt z
+                     (HardSumCertificate.sum_nat_to_imported delta))
+                  (HardSumCertificate.sum_nat_to_imported
+                     (bigop.bigop 0
+                        (bigop.index_iota t (ssrnat.addn t delta))
+                        (fun x : nat =>
+                         bigop.BigBody x ssrnat.addn true (f x))))
+                  (imported_sum_range_value f t delta)
+                  (HardSumCertificate.sum_eq_sym
+                     (imported_sum_range_value f t delta)
+                     (HardSumCertificate.sum_nat_to_imported
+                        (bigop.bigop 0
+                           (bigop.index_iota t (ssrnat.addn t delta))
+                           (fun x : nat =>
+                            bigop.BigBody x ssrnat.addn true (f x))))
+                     Hvalue)
+                  HltC
+                :
+                ImportedFiniteNatSumNormalized93.Nat_lt
+                  (imported_sum_range_value f t delta)
+                  (HardSumCertificate.sum_nat_to_imported delta))
+               (fun
+                  HltL : ImportedFiniteNatSumNormalized93.Nat_lt
+                           (imported_sum_range_value f t delta)
+                           (HardSumCertificate.sum_nat_to_imported delta) =>
+                PropSPropFoundation.interpret_strict
+                  (exists x : nat,
+                     is_true
+                       (ssrnat.leq t x &&
+                        ssrbool.PredOfSimpl.coerce 
+                          (ssrnat.ltn x) (ssrnat.addn t delta)) /\
+                     f x = 0)
+                  (sum_le_range_exists_backward_strict f t delta
+                     (Htarget HltL))))))
+      :
+      source_sum_le_range_statement f t delta))
+     : forall (f : nat -> nat) (t delta : nat),
+       PropSPropFoundation.PropSPropRel
+         (source_sum_le_range_statement f t delta)
+         (imported_sum_le_range_statement f t delta)
+
+Arguments sum_le_summation_range_statement_certificate 
+  f%_function_scope (t delta)%_nat_scope
+Axioms:
+Lean.eq relies on definitional UIP.
+HardSumCertificate.Sum_STrue relies on definitional UIP.
+PropSPropFoundation.interpret_strict :
+  forall P : Prop, PropSPropFoundation.StrictlyInhabited P -> P
+File "./AssumptionAuditExperiment11Clean.v", line 13, characters 17-58:
+Warning: This interactive proof is not started by the "Proof" command.
+[missing-proof-command,fragile,default]
+AUDIT_END sum_le_summation_range
+File "./AssumptionAuditExperiment11Clean.v", line 15, characters 17-49:
+Warning: This interactive proof is not started by the "Proof" command.
+[missing-proof-command,fragile,default]
+AUDIT_BEGIN job_arrival
+clean_job_arrival_target_roundtrip =
+fun (Job : eqtype.Equality.Exports.eqType)
+  (arrivalL : ImportedJobArrivalClean93.Prosa_Behavior_Job_JobArrival
+                (eqtype.Equality.sort Job))
+  (j : eqtype.Equality.sort Job) =>
+clean_imported_roundtrip
+  (ImportedJobArrivalClean93.Prosa_Behavior_Job_JobArrival_job_arrival
+     (eqtype.Equality.sort Job) arrivalL j)
+     : forall (Job : eqtype.Equality.Exports.eqType)
+         (arrivalL : ImportedJobArrivalClean93.Prosa_Behavior_Job_JobArrival
+                       (eqtype.Equality.sort Job))
+         (j : eqtype.Equality.sort Job),
+       ImportedJobArrivalClean93.Prosa_Behavior_Job_JobArrival_job_arrival
+         (eqtype.Equality.sort Job)
+         (clean_import_job_arrival Job
+            (clean_export_job_arrival Job arrivalL))
+         j =
+       ImportedJobArrivalClean93.Prosa_Behavior_Job_JobArrival_job_arrival
+         (eqtype.Equality.sort Job) arrivalL j
+
+Arguments clean_job_arrival_target_roundtrip Job arrivalL j
+Closed under the global context
+File "./AssumptionAuditExperiment11Clean.v", line 18, characters 17-47:
+Warning: This interactive proof is not started by the "Proof" command.
+[missing-proof-command,fragile,default]
+AUDIT_END job_arrival
+File "./AssumptionAuditExperiment11Clean.v", line 20, characters 17-65:
+Warning: This interactive proof is not started by the "Proof" command.
+[missing-proof-command,fragile,default]
+AUDIT_BEGIN completes_at_counterexample
+completes_at_current_counterexample_witness =
+fun (Job : eqtype.Equality.Exports.eqType)
+  (PState : schedule.ProcessorState Job) (sched : schedule.schedule PState)
+  (j : eqtype.Equality.sort Job) =>
+{|
+  Lean.left :=
+    PropSPropFoundation.strictly_inhabits
+      (source_completes_at_zero_true Job PState sched j);
+  Lean.right := imported_completes_at_current_false
+|}
+     : forall (Job : eqtype.Equality.Exports.eqType)
+         (PState : schedule.ProcessorState Job)
+         (sched : schedule.schedule PState) (j : eqtype.Equality.sort Job),
+       completes_at_current_counterexample Job PState sched j
+
+Arguments completes_at_current_counterexample_witness Job PState sched j
+Closed under the global context
+File "./AssumptionAuditExperiment11Clean.v", line 23, characters 17-63:
+Warning: This interactive proof is not started by the "Proof" command.
+[missing-proof-command,fragile,default]
+AUDIT_END completes_at_counterexample
+File "./AssumptionAuditExperiment11Clean.v", line 25, characters 17-60:
+Warning: This interactive proof is not started by the "Proof" command.
+[missing-proof-command,fragile,default]
+AUDIT_BEGIN completes_at_corrected
+completes_at_corrected_certificate =
+fun (Job : eqtype.Equality.Exports.eqType)
+  (PState : schedule.ProcessorState Job) (sched : schedule.schedule PState)
+  (j : eqtype.Equality.sort Job) =>
+{|
+  PropSPropFoundation.prop_to_sprop :=
+    fun _ : source_completes_at_zero_statement Job PState sched j =>
+    imported_completes_at_corrected_true;
+  PropSPropFoundation.sprop_to_prop :=
+    fun
+      _ : ImportedCompletesAt93.Prosa_Validation_CompletesAt_corrected_completes_at_zero =>
+    source_completes_at_zero_true Job PState sched j
+|}
+     : forall (Job : eqtype.Equality.Exports.eqType)
+         (PState : schedule.ProcessorState Job)
+         (sched : schedule.schedule PState) (j : eqtype.Equality.sort Job),
+       PropSPropFoundation.PropSPropRel
+         (source_completes_at_zero_statement Job PState sched j)
+         ImportedCompletesAt93.Prosa_Validation_CompletesAt_corrected_completes_at_zero
+
+Arguments completes_at_corrected_certificate Job PState sched j
+Axioms:
+Lean.eq relies on definitional UIP.
+File "./AssumptionAuditExperiment11Clean.v", line 28, characters 17-58:
+Warning: This interactive proof is not started by the "Proof" command.
+[missing-proof-command,fragile,default]
+AUDIT_END completes_at_corrected
+File "./AssumptionAuditExperiment11Clean.v", line 30, characters 17-58:
+Warning: This interactive proof is not started by the "Proof" command.
+[missing-proof-command,fragile,default]
+AUDIT_BEGIN completes_at_generic
+official_completes_at_conditional_certificate =
+fun (Job : eqtype.Equality.Exports.eqType)
+  (PState : schedule.ProcessorState Job) (sched : schedule.schedule PState)
+  (job_cost : job.JobCost Job) (j : eqtype.Equality.sort Job)
+  (completedL : Lean.Nat -> SProp)
+  (Hcompleted : SourceCompletedByRel
+                  (fun u : nat => service.completed_by sched j u) completedL)
+  (t : nat) =>
+completes_at_formula_conditional_certificate
+  (fun u : nat => service.completed_by sched j u) completedL Hcompleted t
+     : forall (Job : eqtype.Equality.Exports.eqType)
+         (PState : schedule.ProcessorState Job)
+         (sched : schedule.schedule PState) (job_cost : job.JobCost Job)
+         (j : eqtype.Equality.sort Job) (completedL : Lean.Nat -> SProp),
+       SourceCompletedByRel (fun u : nat => service.completed_by sched j u)
+         completedL ->
+       forall t : nat,
+       PropSPropFoundation.PropSPropRel
+         (is_true (service.completes_at sched j t))
+         (ImportedCompletesAt93.Prosa_Validation_CompletesAt_completes_at_formula
+            completedL (completes_nat_to_imported t))
+
+Arguments official_completes_at_conditional_certificate 
+  Job PState sched job_cost j completedL%_function_scope 
+  Hcompleted t%_nat_scope
+Axioms:
+Lean.eq relies on definitional UIP.
+PropSPropFoundation.interpret_strict :
+  forall P : Prop, PropSPropFoundation.StrictlyInhabited P -> P
+File "./AssumptionAuditExperiment11Clean.v", line 33, characters 17-56:
+Warning: This interactive proof is not started by the "Proof" command.
+[missing-proof-command,fragile,default]
+AUDIT_END completes_at_generic

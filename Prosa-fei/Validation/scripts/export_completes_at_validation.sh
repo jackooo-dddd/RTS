@@ -7,7 +7,7 @@ mathlib_dir=${MATHLIB_DIR:-/private/tmp/mathlib4-v4.33.1}
 exporter_src=${LEAN4EXPORT_SRC:-/private/tmp/lean4export}
 toolchain=${LEAN_TOOLCHAIN:-leanprover/lean4:v4.33.1}
 artifact="$validation_root/export/CompletesAtValidation.out"
-log_dir="$validation_root/reports/logs/experiment10"
+log_dir="$validation_root/reports/logs/${COMPLETES_LOG_EXPERIMENT:-experiment10}"
 fixture="$validation_root/lean_fixtures/completes_at_corrected/CompletesAtCorrected.lean"
 
 mkdir -p "$validation_root/.work" "$validation_root/export" "$log_dir"
@@ -55,6 +55,7 @@ export LEAN4EXPORT_DEFINITION_BODY_PROJECTIONS=$'Prosa.Validation.CompletesAt.pr
 "$exporter" Prosa.Validation.CompletesAt.CompletesAtCorrected -- \
   Prosa.Validation.CompletesAt.production_completes_at_zero \
   Prosa.Validation.CompletesAt.corrected_completes_at_zero \
+  Prosa.Validation.CompletesAt.completes_at_formula \
   > "$artifact" 2> "$log_dir/completes_at_export.log"
 
 {
@@ -67,6 +68,7 @@ export LEAN4EXPORT_DEFINITION_BODY_PROJECTIONS=$'Prosa.Validation.CompletesAt.pr
   shasum -a 256 "$prosa_root/Prosa/Behavior/Service.lean"
   echo "Validation-only fixture: $fixture"
   shasum -a 256 "$fixture"
+  echo "Kernel guard: Prosa.Validation.CompletesAt.completes_at_corrected_formula_defeq (compiled proof: rfl)"
   echo "Artifact: $artifact"
   wc -l -c "$artifact"
   shasum -a 256 "$artifact"

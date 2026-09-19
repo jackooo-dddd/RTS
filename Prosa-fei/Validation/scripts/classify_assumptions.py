@@ -12,11 +12,13 @@ import yaml
 
 
 MARKER = re.compile(r"AUDIT_BEGIN\s+([A-Za-z0-9_]+)")
+END_MARKER = re.compile(r"AUDIT_END\s+([A-Za-z0-9_]+)")
 ASSUMPTION = re.compile(r"^([A-Za-z_][A-Za-z0-9_'.]*)\s+(?:relies\b|:)")
 
 
-def sections(paths: list[Path]) -> dict[str, str]:
+def sections(paths: list[Path]) -> tuple[dict[str, str], set[str]]:
     result: dict[str, str] = {}
+    incomplete: set[str] = set()
     current: str | None = None
     chunks: list[str] = []
     for path in paths:
@@ -24,14 +26,28 @@ def sections(paths: list[Path]) -> dict[str, str]:
             match = MARKER.search(line)
             if match:
                 if current is not None:
+                    incomplete.add(current)
                     result[current] = "\n".join(chunks)
                 current, chunks = match.group(1), []
+            elif (match := END_MARKER.search(line)):
+                if current == match.group(1):
+                    result[current] = "\n".join(chunks)
+                    current, chunks = None, []
+                elif current is not None:
+                    incomplete.add(current)
+                    result[current] = "\n".join(chunks)
+                    current, chunks = None, []
             elif current is not None:
                 chunks.append(line)
         if current is not None:
+            incomplete.add(current)
             result[current] = "\n".join(chunks)
             current, chunks = None, []
-    return result
+    return result, incomplete
+
+
+def explicitly_allowed(name: str, allowed: set[str]) -> bool:
+    return name in allowed or any(name.endswith("." + item) for item in allowed)
 
 
 def main() -> None:
@@ -42,18 +58,22 @@ def main() -> None:
     args = parser.parse_args()
 
     config = yaml.safe_load(args.config.read_text())
-    found = sections(args.log)
+    found, incomplete = sections(args.log)
     foundation = set(config["foundation_axioms"])
     statement_prefixes = tuple(config.get("statement_only_dependency_prefixes", []))
     importer_prefixes = tuple(config.get("importer_foundation_prefixes", []))
+    allowed_importer = set(config.get("allowed_importer_assumptions", []))
+    allow_legacy_prefixes = bool(config.get("allow_legacy_prefixes", True))
+    require_end = bool(config.get("require_end_marker", False))
     report: dict[str, object] = {"certificates": {}}
     failed = False
 
     for key, spec in config["certificates"].items():
         text = found.get(key)
-        if text is None:
+        if text is None or (require_end and key in incomplete):
             report["certificates"][key] = {
-                "status": "AUDIT_MISSING", "reason": "no Print Assumptions section"
+                "status": "AUDIT_MISSING",
+                "reason": "missing or truncated Print Assumptions section"
             }
             failed = True
             continue
@@ -78,7 +98,9 @@ def main() -> None:
                           and n.rsplit(".", 1)[-1] not in foundation
                           and n not in statement_only
                           and ("relies on definitional UIP" in entries[n]
-                               or n.startswith(importer_prefixes)))
+                               or explicitly_allowed(n, allowed_importer)
+                               or (allow_legacy_prefixes
+                                   and n.startswith(importer_prefixes))))
         classified = set(foundation_used) | set(statement_only) | set(importer)
         unexpected = sorted(set(names) - classified)
         if target_dependency:
