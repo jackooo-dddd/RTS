@@ -6,7 +6,8 @@
  
 +def statementOnlyTheorem (c : Name) : IO Bool := do
 +  let some configured ← IO.getEnv "LEAN4EXPORT_STATEMENT_ONLY" | return false
-+  return (configured.splitOn "\n").contains c.toString
++  let names := configured.splitOn "\n"
++  return names.contains "*" || names.contains c.toString
 +
  partial def dumpConstant (c : Name) : M Unit := do
    if (← get).visitedConstants.contains c then

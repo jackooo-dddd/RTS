@@ -1,0 +1,122 @@
+schema_version: 1
+experiment: 5
+source_release: Prosa 0.6
+source_commit: 414e66760333eaa4ef78c685bcf53291c527a548
+targets:
+  big_nat_eq0:
+    rocq_source_file: util/sum.v
+    rocq_declaration: prosa.util.sum.big_nat_eq0
+    lean_source_file: Prosa/Util/Sum.lean
+    lean_declaration: Prosa.Util.Sum.big_nat_eq0
+    kind: theorem
+    lean_export_mode: statement_only
+    source_acquisition: {mode: auto_extract, source_commit: 414e66760333eaa4ef78c685bcf53291c527a548, source_hash: f1495cda2174236ec363a88811e89998479176ea574d0f7f0d8643cd274114e1}
+    dependencies: [finite_nat_interval_bridge, finite_nat_sum_bridge, nat_order_bridge, PropSPropBridge]
+    certificate: big_nat_eq0_parametric_certificate
+    assumptions: prop_sprop_trusted_elim, importer definitional UIP, statement-only imported theorem dependencies; FiniteNatSumValueBridge remains a certificate premise
+    status: PARAMETRICALLY_CERTIFIED
+    reason: full logical structure is kernel-checked against the actual imported theorem type, conditional on one explicit reusable interval-sum value bridge; sum-equals-one mutation is rejected
+  sum_diff:
+    rocq_source_file: util/sum.v
+    rocq_declaration: prosa.util.sum.sum_diff
+    lean_source_file: Prosa/Util/Sum.lean
+    lean_declaration: Prosa.Util.Sum.sum_diff
+    kind: theorem
+    lean_export_mode: statement_only
+    source_acquisition: {mode: source_missing, source_commit: 414e66760333eaa4ef78c685bcf53291c527a548}
+    dependencies: []
+    certificate: none
+    assumptions: none
+    status: FAILED
+    reason: no declaration named sum_diff exists in official Prosa 0.6 source
+  sum_seq_gt0P:
+    rocq_source_file: util/sum.v
+    rocq_declaration: prosa.util.sum.sum_seq_gt0P
+    lean_source_file: Prosa/Util/Sum.lean
+    lean_declaration: Prosa.Util.Sum.sum_seq_gt0P
+    kind: theorem
+    lean_export_mode: statement_only
+    source_acquisition: {mode: source_missing, source_commit: 414e66760333eaa4ef78c685bcf53291c527a548}
+    dependencies: []
+    certificate: none
+    assumptions: none
+    status: FAILED
+    reason: no declaration named sum_seq_gt0P exists in official Prosa 0.6 source
+  sum_pred_diff:
+    rocq_source_file: util/sum.v
+    rocq_declaration: prosa.util.sum.sum_pred_diff
+    lean_source_file: Prosa/Util/Sum.lean
+    lean_declaration: Prosa.Util.Sum.sum_pred_diff
+    kind: theorem
+    lean_export_mode: statement_only
+    source_acquisition: {mode: source_missing, source_commit: 414e66760333eaa4ef78c685bcf53291c527a548}
+    dependencies: []
+    certificate: none
+    assumptions: none
+    status: FAILED
+    reason: no declaration named sum_pred_diff exists in official Prosa 0.6 source
+  rem_all:
+    rocq_source_file: util/list.v
+    rocq_declaration: prosa.util.list.rem_all
+    lean_source_file: Prosa/Util/List.lean
+    lean_declaration: Prosa.Util.List.rem_all
+    kind: definition
+    lean_export_mode: body
+    source_acquisition: {mode: auto_extract, source_commit: 414e66760333eaa4ef78c685bcf53291c527a548, source_hash: 336c7b1b4812fc1714b7573dbb5bcc25fddb688ce302b5bd783d8dff0a985d7d}
+    dependencies: [eqType_bridge, seq_List_relation]
+    certificate: rem_all_recursive_certificate
+    assumptions: importer definitional UIP for imported eq only
+    status: CERTIFIED
+    reason: structural induction relates the official Fixpoint to the actual imported Lean course-of-values recursive body
+  nin_rem_all:
+    rocq_source_file: util/list.v
+    rocq_declaration: prosa.util.list.nin_rem_all
+    lean_source_file: Prosa/Util/List.lean
+    lean_declaration: Prosa.Util.List.nin_rem_all
+    kind: theorem
+    lean_export_mode: statement_only
+    source_acquisition: {mode: auto_extract, source_commit: 414e66760333eaa4ef78c685bcf53291c527a548, source_hash: 8b449823193e6da906b4f36cdeb215e73023f7cfc493ec2c6c52d795ceec4650}
+    dependencies: [rem_all, seq_List_membership, PropSPropBridge]
+    certificate: nin_rem_all_statement_certificate
+    assumptions: prop_sprop_trusted_elim, importer definitional UIP
+    status: CERTIFIED_WITH_PROP_SPROP_BRIDGE
+    reason: theorem statement is derived compositionally from certified rem_all plus reusable seq/List membership correspondence
+  exists_first_intermediate_point:
+    rocq_source_file: util/unit_growth.v
+    rocq_declaration: prosa.util.unit_growth.exists_first_intermediate_point
+    lean_source_file: Prosa/Util/Step_function.lean
+    lean_declaration: Prosa.Util.Step_function.StepFunction.exists_first_intermediate_point
+    kind: theorem
+    lean_export_mode: statement_only
+    source_acquisition: {mode: auto_extract, source_commit: 414e66760333eaa4ef78c685bcf53291c527a548, source_hash: a382f5f5b8976a9450c83ee6a57f2e50dfa80291a88bc295d5bc80e6af6d066d}
+    dependencies: [higher_order_bool_predicate_relation, nat_order_bridge, PropSPropBridge]
+    certificate: exists_first_intermediate_point_statement_certificate
+    assumptions: prop_sprop_trusted_elim, prop_sprop_trusted_exists_intro, importer definitional UIP
+    status: CERTIFIED_WITH_PROP_SPROP_BRIDGE
+    reason: bidirectional statement relation for related higher-order Bool predicates and Nat inputs; witness-carrying Prop/SProp existential transfer is an explicit trust boundary
+  spin_processor_state:
+    rocq_source_file: model/processor/spin.v
+    rocq_declaration: prosa.model.processor.spin.processor_state
+    lean_source_file: Prosa/Model/Processor/Spin.lean
+    lean_declaration: Prosa.Model.Processor.Spin.processor_state
+    kind: inductive
+    lean_export_mode: body
+    source_acquisition: {mode: direct_import, source_commit: 414e66760333eaa4ef78c685bcf53291c527a548, source_hash: 9b221755948c02ebff5b9ff98293beb92ba73985381119c80d10aa3374b996ef}
+    dependencies: [eqType_bridge]
+    certificate: spin_idle_constructor_certificate, spin_spin_constructor_certificate, spin_progress_constructor_certificate
+    assumptions: closed under global context
+    status: CERTIFIED
+    reason: constructor-level SProp relation directly connects official Rocq and actual imported Lean inductives
+  spin_scheduled_on:
+    rocq_source_file: model/processor/spin.v
+    rocq_declaration: prosa.model.processor.spin.spin_scheduled_on
+    lean_source_file: Prosa/Model/Processor/Spin.lean
+    lean_declaration: Prosa.Model.Processor.Spin.processor_state.spin_scheduled_on
+    kind: definition
+    lean_export_mode: body
+    source_acquisition: {mode: direct_import, source_commit: 414e66760333eaa4ef78c685bcf53291c527a548, source_hash: 439dbd3768562a8e4fe7a40efcc8aea38fef35c3adcea12b875742575bd28947}
+    dependencies: [spin_processor_state, eqType_equality_observation]
+    certificate: spin_scheduled_on_certificate
+    assumptions: importer definitional UIP only
+    status: CERTIFIED
+    reason: exhaustive constructor cases plus certified eqType-to-DecidableEq Boolean equality

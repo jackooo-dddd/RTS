@@ -15,6 +15,19 @@ Arguments strictly_inhabits {P} _.
 Axiom prop_sprop_trusted_elim :
   forall P : Prop, StrictlyInhabited P -> P.
 
+(** TRUST BOUNDARY for witness-carrying propositions.  Rocq deliberately
+    forbids eliminating a [Prop] existential into [SProp], while Lean's
+    [Exists] is imported into [SProp].  This bridge exposes exactly the
+    missing witness transfer and nothing about a target proposition. *)
+Variant StrictlyExists (A : Type) (P : A -> Prop) : SProp :=
+| strictly_exists : forall x : A, P x -> StrictlyExists A P.
+
+Arguments strictly_exists {A P} _ _.
+
+Axiom prop_sprop_trusted_exists_intro :
+  forall (A : Type) (P : A -> Prop),
+    (exists x, P x) -> StrictlyExists A P.
+
 Record PropSPropRel (P : Prop) (Q : SProp) : Prop := {
   prop_to_sprop : P -> Q;
   sprop_to_prop : Q -> P
@@ -27,3 +40,4 @@ Definition prop_sprop_rel_intro (P : Prop) (Q : SProp)
      sprop_to_prop := fun q => prop_sprop_trusted_elim P (toStrictP q) |}.
 
 Print Assumptions prop_sprop_rel_intro.
+Print Assumptions prop_sprop_trusted_exists_intro.

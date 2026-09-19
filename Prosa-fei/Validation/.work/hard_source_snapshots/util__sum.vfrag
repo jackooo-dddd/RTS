@@ -1,0 +1,13 @@
+Lemma big_nat_eq0 m n F :
+  \sum_(m <= i < n) F i = 0 <-> (forall i, m <= i < n -> F i = 0).
+Proof.
+  split.
+  - rewrite /index_iota => /eqP.
+    rewrite sum_nat_eq0_nat filter_predT => /allP ZERO i.
+    rewrite -mem_index_iota /index_iota => IN.
+    by apply/eqP; apply ZERO.
+  - move=> ZERO.
+    have-> : \sum_(m <= i < n) F i = \sum_(m <= i < n) 0 by apply eq_big_nat.
+    exact: big1_eq.
+Qed.
+

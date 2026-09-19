@@ -1,0 +1,120 @@
+Welcome to Rocq shunqis-MacBook-Air.local:/Users/shunqiwang/.opam/rocq93rc1/.opam-switch/build/rocq-runtime.dev/_build/default,main (67e678adcd0cb911fec4eca313d9843492881956)
+
+Rocq < [Loading ML file rocq-runtime.plugins.zify ... done]
+[Loading ML file rocq-runtime.plugins.ring ... done]
+[Loading ML file rocq-runtime.plugins.micromega_core ... done]
+[Loading ML file rocq-runtime.plugins.micromega ... done]
+[Loading ML file rocq-runtime.plugins.btauto ... done]
+[Loading ML file rocq-runtime.plugins.nsatz_core ... done]
+[Loading ML file rocq-runtime.plugins.nsatz ... done]
+[Loading ML file yojson (implicit dependency) ... done]
+[Loading ML file coq-lean-import.plugin ... done]
+
+Rocq < 
+Rocq < List_range'__f@{} =
+fun (x____at___Init_Data_List_Basic527151790__hygCtx__hyg15 : Nat)
+  (f : Nat_below (fun _ : Nat => Nat -> Nat -> List_inst1 Nat)
+         x____at___Init_Data_List_Basic527151790__hygCtx__hyg15)
+  (x____at___Init_Data_List_Basic527151790__hygCtx__hyg14
+   x____at___Init_Data_List_Basic527151790__hygCtx__hyg16 : Nat) =>
+List_range'_match_1
+  (fun
+     _
+      x____at___Init_Data_List_Basic527151790__hygCtx15_Init_Data_List_Basic527151790__hygCtx__hyg44
+      _ : Nat =>
+   Nat_below (fun _ : Nat => Nat -> Nat -> List_inst1 Nat)
+     x____at___Init_Data_List_Basic527151790__hygCtx15_Init_Data_List_Basic527151790__hygCtx__hyg44 ->
+   List_inst1 Nat)
+  x____at___Init_Data_List_Basic527151790__hygCtx__hyg14
+  x____at___Init_Data_List_Basic527151790__hygCtx__hyg15
+  x____at___Init_Data_List_Basic527151790__hygCtx__hyg16
+  (fun (_ _ : Nat)
+     (_ : Nat_below (fun _ : Nat => Nat -> Nat -> List_inst1 Nat)
+            (OfNat_ofNat_inst1 Nat 0 (instOfNatNat 0))) =>
+   List_nil_inst1 Nat)
+  (fun (s n step : Nat)
+     (x____at___Init_Data_List_Basic527151790__hygCtx__hyg101 : 
+      Nat_below (fun _ : Nat => Nat -> Nat -> List_inst1 Nat) 
+        (Nat_succ n)) =>
+   List_cons_inst1 Nat s
+     (fst _ _ x____at___Init_Data_List_Basic527151790__hygCtx__hyg101
+        (HAdd_hAdd_inst7 Nat Nat Nat (instHAdd_inst1 Nat instAddNat) s step)
+        step))
+  f
+     : forall x____at___Init_Data_List_Basic527151790__hygCtx__hyg15 : Nat,
+       Nat_below (fun _ : Nat => Nat -> Nat -> List_inst1 Nat)
+         x____at___Init_Data_List_Basic527151790__hygCtx__hyg15 ->
+       Nat -> Nat -> List_inst1 Nat
+
+Arguments List_range'__f
+  x____at___Init_Data_List_Basic527151790__hygCtx__hyg15%_Nat_scope 
+  f
+  (x____at___Init_Data_List_Basic527151790__hygCtx__hyg14
+   x____at___Init_Data_List_Basic527151790__hygCtx__hyg16)%_Nat_scope
+
+Rocq < Nat_brecOn@{u Lean.u+1.0} =
+fun (motive : Nat -> Type) (t : Nat)
+  (F_1 : forall t0 : Nat, Nat_below motive t0 -> motive t0) =>
+fst _ _ (Nat_brecOn_go motive t F_1)
+     : forall (motive : Nat -> Type) (t : Nat),
+       (forall t0 : Nat, Nat_below motive t0 -> motive t0) -> motive t
+
+Arguments Nat_brecOn motive%_function_scope t%_Nat_scope F_1%_function_scope
+
+Rocq < Nat_brecOn_go@{u Lean.u+1.0} =
+fun (motive : Nat -> Type) (t : Nat)
+  (F_1 : forall t0 : Nat, Nat_below motive t0 -> motive t0) =>
+Nat_recl (fun t0 : Nat => PProd (motive t0) (Nat_below motive t0))
+  (PProd_mk (motive 0) PUnit (F_1 0 PUnit_unit) PUnit_unit)
+  (fun (n : Nat) (n_ih : PProd (motive n) (Nat_below motive n)) =>
+   PProd_mk (motive (Nat_succ n)) (PProd (motive n) (Nat_below motive n))
+     (F_1 (Nat_succ n) n_ih) n_ih)
+  t
+     : forall (motive : Nat -> Type) (t : Nat),
+       (forall t0 : Nat, Nat_below motive t0 -> motive t0) ->
+       PProd (motive t) (Nat_below motive t)
+
+Arguments Nat_brecOn_go motive%_function_scope t%_Nat_scope
+  F_1%_function_scope
+
+Rocq < Multiset_foldr_inst3@{} =
+fun (_UU03b1_ _UU03b2_ : Type) (f : _UU03b1_ -> _UU03b2_ -> _UU03b2_)
+  (inst____at___Mathlib_Data_Multiset_MapFold1188276850__hygCtx__hyg10 : 
+   LeftCommutative _UU03b1_ _UU03b2_ f)
+  (b : _UU03b2_) (s : Multiset_inst1 _UU03b1_) =>
+Quot_liftOn (List_inst1 _UU03b1_) _UU03b2_
+  (Setoid_r (List_inst1 _UU03b1_) (List_isSetoid_inst1 _UU03b1_)) s
+  (fun l : List_inst1 _UU03b1_ => List_foldr_inst3 _UU03b1_ _UU03b2_ f b l)
+  (fun (_l_UU2081_ _l_UU2082_ : List_inst1 _UU03b1_)
+     (p : Setoid_r (List_inst1 _UU03b1_) (List_isSetoid_inst1 _UU03b1_)
+            _l_UU2081_ _l_UU2082_) =>
+   List_Perm_foldr_eq_inst3 _UU03b1_ _UU03b2_ f _l_UU2081_ _l_UU2082_
+     inst____at___Mathlib_Data_Multiset_MapFold1188276850__hygCtx__hyg10 p b)
+     : forall (_UU03b1_ _UU03b2_ : Type)
+         (f : _UU03b1_ -> _UU03b2_ -> _UU03b2_),
+       LeftCommutative _UU03b1_ _UU03b2_ f ->
+       _UU03b2_ -> Multiset_inst1 _UU03b1_ -> _UU03b2_
+
+Arguments Multiset_foldr_inst3 (_UU03b1_ _UU03b2_)%_type_scope
+  f%_function_scope
+  inst____at___Mathlib_Data_Multiset_MapFold1188276850__hygCtx__hyg10 
+  b s
+
+Rocq < Toplevel input, characters 6-29:
+> Print Multiset_foldr_inst3__f.
+>       ^^^^^^^^^^^^^^^^^^^^^^^
+Error: Multiset_foldr_inst3__f not a defined object.
+
+Rocq < List_map_inst3@{} =
+fun (_UU03b1_ _UU03b2_ : Type) (f : _UU03b1_ -> _UU03b2_)
+  (x____at___Init_Prelude3880878767__hygCtx__hyg15 : List_inst1 _UU03b1_) =>
+List_brecOn_inst2 _UU03b1_
+  (fun _ : List_inst1 _UU03b1_ => List_inst1 _UU03b2_)
+  x____at___Init_Prelude3880878767__hygCtx__hyg15
+  (List_map__f_inst3 _UU03b1_ _UU03b2_ f)
+     : forall _UU03b1_ _UU03b2_ : Type,
+       (_UU03b1_ -> _UU03b2_) -> List_inst1 _UU03b1_ -> List_inst1 _UU03b2_
+
+Arguments List_map_inst3 (_UU03b1_ _UU03b2_)%_type_scope f%_function_scope l
+
+Rocq < 

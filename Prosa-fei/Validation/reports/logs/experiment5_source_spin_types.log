@@ -1,0 +1,32 @@
+
+Rocq < 
+Rocq < 
+Rocq < 
+Rocq < processor_state
+     : forall _ : JobType, Type
+
+Rocq < Idle
+     : forall Job : JobType, processor_state Job
+
+Rocq < Spin
+     : forall (Job : JobType) (_ : Equality.sort Job), processor_state Job
+
+Rocq < Progress
+     : forall (Job : JobType) (_ : Equality.sort Job), processor_state Job
+
+Rocq < spin_scheduled_on
+     : forall (Job : JobType) (_ : Equality.sort Job)
+         (_ : processor_state Job) (_ : unit),
+       bool
+
+Rocq < Inductive processor_state (Job : JobType) : Type :=
+    Idle : processor_state Job
+  | Spin : forall _ : Equality.sort Job, processor_state Job
+  | Progress : forall _ : Equality.sort Job, processor_state Job.
+
+Arguments processor_state Job
+Arguments Idle Job
+Arguments Spin Job j
+Arguments Progress Job j
+
+Rocq < 

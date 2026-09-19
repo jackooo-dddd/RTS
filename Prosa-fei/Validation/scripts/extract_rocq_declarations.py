@@ -19,8 +19,24 @@ import yaml
 
 
 DECL_RE = re.compile(
-    r"(?ms)^\s*(?:Lemma|Theorem|Fact|Corollary)\s+([A-Za-z0-9_']+)\b.*?^\s*(?:Qed|Defined)\.\s*$"
+    r"(?ms)^\s*(?:Lemma|Theorem|Fact|Corollary)\s+([A-Za-z0-9_']+)\b.*?^[^\n]*(?:Qed|Defined)\.\s*$"
 )
+BODY_RE = re.compile(
+    r"(?ms)^\s*(?:Fixpoint|Definition)\s+([A-Za-z0-9_']+)\b.*?^[^\n]*\.\s*$"
+)
+INDUCTIVE_RE = re.compile(
+    r"(?ms)^\s*Inductive\s+([A-Za-z0-9_']+)\b.*?^\s*\|[^\n]*\.\s*$"
+)
+
+
+def declaration_blocks(text: str) -> dict[str, tuple[int, str]]:
+    matches = []
+    for pattern in (DECL_RE, BODY_RE, INDUCTIVE_RE):
+        matches.extend(pattern.finditer(text))
+    return {
+        match.group(1): (match.start(), match.group(0).lstrip("\n"))
+        for match in sorted(matches, key=lambda item: item.start())
+    }
 
 
 def sha256(text: str) -> str:
@@ -47,12 +63,24 @@ def main() -> None:
     ap.add_argument("--mapping", required=True, type=Path)
     ap.add_argument("--source-root", required=True, type=Path)
     ap.add_argument("--output", type=Path)
+    ap.add_argument("--output-dir", type=Path)
     ap.add_argument("--metadata", type=Path)
     ap.add_argument("--list-lean-theorems", action="store_true")
     ap.add_argument("--list-lean-modules", action="store_true")
+    ap.add_argument("--list-lean-targets", action="store_true")
+    ap.add_argument("--target-keys", help="comma-separated mapping keys")
     args = ap.parse_args()
 
     config = yaml.safe_load(args.mapping.read_text())
+    if args.target_keys:
+        selected_keys = set(args.target_keys.split(","))
+        config["targets"] = {
+            key: value for key, value in config["targets"].items()
+            if key in selected_keys
+        }
+        missing = selected_keys.difference(config["targets"])
+        if missing:
+            raise SystemExit(f"unknown target keys: {sorted(missing)}")
     targets = [
         (key, value) for key, value in config["targets"].items()
         if value.get("kind") == "theorem"
@@ -65,10 +93,67 @@ def main() -> None:
     if args.list_lean_modules:
         modules = {
             target["lean_source_file"].removesuffix(".lean").replace("/", ".")
-            for _, target in targets
+            for target in config["targets"].values()
         }
         for module in sorted(modules):
             print(module)
+        return
+    if args.list_lean_targets:
+        for target in config["targets"].values():
+            print(target["lean_declaration"])
+        return
+    if args.output_dir:
+        source_targets = [
+            (key, value) for key, value in config["targets"].items()
+            if value.get("rocq_source_file")
+            and value.get("source_acquisition", {}).get("mode") != "source_missing"
+        ]
+        grouped: dict[str, list[tuple[str, dict]]] = {}
+        for key, target in source_targets:
+            grouped.setdefault(target["rocq_source_file"], []).append((key, target))
+        metadata = {
+            "source_commit": next(iter(source_targets))[1]["source_acquisition"]["source_commit"],
+            "files": {},
+        }
+        args.output_dir.mkdir(parents=True, exist_ok=True)
+        for relpath, selected in sorted(grouped.items()):
+            source = args.source_root / relpath
+            source_text = source.read_text()
+            blocks = declaration_blocks(source_text)
+            safe_name = relpath.replace("/", "__").removesuffix(".v") + ".vfrag"
+            snapshot = args.output_dir / safe_name
+            extracted = []
+            file_meta = {
+                "source_file": str(source),
+                "source_file_sha256": sha256(source_text),
+                "snapshot": str(snapshot),
+                "declarations": {},
+            }
+            for key, target in selected:
+                name = target["rocq_declaration"].rsplit(".", 1)[-1]
+                if name not in blocks:
+                    raise SystemExit(f"declaration not found in {source}: {name}")
+                block = blocks[name][1]
+                actual_hash = sha256(block)
+                expected_hash = target["source_acquisition"].get("source_hash")
+                if expected_hash and expected_hash != "discover" and actual_hash != expected_hash:
+                    raise SystemExit(
+                        f"official source fidelity failure for {name}: "
+                        f"expected {expected_hash}, got {actual_hash}"
+                    )
+                extracted.extend([block.rstrip(), ""])
+                file_meta["declarations"][key] = {
+                    "declaration": target["rocq_declaration"],
+                    "source_text_sha256": actual_hash,
+                    "normalized_statement": normalized_statement(block),
+                    "normalized_statement_sha256": sha256(normalized_statement(block)),
+                }
+            snapshot.write_text("\n".join(extracted) + "\n")
+            metadata["files"][relpath] = file_meta
+        if not args.metadata:
+            ap.error("--metadata is required with --output-dir")
+        args.metadata.parent.mkdir(parents=True, exist_ok=True)
+        args.metadata.write_text(json.dumps(metadata, indent=2) + "\n")
         return
     if not args.output or not args.metadata:
         ap.error("--output and --metadata are required for extraction")
@@ -84,7 +169,7 @@ def main() -> None:
     relpath, selected = next(iter(grouped.items()))
     source = args.source_root / relpath
     text = source.read_text()
-    blocks = {m.group(1): (m.start(), m.group(0).lstrip("\n")) for m in DECL_RE.finditer(text)}
+    blocks = declaration_blocks(text)
 
     wanted = {t["rocq_declaration"].rsplit(".", 1)[-1] for _, t in selected}
     changed = True

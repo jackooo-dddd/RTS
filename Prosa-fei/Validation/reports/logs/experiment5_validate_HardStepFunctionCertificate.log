@@ -1,0 +1,60 @@
+File "./HardStepFunctionCertificate.v", line 1, characters 0-54:
+Warning: Notation "_ + _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./HardStepFunctionCertificate.v", line 1, characters 0-54:
+Warning: Notation "_ - _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./HardStepFunctionCertificate.v", line 1, characters 0-54:
+Warning: Notation "_ <= _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./HardStepFunctionCertificate.v", line 1, characters 0-54:
+Warning: Notation "_ < _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./HardStepFunctionCertificate.v", line 1, characters 0-54:
+Warning: Notation "_ >= _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./HardStepFunctionCertificate.v", line 1, characters 0-54:
+Warning: Notation "_ > _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./HardStepFunctionCertificate.v", line 1, characters 0-54:
+Warning: Notation "_ <= _ <= _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./HardStepFunctionCertificate.v", line 1, characters 0-54:
+Warning: Notation "_ < _ <= _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./HardStepFunctionCertificate.v", line 1, characters 0-54:
+Warning: Notation "_ <= _ < _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./HardStepFunctionCertificate.v", line 1, characters 0-54:
+Warning: Notation "_ < _ < _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./HardStepFunctionCertificate.v", line 1, characters 0-54:
+Warning: Notation "_ * _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+Axioms:
+eq relies on definitional UIP.
+Axioms:
+eq relies on definitional UIP.
+Step_STrue relies on definitional UIP.
+prop_sprop_trusted_exists_intro :
+  forall (A : Type) (P : A -> Prop),
+  (exists x : A, P x) -> StrictlyExists A P
+prop_sprop_trusted_elim : forall P : Prop, StrictlyInhabited P -> P
+Closed under the global context
+Axioms:
+eq relies on definitional UIP.
+Prosa_Util_Step_function_StepFunction_exists_first_intermediate_point :
+  forall (P : Nat -> Bool) (t1 t2 : Nat),
+  LE_le_inst1 Nat instLENat t1 t2 ->
+  Not (eq (P t1) Bool_true) ->
+  eq (P t2) Bool_true ->
+  Exists Nat
+    (fun t : Nat =>
+     And
+       (And (LT_lt_inst1 Nat instLTNat t1 t) (LE_le_inst1 Nat instLENat t t2))
+       (And
+          (forall x : Nat,
+           And (LE_le_inst1 Nat instLENat t1 x)
+             (LT_lt_inst1 Nat instLTNat x t) ->
+           Not (eq (P x) Bool_true))
+          (eq (P t) Bool_true)))

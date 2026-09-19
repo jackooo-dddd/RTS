@@ -1,0 +1,69 @@
+{
+  "source_commit": "414e66760333eaa4ef78c685bcf53291c527a548",
+  "files": {
+    "model/processor/spin.v": {
+      "source_file": "/Users/shunqiwang/.opam/prosa-0.6/.opam-switch/sources/rocq-prosa.0.6/model/processor/spin.v",
+      "source_file_sha256": "cd7d2249a3600cb66c3710f967d54ebb9f13ce5690b1ffc2a99fe2d2ecf8f4de",
+      "snapshot": "/Users/shunqiwang/CityuHK/Research/Lean/TranslationProof/Prosa-fei/Validation/.work/hard_source_snapshots/model__processor__spin.vfrag",
+      "declarations": {
+        "spin_processor_state": {
+          "declaration": "prosa.model.processor.spin.processor_state",
+          "source_text_sha256": "9b221755948c02ebff5b9ff98293beb92ba73985381119c80d10aa3374b996ef",
+          "normalized_statement": "Inductive processor_state := Idle | Spin (j : Job) | Progress (j : Job).",
+          "normalized_statement_sha256": "c05e859048ddd0908790574dc482744a30d76256f99ce2be318174aec546a16f"
+        },
+        "spin_scheduled_on": {
+          "declaration": "prosa.model.processor.spin.spin_scheduled_on",
+          "source_text_sha256": "439dbd3768562a8e4fe7a40efcc8aea38fef35c3adcea12b875742575bd28947",
+          "normalized_statement": "Definition spin_scheduled_on (s : processor_state) (_ : unit) : bool := match s with | Idle => false | Spin j' => j' == j | Progress j' => j' == j end.",
+          "normalized_statement_sha256": "e5742c99e70423a91c55253cc768d87dbd2697627289c024c0497199b7174518"
+        }
+      }
+    },
+    "util/list.v": {
+      "source_file": "/Users/shunqiwang/.opam/prosa-0.6/.opam-switch/sources/rocq-prosa.0.6/util/list.v",
+      "source_file_sha256": "cbe98e2414d4e7829b7a5f73995f9e47d5160be154406d12614283b54b3dbff3",
+      "snapshot": "/Users/shunqiwang/CityuHK/Research/Lean/TranslationProof/Prosa-fei/Validation/.work/hard_source_snapshots/util__list.vfrag",
+      "declarations": {
+        "rem_all": {
+          "declaration": "prosa.util.list.rem_all",
+          "source_text_sha256": "336c7b1b4812fc1714b7573dbb5bcc25fddb688ce302b5bd783d8dff0a985d7d",
+          "normalized_statement": "Fixpoint rem_all {X : eqType} (x : X) (xs : seq X) := match xs with | [::] => [::] | a :: xs => if a == x then rem_all x xs else a :: rem_all x xs end.",
+          "normalized_statement_sha256": "bd7387cd34eee17ba3da66f21176509d8f5cbd863afcb961a2c9fa24cff70732"
+        },
+        "nin_rem_all": {
+          "declaration": "prosa.util.list.nin_rem_all",
+          "source_text_sha256": "8b449823193e6da906b4f36cdeb215e73023f7cfc493ec2c6c52d795ceec4650",
+          "normalized_statement": "Lemma nin_rem_all : forall {X : eqType} (x : X) (xs : seq X), ~ (x \\in rem_all x xs).",
+          "normalized_statement_sha256": "6d88202853cfa34cd33e21a657fbb907884996ad9c7fc7aa5c680baed97e7ca3"
+        }
+      }
+    },
+    "util/sum.v": {
+      "source_file": "/Users/shunqiwang/.opam/prosa-0.6/.opam-switch/sources/rocq-prosa.0.6/util/sum.v",
+      "source_file_sha256": "3415b2c1d3d7ed892a168d114f66007913a014a1ec3ede2ba8fef84217bb14d5",
+      "snapshot": "/Users/shunqiwang/CityuHK/Research/Lean/TranslationProof/Prosa-fei/Validation/.work/hard_source_snapshots/util__sum.vfrag",
+      "declarations": {
+        "big_nat_eq0": {
+          "declaration": "prosa.util.sum.big_nat_eq0",
+          "source_text_sha256": "f1495cda2174236ec363a88811e89998479176ea574d0f7f0d8643cd274114e1",
+          "normalized_statement": "Lemma big_nat_eq0 m n F : \\sum_(m <= i < n) F i = 0 <-> (forall i, m <= i < n -> F i = 0).",
+          "normalized_statement_sha256": "9898796bfd1a558f1318bd53545127db8f03e9573f411c5362587dbff5920256"
+        }
+      }
+    },
+    "util/unit_growth.v": {
+      "source_file": "/Users/shunqiwang/.opam/prosa-0.6/.opam-switch/sources/rocq-prosa.0.6/util/unit_growth.v",
+      "source_file_sha256": "c74cc6169150abdf2401953588c36f5744bf780def785ab084f8c3299e8d178b",
+      "snapshot": "/Users/shunqiwang/CityuHK/Research/Lean/TranslationProof/Prosa-fei/Validation/.work/hard_source_snapshots/util__unit_growth.vfrag",
+      "declarations": {
+        "exists_first_intermediate_point": {
+          "declaration": "prosa.util.unit_growth.exists_first_intermediate_point",
+          "source_text_sha256": "a382f5f5b8976a9450c83ee6a57f2e50dfa80291a88bc295d5bc80e6af6d066d",
+          "normalized_statement": "Lemma exists_first_intermediate_point : exists t, (t1 < t <= t2) /\\ (forall x, t1 <= x < t -> ~~ P x) /\\ P t.",
+          "normalized_statement_sha256": "96de5fbae4111a019ed575c61af1ba806f6dfd247a25238edcd5685554e564a7"
+        }
+      }
+    }
+  }
+}

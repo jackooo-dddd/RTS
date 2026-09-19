@@ -1,0 +1,12 @@
+  Inductive processor_state :=
+    Idle
+  | Spin (j : Job)
+  | Progress (j : Job).
+
+    Definition spin_scheduled_on (s : processor_state) (_ : unit) : bool :=
+      match s with
+      | Idle        => false
+      | Spin j'     => j' == j
+      | Progress j' => j' == j
+      end.
+
