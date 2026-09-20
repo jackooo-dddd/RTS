@@ -1,0 +1,11 @@
+From FoundationCertificates Require Import FoundationTimeCertificate.
+
+Print Assumptions rocq_nat_roundtrip.
+Print Assumptions imported_nat_roundtrip.
+Print Assumptions duration_relation_total_from_rocq.
+Print Assumptions duration_rocq_roundtrip_certificate.
+Print Assumptions duration_imported_roundtrip_certificate.
+Print Assumptions instant_relation_total_from_rocq.
+Print Assumptions instant_rocq_roundtrip_certificate.
+Print Assumptions instant_imported_roundtrip_certificate.
+

@@ -1,0 +1,312 @@
+diff --git a/src/Lean.v b/src/Lean.v
+index 910a317..009c304 100644
+--- a/src/Lean.v
++++ b/src/Lean.v
+@@ -361,6 +361,41 @@ Section strings.
+     rewrite <- Nat_pow_comm. eapply Nat_lt_to_N.
+   Qed.
+ 
++  Lemma LeanImport_Nat_le_trans (n m p : Nat) : n <= m -> m <= p -> n <= p.
++  Proof.
++    intros Hnm Hmp. induction Hmp.
++    - exact Hnm.
++    - constructor. exact IHHmp.
++  Qed.
++
++  Lemma LeanImport_Nat_lt_trans (n m p : Nat) : n < m -> m < p -> n < p.
++  Proof.
++    intros Hnm Hmp.
++    eapply LeanImport_Nat_le_trans; [ exact Hnm | ].
++    eapply LeanImport_Nat_le_trans; [ constructor; exact (Nat_le_refl m) | exact Hmp ].
++  Qed.
++
++  Lemma Nat_isValidChar_lt_pow32 (n : Nat) :
++    Nat_isValidChar n -> n < Nat_pow 2 32.
++  Proof.
++    intro Hvalid.
++    eapply LeanImport_Nat_lt_trans.
++    - destruct Hvalid as [Hsmall | Hlarge].
++      + eapply LeanImport_Nat_lt_trans; [ exact Hsmall | ].
++        exact (Nat_lt_to_N 0xd800 0x110000 Logic.eq_refl).
++      + destruct Hlarge as [Hlower Hupper]. exact Hupper.
++    - exact (Nat_lt_to_N_pow 0x110000 32 Logic.eq_refl).
++  Qed.
++
++  Definition Char_ofNatAux (n : Nat) (h : Nat_isValidChar n) : Char :=
++    Char_mk
++      (UInt32_ofBitVec
++         (BitVec_ofFin 32
++            (Fin_mk (Nat_pow 2 32) n (Nat_isValidChar_lt_pow32 n h))))
++      h.
++
++  Register Char_ofNatAux as lean.Char_ofNatAux.
++
+   Definition Fin_mk_N_pow (n : N) (val : N) (isLt : (val <? 2 ^ n)%N = true) : Fin (Nat_pow 2 (Nat_of_N n))
+     := Fin_mk (Nat_pow 2 (Nat_of_N n)) (Nat_of_N val) (Nat_lt_to_N_pow val n isLt).
+ 
+@@ -462,4 +497,4 @@ Register reflective_Char_mk_prim as lean.Char.mk.reflective_prim.
+ Goal forall a n, Nat_pow a (Nat_succ n) = Nat_mul (Nat_pow a n) a.
+ Proof.
+   intros. simpl. reflexivity.
+-Abort.
+\ No newline at end of file
++Abort.
+diff --git a/src/lean.ml b/src/lean.ml
+index 6eb7956..ee9667f 100644
+--- a/src/lean.ml
++++ b/src/lean.ml
+@@ -302,7 +302,7 @@ let to_universe map u =
+ 
+ (** Map from [n] to the global level standing for [Set+n] (not including n=0).
+ *)
+-let sets : Level.t Int.Map.t Summary.Ref.t =
++let sets : Level.t Int.Map.t ref =
+   Summary.ref ~name:"lean-set-surrogates" Int.Map.empty
+ 
+ type uconv = {
+@@ -367,7 +367,6 @@ let is_sets u =
+ 
+ (** Find or add a global level for Set+n *)
+ let rec level_of_sets uconv n =
+-  let open Summary.Ref in
+   if n = 0 then (uconv, Level.set)
+   else
+     try (uconv, Int.Map.find n !sets)
+@@ -423,7 +422,6 @@ let height_cache = Summary.ref ~name:"lean-heights" N.Map.empty
+ 
+ let rec height = function
+   | Const (c, _) ->
+-    let open Summary.Ref in
+     (try N.Map.find c !height_cache + 1
+      with Not_found ->
+        (* non constant, recursor, or just skipped *)
+@@ -435,7 +433,6 @@ let rec height = function
+   | Nat _ | String _ -> 0
+ 
+ let height n body =
+-  let open Summary.Ref in
+   match N.Map.find_opt n !height_cache with
+   | Some h -> h
+   | None ->
+@@ -639,7 +636,7 @@ let univ_entry_gen { map; levels; graph } ounivs =
+     List.fold_left (fun kept l -> Level.Set.add l kept) Level.Set.empty univs
+   in
+   let kept = Level.Set.add Level.set uset in
+-  let kept = Int.Map.fold (fun _ -> Level.Set.add) Summary.Ref.(!sets) kept in
++  let kept = Int.Map.fold (fun _ -> Level.Set.add) !sets kept in
+   let csts = UGraph.constraints_for ~kept graph in
+   let csts =
+     UnivConstraints.filter
+@@ -723,7 +720,7 @@ let get_predeclared_def defn n i =
+   else None
+ 
+ type predeclared_ind_kind = Eq | Nat | Nat_le | Or | And | Fin | UInt32 | BitVec | Char
+-type predeclared_def_kind = UInt32_size | Add | Mult | Pow | Nat_isValidChar
++type predeclared_def_kind = UInt32_size | Add | Mult | Pow | Nat_isValidChar | Char_ofNatAux
+ type predeclared_ind_as_def_kind = ULift_cumul
+ 
+ let get_predeclared_cnames (k : predeclared_ind_kind) n =
+@@ -788,6 +785,7 @@ let get_predeclared_def_any n i =
+       (Mult, [ "Nat"; "mul" ]);
+       (Pow, [ "Nat" ; "pow" ]);
+       (Nat_isValidChar, [ "Nat"; "isValidChar" ]);
++      (Char_ofNatAux, [ "Char"; "ofNatAux" ]);
+     ]
+ 
+ let get_predeclared_def_some n i =
+@@ -810,16 +808,15 @@ let nat_double = "Nat_double"
+     expect small instance lengths (experimentally at most 4 in the stdlib) so we
+     represent instantiations as bit fields, bit n is 1 iff universe n is
+     instantiated by SProp. *)
+-let declared : instantiation Int.Map.t N.Map.t Summary.Ref.t =
++let declared : instantiation Int.Map.t N.Map.t ref =
+   Summary.ref ~name:"lean-declared-instances" N.Map.empty
+ 
+-let entries : entry N.Map.t Summary.Ref.t = Summary.ref ~name:"lean-entries" N.Map.empty
++let entries : entry N.Map.t ref = Summary.ref ~name:"lean-entries" N.Map.empty
+ 
+-let squash_info : squashy N.Map.t Summary.Ref.t =
++let squash_info : squashy N.Map.t ref =
+   Summary.ref ~name:"lean-squash-info" N.Map.empty
+ 
+ let add_declared n i inst =
+-  let open Summary.Ref in
+   declared :=
+     N.Map.update n
+       (function
+@@ -996,7 +993,7 @@ let mk_list list uinst ty l =
+   in
+   mk_list_rec l
+ 
+-let mk_string char string list char_uinst mkChar s =
++let mk_char_list char list char_uinst mkChar s =
+   let codepoints =
+     try check_valid_codepoints (string_to_codepoints s)
+     with Failure msg as exn ->
+@@ -1004,8 +1001,7 @@ let mk_string char string list char_uinst mkChar s =
+       CErrors.user_err ~info Pp.(str msg)
+   in
+   let chars = List.map (mk_char mkChar) codepoints in
+-  let ls = mk_list list char_uinst char chars in
+-  Constr.(mkApp (mkConstructU ((string, 1), UVars.Instance.empty), [| ls |]))
++  mk_list list char_uinst char chars
+ 
+ (* [c] has type [indu] applied to [args] *)
+ let unfold_proj_case env evd ~field ~indu ~mib ~mip ~args c =
+@@ -1179,37 +1175,46 @@ let rec to_constr =
+       in
+       ret (nat_int nat double i)
+     | String s ->
+-      (* instantiate (N.append N.anon "Char") [] >>= fun char -> *)
+-      (* let (_, charu) = Constr.destInd char in *)
+       instantiate (N.append N.anon "String") [] >>= fun string ->
+-      let string, _ = Constr.destInd string in
+-      instantiate (N.append (N.append N.anon "String") "mk") []
+-      >>= fun string_mk ->
++      let _string, _ = Constr.destInd string in
++      instantiate (N.append (N.append N.anon "String") "ofByteArray") []
++      >>= fun string_of_byte_array ->
++      instantiate (N.append (N.append N.anon "List") "utf8Encode") []
++      >>= fun utf8_encode ->
++      instantiate
++        (N.append
++           (N.append (N.append N.anon "ByteArray") "IsValidUTF8")
++           "intro")
++        []
++      >>= fun valid_utf8_intro ->
++      instantiate
++        (N.append (N.append N.anon "Eq") "refl")
++        [ LeanExpr.U.Succ LeanExpr.U.Prop ]
++      >>= fun eq_refl ->
+       get_uconv >>= fun uconv ->
+-      let list, char =
++      let list, char, byte_array =
+         with_env_evm env uconv
+           (fun env evd () ->
+-            let ty =
+-              Retyping.get_type_of env evd (EConstr.of_constr string_mk)
+-            in
+-            let _, list_char, _ = EConstr.destProd evd ty in
++            let ty = Retyping.get_type_of env evd (EConstr.of_constr utf8_encode) in
++            let _, list_char, byte_array = EConstr.destProd evd ty in
+             let list, char =
+               match EConstr.destApp evd list_char with
+               | list, [| char |] -> (list, char)
+               | _ ->
+                 CErrors.user_err
+                   Pp.(
+-                    str "Invalid type for string constructor: "
++                    str "Invalid type for List.utf8Encode: "
+                     ++ Printer.pr_type_env env evd (EConstr.to_constr evd ty)
+                     ++ str " ("
+                     ++ Printer.pr_type_env env evd
+                          (EConstr.to_constr evd list_char)
+                     ++ str " should be an application of list to char)")
+             in
+-            (EConstr.to_constr evd list, EConstr.to_constr evd char))
++            ( EConstr.to_constr evd list,
++              EConstr.to_constr evd char,
++              EConstr.to_constr evd byte_array ))
+           ()
+       in
+-      (* instantiate (N.append N.anon "List") [] >>= fun list -> *)
+       let list, _ = Constr.destInd list in
+       get_uconv >>= fun uconv ->
+       let mkChar =
+@@ -1222,7 +1227,11 @@ let rec to_constr =
+             EConstr.to_constr evd mkChar)
+           ()
+       in
+-      ret (mk_string char string list UVars.Instance.empty mkChar s)
++      let chars = mk_char_list char list UVars.Instance.empty mkChar s in
++      let bytes = Constr.mkApp (utf8_encode, [| chars |]) in
++      let refl = Constr.mkApp (eq_refl, [| byte_array; bytes |]) in
++      let valid = Constr.mkApp (valid_utf8_intro, [| bytes; chars; refl |]) in
++      ret (Constr.mkApp (string_of_byte_array, [| bytes; valid |]))
+ 
+ and instantiate n univs uconv =
+   assert (List.length univs < Sys.int_size);
+@@ -1251,7 +1260,6 @@ and instantiate n univs uconv =
+   (uconv, Constr.mkRef (inst.ref, u))
+ 
+ and ensure_exists n i =
+-  let open Summary.Ref in
+   try !declared |> N.Map.find n |> Int.Map.find i
+   with Not_found ->
+     (* TODO can we end up asking for a ctor or eliminator before
+@@ -1268,7 +1276,7 @@ and ensure_exists n i =
+ and declare_def { name = n; ty; body; univs; hint; kernel_opaque } i =
+   let ref, algs =
+     match get_predeclared_def_some n i with
+-    | Some ((UInt32_size | Add | Mult | Pow | Nat_isValidChar), _, (def_name, c)) ->
++    | Some ((UInt32_size | Add | Mult | Pow | Nat_isValidChar | Char_ofNatAux), _, (def_name, c)) ->
+       (* Hack to let the user predeclare some constants
+          TODO make a more general Register-like API? *)
+       Feedback.msg_info Pp.(Id.print def_name ++ str " is predeclared");
+@@ -1304,7 +1312,7 @@ and declare_def { name = n; ty; body; univs; hint; kernel_opaque } i =
+         | AbbrevHint -> Conv_oracle.Expand
+         | OpaqueHint -> Conv_oracle.Level 1
+         | RegularHint h ->
+-          Summary.Ref.(height_cache := N.Map.add n h !height_cache);
++          height_cache := N.Map.add n h !height_cache;
+           Conv_oracle.Level (-h)
+       in
+       Redexpr.set_strategy false [ (strategy, [ Evaluable.EvalConstRef c ]) ]
+@@ -1409,7 +1417,7 @@ and declare_ind { name = n; params; ty; ctors; univs } i =
+       (* this case is for the ones without universes*)
+       Feedback.msg_info Pp.(Id.print ind_name ++ str " is predeclared");
+       let cnames = get_predeclared_cnames k n in
+-      let squashy = N.Map.get n Summary.Ref.(!squash_info) in
++      let squashy = N.Map.get n !squash_info in
+       (mind, [], ind_name, cnames, UContext.empty, squashy)
+     | None ->
+       let uconv = start_uconv univs i in
+@@ -1531,7 +1539,7 @@ and declare_ind { name = n; params; ty; ctors; univs } i =
+           mind_entry_variance = None;
+         }
+       in
+-      let squashy = N.Map.get n Summary.Ref.(!squash_info) in
++      let squashy = N.Map.get n !squash_info in
+       let coq_squashes =
+         if squashy.maybe_prop then coq_squashes graph (entry Finite) else false
+       in
+@@ -1753,7 +1761,6 @@ let squashify { name = n; params; ty; ctors; univs } =
+       { maybe_prop = true; always_prop; lean_squashes }
+ 
+ let squashify ind =
+-  let open Summary.Ref in
+   let s = squashify ind in
+   squash_info := N.Map.add ind.name s !squash_info
+ 
+@@ -1830,7 +1837,6 @@ let entry_name = function
+ | Quot name | Def { name } | Ax { name } | Ind { name } -> name
+ 
+ let add_entry entry =
+-  let open Summary.Ref in
+   let () =
+     match entry with
+     | Quot quot_name -> declare_quot quot_name
+@@ -1864,7 +1870,6 @@ let pp_parser_state = function
+   | NdjsonParser state -> LeanParseNdjson.pp_state state
+ 
+ let finish state =
+-  let open Summary.Ref in
+   let max_univs, cnt =
+     N.Map.fold
+       (fun _ entry (m, cnt) ->
+@@ -2067,7 +2072,6 @@ let rec do_input state ~from ~until ch =
+ let pstate = Summary.ref ~name:"lean-parse-state" LeanParse.empty_state
+ 
+ let lean_obj =
+-  let open Summary.Ref in
+   let cache (pstatev, setsv, declaredv, entriesv, squash_infov, heightv) =
+     pstate := pstatev;
+     sets := setsv;
+@@ -2087,7 +2091,6 @@ let lean_obj =
+     }
+ 
+ let import ~from ~until f =
+-  let open Summary.Ref in
+   Stdlib.(lcnt := 1);
+   let initial_pstate =
+     let rec first_non_empty_line ch =

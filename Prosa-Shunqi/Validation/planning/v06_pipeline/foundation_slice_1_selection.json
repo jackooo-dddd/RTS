@@ -1,0 +1,59 @@
+{
+  "slice": "FOUNDATION_SLICE_1",
+  "created_at": "2026-09-20 21:04:00 HKT",
+  "created_before_production_translation": true,
+  "authority": {
+    "prosa_version": "v0.6",
+    "source_commit": "414e66760333eaa4ef78c685bcf53291c527a548",
+    "file_dag_policy": "authoritative readiness criterion",
+    "declaration_dag_policy": "fine-grained ordering/context aid only"
+  },
+  "selection_policy": {
+    "mandatory": ["behavior/time.v"],
+    "maximum_additional_files": 2,
+    "selected_additional_files": 0,
+    "reason_for_no_additional_file": "The first production slice prioritizes a fully closed actual-artifact semantic-validation path. The two smallest Layer-0 files have no named public declarations; the next eligible files introduce notation/big-operator or eqType/List/Prop-SProp boundaries that would enlarge the first acceptance slice."
+  },
+  "selected_files": [
+    {
+      "source_file": "behavior/time.v",
+      "file_layer": 0,
+      "direct_internal_dependencies": [],
+      "direct_external_dependencies": [],
+      "public_declaration_count": 2,
+      "public_declarations": ["duration", "instant"],
+      "loc": 8,
+      "migration_reuse_information": {
+        "REUSE_AFTER_REVALIDATION": 2,
+        "ADAPT_OLD_LEAN": 0,
+        "REFERENCE_ONLY": 0,
+        "NEW_TRANSLATION": 0
+      },
+      "why_selected": "Mandatory Layer-0 time representation root; no internal or external dependencies; both Nat aliases have approved representation policy and prior implementation reference, but require fresh v0.6 validation.",
+      "FILE_DAG_READY": true
+    }
+  ],
+  "considered_not_selected": [
+    {
+      "source_file": "util/epsilon.v",
+      "reason": "0 named public declarations"
+    },
+    {
+      "source_file": "util/int.v",
+      "reason": "0 named public declarations"
+    },
+    {
+      "source_file": "util/rel.v",
+      "reason": "Introduces eqType/List/Bool membership and higher-order Prop/SProp correspondence; deferred to a later focused foundation slice"
+    },
+    {
+      "source_file": "util/notation.v",
+      "reason": "Although it has one simple definition, whole-file fidelity also requires an approved notation/big-concatenation treatment"
+    },
+    {
+      "source_file": "util/bigop.v",
+      "reason": "Explicitly deprioritized big-operator theorem boundary"
+    }
+  ],
+  "selection_status": "READY"
+}
