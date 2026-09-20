@@ -69,9 +69,30 @@ def main() -> None:
         else:
             row["type_evidence_status"] = "UNRESOLVED_CHECK_OUTPUT"
     with args.inventory.open("w", newline="") as stream:
-        writer = csv.DictWriter(stream, fieldnames=list(rows[0]))
+        writer = csv.DictWriter(stream, fieldnames=list(rows[0]), lineterminator="\n")
         writer.writeheader(); writer.writerows(rows)
     args.evidence.write_text(json.dumps(evidence, indent=2, sort_keys=True) + "\n")
+    edge_path = args.inventory.with_name("declaration_dag_edges.csv")
+    dag_path = args.inventory.with_name("declaration_dag.json")
+    if edge_path.exists():
+        edges = list(csv.DictReader(edge_path.open()))
+        for edge in edges:
+            categories = {item for item in edge["evidence_categories"].split(";") if item}
+            if edge["reference_region"] == "TYPE_OR_STRUCTURE" and edge["dependent"] in evidence:
+                categories.add("ELABORATED_TYPE_CONFIRMED")
+            edge["evidence_categories"] = ";".join(sorted(categories))
+        with edge_path.open("w", newline="") as stream:
+            writer = csv.DictWriter(stream, fieldnames=list(edges[0]), lineterminator="\n")
+            writer.writeheader(); writer.writerows(edges)
+        if dag_path.exists():
+            dag = json.loads(dag_path.read_text())
+            dag["edges"] = edges
+            for node in dag["nodes"]:
+                node["elaborated_type_status"] = (
+                    "ELABORATED_TYPE_CONFIRMED" if node["qualified_name"] in evidence
+                    else "UNRESOLVED_EXTERNAL"
+                )
+            dag_path.write_text(json.dumps(dag, indent=2, sort_keys=True) + "\n")
     expected = sum("/refinements/" not in row["source_file"] for row in rows)
     print(json.dumps({"expected": expected, "captured": len(evidence), "missing": expected - len(evidence)}))
     if len(evidence) != expected:

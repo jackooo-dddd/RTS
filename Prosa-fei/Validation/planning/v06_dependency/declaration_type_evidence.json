@@ -994,25 +994,10 @@
     "rendered_check": "@job_mapping_uniq\n     : forall Job1 Job2 : JobType, arrival_sequence Job1 -> (Job1 -> seq Job2) -> Prop",
     "sha256": "3131a613b7c8431ed8dbce2bf9bf393175dde901c129d628a2e712e9c46e119a"
   },
-  "prosa.analysis.definitions.delay_propagation.propagated_arrival_curve": {
-    "normalized_check": "@propagated_arrival_curve : forall Task1 Task2 : TaskType, (Task2 -> Task1) -> (Task2 -> duration) -> MaxArrivals Task1 -> MaxArrivals Task2",
-    "rendered_check": "@propagated_arrival_curve\n     : forall Task1 Task2 : TaskType, (Task2 -> Task1) -> (Task2 -> duration) -> MaxArrivals Task1 -> MaxArrivals Task2",
-    "sha256": "f3d2186e7354072e92f17da798e59e8cd88f9dc8a93dfa774c139dd9b8a61a5e"
-  },
   "prosa.analysis.definitions.delay_propagation.propagated_arrival_sequence": {
     "normalized_check": "@propagated_arrival_sequence : forall Job1 Job2 : JobType, JobArrival Job1 -> (Job2 -> Job1) -> arrival_sequence Job1 -> (Job1 -> seq Job2) -> (Job2 -> duration) -> instant -> seq Job2",
     "rendered_check": "@propagated_arrival_sequence\n     : forall Job1 Job2 : JobType, JobArrival Job1 -> (Job2 -> Job1) -> arrival_sequence Job1 -> (Job1 -> seq Job2) -> (Job2 -> duration) -> instant -> seq Job2",
     "sha256": "c4b8bc139341082db66a5448eb8b22b51e288ca6edba6eea11c5855435246b32"
-  },
-  "prosa.analysis.definitions.delay_propagation.release_as_arrival": {
-    "normalized_check": "@release_as_arrival : forall Job : JobType, JobArrival Job -> JobJitter Job -> JobArrival Job",
-    "rendered_check": "@release_as_arrival\n     : forall Job : JobType, JobArrival Job -> JobJitter Job -> JobArrival Job",
-    "sha256": "f9ac14ac446cda40e475503a8a7d77247a6e88ea644e4b1df70095a5c8e6207f"
-  },
-  "prosa.analysis.definitions.delay_propagation.release_curve": {
-    "normalized_check": "@release_curve : forall Task : TaskType, MaxArrivals Task -> TaskJitter Task -> MaxArrivals Task",
-    "rendered_check": "@release_curve\n     : forall Task : TaskType, MaxArrivals Task -> TaskJitter Task -> MaxArrivals Task",
-    "sha256": "e3ace1613b560f24b72257f6adcbd28d9e2c3a6a9e94843fb2e21cb196dd2210"
   },
   "prosa.analysis.definitions.delay_propagation.release_sequence": {
     "normalized_check": "@release_sequence : forall Job : JobType, JobArrival Job -> JobJitter Job -> arrival_sequence Job -> instant -> seq Job",
@@ -6464,6 +6449,41 @@
     "rendered_check": "suffix_sum\n     : seq nat -> nat -> nat",
     "sha256": "001f91299ce3a027735d0d574bf0fd6167e5cf150136e443e6a3d9fc80d9d075"
   },
+  "prosa.implementation.definitions.task.ConcreteMaxArrivals": {
+    "normalized_check": "ConcreteMaxArrivals : MaxArrivals concrete_task",
+    "rendered_check": "ConcreteMaxArrivals\n     : MaxArrivals concrete_task",
+    "sha256": "e340eca060bb419f5dac4c1eeadbe2a6885bc7d1de7d13789e349a6cdf0153de"
+  },
+  "prosa.implementation.definitions.task.JobArrival": {
+    "normalized_check": "task.JobArrival : JobArrival concrete_job",
+    "rendered_check": "task.JobArrival\n     : JobArrival concrete_job",
+    "sha256": "f2d079f586a9c1afa7f29165ed27c1da484fec6cef9eb93167b7310b26499673"
+  },
+  "prosa.implementation.definitions.task.JobCost": {
+    "normalized_check": "task.JobCost : JobCost concrete_job",
+    "rendered_check": "task.JobCost\n     : JobCost concrete_job",
+    "sha256": "4f5a41b284715528ea94fc08dca44ad6acc1564280cb7d3fc79299fee46cb1b2"
+  },
+  "prosa.implementation.definitions.task.JobTask": {
+    "normalized_check": "task.JobTask : JobTask concrete_job concrete_task",
+    "rendered_check": "task.JobTask\n     : JobTask concrete_job concrete_task",
+    "sha256": "58b4f1bfc4cc63c79a06bb014c09e14223211c44b98ced8fc0d24dd51588f70a"
+  },
+  "prosa.implementation.definitions.task.TaskCost": {
+    "normalized_check": "task.TaskCost : TaskCost concrete_task",
+    "rendered_check": "task.TaskCost\n     : TaskCost concrete_task",
+    "sha256": "f6ff912cb12934d9fb0c3c38d74d81f57bd42239f5ec04dfb5f1a4ba099151cf"
+  },
+  "prosa.implementation.definitions.task.TaskDeadline": {
+    "normalized_check": "task.TaskDeadline : TaskDeadline concrete_task",
+    "rendered_check": "task.TaskDeadline\n     : TaskDeadline concrete_task",
+    "sha256": "5f5283614ecafd0a531794c657da98fd3b93de98ad620d193c90a1286a40576e"
+  },
+  "prosa.implementation.definitions.task.TaskPriority": {
+    "normalized_check": "TaskPriority : numeric_fixed_priority.TaskPriority concrete_task",
+    "rendered_check": "TaskPriority\n     : numeric_fixed_priority.TaskPriority concrete_task",
+    "sha256": "e4dc24587e1349413d59e3c5f514ecbadea4036500de6189dcba8e691bcdf438"
+  },
   "prosa.implementation.definitions.task.concrete_job": {
     "normalized_check": "concrete_job : Type",
     "rendered_check": "concrete_job\n     : Type",
@@ -7024,6 +7044,11 @@
     "rendered_check": "@transitive_priorities_JLFP_implies_JLDP\n     : forall (Job : JobType) (jlfp : JLFP_policy Job), transitive_job_priorities jlfp -> transitive_priorities jlfp",
     "sha256": "e65b16d75bbcf464066bd59b5ee070e7f87984e584f73e019b0f340b8df00ca3"
   },
+  "prosa.model.priority.deadline_monotonic.DM": {
+    "normalized_check": "DM : forall Task : TaskType, TaskDeadline Task -> FP_policy Task",
+    "rendered_check": "DM\n     : forall Task : TaskType, TaskDeadline Task -> FP_policy Task",
+    "sha256": "218d8fb3733e780f866b7d12c9b8bdcf930d814dd1b7fc38f8694903946bb7ec"
+  },
   "prosa.model.priority.deadline_monotonic.DM_is_reflexive": {
     "normalized_check": "@DM_is_reflexive : forall (Task : TaskType) (H : TaskDeadline Task), reflexive_task_priorities (DM Task)",
     "rendered_check": "@DM_is_reflexive\n     : forall (Task : TaskType) (H : TaskDeadline Task), reflexive_task_priorities (DM Task)",
@@ -7139,6 +7164,11 @@
     "rendered_check": "@transitive_task_priorities\n     : forall Task : TaskType, FP_policy Task -> Prop",
     "sha256": "9938a0645050321794a6d760972a14e9c91a1c946cb2cf0b85679dcc505310ab"
   },
+  "prosa.model.priority.edf.EDF": {
+    "normalized_check": "EDF : forall Job : JobType, JobDeadline Job -> JLFP_policy Job",
+    "rendered_check": "EDF\n     : forall Job : JobType, JobDeadline Job -> JLFP_policy Job",
+    "sha256": "1b881c20e4091be69f35de5011295bd3f88b6576c26d4d8967a4efa48f1e1a11"
+  },
   "prosa.model.priority.edf.EDF_is_reflexive": {
     "normalized_check": "@EDF_is_reflexive : forall (Job : JobType) (H : JobDeadline Job), reflexive_job_priorities (EDF Job)",
     "rendered_check": "@EDF_is_reflexive\n     : forall (Job : JobType) (H : JobDeadline Job), reflexive_job_priorities (EDF Job)",
@@ -7154,6 +7184,16 @@
     "rendered_check": "@EDF_is_transitive\n     : forall (Job : JobType) (H : JobDeadline Job), transitive_job_priorities (EDF Job)",
     "sha256": "9ccd3c5e0eab4c8ffd04deffd8bc6fb376bfb69b8a1c842dcf9cdc04df1a7173"
   },
+  "prosa.model.priority.elf.ELF": {
+    "normalized_check": "@ELF : forall Task : TaskType, PriorityPoint Task -> forall Job : JobType, JobArrival Job -> JobTask Job Task -> FP_policy Task -> JLFP_policy Job",
+    "rendered_check": "@ELF\n     : forall Task : TaskType, PriorityPoint Task -> forall Job : JobType, JobArrival Job -> JobTask Job Task -> FP_policy Task -> JLFP_policy Job",
+    "sha256": "9749943aa7f1af9bef8ecafd39a9176f832eac6dd9a5a9eb94ac2dc9b5346183"
+  },
+  "prosa.model.priority.fifo.FIFO": {
+    "normalized_check": "FIFO : forall Job : JobType, JobArrival Job -> JLFP_policy Job",
+    "rendered_check": "FIFO\n     : forall Job : JobType, JobArrival Job -> JLFP_policy Job",
+    "sha256": "96bbf5b62ed9cab1578ff5f6ae36d554e9d2623446c1914c9d1e62aac3a0b7e6"
+  },
   "prosa.model.priority.fifo.FIFO_is_reflexive": {
     "normalized_check": "@FIFO_is_reflexive : forall (Job : JobType) (H : JobArrival Job), reflexive_job_priorities (FIFO Job)",
     "rendered_check": "@FIFO_is_reflexive\n     : forall (Job : JobType) (H : JobArrival Job), reflexive_job_priorities (FIFO Job)",
@@ -7168,6 +7208,11 @@
     "normalized_check": "@FIFO_is_transitive : forall (Job : JobType) (H : JobArrival Job), transitive_job_priorities (FIFO Job)",
     "rendered_check": "@FIFO_is_transitive\n     : forall (Job : JobType) (H : JobArrival Job), transitive_job_priorities (FIFO Job)",
     "sha256": "1008089c10e447038283f9b7d62b12525a6103bb653a3d9b16f4468f62ce492c"
+  },
+  "prosa.model.priority.gel.GEL": {
+    "normalized_check": "GEL : forall (Job : JobType) (Task : TaskType), PriorityPoint Task -> JobArrival Job -> JobTask Job Task -> JLFP_policy Job",
+    "rendered_check": "GEL\n     : forall (Job : JobType) (Task : TaskType), PriorityPoint Task -> JobArrival Job -> JobTask Job Task -> JLFP_policy Job",
+    "sha256": "a06ed57a1b81d4d99247d426bfcf6ce0ca2a2eddae096dba1f87a1e56e4f9393"
   },
   "prosa.model.priority.gel.GEL_is_reflexive": {
     "normalized_check": "@GEL_is_reflexive : forall (Task : TaskType) (H : PriorityPoint Task) (Job : JobType) (H0 : JobArrival Job) (H1 : JobTask Job Task), reflexive_job_priorities (GEL Job Task)",
@@ -7233,6 +7278,11 @@
     "normalized_check": "numeric_fixed_priority.TaskPriority : TaskType -> Type",
     "rendered_check": "numeric_fixed_priority.TaskPriority\n     : TaskType -> Type",
     "sha256": "db8379235841d9b2aa5beb4018cc0f645def6895fc1628fd780cfd81bd71ad2a"
+  },
+  "prosa.model.priority.rate_monotonic.RM": {
+    "normalized_check": "RM : forall Task : TaskType, SporadicModel Task -> FP_policy Task",
+    "rendered_check": "RM\n     : forall Task : TaskType, SporadicModel Task -> FP_policy Task",
+    "sha256": "7156a442443636625c55f1c1e49650f7a160faaf7422bf80407ce4c594bc82a7"
   },
   "prosa.model.priority.rate_monotonic.RM_is_reflexive": {
     "normalized_check": "@RM_is_reflexive : forall (Task : TaskType) (H : SporadicModel Task), reflexive_task_priorities (RM Task)",

@@ -39,7 +39,9 @@ constructing declaration-level graphs.
 - Initial graph construction found 357 nodes, 1,358 internal file edges, 30
   layers, and no file-level strongly connected component with more than one
   node.
-- Initial public-declaration extraction found 2,429 source declarations. Proof
+- Initial public-declaration extraction found 2,429 source declarations (this
+  baseline was later corrected to 2,439 after recognizing attributed named
+  instances). Proof
   references are intentionally excluded: theorem edges are taken only from
   references whose `.glob` positions lie in the theorem statement command;
   computational declarations include both type and body references.
@@ -50,9 +52,9 @@ elaborated Rocq type fingerprints for every buildable declaration. The 14
 refinement files are expected to retain an explicit unresolved type-evidence
 status until CoqEAL is installed.
 
-### 2026-09-20 18:18:29 HKT — elaborated inventory and graph audit completed
+### 2026-09-20 18:18:29 HKT — initial elaborated inventory (superseded)
 
-- All **2,190** declarations in the 343 buildable main-package files were
+- At this stage **2,190** declarations in the 343 buildable main-package files were
   successfully resolved by fully qualified name and checked with Rocq
   `Check @declaration`; normalized rendered types and SHA-256 fingerprints are
   in `declaration_type_evidence.json` and `declaration_inventory.csv`.
@@ -62,7 +64,7 @@ status until CoqEAL is installed.
 - Every one of the **1,359** final internal file edges is present in Rocq's
   `coqdep` output. Source parsing supplies only the `Require Import` versus
   `Require Export` label; it does not invent file edges.
-- The final declaration graph contains **4,542** direct edges: 3,077 type,
+- This initial declaration graph contained **4,542** direct edges: 3,077 type,
   1,306 body, 91 structure-field, and 68 instance dependencies.
 - Neither the file graph nor the extracted declaration graph has a non-trivial
   strongly connected component. The longest file chain has 30 nodes; the
@@ -75,7 +77,7 @@ status until CoqEAL is installed.
 | Item | Recorded value |
 |---|---|
 | Authoritative Prosa source | v0.6, commit `414e66760333eaa4ef78c685bcf53291c527a548` |
-| Current RTS repository | `1e18e33c891dc529896bde2c01670d674ae60ade` |
+| Current RTS repository at hardened reproduction | `1996f0829f936973299ca8af13d8190a5ffe97df` |
 | Frozen current Lean tree | Git tree `7426e874bd049e6f007b2695ef13f7209a0a1f8f` |
 | Rocq used for source build | 9.0.1, OCaml 4.14.2, opam switch `prosa-0.6` |
 | MathComp | 2.4.0; MathComp-Zify 1.7.0+2.4+9.0 |
@@ -145,14 +147,16 @@ The full chain is stored in `file_dag.json` and shown in
 
 ### Public declarations and declaration dependencies
 
-The source-level inventory contains **2,429 public declarations**. It excludes
+The hardened source-level inventory contains **2,439 public declarations**. It excludes
 Section variables/hypotheses, local `Let`s, and compiler-generated
 constructors/recursors/projections. All 44 source `Class`/`Record`/`Structure`
 declarations have their source fields recorded separately.
 Anonymous `HB.instance Definition _` commands are treated as generated
 Hierarchy Builder implementation artifacts rather than named public source
 declarations; their effects remain visible through elaborated types and
-instance references.
+instance references. Anonymous Rocq `Instance : ...` commands likewise do not
+become named public inventory nodes; the sole `Defined.` case is recorded
+separately in the declaration-method audit.
 
 | Source kind | Count |
 |---|---:|
@@ -160,7 +164,7 @@ instance references.
 | Definition | 778 |
 | Corollary | 149 |
 | Theorem | 101 |
-| Instance | 95 |
+| Instance | 105 |
 | Fact | 49 |
 | Class | 40 |
 | Remark | 39 |
@@ -169,20 +173,20 @@ instance references.
 | Structure | 2 |
 | Record | 2 |
 
-For 2,190 main-package declarations, the final post-elaboration type evidence
+For 2,200 main-package declarations, the final post-elaboration type evidence
 comes from Rocq itself (`Check @fully.qualified.name`) after compiling the exact
 pinned source. The 239 refinement declarations retain source-command
 fingerprints and an explicit unresolved status because their CoqEAL boundary
 is absent.
 
-The translation-relevant graph contains **4,542** edges:
+The hardened explicit translation-relevant graph contains **4,628** edges:
 
 | Edge type | Count |
 |---|---:|
-| `TYPE_DEPENDENCY` | 3,077 |
-| `BODY_DEPENDENCY` | 1,306 |
+| `TYPE_DEPENDENCY` | 3,079 |
+| `BODY_DEPENDENCY` | 1,329 |
 | `STRUCTURE_FIELD_DEPENDENCY` | 91 |
-| `INSTANCE_DEPENDENCY` | 68 |
+| `INSTANCE_DEPENDENCY` | 129 |
 
 For lemmas/theorems, only `.glob` references located within the final statement
 command are included. References in `Proof ... Qed` are absent by design. For
@@ -190,10 +194,12 @@ computational/structural declarations, references in both the declared type
 and definition body are included. Thus this graph is not a disguised theorem
 proof-dependency graph.
 
-The declaration graph has 14 layers and no detected cycle. Dependency
-extraction is complete for the 2,190 compiled main declarations and explicitly
-`UNRESOLVED` for all 239 refinement declarations; no guessed refinement edges
-are inserted.
+The declaration graph has 14 layers and no detected cycle. It verifies explicit
+translation-relevant `.glob` references and mapped generated symbols for the
+2,200 compiled main declarations; it does **not** claim that absent edges prove
+absence of implicit typeclass/canonical/HB dependencies. All 239 refinement
+declarations remain `UNRESOLVED_EXTERNAL`; no guessed refinement edge is
+inserted.
 
 ### Graph-derived foundations and representation risk
 
@@ -207,21 +213,21 @@ The highest-impact semantic declarations are:
 
 | Declaration | Kind | Declaration layer | Transitive dependents |
 |---|---|---:|---:|
-| `behavior.job.JobType` | Definition | 0 | 1,397 |
-| `behavior.time.instant` | Definition | 0 | 1,347 |
-| `behavior.job.work` | Definition | 0 | 1,205 |
+| `behavior.job.JobType` | Definition | 0 | 1,403 |
+| `behavior.time.instant` | Definition | 0 | 1,370 |
+| `behavior.job.work` | Definition | 0 | 1,206 |
 | `behavior.schedule.ProcessorState` | Class | 1 | 915 |
 | `behavior.arrival_sequence.arrivals_at` | Definition | 1 | 779 |
-| `model.task.concept.TaskType` | Definition | 0 | 758 |
+| `model.task.concept.TaskType` | Definition | 0 | 774 |
 | `behavior.schedule.service_in` | Definition | 2 | 684 |
 | `behavior.service.service_at` | Definition | 5 | 669 |
-| `behavior.time.duration` | Definition | 0 | 630 |
-| `behavior.job.JobCost` | Class | 1 | 555 |
+| `behavior.time.duration` | Definition | 0 | 643 |
+| `behavior.job.JobCost` | Class | 1 | 556 |
 | `behavior.service.service_during` | Definition | 5 | 553 |
-| `behavior.job.JobArrival` | Class | 1 | 523 |
+| `behavior.job.JobArrival` | Class | 1 | 535 |
 | `behavior.arrival_sequence.arrivals_between` | Definition | 2 | 497 |
 | `behavior.service.service` | Definition | 5 | 475 |
-| `model.task.concept.JobTask` | Class | 1 | 440 |
+| `model.task.concept.JobTask` | Class | 1 | 452 |
 | `behavior.schedule.scheduled_in` | Definition | 2 | 397 |
 | `behavior.service.scheduled_at` | Definition | 3 | 386 |
 | `behavior.service.completed_by` | Definition | 6 | 358 |
@@ -309,12 +315,12 @@ No declaration has been translated in this work, and no file under
 2. **Internal file edges:** 1,359.
 3. **External boundaries:** 178 direct occurrences, 24 modules, 4 library
    roots.
-4. **Public declarations:** 2,429.
+4. **Public declarations:** 2,439.
 5. **Layers:** 30 file layers; 14 extracted declaration layers.
 6. **Lowest foundations:** the 11 layer-0 files above; semantic roots are led
    by `instant`, `duration`, `JobType`, `work`, and `TaskType`.
 7. **Maximum fan-out:** `util/tactics.v` at file level (346); `JobType` at
-   declaration level (1,397).
+   declaration level (1,403 after generated-symbol hardening).
 8. **Highest representation risk:** `JobType`, time/work naturals,
    `ProcessorState`, `TaskType`/job-task mapping, arrivals, and the
    service/schedule chain, as quantified above.
@@ -324,7 +330,7 @@ No declaration has been translated in this work, and no file under
 10. **Recommended order:** ascending machine-generated file or declaration
     layer only; no current Lean or v0.4 structure was used to choose it.
 
-### 2026-09-20 18:21:39 HKT — clean reproduction passed
+### 2026-09-20 18:21:39 HKT — Prompt 1 baseline reproduction (superseded declaration counts)
 
 `./Validation/planning/v06_dependency/reproduce.sh` completed successfully.
 It regenerated the 357-file inventory, all 1,359 file edges, the 2,429
@@ -336,10 +342,95 @@ coverage, and type-evidence classification checks all passed. Graphviz produced
 Lean tree remained exactly Git object
 `7426e874bd049e6f007b2695ef13f7209a0a1f8f`.
 
-### 2026-09-20 18:23:35 HKT — final consistency audit
+### 2026-09-20 18:23:35 HKT — Prompt 1 baseline consistency audit (superseded declaration counts)
 
 Final assertions passed: 357 unique source files, 1,359 `coqdep`-verified
 internal edges, 2,429 unique public declaration names, 4,542 declaration
 statement/body edges, no graph cycles, 2,190 elaborated type checks, and 239
 explicit CoqEAL-boundary declarations. `git diff --check` still passes and
 `git status` reports no change under `Prosa-fei/Prosa/`.
+
+## Declaration-DAG hardening addendum
+
+### 2026-09-20 18:57:51 HKT — evidence model corrected
+
+The earlier phrase “complete for 2,190 declarations” was too strong. `.glob`
+source-reference locations establish explicit dependencies, but absence of a
+reference does not establish absence of elaborator-inserted typeclass,
+canonical-structure, coercion, or HB dependencies. The file DAG remains
+unchanged and authoritative; the declaration DAG is being reclassified as an
+explicit fine-grained scheduling aid.
+
+The hardening pass also found a concrete inventory-parser omission: named
+`#[export]` and same-line `#[global,...]` instances were not all recognized.
+The parser now handles attributes and adds the missing named public instances.
+This is a declaration-inventory correction, not a file-DAG change.
+
+Generated-symbol mapping now covers source-span constructors/projections and
+unambiguous HB symbols without adding them as public declaration nodes. The
+current pre-reproduction result contains 93 generated-symbol mappings and 734
+edges using such mappings. Seventy-one referenced local/generated symbols have
+no unambiguous public owner and remain explicitly unresolved rather than being
+guessed.
+
+The entire pinned tree contains one `Defined.` occurrence: the anonymous global
+`RewriteRelation le` instance in `util/setoid.v`. It has zero proof-body
+references and is not a named public inventory node, so no named computational
+body edge was lost. The extractor nevertheless now extends any future named
+computational `... Proof ... Defined` span through `Defined.`.
+
+### 2026-09-20 19:08:32 HKT — hardened clean reproduction passed
+
+The hardened `reproduce.sh` completed from the pinned source and captured
+2,200/2,200 buildable elaborated declaration types. Final statuses are:
+
+```text
+FILE_DAG_STATUS = VERIFIED_COMPLETE_FOR_PINNED_SOURCE
+
+DECLARATION_DAG_STATUS =
+VERIFIED_EXPLICIT_TRANSLATION_RELEVANT_DEPENDENCIES
+WITH_DOCUMENTED_IMPLICIT/GENERATED LIMITATIONS
+```
+
+The file graph is semantically unchanged: comparison with the Prompt 1
+baseline confirms the exact same 1,359 edge identities and the same layer for
+all 357 files (30 layers, zero cycles). Generated CSV files now use canonical
+LF line endings and SCC traversal is deterministic; these are serialization
+changes only.
+
+The final declaration inventory/graph contains:
+
+- 2,439 named public source declarations: 2,200 elaborated main-package
+  declarations plus 239 explicit CoqEAL-boundary declarations;
+- 4,628 explicit/mapped direct edges: 3,079 type, 1,329 body, 91
+  structure-field, and 129 instance edges;
+- 3,916 `EXPLICIT_GLOB_DEPENDENCY` edge occurrences;
+- 3,263 `ELABORATED_TYPE_CONFIRMED` edge occurrences (confirmation of the
+  dependent final type, not proof of edge-set completeness);
+- 734 `GENERATED_SYMBOL_MAPPED` edge occurrences;
+- 93 generated-symbol mappings: 59 projections, 21 constructors, and 13 HB
+  generated definitions;
+- 71 referenced local/generated symbols deliberately left unresolved because
+  no unique public source owner can be justified;
+- confidence: 611 `HIGH_EXPLICIT_AND_GENERATED`, 1,589 `EXPLICIT_ONLY`, and
+  239 `UNRESOLVED_EXTERNAL` declarations.
+
+The authoritative scheduling rule is now explicit: `file_layers.csv` is the
+mandatory readiness criterion. `declaration_layers.csv` may refine ordering
+only inside an already-ready file context. A missing declaration edge never
+establishes independence from implicit instance/canonical/HB resolution.
+
+Detailed evidence is in `declaration_dependency_method.md` and the requested
+14-declaration chain audit is in `foundation_dependency_audit.md`. The latter
+includes each actual elaborated Rocq type, official source body, direct edges,
+generated-symbol mappings, unresolved risk, and confidence classification.
+`git diff --check` passes, and no path under `Prosa-fei/Prosa/` changed.
+
+### 2026-09-20 19:11:41 HKT — final hardening audit
+
+After the last method/manifest update, a further full reproduction passed:
+2,200/2,200 elaborated checks, 357/357 file coverage, all declaration evidence
+classifications, the single zero-reference `Defined.` case, all 93 generated
+mappings, and all 14 foundational audit entries were checked again.
+`HARDENING_FINAL_AUDIT_PASS` and `git diff --check` both succeeded. Production
+Lean remains untouched.

@@ -52,6 +52,8 @@ python3 "$SCRIPT_DIR/elaborate_declaration_types.py" merge \
   --inventory "$SCRIPT_DIR/declaration_inventory.csv" \
   --probe-output "$LOG_DIR/elaborated_type_probe.stdout" \
   --evidence "$SCRIPT_DIR/declaration_type_evidence.json" | tee "$LOG_DIR/type_probe_merge.log"
+python3 "$SCRIPT_DIR/harden_declaration_dependency_docs.py" \
+  --source "$SOURCE_DIR" --output "$SCRIPT_DIR" | tee "$LOG_DIR/declaration_hardening_docs.log"
 
 if command -v dot >/dev/null 2>&1; then
   dot -Tsvg "$SCRIPT_DIR/file_dag.dot" -o "$SCRIPT_DIR/file_dag.svg"
@@ -87,6 +89,11 @@ declarations = list(csv.DictReader((out / "declaration_inventory.csv").open()))
 assert all(row["type_evidence_status"] in {
     "ELABORATED_ROCQ_CHECK", "UNRESOLVED_EXTERNAL_BUILD_BOUNDARY_COQEAL"
 } for row in declarations), "unclassified declaration type evidence"
+assert all(row["implicit_dependency_status"] in {
+    "UNRESOLVED_IMPLICIT_DEPENDENCY", "UNRESOLVED_EXTERNAL"
+} for row in csv.DictReader((out / "declaration_layers.csv").open()))
+assert (out / "foundation_dependency_audit.md").exists()
+assert (out / "declaration_dependency_method.md").exists()
 print(f"completeness: {len(source_files)} files, exactly once")
 PY
 

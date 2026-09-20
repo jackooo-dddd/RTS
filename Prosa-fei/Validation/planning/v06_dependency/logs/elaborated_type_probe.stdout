@@ -786,10 +786,6 @@ BEGIN|prosa.analysis.definitions.delay_propagation.valid_delay_propagation_mappi
 @valid_delay_propagation_mapping
      : forall (Task1 Task2 : TaskType) (Job1 Job2 : JobType), JobTask Job1 Task1 -> JobTask Job2 Task2 -> JobArrival Job1 -> JobArrival Job2 -> (Job2 -> Job1) -> (Task2 -> Task1) -> (Task2 -> duration) -> seq Task2 -> Prop
 END|prosa.analysis.definitions.delay_propagation.valid_delay_propagation_mapping
-BEGIN|prosa.analysis.definitions.delay_propagation.propagated_arrival_curve
-@propagated_arrival_curve
-     : forall Task1 Task2 : TaskType, (Task2 -> Task1) -> (Task2 -> duration) -> MaxArrivals Task1 -> MaxArrivals Task2
-END|prosa.analysis.definitions.delay_propagation.propagated_arrival_curve
 BEGIN|prosa.analysis.definitions.delay_propagation.propagated_arrival_sequence
 @propagated_arrival_sequence
      : forall Job1 Job2 : JobType, JobArrival Job1 -> (Job2 -> Job1) -> arrival_sequence Job1 -> (Job1 -> seq Job2) -> (Job2 -> duration) -> instant -> seq Job2
@@ -802,14 +798,6 @@ BEGIN|prosa.analysis.definitions.delay_propagation.valid_arr_seq_propagation_map
 @valid_arr_seq_propagation_mapping
      : forall (Task2 : TaskType) (Job1 Job2 : JobType), JobTask Job2 Task2 -> JobArrival Job1 -> JobArrival Job2 -> (Job2 -> Job1) -> (Task2 -> duration) -> arrival_sequence Job1 -> (Job1 -> seq Job2) -> (Job2 -> duration) -> seq Task2 -> Prop
 END|prosa.analysis.definitions.delay_propagation.valid_arr_seq_propagation_mapping
-BEGIN|prosa.analysis.definitions.delay_propagation.release_as_arrival
-@release_as_arrival
-     : forall Job : JobType, JobArrival Job -> JobJitter Job -> JobArrival Job
-END|prosa.analysis.definitions.delay_propagation.release_as_arrival
-BEGIN|prosa.analysis.definitions.delay_propagation.release_curve
-@release_curve
-     : forall Task : TaskType, MaxArrivals Task -> TaskJitter Task -> MaxArrivals Task
-END|prosa.analysis.definitions.delay_propagation.release_curve
 BEGIN|prosa.analysis.definitions.delay_propagation.jitter_delay_mapping_valid
 @jitter_delay_mapping_valid
      : forall (Task : TaskType) (Job : JobType) (H0 : JobTask Job Task) (original_arrival : JobArrival Job) (H1 : TaskJitter Task) (H2 : JobJitter Job) (ts : TaskSet Task), valid_jitter_bounds ts -> valid_delay_propagation_mapping original_arrival release_as_arrival id id task_jitter ts
@@ -5202,6 +5190,34 @@ BEGIN|prosa.implementation.definitions.task.eqn_job
 eqn_job
      : Equality.axiom (T:=concrete_job) job_eqdef
 END|prosa.implementation.definitions.task.eqn_job
+BEGIN|prosa.implementation.definitions.task.TaskCost
+task.TaskCost
+     : TaskCost concrete_task
+END|prosa.implementation.definitions.task.TaskCost
+BEGIN|prosa.implementation.definitions.task.TaskPriority
+TaskPriority
+     : numeric_fixed_priority.TaskPriority concrete_task
+END|prosa.implementation.definitions.task.TaskPriority
+BEGIN|prosa.implementation.definitions.task.TaskDeadline
+task.TaskDeadline
+     : TaskDeadline concrete_task
+END|prosa.implementation.definitions.task.TaskDeadline
+BEGIN|prosa.implementation.definitions.task.ConcreteMaxArrivals
+ConcreteMaxArrivals
+     : MaxArrivals concrete_task
+END|prosa.implementation.definitions.task.ConcreteMaxArrivals
+BEGIN|prosa.implementation.definitions.task.JobTask
+task.JobTask
+     : JobTask concrete_job concrete_task
+END|prosa.implementation.definitions.task.JobTask
+BEGIN|prosa.implementation.definitions.task.JobArrival
+task.JobArrival
+     : JobArrival concrete_job
+END|prosa.implementation.definitions.task.JobArrival
+BEGIN|prosa.implementation.definitions.task.JobCost
+task.JobCost
+     : JobCost concrete_job
+END|prosa.implementation.definitions.task.JobCost
 BEGIN|prosa.implementation.facts.extrapolated_arrival_curve.ltn_steps_is_transitive
 ltn_steps_is_transitive
      : transitive (T:=nat * nat) ltn_steps
@@ -5639,6 +5655,10 @@ BEGIN|prosa.model.priority.coercion.total_priorities_JLFP_implies_JLDP
 @total_priorities_JLFP_implies_JLDP
      : forall (Job : JobType) (jlfp : JLFP_policy Job), total_job_priorities jlfp -> total_priorities jlfp
 END|prosa.model.priority.coercion.total_priorities_JLFP_implies_JLDP
+BEGIN|prosa.model.priority.deadline_monotonic.DM
+DM
+     : forall Task : TaskType, TaskDeadline Task -> FP_policy Task
+END|prosa.model.priority.deadline_monotonic.DM
 BEGIN|prosa.model.priority.deadline_monotonic.DM_is_reflexive
 @DM_is_reflexive
      : forall (Task : TaskType) (H : TaskDeadline Task), reflexive_task_priorities (DM Task)
@@ -5731,6 +5751,10 @@ BEGIN|prosa.model.priority.definitions.ep_task
 @ep_task
      : forall Task : TaskType, FP_policy Task -> Task -> Task -> bool
 END|prosa.model.priority.definitions.ep_task
+BEGIN|prosa.model.priority.edf.EDF
+EDF
+     : forall Job : JobType, JobDeadline Job -> JLFP_policy Job
+END|prosa.model.priority.edf.EDF
 BEGIN|prosa.model.priority.edf.EDF_is_reflexive
 @EDF_is_reflexive
      : forall (Job : JobType) (H : JobDeadline Job), reflexive_job_priorities (EDF Job)
@@ -5743,6 +5767,14 @@ BEGIN|prosa.model.priority.edf.EDF_is_total
 @EDF_is_total
      : forall (Job : JobType) (H : JobDeadline Job), total_job_priorities (EDF Job)
 END|prosa.model.priority.edf.EDF_is_total
+BEGIN|prosa.model.priority.elf.ELF
+@ELF
+     : forall Task : TaskType, PriorityPoint Task -> forall Job : JobType, JobArrival Job -> JobTask Job Task -> FP_policy Task -> JLFP_policy Job
+END|prosa.model.priority.elf.ELF
+BEGIN|prosa.model.priority.fifo.FIFO
+FIFO
+     : forall Job : JobType, JobArrival Job -> JLFP_policy Job
+END|prosa.model.priority.fifo.FIFO
 BEGIN|prosa.model.priority.fifo.FIFO_is_reflexive
 @FIFO_is_reflexive
      : forall (Job : JobType) (H : JobArrival Job), reflexive_job_priorities (FIFO Job)
@@ -5767,6 +5799,10 @@ BEGIN|prosa.model.priority.gel.job_priority_point
 @job_priority_point
      : forall (Job : JobType) (Task : TaskType), JobTask Job Task -> PriorityPoint Task -> JobArrival Job -> Job -> ssrint_int__canonical__GRing_PzSemiRing
 END|prosa.model.priority.gel.job_priority_point
+BEGIN|prosa.model.priority.gel.GEL
+GEL
+     : forall (Job : JobType) (Task : TaskType), PriorityPoint Task -> JobArrival Job -> JobTask Job Task -> JLFP_policy Job
+END|prosa.model.priority.gel.GEL
 BEGIN|prosa.model.priority.gel.GEL_is_reflexive
 @GEL_is_reflexive
      : forall (Task : TaskType) (H : PriorityPoint Task) (Job : JobType) (H0 : JobArrival Job) (H1 : JobTask Job Task), reflexive_job_priorities (GEL Job Task)
@@ -5807,6 +5843,10 @@ BEGIN|prosa.model.priority.numeric_fixed_priority.NFPD_is_total
 @NFPD_is_total
      : forall (Task : TaskType) (H : numeric_fixed_priority.TaskPriority Task), total_task_priorities (NumericFPDescending Task)
 END|prosa.model.priority.numeric_fixed_priority.NFPD_is_total
+BEGIN|prosa.model.priority.rate_monotonic.RM
+RM
+     : forall Task : TaskType, SporadicModel Task -> FP_policy Task
+END|prosa.model.priority.rate_monotonic.RM
 BEGIN|prosa.model.priority.rate_monotonic.RM_is_reflexive
 @RM_is_reflexive
      : forall (Task : TaskType) (H : SporadicModel Task), reflexive_task_priorities (RM Task)

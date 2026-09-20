@@ -21,8 +21,8 @@ All **357** `.v` files are present exactly once.
 - File layers: **30**.
 - File cycles: **0**; the machine-readable JSON retains SCCs and condensation edges.
 - Longest file dependency chain: **30 nodes**.
-- Public source declarations: **2429**.
-- Declaration edges extracted: **4542**.
+- Public source declarations: **2439**.
+- Declaration edges extracted: **4628**.
 - Files with unresolved declaration reference extraction: **14** (the refinement build boundary).
 
 ## One longest file chain
@@ -94,38 +94,39 @@ All **357** `.v` files are present exactly once.
 
 | Declaration | Kind | Transitive dependents | Extraction |
 |---|---|---:|---|
-| `prosa.behavior.job.JobType` | Definition | 1397 | GLOB_STATEMENT_BODY_EXTRACTED |
-| `prosa.behavior.time.instant` | Definition | 1347 | GLOB_STATEMENT_BODY_EXTRACTED |
-| `prosa.behavior.job.work` | Definition | 1205 | GLOB_STATEMENT_BODY_EXTRACTED |
-| `prosa.behavior.schedule.ProcessorState` | Class | 915 | GLOB_STATEMENT_BODY_EXTRACTED |
-| `prosa.behavior.arrival_sequence.arrivals_at` | Definition | 779 | GLOB_STATEMENT_BODY_EXTRACTED |
-| `prosa.model.task.concept.TaskType` | Definition | 758 | GLOB_STATEMENT_BODY_EXTRACTED |
-| `prosa.behavior.schedule.service_in` | Definition | 684 | GLOB_STATEMENT_BODY_EXTRACTED |
-| `prosa.behavior.service.service_at` | Definition | 669 | GLOB_STATEMENT_BODY_EXTRACTED |
-| `prosa.behavior.time.duration` | Definition | 630 | GLOB_STATEMENT_BODY_EXTRACTED |
-| `prosa.behavior.job.JobCost` | Class | 555 | GLOB_STATEMENT_BODY_EXTRACTED |
-| `prosa.behavior.service.service_during` | Definition | 553 | GLOB_STATEMENT_BODY_EXTRACTED |
-| `prosa.behavior.job.JobArrival` | Class | 523 | GLOB_STATEMENT_BODY_EXTRACTED |
-| `prosa.behavior.arrival_sequence.arrivals_between` | Definition | 497 | GLOB_STATEMENT_BODY_EXTRACTED |
-| `prosa.behavior.service.service` | Definition | 475 | GLOB_STATEMENT_BODY_EXTRACTED |
-| `prosa.model.task.concept.JobTask` | Class | 440 | GLOB_STATEMENT_BODY_EXTRACTED |
-| `prosa.behavior.schedule.scheduled_in` | Definition | 397 | GLOB_STATEMENT_BODY_EXTRACTED |
-| `prosa.behavior.service.scheduled_at` | Definition | 386 | GLOB_STATEMENT_BODY_EXTRACTED |
-| `prosa.behavior.service.completed_by` | Definition | 358 | GLOB_STATEMENT_BODY_EXTRACTED |
-| `prosa.behavior.arrival_sequence.arrives_in` | Definition | 348 | GLOB_STATEMENT_BODY_EXTRACTED |
-| `prosa.model.task.concept.job_of_task` | Definition | 300 | GLOB_STATEMENT_BODY_EXTRACTED |
-| `prosa.behavior.arrival_sequence.arrivals_up_to` | Definition | 277 | GLOB_STATEMENT_BODY_EXTRACTED |
-| `prosa.model.task.arrival.curves.MaxArrivals` | Class | 255 | GLOB_STATEMENT_BODY_EXTRACTED |
-| `prosa.model.priority.definitions.JLFP_policy` | Class | 245 | GLOB_STATEMENT_BODY_EXTRACTED |
-| `prosa.model.task.concept.TaskCost` | Class | 242 | GLOB_STATEMENT_BODY_EXTRACTED |
-| `prosa.behavior.schedule.schedule` | Definition | 187 | GLOB_STATEMENT_BODY_EXTRACTED |
-| `prosa.analysis.definitions.request_bound_function.task_request_bound_function` | Definition | 184 | GLOB_STATEMENT_BODY_EXTRACTED |
-| `prosa.model.priority.definitions.FP_policy` | Class | 178 | GLOB_STATEMENT_BODY_EXTRACTED |
-| `prosa.model.schedule.scheduled.scheduled_jobs_at` | Definition | 150 | GLOB_STATEMENT_BODY_EXTRACTED |
-| `prosa.behavior.arrival_sequence.has_arrived` | Definition | 138 | GLOB_STATEMENT_BODY_EXTRACTED |
-| `prosa.behavior.service.pending` | Definition | 124 | GLOB_STATEMENT_BODY_EXTRACTED |
+| `prosa.behavior.job.JobType` | Definition | 1403 | VERIFIED_EXPLICIT_TRANSLATION_RELEVANT_DEPENDENCIES |
+| `prosa.behavior.time.instant` | Definition | 1370 | VERIFIED_EXPLICIT_TRANSLATION_RELEVANT_DEPENDENCIES |
+| `prosa.behavior.job.work` | Definition | 1206 | VERIFIED_EXPLICIT_TRANSLATION_RELEVANT_DEPENDENCIES |
+| `prosa.behavior.schedule.ProcessorState` | Class | 915 | VERIFIED_EXPLICIT_TRANSLATION_RELEVANT_DEPENDENCIES |
+| `prosa.behavior.arrival_sequence.arrivals_at` | Definition | 779 | VERIFIED_EXPLICIT_TRANSLATION_RELEVANT_DEPENDENCIES |
+| `prosa.model.task.concept.TaskType` | Definition | 774 | VERIFIED_EXPLICIT_TRANSLATION_RELEVANT_DEPENDENCIES |
+| `prosa.behavior.schedule.service_in` | Definition | 684 | VERIFIED_EXPLICIT_TRANSLATION_RELEVANT_DEPENDENCIES |
+| `prosa.behavior.service.service_at` | Definition | 669 | VERIFIED_EXPLICIT_TRANSLATION_RELEVANT_DEPENDENCIES |
+| `prosa.behavior.time.duration` | Definition | 643 | VERIFIED_EXPLICIT_TRANSLATION_RELEVANT_DEPENDENCIES |
+| `prosa.behavior.job.JobCost` | Class | 556 | VERIFIED_EXPLICIT_TRANSLATION_RELEVANT_DEPENDENCIES |
+| `prosa.behavior.service.service_during` | Definition | 553 | VERIFIED_EXPLICIT_TRANSLATION_RELEVANT_DEPENDENCIES |
+| `prosa.behavior.job.JobArrival` | Class | 535 | VERIFIED_EXPLICIT_TRANSLATION_RELEVANT_DEPENDENCIES |
+| `prosa.behavior.arrival_sequence.arrivals_between` | Definition | 497 | VERIFIED_EXPLICIT_TRANSLATION_RELEVANT_DEPENDENCIES |
+| `prosa.behavior.service.service` | Definition | 475 | VERIFIED_EXPLICIT_TRANSLATION_RELEVANT_DEPENDENCIES |
+| `prosa.model.task.concept.JobTask` | Class | 452 | VERIFIED_EXPLICIT_TRANSLATION_RELEVANT_DEPENDENCIES |
+| `prosa.behavior.schedule.scheduled_in` | Definition | 397 | VERIFIED_EXPLICIT_TRANSLATION_RELEVANT_DEPENDENCIES |
+| `prosa.behavior.service.scheduled_at` | Definition | 386 | VERIFIED_EXPLICIT_TRANSLATION_RELEVANT_DEPENDENCIES |
+| `prosa.behavior.service.completed_by` | Definition | 358 | VERIFIED_EXPLICIT_TRANSLATION_RELEVANT_DEPENDENCIES |
+| `prosa.behavior.arrival_sequence.arrives_in` | Definition | 348 | VERIFIED_EXPLICIT_TRANSLATION_RELEVANT_DEPENDENCIES |
+| `prosa.model.task.concept.job_of_task` | Definition | 300 | VERIFIED_EXPLICIT_TRANSLATION_RELEVANT_DEPENDENCIES |
+| `prosa.behavior.arrival_sequence.arrivals_up_to` | Definition | 277 | VERIFIED_EXPLICIT_TRANSLATION_RELEVANT_DEPENDENCIES |
+| `prosa.model.task.arrival.curves.MaxArrivals` | Class | 254 | VERIFIED_EXPLICIT_TRANSLATION_RELEVANT_DEPENDENCIES |
+| `prosa.model.priority.definitions.JLFP_policy` | Class | 249 | VERIFIED_EXPLICIT_TRANSLATION_RELEVANT_DEPENDENCIES |
+| `prosa.model.task.concept.TaskCost` | Class | 243 | VERIFIED_EXPLICIT_TRANSLATION_RELEVANT_DEPENDENCIES |
+| `prosa.behavior.schedule.schedule` | Definition | 187 | VERIFIED_EXPLICIT_TRANSLATION_RELEVANT_DEPENDENCIES |
+| `prosa.model.priority.definitions.FP_policy` | Class | 186 | VERIFIED_EXPLICIT_TRANSLATION_RELEVANT_DEPENDENCIES |
+| `prosa.analysis.definitions.request_bound_function.task_request_bound_function` | Definition | 184 | VERIFIED_EXPLICIT_TRANSLATION_RELEVANT_DEPENDENCIES |
+| `prosa.model.schedule.scheduled.scheduled_jobs_at` | Definition | 150 | VERIFIED_EXPLICIT_TRANSLATION_RELEVANT_DEPENDENCIES |
+| `prosa.behavior.arrival_sequence.has_arrived` | Definition | 138 | VERIFIED_EXPLICIT_TRANSLATION_RELEVANT_DEPENDENCIES |
+| `prosa.behavior.service.pending` | Definition | 124 | VERIFIED_EXPLICIT_TRANSLATION_RELEVANT_DEPENDENCIES |
 
 ## Interpretation
 
 Layers and priority rankings are graph-derived. A lower layer is not automatically semantically more important; transitive dependent count identifies representation choices with broad downstream impact.
 The declaration graph is intentionally not a Lean-proof translation order: theorem proof-body references are excluded.
+Declaration edges establish explicit `.glob` references and mapped generated symbols only. Absence of an edge does not establish absence of an implicit typeclass/canonical/HB dependency; the file DAG remains authoritative for readiness.

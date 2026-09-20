@@ -29,7 +29,8 @@ DECL_KINDS = (
 THEOREM_KINDS = {"Lemma", "Theorem", "Corollary", "Fact", "Remark", "Proposition", "Example"}
 STRUCTURE_KINDS = {"Record", "Structure", "Class"}
 DECL_RE = re.compile(
-    r"(?m)^[ \t]*(?P<scope>Local\s+|Global\s+)?(?P<program>Program\s+)?"
+    r"(?m)^[ \t]*(?P<attributes>(?:#\[[^\]]+\]\s*)*)"
+    r"(?P<scope>Local\s+|Global\s+)?(?P<program>Program\s+)?"
     r"(?P<kind>" + "|".join(DECL_KINDS) + r")\s+(?P<name>[^\W\d][\w']*)"
 )
 REQUIRE_RE = re.compile(
@@ -175,7 +176,7 @@ def parse_coqdep(text: str, known: dict[str, str]) -> set[tuple[str, str]]:
 
 def tarjan(nodes: Iterable[str], edges: Iterable[tuple[str, str]]) -> list[list[str]]:
     adjacency: dict[str, list[str]] = defaultdict(list)
-    for a, b in edges: adjacency[a].append(b)
+    for a, b in sorted(edges): adjacency[a].append(b)
     index = 0
     indices: dict[str, int] = {}
     low: dict[str, int] = {}
@@ -209,7 +210,7 @@ def graph_metrics(nodes: list[str], edges: set[tuple[str, str]]) -> dict[str, An
     c_edges = {(comp_of[a], comp_of[b]) for a, b in edges if comp_of[a] != comp_of[b]}
     pred: dict[int, set[int]] = defaultdict(set)
     succ: dict[int, set[int]] = defaultdict(set)
-    for a, b in c_edges: succ[a].add(b); pred[b].add(a)
+    for a, b in sorted(c_edges): succ[a].add(b); pred[b].add(a)
     indegree = {i: len(pred[i]) for i in range(len(components))}
     queue = deque(sorted(i for i, degree in indegree.items() if degree == 0))
     order: list[int] = []
@@ -230,7 +231,7 @@ def graph_metrics(nodes: list[str], edges: set[tuple[str, str]]) -> dict[str, An
 
     adjacency: dict[str, set[str]] = defaultdict(set)
     reverse: dict[str, set[str]] = defaultdict(set)
-    for a, b in edges: adjacency[a].add(b); reverse[b].add(a)
+    for a, b in sorted(edges): adjacency[a].add(b); reverse[b].add(a)
     def reachable(start: str, graph: dict[str, set[str]]) -> set[str]:
         seen: set[str] = set(); todo = list(graph[start])
         while todo:
@@ -254,53 +255,82 @@ def parse_declarations(path: Path, module: str) -> list[dict[str, Any]]:
     declarations: list[dict[str, Any]] = []
     order = 0
     for match in DECL_RE.finditer(clean):
-        if (match.group("scope") or "").strip() == "Local":
+        attributes = match.group("attributes") or ""
+        if (match.group("scope") or "").strip() == "Local" or re.search(r"#\[[^]]*\blocal\b", attributes):
             continue
         kind, name = match.group("kind"), match.group("name")
-        end = command_end(clean, match.start())
-        assignment = top_level_assignment(clean, match.start(), end)
+        header_end = command_end(clean, match.start())
+        assignment = top_level_assignment(clean, match.start(), header_end)
+        extraction_end = header_end
+        computational_body_mode = "INLINE_BODY" if assignment is not None else "NO_INLINE_BODY"
+        if kind in {"Definition", "Fixpoint", "CoFixpoint", "Instance"} and assignment is None:
+            tail = clean[header_end:]
+            proof = re.match(r"\s*Proof\s*\.", tail)
+            if proof:
+                terminator = re.search(r"(?m)^[ \t]*(Defined|Qed|Admitted|Abort)\s*\.", tail[proof.end():])
+                if terminator:
+                    mode = terminator.group(1)
+                    if mode == "Defined":
+                        extraction_end = header_end + proof.end() + terminator.end()
+                        computational_body_mode = "PROOF_DEFINED_BODY_INCLUDED"
+                    else:
+                        computational_body_mode = f"OPAQUE_PROOF_{mode.upper()}_EXCLUDED"
         fields: list[dict[str, str]] = []
         if kind in STRUCTURE_KINDS:
-            block = clean[match.end():end]
+            block = clean[match.end():header_end]
             for field in re.finditer(r"(?m)(?:^|[{;])[ \t]*([^\W\d][\w']*)\s*(?:[^:\n]*?)\s*:\s*([^;\n}]+)", block):
                 fields.append({"name": field.group(1), "source_type": " ".join(field.group(2).split())})
             if not fields and assignment is not None:
                 single = re.match(r"\s*([^\W\d][\w']*)\s*:\s*(.*)\.\s*$",
-                                  clean[assignment + 2:end], re.S)
+                                  clean[assignment + 2:header_end], re.S)
                 if single:
                     fields.append({"name": single.group(1), "source_type": " ".join(single.group(2).split())})
         order += 1
         start_byte = len(raw[:match.start()].encode())
-        end_byte = len(raw[:end].encode())
+        header_end_byte = len(raw[:header_end].encode())
+        extraction_end_byte = len(raw[:extraction_end].encode())
         assignment_byte = len(raw[:assignment].encode()) if assignment is not None else None
         declarations.append({
             "source_file": path.name, "module": module, "declaration_name": name,
             "qualified_name": f"{module}.{name}", "kind": kind, "source_order": order,
             "source_line": clean.count("\n", 0, match.start()) + 1,
-            "start": start_byte, "end": end_byte, "assignment": assignment_byte,
-            "start_char": match.start(), "end_char": end,
-            "statement_end": end, "structure_fields": fields,
-            "source_command_sha256": sha256_bytes(raw[match.start():end].encode()),
+            "start": start_byte, "end": extraction_end_byte, "header_end": header_end_byte,
+            "assignment": assignment_byte, "start_char": match.start(),
+            "end_char": extraction_end, "header_end_char": header_end,
+            "statement_end": header_end_byte, "structure_fields": fields,
+            "attributes": attributes.strip(), "computational_body_mode": computational_body_mode,
+            "source_command_sha256": sha256_bytes(raw[match.start():extraction_end].encode()),
         })
     return declarations
 
 
-def parse_glob(path: Path) -> list[dict[str, Any]]:
+def parse_glob(path: Path) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
     refs: list[dict[str, Any]] = []
-    if not path.exists(): return refs
+    symbols: list[dict[str, Any]] = []
+    if not path.exists(): return refs, symbols
+    module = ""
     for line in path.read_text(errors="replace").splitlines():
+        if line.startswith("F"):
+            module = line[1:]
+            continue
+        declaration = re.match(r"(ind|constr|rec|proj|def|prf|thm|inst|class)\s+(\d+):(\d+)\s+\S+\s+(\S+)", line)
+        if declaration and module:
+            kind, start, end, name = declaration.groups()
+            symbols.append({"start": int(start), "end": int(end) + 1,
+                            "qualified": f"{module}.{name}", "name": name, "kind": kind})
+            continue
         match = re.match(r"R(\d+):(\d+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)", line)
         if not match: continue
         start, end, library, namespace, name, kind = match.groups()
         if ":" in name or kind in {"var", "not"}: continue
         qualified = f"{library}.{name}"
         refs.append({"start": int(start), "end": int(end) + 1, "qualified": qualified, "kind": kind})
-    return refs
+    return refs, symbols
 
 
 def csv_write(path: Path, fieldnames: list[str], rows: Iterable[dict[str, Any]]) -> None:
     with path.open("w", newline="") as stream:
-        writer = csv.DictWriter(stream, fieldnames=fieldnames, extrasaction="ignore")
+        writer = csv.DictWriter(stream, fieldnames=fieldnames, extrasaction="ignore", lineterminator="\n")
         writer.writeheader(); writer.writerows(rows)
 
 
@@ -392,44 +422,152 @@ def main() -> None:
         for d in ds: d["source_file"] = relative
         declarations.extend(ds)
     decl_by_qname = {d["qualified_name"]: d for d in declarations}
-    field_owner: dict[str, str] = {}
-    for d in declarations:
-        for field in d["structure_fields"]:
-            field_owner[f'{d["module"]}.{field["name"]}'] = d["qualified_name"]
+    declarations_by_file: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    for declaration in declarations:
+        declarations_by_file[declaration["source_file"]].append(declaration)
 
-    decl_edges: dict[tuple[str, str, str], dict[str, Any]] = {}
+    glob_refs: dict[str, list[dict[str, Any]]] = {}
+    glob_symbols: dict[str, list[dict[str, Any]]] = {}
+    all_glob_symbols: dict[str, dict[str, Any]] = {}
     unresolved_decl_files: list[str] = []
     for relative in paths:
         glob = source / relative[:-2]
         glob = glob.with_suffix(".glob")
-        refs = parse_glob(glob)
-        if not glob.exists(): unresolved_decl_files.append(relative)
-        for declaration in [d for d in declarations if d["source_file"] == relative]:
+        refs, symbols = parse_glob(glob)
+        glob_refs[relative], glob_symbols[relative] = refs, symbols
+        for symbol in symbols:
+            all_glob_symbols[symbol["qualified"]] = {**symbol, "source_file": relative}
+        if not glob.exists():
+            unresolved_decl_files.append(relative)
+
+    # Generated symbols are not public inventory nodes. Constructors and
+    # projections are mapped to the source declaration whose command span
+    # caused Rocq to generate them. Relevant HB-generated symbols are mapped
+    # only when the same HB command explicitly references exactly one source
+    # structural owner; otherwise no edge is guessed.
+    generated_mappings: dict[str, dict[str, Any]] = {}
+    structural_kinds = STRUCTURE_KINDS | {"Inductive", "Variant", "CoInductive"}
+    for relative in paths:
+        for declaration in declarations_by_file[relative]:
+            if declaration["kind"] not in structural_kinds:
+                continue
+            for symbol in glob_symbols[relative]:
+                if declaration["start"] <= symbol["start"] < declaration["header_end"] \
+                        and symbol["qualified"] != declaration["qualified_name"]:
+                    generated_mappings[symbol["qualified"]] = {
+                        "generated_symbol": symbol["qualified"], "owner": declaration["qualified_name"],
+                        "symbol_kind": symbol["kind"], "mapping_method": "SOURCE_DECLARATION_SPAN",
+                        "source_file": relative,
+                    }
+        raw = (source / relative).read_text(errors="replace")
+        clean = strip_comments(raw)
+        for hb in re.finditer(r"(?m)^[ \t]*HB\.instance\s+Definition\s+_\b", clean):
+            hb_end_char = command_end(clean, hb.start())
+            hb_start = len(raw[:hb.start()].encode())
+            hb_end = len(raw[:hb_end_char].encode())
+            candidates = {
+                ref["qualified"] for ref in glob_refs[relative]
+                if hb_start <= ref["start"] < hb_end
+                and ref["qualified"] in decl_by_qname
+                and decl_by_qname[ref["qualified"]]["kind"] in structural_kinds
+            }
+            if len(candidates) != 1:
+                continue
+            owner = next(iter(candidates))
+            for symbol in glob_symbols[relative]:
+                if hb_start <= symbol["start"] < hb_end and symbol["qualified"] not in decl_by_qname:
+                    generated_mappings[symbol["qualified"]] = {
+                        "generated_symbol": symbol["qualified"], "owner": owner,
+                        "symbol_kind": symbol["kind"],
+                        "mapping_method": "HB_SAME_COMMAND_UNIQUE_STRUCTURAL_OWNER",
+                        "source_file": relative,
+                    }
+
+    decl_edges_work: dict[tuple[str, str, str], dict[str, Any]] = {}
+    generated_use_count: Counter[str] = Counter()
+    for relative in paths:
+        refs = glob_refs[relative]
+        for declaration in declarations_by_file[relative]:
             for ref in refs:
                 if not (declaration["start"] <= ref["start"] < declaration["end"]): continue
                 target = ref["qualified"]
-                dependency = target if target in decl_by_qname else field_owner.get(target)
+                mapping = generated_mappings.get(target)
+                dependency = target if target in decl_by_qname else mapping["owner"] if mapping else None
                 if not dependency or dependency == declaration["qualified_name"]: continue
+                body_reference = declaration["kind"] not in structural_kinds and ((
+                    declaration["assignment"] is not None and ref["start"] > declaration["assignment"]
+                ) or (
+                    declaration["computational_body_mode"] == "PROOF_DEFINED_BODY_INCLUDED"
+                    and ref["start"] >= declaration["header_end"]
+                ))
                 if declaration["kind"] in STRUCTURE_KINDS:
                     edge_type = "STRUCTURE_FIELD_DEPENDENCY"
                 elif declaration["kind"] == "Instance" or decl_by_qname[dependency]["kind"] == "Instance" or ref["kind"] in {"inst"}:
                     edge_type = "INSTANCE_DEPENDENCY"
                 elif declaration["kind"] in THEOREM_KINDS:
                     edge_type = "TYPE_DEPENDENCY"
-                elif declaration["assignment"] is not None and ref["start"] > declaration["assignment"]:
+                elif body_reference:
                     edge_type = "BODY_DEPENDENCY"
                 else:
                     edge_type = "TYPE_DEPENDENCY"
                 key = (dependency, declaration["qualified_name"], edge_type)
-                decl_edges[key] = {"dependency": dependency, "dependent": declaration["qualified_name"],
-                                   "edge_type": edge_type, "source_file": relative,
-                                   "evidence": "Rocq .glob reference within statement/definition command"}
+                row = decl_edges_work.setdefault(key, {
+                    "dependency": dependency, "dependent": declaration["qualified_name"],
+                    "edge_type": edge_type, "source_file": relative,
+                    "reference_region": "BODY" if body_reference else "TYPE_OR_STRUCTURE",
+                    "evidence_categories": set(), "generated_symbols": set(), "mapping_methods": set(),
+                })
+                if mapping:
+                    row["evidence_categories"].add("GENERATED_SYMBOL_MAPPED")
+                    row["generated_symbols"].add(target)
+                    row["mapping_methods"].add(mapping["mapping_method"])
+                    generated_use_count[target] += 1
+                else:
+                    row["evidence_categories"].add("EXPLICIT_GLOB_DEPENDENCY")
+
+    decl_edges: dict[tuple[str, str, str], dict[str, Any]] = {}
+    for key, row in decl_edges_work.items():
+        decl_edges[key] = {
+            **{k: v for k, v in row.items() if k not in {"evidence_categories", "generated_symbols", "mapping_methods"}},
+            "evidence_categories": ";".join(sorted(row["evidence_categories"])),
+            "generated_symbols": ";".join(sorted(row["generated_symbols"])),
+            "mapping_methods": ";".join(sorted(row["mapping_methods"])),
+            "implicit_dependency_status": "UNRESOLVED_IMPLICIT_DEPENDENCY",
+        }
+
+    referenced_internal_symbols = {
+        ref["qualified"] for refs in glob_refs.values() for ref in refs
+        if ref["qualified"].startswith("prosa.")
+    }
+    unresolved_generated_symbols = []
+    for symbol in sorted(referenced_internal_symbols & set(all_glob_symbols)):
+        if symbol in decl_by_qname or symbol in generated_mappings:
+            continue
+        item = all_glob_symbols[symbol]
+        unresolved_generated_symbols.append({
+            "symbol": symbol, "symbol_kind": item["kind"], "source_file": item["source_file"],
+            "status": "UNRESOLVED_IMPLICIT_DEPENDENCY",
+            "reason": "internal generated/local symbol has no unambiguous public source owner",
+        })
     decl_nodes = sorted(decl_by_qname)
     decl_graph_edges = {(a, b) for a, b, _ in decl_edges}
     decl_metrics = graph_metrics(decl_nodes, decl_graph_edges)
+    dependents_with_generated_mapping = {
+        row["dependent"] for row in decl_edges.values()
+        if "GENERATED_SYMBOL_MAPPED" in row["evidence_categories"]
+    }
     decl_layer_rows = []
     for name in decl_nodes:
         d = decl_by_qname[name]
+        if d["source_file"] in unresolved_decl_files:
+            confidence = "UNRESOLVED_EXTERNAL"
+            extraction_status = "UNRESOLVED_EXTERNAL"
+        elif name in dependents_with_generated_mapping or d["kind"] in structural_kinds:
+            confidence = "HIGH_EXPLICIT_AND_GENERATED"
+            extraction_status = "VERIFIED_EXPLICIT_TRANSLATION_RELEVANT_DEPENDENCIES"
+        else:
+            confidence = "EXPLICIT_ONLY"
+            extraction_status = "VERIFIED_EXPLICIT_TRANSLATION_RELEVANT_DEPENDENCIES"
         decl_layer_rows.append({
             "qualified_name": name, "source_file": d["source_file"], "kind": d["kind"],
             "layer": decl_metrics["layer"][name],
@@ -437,7 +575,9 @@ def main() -> None:
             "transitive_internal_dependency_count": len(decl_metrics["transitive_dependencies"][name]),
             "direct_dependent_count": len(decl_metrics["dependents"][name]),
             "transitive_dependent_count": len(decl_metrics["transitive_dependents"][name]),
-            "dependency_extraction_status": "UNRESOLVED" if d["source_file"] in unresolved_decl_files else "GLOB_STATEMENT_BODY_EXTRACTED",
+            "dependency_extraction_status": extraction_status,
+            "dependency_extraction_confidence": confidence,
+            "implicit_dependency_status": "UNRESOLVED_IMPLICIT_DEPENDENCY" if confidence != "UNRESOLVED_EXTERNAL" else "UNRESOLVED_EXTERNAL",
         })
 
     for d in declarations:
@@ -482,7 +622,11 @@ def main() -> None:
                          "refinements": sum(r["build_group"] == "refinements" for r in inventory)},
         "coqdep": {"rules": len(paths), "stderr_sha256": sha256_bytes(args.coqdep_errors.read_bytes()),
                    "warnings": args.coqdep_errors.read_text(errors="replace").splitlines()},
-        "declaration_dependency_policy": "Theorem proof-body references are excluded. Theorem statements and definition types/bodies use .glob positions.",
+        "declaration_dependency_policy": (
+            "Theorem proof-body references are excluded. Explicit theorem-type and definition type/body references use .glob positions; "
+            "constructors/projections and unambiguous HB symbols are mapped to public source owners. Missing .glob edges do not prove "
+            "absence of implicit typeclass/canonical/HB dependencies; the file DAG remains authoritative."
+        ),
     }
     (output / "scope_manifest.json").write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n")
     csv_write(output / "file_inventory.csv", list(inventory[0]), inventory)
@@ -492,9 +636,12 @@ def main() -> None:
     csv_write(output / "file_layers.csv", list(layer_rows[0]), layer_rows)
     csv_write(output / "declaration_inventory.csv",
               ["source_file", "declaration_name", "qualified_name", "kind", "final_type_or_type_fingerprint",
-               "type_evidence_status", "structure_fields_if_any", "source_order", "source_line", "source_command_sha256"], declarations)
+               "type_evidence_status", "structure_fields_if_any", "attributes", "computational_body_mode",
+               "source_order", "source_line", "source_command_sha256"], declarations)
     csv_write(output / "declaration_dag_edges.csv",
-              ["dependency", "dependent", "edge_type", "source_file", "evidence"], sorted(decl_edges.values(), key=lambda x: (x["dependent"], x["dependency"], x["edge_type"])))
+              ["dependency", "dependent", "edge_type", "source_file", "reference_region",
+               "evidence_categories", "generated_symbols", "mapping_methods", "implicit_dependency_status"],
+              sorted(decl_edges.values(), key=lambda x: (x["dependent"], x["dependency"], x["edge_type"])))
     csv_write(output / "declaration_layers.csv", list(decl_layer_rows[0]) if decl_layer_rows else [], decl_layer_rows)
 
     file_json = {
@@ -502,11 +649,18 @@ def main() -> None:
         "strongly_connected_components": file_metrics["components"], "cycles": file_metrics["cycles"],
         "condensation_edges": file_metrics["component_edges"], "longest_chain": file_metrics["longest_chain"],
     }
+    layer_by_decl = {row["qualified_name"]: row for row in decl_layer_rows}
     decl_json = {
         "edge_direction": "dependency -> dependent", "proof_dependencies_included": False,
-        "nodes": [{k: d[k] for k in ("qualified_name", "source_file", "kind", "source_order")} for d in declarations],
+        "status": "VERIFIED_EXPLICIT_TRANSLATION_RELEVANT_DEPENDENCIES_WITH_DOCUMENTED_IMPLICIT_GENERATED_LIMITATIONS",
+        "nodes": [{**{k: d[k] for k in ("qualified_name", "source_file", "kind", "source_order")},
+                   "dependency_extraction_confidence": layer_by_decl[d["qualified_name"]]["dependency_extraction_confidence"],
+                   "implicit_dependency_status": layer_by_decl[d["qualified_name"]]["implicit_dependency_status"]}
+                  for d in declarations],
         "edges": sorted(decl_edges.values(), key=lambda x: (x["dependent"], x["dependency"], x["edge_type"])),
         "cycles": decl_metrics["cycles"], "longest_chain": decl_metrics["longest_chain"],
+        "generated_symbol_mappings": sorted(generated_mappings.values(), key=lambda x: x["generated_symbol"]),
+        "unresolved_generated_symbols": unresolved_generated_symbols,
         "unresolved_files": sorted(unresolved_decl_files),
     }
     (output / "file_dag.json").write_text(json.dumps(file_json, indent=2, sort_keys=True) + "\n")
@@ -551,7 +705,8 @@ def main() -> None:
     for row in foundation_decls: summary.append(f"| `{row['qualified_name']}` | {row['kind']} | {row['transitive_dependent_count']} | {row['dependency_extraction_status']} |")
     summary += ["", "## Interpretation", "",
                 "Layers and priority rankings are graph-derived. A lower layer is not automatically semantically more important; transitive dependent count identifies representation choices with broad downstream impact.",
-                "The declaration graph is intentionally not a Lean-proof translation order: theorem proof-body references are excluded.", ""]
+                "The declaration graph is intentionally not a Lean-proof translation order: theorem proof-body references are excluded.",
+                "Declaration edges establish explicit `.glob` references and mapped generated symbols only. Absence of an edge does not establish absence of an implicit typeclass/canonical/HB dependency; the file DAG remains authoritative for readiness.", ""]
     (output / "file_dag_summary.md").write_text("\n".join(summary))
 
     result = {"files": len(paths), "file_edges": len(graph_edges), "external_occurrences": len(external_rows),
@@ -559,6 +714,11 @@ def main() -> None:
               "file_layers": max(file_metrics["layer"].values()) + 1 if paths else 0,
               "file_cycles": len(file_metrics["cycles"]), "declarations": len(declarations),
               "declaration_edges": len(decl_edges), "unresolved_declaration_files": len(unresolved_decl_files),
+              "declaration_cycles": len(decl_metrics["cycles"]),
+              "generated_symbol_mappings": len(generated_mappings),
+              "generated_symbol_edges": sum("GENERATED_SYMBOL_MAPPED" in row["evidence_categories"] for row in decl_edges.values()),
+              "unresolved_generated_symbols": len(unresolved_generated_symbols),
+              "declaration_confidence": dict(Counter(row["dependency_extraction_confidence"] for row in decl_layer_rows)),
               "unresolved_internal_imports": len(unresolved_internal)}
     (output / "generation_summary.json").write_text(json.dumps(result, indent=2, sort_keys=True) + "\n")
     print(json.dumps(result, indent=2, sort_keys=True))

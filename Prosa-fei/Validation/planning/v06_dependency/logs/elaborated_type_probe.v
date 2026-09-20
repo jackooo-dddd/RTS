@@ -934,9 +934,6 @@ Goal True. idtac "END|prosa.analysis.definitions.completion_sequence.completion_
 Goal True. idtac "BEGIN|prosa.analysis.definitions.delay_propagation.valid_delay_propagation_mapping". Abort.
 Check @prosa.analysis.definitions.delay_propagation.valid_delay_propagation_mapping.
 Goal True. idtac "END|prosa.analysis.definitions.delay_propagation.valid_delay_propagation_mapping". Abort.
-Goal True. idtac "BEGIN|prosa.analysis.definitions.delay_propagation.propagated_arrival_curve". Abort.
-Check @prosa.analysis.definitions.delay_propagation.propagated_arrival_curve.
-Goal True. idtac "END|prosa.analysis.definitions.delay_propagation.propagated_arrival_curve". Abort.
 Goal True. idtac "BEGIN|prosa.analysis.definitions.delay_propagation.propagated_arrival_sequence". Abort.
 Check @prosa.analysis.definitions.delay_propagation.propagated_arrival_sequence.
 Goal True. idtac "END|prosa.analysis.definitions.delay_propagation.propagated_arrival_sequence". Abort.
@@ -946,12 +943,6 @@ Goal True. idtac "END|prosa.analysis.definitions.delay_propagation.job_mapping_u
 Goal True. idtac "BEGIN|prosa.analysis.definitions.delay_propagation.valid_arr_seq_propagation_mapping". Abort.
 Check @prosa.analysis.definitions.delay_propagation.valid_arr_seq_propagation_mapping.
 Goal True. idtac "END|prosa.analysis.definitions.delay_propagation.valid_arr_seq_propagation_mapping". Abort.
-Goal True. idtac "BEGIN|prosa.analysis.definitions.delay_propagation.release_as_arrival". Abort.
-Check @prosa.analysis.definitions.delay_propagation.release_as_arrival.
-Goal True. idtac "END|prosa.analysis.definitions.delay_propagation.release_as_arrival". Abort.
-Goal True. idtac "BEGIN|prosa.analysis.definitions.delay_propagation.release_curve". Abort.
-Check @prosa.analysis.definitions.delay_propagation.release_curve.
-Goal True. idtac "END|prosa.analysis.definitions.delay_propagation.release_curve". Abort.
 Goal True. idtac "BEGIN|prosa.analysis.definitions.delay_propagation.jitter_delay_mapping_valid". Abort.
 Check @prosa.analysis.definitions.delay_propagation.jitter_delay_mapping_valid.
 Goal True. idtac "END|prosa.analysis.definitions.delay_propagation.jitter_delay_mapping_valid". Abort.
@@ -4246,6 +4237,27 @@ Goal True. idtac "END|prosa.implementation.definitions.task.job_eqdef". Abort.
 Goal True. idtac "BEGIN|prosa.implementation.definitions.task.eqn_job". Abort.
 Check @prosa.implementation.definitions.task.eqn_job.
 Goal True. idtac "END|prosa.implementation.definitions.task.eqn_job". Abort.
+Goal True. idtac "BEGIN|prosa.implementation.definitions.task.TaskCost". Abort.
+Check @prosa.implementation.definitions.task.TaskCost.
+Goal True. idtac "END|prosa.implementation.definitions.task.TaskCost". Abort.
+Goal True. idtac "BEGIN|prosa.implementation.definitions.task.TaskPriority". Abort.
+Check @prosa.implementation.definitions.task.TaskPriority.
+Goal True. idtac "END|prosa.implementation.definitions.task.TaskPriority". Abort.
+Goal True. idtac "BEGIN|prosa.implementation.definitions.task.TaskDeadline". Abort.
+Check @prosa.implementation.definitions.task.TaskDeadline.
+Goal True. idtac "END|prosa.implementation.definitions.task.TaskDeadline". Abort.
+Goal True. idtac "BEGIN|prosa.implementation.definitions.task.ConcreteMaxArrivals". Abort.
+Check @prosa.implementation.definitions.task.ConcreteMaxArrivals.
+Goal True. idtac "END|prosa.implementation.definitions.task.ConcreteMaxArrivals". Abort.
+Goal True. idtac "BEGIN|prosa.implementation.definitions.task.JobTask". Abort.
+Check @prosa.implementation.definitions.task.JobTask.
+Goal True. idtac "END|prosa.implementation.definitions.task.JobTask". Abort.
+Goal True. idtac "BEGIN|prosa.implementation.definitions.task.JobArrival". Abort.
+Check @prosa.implementation.definitions.task.JobArrival.
+Goal True. idtac "END|prosa.implementation.definitions.task.JobArrival". Abort.
+Goal True. idtac "BEGIN|prosa.implementation.definitions.task.JobCost". Abort.
+Check @prosa.implementation.definitions.task.JobCost.
+Goal True. idtac "END|prosa.implementation.definitions.task.JobCost". Abort.
 Goal True. idtac "BEGIN|prosa.implementation.facts.extrapolated_arrival_curve.ltn_steps_is_transitive". Abort.
 Check @prosa.implementation.facts.extrapolated_arrival_curve.ltn_steps_is_transitive.
 Goal True. idtac "END|prosa.implementation.facts.extrapolated_arrival_curve.ltn_steps_is_transitive". Abort.
@@ -4558,6 +4570,9 @@ Goal True. idtac "END|prosa.model.priority.coercion.transitive_priorities_JLFP_i
 Goal True. idtac "BEGIN|prosa.model.priority.coercion.total_priorities_JLFP_implies_JLDP". Abort.
 Check @prosa.model.priority.coercion.total_priorities_JLFP_implies_JLDP.
 Goal True. idtac "END|prosa.model.priority.coercion.total_priorities_JLFP_implies_JLDP". Abort.
+Goal True. idtac "BEGIN|prosa.model.priority.deadline_monotonic.DM". Abort.
+Check @prosa.model.priority.deadline_monotonic.DM.
+Goal True. idtac "END|prosa.model.priority.deadline_monotonic.DM". Abort.
 Goal True. idtac "BEGIN|prosa.model.priority.deadline_monotonic.DM_is_reflexive". Abort.
 Check @prosa.model.priority.deadline_monotonic.DM_is_reflexive.
 Goal True. idtac "END|prosa.model.priority.deadline_monotonic.DM_is_reflexive". Abort.
@@ -4627,6 +4642,9 @@ Goal True. idtac "END|prosa.model.priority.definitions.hp_task". Abort.
 Goal True. idtac "BEGIN|prosa.model.priority.definitions.ep_task". Abort.
 Check @prosa.model.priority.definitions.ep_task.
 Goal True. idtac "END|prosa.model.priority.definitions.ep_task". Abort.
+Goal True. idtac "BEGIN|prosa.model.priority.edf.EDF". Abort.
+Check @prosa.model.priority.edf.EDF.
+Goal True. idtac "END|prosa.model.priority.edf.EDF". Abort.
 Goal True. idtac "BEGIN|prosa.model.priority.edf.EDF_is_reflexive". Abort.
 Check @prosa.model.priority.edf.EDF_is_reflexive.
 Goal True. idtac "END|prosa.model.priority.edf.EDF_is_reflexive". Abort.
@@ -4636,6 +4654,12 @@ Goal True. idtac "END|prosa.model.priority.edf.EDF_is_transitive". Abort.
 Goal True. idtac "BEGIN|prosa.model.priority.edf.EDF_is_total". Abort.
 Check @prosa.model.priority.edf.EDF_is_total.
 Goal True. idtac "END|prosa.model.priority.edf.EDF_is_total". Abort.
+Goal True. idtac "BEGIN|prosa.model.priority.elf.ELF". Abort.
+Check @prosa.model.priority.elf.ELF.
+Goal True. idtac "END|prosa.model.priority.elf.ELF". Abort.
+Goal True. idtac "BEGIN|prosa.model.priority.fifo.FIFO". Abort.
+Check @prosa.model.priority.fifo.FIFO.
+Goal True. idtac "END|prosa.model.priority.fifo.FIFO". Abort.
 Goal True. idtac "BEGIN|prosa.model.priority.fifo.FIFO_is_reflexive". Abort.
 Check @prosa.model.priority.fifo.FIFO_is_reflexive.
 Goal True. idtac "END|prosa.model.priority.fifo.FIFO_is_reflexive". Abort.
@@ -4654,6 +4678,9 @@ Goal True. idtac "END|prosa.model.priority.gel.PriorityPoint". Abort.
 Goal True. idtac "BEGIN|prosa.model.priority.gel.job_priority_point". Abort.
 Check @prosa.model.priority.gel.job_priority_point.
 Goal True. idtac "END|prosa.model.priority.gel.job_priority_point". Abort.
+Goal True. idtac "BEGIN|prosa.model.priority.gel.GEL". Abort.
+Check @prosa.model.priority.gel.GEL.
+Goal True. idtac "END|prosa.model.priority.gel.GEL". Abort.
 Goal True. idtac "BEGIN|prosa.model.priority.gel.GEL_is_reflexive". Abort.
 Check @prosa.model.priority.gel.GEL_is_reflexive.
 Goal True. idtac "END|prosa.model.priority.gel.GEL_is_reflexive". Abort.
@@ -4684,6 +4711,9 @@ Goal True. idtac "END|prosa.model.priority.numeric_fixed_priority.NFPD_is_transi
 Goal True. idtac "BEGIN|prosa.model.priority.numeric_fixed_priority.NFPD_is_total". Abort.
 Check @prosa.model.priority.numeric_fixed_priority.NFPD_is_total.
 Goal True. idtac "END|prosa.model.priority.numeric_fixed_priority.NFPD_is_total". Abort.
+Goal True. idtac "BEGIN|prosa.model.priority.rate_monotonic.RM". Abort.
+Check @prosa.model.priority.rate_monotonic.RM.
+Goal True. idtac "END|prosa.model.priority.rate_monotonic.RM". Abort.
 Goal True. idtac "BEGIN|prosa.model.priority.rate_monotonic.RM_is_reflexive". Abort.
 Check @prosa.model.priority.rate_monotonic.RM_is_reflexive.
 Goal True. idtac "END|prosa.model.priority.rate_monotonic.RM_is_reflexive". Abort.
