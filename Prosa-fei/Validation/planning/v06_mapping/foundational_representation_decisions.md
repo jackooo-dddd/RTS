@@ -8,9 +8,9 @@ from the hardened v0.6 dependency artifacts, not from the current Lean tree.
 
 | v0.6 declaration | v0.4 evolution | Current Lean candidate | Decision |
 |---|---|---|---|
-| `instant`, `duration`, `work` | unchanged aliases of natural numbers | strong v0.4 candidate | use `Nat`; reuse only after v0.6 revalidation |
-| `JobType`, `TaskType` | unchanged `eqType` aliases | bare `Type` aliases | adapt to the approved carrier + `DecidableEq` boundary |
-| `JobArrival`, `JobCost`, `JobTask` | structurally unchanged simple classes | strong v0.4 candidates | retain complete field structure and revalidate |
+| `instant`, `duration`, `work` | source command unchanged | strong v0.4 candidate | use `Nat`; reuse only after fresh v0.6 type/semantic validation |
+| `JobType`, `TaskType` | source command unchanged (`eqType`) | bare `Type` aliases | adapt to the approved carrier + `DecidableEq` boundary |
+| `JobArrival`, `JobCost`, `JobTask` | source command structurally unchanged | strong v0.4 candidates | retain fields and carry all corresponding `DecidableEq` parameters; revalidate |
 | `ProcessorState` | substantively evolved | old v0.4-shaped class | adopt nested `State/Core`, per-core operations, and both laws |
 | `scheduled_in` | v0.4 class field externalized as a v0.6 derived definition | extracted Lean definition | adapt after new `ProcessorState`; keep Boolean finite existential |
 | `supply_in` | new in v0.6 | none | new translation as sum over all cores |
@@ -21,11 +21,22 @@ from the hardened v0.6 dependency artifacts, not from the current Lean tree.
 
 ## Equality-bearing carriers
 
+In this planning data, “unchanged” means only that the normalized source
+declaration command is unchanged. v0.4 lacks matching elaborated
+`Check @declaration` evidence, so no row is certified as elaborated-type or
+semantically unchanged. The 144 `REUSE_AFTER_REVALIDATION` rows remain future
+validation obligations.
+
 `JobType` has 1,403 and `TaskType` 774 extracted transitive declaration
 dependents. The approved representation is `Type u` plus `DecidableEq` at the
 same semantic boundary. Equality behavior is an explicit correspondence
 obligation. The old bare aliases alone are insufficient evidence, so both rows
 are `ADAPT_OLD_LEAN`, not automatic reuse.
+
+The same equality evidence is retained even by a class whose own field does
+not compare values: `JobArrival` and `JobCost` carry `[DecidableEq Job]`, and
+`JobTask` carries both `[DecidableEq Job]` and `[DecidableEq Task]`. This keeps
+the Lean boundary consistent with the source `eqType` binders.
 
 ## Processor state and finite cores
 
@@ -33,7 +44,11 @@ The v0.6 `ProcessorState` owns `State`, `Core : finType`, three observable
 per-core operations, and two laws. The approved Lean record owns `State`,
 `Core`, `Fintype Core`, `DecidableEq Core`, matching operations, and matching
 laws. `scheduled_in`, `supply_in`, and `service_in` remain outside the class as
-derived definitions.
+derived definitions. `scheduled_in` is a computable Boolean-or fold over
+`Finset.univ` (the pinned Mathlib has no `Finset.any`, and `Finset.toList` is
+noncomputable); its prototype proof establishes that it is true exactly when
+some core's `scheduled_on` Boolean is true. The other two definitions remain
+finite sums.
 
 This is intentionally incompatible with blindly retaining the current
 v0.4-shaped `ProcessorState Job State`. The old class can guide names and
@@ -55,7 +70,9 @@ Computational Boolean predicates such as `scheduled_on` stay `Bool`. Their
 truth interpretation is `b = true`, with explicit reflection lemmas when a
 Lean `Prop` consumer is required. Source laws stated through Boolean negation
 must preserve the same truth table rather than being casually rewritten to an
-unrelated proposition.
+unrelated proposition. In particular, `scheduled_in` does not use a
+Prop-mediated `decide`; it performs direct Boolean enumeration and exposes a
+proved existential-reflection lemma for later semantic validation.
 
 ## Review state
 

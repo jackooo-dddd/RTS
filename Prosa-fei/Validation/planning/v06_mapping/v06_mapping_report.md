@@ -5,7 +5,7 @@
 **Historical reference:** Prosa v0.4 commit
 `ee05f255e29676ad79e07b5d6cc59dc66cd7fcb7`  
 **Production Lean status:** frozen and unmodified  
-**Preparation completed:** 2026-09-20 19:36:09 HKT
+**Preparation completed:** 2026-09-20 19:56:32 HKT
 
 ## Scope and method
 
@@ -49,6 +49,14 @@ moved/renamed rows whose secondary notes retain any simultaneous change.
 There are 1,793 declarations with no credible v0.4 public/field ancestor under
 the conservative matcher. Fifteen remain unclear rather than being forced into
 new or evolved categories.
+
+Here `UNCHANGED_FROM_V04` means only **normalized source declaration command
+unchanged under the available evidence**. It does not mean that the final
+post-Section elaborated types or semantics have been certified equal: v0.4 has
+source fingerprints, whereas v0.6 additionally has actual
+`Check @declaration` evidence. Accordingly, all 144
+`REUSE_AFTER_REVALIDATION` rows still require fresh v0.6 type and semantic
+validation and remain planning candidates, not certified translations.
 
 No row uses `REPRESENTATION_REFORMULATION` as its primary v0.4→v0.6 class:
 known representation reformulations in this workspace concern the current
@@ -101,8 +109,10 @@ separate evidence is supplied.
 - `instant`, `duration`, and `work` remain natural numbers and have strong,
   unchanged candidates.
 - `JobType` and `TaskType` remain `eqType`, but their Lean representation is
-  fixed as carrier `Type` plus explicit `DecidableEq`; the current bare aliases
-  require adaptation rather than automatic reuse.
+  fixed as carrier `Type` plus explicit `DecidableEq` at every translated
+  boundary. `JobArrival`, `JobCost`, and `JobTask` therefore retain the
+  appropriate equality instances even when their fields do not compare values.
+  The current bare aliases require adaptation rather than automatic reuse.
 - `JobArrival`, `JobCost`, and `JobTask` are simple complete class candidates;
   all fields must remain represented.
 - v0.6 `ProcessorState` is a genuine structural evolution. It owns `State`, a
@@ -124,7 +134,11 @@ The approved design keeps both `State` and `Core` as fields owned by
 `ProcessorState`, with `Fintype Core` and `DecidableEq Core` stored at the same
 boundary. It preserves `scheduled_on`, `supply_on`, `service_on`, and both
 source laws. `scheduled_in`, `supply_in`, and `service_in` remain derived
-definitions.
+definitions. `scheduled_in` is deliberately represented as a direct computable
+Boolean-or fold over `Finset.univ` (the pinned Mathlib provides no
+`Finset.any`, while `Finset.toList` is noncomputable), with a proved reflection
+lemma to the existential proposition. The supply/service definitions remain
+finite sums.
 
 This option is closest to the v0.6 class, avoids propagating an unrelated
 external `State` parameter, and exposes exactly the observations needed by
@@ -192,3 +206,28 @@ tree object before and after, and runs `git diff --check`.
 10. **Readiness:** the repository is ready for translation-pipeline preparation
     and work-package design. It is not yet authorization to start production
     translation; each package must follow file-DAG order and this policy.
+
+## Final foundational-policy corrections — 2026-09-20 19:56:32 HKT
+
+- `UNCHANGED_FROM_V04` is now explicitly limited to unchanged normalized
+  source declaration commands. It is not an elaborated-type or semantic
+  certificate, and none of the 144 reuse rows was promoted to certified.
+- All prototype declarations whose source carrier is an `eqType` now retain
+  the corresponding `DecidableEq` evidence, including `JobArrival`, `JobCost`,
+  and both carriers of `JobTask`.
+- `scheduled_in` now uses a computable Boolean-or `Finset.univ.fold`. The first
+  attempted `Finset.any` spelling was unavailable in pinned Mathlib, and
+  `Finset.toList` was correctly rejected as noncomputable. The selected fold
+  compiles without `noncomputable` and its existential truth-table lemma is
+  kernel-checked by Lean.
+- `ProcessorState` remains the approved nested-carrier v0.6 structure;
+  `supply_in` and `service_in` remain finite sums.
+- The migration CSV/JSON and summary hashes remain identical to the accepted
+  Prompt 2 artifacts; no migration classification was regenerated or changed.
+- Relevant checks passed under Lean 4.33.1 and Mathlib
+  `0df444a360eaa60ab8c11dca51a86af692955474`; `git diff --check` passed and
+  the production Lean status is empty.
+
+```text
+FOUNDATIONAL_REPRESENTATION_POLICY_READY = YES
+```

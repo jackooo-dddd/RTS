@@ -12,6 +12,14 @@ The authoritative readiness order is `../v06_dependency/file_layers.csv`.
 The declaration graph refines local ordering but cannot establish independence
 from implicit instances, canonical structures, or HB resolution.
 
+`UNCHANGED_FROM_V04` in the migration table has a deliberately limited
+planning meaning: the normalized source declaration command is unchanged under
+the available evidence. Since v0.4 has source-command fingerprints but not the
+same post-Section `Check @declaration` evidence captured for v0.6, this label
+does **not** certify equality of elaborated types or semantics. Every
+`REUSE_AFTER_REVALIDATION` row still requires a fresh v0.6 type check and
+semantic validation; none of the 144 rows is certified by the migration table.
+
 ## General fidelity rule
 
 Translation may change surface syntax but must preserve carrier parameters,
@@ -32,6 +40,23 @@ universe u
 abbrev JobType := Type u
 
 variable {Job : JobType} [DecidableEq Job]
+```
+
+The evidence is part of every translated declaration boundary whose Rocq
+context contains the corresponding `eqType`, including declarations that do
+not themselves invoke equality. For example:
+
+```lean
+class JobArrival (Job : JobType) [DecidableEq Job] where
+  jobArrival : Job → instant
+
+class JobCost (Job : JobType) [DecidableEq Job] where
+  jobCost : Job → work
+
+class JobTask
+    (Job : JobType) [DecidableEq Job]
+    (Task : TaskType) [DecidableEq Task] where
+  jobTask : Job → Task
 ```
 
 This is a representation relation, not an isomorphism between `eqType` and
@@ -100,6 +125,29 @@ This policy prevents one file from translating `scheduled_on` as `Bool` while
 another silently treats it as an arbitrary proposition. Cross-ITP theorem
 validation may additionally require the separately audited Prop/SProp
 foundation; that trust boundary is not a representation shortcut.
+
+For the v0.6 Boolean finite existential in `scheduled_in`, the approved
+production representation is direct Boolean enumeration:
+
+```lean
+def scheduledIn (j : Job) (s : PState.State) : Bool :=
+  (Finset.univ : Finset PState.Core).fold Bool.or false fun c =>
+    PState.scheduledOn j s c
+```
+
+This avoids routing the computation through `decide (∃ ...)`, remains
+computable from the owned finite enumeration, and matches MathComp's Boolean
+existential truth table. The required reusable reflection lemma is:
+
+```text
+scheduledIn PState j s = true
+↔ ∃ c : PState.Core, PState.scheduledOn j s c = true
+```
+
+The validation-only prototype proves this lemma. Later cross-ITP validation
+must additionally relate the Rocq and Lean core enumerations and
+`scheduled_on` observations. `supply_in` and `service_in` remain finite sums;
+this decision changes neither definition.
 
 ## Big operators and intervals
 
@@ -184,6 +232,9 @@ Derived definitions quantify/sum over the owned `Core` using the owned
 instances. This most closely follows the v0.6 abstraction boundary, avoids
 unrelated `State` parameters at every downstream declaration, and makes the two
 source laws visible to typeclass inference and semantic validation.
+`scheduled_in` uses a direct Boolean-or `Finset.univ.fold` (the pinned Mathlib
+does not expose `Finset.any`, and its `Finset.toList` is noncomputable); the two
+work aggregates use finite sums.
 
 ### Option B — external `State` parameter (rejected as the default)
 

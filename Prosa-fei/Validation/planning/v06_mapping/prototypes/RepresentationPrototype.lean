@@ -20,13 +20,15 @@ abbrev work := Nat
 abbrev JobType := Type u
 abbrev TaskType := Type v
 
-class JobArrival (Job : JobType) where
+class JobArrival (Job : JobType) [DecidableEq Job] where
   jobArrival : Job → instant
 
-class JobCost (Job : JobType) where
+class JobCost (Job : JobType) [DecidableEq Job] where
   jobCost : Job → work
 
-class JobTask (Job : JobType) (Task : TaskType) where
+class JobTask
+    (Job : JobType) [DecidableEq Job]
+    (Task : TaskType) [DecidableEq Task] where
   jobTask : Job → Task
 
 /- Option A from the policy: State and Core remain owned by ProcessorState,
@@ -50,8 +52,31 @@ variable {Job : JobType} [DecidableEq Job] (PState : ProcessorState Job)
 local instance : Fintype PState.Core := PState.coreFintype
 local instance : DecidableEq PState.Core := PState.coreDecidableEq
 
-noncomputable def scheduledIn (j : Job) (s : PState.State) : Bool :=
-  decide (∃ c : PState.Core, PState.scheduledOn j s c = true)
+local instance : Std.Commutative Bool.or where
+  comm := Bool.or_comm
+
+local instance : Std.Associative Bool.or where
+  assoc := Bool.or_assoc
+
+private theorem foldBoolOr_eq_true_iff
+    {α : Type*} [DecidableEq α] (xs : Finset α) (p : α → Bool) :
+    xs.fold Bool.or false p = true ↔ ∃ x ∈ xs, p x = true := by
+  induction xs using Finset.induction with
+  | empty => simp
+  | @insert a xs ha ih =>
+      rw [Finset.fold_insert ha]
+      simp [ih]
+
+def scheduledIn (j : Job) (s : PState.State) : Bool :=
+  (Finset.univ : Finset PState.Core).fold Bool.or false fun c =>
+    PState.scheduledOn j s c
+
+theorem scheduledIn_eq_true_iff (j : Job) (s : PState.State) :
+    scheduledIn PState j s = true ↔
+      ∃ c : PState.Core, PState.scheduledOn j s c = true := by
+  simpa [scheduledIn] using
+    foldBoolOr_eq_true_iff (Finset.univ : Finset PState.Core)
+      (fun c => PState.scheduledOn j s c)
 
 noncomputable def supplyIn (s : PState.State) : work :=
   ∑ c : PState.Core, PState.supplyOn s c
