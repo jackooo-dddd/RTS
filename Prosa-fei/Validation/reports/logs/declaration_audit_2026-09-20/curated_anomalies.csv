@@ -1,0 +1,38 @@
+rocq_file,rocq_declaration,rocq_kind,lean_candidate,lean_file,classification,reason,severity
+behavior/job.v,JobType,Definition,JobType,Behavior/Job.lean,RENAMED_OR_REFORMULATED,"MathComp eqType became a Lean carrier Type; DecidableEq is supplied at equality-sensitive use sites",MEDIUM
+behavior/arrival_sequence.v,arrivals_between_P,Lemma,,Behavior/Arrival_sequence.lean,ROCQ_MISSING_IN_LEAN,"No same-name or statement-equivalent declaration was found in the frozen Lean tree",MEDIUM
+behavior/schedule.v,ProcessorState,Class,ProcessorState,Behavior/Schedule.lean,STRUCTURAL_MISMATCH,"Lean externalizes State and removes supply_on/service_on and both per-core laws; aggregate service_in is primitive",HIGH
+behavior/schedule.v,supply_in,Definition,,Behavior/Schedule.lean,ROCQ_MISSING_IN_LEAN,"The source finite sum of per-core supply has no Lean counterpart",HIGH
+behavior/schedule.v,service_in,Definition,ProcessorState.service_in,Behavior/Schedule.lean,STRUCTURAL_MISMATCH,"The source declaration is a finite sum of service_on; the same-named Lean field is an unconstrained aggregate primitive",HIGH
+behavior/service.v,receives_service_at,Definition,,Behavior/Service.lean,ROCQ_MISSING_IN_LEAN,"The positive instantaneous-service predicate is absent",HIGH
+behavior/service.v,completes_at,Definition,completes_at,Behavior/Service.lean,STRUCTURAL_MISMATCH,"Lean omits the source t = 0 disjunct; the known t=0 zero-cost instance distinguishes the statements",HIGH
+util/seqset.v,set,Record,SeqSet,Util/Seqset.lean,RENAMED_OR_REFORMULATED,"The carrier record is renamed and MathComp/HB coercions are represented by Lean instances",LOW
+util/bigcat.v,mem_bigcat,Lemma,,Util/Bigcat.lean,ROCQ_MISSING_IN_LEAN,"Only the nat-indexed bigcat membership variant is translated",MEDIUM
+util/bigcat.v,size_big_nat,Lemma,,Util/Bigcat.lean,ROCQ_MISSING_IN_LEAN,"No Lean counterpart was found",MEDIUM
+util/list.v,prefix_of,Definition,,Util/List.lean,ROCQ_MISSING_IN_LEAN,"No corresponding prefix predicate was found",MEDIUM
+util/list.v,strict_prefix_of,Definition,,Util/List.lean,ROCQ_MISSING_IN_LEAN,"No corresponding strict-prefix predicate was found",MEDIUM
+util/list.v,count_predUI',Lemma,,Util/List.lean,ROCQ_MISSING_IN_LEAN,"No corresponding counting lemma was found",MEDIUM
+util/list.v,nthD,,nthD,Util/List.lean,LEAN_HELPER,"Lean helper with no source-level declaration of this name in pinned Prosa 0.6",LOW
+util/sum.v,big_sum_eq_in_eq_sized_intervals,Lemma,,Util/Sum.lean,ROCQ_MISSING_IN_LEAN,"Pinned Prosa 0.6 interval-sum lemma is absent",MEDIUM
+util/sum.v,reorder_summation,Lemma,,Util/Sum.lean,ROCQ_MISSING_IN_LEAN,"Pinned Prosa 0.6 reindexing lemma is absent; a same-name occurrence elsewhere is unrelated local use",MEDIUM
+util/sum.v,sum_over_partitions_eq,Lemma,,Util/Sum.lean,ROCQ_MISSING_IN_LEAN,"Pinned Prosa 0.6 partition-sum theorem is absent",MEDIUM
+util/sum.v,, ,sum_diff,Util/Sum.lean,OLD_VERSION_OR_WRONG_SOURCE,"No declaration named sum_diff exists anywhere in the pinned official Prosa 0.6 source",MEDIUM
+util/sum.v,, ,sum_seq_gt0P,Util/Sum.lean,OLD_VERSION_OR_WRONG_SOURCE,"No declaration named sum_seq_gt0P exists anywhere in the pinned official Prosa 0.6 source",MEDIUM
+util/sum.v,, ,sum_pred_diff,Util/Sum.lean,OLD_VERSION_OR_WRONG_SOURCE,"No declaration named sum_pred_diff exists anywhere in the pinned official Prosa 0.6 source",MEDIUM
+model/task/concept.v,TaskMinCost,Class,,Model/Task/Concept.lean,ROCQ_MISSING_IN_LEAN,"A core v0.6 class field task_min_cost is absent",HIGH
+model/task/concept.v,valid_min_job_cost,Definition,,Model/Task/Concept.lean,ROCQ_MISSING_IN_LEAN,"The minimum-cost validity predicate is absent with TaskMinCost",HIGH
+model/task/concept.v,jobs_have_valid_min_job_costs,Definition,,Model/Task/Concept.lean,ROCQ_MISSING_IN_LEAN,"The minimum-cost validity family is absent",HIGH
+model/processor/ideal.v,processor_state,Definition,"processor_state + pstate_instance",Model/Processor/Ideal.lean,STRUCTURAL_MISMATCH,"Lean splits carrier and instance, but the instance implements the changed aggregate-service ProcessorState rather than all official fields",HIGH
+model/processor/ideal.v,ideal_is_idle,Definition,is_idle,Model/Processor/Ideal.lean,RENAMED_OR_REFORMULATED,"Boolean equality to None is represented by a Prop equality and the name is shortened",LOW
+model/processor/spin.v,spin_supply_on,Definition,,Model/Processor/Spin.lean,ROCQ_MISSING_IN_LEAN,"Per-core supply was dropped with the generic interface field",HIGH
+model/processor/spin.v,spin_service_on,Definition,spin_service_in,Model/Processor/Spin.lean,STRUCTURAL_MISMATCH,"Per-core service was replaced by aggregate service",HIGH
+model/processor/multiprocessor.v,multiproc_supply_on,Definition,,Model/Processor/Multiprocessor.lean,ROCQ_MISSING_IN_LEAN,"Per-core supply has no Lean counterpart",HIGH
+model/processor/multiprocessor.v,multiproc_service_on,Definition,multiproc_service_in,Model/Processor/Multiprocessor.lean,STRUCTURAL_MISMATCH,"Per-core service and its sum theorem were replaced by a primitive aggregate",HIGH
+analysis/facts/behavior/service.v,service_in_implies_scheduled_in,Lemma,,Analysis/Facts/Behavior/Service.lean,ROCQ_MISSING_IN_LEAN,"Official theorem depends on the per-core service interface that Lean removed",HIGH
+analysis/facts/behavior/service.v,receives_service_implies_has_supply,Lemma,,Analysis/Facts/Behavior/Service.lean,ROCQ_MISSING_IN_LEAN,"Supply-side statement cannot be expressed using the frozen Lean ProcessorState interface",HIGH
+analysis/facts/model/ideal/schedule.v,ideal_proc_model_provides_unit_supply,Lemma,,Analysis/Facts/Model/Ideal_schedule.lean,ROCQ_MISSING_IN_LEAN,"Official unit-supply theorem is absent because supply was removed",HIGH
+analysis/facts/model/rbf.v,rbf_spec,Lemma,,Analysis/Facts/Model/Rbf.lean,ROCQ_MISSING_IN_LEAN,"Core request-bound specification lemma is absent",HIGH
+analysis/facts/model/rbf.v,task_rbf_ge_task_cost,Lemma,,Analysis/Facts/Model/Rbf.lean,ROCQ_MISSING_IN_LEAN,"No Lean theorem with matching name or statement role was found",MEDIUM
+analysis/definitions/job_properties.v,job_respects_task,Definition,job_respects_task,Analysis/Definitions/Job_properties.lean,OLD_VERSION_OR_WRONG_SOURCE,"Lean cites an obsolete file path; the pinned declaration is in model/job/properties.v",MEDIUM
+analysis/facts/busy_interval/priority_inversion.v,*,mixed,"declarations redistributed across hep_at_pt.v, pi.v, and model/preemption.v",Analysis/Facts/Busy_interval/Priority_inversion.lean,OLD_VERSION_OR_WRONG_SOURCE,"The cited source file does not exist in pinned v0.6; 21 names can be traced to three current files and two Lean names have no pinned occurrence",HIGH
+results/edf/rta/bounded_pi.v,*,mixed,"multiple candidates",Results/Edf/Rta/Bounded_pi.lean,UNCLEAR,"The cited old path is absent; same names occur in several v0.6 platform-specific bounded_pi files, so name-only pairing is not 1:1",HIGH
