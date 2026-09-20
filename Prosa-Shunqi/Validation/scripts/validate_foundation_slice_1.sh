@@ -5,9 +5,9 @@ script_dir=$(cd "$(dirname "$0")" && pwd)
 validation_root=$(cd "$script_dir/.." && pwd)
 project_root=$(cd "$validation_root/.." && pwd)
 repo_root=$(cd "$project_root/.." && pwd)
-source_root=${PROSA_V06_SOURCE_ROOT:-"$repo_root/Prosa-fei/Validation/.work/prosa-v06-414e667"}
-exporter_root=${LEAN4EXPORT_SRC:-/private/tmp/lean4export}
-importer_root=${ROCQLI_SRC:-/private/tmp/rocq-lean-import-93}
+source_root=${PROSA_V06_SOURCE_ROOT:-"$validation_root/.work/prosa-v06-414e667"}
+exporter_root=${LEAN4EXPORT_SRC:-"$validation_root/.work/tooling/lean4export"}
+importer_root=${ROCQLI_SRC:-"$validation_root/.work/tooling/rocq-lean-import"}
 rocq_switch=${IMPORT_OPAM_SWITCH:-rocq93rc1}
 lean_toolchain=leanprover/lean4:v4.33.1
 expected_source_commit=414e66760333eaa4ef78c685bcf53291c527a548
@@ -19,6 +19,8 @@ canonical_import_dir="$validation_root/imported/foundation_slice_1"
 certificate_src_dir="$validation_root/certificates/foundation_slice_1"
 fixture_dir="$validation_root/fixtures/foundation_slice_1"
 mkdir -p "$validation_root/.work" "$log_dir" "$canonical_import_dir"
+PROSA_V06_SOURCE_ROOT="$source_root" "$script_dir/ensure_pinned_v06_source.sh" >/dev/null
+"$validation_root/tooling/setup_validation_tooling.sh" >/dev/null
 work=$(mktemp -d "$validation_root/.work/foundation_slice_1.XXXXXX")
 mkdir -p "$work/olean/Prosa/Behavior" "$work/source/behavior" \
   "$work/imported" "$work/certificates" "$work/artifacts"

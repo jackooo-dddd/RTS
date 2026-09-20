@@ -1,0 +1,87 @@
+File "./SourceTypeAudit.v", line 1, characters 0-109:
+Warning: Notation "_ + _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./SourceTypeAudit.v", line 1, characters 0-109:
+Warning: Notation "_ - _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./SourceTypeAudit.v", line 1, characters 0-109:
+Warning: Notation "_ <= _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./SourceTypeAudit.v", line 1, characters 0-109:
+Warning: Notation "_ < _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./SourceTypeAudit.v", line 1, characters 0-109:
+Warning: Notation "_ >= _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./SourceTypeAudit.v", line 1, characters 0-109:
+Warning: Notation "_ > _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./SourceTypeAudit.v", line 1, characters 0-109:
+Warning: Notation "_ <= _ <= _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./SourceTypeAudit.v", line 1, characters 0-109:
+Warning: Notation "_ < _ <= _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./SourceTypeAudit.v", line 1, characters 0-109:
+Warning: Notation "_ <= _ < _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./SourceTypeAudit.v", line 1, characters 0-109:
+Warning: Notation "_ < _ < _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./SourceTypeAudit.v", line 1, characters 0-109:
+Warning: Notation "_ * _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+@notation.constant
+     : forall X Y : Type, Y -> X -> Y
+neqP
+     : forall (T : eqType) (x y : T), reflect (x <> y) (x != y)
+modusponens
+     : forall P Q : Prop, P -> (P -> Q) -> Q
+@monotone
+     : forall T : Type, rel T -> (T -> T) -> Prop
+@total_over_list
+     : forall T : eqType, (T -> T -> bool) -> seq T -> Prop
+@antisymmetric_over_list
+     : forall T : eqType, (T -> T -> bool) -> seq T -> Prop
+@set
+     : eqType -> Type
+@set_of
+     : forall T : eqType, phant T -> Type
+@set_uniq
+     : forall (T : eqType) (s : {setT}), uniq s
+subadditive_at
+     : (nat -> nat) -> nat -> Prop
+subadditive_until
+     : (nat -> nat) -> nat -> Prop
+subadditive
+     : (nat -> nat) -> Prop
+subadditive_standard
+     : (nat -> nat) -> Prop
+subadditive_standard_equivalence
+     : forall f : nat -> nat, subadditive f <-> subadditive_standard f
+subadditive_leq_mul
+     : forall f : nat -> nat,
+       subadditive f -> forall n m : nat, 0 < m -> f (m * n) <= m * f n
+@choose_superior
+     : forall T : eqType, rel T -> T -> option T -> option T
+@supremum
+     : forall T : eqType, rel T -> seq T -> option T
+@supremum_unfold
+     : forall (T : eqType) (R : rel T) (head : T) (tail : seq T),
+       supremum R (head :: tail) = choose_superior R head (supremum R tail)
+@supremum_exists
+     : forall (T : eqType) (R : rel T) (x : T) (s : seq_predType T),
+       x \in s -> supremum R s != None
+@supremum_none
+     : forall (T : eqType) (R : rel T) (s : seq T),
+       supremum R s = None -> s = [::]
+@supremum_in
+     : forall (T : eqType) (R : rel T) (x : T) (s : seq T),
+       supremum R s = Some x -> x \in s
+@supremum_spec
+     : forall (T : eqType) (R : rel T),
+       reflexive (T:=T) R ->
+       total (T:=T) R ->
+       transitive (T:=T) R ->
+       forall (x : T) (s : seq T),
+       supremum R s = Some x -> forall y : T, y \in s -> R x y

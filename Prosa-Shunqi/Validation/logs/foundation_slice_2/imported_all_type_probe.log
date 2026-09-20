@@ -1,0 +1,54 @@
+Prosa_Util_Rel_monotone
+     : forall T : Type, (T -> T -> ImportedRel.Bool) -> (T -> T) -> SProp
+Prosa_Util_Rel_total_over_list
+     : forall T : Type,
+       ImportedRel.DecidableEq T ->
+       (T -> T -> ImportedRel.Bool) -> ImportedRel.List T -> SProp
+Prosa_Util_Rel_antisymmetric_over_list
+     : forall T : Type,
+       ImportedRel.DecidableEq T ->
+       (T -> T -> ImportedRel.Bool) -> ImportedRel.List T -> SProp
+Prosa_Util_Seqset_set
+     : forall T : Type, ImportedSeqset.DecidableEq T -> Type
+Prosa_Util_Seqset_set_of
+     : forall T : Type, ImportedSeqset.DecidableEq T -> Type
+Prosa_Util_Seqset_set_uniq
+     : forall (T : Type)
+         (inst____at___Prosa_Util_Seqset19207430__hygCtx__hyg3 : 
+          ImportedSeqset.DecidableEq T)
+         (s : Prosa_Util_Seqset_set T
+                inst____at___Prosa_Util_Seqset19207430__hygCtx__hyg3),
+       List_Nodup T
+         (Prosa_Util_Seqset_set_val T
+            inst____at___Prosa_Util_Seqset19207430__hygCtx__hyg3 s)
+Prosa_Util_Subadditivity_subadditive_at
+     : (Nat -> Nat) -> Nat -> SProp
+Prosa_Util_Subadditivity_subadditive_until
+     : (Nat -> Nat) -> Nat -> SProp
+Prosa_Util_Subadditivity_subadditive
+     : (Nat -> Nat) -> SProp
+Prosa_Util_Subadditivity_subadditive_standard
+     : (Nat -> Nat) -> SProp
+Prosa_Util_Subadditivity_subadditive_standard_equivalence
+     : forall f : Nat -> Nat,
+       Iff (Prosa_Util_Subadditivity_subadditive f)
+         (Prosa_Util_Subadditivity_subadditive_standard f)
+Prosa_Util_Subadditivity_subadditive_leq_mul
+     : forall f : Nat -> Nat,
+       Prosa_Util_Subadditivity_subadditive f ->
+       forall n m : Nat,
+       LT_lt_inst1 Nat instLTNat (OfNat_ofNat_inst1 Nat 0 (instOfNatNat 0)) m ->
+       LE_le_inst1 Nat instLENat
+         (f (HMul_hMul_inst7 Nat Nat Nat (instHMul_inst1 Nat instMulNat) m n))
+         (HMul_hMul_inst7 Nat Nat Nat (instHMul_inst1 Nat instMulNat) m (f n))
+Prosa_Util_Supremum_choose_superior
+     : forall T : Type, (T -> T -> Bool) -> T -> Option T -> Option T
+Prosa_Util_Supremum_supremum
+     : forall T : Type, (T -> T -> Bool) -> List T -> Option T
+Prosa_Util_Supremum_supremum_unfold
+     : forall T : Type,
+       DecidableEq T ->
+       forall (R : T -> T -> Bool) (head : T) (tail : List T),
+       eq (Prosa_Util_Supremum_supremum T R (List_cons T head tail))
+         (Prosa_Util_Supremum_choose_superior T R head
+            (Prosa_Util_Supremum_supremum T R tail))

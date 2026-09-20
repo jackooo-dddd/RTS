@@ -1,0 +1,30 @@
+Prosa_Util_Rel_monotone@{u Lean.u+1.0} =
+fun (T : Type) (R : T -> T -> Bool) (f : T -> T) =>
+forall x y : T, eq (R x y) Bool_true -> eq (R (f x) (f y)) Bool_true
+     : forall T : Type, (T -> T -> Bool) -> (T -> T) -> SProp
+
+Arguments Prosa_Util_Rel_monotone T%_type_scope (R f)%_function_scope
+Prosa_Util_Rel_total_over_list@{u Lean.u+1.0 Lean.u+2.0} =
+fun (T : Type) (_ : DecidableEq T) (R : T -> T -> Bool) (xs : List T) =>
+forall x_UU2081_ x_UU2082_ : T,
+Membership_mem T (List T) (List_instMembership T) xs x_UU2081_ ->
+Membership_mem T (List T) (List_instMembership T) xs x_UU2082_ ->
+Or (eq (R x_UU2081_ x_UU2082_) Bool_true)
+  (eq (R x_UU2082_ x_UU2081_) Bool_true)
+     : forall T : Type, DecidableEq T -> (T -> T -> Bool) -> List T -> SProp
+
+Arguments Prosa_Util_Rel_total_over_list T%_type_scope
+  inst____at___Prosa_Util_Rel1179086148__hygCtx__hyg3 
+  R%_function_scope xs
+Prosa_Util_Rel_antisymmetric_over_list@{u Lean.u+1.0 Lean.u+2.0} =
+fun (T : Type) (_ : DecidableEq T) (R : T -> T -> Bool) (xs : List T) =>
+forall x_UU2081_ x_UU2082_ : T,
+Membership_mem T (List T) (List_instMembership T) xs x_UU2081_ ->
+Membership_mem T (List T) (List_instMembership T) xs x_UU2082_ ->
+eq (R x_UU2081_ x_UU2082_) Bool_true ->
+eq (R x_UU2082_ x_UU2081_) Bool_true -> eq x_UU2081_ x_UU2082_
+     : forall T : Type, DecidableEq T -> (T -> T -> Bool) -> List T -> SProp
+
+Arguments Prosa_Util_Rel_antisymmetric_over_list T%_type_scope
+  inst____at___Prosa_Util_Rel1179086148__hygCtx__hyg3 
+  R%_function_scope xs

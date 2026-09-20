@@ -1,0 +1,109 @@
+FREEZE_BEGIN Prosa.Util.Notation.constant
+@Prosa.Util.Notation.constant : {X : Type u_1} → {Y : Type u_2} → Y → X → Y
+def Prosa.Util.Notation.constant.{u, v} : {X : Type u} → {Y : Type v} → Y → X → Y :=
+fun {X} {Y} c x => c
+FREEZE_END Prosa.Util.Notation.constant
+FREEZE_BEGIN Prosa.Util.Tactics.neqP
+@Prosa.Util.Tactics.neqP : ∀ {T : Type u_1} [inst : DecidableEq T] (x y : T), decide (x ≠ y) = true ↔ x ≠ y
+FREEZE_END Prosa.Util.Tactics.neqP
+FREEZE_BEGIN Prosa.Util.Tactics.modusponens
+Prosa.Util.Tactics.modusponens : ∀ (P Q : Prop), P → (P → Q) → Q
+FREEZE_END Prosa.Util.Tactics.modusponens
+FREEZE_BEGIN Prosa.Util.Rel.monotone
+@Prosa.Util.Rel.monotone : {T : Type u_1} → (T → T → Bool) → (T → T) → Prop
+def Prosa.Util.Rel.monotone.{u} : {T : Type u} → (T → T → Bool) → (T → T) → Prop :=
+fun {T} R f => ∀ (x y : T), R x y = true → R (f x) (f y) = true
+FREEZE_END Prosa.Util.Rel.monotone
+FREEZE_BEGIN Prosa.Util.Rel.total_over_list
+@Prosa.Util.Rel.total_over_list : {T : Type u_1} → [DecidableEq T] → (T → T → Bool) → List T → Prop
+def Prosa.Util.Rel.total_over_list.{u} : {T : Type u} → [DecidableEq T] → (T → T → Bool) → List T → Prop :=
+fun {T} [DecidableEq T] R xs => ∀ (x₁ x₂ : T), x₁ ∈ xs → x₂ ∈ xs → R x₁ x₂ = true ∨ R x₂ x₁ = true
+FREEZE_END Prosa.Util.Rel.total_over_list
+FREEZE_BEGIN Prosa.Util.Rel.antisymmetric_over_list
+@Prosa.Util.Rel.antisymmetric_over_list : {T : Type u_1} → [DecidableEq T] → (T → T → Bool) → List T → Prop
+def Prosa.Util.Rel.antisymmetric_over_list.{u} : {T : Type u} → [DecidableEq T] → (T → T → Bool) → List T → Prop :=
+fun {T} [DecidableEq T] R xs => ∀ (x₁ x₂ : T), x₁ ∈ xs → x₂ ∈ xs → R x₁ x₂ = true → R x₂ x₁ = true → x₁ = x₂
+FREEZE_END Prosa.Util.Rel.antisymmetric_over_list
+FREEZE_BEGIN Prosa.Util.Seqset.set
+Prosa.Util.Seqset.set : (T : Type u_1) → [DecidableEq T] → Type u_1
+structure Prosa.Util.Seqset.set.{u} (T : Type u) [DecidableEq T] : Type u
+number of parameters: 2
+fields:
+  Prosa.Util.Seqset.set.val : List T
+  Prosa.Util.Seqset.set.nodup : self.val.Nodup
+constructor:
+  Prosa.Util.Seqset.set.mk.{u} {T : Type u} [DecidableEq T] (val : List T) (nodup : val.Nodup) : Prosa.Util.Seqset.set T
+FREEZE_END Prosa.Util.Seqset.set
+FREEZE_BEGIN Prosa.Util.Seqset.set_of
+Prosa.Util.Seqset.set_of : (T : Type u_1) → [DecidableEq T] → Type u_1
+@[reducible] def Prosa.Util.Seqset.set_of.{u} : (T : Type u) → [DecidableEq T] → Type u :=
+fun T [DecidableEq T] => Prosa.Util.Seqset.set T
+FREEZE_END Prosa.Util.Seqset.set_of
+FREEZE_BEGIN Prosa.Util.Seqset.set_uniq
+@Prosa.Util.Seqset.set_uniq : ∀ {T : Type u_1} [inst : DecidableEq T] (s : Prosa.Util.Seqset.set T), s.val.Nodup
+FREEZE_END Prosa.Util.Seqset.set_uniq
+FREEZE_BEGIN Prosa.Util.Subadditivity.subadditive_at
+Prosa.Util.Subadditivity.subadditive_at : (ℕ → ℕ) → ℕ → Prop
+def Prosa.Util.Subadditivity.subadditive_at : (ℕ → ℕ) → ℕ → Prop :=
+fun f h => ∀ (a b : ℕ), a + b = h → f h ≤ f a + f b
+FREEZE_END Prosa.Util.Subadditivity.subadditive_at
+FREEZE_BEGIN Prosa.Util.Subadditivity.subadditive_until
+Prosa.Util.Subadditivity.subadditive_until : (ℕ → ℕ) → ℕ → Prop
+def Prosa.Util.Subadditivity.subadditive_until : (ℕ → ℕ) → ℕ → Prop :=
+fun f h => ∀ x < h, Prosa.Util.Subadditivity.subadditive_at f x
+FREEZE_END Prosa.Util.Subadditivity.subadditive_until
+FREEZE_BEGIN Prosa.Util.Subadditivity.subadditive
+Prosa.Util.Subadditivity.subadditive : (ℕ → ℕ) → Prop
+def Prosa.Util.Subadditivity.subadditive : (ℕ → ℕ) → Prop :=
+fun f => ∀ (h : ℕ), Prosa.Util.Subadditivity.subadditive_at f h
+FREEZE_END Prosa.Util.Subadditivity.subadditive
+FREEZE_BEGIN Prosa.Util.Subadditivity.subadditive_standard
+Prosa.Util.Subadditivity.subadditive_standard : (ℕ → ℕ) → Prop
+def Prosa.Util.Subadditivity.subadditive_standard : (ℕ → ℕ) → Prop :=
+fun f => ∀ (a b : ℕ), f (a + b) ≤ f a + f b
+FREEZE_END Prosa.Util.Subadditivity.subadditive_standard
+FREEZE_BEGIN Prosa.Util.Subadditivity.subadditive_standard_equivalence
+Prosa.Util.Subadditivity.subadditive_standard_equivalence : ∀ (f : ℕ → ℕ),
+  Prosa.Util.Subadditivity.subadditive f ↔ Prosa.Util.Subadditivity.subadditive_standard f
+FREEZE_END Prosa.Util.Subadditivity.subadditive_standard_equivalence
+FREEZE_BEGIN Prosa.Util.Subadditivity.subadditive_leq_mul
+Prosa.Util.Subadditivity.subadditive_leq_mul : ∀ (f : ℕ → ℕ),
+  Prosa.Util.Subadditivity.subadditive f → ∀ (n m : ℕ), 0 < m → f (m * n) ≤ m * f n
+FREEZE_END Prosa.Util.Subadditivity.subadditive_leq_mul
+FREEZE_BEGIN Prosa.Util.Supremum.choose_superior
+@Prosa.Util.Supremum.choose_superior : {T : Type u_1} → (T → T → Bool) → T → Option T → Option T
+def Prosa.Util.Supremum.choose_superior.{u} : {T : Type u} → (T → T → Bool) → T → Option T → Option T :=
+fun {T} R x maybeY =>
+  match maybeY with
+  | some y => if R x y = true then some x else some y
+  | none => some x
+FREEZE_END Prosa.Util.Supremum.choose_superior
+FREEZE_BEGIN Prosa.Util.Supremum.supremum
+@Prosa.Util.Supremum.supremum : {T : Type u_1} → (T → T → Bool) → List T → Option T
+def Prosa.Util.Supremum.supremum.{u} : {T : Type u} → (T → T → Bool) → List T → Option T :=
+fun {T} R s => List.foldr (Prosa.Util.Supremum.choose_superior R) none s
+FREEZE_END Prosa.Util.Supremum.supremum
+FREEZE_BEGIN Prosa.Util.Supremum.supremum_unfold
+@Prosa.Util.Supremum.supremum_unfold : ∀ {T : Type u_1} [DecidableEq T] (R : T → T → Bool) (head : T) (tail : List T),
+  Prosa.Util.Supremum.supremum R (head :: tail) =
+    Prosa.Util.Supremum.choose_superior R head (Prosa.Util.Supremum.supremum R tail)
+FREEZE_END Prosa.Util.Supremum.supremum_unfold
+FREEZE_BEGIN Prosa.Util.Supremum.supremum_exists
+@Prosa.Util.Supremum.supremum_exists : ∀ {T : Type u_1} [DecidableEq T] (R : T → T → Bool) (x : T) (s : List T),
+  x ∈ s → Prosa.Util.Supremum.supremum R s ≠ none
+FREEZE_END Prosa.Util.Supremum.supremum_exists
+FREEZE_BEGIN Prosa.Util.Supremum.supremum_none
+@Prosa.Util.Supremum.supremum_none : ∀ {T : Type u_1} [DecidableEq T] (R : T → T → Bool) (s : List T),
+  Prosa.Util.Supremum.supremum R s = none → s = []
+FREEZE_END Prosa.Util.Supremum.supremum_none
+FREEZE_BEGIN Prosa.Util.Supremum.supremum_in
+@Prosa.Util.Supremum.supremum_in : ∀ {T : Type u_1} [DecidableEq T] (R : T → T → Bool) (x : T) (s : List T),
+  Prosa.Util.Supremum.supremum R s = some x → x ∈ s
+FREEZE_END Prosa.Util.Supremum.supremum_in
+FREEZE_BEGIN Prosa.Util.Supremum.supremum_spec
+@Prosa.Util.Supremum.supremum_spec : ∀ {T : Type u_1} [DecidableEq T] (R : T → T → Bool),
+  (∀ (x : T), R x x = true) →
+    (∀ (x y : T), (R x y || R y x) = true) →
+      (∀ (x y z : T), R x y = true → R y z = true → R x z = true) →
+        ∀ (x : T) (s : List T), Prosa.Util.Supremum.supremum R s = some x → ∀ y ∈ s, R x y = true
+FREEZE_END Prosa.Util.Supremum.supremum_spec

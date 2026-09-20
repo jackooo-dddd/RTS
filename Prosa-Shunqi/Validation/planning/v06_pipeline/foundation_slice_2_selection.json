@@ -1,0 +1,108 @@
+{
+  "slice": "FOUNDATION_SLICE_2",
+  "created_at": "2026-09-20 21:42:30 HKT",
+  "created_before_production_translation": true,
+  "authority": {
+    "source_commit": "414e66760333eaa4ef78c685bcf53291c527a548",
+    "source_tree": "7d7e94c731f7eefde4ca738310d4cafdd7bebdf0",
+    "file_dag_policy": "authoritative readiness criterion",
+    "declaration_dag_policy": "fine-grained ordering/context aid only"
+  },
+  "selected_files": [
+    {
+      "source_file": "util/notation.v",
+      "file_layer": 0,
+      "direct_internal_dependencies": [],
+      "direct_external_dependencies": ["mathcomp.bigop", "mathcomp.eqtype", "mathcomp.fintype", "mathcomp.seq", "mathcomp.ssrbool", "mathcomp.ssreflect", "mathcomp.ssrnat"],
+      "public_declarations": ["constant"],
+      "public_declaration_count": 1,
+      "loc": 49,
+      "migration_actions": {"NEW_TRANSLATION": 1},
+      "representation_policies": ["higher-order functions", "notations are not public declaration targets"],
+      "expected_validation_difficulty": "LOW",
+      "FILE_DAG_READY": true
+    },
+    {
+      "source_file": "util/tactics.v",
+      "file_layer": 0,
+      "direct_internal_dependencies": [],
+      "direct_external_dependencies": ["mathcomp.bigop", "mathcomp.eqtype", "mathcomp.ssrbool", "mathcomp.ssreflect", "mathcomp.ssrnat"],
+      "public_declarations": ["neqP", "modusponens"],
+      "public_declaration_count": 2,
+      "loc": 181,
+      "migration_actions": {"ADAPT_OLD_LEAN": 1, "NEW_TRANSLATION": 1},
+      "representation_policies": ["eqType to Type plus DecidableEq", "Bool reflection", "Prop"],
+      "expected_validation_difficulty": "MEDIUM: theorem statements cross Prop/SProp and MathComp reflect",
+      "FILE_DAG_READY": true
+    },
+    {
+      "source_file": "util/rel.v",
+      "file_layer": 0,
+      "direct_internal_dependencies": [],
+      "direct_external_dependencies": ["mathcomp.eqtype", "mathcomp.seq", "mathcomp.ssrbool", "mathcomp.ssreflect", "mathcomp.ssrnat"],
+      "public_declarations": ["monotone", "total_over_list", "antisymmetric_over_list"],
+      "public_declaration_count": 3,
+      "loc": 46,
+      "migration_actions": {"ADAPT_OLD_LEAN": 3},
+      "representation_policies": ["seq to List", "eqType to Type plus DecidableEq", "Bool predicates remain Bool", "higher-order relation"],
+      "expected_validation_difficulty": "MEDIUM: higher-order predicates and list membership",
+      "FILE_DAG_READY": true
+    },
+    {
+      "source_file": "util/seqset.v",
+      "file_layer": 0,
+      "direct_internal_dependencies": [],
+      "direct_external_dependencies": ["HB.structures", "mathcomp.eqtype", "mathcomp.fintype", "mathcomp.seq", "mathcomp.ssrbool", "mathcomp.ssreflect", "mathcomp.ssrnat"],
+      "public_declarations": ["set", "set_of", "set_uniq"],
+      "public_declaration_count": 3,
+      "loc": 42,
+      "migration_actions": {"NEW_TRANSLATION": 1, "REUSE_AFTER_REVALIDATION": 2},
+      "representation_policies": ["ordered duplicate-free sequence wrapper", "not Finset", "eqType to Type plus DecidableEq"],
+      "expected_validation_difficulty": "HIGH: record, proof field, membership and uniqueness observations",
+      "FILE_DAG_READY": true
+    },
+    {
+      "source_file": "util/subadditivity.v",
+      "file_layer": 0,
+      "direct_internal_dependencies": [],
+      "direct_external_dependencies": ["mathcomp.bigop", "mathcomp.div", "mathcomp.eqtype", "mathcomp.fintype", "mathcomp.path", "mathcomp.seq", "mathcomp.ssrbool", "mathcomp.ssreflect", "mathcomp.ssrnat"],
+      "public_declarations": ["subadditive_at", "subadditive_until", "subadditive", "subadditive_standard", "subadditive_standard_equivalence", "subadditive_leq_mul"],
+      "public_declaration_count": 6,
+      "loc": 80,
+      "migration_actions": {"NEW_TRANSLATION": 6},
+      "representation_policies": ["Nat", "Nat order", "higher-order predicates", "Prop theorem correspondence"],
+      "expected_validation_difficulty": "HIGH: quantified arithmetic definitions plus theorem statements",
+      "FILE_DAG_READY": true
+    },
+    {
+      "source_file": "util/supremum.v",
+      "file_layer": 0,
+      "direct_internal_dependencies": [],
+      "direct_external_dependencies": ["mathcomp.eqtype", "mathcomp.seq", "mathcomp.ssrbool", "mathcomp.ssreflect"],
+      "public_declarations": ["choose_superior", "supremum", "supremum_unfold", "supremum_exists", "supremum_none", "supremum_in", "supremum_spec"],
+      "public_declaration_count": 7,
+      "loc": 126,
+      "migration_actions": {"REUSE_AFTER_REVALIDATION": 2, "ADAPT_OLD_LEAN": 5},
+      "representation_policies": ["seq to List", "option to Option", "Bool relation", "observable fold result", "Prop theorem correspondence"],
+      "expected_validation_difficulty": "HIGH: recursive fold semantics, option/list observations and theorem statements",
+      "FILE_DAG_READY": true
+    }
+  ],
+  "conditional_follow_on": {
+    "source_file": "util/nat.v",
+    "file_layer": 1,
+    "direct_internal_dependencies": ["util/tactics.v"],
+    "direct_external_dependencies": ["mathcomp.bigop", "mathcomp.div", "mathcomp.eqtype", "mathcomp.fintype", "mathcomp.seq", "mathcomp.ssrbool", "mathcomp.ssreflect", "mathcomp.ssrnat", "mathcomp.zify.zify"],
+    "public_declarations": ["subnACA", "leq_subRL_impl"],
+    "public_declaration_count": 2,
+    "loc": 20,
+    "migration_actions": {"NEW_TRANSLATION": 2},
+    "representation_policies": ["Nat arithmetic", "Prop theorem correspondence"],
+    "expected_validation_difficulty": "MEDIUM",
+    "FILE_DAG_READY": false,
+    "readiness_condition": "util/tactics.v must first become ACCEPTED_V06_FILE in this slice"
+  },
+  "explicitly_deferred": ["util/bigop.v", "util/setoid.v"],
+  "selected_public_declaration_total": 22,
+  "selection_status": "READY"
+}

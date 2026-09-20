@@ -1,0 +1,20 @@
+Prosa_Util_Supremum_choose_superior@{u Lean.u+1.0} =
+fun (T : Type) (R : T -> T -> Bool) (x : T) (maybeY : Option T) =>
+Prosa_Util_Supremum_choose_superior_match_1 T (fun _ : Option T => Option T)
+  maybeY
+  (fun y : T =>
+   ite (Option T) (eq (R x y) Bool_true)
+     (instDecidableEqBool (R x y) Bool_true) (Option_some T x)
+     (Option_some T y))
+  (fun _ : Unit => Option_some T x)
+     : forall T : Type, (T -> T -> Bool) -> T -> Option T -> Option T
+
+Arguments Prosa_Util_Supremum_choose_superior T%_type_scope 
+  R%_function_scope x maybeY
+Prosa_Util_Supremum_supremum@{u Lean.u+1.0 Lean.u+2.0} =
+fun (T : Type) (R : T -> T -> Bool) (s : List T) =>
+List_foldr T (Option T) (Prosa_Util_Supremum_choose_superior T R)
+  (Option_none T) s
+     : forall T : Type, (T -> T -> Bool) -> List T -> Option T
+
+Arguments Prosa_Util_Supremum_supremum T%_type_scope R%_function_scope s
