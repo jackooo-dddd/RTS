@@ -9,6 +9,8 @@ import Prosa.Util.Supremum
 
 namespace Prosa.Util.List
 
+universe u
+
 /-- Maximum of a sequence of natural numbers, with `0` for the empty list. -/
 def max0 (xs : List Nat) : Nat := xs.foldl Nat.max 0
 
@@ -559,5 +561,337 @@ theorem nonnil_last {X : Type _} [DecidableEq X]
   cases xs with
   | nil => contradiction
   | cons a xs => simp [List.getLastD]
+
+/-- If some element satisfies a Boolean predicate, the last retained element
+    belongs to the original list. -/
+theorem filter_last_mem {X : Type _} [DecidableEq X]
+    (xs : List X) (d : X) (P : X → Bool)
+    (hhas : xs.any P = true) :
+    (xs.filter P).getLastD d ∈ xs := by
+  obtain ⟨x, hx, hPx⟩ := List.any_eq_true.mp hhas
+  have hfilter_ne : xs.filter P ≠ [] := by
+    intro hnil
+    have hxfilter : x ∈ xs.filter P := List.mem_filter.mpr ⟨hx, hPx⟩
+    simpa [hnil] using hxfilter
+  have hlastfilter : (xs.filter P).getLastD d ∈ xs.filter P := by
+    cases hfilter : xs.filter P with
+    | nil => exact (hfilter_ne hfilter).elim
+    | cons a ys =>
+        rw [nonnil_last (a :: ys) d a (List.cons_ne_nil a ys)]
+        simpa [List.getLastD] using
+          (@List.getLastD_mem_cons X ys a)
+  exact (List.mem_filter.mp hlastfilter).1
+
+/-- LEAN_HELPER: MathComp's `index_iota a b = iota a (b - a)` as an
+    ordered list with half-open endpoint semantics. -/
+def index_iota (a b : Nat) : List Nat := List.range' a (b - a)
+
+/-- Inclusive natural-number range, defined by extending the half-open
+    `index_iota` endpoint by one. -/
+def range (a b : Nat) : List Nat := index_iota a (b + 1)
+
+/-- Split an iota list at any duration not exceeding its length. -/
+theorem iotaD_impl (n_le m n : Nat) (h : n_le ≤ n) :
+    List.range' m n =
+      List.range' m n_le ++ List.range' (m + n_le) (n - n_le) := by
+  have hsum : n_le + (n - n_le) = n := by omega
+  calc
+    List.range' m n = List.range' m (n_le + (n - n_le)) := by rw [hsum]
+    _ = List.range' m n_le ++ List.range' (m + n_le) (n - n_le) := by
+      simpa using
+        (List.range'_append (s := m) (m := n_le) (n := n - n_le)
+          (step := 1)).symm
+
+/-- A non-empty half-open index interval exposes its lower endpoint. -/
+theorem index_iota_lt_step (a b : Nat) (h : a < b) :
+    index_iota a b = a :: index_iota (a + 1) b := by
+  simp only [index_iota]
+  have hlen : b - a = (b - (a + 1)) + 1 := by omega
+  rw [hlen, List.range'_succ]
+
+/-- Split a half-open index interval at an intermediate point. -/
+theorem index_iota_cat (t t1 t2 : Nat)
+    (h : t1 ≤ t ∧ t ≤ t2) :
+    index_iota t1 t2 = index_iota t1 t ++ index_iota t t2 := by
+  rcases h with ⟨ht1, ht2⟩
+  unfold index_iota
+  have hlen : (t - t1) + (t2 - t) = t2 - t1 := by omega
+  have hstart : t1 + (t - t1) = t := by omega
+  calc
+    List.range' t1 (t2 - t1) =
+        List.range' t1 ((t - t1) + (t2 - t)) := by rw [hlen]
+    _ = List.range' t1 (t - t1) ++
+        List.range' (t1 + (t - t1)) (t2 - t) := by
+      simpa using
+        (List.range'_append (s := t1) (m := t - t1) (n := t2 - t)
+          (step := 1)).symm
+    _ = List.range' t1 (t - t1) ++ List.range' t (t2 - t) := by
+      rw [hstart]
+
+/-- Duplicating the head of the membership list does not change a filtered
+    range. -/
+theorem range_filter_2cons (x : Nat) (xs : List Nat) (k : Nat) :
+    (range 0 k).filter (fun ρ => decide (ρ ∈ x :: x :: xs)) =
+      (range 0 k).filter (fun ρ => decide (ρ ∈ x :: xs)) := by
+  apply List.filter_congr
+  intro y _hy
+  by_cases hyx : y = x <;> simp [hyx]
+
+/-- Equality-filtering a half-open interval at an in-range value yields the
+    corresponding singleton. -/
+theorem index_iota_filter_eqx (x a b : Nat)
+    (h : a ≤ x ∧ x < b) :
+    (index_iota a b).filter (fun ρ => decide (ρ = x)) = [x] := by
+  obtain ⟨hax, hxb⟩ := h
+  suffices key : ∀ len a b, b - a ≤ len → a ≤ x → x < b →
+      (index_iota a b).filter (fun ρ => decide (ρ = x)) = [x] from
+    key (b - a) a b (Nat.le_refl _) hax hxb
+  intro len
+  induction len with
+  | zero =>
+      intro a b hba hax hxb
+      omega
+  | succ n ih =>
+      intro a b hba hax hxb
+      have hab : a < b := by omega
+      rw [index_iota_lt_step a b hab, List.filter_cons]
+      by_cases heq : a = x
+      · subst a
+        simp only [decide_true, if_true]
+        congr 1
+        apply filter_in_pred0
+        intro y hy
+        simp only [index_iota] at hy
+        rw [List.mem_range'] at hy
+        rcases hy with ⟨i, hi, hy⟩
+        have hyx : y ≠ x := by
+          simp only [Nat.one_mul] at hy
+          omega
+        simp [hyx]
+      · have hdec : decide (a = x) = false := decide_eq_false heq
+        simp only [hdec, if_false]
+        exact ih (a + 1) b (by omega) (by omega) hxb
+
+/-- Singleton-membership filtering is the equality-filtering special case. -/
+theorem index_iota_filter_singl (x a b : Nat)
+    (h : a ≤ x ∧ x < b) :
+    (index_iota a b).filter (fun ρ => decide (ρ ∈ [x])) = [x] := by
+  calc
+    (index_iota a b).filter (fun ρ => decide (ρ ∈ [x])) =
+        (index_iota a b).filter (fun ρ => decide (ρ = x)) := by
+      apply List.filter_congr
+      intro y _hy
+      simp
+    _ = [x] := index_iota_filter_eqx x a b h
+
+private theorem mem_rem_all_of_ne_of_mem {X : Type _} [DecidableEq X]
+    (y x : X) (xs : List X) (hne : y ≠ x) (hmem : y ∈ xs) :
+    y ∈ rem_all x xs := by
+  induction xs with
+  | nil => exact hmem
+  | cons a xs ih =>
+      simp only [rem_all]
+      split
+      · rename_i hax
+        subst a
+        rcases List.mem_cons.mp hmem with rfl | hin
+        · exact absurd rfl hne
+        · exact ih hin
+      · rcases List.mem_cons.mp hmem with rfl | hin
+        · exact List.mem_cons_self
+        · exact List.mem_cons_of_mem _ (ih hin)
+
+/-- Removing an element below an interval's lower endpoint preserves the
+    interval filtered by list membership. -/
+theorem index_iota_filter_inxs (a b x : Nat) (xs : List Nat)
+    (h : x < a) :
+    (index_iota a b).filter (fun ρ => decide (ρ ∈ xs)) =
+      (index_iota a b).filter (fun ρ => decide (ρ ∈ rem_all x xs)) := by
+  apply List.filter_congr
+  intro y hy
+  simp only [index_iota] at hy
+  rw [List.mem_range'] at hy
+  rcases hy with ⟨i, hi, hy⟩
+  have hyx : y ≠ x := by
+    simp only [Nat.one_mul] at hy
+    omega
+  simp only [decide_eq_decide]
+  constructor
+  · exact mem_rem_all_of_ne_of_mem y x xs hyx
+  · exact in_rem_all y x xs
+
+/-- If `x` is a minimum of `xs`, filtering an interval by membership in
+    `x :: xs` exposes `x` first and removes all further copies of `x`. -/
+theorem index_iota_filter_step (x : Nat) (xs : List Nat) (a b : Nat)
+    (hBounds : a ≤ x ∧ x < b)
+    (hMin : ∀ y, y ∈ xs → x ≤ y) :
+    (index_iota a b).filter (fun ρ => decide (ρ ∈ x :: xs)) =
+      x :: (index_iota a b).filter
+        (fun ρ => decide (ρ ∈ rem_all x xs)) := by
+  obtain ⟨hax, hxb⟩ := hBounds
+  suffices key : ∀ len a b, b - a ≤ len → a ≤ x → x < b →
+      (index_iota a b).filter (fun ρ => decide (ρ ∈ x :: xs)) =
+        x :: (index_iota a b).filter
+          (fun ρ => decide (ρ ∈ rem_all x xs)) from
+    key (b - a) a b (Nat.le_refl _) hax hxb
+  intro len
+  induction len with
+  | zero =>
+      intro a b hba hax hxb
+      omega
+  | succ n ih =>
+      intro a b hba hax hxb
+      have hab : a < b := by omega
+      rw [index_iota_lt_step a b hab]
+      by_cases heq : a = x
+      · subst a
+        rw [List.filter_cons, List.filter_cons]
+        simp only [List.mem_cons_self, decide_true, if_true,
+          show decide (x ∈ rem_all x xs) = false from
+            decide_eq_false_iff_not.mpr (nin_rem_all x xs)]
+        congr 1
+        apply List.filter_congr
+        intro y hy
+        simp only [index_iota] at hy
+        rw [List.mem_range'] at hy
+        rcases hy with ⟨i, hi, hy⟩
+        have hyx : y ≠ x := by
+          simp only [Nat.one_mul] at hy
+          omega
+        simp only [decide_eq_decide]
+        constructor
+        · intro hyin
+          rcases List.mem_cons.mp hyin with rfl | hin
+          · exact absurd rfl hyx
+          · exact mem_rem_all_of_ne_of_mem y x xs hyx hin
+        · intro hyin
+          exact List.mem_cons_of_mem x (in_rem_all y x xs hyin)
+      · have halt : a < x := by omega
+        have hnotmem1 : a ∉ (x :: xs) := by
+          simp only [List.mem_cons, not_or]
+          exact ⟨by omega, fun hmem => by
+            have := hMin a hmem
+            omega⟩
+        have hnotmem2 : a ∉ rem_all x xs := by
+          intro hmem
+          have hmem' := in_rem_all a x xs hmem
+          have := hMin a hmem'
+          omega
+        rw [List.filter_cons, List.filter_cons]
+        simp only [
+          show decide (a ∈ x :: xs) = false from
+            decide_eq_false_iff_not.mpr hnotmem1,
+          show decide (a ∈ rem_all x xs) = false from
+            decide_eq_false_iff_not.mpr hnotmem2,
+          if_false]
+        exact ih (a + 1) b (by omega) (by omega) hxb
+
+/-- The inclusive `range 0 k` specialization of
+    `index_iota_filter_step`. -/
+theorem range_iota_filter_step (x : Nat) (xs : List Nat) (k : Nat)
+    (hBound : x ≤ k) (hMin : ∀ y, y ∈ xs → x ≤ y) :
+    (range 0 k).filter (fun ρ => decide (ρ ∈ x :: xs)) =
+      x :: (range 0 k).filter
+        (fun ρ => decide (ρ ∈ rem_all x xs)) := by
+  unfold range
+  apply index_iota_filter_step
+  · exact ⟨Nat.zero_le x, by omega⟩
+  · exact hMin
+
+/-- Every selected element of `[a,b)` is strictly above a value below `a`. -/
+theorem iota_filter_gt (x a b idx : Nat) (P : Nat → Bool)
+    (hLower : x < a)
+    (hIdx : idx < ((index_iota a b).filter P).length) :
+    x < ((index_iota a b).filter P).getD idx 0 := by
+  suffices key : ∀ len a b idx, b - a ≤ len → x < a →
+      idx < ((index_iota a b).filter P).length →
+      x < ((index_iota a b).filter P).getD idx 0 from
+    key (b - a) a b idx (Nat.le_refl _) hLower hIdx
+  intro len
+  induction len with
+  | zero =>
+      intro a b idx hlen hxa hidx
+      simp only [index_iota] at hidx
+      have hba : b - a = 0 := by omega
+      rw [hba] at hidx
+      simp at hidx
+  | succ n ih =>
+      intro a b idx hlen hxa hidx
+      by_cases hab : b ≤ a
+      · simp only [index_iota] at hidx
+        have hzero : b - a = 0 := by omega
+        rw [hzero] at hidx
+        simp at hidx
+      · have hab' : a < b := by omega
+        rw [index_iota_lt_step a b hab'] at hidx ⊢
+        simp only [List.filter_cons] at hidx ⊢
+        by_cases hPa : P a = true
+        · simp only [hPa, if_true] at hidx ⊢
+          cases idx with
+          | zero =>
+              simp only [List.getD_cons_zero]
+              exact hxa
+          | succ idx =>
+              simp only [List.length_cons] at hidx
+              rw [List.getD_cons_succ]
+              exact ih (a + 1) b idx (by omega) (by omega) (by omega)
+        · simp only [Bool.not_eq_true] at hPa
+          simp only [hPa] at hidx ⊢
+          exact ih (a + 1) b idx (by omega) (by omega) hidx
+
+/-- Pointwise implication on a list induces monotonicity of Boolean count. -/
+theorem sub_count_seq {X : Type u} [DecidableEq X]
+    (f g : X → Bool) (xs : List X)
+    (hImpl : ∀ x, x ∈ xs → f x = true → g x = true) :
+    xs.countP f ≤ xs.countP g := by
+  induction xs with
+  | nil => simp
+  | cons a xs ih =>
+      rw [List.countP_cons, List.countP_cons]
+      have ih' : xs.countP f ≤ xs.countP g :=
+        ih (fun x hx => hImpl x (List.mem_cons_of_mem a hx))
+      cases hfa : f a with
+      | false =>
+        simp [hfa]
+        exact Nat.le_trans ih' (Nat.le_add_right _ _)
+      | true =>
+        have hga : g a = true := hImpl a List.mem_cons_self hfa
+        simp [hfa, hga]
+        omega
+
+/-- Inclusion-exclusion for counts of two Boolean predicates. -/
+theorem count_predUI' (P₁ P₂ : Nat → Bool) (xs : List Nat) :
+    xs.countP (fun x => P₁ x || P₂ x) =
+      xs.countP P₁ + xs.countP P₂ -
+        xs.countP (fun x => P₁ x && P₂ x) := by
+  induction xs with
+  | nil => rfl
+  | cons a xs ih =>
+      have hInter :
+          xs.countP (fun x => P₁ x && P₂ x) ≤ xs.countP P₁ := by
+        apply sub_count_seq
+        intro x _hx hand
+        cases h₁ : P₁ x <;> cases h₂ : P₂ x <;>
+          simp [h₁, h₂] at hand ⊢
+      simp only [List.countP_cons]
+      cases h₁ : P₁ a <;> cases h₂ : P₂ a <;>
+        simp [h₁, h₂] at * <;> omega
+
+/-- `xs` is a prefix of `ys` when `ys` is `xs` followed by a tail. -/
+def prefix_of {T : Type u} [DecidableEq T] (xs ys : List T) : Prop :=
+  ∃ xsTail, xs ++ xsTail = ys
+
+/-- A strict prefix has a non-empty residual tail. -/
+def strict_prefix_of {T : Type u} [DecidableEq T]
+    (xs ys : List T) : Prop :=
+  ∃ xsTail, xsTail ≠ [] ∧ xs ++ xsTail = ys
+
+/-- Shift every point forward by a constant offset. -/
+def shift_points_pos (xs : List Nat) (s : Nat) : List Nat :=
+  xs.map (fun x => s + x)
+
+/-- Drop points below `s` and shift all remaining points backwards by `s`. -/
+def shift_points_neg (xs : List Nat) (s : Nat) : List Nat :=
+  (xs.filter (fun x => decide (s ≤ x))).map (fun x => x - s)
 
 end Prosa.Util.List

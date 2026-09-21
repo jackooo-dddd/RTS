@@ -9,7 +9,7 @@ import re
 from pathlib import Path
 
 LINE = re.compile(
-    r"^'([^']+)' (?:does not depend on any axioms|depends on axioms: \[([^]]*)\])$"
+    r"^'(.+)' (?:does not depend on any axioms|depends on axioms: \[([^]]*)\])$"
 )
 
 

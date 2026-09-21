@@ -1,0 +1,601 @@
+Warning:
+Cannot open /Users/shunqiwang/CityuHK/Research/Lean/TranslationProof/Prosa-Shunqi/Validation/.work/runs/utility_list_prepare.FetfJG/certificates
+[cannot-open-path,filesystem,default]
+Prosa_Util_List_last0
+     : List_inst1 Nat -> Nat
+Prosa_Util_List_last0_cons
+     : forall (x : Nat) (xs : List_inst1 Nat),
+       Ne (List_inst1 Nat) xs (List_nil_inst1 Nat) ->
+       eq (Prosa_Util_List_last0 (List_cons_inst1 Nat x xs))
+         (Prosa_Util_List_last0 xs)
+Prosa_Util_List_last0_cat
+     : forall xs_l xs_r : List_inst1 Nat,
+       Ne (List_inst1 Nat) xs_r (List_nil_inst1 Nat) ->
+       eq
+         (Prosa_Util_List_last0
+            (HAppend_hAppend_inst7 (List_inst1 Nat) 
+               (List_inst1 Nat) (List_inst1 Nat)
+               (instHAppendOfAppend_inst1 (List_inst1 Nat)
+                  (List_instAppend_inst1 Nat))
+               xs_l xs_r))
+         (Prosa_Util_List_last0 xs_r)
+Prosa_Util_List_last0_nth
+     : forall xs : List_inst1 Nat,
+       eq (Prosa_Util_List_last0 xs)
+         (List_getD_inst1 Nat xs
+            (HSub_hSub_inst7 Nat Nat Nat (instHSub_inst1 Nat instSubNat)
+               (List_length_inst1 Nat xs)
+               (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1)))
+            (OfNat_ofNat_inst1 Nat 0 (instOfNatNat 0)))
+Prosa_Util_List_last0_ex_cat
+     : forall (x : Nat) (xs : List_inst1 Nat),
+       Ne (List_inst1 Nat) xs (List_nil_inst1 Nat) ->
+       eq (Prosa_Util_List_last0 xs) x ->
+       Exists (List_inst1 Nat)
+         (fun xsh : List_inst1 Nat =>
+          HAppend_hAppend_inst7 (List_inst1 Nat) (List_inst1 Nat)
+            (List_inst1 Nat)
+            (instHAppendOfAppend_inst1 (List_inst1 Nat)
+               (List_instAppend_inst1 Nat))
+            xsh (List_cons_inst1 Nat x (List_nil_inst1 Nat)) =
+          xs)
+Prosa_Util_List_last0_filter
+     : forall (x : Nat) (xs : List_inst1 Nat) (P : Nat -> Bool),
+       Ne (List_inst1 Nat) xs (List_nil_inst1 Nat) ->
+       eq (Prosa_Util_List_last0 xs) x ->
+       eq (P x) Bool_true ->
+       eq (Prosa_Util_List_last0 (List_filter_inst1 Nat P xs)) x
+Prosa_Util_List_max0
+     : List_inst1 Nat -> Nat
+Prosa_Util_List_max0_cons
+     : forall (x : Nat) (xs : List_inst1 Nat),
+       eq (Prosa_Util_List_max0 (List_cons_inst1 Nat x xs))
+         (Nat_max x (Prosa_Util_List_max0 xs))
+Prosa_Util_List_max0_of_uniform_set
+     : forall (k : Nat) (xs : List_inst1 Nat),
+       GT_gt_inst1 Nat instLTNat (List_length_inst1 Nat xs)
+         (OfNat_ofNat_inst1 Nat 0 (instOfNatNat 0)) ->
+       (forall x : Nat,
+        Membership_mem_inst3 Nat (List_inst1 Nat)
+          (List_instMembership_inst1 Nat) xs x ->
+        eq x k) ->
+       eq (Prosa_Util_List_max0 xs) k
+Prosa_Util_List_in_max0_le
+     : forall (xs : List_inst1 Nat) (x : Nat),
+       Membership_mem_inst3 Nat (List_inst1 Nat)
+         (List_instMembership_inst1 Nat) xs x ->
+       LE_le_inst1 Nat instLENat x (Prosa_Util_List_max0 xs)
+Prosa_Util_List_max0_in_seq
+     : forall xs : List_inst1 Nat,
+       Ne (List_inst1 Nat) xs (List_nil_inst1 Nat) ->
+       Membership_mem_inst3 Nat (List_inst1 Nat)
+         (List_instMembership_inst1 Nat) xs (Prosa_Util_List_max0 xs)
+Prosa_Util_List_max0_2cons_eq
+     : forall (x : Nat) (xs : List_inst1 Nat),
+       eq
+         (Prosa_Util_List_max0
+            (List_cons_inst1 Nat x (List_cons_inst1 Nat x xs)))
+         (Prosa_Util_List_max0 (List_cons_inst1 Nat x xs))
+Prosa_Util_List_max0_2cons_le
+     : forall (x1 x2 : Nat) (xs : List_inst1 Nat),
+       LE_le_inst1 Nat instLENat x1 x2 ->
+       eq
+         (Prosa_Util_List_max0
+            (List_cons_inst1 Nat x1 (List_cons_inst1 Nat x2 xs)))
+         (Prosa_Util_List_max0 (List_cons_inst1 Nat x2 xs))
+Prosa_Util_List_max0_rem0
+     : forall xs : List_inst1 Nat,
+       eq
+         (Prosa_Util_List_max0
+            (List_filter_inst1 Nat
+               (fun x : Nat =>
+                Decidable_decide
+                  (LT_lt_inst1 Nat instLTNat
+                     (OfNat_ofNat_inst1 Nat 0 (instOfNatNat 0)) x)
+                  (Nat_decLt (OfNat_ofNat_inst1 Nat 0 (instOfNatNat 0)) x))
+               xs))
+         (Prosa_Util_List_max0 xs)
+Prosa_Util_List_last_of_seq_le_max_of_seq
+     : forall xs : List_inst1 Nat,
+       LE_le_inst1 Nat instLENat (Prosa_Util_List_last0 xs)
+         (Prosa_Util_List_max0 xs)
+Prosa_Util_List_max_of_dominating_seq
+     : forall xs ys : List_inst1 Nat,
+       (forall n : Nat,
+        LE_le_inst1 Nat instLENat
+          (List_getD_inst1 Nat xs n
+             (OfNat_ofNat_inst1 Nat 0 (instOfNatNat 0)))
+          (List_getD_inst1 Nat ys n
+             (OfNat_ofNat_inst1 Nat 0 (instOfNatNat 0)))) ->
+       LE_le_inst1 Nat instLENat (Prosa_Util_List_max0 xs)
+         (Prosa_Util_List_max0 ys)
+Prosa_Util_List_nth0_cons
+     : forall (x : Nat) (xs : List_inst1 Nat) (n : Nat),
+       GT_gt_inst1 Nat instLTNat n (OfNat_ofNat_inst1 Nat 0 (instOfNatNat 0)) ->
+       eq
+         (List_getD_inst1 Nat (List_cons_inst1 Nat x xs) n
+            (OfNat_ofNat_inst1 Nat 0 (instOfNatNat 0)))
+         (List_getD_inst1 Nat xs
+            (HSub_hSub_inst7 Nat Nat Nat (instHSub_inst1 Nat instSubNat) n
+               (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1)))
+            (OfNat_ofNat_inst1 Nat 0 (instOfNatNat 0)))
+Prosa_Util_List_rem_in
+     : forall (T : Type)
+         (inst____at___Prosa_Util_List751658242__hygCtx__hyg3 : 
+          DecidableEq T)
+         (x y : T) (xs : List T),
+       Membership_mem T (List T) (List_instMembership T)
+         (List_erase T
+            (instBEqOfDecidableEq T
+               inst____at___Prosa_Util_List751658242__hygCtx__hyg3)
+            xs y)
+         x ->
+       Membership_mem T (List T) (List_instMembership T) xs x
+Prosa_Util_List_in_neq_impl_rem_in
+     : forall (T : Type)
+         (inst____at___Prosa_Util_List1412009673__hygCtx__hyg3 : 
+          DecidableEq T)
+         (x y : T) (xs : List T),
+       Membership_mem T (List T) (List_instMembership T) xs x ->
+       Ne T x y ->
+       Membership_mem T (List T) (List_instMembership T)
+         (List_erase T
+            (instBEqOfDecidableEq T
+               inst____at___Prosa_Util_List1412009673__hygCtx__hyg3)
+            xs y)
+         x
+Prosa_Util_List_filter_size_rem
+     : forall (T : Type)
+         (inst____at___Prosa_Util_List2563590170__hygCtx__hyg3 : 
+          DecidableEq T)
+         (x : T) (xs : List T) (P : T -> Bool),
+       Membership_mem T (List T) (List_instMembership T) xs x ->
+       eq (P x) Bool_true ->
+       eq (List_length T (List_filter T P xs))
+         (HAdd_hAdd_inst7 Nat Nat Nat (instHAdd_inst1 Nat instAddNat)
+            (List_length T
+               (List_filter T P
+                  (List_erase T
+                     (instBEqOfDecidableEq T
+                        inst____at___Prosa_Util_List2563590170__hygCtx__hyg3)
+                     xs x)))
+            (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1)))
+Prosa_Util_List_in_seq_equiv_undup
+     : forall (T : Type)
+         (inst____at___Prosa_Util_List1496379328__hygCtx__hyg3 : 
+          DecidableEq T)
+         (xs : List T) (x : T),
+       eq
+         (Decidable_decide
+            (Membership_mem T (List T) (List_instMembership T)
+               (List_eraseDups T
+                  (instBEqOfDecidableEq T
+                     inst____at___Prosa_Util_List1496379328__hygCtx__hyg3)
+                  xs)
+               x)
+            (List_instDecidableMemOfLawfulBEq T
+               (instBEqOfDecidableEq T
+                  inst____at___Prosa_Util_List1496379328__hygCtx__hyg3)
+               (instLawfulBEq T
+                  inst____at___Prosa_Util_List1496379328__hygCtx__hyg3)
+               x
+               (List_eraseDups T
+                  (instBEqOfDecidableEq T
+                     inst____at___Prosa_Util_List1496379328__hygCtx__hyg3)
+                  xs)))
+         (Decidable_decide
+            (Membership_mem T (List T) (List_instMembership T) xs x)
+            (List_instDecidableMemOfLawfulBEq T
+               (instBEqOfDecidableEq T
+                  inst____at___Prosa_Util_List1496379328__hygCtx__hyg3)
+               (instLawfulBEq T
+                  inst____at___Prosa_Util_List1496379328__hygCtx__hyg3)
+               x xs))
+Prosa_Util_List_filter_in_pred0
+     : forall T : Type,
+       DecidableEq T ->
+       forall (xs : List T) (P : T -> Bool),
+       (forall x : T,
+        Membership_mem T (List T) (List_instMembership T) xs x ->
+        eq (P x) Bool_false) ->
+       eq (List_filter T P xs) (List_nil T)
+Prosa_Util_List_rem_all
+     : forall T : Type, DecidableEq T -> T -> List T -> List T
+Prosa_Util_List_nin_rem_all
+     : forall (T : Type)
+         (inst____at___Prosa_Util_List2803459403__hygCtx__hyg3 : 
+          DecidableEq T)
+         (x : T) (xs : List T),
+       Not
+         (Membership_mem T (List T) (List_instMembership T)
+            (Prosa_Util_List_rem_all T
+               inst____at___Prosa_Util_List2803459403__hygCtx__hyg3 x xs)
+            x)
+Prosa_Util_List_in_rem_all
+     : forall (T : Type)
+         (inst____at___Prosa_Util_List3286109393__hygCtx__hyg3 : 
+          DecidableEq T)
+         (a x : T) (xs : List T),
+       Membership_mem T (List T) (List_instMembership T)
+         (Prosa_Util_List_rem_all T
+            inst____at___Prosa_Util_List3286109393__hygCtx__hyg3 x xs)
+         a ->
+       Membership_mem T (List T) (List_instMembership T) xs a
+Prosa_Util_List_rem_lt_id
+     : forall (x : Nat) (xs : List_inst1 Nat),
+       (forall y : Nat,
+        Membership_mem_inst3 Nat (List_inst1 Nat)
+          (List_instMembership_inst1 Nat) xs y ->
+        LT_lt_inst1 Nat instLTNat x y) ->
+       eq (Prosa_Util_List_rem_all_inst1 Nat instDecidableEqNat x xs) xs
+Prosa_Util_List_subseq_leq_size
+     : forall X : Type,
+       DecidableEq X ->
+       forall xs ys : List X,
+       List_Nodup X xs ->
+       (forall x : X,
+        Membership_mem X (List X) (List_instMembership X) xs x ->
+        Membership_mem X (List X) (List_instMembership X) ys x) ->
+       LE_le_inst1 Nat instLENat (List_length X xs) (List_length X ys)
+Prosa_Util_List_in_zip
+     : forall X Y : Type,
+       DecidableEq X ->
+       DecidableEq Y ->
+       forall (xs : List X) (ys : List Y) (x xDefault : X) (y yDefault : Y),
+       eq (List_length X xs) (List_length Y ys) ->
+       Exists Nat
+         (fun idx : Nat =>
+          And (LT_lt_inst1 Nat instLTNat idx (List_length X xs))
+            (And (eq (List_getD X xs idx xDefault) x)
+               (eq (List_getD Y ys idx yDefault) y))) ->
+       Membership_mem (Prod X Y) (List (Prod X Y))
+         (List_instMembership (Prod X Y)) (List_zip X Y xs ys)
+         (Prod_mk X Y x y)
+Prosa_Util_List_eq_ind_in_seq
+     : forall (X : Type)
+         (inst____at___Prosa_Util_List3687895802__hygCtx__hyg3 : 
+          DecidableEq X)
+         (a b : X) (xs : List X),
+       eq
+         (List_idxOf X
+            (instBEqOfDecidableEq X
+               inst____at___Prosa_Util_List3687895802__hygCtx__hyg3)
+            a xs)
+         (List_idxOf X
+            (instBEqOfDecidableEq X
+               inst____at___Prosa_Util_List3687895802__hygCtx__hyg3)
+            b xs) ->
+       Membership_mem X (List X) (List_instMembership X) xs a ->
+       Membership_mem X (List X) (List_instMembership X) xs b -> eq a b
+Prosa_Util_List_default_or_in
+     : forall X : Type,
+       DecidableEq X ->
+       forall (n : Nat) (d : X) (xs : List X),
+       Or (eq (List_getD X xs n d) d)
+         (Membership_mem X (List X) (List_instMembership X) xs
+            (List_getD X xs n d))
+Prosa_Util_List_exists_two
+     : forall X : Type,
+       DecidableEq X ->
+       forall xs : List X,
+       LT_lt_inst1 Nat instLTNat (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1))
+         (List_length X xs) ->
+       List_Nodup X xs ->
+       Exists X
+         (fun a : X =>
+          Exists X
+            (fun b : X =>
+             And (Ne X a b)
+               (And (Membership_mem X (List X) (List_instMembership X) xs a)
+                  (Membership_mem X (List X) (List_instMembership X) xs b))))
+Prosa_Util_List_has_all_nilp
+     : forall T : Type,
+       DecidableEq T ->
+       forall (s : List T) (P : T -> Bool),
+       eq (List_all T s P) Bool_true ->
+       eq (List_isEmpty T s) Bool_false -> eq (List_any T s P) Bool_true
+Prosa_Util_List_sorted_split
+     : forall X : Type,
+       DecidableEq X ->
+       forall (xs : List X) (P : X -> Bool) (f : X -> Nat) (t : Nat),
+       Prosa_Util_List_boolSorted X
+         (fun x y : X =>
+          Decidable_decide (LE_le_inst1 Nat instLENat (f x) (f y))
+            (Nat_decLe (f x) (f y)))
+         xs ->
+       eq (List_filter X P xs)
+         (HAppend_hAppend (List X) (List X) (List X)
+            (instHAppendOfAppend (List X) (List_instAppend X))
+            (List_filter X
+               (fun x : X =>
+                Bool_and (P x)
+                  (Decidable_decide (LE_le_inst1 Nat instLENat (f x) t)
+                     (Nat_decLe (f x) t)))
+               xs)
+            (List_filter X
+               (fun x : X =>
+                Bool_and (P x)
+                  (Decidable_decide (LT_lt_inst1 Nat instLTNat t (f x))
+                     (Nat_decLt t (f x))))
+               xs))
+Prosa_Util_List_sorted_cat
+     : forall X : Type,
+       DecidableEq X ->
+       forall (R : X -> X -> Bool) (xs1 xs2 : List X),
+       (forall x y z : X,
+        eq (R x y) Bool_true -> eq (R y z) Bool_true -> eq (R x z) Bool_true) ->
+       Prosa_Util_List_boolSorted X R
+         (HAppend_hAppend (List X) (List X) (List X)
+            (instHAppendOfAppend (List X) (List_instAppend X)) xs1 xs2) ->
+       And (Prosa_Util_List_boolSorted X R xs1)
+         (Prosa_Util_List_boolSorted X R xs2)
+Prosa_Util_List_nonnil_last
+     : forall X : Type,
+       DecidableEq X ->
+       forall (xs : List X) (d1 d2 : X),
+       Ne (List X) xs (List_nil X) ->
+       eq (List_getLastD X xs d1) (List_getLastD X xs d2)
+Prosa_Util_List_filter_last_mem
+     : forall X : Type,
+       DecidableEq X ->
+       forall (xs : List X) (d : X) (P : X -> Bool),
+       eq (List_any X xs P) Bool_true ->
+       Membership_mem X (List X) (List_instMembership X) xs
+         (List_getLastD X (List_filter X P xs) d)
+Prosa_Util_List_index_iota
+     : Nat -> Nat -> List_inst1 Nat
+Prosa_Util_List_range
+     : Nat -> Nat -> List_inst1 Nat
+Prosa_Util_List_iotaD_impl
+     : forall n_le m n : Nat,
+       LE_le_inst1 Nat instLENat n_le n ->
+       eq (List_range' m n (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1)))
+         (HAppend_hAppend_inst7 (List_inst1 Nat) (List_inst1 Nat)
+            (List_inst1 Nat)
+            (instHAppendOfAppend_inst1 (List_inst1 Nat)
+               (List_instAppend_inst1 Nat))
+            (List_range' m n_le (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1)))
+            (List_range'
+               (HAdd_hAdd_inst7 Nat Nat Nat (instHAdd_inst1 Nat instAddNat) m
+                  n_le)
+               (HSub_hSub_inst7 Nat Nat Nat (instHSub_inst1 Nat instSubNat) n
+                  n_le)
+               (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1))))
+Prosa_Util_List_index_iota_lt_step
+     : forall a b : Nat,
+       LT_lt_inst1 Nat instLTNat a b ->
+       eq (Prosa_Util_List_index_iota a b)
+         (List_cons_inst1 Nat a
+            (Prosa_Util_List_index_iota
+               (HAdd_hAdd_inst7 Nat Nat Nat (instHAdd_inst1 Nat instAddNat) a
+                  (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1)))
+               b))
+Prosa_Util_List_index_iota_cat
+     : forall t t1 t2 : Nat,
+       And (LE_le_inst1 Nat instLENat t1 t) (LE_le_inst1 Nat instLENat t t2) ->
+       eq (Prosa_Util_List_index_iota t1 t2)
+         (HAppend_hAppend_inst7 (List_inst1 Nat) (List_inst1 Nat)
+            (List_inst1 Nat)
+            (instHAppendOfAppend_inst1 (List_inst1 Nat)
+               (List_instAppend_inst1 Nat))
+            (Prosa_Util_List_index_iota t1 t)
+            (Prosa_Util_List_index_iota t t2))
+Prosa_Util_List_range_filter_2cons
+     : forall (x : Nat) (xs : List_inst1 Nat) (k : Nat),
+       eq
+         (List_filter_inst1 Nat
+            (fun _UU03c1_ : Nat =>
+             Decidable_decide
+               (Membership_mem_inst3 Nat (List_inst1 Nat)
+                  (List_instMembership_inst1 Nat)
+                  (List_cons_inst1 Nat x (List_cons_inst1 Nat x xs)) _UU03c1_)
+               (List_instDecidableMemOfLawfulBEq_inst1 Nat
+                  (instBEqOfDecidableEq_inst1 Nat instDecidableEqNat)
+                  Nat_instLawfulBEq _UU03c1_
+                  (List_cons_inst1 Nat x (List_cons_inst1 Nat x xs))))
+            (Prosa_Util_List_range (OfNat_ofNat_inst1 Nat 0 (instOfNatNat 0))
+               k))
+         (List_filter_inst1 Nat
+            (fun _UU03c1_ : Nat =>
+             Decidable_decide
+               (Membership_mem_inst3 Nat (List_inst1 Nat)
+                  (List_instMembership_inst1 Nat) 
+                  (List_cons_inst1 Nat x xs) _UU03c1_)
+               (List_instDecidableMemOfLawfulBEq_inst1 Nat
+                  (instBEqOfDecidableEq_inst1 Nat instDecidableEqNat)
+                  Nat_instLawfulBEq _UU03c1_ (List_cons_inst1 Nat x xs)))
+            (Prosa_Util_List_range (OfNat_ofNat_inst1 Nat 0 (instOfNatNat 0))
+               k))
+Prosa_Util_List_index_iota_filter_eqx
+     : forall x a b : Nat,
+       And (LE_le_inst1 Nat instLENat a x) (LT_lt_inst1 Nat instLTNat x b) ->
+       eq
+         (List_filter_inst1 Nat
+            (fun _UU03c1_ : Nat =>
+             Decidable_decide (eq _UU03c1_ x) (instDecidableEqNat _UU03c1_ x))
+            (Prosa_Util_List_index_iota a b))
+         (List_cons_inst1 Nat x (List_nil_inst1 Nat))
+Prosa_Util_List_index_iota_filter_singl
+     : forall x a b : Nat,
+       And (LE_le_inst1 Nat instLENat a x) (LT_lt_inst1 Nat instLTNat x b) ->
+       eq
+         (List_filter_inst1 Nat
+            (fun _UU03c1_ : Nat =>
+             Decidable_decide
+               (Membership_mem_inst3 Nat (List_inst1 Nat)
+                  (List_instMembership_inst1 Nat)
+                  (List_cons_inst1 Nat x (List_nil_inst1 Nat)) _UU03c1_)
+               (List_instDecidableMemOfLawfulBEq_inst1 Nat
+                  (instBEqOfDecidableEq_inst1 Nat instDecidableEqNat)
+                  Nat_instLawfulBEq _UU03c1_
+                  (List_cons_inst1 Nat x (List_nil_inst1 Nat))))
+            (Prosa_Util_List_index_iota a b))
+         (List_cons_inst1 Nat x (List_nil_inst1 Nat))
+Prosa_Util_List_index_iota_filter_inxs
+     : forall (a b x : Nat) (xs : List_inst1 Nat),
+       LT_lt_inst1 Nat instLTNat x a ->
+       eq
+         (List_filter_inst1 Nat
+            (fun _UU03c1_ : Nat =>
+             Decidable_decide
+               (Membership_mem_inst3 Nat (List_inst1 Nat)
+                  (List_instMembership_inst1 Nat) xs _UU03c1_)
+               (List_instDecidableMemOfLawfulBEq_inst1 Nat
+                  (instBEqOfDecidableEq_inst1 Nat instDecidableEqNat)
+                  Nat_instLawfulBEq _UU03c1_ xs))
+            (Prosa_Util_List_index_iota a b))
+         (List_filter_inst1 Nat
+            (fun _UU03c1_ : Nat =>
+             Decidable_decide
+               (Membership_mem_inst3 Nat (List_inst1 Nat)
+                  (List_instMembership_inst1 Nat)
+                  (Prosa_Util_List_rem_all_inst1 Nat instDecidableEqNat x xs)
+                  _UU03c1_)
+               (List_instDecidableMemOfLawfulBEq_inst1 Nat
+                  (instBEqOfDecidableEq_inst1 Nat instDecidableEqNat)
+                  Nat_instLawfulBEq _UU03c1_
+                  (Prosa_Util_List_rem_all_inst1 Nat instDecidableEqNat x xs)))
+            (Prosa_Util_List_index_iota a b))
+Prosa_Util_List_index_iota_filter_step
+     : forall (x : Nat) (xs : List_inst1 Nat) (a b : Nat),
+       And (LE_le_inst1 Nat instLENat a x) (LT_lt_inst1 Nat instLTNat x b) ->
+       (forall y : Nat,
+        Membership_mem_inst3 Nat (List_inst1 Nat)
+          (List_instMembership_inst1 Nat) xs y ->
+        LE_le_inst1 Nat instLENat x y) ->
+       eq
+         (List_filter_inst1 Nat
+            (fun _UU03c1_ : Nat =>
+             Decidable_decide
+               (Membership_mem_inst3 Nat (List_inst1 Nat)
+                  (List_instMembership_inst1 Nat) 
+                  (List_cons_inst1 Nat x xs) _UU03c1_)
+               (List_instDecidableMemOfLawfulBEq_inst1 Nat
+                  (instBEqOfDecidableEq_inst1 Nat instDecidableEqNat)
+                  Nat_instLawfulBEq _UU03c1_ (List_cons_inst1 Nat x xs)))
+            (Prosa_Util_List_index_iota a b))
+         (List_cons_inst1 Nat x
+            (List_filter_inst1 Nat
+               (fun _UU03c1_ : Nat =>
+                Decidable_decide
+                  (Membership_mem_inst3 Nat (List_inst1 Nat)
+                     (List_instMembership_inst1 Nat)
+                     (Prosa_Util_List_rem_all_inst1 Nat instDecidableEqNat x
+                        xs)
+                     _UU03c1_)
+                  (List_instDecidableMemOfLawfulBEq_inst1 Nat
+                     (instBEqOfDecidableEq_inst1 Nat instDecidableEqNat)
+                     Nat_instLawfulBEq _UU03c1_
+                     (Prosa_Util_List_rem_all_inst1 Nat instDecidableEqNat x
+                        xs)))
+               (Prosa_Util_List_index_iota a b)))
+Prosa_Util_List_range_iota_filter_step
+     : forall (x : Nat) (xs : List_inst1 Nat) (k : Nat),
+       LE_le_inst1 Nat instLENat x k ->
+       (forall y : Nat,
+        Membership_mem_inst3 Nat (List_inst1 Nat)
+          (List_instMembership_inst1 Nat) xs y ->
+        LE_le_inst1 Nat instLENat x y) ->
+       eq
+         (List_filter_inst1 Nat
+            (fun _UU03c1_ : Nat =>
+             Decidable_decide
+               (Membership_mem_inst3 Nat (List_inst1 Nat)
+                  (List_instMembership_inst1 Nat) 
+                  (List_cons_inst1 Nat x xs) _UU03c1_)
+               (List_instDecidableMemOfLawfulBEq_inst1 Nat
+                  (instBEqOfDecidableEq_inst1 Nat instDecidableEqNat)
+                  Nat_instLawfulBEq _UU03c1_ (List_cons_inst1 Nat x xs)))
+            (Prosa_Util_List_range (OfNat_ofNat_inst1 Nat 0 (instOfNatNat 0))
+               k))
+         (List_cons_inst1 Nat x
+            (List_filter_inst1 Nat
+               (fun _UU03c1_ : Nat =>
+                Decidable_decide
+                  (Membership_mem_inst3 Nat (List_inst1 Nat)
+                     (List_instMembership_inst1 Nat)
+                     (Prosa_Util_List_rem_all_inst1 Nat instDecidableEqNat x
+                        xs)
+                     _UU03c1_)
+                  (List_instDecidableMemOfLawfulBEq_inst1 Nat
+                     (instBEqOfDecidableEq_inst1 Nat instDecidableEqNat)
+                     Nat_instLawfulBEq _UU03c1_
+                     (Prosa_Util_List_rem_all_inst1 Nat instDecidableEqNat x
+                        xs)))
+               (Prosa_Util_List_range
+                  (OfNat_ofNat_inst1 Nat 0 (instOfNatNat 0)) k)))
+Prosa_Util_List_iota_filter_gt
+     : forall (x a b idx : Nat) (P : Nat -> Bool),
+       LT_lt_inst1 Nat instLTNat x a ->
+       LT_lt_inst1 Nat instLTNat idx
+         (List_length_inst1 Nat
+            (List_filter_inst1 Nat P (Prosa_Util_List_index_iota a b))) ->
+       LT_lt_inst1 Nat instLTNat x
+         (List_getD_inst1 Nat
+            (List_filter_inst1 Nat P (Prosa_Util_List_index_iota a b)) idx
+            (OfNat_ofNat_inst1 Nat 0 (instOfNatNat 0)))
+Prosa_Util_List_sub_count_seq
+     : forall X : Type,
+       DecidableEq X ->
+       forall (f g : X -> Bool) (xs : List X),
+       (forall x : X,
+        Membership_mem X (List X) (List_instMembership X) xs x ->
+        eq (f x) Bool_true -> eq (g x) Bool_true) ->
+       LE_le_inst1 Nat instLENat (List_countP X f xs) (List_countP X g xs)
+File "./ImportedListLastTypeProbe.v", line 53, characters 6-56:
+Error: The reference ImportedListLast.Prosa_Util_List_count_predUI_x27_
+was not found in the current environment. Did you mean
+ImportedListLast.Prosa_Util_List_count_predUI',
+ImportedListLast.Prosa_Util_List_strict_prefix_of,
+ImportedListLast.Prosa_Util_List_sorted_cat,
+ImportedListLast.Prosa_Util_List_nin_rem_all,
+ImportedListLast.Prosa_Util_List_in_rem_all,
+ImportedListLast.Prosa_Util_List_sorted_split,
+ImportedListLast.Prosa_Util_List_shift_points_pos,
+ImportedListLast.Prosa_Util_List_shift_points_neg,
+ImportedListLast.Prosa_Util_List_prefix_of,
+ImportedListLast.Prosa_Util_List_sub_count_seq,
+ImportedListLast.Prosa_Util_List_seq_elim_last,
+ImportedListLast.Prosa_Util_List_rem_in,
+ImportedListLast.Prosa_Util_List_rem_all,
+ImportedListLast.Prosa_Util_List_nth0_cons,
+ImportedListLast.Prosa_Util_List_nonnil_last,
+ImportedListLast.Prosa_Util_List_max0_rem0,
+ImportedListLast.Prosa_Util_List_last0_ex_cat,
+ImportedListLast.Prosa_Util_List_iota_filter_gt,
+ImportedListLast.Prosa_Util_List_iotaD_impl,
+ImportedListLast.Prosa_Util_List_index_iota,
+ImportedListLast.Prosa_Util_List_in_max0_le,
+ImportedListLast.Prosa_Util_List_default_or_in,
+ImportedListLast.Prosa_Util_List_boolSorted,
+ImportedListLast.Prosa_Util_List_subseq_leq_size,
+ImportedListLast.Prosa_Util_List_seq1_some,
+ImportedListLast.Prosa_Util_List_rem_lt_id,
+ImportedListLast.Prosa_Util_List_rem_all__f,
+ImportedListLast.Prosa_Util_List_range,
+ImportedListLast.Prosa_Util_List_max0_in_seq,
+ImportedListLast.Prosa_Util_List_max0_2cons_le,
+ImportedListLast.Prosa_Util_List_max0_2cons_eq,
+ImportedListLast.Prosa_Util_List_last0_nth,
+ImportedListLast.Prosa_Util_List_last0_cons,
+ImportedListLast.Prosa_Util_List_last0_cat,
+ImportedListLast.Prosa_Util_List_index_iota_cat,
+ImportedListLast.Prosa_Util_List_in_zip,
+ImportedListLast.Prosa_Util_List_in_cat,
+ImportedListLast.Prosa_Util_List_has_all_nilp,
+ImportedListLast.Prosa_Util_List_filter_size_rem,
+ImportedListLast.Prosa_Util_List_filter_last_mem,
+ImportedListLast.Prosa_Util_List_filter_in_pred0,
+ImportedListLast.Prosa_Util_List_exists_two,
+ImportedListLast.Prosa_Util_List_eq_ind_in_seq,
+ImportedListLast.Prosa_Util_List_rem_all_match_1,
+ImportedListLast.Prosa_Util_List_rem_all_inst1,
+ImportedListLast.Prosa_Util_List_rem_all__f_inst1,
+ImportedListLast.Prosa_Util_List_range_filter_2cons,
+ImportedListLast.Prosa_Util_List_max0_cons,
+ImportedListLast.Prosa_Util_List_max0,
+ImportedListLast.Prosa_Util_List_last0_filter,
+ImportedListLast.Prosa_Util_List_last0,
+ImportedListLast.Prosa_Util_List_index_iota_lt_step or
+ImportedListLast.Prosa_Util_List_in_neq_impl_rem_in?
+

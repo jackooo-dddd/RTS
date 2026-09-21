@@ -1,0 +1,294 @@
+FREEZE_BEGIN Prosa.Util.List.max0
+Prosa.Util.List.max0 : List ℕ → ℕ
+def Prosa.Util.List.max0 : List ℕ → ℕ :=
+fun xs => List.foldl Nat.max 0 xs
+FREEZE_END Prosa.Util.List.max0
+FREEZE_BEGIN Prosa.Util.List.first0
+Prosa.Util.List.first0 : List ℕ → ℕ
+def Prosa.Util.List.first0 : List ℕ → ℕ :=
+fun xs => xs.headD 0
+FREEZE_END Prosa.Util.List.first0
+FREEZE_BEGIN Prosa.Util.List.last0
+Prosa.Util.List.last0 : List ℕ → ℕ
+def Prosa.Util.List.last0 : List ℕ → ℕ :=
+fun xs => xs.getLastD 0
+FREEZE_END Prosa.Util.List.last0
+'Prosa.Util.List.max0' does not depend on any axioms
+'Prosa.Util.List.first0' does not depend on any axioms
+'Prosa.Util.List.last0' does not depend on any axioms
+FREEZE_BEGIN Prosa.Util.List.last0_cons
+Prosa.Util.List.last0_cons : ∀ (x : ℕ) (xs : List ℕ),
+  xs ≠ [] → Prosa.Util.List.last0 (x :: xs) = Prosa.Util.List.last0 xs
+FREEZE_END Prosa.Util.List.last0_cons
+FREEZE_BEGIN Prosa.Util.List.last0_cat
+Prosa.Util.List.last0_cat : ∀ (xs_l xs_r : List ℕ),
+  xs_r ≠ [] → Prosa.Util.List.last0 (xs_l ++ xs_r) = Prosa.Util.List.last0 xs_r
+FREEZE_END Prosa.Util.List.last0_cat
+FREEZE_BEGIN Prosa.Util.List.last0_nth
+Prosa.Util.List.last0_nth : ∀ (xs : List ℕ), Prosa.Util.List.last0 xs = xs.getD (xs.length - 1) 0
+FREEZE_END Prosa.Util.List.last0_nth
+FREEZE_BEGIN Prosa.Util.List.last0_ex_cat
+Prosa.Util.List.last0_ex_cat : ∀ (x : ℕ) (xs : List ℕ), xs ≠ [] → Prosa.Util.List.last0 xs = x → ∃ xsh, xsh ++ [x] = xs
+FREEZE_END Prosa.Util.List.last0_ex_cat
+FREEZE_BEGIN Prosa.Util.List.last0_filter
+Prosa.Util.List.last0_filter : ∀ (x : ℕ) (xs : List ℕ) (P : ℕ → Bool),
+  xs ≠ [] → Prosa.Util.List.last0 xs = x → P x = true → Prosa.Util.List.last0 (List.filter P xs) = x
+FREEZE_END Prosa.Util.List.last0_filter
+'Prosa.Util.List.last0_cons' does not depend on any axioms
+'Prosa.Util.List.last0_cat' depends on axioms: [propext]
+'Prosa.Util.List.last0_nth' depends on axioms: [propext]
+'Prosa.Util.List.last0_ex_cat' depends on axioms: [propext]
+'Prosa.Util.List.last0_filter' depends on axioms: [propext]
+FREEZE_BEGIN Prosa.Util.List.max0_cons
+Prosa.Util.List.max0_cons : ∀ (x : ℕ) (xs : List ℕ), Prosa.Util.List.max0 (x :: xs) = x.max (Prosa.Util.List.max0 xs)
+FREEZE_END Prosa.Util.List.max0_cons
+FREEZE_BEGIN Prosa.Util.List.max0_of_uniform_set
+Prosa.Util.List.max0_of_uniform_set : ∀ (k : ℕ) (xs : List ℕ),
+  xs.length > 0 → (∀ (x : ℕ), x ∈ xs → x = k) → Prosa.Util.List.max0 xs = k
+FREEZE_END Prosa.Util.List.max0_of_uniform_set
+FREEZE_BEGIN Prosa.Util.List.in_max0_le
+Prosa.Util.List.in_max0_le : ∀ (xs : List ℕ) (x : ℕ), x ∈ xs → x ≤ Prosa.Util.List.max0 xs
+FREEZE_END Prosa.Util.List.in_max0_le
+FREEZE_BEGIN Prosa.Util.List.max0_in_seq
+Prosa.Util.List.max0_in_seq : ∀ (xs : List ℕ), xs ≠ [] → Prosa.Util.List.max0 xs ∈ xs
+FREEZE_END Prosa.Util.List.max0_in_seq
+FREEZE_BEGIN Prosa.Util.List.max0_2cons_eq
+Prosa.Util.List.max0_2cons_eq : ∀ (x : ℕ) (xs : List ℕ),
+  Prosa.Util.List.max0 (x :: x :: xs) = Prosa.Util.List.max0 (x :: xs)
+FREEZE_END Prosa.Util.List.max0_2cons_eq
+FREEZE_BEGIN Prosa.Util.List.max0_2cons_le
+Prosa.Util.List.max0_2cons_le : ∀ (x1 x2 : ℕ) (xs : List ℕ),
+  x1 ≤ x2 → Prosa.Util.List.max0 (x1 :: x2 :: xs) = Prosa.Util.List.max0 (x2 :: xs)
+FREEZE_END Prosa.Util.List.max0_2cons_le
+FREEZE_BEGIN Prosa.Util.List.max0_rem0
+Prosa.Util.List.max0_rem0 : ∀ (xs : List ℕ),
+  Prosa.Util.List.max0 (List.filter (fun x => decide (0 < x)) xs) = Prosa.Util.List.max0 xs
+FREEZE_END Prosa.Util.List.max0_rem0
+FREEZE_BEGIN Prosa.Util.List.last_of_seq_le_max_of_seq
+Prosa.Util.List.last_of_seq_le_max_of_seq : ∀ (xs : List ℕ), Prosa.Util.List.last0 xs ≤ Prosa.Util.List.max0 xs
+FREEZE_END Prosa.Util.List.last_of_seq_le_max_of_seq
+FREEZE_BEGIN Prosa.Util.List.max_of_dominating_seq
+Prosa.Util.List.max_of_dominating_seq : ∀ (xs ys : List ℕ),
+  (∀ (n : ℕ), xs.getD n 0 ≤ ys.getD n 0) → Prosa.Util.List.max0 xs ≤ Prosa.Util.List.max0 ys
+FREEZE_END Prosa.Util.List.max_of_dominating_seq
+FREEZE_BEGIN Prosa.Util.List.nth0_cons
+Prosa.Util.List.nth0_cons : ∀ (x : ℕ) (xs : List ℕ) (n : ℕ), n > 0 → (x :: xs).getD n 0 = xs.getD (n - 1) 0
+FREEZE_END Prosa.Util.List.nth0_cons
+'Prosa.Util.List.max0_cons' depends on axioms: [propext]
+'Prosa.Util.List.max0_of_uniform_set' depends on axioms: [propext]
+'Prosa.Util.List.in_max0_le' depends on axioms: [propext]
+'Prosa.Util.List.max0_in_seq' depends on axioms: [propext]
+'Prosa.Util.List.max0_2cons_eq' depends on axioms: [propext]
+'Prosa.Util.List.max0_2cons_le' depends on axioms: [propext]
+'Prosa.Util.List.max0_rem0' depends on axioms: [propext]
+'Prosa.Util.List.last_of_seq_le_max_of_seq' depends on axioms: [propext]
+'Prosa.Util.List.max_of_dominating_seq' depends on axioms: [propext]
+'Prosa.Util.List.nth0_cons' depends on axioms: [propext]
+FREEZE_BEGIN Prosa.Util.List.rem_in
+@Prosa.Util.List.rem_in : ∀ {T : Type u_1} [inst : DecidableEq T] (x y : T) (xs : List T), x ∈ xs.erase y → x ∈ xs
+FREEZE_END Prosa.Util.List.rem_in
+FREEZE_BEGIN Prosa.Util.List.in_neq_impl_rem_in
+@Prosa.Util.List.in_neq_impl_rem_in : ∀ {T : Type u_1} [inst : DecidableEq T] (x y : T) (xs : List T),
+  x ∈ xs → x ≠ y → x ∈ xs.erase y
+FREEZE_END Prosa.Util.List.in_neq_impl_rem_in
+FREEZE_BEGIN Prosa.Util.List.filter_size_rem
+@Prosa.Util.List.filter_size_rem : ∀ {T : Type u_1} [inst : DecidableEq T] (x : T) (xs : List T) (P : T → Bool),
+  x ∈ xs → P x = true → (List.filter P xs).length = (List.filter P (xs.erase x)).length + 1
+FREEZE_END Prosa.Util.List.filter_size_rem
+FREEZE_BEGIN Prosa.Util.List.in_seq_equiv_undup
+@Prosa.Util.List.in_seq_equiv_undup : ∀ {T : Type u_1} [inst : DecidableEq T] (xs : List T) (x : T),
+  decide (x ∈ xs.eraseDups) = decide (x ∈ xs)
+FREEZE_END Prosa.Util.List.in_seq_equiv_undup
+FREEZE_BEGIN Prosa.Util.List.seq1_some
+@Prosa.Util.List.seq1_some : ∀ {T : Type u_1} [inst : DecidableEq T] (x y : T),
+  decide ([x] = [y]) = decide (some x = some y)
+FREEZE_END Prosa.Util.List.seq1_some
+FREEZE_BEGIN Prosa.Util.List.seq_elim_last
+@Prosa.Util.List.seq_elim_last : ∀ {T : Type u_1} (n : ℕ) (xs : List T),
+  xs.length = n + 1 → ∃ x pre, xs = pre ++ [x] ∧ pre.length = n
+FREEZE_END Prosa.Util.List.seq_elim_last
+FREEZE_BEGIN Prosa.Util.List.in_cat
+@Prosa.Util.List.in_cat : ∀ {T : Type u_1} [DecidableEq T] (x : T) (xs : List T),
+  x ∈ xs → ∃ left right, xs = left ++ [x] ++ right
+FREEZE_END Prosa.Util.List.in_cat
+'Prosa.Util.List.rem_in' depends on axioms: [propext]
+'Prosa.Util.List.in_neq_impl_rem_in' depends on axioms: [propext]
+'Prosa.Util.List.filter_size_rem' depends on axioms: [propext]
+'Prosa.Util.List.in_seq_equiv_undup' depends on axioms: [propext, Quot.sound]
+'Prosa.Util.List.seq1_some' depends on axioms: [propext]
+'Prosa.Util.List.seq_elim_last' depends on axioms: [propext]
+'Prosa.Util.List.in_cat' depends on axioms: [propext]
+'Prosa.Validation.ListLastInterface.generic_mem_eraseDups' depends on axioms: [propext, Quot.sound]
+FREEZE_BEGIN Prosa.Util.List.filter_in_pred0
+@Prosa.Util.List.filter_in_pred0 : ∀ {T : Type u_1} [DecidableEq T] (xs : List T) (P : T → Bool),
+  (∀ (x : T), x ∈ xs → P x = false) → List.filter P xs = []
+FREEZE_END Prosa.Util.List.filter_in_pred0
+FREEZE_BEGIN Prosa.Util.List.rem_all
+@Prosa.Util.List.rem_all : {T : Type u_1} → [DecidableEq T] → T → List T → List T
+FREEZE_END Prosa.Util.List.rem_all
+FREEZE_BEGIN Prosa.Util.List.nin_rem_all
+@Prosa.Util.List.nin_rem_all : ∀ {T : Type u_1} [inst : DecidableEq T] (x : T) (xs : List T),
+  ¬x ∈ Prosa.Util.List.rem_all x xs
+FREEZE_END Prosa.Util.List.nin_rem_all
+FREEZE_BEGIN Prosa.Util.List.in_rem_all
+@Prosa.Util.List.in_rem_all : ∀ {T : Type u_1} [inst : DecidableEq T] (a x : T) (xs : List T),
+  a ∈ Prosa.Util.List.rem_all x xs → a ∈ xs
+FREEZE_END Prosa.Util.List.in_rem_all
+FREEZE_BEGIN Prosa.Util.List.rem_lt_id
+Prosa.Util.List.rem_lt_id : ∀ (x : ℕ) (xs : List ℕ), (∀ (y : ℕ), y ∈ xs → x < y) → Prosa.Util.List.rem_all x xs = xs
+FREEZE_END Prosa.Util.List.rem_lt_id
+'Prosa.Util.List.filter_in_pred0' depends on axioms: [propext]
+'Prosa.Util.List.rem_all' does not depend on any axioms
+'Prosa.Util.List.nin_rem_all' depends on axioms: [propext]
+'Prosa.Util.List.in_rem_all' depends on axioms: [propext]
+'Prosa.Util.List.rem_lt_id' depends on axioms: [propext, Quot.sound]
+'Prosa.Validation.ListLastInterface.generic_rem_all_nil' does not depend on any axioms
+'Prosa.Validation.ListLastInterface.generic_rem_all_cons' does not depend on any axioms
+FREEZE_BEGIN Prosa.Util.List.subseq_leq_size
+@Prosa.Util.List.subseq_leq_size : ∀ {X : Type u_1} [DecidableEq X] (xs ys : List X),
+  xs.Nodup → (∀ (x : X), x ∈ xs → x ∈ ys) → xs.length ≤ ys.length
+FREEZE_END Prosa.Util.List.subseq_leq_size
+FREEZE_BEGIN Prosa.Util.List.in_zip
+@Prosa.Util.List.in_zip : ∀ {X : Type u_1} {Y : Type u_2} [DecidableEq X] [DecidableEq Y] (xs : List X) (ys : List Y)
+  (x xDefault : X) (y yDefault : Y),
+  xs.length = ys.length →
+    (∃ idx, idx < xs.length ∧ xs.getD idx xDefault = x ∧ ys.getD idx yDefault = y) → (x, y) ∈ xs.zip ys
+FREEZE_END Prosa.Util.List.in_zip
+FREEZE_BEGIN Prosa.Util.List.eq_ind_in_seq
+@Prosa.Util.List.eq_ind_in_seq : ∀ {X : Type u_1} [inst : DecidableEq X] (a b : X) (xs : List X),
+  List.idxOf a xs = List.idxOf b xs → a ∈ xs → b ∈ xs → a = b
+FREEZE_END Prosa.Util.List.eq_ind_in_seq
+FREEZE_BEGIN Prosa.Util.List.default_or_in
+@Prosa.Util.List.default_or_in : ∀ {X : Type u_1} [DecidableEq X] (n : ℕ) (d : X) (xs : List X),
+  xs.getD n d = d ∨ xs.getD n d ∈ xs
+FREEZE_END Prosa.Util.List.default_or_in
+FREEZE_BEGIN Prosa.Util.List.exists_two
+@Prosa.Util.List.exists_two : ∀ {X : Type u_1} [DecidableEq X] (xs : List X),
+  1 < xs.length → xs.Nodup → ∃ a b, a ≠ b ∧ a ∈ xs ∧ b ∈ xs
+FREEZE_END Prosa.Util.List.exists_two
+FREEZE_BEGIN Prosa.Util.List.has_all_nilp
+@Prosa.Util.List.has_all_nilp : ∀ {T : Type u_1} [DecidableEq T] (s : List T) (P : T → Bool),
+  s.all P = true → s.isEmpty = false → s.any P = true
+FREEZE_END Prosa.Util.List.has_all_nilp
+FREEZE_BEGIN Prosa.Util.List.sorted_split
+@Prosa.Util.List.sorted_split : ∀ {X : Type u_1} [DecidableEq X] (xs : List X) (P : X → Bool) (f : X → ℕ) (t : ℕ),
+  Prosa.Util.List.boolSorted (fun x y => decide (f x ≤ f y)) xs →
+    List.filter P xs =
+      List.filter (fun x => P x && decide (f x ≤ t)) xs ++ List.filter (fun x => P x && decide (t < f x)) xs
+FREEZE_END Prosa.Util.List.sorted_split
+FREEZE_BEGIN Prosa.Util.List.sorted_cat
+@Prosa.Util.List.sorted_cat : ∀ {X : Type u_1} [DecidableEq X] (R : X → X → Bool) (xs1 xs2 : List X),
+  (∀ (x y z : X), R x y = true → R y z = true → R x z = true) →
+    Prosa.Util.List.boolSorted R (xs1 ++ xs2) → Prosa.Util.List.boolSorted R xs1 ∧ Prosa.Util.List.boolSorted R xs2
+FREEZE_END Prosa.Util.List.sorted_cat
+FREEZE_BEGIN Prosa.Util.List.nonnil_last
+@Prosa.Util.List.nonnil_last : ∀ {X : Type u_1} [DecidableEq X] (xs : List X) (d1 d2 : X),
+  xs ≠ [] → xs.getLastD d1 = xs.getLastD d2
+FREEZE_END Prosa.Util.List.nonnil_last
+'Prosa.Util.List.subseq_leq_size' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Prosa.Util.List.in_zip' depends on axioms: [propext]
+'Prosa.Util.List.eq_ind_in_seq' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Prosa.Util.List.default_or_in' depends on axioms: [propext]
+'Prosa.Util.List.exists_two' depends on axioms: [propext]
+'Prosa.Util.List.has_all_nilp' depends on axioms: [propext]
+'Prosa.Util.List.sorted_split' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Prosa.Util.List.sorted_cat' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Prosa.Util.List.nonnil_last' depends on axioms: [propext]
+FREEZE_BEGIN Prosa.Util.List.filter_last_mem
+@Prosa.Util.List.filter_last_mem : ∀ {X : Type u_1} [DecidableEq X] (xs : List X) (d : X) (P : X → Bool),
+  xs.any P = true → (List.filter P xs).getLastD d ∈ xs
+FREEZE_END Prosa.Util.List.filter_last_mem
+FREEZE_BEGIN Prosa.Util.List.range
+Prosa.Util.List.range : ℕ → ℕ → List ℕ
+FREEZE_END Prosa.Util.List.range
+FREEZE_BEGIN Prosa.Util.List.iotaD_impl
+Prosa.Util.List.iotaD_impl : ∀ (n_le m n : ℕ),
+  n_le ≤ n → List.range' m n = List.range' m n_le ++ List.range' (m + n_le) (n - n_le)
+FREEZE_END Prosa.Util.List.iotaD_impl
+FREEZE_BEGIN Prosa.Util.List.index_iota_lt_step
+Prosa.Util.List.index_iota_lt_step : ∀ (a b : ℕ),
+  a < b → Prosa.Util.List.index_iota a b = a :: Prosa.Util.List.index_iota (a + 1) b
+FREEZE_END Prosa.Util.List.index_iota_lt_step
+FREEZE_BEGIN Prosa.Util.List.index_iota_cat
+Prosa.Util.List.index_iota_cat : ∀ (t t1 t2 : ℕ),
+  t1 ≤ t ∧ t ≤ t2 →
+    Prosa.Util.List.index_iota t1 t2 = Prosa.Util.List.index_iota t1 t ++ Prosa.Util.List.index_iota t t2
+FREEZE_END Prosa.Util.List.index_iota_cat
+FREEZE_BEGIN Prosa.Util.List.range_filter_2cons
+Prosa.Util.List.range_filter_2cons : ∀ (x : ℕ) (xs : List ℕ) (k : ℕ),
+  List.filter (fun ρ => decide (ρ ∈ x :: x :: xs)) (Prosa.Util.List.range 0 k) =
+    List.filter (fun ρ => decide (ρ ∈ x :: xs)) (Prosa.Util.List.range 0 k)
+FREEZE_END Prosa.Util.List.range_filter_2cons
+FREEZE_BEGIN Prosa.Util.List.index_iota_filter_eqx
+Prosa.Util.List.index_iota_filter_eqx : ∀ (x a b : ℕ),
+  a ≤ x ∧ x < b → List.filter (fun ρ => decide (ρ = x)) (Prosa.Util.List.index_iota a b) = [x]
+FREEZE_END Prosa.Util.List.index_iota_filter_eqx
+FREEZE_BEGIN Prosa.Util.List.index_iota_filter_singl
+Prosa.Util.List.index_iota_filter_singl : ∀ (x a b : ℕ),
+  a ≤ x ∧ x < b → List.filter (fun ρ => decide (ρ ∈ [x])) (Prosa.Util.List.index_iota a b) = [x]
+FREEZE_END Prosa.Util.List.index_iota_filter_singl
+FREEZE_BEGIN Prosa.Util.List.index_iota_filter_inxs
+Prosa.Util.List.index_iota_filter_inxs : ∀ (a b x : ℕ) (xs : List ℕ),
+  x < a →
+    List.filter (fun ρ => decide (ρ ∈ xs)) (Prosa.Util.List.index_iota a b) =
+      List.filter (fun ρ => decide (ρ ∈ Prosa.Util.List.rem_all x xs)) (Prosa.Util.List.index_iota a b)
+FREEZE_END Prosa.Util.List.index_iota_filter_inxs
+'Prosa.Util.List.filter_last_mem' depends on axioms: [propext, Quot.sound]
+'Prosa.Util.List.range' does not depend on any axioms
+'Prosa.Util.List.iotaD_impl' depends on axioms: [propext, Quot.sound]
+'Prosa.Util.List.index_iota_lt_step' depends on axioms: [propext, Quot.sound]
+'Prosa.Util.List.index_iota_cat' depends on axioms: [propext, Quot.sound]
+'Prosa.Util.List.range_filter_2cons' depends on axioms: [propext, Quot.sound]
+'Prosa.Util.List.index_iota_filter_eqx' depends on axioms: [propext, Quot.sound]
+'Prosa.Util.List.index_iota_filter_singl' depends on axioms: [propext, Quot.sound]
+'Prosa.Util.List.index_iota_filter_inxs' depends on axioms: [propext, Quot.sound]
+FREEZE_BEGIN Prosa.Util.List.index_iota_filter_step
+Prosa.Util.List.index_iota_filter_step : ∀ (x : ℕ) (xs : List ℕ) (a b : ℕ),
+  a ≤ x ∧ x < b →
+    (∀ (y : ℕ), y ∈ xs → x ≤ y) →
+      List.filter (fun ρ => decide (ρ ∈ x :: xs)) (Prosa.Util.List.index_iota a b) =
+        x :: List.filter (fun ρ => decide (ρ ∈ Prosa.Util.List.rem_all x xs)) (Prosa.Util.List.index_iota a b)
+FREEZE_END Prosa.Util.List.index_iota_filter_step
+FREEZE_BEGIN Prosa.Util.List.range_iota_filter_step
+Prosa.Util.List.range_iota_filter_step : ∀ (x : ℕ) (xs : List ℕ) (k : ℕ),
+  x ≤ k →
+    (∀ (y : ℕ), y ∈ xs → x ≤ y) →
+      List.filter (fun ρ => decide (ρ ∈ x :: xs)) (Prosa.Util.List.range 0 k) =
+        x :: List.filter (fun ρ => decide (ρ ∈ Prosa.Util.List.rem_all x xs)) (Prosa.Util.List.range 0 k)
+FREEZE_END Prosa.Util.List.range_iota_filter_step
+FREEZE_BEGIN Prosa.Util.List.iota_filter_gt
+Prosa.Util.List.iota_filter_gt : ∀ (x a b idx : ℕ) (P : ℕ → Bool),
+  x < a →
+    idx < (List.filter P (Prosa.Util.List.index_iota a b)).length →
+      x < (List.filter P (Prosa.Util.List.index_iota a b)).getD idx 0
+FREEZE_END Prosa.Util.List.iota_filter_gt
+FREEZE_BEGIN Prosa.Util.List.sub_count_seq
+@Prosa.Util.List.sub_count_seq : ∀ {X : Type u_1} [DecidableEq X] (f g : X → Bool) (xs : List X),
+  (∀ (x : X), x ∈ xs → f x = true → g x = true) → List.countP f xs ≤ List.countP g xs
+FREEZE_END Prosa.Util.List.sub_count_seq
+FREEZE_BEGIN Prosa.Util.List.count_predUI'
+Prosa.Util.List.count_predUI' : ∀ (P₁ P₂ : ℕ → Bool) (xs : List ℕ),
+  List.countP (fun x => P₁ x || P₂ x) xs =
+    List.countP P₁ xs + List.countP P₂ xs - List.countP (fun x => P₁ x && P₂ x) xs
+FREEZE_END Prosa.Util.List.count_predUI'
+FREEZE_BEGIN Prosa.Util.List.prefix_of
+@Prosa.Util.List.prefix_of : {T : Type u_1} → [DecidableEq T] → List T → List T → Prop
+FREEZE_END Prosa.Util.List.prefix_of
+FREEZE_BEGIN Prosa.Util.List.strict_prefix_of
+@Prosa.Util.List.strict_prefix_of : {T : Type u_1} → [DecidableEq T] → List T → List T → Prop
+FREEZE_END Prosa.Util.List.strict_prefix_of
+FREEZE_BEGIN Prosa.Util.List.shift_points_pos
+Prosa.Util.List.shift_points_pos : List ℕ → ℕ → List ℕ
+FREEZE_END Prosa.Util.List.shift_points_pos
+FREEZE_BEGIN Prosa.Util.List.shift_points_neg
+Prosa.Util.List.shift_points_neg : List ℕ → ℕ → List ℕ
+FREEZE_END Prosa.Util.List.shift_points_neg
+'Prosa.Util.List.index_iota_filter_step' depends on axioms: [propext, Quot.sound]
+'Prosa.Util.List.range_iota_filter_step' depends on axioms: [propext, Quot.sound]
+'Prosa.Util.List.iota_filter_gt' depends on axioms: [propext, Quot.sound]
+'Prosa.Util.List.sub_count_seq' depends on axioms: [propext]
+'Prosa.Util.List.count_predUI'' depends on axioms: [propext, Quot.sound]
+'Prosa.Util.List.prefix_of' does not depend on any axioms
+'Prosa.Util.List.strict_prefix_of' does not depend on any axioms
+'Prosa.Util.List.shift_points_pos' does not depend on any axioms
+'Prosa.Util.List.shift_points_neg' does not depend on any axioms

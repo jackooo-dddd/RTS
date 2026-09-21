@@ -8,8 +8,8 @@ import json
 import re
 from pathlib import Path
 
-BEGIN = re.compile(r"AUDIT_BEGIN\s+([A-Za-z0-9_.-]+)")
-END = re.compile(r"AUDIT_END\s+([A-Za-z0-9_.-]+)")
+BEGIN = re.compile(r"AUDIT_BEGIN\s+([A-Za-z0-9_.'-]+)")
+END = re.compile(r"AUDIT_END\s+([A-Za-z0-9_.'-]+)")
 ENTRY = re.compile(r"^([A-Za-z_][A-Za-z0-9_'.]*)\s+(?:relies\b|:)")
 
 

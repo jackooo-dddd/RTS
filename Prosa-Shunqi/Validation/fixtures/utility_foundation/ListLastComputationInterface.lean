@@ -180,4 +180,74 @@ theorem generic_rem_all_cons {T : Type u} [deq : DecidableEq T]
       else a :: Prosa.Util.List.rem_all x xs := by
   rfl
 
+/-- Kernel-checked equations for the actual `List.range'` operation and the
+    production interval helpers used by List batch 4. -/
+theorem generic_range_prime_zero (start : Nat) :
+    List.range' start 0 = [] := by rfl
+
+theorem generic_range_prime_succ (start len : Nat) :
+    List.range' start (Nat.succ len) =
+      start :: List.range' (start + 1) len := by rfl
+
+theorem production_index_iota_eq (a b : Nat) :
+    Prosa.Util.List.index_iota a b = List.range' a (b - a) := by rfl
+
+theorem production_range_eq (a b : Nat) :
+    Prosa.Util.List.range a b =
+      Prosa.Util.List.index_iota a (b + 1) := by rfl
+
+/- Kernel-checked generic computation equations required by the final List
+   cluster. -/
+theorem generic_map_nil {T U : Type u} (f : T → U) :
+    List.map f [] = [] := by rfl
+
+theorem generic_map_cons {T U : Type u} (f : T → U)
+    (a : T) (xs : List T) :
+    List.map f (a :: xs) = f a :: List.map f xs := by rfl
+
+/- Monomorphic Nat equations are kept separately because lean4export emits a
+   distinct specialized List carrier/operation in the production definitions
+   [shift_points_pos] and [shift_points_neg]. -/
+theorem nat_map_nil (f : Nat → Nat) :
+    List.map f ([] : List Nat) = [] := by rfl
+
+theorem nat_map_cons (f : Nat → Nat) (a : Nat) (xs : List Nat) :
+    List.map f (a :: xs) = f a :: List.map f xs := by rfl
+
+theorem generic_countP_nil {T : Type u} (P : T → Bool) :
+    List.countP P [] = 0 := by rfl
+
+theorem generic_countP_cons {T : Type u} (P : T → Bool)
+    (a : T) (xs : List T) :
+    List.countP P (a :: xs) =
+      List.countP P xs + if P a = true then 1 else 0 := by
+  exact List.countP_cons
+
+theorem nat_countP_nil (P : Nat → Bool) :
+    List.countP P ([] : List Nat) = 0 := by rfl
+
+theorem nat_countP_cons (P : Nat → Bool) (a : Nat) (xs : List Nat) :
+    List.countP P (a :: xs) =
+      List.countP P xs + if P a = true then 1 else 0 := by
+  exact List.countP_cons
+
+/- Exact definitional guards for the four production definitions in the
+   final List cluster. -/
+theorem production_prefix_of_eq {T : Type u} [DecidableEq T]
+    (xs ys : List T) :
+    Prosa.Util.List.prefix_of xs ys ↔ ∃ tail, xs ++ tail = ys := by rfl
+
+theorem production_strict_prefix_of_eq {T : Type u} [DecidableEq T]
+    (xs ys : List T) :
+    Prosa.Util.List.strict_prefix_of xs ys ↔
+      ∃ tail, tail ≠ [] ∧ xs ++ tail = ys := by rfl
+
+theorem production_shift_points_pos_eq (xs : List Nat) (s : Nat) :
+    Prosa.Util.List.shift_points_pos xs s =
+      xs.map (fun x => s + x) := by rfl
+
+theorem production_shift_points_neg_eq (xs : List Nat) (s : Nat) :
+    Prosa.Util.List.shift_points_neg xs s =
+      (xs.filter (fun x => decide (s ≤ x))).map (fun x => x - s) := by rfl
+
 end Prosa.Validation.ListLastInterface

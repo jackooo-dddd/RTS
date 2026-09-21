@@ -170,7 +170,16 @@ def main() -> None:
         metadata_expected = set(configured) | set(
             config.get("source_acquisition_dependency_declarations", [])
         )
-        if set(source_metadata.get("declarations", {})) != metadata_expected:
+        metadata_actual = set(source_metadata.get("declarations", {}))
+        if partial_inventory:
+            missing = metadata_expected - metadata_actual
+            unknown = metadata_actual - source_names
+            if missing or unknown:
+                raise SystemExit(
+                    "source acquisition metadata declaration coverage mismatch: "
+                    f"missing={sorted(missing)}, unknown={sorted(unknown)}"
+                )
+        elif metadata_actual != metadata_expected:
             raise SystemExit("source acquisition metadata declaration coverage mismatch")
     certificate_root = validation / "certificates/utility_foundation"
     common_root = validation / "certificates/common"

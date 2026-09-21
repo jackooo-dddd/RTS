@@ -18,11 +18,11 @@ from pathlib import Path
 
 DECL_RE = re.compile(
     r"(?ms)^[ \t]*(?:Lemma|Theorem|Fact|Corollary|Remark|Proposition)\s+"
-    r"([A-Za-z0-9_']+)\b.*?^[^\n]*(?:Qed|Defined)\.[ \t]*$"
+    r"([A-Za-z0-9_']+)(?![A-Za-z0-9_']).*?^[^\n]*(?:Qed|Defined)\.[ \t]*$"
 )
 BODY_RE = re.compile(
     r"(?ms)^[ \t]*(?:Fixpoint|CoFixpoint|Definition)\s+"
-    r"([A-Za-z0-9_']+)\b.*?\.[ \t]*$"
+    r"([A-Za-z0-9_']+)(?![A-Za-z0-9_']).*?\.[ \t]*$"
     r"(?:\n(?:[ \t]*\n)*[ \t]*Proof\.[ \t]*$.*?^[^\n]*Defined\.[ \t]*$)?"
 )
 
@@ -71,7 +71,7 @@ def theorem_statement(name: str, block: str) -> str:
     header = re.split(r"(?m)^[ \t]*Proof\.", block, maxsplit=1)[0].strip()
     match = re.match(
         rf"(?s)^(?:Lemma|Theorem|Fact|Corollary|Remark|Proposition)\s+"
-        rf"{re.escape(name)}\b(.*)\.\s*$",
+        rf"{re.escape(name)}(?![A-Za-z0-9_'])(.*)\.\s*$",
         header,
     )
     if not match:
