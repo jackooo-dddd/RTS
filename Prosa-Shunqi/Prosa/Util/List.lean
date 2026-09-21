@@ -340,4 +340,65 @@ theorem in_cat {T : Type _} [DecidableEq T] (x : T) (xs : List T)
       · obtain ⟨left, right, hsplit⟩ := ih hin
         exact ⟨a :: left, right, by simp [hsplit]⟩
 
+/-- If every member fails a Boolean predicate, filtering by that predicate
+    produces the empty list. -/
+theorem filter_in_pred0 {T : Type _} [DecidableEq T]
+    (xs : List T) (P : T → Bool)
+    (h : ∀ x, x ∈ xs → P x = false) :
+    xs.filter P = [] := by
+  induction xs with
+  | nil => rfl
+  | cons a xs ih =>
+      simp only [List.filter_cons, h a List.mem_cons_self, Bool.false_eq_true,
+        if_false]
+      exact ih (fun x hx => h x (List.mem_cons_of_mem a hx))
+
+/-- Remove every occurrence of a value from a list. -/
+def rem_all {T : Type _} [DecidableEq T] (x : T) : List T → List T
+  | [] => []
+  | a :: xs => if a = x then rem_all x xs else a :: rem_all x xs
+
+/-- The removed value is absent after `rem_all`. -/
+theorem nin_rem_all {T : Type _} [DecidableEq T]
+    (x : T) (xs : List T) :
+    x ∉ rem_all x xs := by
+  induction xs with
+  | nil => simp [rem_all]
+  | cons a xs ih =>
+      simp only [rem_all]
+      split
+      · exact ih
+      · rename_i hne
+        simp only [List.mem_cons, not_or]
+        exact ⟨Ne.symm hne, ih⟩
+
+/-- Every member surviving `rem_all` was a member of the input list. -/
+theorem in_rem_all {T : Type _} [DecidableEq T]
+    (a x : T) (xs : List T) (h : a ∈ rem_all x xs) :
+    a ∈ xs := by
+  induction xs with
+  | nil => simp [rem_all] at h
+  | cons b xs ih =>
+      simp only [rem_all] at h
+      split at h
+      · exact List.mem_cons_of_mem b (ih h)
+      · rcases List.mem_cons.mp h with rfl | hin
+        · exact List.mem_cons_self
+        · exact List.mem_cons_of_mem b (ih hin)
+
+/-- Removing a natural number strictly below every list member is the
+    identity operation. -/
+theorem rem_lt_id (x : Nat) (xs : List Nat)
+    (h : ∀ y, y ∈ xs → x < y) :
+    rem_all x xs = xs := by
+  induction xs with
+  | nil => rfl
+  | cons a xs ih =>
+      have hne : a ≠ x := by
+        have hlt := h a List.mem_cons_self
+        omega
+      simp only [rem_all, if_neg hne]
+      congr 1
+      exact ih (fun y hy => h y (List.mem_cons_of_mem a hy))
+
 end Prosa.Util.List

@@ -65,6 +65,9 @@ def main() -> None:
     p.add_argument("--lean-axioms", required=True, type=Path)
     p.add_argument("--assumptions", required=True, type=Path)
     p.add_argument("--baseline", required=True, type=Path)
+    p.add_argument("--snapshot-id")
+    p.add_argument("--prepare-manifest", type=Path)
+    p.add_argument("--prepare-evidence", type=Path)
     p.add_argument("--output", required=True, type=Path)
     args = p.parse_args()
 
@@ -117,6 +120,34 @@ def main() -> None:
     baseline = json.loads(args.baseline.read_text())
     if baseline["status"] != "PASS":
         raise SystemExit("frozen baseline was invalidated")
+
+    prepare_manifest = None
+    prepare_evidence = None
+    if args.snapshot_id is not None:
+        if args.prepare_manifest is None or args.prepare_evidence is None:
+            raise SystemExit(
+                "snapshot-aware publication requires prepare manifest and evidence"
+            )
+        prepare_manifest = json.loads(args.prepare_manifest.read_text())
+        prepare_evidence = json.loads(args.prepare_evidence.read_text())
+        if prepare_manifest.get("snapshot_id") != args.snapshot_id:
+            raise SystemExit("publication prepare-manifest snapshot mismatch")
+        if prepare_evidence.get("snapshot_id") != args.snapshot_id:
+            raise SystemExit("publication prepare-evidence snapshot mismatch")
+        required_stages = {
+            "lean_build", "source_acquisition", "export", "rocq_import"
+        }
+        stages = prepare_evidence.get("stages", [])
+        by_name = {stage.get("stage"): stage for stage in stages}
+        if set(by_name) != required_stages:
+            raise SystemExit("publication prepare-stage evidence incomplete")
+        for name, stage in by_name.items():
+            if stage.get("mode") not in {"FRESH", "VERIFIED_CACHE"}:
+                raise SystemExit(f"unknown prepare evidence mode: {name}")
+            if stage.get("mode") == "FRESH" and not stage.get("executed"):
+                raise SystemExit(f"fresh prepare stage was not executed: {name}")
+            if stage.get("mode") == "VERIFIED_CACHE" and stage.get("executed"):
+                raise SystemExit(f"cache stage unexpectedly executed: {name}")
 
     lean_source = project / config["lean_file"]
     olean = args.work / "olean" / config["lean_file"].replace(".lean", ".olean")
@@ -242,9 +273,23 @@ def main() -> None:
                 "bridge_source_sha256": bridge_hashes,
             },
             "acceptance": "ACCEPTED_V06_TRANSLATION",
+            "snapshot_id": args.snapshot_id,
+            "evidence_scope": (
+                "CURRENT_SNAPSHOT" if args.snapshot_id is not None
+                else "LEGACY_UNTIMED"
+            ),
             "content_invalidation_key_sha256": digest_json(invalidation_material),
         })
 
+    prepare_modes = {}
+    if prepare_evidence is not None:
+        prepare_modes = {
+            stage["stage"]: stage["mode"]
+            for stage in prepare_evidence["stages"]
+        }
+    current_run_fresh = bool(prepare_modes) and all(
+        mode == "FRESH" for mode in prepare_modes.values()
+    )
     result = {
         "source_file": source_file,
         "file_status": (
@@ -253,7 +298,19 @@ def main() -> None:
         "inventory_scope": (
             "DECLARATION_CLUSTER" if partial_inventory else "WHOLE_FILE"
         ),
-        "fresh_build": True,
+        "snapshot_id": args.snapshot_id,
+        "evidence_scope": (
+            "CURRENT_SNAPSHOT" if args.snapshot_id is not None
+            else "LEGACY_UNTIMED"
+        ),
+        "fresh_build": current_run_fresh if args.snapshot_id is not None else None,
+        "prepare_stage_modes": prepare_modes,
+        "prepare_manifest_sha256": (
+            sha(args.prepare_manifest) if args.prepare_manifest is not None else None
+        ),
+        "prepare_run_evidence_sha256": (
+            sha(args.prepare_evidence) if args.prepare_evidence is not None else None
+        ),
         "source_commit": git(args.source_root, "rev-parse", "HEAD"),
         "source_tree": git(args.source_root, "rev-parse", "HEAD^{tree}"),
         "source_sha256": sha(args.source_root / source_file),

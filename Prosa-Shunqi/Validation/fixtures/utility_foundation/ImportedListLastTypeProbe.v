@@ -22,6 +22,11 @@ Check ImportedListLast.Prosa_Util_List_rem_in.
 Check ImportedListLast.Prosa_Util_List_in_neq_impl_rem_in.
 Check ImportedListLast.Prosa_Util_List_filter_size_rem.
 Check ImportedListLast.Prosa_Util_List_in_seq_equiv_undup.
+Check ImportedListLast.Prosa_Util_List_filter_in_pred0.
+Check ImportedListLast.Prosa_Util_List_rem_all.
+Check ImportedListLast.Prosa_Util_List_nin_rem_all.
+Check ImportedListLast.Prosa_Util_List_in_rem_all.
+Check ImportedListLast.Prosa_Util_List_rem_lt_id.
 
 Print ImportedListLast.Prosa_Util_List_last0.
 Print ImportedListLast.Prosa_Util_List_last0_cons.
@@ -44,6 +49,11 @@ Print ImportedListLast.Prosa_Util_List_rem_in.
 Print ImportedListLast.Prosa_Util_List_in_neq_impl_rem_in.
 Print ImportedListLast.Prosa_Util_List_filter_size_rem.
 Print ImportedListLast.Prosa_Util_List_in_seq_equiv_undup.
+Print ImportedListLast.Prosa_Util_List_filter_in_pred0.
+Print ImportedListLast.Prosa_Util_List_rem_all.
+Print ImportedListLast.Prosa_Util_List_nin_rem_all.
+Print ImportedListLast.Prosa_Util_List_in_rem_all.
+Print ImportedListLast.Prosa_Util_List_rem_lt_id.
 
 Print ImportedListLast.List_append_inst1.
 Print ImportedListLast.List_filter_inst1.
@@ -66,3 +76,5 @@ Check ImportedListLast.Prosa_Validation_ListLastInterface_getD_succ_direct.
 Check ImportedListLast.Prosa_Validation_ListLastInterface_sub_zero.
 Check ImportedListLast.Prosa_Validation_ListLastInterface_sub_succ.
 Check ImportedListLast.Prosa_Validation_ListLastInterface_sub_one.
+Check ImportedListLast.Prosa_Validation_ListLastInterface_generic_rem_all_nil.
+Check ImportedListLast.Prosa_Validation_ListLastInterface_generic_rem_all_cons.

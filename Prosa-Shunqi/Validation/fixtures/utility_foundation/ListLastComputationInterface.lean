@@ -95,4 +95,16 @@ theorem generic_mem_eraseDups {T : Type u} [DecidableEq T]
     x ∈ xs.eraseDups ↔ x ∈ xs := by
   exact List.mem_eraseDups
 
+/-- Kernel-checked equations for the actual production `rem_all` body. -/
+theorem generic_rem_all_nil {T : Type u} [DecidableEq T] (x : T) :
+    Prosa.Util.List.rem_all x [] = [] := by
+  rfl
+
+theorem generic_rem_all_cons {T : Type u} [deq : DecidableEq T]
+    (x a : T) (xs : List T) :
+    Prosa.Util.List.rem_all x (a :: xs) =
+      if a = x then Prosa.Util.List.rem_all x xs
+      else a :: Prosa.Util.List.rem_all x xs := by
+  rfl
+
 end Prosa.Validation.ListLastInterface

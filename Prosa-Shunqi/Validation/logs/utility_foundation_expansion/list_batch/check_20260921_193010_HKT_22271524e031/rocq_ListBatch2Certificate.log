@@ -1,0 +1,58 @@
+File "./ListBatch2Certificate.v", line 1, characters 0-65:
+Warning: Notation "_ + _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./ListBatch2Certificate.v", line 1, characters 0-65:
+Warning: Notation "_ - _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./ListBatch2Certificate.v", line 1, characters 0-65:
+Warning: Notation "_ <= _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./ListBatch2Certificate.v", line 1, characters 0-65:
+Warning: Notation "_ < _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./ListBatch2Certificate.v", line 1, characters 0-65:
+Warning: Notation "_ >= _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./ListBatch2Certificate.v", line 1, characters 0-65:
+Warning: Notation "_ > _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./ListBatch2Certificate.v", line 1, characters 0-65:
+Warning: Notation "_ <= _ <= _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./ListBatch2Certificate.v", line 1, characters 0-65:
+Warning: Notation "_ < _ <= _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./ListBatch2Certificate.v", line 1, characters 0-65:
+Warning: Notation "_ <= _ < _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./ListBatch2Certificate.v", line 1, characters 0-65:
+Warning: Notation "_ < _ < _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./ListBatch2Certificate.v", line 1, characters 0-65:
+Warning: Notation "_ * _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./ListBatch2Certificate.v", line 78, characters 6-14:
+Error:
+In environment
+Htarget :
+  forall (T : eqType) (xs : List T) (P : T -> Bool),
+  (forall x : T, lr_target_mem x xs -> eq (P x) Bool_false) ->
+  eq (lr_target_filter P xs) (List_nil T)
+T : eqType
+xsR : seq T
+PR : pred T
+HallR : forall x : T, x \in xsR -> ~~ PR x
+Hxs : LrListRel xsR (lr_to_imported xsR)
+HP : LrPredRel PR (lr_pred_to_imported PR)
+HfilterL :
+  eq (lr_target_filter (lr_pred_to_imported PR) (lr_to_imported xsR))
+    (List_nil T)
+Hfilter :
+  LrListRel [seq x <- xsR | PR x]
+    (lr_target_filter (lr_pred_to_imported PR) (lr_to_imported xsR))
+The term "HfilterL" has type
+ "lr_target_filter (lr_pred_to_imported PR) (lr_to_imported xsR) = List_nil T"
+while it is expected to have type
+ "lr_target_filter (lr_pred_to_imported PR) (lr_to_imported xsR) =
+  lr_to_imported ?ysR".
+

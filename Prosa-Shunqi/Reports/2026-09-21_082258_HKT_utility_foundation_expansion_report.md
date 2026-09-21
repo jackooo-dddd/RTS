@@ -881,3 +881,166 @@ validation class, and file-DAG readiness.
   when its own elaborated declaration fingerprint or certified dependency
   closure changes; and run one full regression at cluster close. This preserves
   stale-artifact protection while avoiding theorem-by-theorem replay.
+
+## 2026-09-21 19:12:59 HKT — incremental List batch selected and Lean candidates compile
+
+- Work is restricted to `util/list.v`; Sum remains unchanged. The next frozen
+  batch contains five dependency-compatible targets:
+  `filter_in_pred0`, `rem_all`, `nin_rem_all`, `in_rem_all`, and `rem_lt_id`.
+- Selection rationale: the batch reuses the already certified eqType /
+  `DecidableEq`, ordered `seq` / `List`, membership, Boolean-predicate/filter,
+  Nat-order, and Prop/SProp bridges. The one new operational dependency is the
+  recursive `rem_all` computation, which is shared by the final three theorem
+  statements and already has a historical actual-artifact proof pattern that
+  must be rebound to the new v0.6 artifact.
+- The five production candidates were translated from the pinned v0.6 source.
+  `filter_in_pred0` is correctly adapted from source Boolean negation to the
+  equivalent Lean equation `P x = false`; `rem_all` preserves source structural
+  recursion and uses the approved `DecidableEq` boundary.
+- `lake env lean Prosa/Util/List.lean` passed under Lean 4.33.1 with no
+  `sorry`; only pre-existing unused-simp linter warnings were emitted. This is
+  translation/proof progress only, not semantic acceptance.
+- The current `List.lean` source is now the candidate snapshot to be frozen by
+  the new minimal prepare/check/finalize workflow. No historical List evidence
+  is counted against this changed snapshot until the final batch regression.
+
+## 2026-09-21 19:33:52 HKT — prepared snapshot reused; five new semantic proofs close
+
+- The new `prepare` phase sealed snapshot
+  `22271524e031d9248634acd07fc816acfaa0032fe0cd9488cc67a26564b4314b`.
+  Measured fresh-stage times were: Lean build `17.762879s`, official-source
+  acquisition `2.025433s`, export `0.813817s`, and Rocq import `33.430008s`
+  (`54.032137s` total measured preparation).
+- Subsequent certificate iterations hash-verified and reused that snapshot.
+  The successful check recorded four `VERIFIED_CACHE` hits for those stages;
+  none of Lean build, source acquisition, export, or import executed. The final
+  new-certificate compile took `3.828762s` and its assumption audit `0.032977s`.
+- Rocq 9.3 compiled actual-artifact certificates for all five batch targets.
+  `rem_all_recursive_certificate` is `CERTIFIED` and uses the imported
+  production computation plus kernel-checked recursion equations. The four
+  theorem-statement certificates (`filter_in_pred0`, `nin_rem_all`,
+  `in_rem_all`, `rem_lt_id`) are
+  `CERTIFIED_WITH_PROP_SPROP_FOUNDATION`.
+- Every new audit reports `semantic_premises=[]`, source theorem dependency
+  false, target theorem dependency false, and no unexpected assumptions.
+  `rem_all` has no Prop/SProp assumption; the theorem statements expose only
+  the already approved `PropSPropFoundation.interpret_strict` boundary plus
+  classified importer equality/UIP foundations.
+- These are successful intermediate checks, not yet published acceptance. The
+  current snapshot still requires one unified regression of the prior 25 List
+  declarations plus these five targets, Lean proof audit, baseline audit, and
+  publication.
+
+## 2026-09-21 19:54:52 HKT — five-target List batch accepted; incremental validator verified
+
+### Translation and semantic result
+
+- The frozen final List snapshot is
+  `520b1687056e977a1d6089c944dee3b5fc1b976d8f3965c4af2c927640a09ec8`.
+  It includes one Lean build of `Prosa/Util/List.lean`, both applicable export /
+  import groups, and the exact official-source extractions used by all 30
+  current List certificates.
+- The batch added and accepted five declarations:
+
+  | declaration | status | new semantic dependency |
+  | --- | --- | --- |
+  | `filter_in_pred0` | `CERTIFIED_WITH_PROP_SPROP_FOUNDATION` | none; composes certified equality, membership, Bool/filter, and List bridges |
+  | `rem_all` | `CERTIFIED` | recursive `rem_all` operation correspondence over the actual imported body |
+  | `nin_rem_all` | `CERTIFIED_WITH_PROP_SPROP_FOUNDATION` | reuses certified `rem_all` and membership |
+  | `in_rem_all` | `CERTIFIED_WITH_PROP_SPROP_FOUNDATION` | reuses certified `rem_all` and membership |
+  | `rem_lt_id` | `CERTIFIED_WITH_PROP_SPROP_FOUNDATION` | reuses monomorphic Nat/List `rem_all`, membership, length, and `<` correspondence |
+
+- The final regression rechecked the prior 25 List targets and the five new
+  targets together. All **30 / 30** compile, are proof-clean, pass semantic
+  correspondence, and pass the fail-closed assumption audit. Across the 30,
+  3 are `CERTIFIED` without the Prop/SProp axiom and 27 are
+  `CERTIFIED_WITH_PROP_SPROP_FOUNDATION`. Every result has
+  `semantic_premises=[]`, source theorem dependency `false`, target theorem
+  dependency `false`, and `unexpected=[]`.
+- One audit issue was detected rather than hidden: the compiled Lean proof of
+  `rem_lt_id` uses the already approved standard foundation `Quot.sound`. Its
+  initial target-specific allowlist omitted that fact, so finalize failed
+  closed. The allowlist was corrected to the observed exact pair
+  `[propext, Quot.sound]`; no semantic axiom or premise was added.
+- The exact `lean4export` artifact format deliberately contains trailing field
+  separators. A narrowly scoped Git attribute now excludes generated `.out`
+  files from whitespace diagnostics while preserving their exact imported
+  bytes and hashes. `git diff --check` passes.
+
+### Prepare / check / finalize behavior
+
+- `prepare_utility_list_batch.sh` owns source verification, Lean build,
+  official-source acquisition, export, and Rocq import. Its manifest binds the
+  complete production Lean tree, source/tool commits, tool binaries, module
+  loading configuration, options, input hashes, output set, and each output
+  hash.
+- `check_utility_list_batch.sh` verifies that manifest and then rebuilds only
+  the affected Rocq certificate layer and assumption audit. A certificate-only
+  marker edit retained snapshot `520b...a09ec8`: all four prepare stages were
+  `VERIFIED_CACHE`, with zero Lean build/export/import execution. Restoring the
+  certificate and checking again gave the same result; the second check also
+  reused its validated lower-level certificate base.
+- `finalize_utility_list_batch.sh` runs the unified 30-target regression and
+  publishes only after the full Lean axiom audit, Rocq assumption audit,
+  baseline audit, and provenance checks succeed. Publication records
+  `CURRENT_SNAPSHOT` plus per-stage `FRESH` / `VERIFIED_CACHE`; it no longer
+  hard-codes `fresh_build=true`.
+
+### Invalidation and corruption tests
+
+- **Same inputs:** repeated prepare calls on the final snapshot produced four
+  verified cache hits and executed no target stage.
+- **Certificate-only change:** prepare verification took `0.001758s`; only
+  certificate compilation (`3.856587s`) and audit (`0.033226s`) ran. Lean
+  build, source acquisition, export, and import did not run.
+- **Related Lean input change:** a temporary validation-only computation-
+  interface marker changed the snapshot to `f96bbdcb...` and forced all four
+  stages to execute: Lean build `17.933845s`, source acquisition `3.303088s`,
+  export `2.636761s`, and Rocq import `33.969777s`. Removing the marker restored
+  the original snapshot, which was hash-verified from cache.
+- **Corrupted artifact:** a copied prepared source artifact was altered. Cache
+  verification exited nonzero with
+  `PREPARED_ARTIFACT_HASH_MISMATCH:source_acquisition:source/GeneratedListLastSource.v`
+  and emitted no success evidence.
+- **Incremental versus clean:** the incremental finalize used verified prepare
+  artifacts and took `22.754466s` across all recorded phases. A subsequent
+  `CLEAN_FULL` run executed all seven phases: Lean build `17.305738s`, source
+  acquisition `3.538602s`, export `1.952283s`, Rocq import `34.289977s`,
+  certificate compilation `13.494349s`, audit `6.836643s`, and publication
+  `0.511772s` (`77.929364s` total). The comparison reports the same snapshot,
+  identical 30 declaration acceptance results, and identical semantic /
+  assumption boundaries.
+
+### Instrumented execution counts
+
+The machine summary covers all 19 instrumented prepare invocations during
+development, recovery, invalidation testing, and clean reproduction. There
+were four actual executions of each prepare stage (the provisional snapshot,
+the final expanded snapshot, the intentional Lean-input mutation, and the
+required clean reproduction) and 15 verified-cache uses of each stage, i.e.
+60 validated stage-level cache hits. Recorded totals are:
+
+| stage | executions | verified cache hits | measured seconds |
+| --- | ---: | ---: | ---: |
+| Lean build | 4 | 15 | 71.329487 |
+| source acquisition | 4 | 15 | 12.076003 |
+| export | 4 | 15 | 7.432120 |
+| Rocq import | 4 | 15 | 135.726467 |
+| certificate compile | 7 | 0 | 65.502614 |
+| audit | 6 | 0 | 25.792372 |
+| publication | 3 | 0 | 1.544008 |
+
+Failed runs are fail-closed and are counted only for stages that emitted a
+completed timing event; no elapsed time is inferred from report timestamps.
+Machine evidence is under
+`Validation/logs/utility_foundation_expansion/list_batch/`, notably
+`incremental_tests/timing_execution_summary.json` and
+`incremental_tests/clean_full_equivalence.json`.
+
+### Current coverage after publication
+
+- List: **5 newly accepted**, **30 / 57 cumulative accepted**, **27 remaining**.
+- Sum: unchanged at **3 / 25**.
+- Project: **79 / 2439 accepted declarations**, **10 / 357 accepted whole
+  files**, and **0 translated-but-not-certified declarations** in the current
+  manifest.
