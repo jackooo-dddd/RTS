@@ -34,6 +34,7 @@ import Prosa.Util.SearchArg
 #eval IO.println "FREEZE_END Prosa.Util.SearchArg.prop_on_ex_minn"
 
 #print axioms Prosa.Util.SearchArg.earliest_pred_element_exists_case
+#print axioms Prosa.Util.SearchArg.search_arg
 #print axioms Prosa.Util.SearchArg.search_arg_none
 #print axioms Prosa.Util.SearchArg.search_arg_not_none
 #print axioms Prosa.Util.SearchArg.search_arg_pred

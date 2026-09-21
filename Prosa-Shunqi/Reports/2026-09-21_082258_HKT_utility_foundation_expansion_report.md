@@ -440,3 +440,85 @@ validation class, and file-DAG readiness.
   declarations. Current translated-but-not-certified debt falls to 8, all in
   `util/search_arg.v`; List and Sum have no translated-but-uncertified starter
   declaration.
+
+## 2026-09-21 12:56:22 HKT — SearchArg compositional statement route advances
+
+- The second bounded SearchArg approach now compiles four compositional Rocq
+  statement correspondences: `search_arg_none`, `search_arg_not_none`,
+  `search_arg_pred`, and `search_arg_in_range`. They reuse the previously
+  compiled actual-artifact recursion certificate based on imported
+  `search_arg_eq_1` / `search_arg_eq_2`; no `Nat_brecOn` or `Nat_below` body is
+  unfolded.
+- The shared proof layer constructed once in
+  `SearchArgStatementCertificate.v` covers canonical Nat transport, imported
+  Bool truth/false observations, Option constructor/equality transport,
+  conjunction, iff, Nat-indexed forall/exists, and half-open range predicates.
+  All four theorem bodies reuse these relations rather than independently
+  reproving the recursive computation.
+- This is still intermediate `SEMANTIC_PROOF_COMPILED` evidence, not
+  acceptance. Exact official-source/full-target type guards, a fresh isolated
+  export/import, fail-closed assumption audit, and publication remain open.
+  `earliest_pred_element_exists_case`, `search_arg_extremum`, and the
+  proof-dependent `prop_on_ex_minn` remain to be handled.
+- Reuse inventory at this point contains 10 independently maintained common
+  bridge/foundation modules. Six are strict reusable representation families:
+  eqType/equality, Nat arithmetic/order, truncated Nat subtraction, seq/List
+  relations, seqset/List+Nodup, and half-open interval sums. The other four are
+  two domain-level compositional bridges (UnitGrowth and Supremum) plus the
+  Prop/SProp foundation and logical combinators. Across the 44 currently
+  accepted declarations, the main Nat bridge occurs in 26 results,
+  UnitGrowth in 12, Nat subtraction and Supremum in 5 each, seqset and finite
+  sums in 3 each, List relations in 2, and eqType in 1. SearchArg's new
+  Bool/Option layer is deliberately excluded from the formal reusable count
+  until its audit/publication gate succeeds.
+
+## 2026-09-21 13:21:42 HKT — SearchArg accepted 8 / 8
+
+- The third and final bounded recovery route closed the proof-dependent
+  `prop_on_ex_minn` declaration without unfolding the large imported
+  `Nat_brecOn` / `Nat_below` implementation.  It derives the imported least
+  witness laws from the actual `Nat.find` definition and its
+  `Subtype.property`, relates that witness to MathComp `ex_minn` using the two
+  minimality specifications, and obtains equality by imported Nat
+  antisymmetry.
+- All eight declarations in `util/search_arg.v` now have Rocq-compiled
+  actual-artifact semantic certificates.  A fail-closed assumption audit
+  reports no semantic premise, no source theorem dependency, no target theorem
+  dependency, and no unexpected assumption for any declaration.  All eight
+  statuses are `CERTIFIED_WITH_PROP_SPROP_FOUNDATION`; the visible logical
+  boundary is `PropSPropFoundation.interpret_strict` plus the classified
+  importer equality/UIP foundation.
+- `SearchArgTypeAudit.v` separately kernel-checks the exact types of all seven
+  imported Lean theorem constants against explicit expected types.  These
+  provenance guards are not imported by the semantic certificate modules.
+  The source side is automatically extracted from pinned official
+  `util/search_arg.v`; its computational body is byte-exact and its theorem
+  blocks/types are bound by the extraction metadata and elaborated-type
+  evidence.
+- The final isolated run
+  `Validation/scripts/validate_utility_search_arg.sh` rebuilt the Lean module,
+  exported and imported its actual artifact, compiled the source signature and
+  certificates, ran Lean and Rocq assumption audits, verified the frozen
+  baseline, published only after success, and passed `git diff --check`.
+  The run directory is `Validation/.work/runs/utility_search_arg.gS35yF`.
+- Content hashes include source `7bc98aca...e122`, Lean source
+  `1536fdcd...27b9`, fresh `.olean` `ef73a70c...552f`, export
+  `7fb1c0ab...26dd`, imported `.vo` `651bbb6f...8d35`, generated source `.vo`
+  `5e8da148...2d5a`, statement certificate `.vo` `99ff88fa...08ba`, and exact
+  target-type audit `.vo` `2544ddff...eae5`.  Full values are in the cluster
+  manifest.
+- Reuse accounting is now explicit.  The cross-file common library still has
+  **six reusable representation-correspondence families**: eqType/equality,
+  Nat arithmetic/order, truncated Nat subtraction, seq/List, seqset with
+  Nodup, and half-open interval finite sums.  Together with two domain
+  composition modules and two logical/foundation modules, the audited common
+  library contains **ten modules**.  SearchArg successfully composes the Nat,
+  Bool truth, Option, equality, and logical/witness relations across all eight
+  declarations; its Bool/Option adapters remain SearchArg-local and are not
+  inflated into the cross-file reusable count until another file consumes
+  them or they are extracted and independently audited as common modules.
+- Current batch truth is 28 translated/proof-clean and 28 accepted
+  declarations: Nat 2/2, UnitGrowth 12/12, SearchArg 8/8, List 3/57, and Sum
+  3/25.  Cumulative coverage is now 10 / 357 accepted files and 52 / 2439
+  accepted declarations, with zero translated-but-not-certified declarations
+  in the currently translated subset.

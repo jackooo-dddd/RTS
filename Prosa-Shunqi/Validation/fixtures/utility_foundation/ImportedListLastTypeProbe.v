@@ -1,0 +1,28 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedListLast.
+
+Check ImportedListLast.Prosa_Util_List_last0.
+Check ImportedListLast.Prosa_Util_List_last0_cons.
+Check ImportedListLast.Prosa_Util_List_last0_cat.
+Check ImportedListLast.Prosa_Util_List_last0_nth.
+Check ImportedListLast.Prosa_Util_List_last0_ex_cat.
+Check ImportedListLast.Prosa_Util_List_last0_filter.
+
+Print ImportedListLast.Prosa_Util_List_last0.
+Print ImportedListLast.Prosa_Util_List_last0_cons.
+Print ImportedListLast.Prosa_Util_List_last0_cat.
+Print ImportedListLast.Prosa_Util_List_last0_nth.
+Print ImportedListLast.Prosa_Util_List_last0_ex_cat.
+Print ImportedListLast.Prosa_Util_List_last0_filter.
+
+Print ImportedListLast.List_append_inst1.
+Print ImportedListLast.List_filter_inst1.
+Print ImportedListLast.List_getD_inst1.
+Print ImportedListLast.List_length_inst1.
+Print ImportedListLast.Nat_sub.
+Check ImportedListLast.List_append_eq_1_inst1.
+Check ImportedListLast.List_append_eq_2_inst1.
+Check ImportedListLast.List_filter_eq_1_inst1.
+Check ImportedListLast.List_filter_eq_2_inst1.
+Check ImportedListLast.List_length_eq_1_inst1.
+Check ImportedListLast.List_length_eq_2_inst1.

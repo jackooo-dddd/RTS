@@ -1,0 +1,23 @@
+FREEZE_BEGIN Prosa.Util.List.last0_cons
+Prosa.Util.List.last0_cons : ∀ (x : ℕ) (xs : List ℕ),
+  xs ≠ [] → Prosa.Util.List.last0 (x :: xs) = Prosa.Util.List.last0 xs
+FREEZE_END Prosa.Util.List.last0_cons
+FREEZE_BEGIN Prosa.Util.List.last0_cat
+Prosa.Util.List.last0_cat : ∀ (xs_l xs_r : List ℕ),
+  xs_r ≠ [] → Prosa.Util.List.last0 (xs_l ++ xs_r) = Prosa.Util.List.last0 xs_r
+FREEZE_END Prosa.Util.List.last0_cat
+FREEZE_BEGIN Prosa.Util.List.last0_nth
+Prosa.Util.List.last0_nth : ∀ (xs : List ℕ), Prosa.Util.List.last0 xs = xs.getD (xs.length - 1) 0
+FREEZE_END Prosa.Util.List.last0_nth
+FREEZE_BEGIN Prosa.Util.List.last0_ex_cat
+Prosa.Util.List.last0_ex_cat : ∀ (x : ℕ) (xs : List ℕ), xs ≠ [] → Prosa.Util.List.last0 xs = x → ∃ xsh, xsh ++ [x] = xs
+FREEZE_END Prosa.Util.List.last0_ex_cat
+FREEZE_BEGIN Prosa.Util.List.last0_filter
+Prosa.Util.List.last0_filter : ∀ (x : ℕ) (xs : List ℕ) (P : ℕ → Bool),
+  xs ≠ [] → Prosa.Util.List.last0 xs = x → P x = true → Prosa.Util.List.last0 (List.filter P xs) = x
+FREEZE_END Prosa.Util.List.last0_filter
+'Prosa.Util.List.last0_cons' does not depend on any axioms
+'Prosa.Util.List.last0_cat' depends on axioms: [propext]
+'Prosa.Util.List.last0_nth' depends on axioms: [propext]
+'Prosa.Util.List.last0_ex_cat' depends on axioms: [propext]
+'Prosa.Util.List.last0_filter' depends on axioms: [propext]

@@ -1,0 +1,250 @@
+File "./Validation/.work/runs/utility_search_arg_probe.atgSu4/certificates/SearchArgLogicProbe.v", line 1, characters 0-54:
+Warning: Notation "_ + _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./Validation/.work/runs/utility_search_arg_probe.atgSu4/certificates/SearchArgLogicProbe.v", line 1, characters 0-54:
+Warning: Notation "_ - _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./Validation/.work/runs/utility_search_arg_probe.atgSu4/certificates/SearchArgLogicProbe.v", line 1, characters 0-54:
+Warning: Notation "_ <= _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./Validation/.work/runs/utility_search_arg_probe.atgSu4/certificates/SearchArgLogicProbe.v", line 1, characters 0-54:
+Warning: Notation "_ < _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./Validation/.work/runs/utility_search_arg_probe.atgSu4/certificates/SearchArgLogicProbe.v", line 1, characters 0-54:
+Warning: Notation "_ >= _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./Validation/.work/runs/utility_search_arg_probe.atgSu4/certificates/SearchArgLogicProbe.v", line 1, characters 0-54:
+Warning: Notation "_ > _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./Validation/.work/runs/utility_search_arg_probe.atgSu4/certificates/SearchArgLogicProbe.v", line 1, characters 0-54:
+Warning: Notation "_ <= _ <= _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./Validation/.work/runs/utility_search_arg_probe.atgSu4/certificates/SearchArgLogicProbe.v", line 1, characters 0-54:
+Warning: Notation "_ < _ <= _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./Validation/.work/runs/utility_search_arg_probe.atgSu4/certificates/SearchArgLogicProbe.v", line 1, characters 0-54:
+Warning: Notation "_ <= _ < _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./Validation/.work/runs/utility_search_arg_probe.atgSu4/certificates/SearchArgLogicProbe.v", line 1, characters 0-54:
+Warning: Notation "_ < _ < _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./Validation/.work/runs/utility_search_arg_probe.atgSu4/certificates/SearchArgLogicProbe.v", line 1, characters 0-54:
+Warning: Notation "_ * _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+ex_minn
+     : forall P : pred nat, (exists n : nat, P n) -> nat
+ex_minnP
+     : forall (P : pred nat) (exP : exists n : nat, P n),
+       ex_minn_spec P (ex_minn (P:=P) exP)
+ex_minn_spec
+     : pred nat -> nat -> Set
+Inductive ex_minn_spec (P : pred nat) : nat -> Set :=
+    ExMinnSpec : forall m : nat,
+                 P m ->
+                 (forall n : nat, P n -> (m <= n)%N) -> ex_minn_spec P m.
+
+Arguments ex_minn_spec P _%_nat_scope
+Arguments ExMinnSpec [P] [m]%_nat_scope _ _%_function_scope
+Iff_intro
+     : forall a b : SProp, (a -> b) -> (b -> a) -> Iff a b
+mp
+     : forall a b : SProp, Iff a b -> a -> b
+mpr
+     : forall a b : SProp, Iff a b -> b -> a
+And_intro
+     : forall a a0 : SProp, a -> a0 -> And a a0
+Or_inl
+     : forall a a0 : SProp, a -> Or a a0
+Or_inr
+     : forall a a0 : SProp, a0 -> Or a a0
+Exists_intro
+     : forall (_UU03b1_ : Type) (p : _UU03b1_ -> SProp) (w : _UU03b1_),
+       p w -> Exists _UU03b1_ p
+Bool_noConfusion_inst1
+     : forall (P : SProp) (t t' : Bool),
+       eq t t' -> Bool_noConfusionType_inst1 P t t'
+Nat_find
+     : forall p : Nat -> SProp,
+       DecidablePred Nat p -> Exists Nat (fun n : Nat => p n) -> Nat
+Subtype_val
+     : forall (_UU03b1_ : Type) (p : _UU03b1_ -> SProp),
+       Subtype _UU03b1_ p -> _UU03b1_
+property
+     : forall (_UU03b1_ : Type) (r : _UU03b1_ -> SProp)
+         (Subtype : Subtype _UU03b1_ r),
+       r (val _ _ Subtype)
+Nat_lt_or_ge
+     : forall n m : Nat,
+       Or (LT_lt_inst1 Nat instLTNat n m) (GE_ge_inst1 Nat instLENat n m)
+Nat_le_antisymm
+     : forall n m : Nat,
+       LE_le_inst1 Nat instLENat n m ->
+       LE_le_inst1 Nat instLENat m n -> eq n m
+Nat_find@{} =
+fun (p : Nat -> SProp)
+  (inst____at___Mathlib_Data_Nat_Find1364543548__hygCtx__hyg21 : 
+   DecidablePred Nat p)
+  (H : Exists Nat (fun n : Nat => p n)) =>
+Subtype_val Nat
+  (fun n : Nat =>
+   And (p n) (forall m : Nat, LT_lt_inst1 Nat instLTNat m n -> Not (p m)))
+  (Nat_findX p inst____at___Mathlib_Data_Nat_Find1364543548__hygCtx__hyg21 H)
+     : forall p : Nat -> SProp,
+       DecidablePred Nat p -> Exists Nat (fun n : Nat => p n) -> Nat
+
+Arguments Nat_find p%_function_scope
+  inst____at___Mathlib_Data_Nat_Find1364543548__hygCtx__hyg21 
+  H
+Nat_findX@{} =
+fun (p : Nat -> SProp)
+  (inst____at___Mathlib_Data_Nat_Find2176396648__hygCtx__hyg21 : 
+   DecidablePred Nat p)
+  (H : Exists Nat (fun n : Nat => p n)) =>
+WellFounded_fix Nat
+  (fun k : Nat =>
+   (forall m : Nat, LT_lt_inst1 Nat instLTNat m k -> Not (p m)) ->
+   Subtype Nat
+     (fun n : Nat =>
+      And (p n) (forall m : Nat, LT_lt_inst1 Nat instLTNat m n -> Not (p m))))
+  (_private_Mathlib_Data_Nat_Find0_Nat_lbp p)
+  (_private_Mathlib_Data_Nat_Find0_Nat_wf_lbp p H)
+  (fun (m : Nat)
+     (IH : forall y : Nat,
+           _private_Mathlib_Data_Nat_Find0_Nat_lbp p y m ->
+           (forall n : Nat, LT_lt_inst1 Nat instLTNat n y -> Not (p n)) ->
+           Subtype Nat
+             (fun n : Nat =>
+              And (p n)
+                (forall m0 : Nat,
+                 LT_lt_inst1 Nat instLTNat m0 n -> Not (p m0))))
+     (al : forall n : Nat, LT_lt_inst1 Nat instLTNat n m -> Not (p n)) =>
+   dite
+     (Subtype Nat
+        (fun n : Nat =>
+         And (p n)
+           (forall m0 : Nat, LT_lt_inst1 Nat instLTNat m0 n -> Not (p m0))))
+     (p m) (inst____at___Mathlib_Data_Nat_Find2176396648__hygCtx__hyg21 m)
+     (fun pm : p m =>
+      Subtype_mk Nat
+        (fun n : Nat =>
+         And (p n)
+           (forall m0 : Nat, LT_lt_inst1 Nat instLTNat m0 n -> Not (p m0)))
+        m (Nat_findX__proof_2 p m al pm))
+     (fun pm : Not (p m) =>
+      let this := Nat_findX__proof_3 p m al pm in
+      IH
+        (HAdd_hAdd_inst7 Nat Nat Nat (instHAdd_inst1 Nat instAddNat) m
+           (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1)))
+        (Nat_findX__proof_4 p m this) (Nat_findX__proof_5 p m this)))
+  (OfNat_ofNat_inst1 Nat 0 (instOfNatNat 0)) (Nat_findX__proof_6 p)
+     : forall p : Nat -> SProp,
+       DecidablePred Nat p ->
+       Exists Nat (fun n : Nat => p n) ->
+       Subtype Nat
+         (fun n : Nat =>
+          And (p n)
+            (forall m : Nat, LT_lt_inst1 Nat instLTNat m n -> Not (p m)))
+
+Arguments Nat_findX p%_function_scope
+  inst____at___Mathlib_Data_Nat_Find2176396648__hygCtx__hyg21 
+  H
+Nat_findX__proof_1@{} =
+fun (p : Nat -> SProp) (m : Nat) (pm : Not (p m)) (n : Nat) (e : eq n m) =>
+Eq_mpr_inst1 (Not (p n)) (Not (p m))
+  (id_inst1 (eq (Not (p n)) (Not (p m)))
+     (congrArg Nat SProp n m (fun _a : Nat => Not (p _a)) e))
+  pm
+     : forall (p : Nat -> SProp) (m : Nat),
+       Not (p m) -> forall n : Nat, eq n m -> Not (p n)
+
+Arguments Nat_findX__proof_1 p%_function_scope m%_Nat_scope 
+  pm n%_Nat_scope e a____at____internal__hyg0
+Nat_findX__proof_2@{} =
+fun (p : Nat -> SProp) (m : Nat)
+  (al : forall n : Nat, LT_lt_inst1 Nat instLTNat n m -> Not (p n))
+  (pm : p m) =>
+{| left := pm; right := al |}
+     : forall (p : Nat -> SProp) (m : Nat),
+       (forall n : Nat, LT_lt_inst1 Nat instLTNat n m -> Not (p n)) ->
+       p m ->
+       And (p m)
+         (forall m0 : Nat, LT_lt_inst1 Nat instLTNat m0 m -> Not (p m0))
+
+Arguments Nat_findX__proof_2 p%_function_scope m%_Nat_scope
+  al%_function_scope pm
+Nat_findX__proof_3@{} =
+fun (p : Nat -> SProp) (m : Nat)
+  (al : forall n : Nat, LT_lt_inst1 Nat instLTNat n m -> Not (p n))
+  (pm : Not (p m)) (n : Nat) (h : LE_le_inst1 Nat instLENat n m) =>
+Or_elim (LT_lt_inst1 Nat instLTNat n m) (eq n m) (Not (p n))
+  (Nat_lt_or_eq_of_le n m h) (al n)
+  (fun e : eq n m => Nat_findX__proof_1 p m pm n e)
+     : forall (p : Nat -> SProp) (m : Nat),
+       (forall n : Nat, LT_lt_inst1 Nat instLTNat n m -> Not (p n)) ->
+       Not (p m) ->
+       forall n : Nat, LE_le_inst1 Nat instLENat n m -> Not (p n)
+
+Arguments Nat_findX__proof_3 p%_function_scope m%_Nat_scope
+  al%_function_scope pm n%_Nat_scope h a____at____internal__hyg0
+Nat_findX__proof_4@{} =
+fun (p : Nat -> SProp) (m : Nat)
+  (this : forall n : Nat, LE_le_inst1 Nat instLENat n m -> Not (p n)) =>
+{|
+  left :=
+    rfl Nat
+      (HAdd_hAdd_inst7 Nat Nat Nat (instHAdd_inst1 Nat instAddNat) m
+         (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1)));
+  right := this
+|}
+     : forall (p : Nat -> SProp) (m : Nat),
+       (forall n : Nat, LE_le_inst1 Nat instLENat n m -> Not (p n)) ->
+       And
+         (eq
+            (HAdd_hAdd_inst7 Nat Nat Nat (instHAdd_inst1 Nat instAddNat) m
+               (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1)))
+            (HAdd_hAdd_inst7 Nat Nat Nat (instHAdd_inst1 Nat instAddNat) m
+               (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1))))
+         (forall k : Nat, LE_le_inst1 Nat instLENat k m -> Not (p k))
+
+Arguments Nat_findX__proof_4 p%_function_scope m%_Nat_scope
+  this%_function_scope
+Nat_findX__proof_5@{} =
+fun (p : Nat -> SProp) (m : Nat)
+  (this : forall n : Nat, LE_le_inst1 Nat instLENat n m -> Not (p n))
+  (n : Nat)
+  (h : LT_lt_inst1 Nat instLTNat n
+         (HAdd_hAdd_inst7 Nat Nat Nat (instHAdd_inst1 Nat instAddNat) m
+            (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1)))) =>
+this n (Nat_le_of_succ_le_succ n m h)
+     : forall (p : Nat -> SProp) (m : Nat),
+       (forall n : Nat, LE_le_inst1 Nat instLENat n m -> Not (p n)) ->
+       forall n : Nat,
+       LT_lt_inst1 Nat instLTNat n
+         (HAdd_hAdd_inst7 Nat Nat Nat (instHAdd_inst1 Nat instAddNat) m
+            (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1))) ->
+       Not (p n)
+
+Arguments Nat_findX__proof_5 p%_function_scope m%_Nat_scope
+  this%_function_scope n%_Nat_scope h a____at____internal__hyg0
+Nat_findX__proof_6@{} =
+fun (p : Nat -> SProp)
+  (x____at___Mathlib_Data_Nat_Find2176396648__hygCtx__hyg261 : Nat)
+  (h : LT_lt_inst1 Nat instLTNat
+         x____at___Mathlib_Data_Nat_Find2176396648__hygCtx__hyg261
+         (OfNat_ofNat_inst1 Nat 0 (instOfNatNat 0))) =>
+absurd_inst1
+  (LT_lt_inst1 Nat instLTNat
+     x____at___Mathlib_Data_Nat_Find2176396648__hygCtx__hyg261
+     (OfNat_ofNat_inst1 Nat 0 (instOfNatNat 0)))
+  (Not (p x____at___Mathlib_Data_Nat_Find2176396648__hygCtx__hyg261)) h
+  (Nat_not_lt_zero x____at___Mathlib_Data_Nat_Find2176396648__hygCtx__hyg261)
+     : forall (p : Nat -> SProp)
+         (x____at___Mathlib_Data_Nat_Find2176396648__hygCtx__hyg261 : Nat),
+       LT_lt_inst1 Nat instLTNat
+         x____at___Mathlib_Data_Nat_Find2176396648__hygCtx__hyg261
+         (OfNat_ofNat_inst1 Nat 0 (instOfNatNat 0)) ->
+       Not (p x____at___Mathlib_Data_Nat_Find2176396648__hygCtx__hyg261)
+
+Arguments Nat_findX__proof_6 p%_function_scope
+  x____at___Mathlib_Data_Nat_Find2176396648__hygCtx__hyg261%_Nat_scope 
+  h a____at____internal__hyg0
