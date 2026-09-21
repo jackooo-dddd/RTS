@@ -1,0 +1,243 @@
+Prosa_Util_UnitGrowth_unit_growth_function
+     : (Nat -> Nat) -> SProp
+Prosa_Util_UnitGrowth_unit_growth_function_k_steps_bounded
+     : forall f : Nat -> Nat,
+       Prosa_Util_UnitGrowth_unit_growth_function f ->
+       forall x k : Nat,
+       LE_le_inst1 Nat instLENat
+         (f (HAdd_hAdd_inst7 Nat Nat Nat (instHAdd_inst1 Nat instAddNat) x k))
+         (HAdd_hAdd_inst7 Nat Nat Nat (instHAdd_inst1 Nat instAddNat) k (f x))
+Prosa_Util_UnitGrowth_exists_intermediate_point
+     : forall f : Nat -> Nat,
+       Prosa_Util_UnitGrowth_unit_growth_function f ->
+       forall x1 x2 : Nat,
+       LE_le_inst1 Nat instLENat x1 x2 ->
+       forall y : Nat,
+       And (LE_le_inst1 Nat instLENat (f x1) y)
+         (LT_lt_inst1 Nat instLTNat y (f x2)) ->
+       Exists Nat
+         (fun xmid : Nat =>
+          And
+            (And (LE_le_inst1 Nat instLENat x1 xmid)
+               (LT_lt_inst1 Nat instLTNat xmid x2))
+            (eq (f xmid) y))
+Prosa_Util_UnitGrowth_exists_intermediate_point_leq
+     : forall f : Nat -> Nat,
+       Prosa_Util_UnitGrowth_unit_growth_function f ->
+       forall x1 x2 : Nat,
+       LE_le_inst1 Nat instLENat x1 x2 ->
+       forall y : Nat,
+       And (LE_le_inst1 Nat instLENat (f x1) y)
+         (LE_le_inst1 Nat instLENat y (f x2)) ->
+       Exists Nat
+         (fun xmid : Nat =>
+          And
+            (And (LE_le_inst1 Nat instLENat x1 xmid)
+               (LE_le_inst1 Nat instLENat xmid x2))
+            (eq (f xmid) y))
+Prosa_Util_UnitGrowth_exists_first_intermediate_point
+     : forall (P : Nat -> Bool) (t1 t2 : Nat),
+       LE_le_inst1 Nat instLENat t1 t2 ->
+       eq (P t1) Bool_false ->
+       eq (P t2) Bool_true ->
+       Exists Nat
+         (fun t : Nat =>
+          And
+            (And (LT_lt_inst1 Nat instLTNat t1 t)
+               (LE_le_inst1 Nat instLENat t t2))
+            (And
+               (forall x : Nat,
+                And (LE_le_inst1 Nat instLENat t1 x)
+                  (LT_lt_inst1 Nat instLTNat x t) ->
+                eq (P x) Bool_false)
+               (eq (P t) Bool_true)))
+Prosa_Util_UnitGrowth_slowed
+     : (Nat -> Nat) -> Nat -> Nat
+Prosa_Util_UnitGrowth_slowed_eq_1
+     : forall F : Nat -> Nat,
+       eq
+         (Prosa_Util_UnitGrowth_slowed F
+            (OfNat_ofNat_inst1 Nat 0 (instOfNatNat 0)))
+         (F (OfNat_ofNat_inst1 Nat 0 (instOfNatNat 0)))
+Prosa_Util_UnitGrowth_slowed_eq_2
+     : forall (F : Nat -> Nat) (n : Nat),
+       eq (Prosa_Util_UnitGrowth_slowed F (Nat_succ n))
+         (Min_min_inst1 Nat instMinNat
+            (F
+               (HAdd_hAdd_inst7 Nat Nat Nat (instHAdd_inst1 Nat instAddNat) n
+                  (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1))))
+            (HAdd_hAdd_inst7 Nat Nat Nat (instHAdd_inst1 Nat instAddNat)
+               (Prosa_Util_UnitGrowth_slowed F n)
+               (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1))))
+Prosa_Util_UnitGrowth_slowed_respects_pointwise_leq
+     : forall (f F : Nat -> Nat) (_UU0394_ : Nat),
+       Prosa_Util_UnitGrowth_unit_growth_function f ->
+       (forall x : Nat,
+        LE_le_inst1 Nat instLENat x _UU0394_ ->
+        LE_le_inst1 Nat instLENat (f x) (F x)) ->
+       LE_le_inst1 Nat instLENat (f _UU0394_)
+         (Prosa_Util_UnitGrowth_slowed F _UU0394_)
+Prosa_Util_UnitGrowth_slowed_is_unit_step
+     : forall f : Nat -> Nat,
+       Prosa_Util_UnitGrowth_unit_growth_function
+         (Prosa_Util_UnitGrowth_slowed f)
+Prosa_Util_UnitGrowth_slowed_respects_monotone
+     : forall f : Nat -> Nat,
+       Prosa_Util_Rel_monotone_inst1 Nat
+         (fun x y : Nat =>
+          Decidable_decide (LE_le_inst1 Nat instLENat x y) (Nat_decLe x y))
+         f ->
+       Prosa_Util_Rel_monotone_inst1 Nat
+         (fun x y : Nat =>
+          Decidable_decide (LE_le_inst1 Nat instLENat x y) (Nat_decLe x y))
+         (Prosa_Util_UnitGrowth_slowed f)
+Prosa_Util_UnitGrowth_slowed_never_exceeds
+     : forall (f : Nat -> Nat) (x : Nat),
+       LE_le_inst1 Nat instLENat (Prosa_Util_UnitGrowth_slowed f x) (f x)
+Prosa_Util_UnitGrowth_bound_preserved_under_slowed
+     : forall (f : Nat -> Nat) (_UU03b4_ A F : Nat),
+       LE_le_inst1 Nat instLENat A
+         (HSub_hSub_inst7 Nat Nat Nat (instHSub_inst1 Nat instSubNat) F
+            (f _UU03b4_)) ->
+       LE_le_inst1 Nat instLENat A
+         (HSub_hSub_inst7 Nat Nat Nat (instHSub_inst1 Nat instSubNat) F
+            (Prosa_Util_UnitGrowth_slowed f _UU03b4_))
+Prosa_Util_UnitGrowth_slowed_subtraction_value_preservation
+     : forall (f : Nat -> Nat) (_UU0394_ : Nat),
+       Prosa_Util_Rel_monotone_inst1 Nat
+         (fun x y : Nat =>
+          Decidable_decide (LE_le_inst1 Nat instLENat x y) (Nat_decLe x y))
+         f ->
+       Exists Nat
+         (fun _UU03b4_ : Nat =>
+          And (LE_le_inst1 Nat instLENat _UU03b4_ _UU0394_)
+            (eq
+               (HSub_hSub_inst7 Nat Nat Nat (instHSub_inst1 Nat instSubNat)
+                  _UU0394_ (f _UU0394_))
+               (HSub_hSub_inst7 Nat Nat Nat (instHSub_inst1 Nat instSubNat)
+                  _UU03b4_ (Prosa_Util_UnitGrowth_slowed f _UU03b4_))))
+Prosa_Util_UnitGrowth_unit_growth_function@{} =
+fun f : Nat -> Nat =>
+forall t : Nat,
+LE_le_inst1 Nat instLENat
+  (f
+     (HAdd_hAdd_inst7 Nat Nat Nat (instHAdd_inst1 Nat instAddNat) t
+        (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1))))
+  (HAdd_hAdd_inst7 Nat Nat Nat (instHAdd_inst1 Nat instAddNat) 
+     (f t) (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1)))
+     : (Nat -> Nat) -> SProp
+
+Arguments Prosa_Util_UnitGrowth_unit_growth_function f%_function_scope
+Prosa_Util_UnitGrowth_slowed@{} =
+fun (F : Nat -> Nat)
+  (x____at___Prosa_Util_UnitGrowth1190789944__hygCtx__hyg8 : Nat) =>
+Nat_brecOn (fun _ : Nat => Nat)
+  x____at___Prosa_Util_UnitGrowth1190789944__hygCtx__hyg8
+  (Prosa_Util_UnitGrowth_slowed__f F)
+     : (Nat -> Nat) -> Nat -> Nat
+
+Arguments Prosa_Util_UnitGrowth_slowed F%_function_scope n%_Nat_scope
+Axioms:
+eq_inst1 relies on definitional UIP.
+eq relies on definitional UIP.
+True relies on definitional UIP.
+HEq_inst1 relies on definitional UIP.
+Axioms:
+eq_inst1 relies on definitional UIP.
+eq relies on definitional UIP.
+True relies on definitional UIP.
+HEq_inst1 relies on definitional UIP.
+Prosa_Util_Rel_monotone@{u Lean.u+1.0} =
+fun (T : Type) (R : T -> T -> Bool) (f : T -> T) =>
+forall x y : T, eq (R x y) Bool_true -> eq (R (f x) (f y)) Bool_true
+     : forall T : Type, (T -> T -> Bool) -> (T -> T) -> SProp
+
+Arguments Prosa_Util_Rel_monotone T%_type_scope (R f)%_function_scope
+instMinNat@{} = minOfLe_inst1 Nat instLENat Nat_decLe
+     : Min_inst1 Nat
+Min_min_inst1@{} =
+fun (_UU03b1_ : Type) (self : Min_inst1 _UU03b1_) => min0 _ self
+     : forall _UU03b1_ : Type,
+       Min_inst1 _UU03b1_ -> _UU03b1_ -> _UU03b1_ -> _UU03b1_
+
+Arguments Min_min_inst1 _UU03b1_%_type_scope self 
+  a____at____internal__hyg0 a____at____internal__hyg0
+minOfLe_inst1@{} =
+fun (_UU03b1_ : Type)
+  (inst____at___Init_Prelude636837753__hygCtx__hyg5 : LE_inst1 _UU03b1_)
+  (inst____at___Init_Prelude636837753__hygCtx__hyg8 : 
+   DecidableRel _UU03b1_ _UU03b1_
+     (LE_le_inst1 _UU03b1_ inst____at___Init_Prelude636837753__hygCtx__hyg5)) =>
+Min_mk_inst1 _UU03b1_
+  (fun x y : _UU03b1_ =>
+   ite _UU03b1_
+     (LE_le_inst1 _UU03b1_ inst____at___Init_Prelude636837753__hygCtx__hyg5 x
+        y)
+     (inst____at___Init_Prelude636837753__hygCtx__hyg8 x y) x y)
+     : forall (_UU03b1_ : Type)
+         (inst____at___Init_Prelude636837753__hygCtx__hyg5 : 
+          LE_inst1 _UU03b1_),
+       DecidableRel _UU03b1_ _UU03b1_
+         (LE_le_inst1 _UU03b1_
+            inst____at___Init_Prelude636837753__hygCtx__hyg5) ->
+       Min_inst1 _UU03b1_
+
+Arguments minOfLe_inst1 _UU03b1_%_type_scope
+  inst____at___Init_Prelude636837753__hygCtx__hyg5
+  inst____at___Init_Prelude636837753__hygCtx__hyg8
+minOfLe@{u_1 Lean.u_1+1.0} =
+fun (_UU03b1_ : Type)
+  (inst____at___Init_Prelude636837753__hygCtx__hyg5 : LE _UU03b1_)
+  (inst____at___Init_Prelude636837753__hygCtx__hyg8 : 
+   DecidableRel _UU03b1_ _UU03b1_
+     (LE_le _UU03b1_ inst____at___Init_Prelude636837753__hygCtx__hyg5)) =>
+Min_mk _UU03b1_
+  (fun x y : _UU03b1_ =>
+   ite _UU03b1_
+     (LE_le _UU03b1_ inst____at___Init_Prelude636837753__hygCtx__hyg5 x y)
+     (inst____at___Init_Prelude636837753__hygCtx__hyg8 x y) x y)
+     : forall (_UU03b1_ : Type)
+         (inst____at___Init_Prelude636837753__hygCtx__hyg5 : LE _UU03b1_),
+       DecidableRel _UU03b1_ _UU03b1_
+         (LE_le _UU03b1_ inst____at___Init_Prelude636837753__hygCtx__hyg5) ->
+       Min _UU03b1_
+
+Arguments minOfLe _UU03b1_%_type_scope
+  inst____at___Init_Prelude636837753__hygCtx__hyg5
+  inst____at___Init_Prelude636837753__hygCtx__hyg8
+Nat_decLe@{} =
+fun n m : Nat =>
+dite (Decidable (LE_le_inst1 Nat instLENat n m)) (eq (Nat_ble n m) Bool_true)
+  (instDecidableEqBool (Nat_ble n m) Bool_true)
+  (fun h : eq (Nat_ble n m) Bool_true =>
+   Decidable_isTrue (LE_le_inst1 Nat instLENat n m)
+     (Nat_le_of_ble_eq_true n m h))
+  (fun h : Not (eq (Nat_ble n m) Bool_true) =>
+   Decidable_isFalse (LE_le_inst1 Nat instLENat n m)
+     (Nat_not_le_of_not_ble_eq_true n m h))
+     : forall n m : Nat, Decidable (LE_le_inst1 Nat instLENat n m)
+
+Arguments Nat_decLe (n m)%_Nat_scope
+Decidable_decide@{} =
+fun (p : SProp) (h : Decidable p) =>
+Decidable_casesOn p (fun _ : Decidable p => Bool) h
+  (fun _ : Not p => Bool_false) (fun _ : p => Bool_true)
+     : forall p : SProp, Decidable p -> Bool
+
+Arguments Decidable_decide p%_type_scope h
+Record And@{} (a a0 : SProp) : SProp := And_intro { left : a;  right : a0 }.
+
+And has primitive projections with eta conversion.
+Arguments And (a a0)%_type_scope
+Arguments And_intro (a a0)%_type_scope left right
+Arguments left (a a0)%_type_scope a
+Arguments right (a a0)%_type_scope a
+And_intro
+     : forall a a0 : SProp, a -> a0 -> And a a0
+Exists_intro
+     : forall (_UU03b1_ : Type) (p : _UU03b1_ -> SProp) (w : _UU03b1_),
+       p w -> Exists _UU03b1_ p
+Bool_false
+     : Bool
+Bool_true
+     : Bool

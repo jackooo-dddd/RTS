@@ -1,0 +1,174 @@
+Prosa_Util_SearchArg_earliest_pred_element_exists_case
+     : forall (P : Nat -> Bool) (t1 t2 : Nat),
+       Or
+         (forall t : Nat,
+          And (LE_le_inst1 Nat instLENat t1 t)
+            (LT_lt_inst1 Nat instLTNat t t2) ->
+          eq (P t) Bool_false)
+         (Exists Nat
+            (fun t : Nat =>
+             And
+               (And (LE_le_inst1 Nat instLENat t1 t)
+                  (LT_lt_inst1 Nat instLTNat t t2))
+               (And (eq (P t) Bool_true)
+                  (forall t' : Nat,
+                   LE_le_inst1 Nat instLENat t1 t' ->
+                   eq (P t') Bool_true -> LE_le_inst1 Nat instLENat t t'))))
+Prosa_Util_SearchArg_search_arg
+     : forall T : Type,
+       (Nat -> T) ->
+       (T -> Bool) -> (T -> T -> Bool) -> Nat -> Nat -> Option_inst1 Nat
+Prosa_Util_SearchArg_search_arg_eq_1
+     : forall (T : Type) (f : Nat -> T) (P : T -> Bool) 
+         (R : T -> T -> Bool) (a : Nat),
+       eq
+         (Prosa_Util_SearchArg_search_arg T f P R a
+            (OfNat_ofNat_inst1 Nat 0 (instOfNatNat 0)))
+         (ite (Option_inst1 Nat)
+            (LT_lt_inst1 Nat instLTNat a
+               (OfNat_ofNat_inst1 Nat 0 (instOfNatNat 0)))
+            (Nat_decLt a (OfNat_ofNat_inst1 Nat 0 (instOfNatNat 0)))
+            (Option_none_inst1 Nat) (Option_none_inst1 Nat))
+Prosa_Util_SearchArg_search_arg_eq_2
+     : forall (T : Type) (f : Nat -> T) (P : T -> Bool) 
+         (R : T -> T -> Bool) (a b' : Nat),
+       eq (Prosa_Util_SearchArg_search_arg T f P R a (Nat_succ b'))
+         (ite (Option_inst1 Nat) (LT_lt_inst1 Nat instLTNat a (Nat_succ b'))
+            (Nat_decLt a (Nat_succ b'))
+            (Prosa_Util_SearchArg_search_arg_match_1
+               (fun _ : Option_inst1 Nat => Option_inst1 Nat)
+               (Prosa_Util_SearchArg_search_arg T f P R a b')
+               (fun _ : Unit =>
+                ite (Option_inst1 Nat) (eq (P (f b')) Bool_true)
+                  (instDecidableEqBool (P (f b')) Bool_true)
+                  (Option_some_inst1 Nat b') (Option_none_inst1 Nat))
+               (fun x : Nat =>
+                ite (Option_inst1 Nat)
+                  (eq (Bool_and (P (f b')) (R (f b') (f x))) Bool_true)
+                  (instDecidableEqBool (Bool_and (P (f b')) (R (f b') (f x)))
+                     Bool_true)
+                  (Option_some_inst1 Nat b') (Option_some_inst1 Nat x)))
+            (Option_none_inst1 Nat))
+Prosa_Util_SearchArg_search_arg_none
+     : forall (T : Type) (f : Nat -> T) (P : T -> Bool) 
+         (R : T -> T -> Bool) (a b : Nat),
+       Iff
+         (eq (Prosa_Util_SearchArg_search_arg T f P R a b)
+            (Option_none_inst1 Nat))
+         (forall x : Nat,
+          And (LE_le_inst1 Nat instLENat a x) (LT_lt_inst1 Nat instLTNat x b) ->
+          eq (P (f x)) Bool_false)
+Prosa_Util_SearchArg_search_arg_not_none
+     : forall (T : Type) (f : Nat -> T) (P : T -> Bool) 
+         (R : T -> T -> Bool) (a b : Nat),
+       Exists Nat
+         (fun x : Nat =>
+          And
+            (And (LE_le_inst1 Nat instLENat a x)
+               (LT_lt_inst1 Nat instLTNat x b))
+            (eq (P (f x)) Bool_true)) ->
+       Exists Nat
+         (fun y : Nat =>
+          Prosa_Util_SearchArg_search_arg T f P R a b =
+          Option_some_inst1 Nat y)
+Prosa_Util_SearchArg_search_arg_pred
+     : forall (T : Type) (f : Nat -> T) (P : T -> Bool) 
+         (R : T -> T -> Bool) (a b x : Nat),
+       eq (Prosa_Util_SearchArg_search_arg T f P R a b)
+         (Option_some_inst1 Nat x) ->
+       eq (P (f x)) Bool_true
+Prosa_Util_SearchArg_search_arg_in_range
+     : forall (T : Type) (f : Nat -> T) (P : T -> Bool) 
+         (R : T -> T -> Bool) (a b x : Nat),
+       eq (Prosa_Util_SearchArg_search_arg T f P R a b)
+         (Option_some_inst1 Nat x) ->
+       And (LE_le_inst1 Nat instLENat a x) (LT_lt_inst1 Nat instLTNat x b)
+Prosa_Util_SearchArg_search_arg_extremum
+     : forall (T : Type) (f : Nat -> T) (P : T -> Bool) (R : T -> T -> Bool),
+       (forall x : T, eq (R x x) Bool_true) ->
+       (forall x y z : T,
+        eq (R x y) Bool_true -> eq (R y z) Bool_true -> eq (R x z) Bool_true) ->
+       (forall x y : T, Or (eq (R x y) Bool_true) (eq (R y x) Bool_true)) ->
+       forall a b x : Nat,
+       eq (Prosa_Util_SearchArg_search_arg T f P R a b)
+         (Option_some_inst1 Nat x) ->
+       forall y : Nat,
+       And (LE_le_inst1 Nat instLENat a y) (LT_lt_inst1 Nat instLTNat y b) ->
+       eq (P (f y)) Bool_true -> eq (R (f x) (f y)) Bool_true
+Prosa_Util_SearchArg_prop_on_ex_minn
+     : forall (P : Nat -> SProp) (pred : Nat -> Bool)
+         (ex : Exists Nat (fun n : Nat => pred n = Bool_true)),
+       P
+         (Nat_find (fun n : Nat => pred n = Bool_true)
+            (fun a : Nat => instDecidableEqBool (pred a) Bool_true) ex) ->
+       Exists Nat
+         (fun n : Nat =>
+          And (P n)
+            (And (eq (pred n) Bool_true)
+               (forall n' : Nat,
+                eq (pred n') Bool_true -> LE_le_inst1 Nat instLENat n n')))
+Prosa_Util_SearchArg_search_arg@{u_1 Lean.u_1+1.0} =
+fun (T : Type) (f : Nat -> T) (P : T -> Bool) (R : T -> T -> Bool)
+  (a b : Nat) =>
+Nat_brecOn (fun _ : Nat => Option_inst1 Nat) b
+  (Prosa_Util_SearchArg_search_arg__f T f P R a)
+     : forall T : Type,
+       (Nat -> T) ->
+       (T -> Bool) -> (T -> T -> Bool) -> Nat -> Nat -> Option_inst1 Nat
+
+Arguments Prosa_Util_SearchArg_search_arg T%_type_scope
+  (f P R)%_function_scope (a b)%_Nat_scope
+Prosa_Util_SearchArg_search_arg__f@{u_1 Lean.u_1+1.0} =
+fun (T : Type) (f : Nat -> T) (P : T -> Bool) (R : T -> T -> Bool)
+  (a b : Nat) (f0 : Nat_below (fun _ : Nat => Option_inst1 Nat) b) =>
+ite (Option_inst1 Nat) (LT_lt_inst1 Nat instLTNat a b) 
+  (Nat_decLt a b)
+  (Prosa_Util_SearchArg_search_arg_match_3
+     (fun b____at___Prosa_Util_SearchArg1194379719__hygCtx__hyg33 : Nat =>
+      Nat_below (fun _ : Nat => Option_inst1 Nat)
+        b____at___Prosa_Util_SearchArg1194379719__hygCtx__hyg33 ->
+      Option_inst1 Nat)
+     b
+     (fun (_ : Unit)
+        (_ : Nat_below (fun _ : Nat => Option_inst1 Nat)
+               (OfNat_ofNat_inst1 Nat 0 (instOfNatNat 0))) =>
+      Option_none_inst1 Nat)
+     (fun (b' : Nat)
+        (x____at___Prosa_Util_SearchArg1194379719__hygCtx__hyg112 : 
+         Nat_below (fun _ : Nat => Option_inst1 Nat) 
+           (Nat_succ b')) =>
+      Prosa_Util_SearchArg_search_arg_match_1
+        (fun _ : Option_inst1 Nat => Option_inst1 Nat)
+        (fst _ _ x____at___Prosa_Util_SearchArg1194379719__hygCtx__hyg112)
+        (fun _ : Unit =>
+         ite (Option_inst1 Nat) (eq (P (f b')) Bool_true)
+           (instDecidableEqBool (P (f b')) Bool_true)
+           (Option_some_inst1 Nat b') (Option_none_inst1 Nat))
+        (fun x : Nat =>
+         ite (Option_inst1 Nat)
+           (eq (Bool_and (P (f b')) (R (f b') (f x))) Bool_true)
+           (instDecidableEqBool (Bool_and (P (f b')) (R (f b') (f x)))
+              Bool_true)
+           (Option_some_inst1 Nat b') (Option_some_inst1 Nat x)))
+     f0)
+  (Option_none_inst1 Nat)
+     : forall T : Type,
+       (Nat -> T) ->
+       (T -> Bool) ->
+       (T -> T -> Bool) ->
+       Nat ->
+       forall b : Nat,
+       Nat_below (fun _ : Nat => Option_inst1 Nat) b -> Option_inst1 Nat
+
+Arguments Prosa_Util_SearchArg_search_arg__f T%_type_scope
+  (f P R)%_function_scope (a b)%_Nat_scope f
+Axioms:
+eq_inst1 relies on definitional UIP.
+eq relies on definitional UIP.
+True relies on definitional UIP.
+HEq_inst1 relies on definitional UIP.
+Axioms:
+eq_inst1 relies on definitional UIP.
+eq relies on definitional UIP.
+True relies on definitional UIP.
+HEq_inst1 relies on definitional UIP.

@@ -1,0 +1,46 @@
+FREEZE_BEGIN Prosa.Util.SearchArg.earliest_pred_element_exists_case
+Prosa.Util.SearchArg.earliest_pred_element_exists_case : ∀ (P : ℕ → Bool) (t1 t2 : ℕ),
+  (∀ (t : ℕ), t1 ≤ t ∧ t < t2 → P t = false) ∨
+    ∃ t, (t1 ≤ t ∧ t < t2) ∧ P t = true ∧ ∀ (t' : ℕ), t1 ≤ t' → P t' = true → t ≤ t'
+FREEZE_END Prosa.Util.SearchArg.earliest_pred_element_exists_case
+FREEZE_BEGIN Prosa.Util.SearchArg.search_arg
+@Prosa.Util.SearchArg.search_arg : {T : Type u_1} → (ℕ → T) → (T → Bool) → (T → T → Bool) → ℕ → ℕ → Option ℕ
+def Prosa.Util.SearchArg.search_arg.{u_1} : {T : Type u_1} → (ℕ → T) → (T → Bool) → (T → T → Bool) → ℕ → ℕ → Option ℕ :=
+fun {T} f P R a b => Nat.brecOn b (Prosa.Util.SearchArg.search_arg._f f P R a)
+FREEZE_END Prosa.Util.SearchArg.search_arg
+FREEZE_BEGIN Prosa.Util.SearchArg.search_arg_none
+@Prosa.Util.SearchArg.search_arg_none : ∀ {T : Type u_1} (f : ℕ → T) (P : T → Bool) (R : T → T → Bool) (a b : ℕ),
+  Prosa.Util.SearchArg.search_arg f P R a b = none ↔ ∀ (x : ℕ), a ≤ x ∧ x < b → P (f x) = false
+FREEZE_END Prosa.Util.SearchArg.search_arg_none
+FREEZE_BEGIN Prosa.Util.SearchArg.search_arg_not_none
+@Prosa.Util.SearchArg.search_arg_not_none : ∀ {T : Type u_1} (f : ℕ → T) (P : T → Bool) (R : T → T → Bool) (a b : ℕ),
+  (∃ x, (a ≤ x ∧ x < b) ∧ P (f x) = true) → ∃ y, Prosa.Util.SearchArg.search_arg f P R a b = some y
+FREEZE_END Prosa.Util.SearchArg.search_arg_not_none
+FREEZE_BEGIN Prosa.Util.SearchArg.search_arg_pred
+@Prosa.Util.SearchArg.search_arg_pred : ∀ {T : Type u_1} (f : ℕ → T) (P : T → Bool) (R : T → T → Bool) (a b x : ℕ),
+  Prosa.Util.SearchArg.search_arg f P R a b = some x → P (f x) = true
+FREEZE_END Prosa.Util.SearchArg.search_arg_pred
+FREEZE_BEGIN Prosa.Util.SearchArg.search_arg_in_range
+@Prosa.Util.SearchArg.search_arg_in_range : ∀ {T : Type u_1} (f : ℕ → T) (P : T → Bool) (R : T → T → Bool) (a b x : ℕ),
+  Prosa.Util.SearchArg.search_arg f P R a b = some x → a ≤ x ∧ x < b
+FREEZE_END Prosa.Util.SearchArg.search_arg_in_range
+FREEZE_BEGIN Prosa.Util.SearchArg.search_arg_extremum
+@Prosa.Util.SearchArg.search_arg_extremum : ∀ {T : Type u_1} (f : ℕ → T) (P : T → Bool) (R : T → T → Bool),
+  (∀ (x : T), R x x = true) →
+    (∀ (x y z : T), R x y = true → R y z = true → R x z = true) →
+      (∀ (x y : T), R x y = true ∨ R y x = true) →
+        ∀ (a b x : ℕ),
+          Prosa.Util.SearchArg.search_arg f P R a b = some x →
+            ∀ (y : ℕ), a ≤ y ∧ y < b → P (f y) = true → R (f x) (f y) = true
+FREEZE_END Prosa.Util.SearchArg.search_arg_extremum
+FREEZE_BEGIN Prosa.Util.SearchArg.prop_on_ex_minn
+Prosa.Util.SearchArg.prop_on_ex_minn : ∀ (P : ℕ → Prop) (pred : ℕ → Bool) (ex : ∃ n, pred n = true),
+  P (Nat.find ex) → ∃ n, P n ∧ pred n = true ∧ ∀ (n' : ℕ), pred n' = true → n ≤ n'
+FREEZE_END Prosa.Util.SearchArg.prop_on_ex_minn
+'Prosa.Util.SearchArg.earliest_pred_element_exists_case' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Prosa.Util.SearchArg.search_arg_none' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Prosa.Util.SearchArg.search_arg_not_none' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Prosa.Util.SearchArg.search_arg_pred' depends on axioms: [propext]
+'Prosa.Util.SearchArg.search_arg_in_range' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Prosa.Util.SearchArg.search_arg_extremum' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Prosa.Util.SearchArg.prop_on_ex_minn' does not depend on any axioms

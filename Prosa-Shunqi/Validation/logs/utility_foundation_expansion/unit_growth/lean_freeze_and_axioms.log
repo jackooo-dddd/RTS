@@ -1,0 +1,62 @@
+FREEZE_BEGIN Prosa.Util.UnitGrowth.unit_growth_function
+Prosa.Util.UnitGrowth.unit_growth_function : (ℕ → ℕ) → Prop
+def Prosa.Util.UnitGrowth.unit_growth_function : (ℕ → ℕ) → Prop :=
+fun f => ∀ (t : ℕ), f (t + 1) ≤ f t + 1
+FREEZE_END Prosa.Util.UnitGrowth.unit_growth_function
+FREEZE_BEGIN Prosa.Util.UnitGrowth.unit_growth_function_k_steps_bounded
+Prosa.Util.UnitGrowth.unit_growth_function_k_steps_bounded : ∀ (f : ℕ → ℕ),
+  Prosa.Util.UnitGrowth.unit_growth_function f → ∀ (x k : ℕ), f (x + k) ≤ k + f x
+FREEZE_END Prosa.Util.UnitGrowth.unit_growth_function_k_steps_bounded
+FREEZE_BEGIN Prosa.Util.UnitGrowth.exists_intermediate_point
+Prosa.Util.UnitGrowth.exists_intermediate_point : ∀ (f : ℕ → ℕ),
+  Prosa.Util.UnitGrowth.unit_growth_function f →
+    ∀ (x1 x2 : ℕ), x1 ≤ x2 → ∀ (y : ℕ), f x1 ≤ y ∧ y < f x2 → ∃ xmid, (x1 ≤ xmid ∧ xmid < x2) ∧ f xmid = y
+FREEZE_END Prosa.Util.UnitGrowth.exists_intermediate_point
+FREEZE_BEGIN Prosa.Util.UnitGrowth.exists_intermediate_point_leq
+Prosa.Util.UnitGrowth.exists_intermediate_point_leq : ∀ (f : ℕ → ℕ),
+  Prosa.Util.UnitGrowth.unit_growth_function f →
+    ∀ (x1 x2 : ℕ), x1 ≤ x2 → ∀ (y : ℕ), f x1 ≤ y ∧ y ≤ f x2 → ∃ xmid, (x1 ≤ xmid ∧ xmid ≤ x2) ∧ f xmid = y
+FREEZE_END Prosa.Util.UnitGrowth.exists_intermediate_point_leq
+FREEZE_BEGIN Prosa.Util.UnitGrowth.exists_first_intermediate_point
+Prosa.Util.UnitGrowth.exists_first_intermediate_point : ∀ (P : ℕ → Bool) (t1 t2 : ℕ),
+  t1 ≤ t2 → P t1 = false → P t2 = true → ∃ t, (t1 < t ∧ t ≤ t2) ∧ (∀ (x : ℕ), t1 ≤ x ∧ x < t → P x = false) ∧ P t = true
+FREEZE_END Prosa.Util.UnitGrowth.exists_first_intermediate_point
+FREEZE_BEGIN Prosa.Util.UnitGrowth.slowed
+Prosa.Util.UnitGrowth.slowed : (ℕ → ℕ) → ℕ → ℕ
+def Prosa.Util.UnitGrowth.slowed : (ℕ → ℕ) → ℕ → ℕ :=
+fun F x => Nat.brecOn x (Prosa.Util.UnitGrowth.slowed._f F)
+FREEZE_END Prosa.Util.UnitGrowth.slowed
+FREEZE_BEGIN Prosa.Util.UnitGrowth.slowed_respects_pointwise_leq
+Prosa.Util.UnitGrowth.slowed_respects_pointwise_leq : ∀ (f F : ℕ → ℕ) (Δ : ℕ),
+  Prosa.Util.UnitGrowth.unit_growth_function f → (∀ x ≤ Δ, f x ≤ F x) → f Δ ≤ Prosa.Util.UnitGrowth.slowed F Δ
+FREEZE_END Prosa.Util.UnitGrowth.slowed_respects_pointwise_leq
+FREEZE_BEGIN Prosa.Util.UnitGrowth.slowed_is_unit_step
+Prosa.Util.UnitGrowth.slowed_is_unit_step : ∀ (f : ℕ → ℕ),
+  Prosa.Util.UnitGrowth.unit_growth_function (Prosa.Util.UnitGrowth.slowed f)
+FREEZE_END Prosa.Util.UnitGrowth.slowed_is_unit_step
+FREEZE_BEGIN Prosa.Util.UnitGrowth.slowed_respects_monotone
+Prosa.Util.UnitGrowth.slowed_respects_monotone : ∀ (f : ℕ → ℕ),
+  Prosa.Util.Rel.monotone (fun x y => decide (x ≤ y)) f →
+    Prosa.Util.Rel.monotone (fun x y => decide (x ≤ y)) (Prosa.Util.UnitGrowth.slowed f)
+FREEZE_END Prosa.Util.UnitGrowth.slowed_respects_monotone
+FREEZE_BEGIN Prosa.Util.UnitGrowth.slowed_never_exceeds
+Prosa.Util.UnitGrowth.slowed_never_exceeds : ∀ (f : ℕ → ℕ) (x : ℕ), Prosa.Util.UnitGrowth.slowed f x ≤ f x
+FREEZE_END Prosa.Util.UnitGrowth.slowed_never_exceeds
+FREEZE_BEGIN Prosa.Util.UnitGrowth.bound_preserved_under_slowed
+Prosa.Util.UnitGrowth.bound_preserved_under_slowed : ∀ (f : ℕ → ℕ) (δ A F : ℕ),
+  A ≤ F - f δ → A ≤ F - Prosa.Util.UnitGrowth.slowed f δ
+FREEZE_END Prosa.Util.UnitGrowth.bound_preserved_under_slowed
+FREEZE_BEGIN Prosa.Util.UnitGrowth.slowed_subtraction_value_preservation
+Prosa.Util.UnitGrowth.slowed_subtraction_value_preservation : ∀ (f : ℕ → ℕ) (Δ : ℕ),
+  Prosa.Util.Rel.monotone (fun x y => decide (x ≤ y)) f → ∃ δ ≤ Δ, Δ - f Δ = δ - Prosa.Util.UnitGrowth.slowed f δ
+FREEZE_END Prosa.Util.UnitGrowth.slowed_subtraction_value_preservation
+'Prosa.Util.UnitGrowth.unit_growth_function_k_steps_bounded' depends on axioms: [propext, Quot.sound]
+'Prosa.Util.UnitGrowth.exists_intermediate_point' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Prosa.Util.UnitGrowth.exists_intermediate_point_leq' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Prosa.Util.UnitGrowth.exists_first_intermediate_point' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Prosa.Util.UnitGrowth.slowed_respects_pointwise_leq' depends on axioms: [propext]
+'Prosa.Util.UnitGrowth.slowed_is_unit_step' depends on axioms: [propext]
+'Prosa.Util.UnitGrowth.slowed_respects_monotone' depends on axioms: [propext, Quot.sound]
+'Prosa.Util.UnitGrowth.slowed_never_exceeds' depends on axioms: [propext]
+'Prosa.Util.UnitGrowth.bound_preserved_under_slowed' depends on axioms: [propext, Quot.sound]
+'Prosa.Util.UnitGrowth.slowed_subtraction_value_preservation' depends on axioms: [propext, Classical.choice, Quot.sound]

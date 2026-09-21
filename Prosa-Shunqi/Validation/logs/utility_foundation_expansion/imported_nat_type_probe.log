@@ -1,0 +1,143 @@
+Prosa_Util_Nat_subnACA
+     : forall m n p q : Lean.Nat,
+       LE_le_inst1 Lean.Nat instLENat p m ->
+       LE_le_inst1 Lean.Nat instLENat q n ->
+       Lean.eq
+         (HSub_hSub_inst7 Lean.Nat Lean.Nat Lean.Nat
+            (instHSub_inst1 Lean.Nat instSubNat)
+            (HAdd_hAdd_inst7 Lean.Nat Lean.Nat Lean.Nat
+               (instHAdd_inst1 Lean.Nat instAddNat) m n)
+            (HAdd_hAdd_inst7 Lean.Nat Lean.Nat Lean.Nat
+               (instHAdd_inst1 Lean.Nat instAddNat) p q))
+         (HAdd_hAdd_inst7 Lean.Nat Lean.Nat Lean.Nat
+            (instHAdd_inst1 Lean.Nat instAddNat)
+            (HSub_hSub_inst7 Lean.Nat Lean.Nat Lean.Nat
+               (instHSub_inst1 Lean.Nat instSubNat) m p)
+            (HSub_hSub_inst7 Lean.Nat Lean.Nat Lean.Nat
+               (instHSub_inst1 Lean.Nat instSubNat) n q))
+Prosa_Util_Nat_leq_subRL_impl
+     : forall m n p : Lean.Nat,
+       LE_le_inst1 Lean.Nat instLENat
+         (HAdd_hAdd_inst7 Lean.Nat Lean.Nat Lean.Nat
+            (instHAdd_inst1 Lean.Nat instAddNat) m n)
+         p ->
+       LE_le_inst1 Lean.Nat instLENat n
+         (HSub_hSub_inst7 Lean.Nat Lean.Nat Lean.Nat
+            (instHSub_inst1 Lean.Nat instSubNat) p m)
+*** [ Prosa_Util_Nat_subnACA@{} :
+forall m n p q : Lean.Nat,
+LE_le_inst1 Lean.Nat instLENat p m ->
+LE_le_inst1 Lean.Nat instLENat q n ->
+Lean.eq
+  (HSub_hSub_inst7 Lean.Nat Lean.Nat Lean.Nat
+     (instHSub_inst1 Lean.Nat instSubNat)
+     (HAdd_hAdd_inst7 Lean.Nat Lean.Nat Lean.Nat
+        (instHAdd_inst1 Lean.Nat instAddNat) m n)
+     (HAdd_hAdd_inst7 Lean.Nat Lean.Nat Lean.Nat
+        (instHAdd_inst1 Lean.Nat instAddNat) p q))
+  (HAdd_hAdd_inst7 Lean.Nat Lean.Nat Lean.Nat
+     (instHAdd_inst1 Lean.Nat instAddNat)
+     (HSub_hSub_inst7 Lean.Nat Lean.Nat Lean.Nat
+        (instHSub_inst1 Lean.Nat instSubNat) m p)
+     (HSub_hSub_inst7 Lean.Nat Lean.Nat Lean.Nat
+        (instHSub_inst1 Lean.Nat instSubNat) n q)) ]
+
+Arguments Prosa_Util_Nat_subnACA (m n p q)%_Nat_scope
+  a____at____internal__hyg0 a____at____internal__hyg0
+*** [ Prosa_Util_Nat_leq_subRL_impl@{} :
+forall m n p : Lean.Nat,
+LE_le_inst1 Lean.Nat instLENat
+  (HAdd_hAdd_inst7 Lean.Nat Lean.Nat Lean.Nat
+     (instHAdd_inst1 Lean.Nat instAddNat) m n)
+  p ->
+LE_le_inst1 Lean.Nat instLENat n
+  (HSub_hSub_inst7 Lean.Nat Lean.Nat Lean.Nat
+     (instHSub_inst1 Lean.Nat instSubNat) p m) ]
+
+Arguments Prosa_Util_Nat_leq_subRL_impl (m n p)%_Nat_scope
+  a____at____internal__hyg0
+instSubNat@{} = Sub_mk_inst1 Lean.Nat Nat_sub
+     : Sub_inst1 Lean.Nat
+instHSub_inst1@{} =
+fun (_UU03b1_ : Type)
+  (inst____at___Init_Prelude4034066273__hygCtx__hyg5 : Sub_inst1 _UU03b1_) =>
+HSub_mk_inst7 _UU03b1_ _UU03b1_ _UU03b1_
+  (fun a b : _UU03b1_ =>
+   Sub_sub_inst1 _UU03b1_ inst____at___Init_Prelude4034066273__hygCtx__hyg5 a
+     b)
+     : forall _UU03b1_ : Type,
+       Sub_inst1 _UU03b1_ -> HSub_inst7 _UU03b1_ _UU03b1_ _UU03b1_
+
+Arguments instHSub_inst1 _UU03b1_%_type_scope
+  inst____at___Init_Prelude4034066273__hygCtx__hyg5
+HSub_hSub_inst7@{} =
+fun (_UU03b1_ _UU03b2_ : Type) (_UU03b3_ : outParam Type)
+  (self : HSub_inst7 _UU03b1_ _UU03b2_ _UU03b3_) =>
+hSub0 _ _ _ self
+     : forall (_UU03b1_ _UU03b2_ : Type) (_UU03b3_ : outParam Type),
+       HSub_inst7 _UU03b1_ _UU03b2_ _UU03b3_ ->
+       _UU03b1_ -> _UU03b2_ -> _UU03b3_
+
+Arguments HSub_hSub_inst7 (_UU03b1_ _UU03b2_)%_type_scope 
+  _UU03b3_ self a____at____internal__hyg0 a____at____internal__hyg0
+Nat_sub__f@{} =
+fun (x____at___Init_Prelude462884191__hygCtx__hyg14 : Lean.Nat)
+  (f : Nat_below (fun _ : Lean.Nat => Lean.Nat -> Lean.Nat)
+         x____at___Init_Prelude462884191__hygCtx__hyg14)
+  (x____at___Init_Prelude462884191__hygCtx__hyg13 : Lean.Nat) =>
+Nat_mul_match_1
+  (fun
+     _
+      x____at___Init_Prelude462884191__hygCtx14_Init_Prelude462884191__hygCtx__hyg35 : Lean.Nat =>
+   Nat_below (fun _ : Lean.Nat => Lean.Nat -> Lean.Nat)
+     x____at___Init_Prelude462884191__hygCtx14_Init_Prelude462884191__hygCtx__hyg35 ->
+   Lean.Nat)
+  x____at___Init_Prelude462884191__hygCtx__hyg13
+  x____at___Init_Prelude462884191__hygCtx__hyg14
+  (fun (a : Lean.Nat)
+     (_ : Nat_below (fun _ : Lean.Nat => Lean.Nat -> Lean.Nat)
+            (OfNat_ofNat_inst1 Lean.Nat Lean.Nat_zero
+               (instOfNatNat Lean.Nat_zero))) =>
+   a)
+  (fun (a b : Lean.Nat)
+     (x____at___Init_Prelude462884191__hygCtx__hyg64 : 
+      Nat_below (fun _ : Lean.Nat => Lean.Nat -> Lean.Nat) 
+        (Lean.Nat_succ b)) =>
+   Nat_pred (fst _ _ x____at___Init_Prelude462884191__hygCtx__hyg64 a))
+  f
+     : forall x____at___Init_Prelude462884191__hygCtx__hyg14 : Lean.Nat,
+       Nat_below (fun _ : Lean.Nat => Lean.Nat -> Lean.Nat)
+         x____at___Init_Prelude462884191__hygCtx__hyg14 ->
+       Lean.Nat -> Lean.Nat
+
+Arguments Nat_sub__f
+  x____at___Init_Prelude462884191__hygCtx__hyg14%_Nat_scope 
+  f n%_Nat_scope
+Nat_sub@{} =
+fun
+  x____at___Init_Prelude462884191__hygCtx__hyg13
+   x____at___Init_Prelude462884191__hygCtx__hyg14 : Lean.Nat =>
+Nat_brecOn (fun _ : Lean.Nat => Lean.Nat -> Lean.Nat)
+  x____at___Init_Prelude462884191__hygCtx__hyg14 Nat_sub__f
+  x____at___Init_Prelude462884191__hygCtx__hyg13
+     : Lean.Nat -> Lean.Nat -> Lean.Nat
+
+Arguments Nat_sub
+  (a____at____internal__hyg0 a____at____internal__hyg0)%_Nat_scope
+Lean.Nat_add@{} =
+fix Nat_add (n m : Lean.Nat) {struct m} : Lean.Nat :=
+  match m with
+  | Lean.Nat_zero => n
+  | Lean.Nat_succ p => Lean.Nat_succ (Nat_add n p)
+  end
+     : Lean.Nat -> Lean.Nat -> Lean.Nat
+
+Arguments Lean.Nat_add (n m)%_Nat_scope
+Inductive Nat_le@{} (n : Lean.Nat) : Lean.Nat -> SProp :=
+    Nat_le_refl : Lean.Nat_le n n
+  | Nat_le_step : forall m : Lean.Nat,
+                  Lean.Nat_le n m -> Lean.Nat_le n (Lean.Nat_succ m).
+
+Arguments Lean.Nat_le (n _)%_Nat_scope
+Arguments Lean.Nat_le_refl n%_Nat_scope
+Arguments Lean.Nat_le_step (n m)%_Nat_scope _
