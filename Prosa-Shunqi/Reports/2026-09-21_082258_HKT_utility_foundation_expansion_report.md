@@ -849,3 +849,35 @@ validation class, and file-DAG readiness.
 - Strict progress is now **List 25 / 57**, **Sum 3 / 25**, hence **28 accepted
   across List + Sum**. Cumulative coverage is **74 / 2439 declarations**, with
   **10 / 357 files** accepted and translated-but-not-certified debt zero.
+
+## 2026-09-21 18:47:00 HKT — coarse module invalidation efficiency audit
+
+- The concern about repeated `List.lean` invalidation is confirmed. There are
+  currently **27** `utility_list_last.*` fresh work directories; **25** reached
+  a freshly imported `ImportedListLast.vo`, and **21** reached the final
+  `ListLastAssumptionAudit.vo` stage. A normal recent successful end-to-end run
+  takes about **64–75 seconds**; earlier runs commonly took **118–123 seconds**.
+- Consequently, even the conservative one-minute-per-audit lower bound is more
+  than **21 minutes** spent in repeated full-pipeline execution. The raw sum of
+  directory-birth-to-final-audit spans is about **51 minutes**, but this is not
+  an exact runtime total because several work directories were later reused for
+  certificate-development probes. It must not be reported as 51 minutes of
+  purely avoidable work.
+- The integrity rule itself is correct: a changed source must not silently reuse
+  stale evidence. The avoidable cost comes from the current coarse artifact
+  design: accumulated targets share one production `.olean`, one export, one
+  imported Rocq module, and one assumption-audit module. An append-only new
+  declaration therefore changes every aggregate hash and forces old targets
+  through the pipeline again even when their elaborated types, bodies, and
+  semantic dependency closures are unchanged.
+- A second avoidable cost is target development: to inspect a newly compiled
+  theorem type, the current script runs nearly the whole validator and then
+  intentionally fails publication until its certificate is added. A dedicated
+  fresh `prepare-target-artifact` mode could stop after compile/export/import.
+- Recommended next optimization, not implemented in this audit: translate and
+  certify several declarations per semantic cluster; export target signatures
+  in content-addressed per-target/per-cluster artifacts; keep stable
+  computational interfaces separate; invalidate an accepted certificate only
+  when its own elaborated declaration fingerprint or certified dependency
+  closure changes; and run one full regression at cluster close. This preserves
+  stale-artifact protection while avoiding theorem-by-theorem replay.
