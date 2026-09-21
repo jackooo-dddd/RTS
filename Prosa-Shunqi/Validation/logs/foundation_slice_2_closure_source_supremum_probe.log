@@ -1,0 +1,661 @@
+@supremum_spec
+     : forall (T : Equality.type) (R : rel (Equality.sort T))
+         (_ : @reflexive (Equality.sort T) R)
+         (_ : @total (Equality.sort T) R)
+         (_ : @transitive (Equality.sort T) R) (x : Equality.sort T)
+         (s : list (Equality.sort T))
+         (_ : @eq (option (Equality.sort T)) (@supremum T R s)
+                (@Some (Equality.sort T) x))
+         (y : Equality.sort T)
+         (_ : is_true
+                (@in_mem (Equality.sort T) y
+                   (@mem (Equality.sort T) (seq_predType T) s))),
+       is_true (R x y)
+supremum_spec =
+fun (T : Equality.type) (R : rel (Equality.sort T))
+  (H_R_reflexive : @reflexive (Equality.sort T) R)
+  (H_R_total : @total (Equality.sort T) R)
+  (H_R_transitive : @transitive (Equality.sort T) R) 
+  (x : Equality.sort T) (s : list (Equality.sort T))
+  (SOME_x : @eq (option (Equality.sort T)) (@supremum T R s)
+              (@Some (Equality.sort T) x)) =>
+(fun
+   (‗evar_0‗ : (fun l : list (Equality.sort T) =>
+                forall (x0 : Equality.sort T)
+                  (_ : @eq (option (Equality.sort T)) 
+                         (@supremum T R l) (@Some (Equality.sort T) x0))
+                  (_ : is_true
+                         (@in_mem (Equality.sort T) x0
+                            (@mem (Equality.sort T) (seq_predType T) l)))
+                  (y : Equality.sort T)
+                  (_ : is_true
+                         (@in_mem (Equality.sort T) y
+                            (@mem (Equality.sort T) (seq_predType T) l))),
+                is_true (R x0 y)) (@nil (Equality.sort T)))
+   (‗evar_0‗0 : forall (a : Equality.sort T) (l : list (Equality.sort T))
+                  (_ : (fun l0 : list (Equality.sort T) =>
+                        forall (x0 : Equality.sort T)
+                          (_ : @eq (option (Equality.sort T))
+                                 (@supremum T R l0)
+                                 (@Some (Equality.sort T) x0))
+                          (_ : is_true
+                                 (@in_mem (Equality.sort T) x0
+                                    (@mem (Equality.sort T) 
+                                       (seq_predType T) l0)))
+                          (y : Equality.sort T)
+                          (_ : is_true
+                                 (@in_mem (Equality.sort T) y
+                                    (@mem (Equality.sort T) 
+                                       (seq_predType T) l0))),
+                        is_true (R x0 y)) l),
+                (fun l0 : list (Equality.sort T) =>
+                 forall (x0 : Equality.sort T)
+                   (_ : @eq (option (Equality.sort T)) 
+                          (@supremum T R l0) (@Some (Equality.sort T) x0))
+                   (_ : is_true
+                          (@in_mem (Equality.sort T) x0
+                             (@mem (Equality.sort T) (seq_predType T) l0)))
+                   (y : Equality.sort T)
+                   (_ : is_true
+                          (@in_mem (Equality.sort T) y
+                             (@mem (Equality.sort T) (seq_predType T) l0))),
+                 is_true (R x0 y)) (@cons (Equality.sort T) a l)) =>
+ @list_ind (Equality.sort T)
+   (fun l : list (Equality.sort T) =>
+    forall (x0 : Equality.sort T)
+      (_ : @eq (option (Equality.sort T)) (@supremum T R l)
+             (@Some (Equality.sort T) x0))
+      (_ : is_true
+             (@in_mem (Equality.sort T) x0
+                (@mem (Equality.sort T) (seq_predType T) l)))
+      (y : Equality.sort T)
+      (_ : is_true
+             (@in_mem (Equality.sort T) y
+                (@mem (Equality.sort T) (seq_predType T) l))),
+    is_true (R x0 y))
+   ‗evar_0‗ ‗evar_0‗0 s)
+  ((fun (x0 : Equality.sort T)
+      (_ : @eq (option (Equality.sort T))
+             (@supremum T R (@nil (Equality.sort T)))
+             (@Some (Equality.sort T) x0))
+      (_ : is_true
+             (@in_mem (Equality.sort T) x0
+                (@mem (Equality.sort T) (seq_predType T)
+                   (@nil (Equality.sort T)))))
+      (y : Equality.sort T)
+      (H : is_true
+             (@in_mem (Equality.sort T) y
+                (@mem (Equality.sort T) (seq_predType T)
+                   (@nil (Equality.sort T))))) =>
+    let H0 : False :=
+      @eq_ind bool
+        (@in_mem (Equality.sort T) y
+           (@mem (Equality.sort T) (seq_predType T) (@nil (Equality.sort T))))
+        (fun e : bool =>
+         match e return Prop with
+         | @true => False
+         | @false => True
+         end)
+        I true H
+      in
+    False_ind (is_true (R x0 y)) H0)
+   :
+   forall (x0 : Equality.sort T)
+     (_ : @eq (option (Equality.sort T))
+            (@supremum T R (@nil (Equality.sort T)))
+            (@Some (Equality.sort T) x0))
+     (_ : is_true
+            (@in_mem (Equality.sort T) x0
+               (@mem (Equality.sort T) (seq_predType T)
+                  (@nil (Equality.sort T)))))
+     (y : Equality.sort T)
+     (_ : is_true
+            (@in_mem (Equality.sort T) y
+               (@mem (Equality.sort T) (seq_predType T)
+                  (@nil (Equality.sort T))))),
+   is_true (R x0 y))
+  (fun (s1 : Equality.sort T) (sn : list (Equality.sort T))
+     (IH : forall (x0 : Equality.sort T)
+             (_ : @eq (option (Equality.sort T)) (@supremum T R sn)
+                    (@Some (Equality.sort T) x0))
+             (_ : is_true
+                    (@in_mem (Equality.sort T) x0
+                       (@mem (Equality.sort T) (seq_predType T) sn)))
+             (y : Equality.sort T)
+             (_ : is_true
+                    (@in_mem (Equality.sort T) y
+                       (@mem (Equality.sort T) (seq_predType T) sn))),
+           is_true (R x0 y))
+     (z : Equality.sort T)
+     (SOME_z : @eq (option (Equality.sort T))
+                 (@supremum T R (@cons (Equality.sort T) s1 sn))
+                 (@Some (Equality.sort T) z))
+     (IN_z_s : is_true
+                 (@in_mem (Equality.sort T) z
+                    (@mem (Equality.sort T) (seq_predType T)
+                       (@cons (Equality.sort T) s1 sn))))
+     (y : Equality.sort T) =>
+   (fun
+      ‗evar_0‗ : forall
+                   (_ : @eq (option (Equality.sort T))
+                          (@choose_superior T R s1 (@supremum T R sn))
+                          (@Some (Equality.sort T) z))
+                   (_ : is_true
+                          (@in_mem (Equality.sort T) y
+                             (@mem (Equality.sort T) 
+                                (seq_predType T)
+                                (@cons (Equality.sort T) s1 sn)))),
+                 is_true (R z y) =>
+    @eq_ind_r (option (Equality.sort T))
+      (@choose_superior T R s1 (@supremum T R sn))
+      (fun ‗pattern_value‗ : option (Equality.sort T) =>
+       forall
+         (_ : @eq (option (Equality.sort T)) ‗pattern_value‗
+                (@Some (Equality.sort T) z))
+         (_ : is_true
+                (@in_mem (Equality.sort T) y
+                   (@mem (Equality.sort T) (seq_predType T)
+                      (@cons (Equality.sort T) s1 sn)))),
+       is_true (R z y))
+      ‗evar_0‗ (@supremum T R (@cons (Equality.sort T) s1 sn))
+      (@supremum_unfold T R s1 sn))
+     (fun
+        SOME_z0 : @eq (option (Equality.sort T))
+                    match
+                      @supremum T R sn return option (Equality.sort T)
+                    with
+                    | @Some _ y0 =>
+                        match R s1 y0 return option (Equality.sort T) with
+                        | @true => @Some (Equality.sort T) s1
+                        | @false => @Some (Equality.sort T) y0
+                        end
+                    | @None _ => @Some (Equality.sort T) s1
+                    end (@Some (Equality.sort T) z) =>
+      let o : option (Equality.sort T) := @supremum T R sn in
+      let SUPR : @eq (option (Equality.sort T)) (@supremum T R sn) o :=
+        @Logic.eq_refl (option (Equality.sort T)) o in
+      match
+        o as o0
+        return
+          (forall (_ : @eq (option (Equality.sort T)) (@supremum T R sn) o0)
+             (_ : forall (x0 : Equality.sort T)
+                    (_ : @eq (option (Equality.sort T)) o0
+                           (@Some (Equality.sort T) x0))
+                    (_ : is_true
+                           (@in_mem (Equality.sort T) x0
+                              (@mem (Equality.sort T) (seq_predType T) sn)))
+                    (y0 : Equality.sort T)
+                    (_ : is_true
+                           (@in_mem (Equality.sort T) y0
+                              (@mem (Equality.sort T) (seq_predType T) sn))),
+                  is_true (R x0 y0))
+             (_ : @eq (option (Equality.sort T))
+                    match o0 return option (Equality.sort T) with
+                    | @Some _ y0 =>
+                        match R s1 y0 return option (Equality.sort T) with
+                        | @true => @Some (Equality.sort T) s1
+                        | @false => @Some (Equality.sort T) y0
+                        end
+                    | @None _ => @Some (Equality.sort T) s1
+                    end (@Some (Equality.sort T) z))
+             (_ : is_true
+                    (@in_mem (Equality.sort T) y
+                       (@mem (Equality.sort T) (seq_predType T)
+                          (@cons (Equality.sort T) s1 sn)))),
+           is_true (R z y))
+      with
+      | @Some _ s0 =>
+          (fun (b : Equality.sort T)
+             (SUPR0 : @eq (option (Equality.sort T)) 
+                        (@supremum T R sn) (@Some (Equality.sort T) b))
+             (IH0 : forall (x0 : Equality.sort T)
+                      (_ : @eq (option (Equality.sort T))
+                             (@Some (Equality.sort T) b)
+                             (@Some (Equality.sort T) x0))
+                      (_ : is_true
+                             (@in_mem (Equality.sort T) x0
+                                (@mem (Equality.sort T) (seq_predType T) sn)))
+                      (y0 : Equality.sort T)
+                      (_ : is_true
+                             (@in_mem (Equality.sort T) y0
+                                (@mem (Equality.sort T) (seq_predType T) sn))),
+                    is_true (R x0 y0))
+             (SOME_z1 : @eq (option (Equality.sort T))
+                          match R s1 b return option (Equality.sort T) with
+                          | @true => @Some (Equality.sort T) s1
+                          | @false => @Some (Equality.sort T) b
+                          end (@Some (Equality.sort T) z)) =>
+           (fun
+              ‗evar_0‗ : forall
+                           _ : is_true
+                                 (orb (@eq_op T y s1)
+                                    (@in_mem (Equality.sort T) y
+                                       (@mem (Equality.sort T)
+                                          (seq_predType T) sn))),
+                         is_true (R z y) =>
+            @eq_ind_r bool
+              (orb (@eq_op T y s1)
+                 (@in_mem (Equality.sort T) y
+                    (@mem (Equality.sort T) (seq_predType T) sn)))
+              (fun ‗pattern_value‗ : bool =>
+               forall _ : is_true ‗pattern_value‗, is_true (R z y))
+              ‗evar_0‗
+              (@in_mem (Equality.sort T) y
+                 (@mem (Equality.sort T) (seq_predType T)
+                    (@cons (Equality.sort T) s1 sn)))
+              (@in_cons T s1 sn y))
+             (fun
+                ‗view_subject‗ : is_true
+                                   (orb (@eq_op T y s1)
+                                      (@in_mem (Equality.sort T) y
+                                         (@mem (Equality.sort T)
+                                            (seq_predType T) sn))) =>
+              (fun
+                 ‗‗top_assumption‗ : or (is_true (@eq_op T y s1))
+                                       (is_true
+                                          (@in_mem 
+                                             (Equality.sort T) y
+                                             (@mem 
+                                                (Equality.sort T)
+                                                (seq_predType T) sn))) =>
+               (fun
+                  (‗evar_0‗ : forall a : is_true (@eq_op T y s1),
+                              (fun
+                                 _ : or (is_true (@eq_op T y s1))
+                                       (is_true
+                                          (@in_mem 
+                                             (Equality.sort T) y
+                                             (@mem 
+                                                (Equality.sort T)
+                                                (seq_predType T) sn))) =>
+                               is_true (R z y))
+                                (@or_introl (is_true (@eq_op T y s1))
+                                   (is_true
+                                      (@in_mem (Equality.sort T) y
+                                         (@mem (Equality.sort T)
+                                            (seq_predType T) sn)))
+                                   a))
+                  (‗evar_0‗0 : forall
+                                 b0 : is_true
+                                        (@in_mem (Equality.sort T) y
+                                           (@mem (Equality.sort T)
+                                              (seq_predType T) sn)),
+                               (fun
+                                  _ : or (is_true (@eq_op T y s1))
+                                        (is_true
+                                           (@in_mem 
+                                              (Equality.sort T) y
+                                              (@mem 
+                                                 (Equality.sort T)
+                                                 (seq_predType T) sn))) =>
+                                is_true (R z y))
+                                 (@or_intror (is_true (@eq_op T y s1))
+                                    (is_true
+                                       (@in_mem (Equality.sort T) y
+                                          (@mem (Equality.sort T)
+                                             (seq_predType T) sn)))
+                                    b0)) =>
+                match
+                  ‗‗top_assumption‗ as o0
+                  return
+                    (fun
+                       _ : or (is_true (@eq_op T y s1))
+                             (is_true
+                                (@in_mem (Equality.sort T) y
+                                   (@mem (Equality.sort T) 
+                                      (seq_predType T) sn))) =>
+                     is_true (R z y)) o0
+                with
+                | @or_introl _ _ a => ‗evar_0‗ a
+                | @or_intror _ _ b0 => ‗evar_0‗0 b0
+                end)
+                 (fun ‗view_subject‗0 : is_true (@eq_op T y s1) =>
+                  (fun EQy : @eq (Equality.sort T) y s1 =>
+                   (fun
+                      ‗evar_0‗ : forall
+                                   _ : is_true
+                                         (orb (@eq_op T z s1)
+                                            (@in_mem 
+                                               (Equality.sort T) z
+                                               (@mem 
+                                                 (Equality.sort T)
+                                                 (seq_predType T) sn))),
+                                 is_true (R z y) =>
+                    @eq_ind_r bool
+                      (orb (@eq_op T z s1)
+                         (@in_mem (Equality.sort T) z
+                            (@mem (Equality.sort T) (seq_predType T) sn)))
+                      (fun ‗pattern_value‗ : bool =>
+                       forall _ : is_true ‗pattern_value‗, is_true (R z y))
+                      ‗evar_0‗
+                      (@in_mem (Equality.sort T) z
+                         (@mem (Equality.sort T) (seq_predType T)
+                            (@cons (Equality.sort T) s1 sn)))
+                      (@in_cons T s1 sn z))
+                     (fun
+                        ‗view_subject‗1 : is_true
+                                            (orb (@eq_op T z s1)
+                                               (@in_mem 
+                                                 (Equality.sort T) z
+                                                 (@mem 
+                                                 (Equality.sort T)
+                                                 (seq_predType T) sn))) =>
+                      (fun
+                         ‗‗top_assumption‗0 : or (is_true (@eq_op T z s1))
+                                                (is_true
+                                                 (@in_mem 
+                                                 (Equality.sort T) z
+                                                 (@mem 
+                                                 (Equality.sort T)
+                                                 (seq_predType T) sn))) =>
+                       (fun
+                          (‗evar_0‗ : forall a : is_true (@eq_op T z s1),
+                                      (fun _ : or (...) (...) =>
+                                       is_true (R z y))
+                                        (@or_introl 
+                                           (is_true (@eq_op T z s1))
+                                           (is_true (@in_mem ... z ...)) a))
+                          (‗evar_0‗0 : forall
+                                         b0 : is_true
+                                                (@in_mem 
+                                                 (Equality.sort T) z
+                                                 (@mem ... ... sn)),
+                                       (fun _ : or (...) (...) =>
+                                        is_true (R z y))
+                                         (@or_intror
+                                            (is_true (@eq_op T z s1))
+                                            (is_true (@in_mem ... z ...)) b0)) =>
+                        match
+                          ‗‗top_assumption‗0 as o0
+                          return (fun _ : or ... ... => is_true (R z y)) o0
+                        with
+                        | @or_introl _ _ a => ‗evar_0‗ a
+                        | @or_intror _ _ b0 => ‗evar_0‗0 b0
+                        end)
+                         (fun ‗view_subject‗2 : is_true (@eq_op T z s1) =>
+                          (fun EQz : @eq (Equality.sort T) z s1 =>
+                           @eq_ind_r (Equality.sort T) s1
+                             (fun y0 : Equality.sort T => is_true (R z y0))
+                             (@eq_ind_r (Equality.sort T) s1
+                                (fun z0 : ... => forall ..., is_true ...)
+                                (fun _ : ... => H_R_reflexive s1) z EQz
+                                SOME_z1)
+                             y EQy)
+                            (@elimTF (@eq (Equality.sort T) z s1)
+                               (@eq_op T z s1) true 
+                               (@eqP T z s1) ‗view_subject‗2))
+                         (fun
+                            _ : is_true
+                                  (@in_mem (Equality.sort T) z
+                                     (@mem (Equality.sort T) 
+                                        (seq_predType T) sn)) =>
+                          (fun
+                             ‗view_subject‗2 : is_true
+                                                 (orb (R s1 b) (R b s1)) =>
+                           (fun ‗‗top_assumption‗1 : or (...) (...) =>
+                            (fun ... ... => ...
+                                            ...
+                                            ...
+                                            end)
+                              (fun ... => ... ... SOME_z1)
+                              (fun ... => ... ...))
+                             (@elimTF (or (is_true ...) (is_true ...))
+                                (orb (R s1 b) (R b s1)) true
+                                (@orP (R s1 b) (R b s1)) ‗view_subject‗2))
+                            (H_R_total s1 b)))
+                        (@elimTF
+                           (or (is_true (@eq_op T z s1))
+                              (is_true
+                                 (@in_mem (Equality.sort T) z
+                                    (@mem (Equality.sort T) 
+                                       (seq_predType T) sn))))
+                           (orb (@eq_op T z s1)
+                              (@in_mem (Equality.sort T) z
+                                 (@mem (Equality.sort T) (seq_predType T) sn)))
+                           true
+                           (@orP (@eq_op T z s1)
+                              (@in_mem (Equality.sort T) z
+                                 (@mem (Equality.sort T) (seq_predType T) sn)))
+                           ‗view_subject‗1))
+                     IN_z_s)
+                    (@elimTF (@eq (Equality.sort T) y s1) 
+                       (@eq_op T y s1) true (@eqP T y s1) ‗view_subject‗0))
+                 (fun
+                    INy : is_true
+                            (@in_mem (Equality.sort T) y
+                               (@mem (Equality.sort T) (seq_predType T) sn)) =>
+                  @ssr_have (is_true (R b y)) (is_true (R z y))
+                    (IH0 b
+                       (@Logic.eq_refl (option (Equality.sort T))
+                          (@Some (Equality.sort T) b))
+                       (@supremum_in T R b sn SUPR0) y INy)
+                    (fun R_by : is_true (R b y) =>
+                     H_R_transitive b z y
+                       (let b0 : bool := R s1 b in
+                        let R_s1b : @eq bool (R s1 b) b0 :=
+                          @Logic.eq_refl bool b0 in
+                        match
+                          b0 as b1
+                          return
+                            (forall (_ : @eq bool (R s1 b) b1)
+                               (_ : @eq (option (Equality.sort T))
+                                      match b1 return option ... with
+                                      | @true => @Some (Equality.sort T) s1
+                                      | @false => @Some (Equality.sort T) b
+                                      end (@Some (Equality.sort T) z)),
+                             is_true (R z b))
+                        with
+                        | @true =>
+                            fun (R_s1b0 : @eq bool (R s1 b) true)
+                              (SOME_z2 : @eq (option (Equality.sort T))
+                                           (@Some (Equality.sort T) s1)
+                                           (@Some (Equality.sort T) z)) =>
+                            let H : @eq (Equality.sort T) s1 z :=
+                              @f_equal (option (Equality.sort T))
+                                (Equality.sort T)
+                                (fun e : option (Equality.sort T) =>
+                                 match e return Equality.sort T with
+                                 | @Some _ s2 => s2
+                                 | @None _ => s1
+                                 end)
+                                (@Some (Equality.sort T) s1)
+                                (@Some (Equality.sort T) z) SOME_z2
+                              in
+                            (fun
+                               ‗‗top_assumption‗0 : 
+                                @eq (Equality.sort T) s1 z =>
+                             (fun ‗evar_0‗ : is_true (...) =>
+                              @eq_ind (Equality.sort T) s1
+                                (fun ... => is_true ...) ‗evar_0‗ z
+                                ‗‗top_assumption‗0)
+                               R_s1b0)
+                              H
+                        | @false =>
+                            fun (_ : @eq bool (R s1 b) false)
+                              (SOME_z2 : @eq (option (Equality.sort T))
+                                           (@Some (Equality.sort T) b)
+                                           (@Some (Equality.sort T) z)) =>
+                            let H : @eq (Equality.sort T) b z :=
+                              @f_equal (option (Equality.sort T))
+                                (Equality.sort T)
+                                (fun e : option (Equality.sort T) =>
+                                 match e return Equality.sort T with
+                                 | @Some _ s2 => s2
+                                 | @None _ => b
+                                 end)
+                                (@Some (Equality.sort T) b)
+                                (@Some (Equality.sort T) z) SOME_z2
+                              in
+                            (fun
+                               ‗‗top_assumption‗0 : @eq (Equality.sort T) b z =>
+                             (fun ‗evar_0‗ : is_true (...) =>
+                              @eq_ind (Equality.sort T) b
+                                (fun ... => is_true ...) ‗evar_0‗ z
+                                ‗‗top_assumption‗0)
+                               (H_R_reflexive b))
+                              H
+                        end R_s1b SOME_z1)
+                       R_by)))
+                (@elimTF
+                   (or (is_true (@eq_op T y s1))
+                      (is_true
+                         (@in_mem (Equality.sort T) y
+                            (@mem (Equality.sort T) (seq_predType T) sn))))
+                   (orb (@eq_op T y s1)
+                      (@in_mem (Equality.sort T) y
+                         (@mem (Equality.sort T) (seq_predType T) sn)))
+                   true
+                   (@orP (@eq_op T y s1)
+                      (@in_mem (Equality.sort T) y
+                         (@mem (Equality.sort T) (seq_predType T) sn)))
+                   ‗view_subject‗)))
+            s0
+      | @None _ =>
+          fun
+            (SUPR0 : @eq (option (Equality.sort T)) 
+                       (@supremum T R sn) (@None (Equality.sort T)))
+            (IH0 : forall (x0 : Equality.sort T)
+                     (_ : @eq (option (Equality.sort T))
+                            (@None (Equality.sort T))
+                            (@Some (Equality.sort T) x0))
+                     (_ : is_true
+                            (@in_mem (Equality.sort T) x0
+                               (@mem (Equality.sort T) (seq_predType T) sn)))
+                     (y0 : Equality.sort T)
+                     (_ : is_true
+                            (@in_mem (Equality.sort T) y0
+                               (@mem (Equality.sort T) (seq_predType T) sn))),
+                   is_true (R x0 y0))
+            (SOME_z1 : @eq (option (Equality.sort T))
+                         (@Some (Equality.sort T) s1)
+                         (@Some (Equality.sort T) z)) =>
+          let SUPR1 :
+            @eq (list (Equality.sort T)) sn (@nil (Equality.sort T)) :=
+            @supremum_none T R sn SUPR0 in
+          @eq_ind_r (list (Equality.sort T)) (@nil (Equality.sort T))
+            (fun sn0 : list (Equality.sort T) =>
+             forall
+               (_ : forall (x0 : Equality.sort T)
+                      (_ : @eq (option (Equality.sort T))
+                             (@None (Equality.sort T))
+                             (@Some (Equality.sort T) x0))
+                      (_ : is_true
+                             (@in_mem (Equality.sort T) x0
+                                (@mem (Equality.sort T) (seq_predType T) sn0)))
+                      (y0 : Equality.sort T)
+                      (_ : is_true
+                             (@in_mem (Equality.sort T) y0
+                                (@mem (Equality.sort T) (seq_predType T) sn0))),
+                    is_true (R x0 y0))
+               (_ : is_true
+                      (@in_mem (Equality.sort T) z
+                         (@mem (Equality.sort T) (seq_predType T)
+                            (@cons (Equality.sort T) s1 sn0))))
+               (_ : is_true
+                      (@in_mem (Equality.sort T) y
+                         (@mem (Equality.sort T) (seq_predType T)
+                            (@cons (Equality.sort T) s1 sn0)))),
+             is_true (R z y))
+            (fun
+               (_ : forall (x0 : Equality.sort T)
+                      (_ : @eq (option (Equality.sort T))
+                             (@None (Equality.sort T))
+                             (@Some (Equality.sort T) x0))
+                      (_ : is_true
+                             (@in_mem (Equality.sort T) x0
+                                (@mem (Equality.sort T) 
+                                   (seq_predType T) 
+                                   (@nil (Equality.sort T)))))
+                      (y0 : Equality.sort T)
+                      (_ : is_true
+                             (@in_mem (Equality.sort T) y0
+                                (@mem (Equality.sort T) 
+                                   (seq_predType T) 
+                                   (@nil (Equality.sort T))))),
+                    is_true (R x0 y0))
+               (_ : is_true
+                      (@in_mem (Equality.sort T) z
+                         (@mem (Equality.sort T) (seq_predType T)
+                            (@cons (Equality.sort T) s1
+                               (@nil (Equality.sort T)))))) =>
+             (fun
+                ‗evar_0‗ : forall _ : is_true (@eq_op T y s1),
+                           is_true (R z y) =>
+              @eq_ind_r bool (@eq_op T y s1)
+                (fun ‗pattern_value‗ : bool =>
+                 forall _ : is_true ‗pattern_value‗, is_true (R z y))
+                ‗evar_0‗
+                (@in_mem (Equality.sort T) y
+                   (@mem (Equality.sort T) (seq_predType T)
+                      (@cons (Equality.sort T) s1 (@nil (Equality.sort T)))))
+                (@mem_seq1 T y s1))
+               (fun ‗view_subject‗ : is_true (@eq_op T y s1) =>
+                (fun ‗‗top_assumption‗ : @eq (Equality.sort T) y s1 =>
+                 (fun ‗evar_0‗ : is_true (R z s1) =>
+                  @eq_ind_r (Equality.sort T) s1
+                    (fun ‗pattern_value‗ : Equality.sort T =>
+                     is_true (R z ‗pattern_value‗))
+                    ‗evar_0‗ y ‗‗top_assumption‗)
+                   (let H : @eq (Equality.sort T) s1 z :=
+                      @f_equal (option (Equality.sort T)) 
+                        (Equality.sort T)
+                        (fun e : option (Equality.sort T) =>
+                         match e return Equality.sort T with
+                         | @Some _ s0 => s0
+                         | @None _ => s1
+                         end)
+                        (@Some (Equality.sort T) s1)
+                        (@Some (Equality.sort T) z) SOME_z1
+                      in
+                    (fun ‗‗top_assumption‗0 : @eq (Equality.sort T) s1 z =>
+                     (fun ‗evar_0‗ : is_true (R z z) =>
+                      @eq_ind_r (Equality.sort T) z
+                        (fun ‗pattern_value‗ : Equality.sort T =>
+                         is_true (R z ‗pattern_value‗))
+                        ‗evar_0‗ s1 ‗‗top_assumption‗0)
+                       (H_R_reflexive z))
+                      H))
+                  (@elimTF (@eq (Equality.sort T) y s1) 
+                     (@eq_op T y s1) true (@eqP T y s1) ‗view_subject‗)))
+            sn SUPR1 IH0 IN_z_s
+      end SUPR IH SOME_z0)
+     SOME_z)
+  x SOME_x (@supremum_in T R x s SOME_x)
+     : forall {T : Equality.type} (R : rel (Equality.sort T))
+         (_ : @reflexive (Equality.sort T) R)
+         (_ : @total (Equality.sort T) R)
+         (_ : @transitive (Equality.sort T) R) (x : Equality.sort T)
+         (s : list (Equality.sort T))
+         (_ : @eq (option (Equality.sort T)) (@supremum T R s)
+                (@Some (Equality.sort T) x))
+         (y : Equality.sort T)
+         (_ : is_true
+                (@in_mem (Equality.sort T) y
+                   (@mem (Equality.sort T) (seq_predType T) s))),
+       is_true (R x y)
+
+Arguments supremum_spec {T} R H_R_reflexive H_R_total 
+  H_R_transitive x s%_seq_scope _ y _
+reflexive
+     : forall (T : Type) (_ : rel T), Prop
+reflexive =
+fun (T : Type) (R : rel T) => forall x : T, is_true (R x x)
+     : forall [T : Type] (_ : rel T), Prop
+
+Arguments reflexive [T]%_type_scope R
+total
+     : forall (T : Type) (_ : rel T), Prop
+total =
+fun (T : Type) (R : rel T) => forall x y : T, is_true (orb (R x y) (R y x))
+     : forall [T : Type] (_ : rel T), Prop
+
+Arguments total [T]%_type_scope R
+transitive
+     : forall (T : Type) (_ : rel T), Prop
+transitive =
+fun (T : Type) (R : rel T) =>
+forall (y x z : T) (_ : is_true (R x y)) (_ : is_true (R y z)),
+is_true (R x z)
+     : forall [T : Type] (_ : rel T), Prop
+
+Arguments transitive [T]%_type_scope R

@@ -15,15 +15,18 @@ Current Lean and Prosa v0.4 never override Prosa v0.6 semantics.
 
 ## Workspace layout
 
-- `Prosa/` contains accepted production Prosa v0.6 translations only.
+- `Prosa/` is the official current Prosa v0.6 Lean translation candidate tree.
+  It may contain declarations whose semantic-validation gate is still open.
 - `Validation/` contains planning snapshots, scripts, certificates, fixtures,
   imported artifacts, and raw logs.
 - `Reports/` contains human-readable current reports.
 
-The production tree starts empty. Historical Lean files, prototypes,
-validation fixtures, generated reports, and compatibility declarations must
-not be copied into `Prosa/`. A declaration enters production only through the
-approved v0.6 migration and validation workflow.
+Historical Lean files, prototypes, validation fixtures, generated reports,
+and compatibility declarations must not be copied into `Prosa/`. File
+existence is not acceptance. The authoritative acceptance and coverage state
+is recorded only in `Validation/planning/v06_pipeline/*status.json` and
+`*manifest.json`; only declarations marked `ACCEPTED_V06_TRANSLATION` there
+count as accepted production coverage.
 
 ## Planning baseline
 

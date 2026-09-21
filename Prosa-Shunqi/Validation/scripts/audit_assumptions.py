@@ -70,11 +70,15 @@ def main() -> int:
         )
         target = spec.get("target_imported_theorem")
         target_dependency = bool(target and any(n == target or n.endswith("." + target) for n in entries))
+        source = spec.get("source_theorem")
+        source_dependency = bool(source and any(n == source or n.endswith("." + source) for n in entries))
         semantic = sorted(token for token in spec.get("semantic_premise_tokens", []) if token in text)
         classified = set(foundation) | set(importer) | set(rocq_sprop_uip)
         unexpected = sorted(set(entries) - classified)
         if target_dependency:
             unexpected.append(f"target theorem dependency: {target}")
+        if source_dependency:
+            unexpected.append(f"source theorem dependency: {source}")
         if semantic:
             status = "CONDITIONAL"
         elif unexpected:
@@ -82,7 +86,7 @@ def main() -> int:
             failed = True
         elif foundation:
             status = "CERTIFIED_WITH_PROP_SPROP_FOUNDATION"
-        elif closed or importer:
+        elif closed or importer or rocq_sprop_uip:
             status = "CERTIFIED"
         else:
             status = "AUDIT_MISSING"
@@ -97,6 +101,7 @@ def main() -> int:
             "rocq_sprop_definitional_uip": rocq_sprop_uip,
             "unexpected": unexpected,
             "target_theorem_dependency": target_dependency,
+            "source_theorem_dependency": source_dependency,
             "raw_section_sha256": __import__("hashlib").sha256(text.encode()).hexdigest(),
         }
     args.output.parent.mkdir(parents=True, exist_ok=True)

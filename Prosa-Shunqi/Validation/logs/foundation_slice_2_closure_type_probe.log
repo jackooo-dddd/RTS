@@ -1,0 +1,457 @@
+*** [ Prosa_Util_Tactics_neqP@{u Lean.u+1.0} :
+forall (T : Type)
+  (inst____at___Prosa_Util_Tactics2181216676__hygCtx__hyg3 : 
+   ImportedTactics.DecidableEq T)
+  (x y : T),
+ImportedTactics.Iff
+  (Lean.eq
+     (Decidable_decide (ImportedTactics.Ne T x y)
+        (instDecidableNot (Lean.eq x y)
+           (inst____at___Prosa_Util_Tactics2181216676__hygCtx__hyg3 x y)))
+     ImportedTactics.Bool_true)
+  (ImportedTactics.Ne T x y) ]
+
+Arguments Prosa_Util_Tactics_neqP T%_type_scope
+  inst____at___Prosa_Util_Tactics2181216676__hygCtx__hyg3 
+  x y
+Record Iff@{} (a a0 : SProp) : SProp := Iff_intro
+  { mp : a -> a0;  mpr : a0 -> a } as default_proj_id.
+
+Iff has primitive projections with eta conversion.
+Arguments ImportedTactics.Iff (a a)%_type_scope
+Arguments ImportedTactics.Iff_intro (a a)%_type_scope
+  (mp mpr)%_function_scope
+ImportedTactics.Not@{} =
+fun a : SProp => a -> ImportedTactics.False
+     : SProp -> SProp
+
+Arguments ImportedTactics.Not a%_type_scope
+ImportedTactics.Ne@{u} =
+fun (_UU03b1_ : Type) (a b : _UU03b1_) => ImportedTactics.Not (Lean.eq a b)
+     : forall _UU03b1_ : Type, _UU03b1_ -> _UU03b1_ -> SProp
+
+Arguments ImportedTactics.Ne _UU03b1_%_type_scope 
+  a____at____internal__hyg0 a____at____internal__hyg0
+Prosa_Util_Rel_total_over_list@{u Lean.u+1.0 Lean.u+2.0} =
+fun (T : Type) (_ : ImportedRel.DecidableEq T)
+  (R : T -> T -> ImportedRel.Bool) (xs : ImportedRel.List T) =>
+forall x_UU2081_ x_UU2082_ : T,
+ImportedRel.Membership_mem T (ImportedRel.List T)
+  (ImportedRel.List_instMembership T) xs x_UU2081_ ->
+ImportedRel.Membership_mem T (ImportedRel.List T)
+  (ImportedRel.List_instMembership T) xs x_UU2082_ ->
+Lean.Or (Lean.eq (R x_UU2081_ x_UU2082_) ImportedRel.Bool_true)
+  (Lean.eq (R x_UU2082_ x_UU2081_) ImportedRel.Bool_true)
+     : forall T : Type,
+       ImportedRel.DecidableEq T ->
+       (T -> T -> ImportedRel.Bool) -> ImportedRel.List T -> SProp
+
+Arguments Prosa_Util_Rel_total_over_list T%_type_scope
+  inst____at___Prosa_Util_Rel1179086148__hygCtx__hyg3 
+  R%_function_scope xs
+Prosa_Util_Rel_antisymmetric_over_list@{u Lean.u+1.0 Lean.u+2.0} =
+fun (T : Type) (_ : ImportedRel.DecidableEq T)
+  (R : T -> T -> ImportedRel.Bool) (xs : ImportedRel.List T) =>
+forall x_UU2081_ x_UU2082_ : T,
+ImportedRel.Membership_mem T (ImportedRel.List T)
+  (ImportedRel.List_instMembership T) xs x_UU2081_ ->
+ImportedRel.Membership_mem T (ImportedRel.List T)
+  (ImportedRel.List_instMembership T) xs x_UU2082_ ->
+Lean.eq (R x_UU2081_ x_UU2082_) ImportedRel.Bool_true ->
+Lean.eq (R x_UU2082_ x_UU2081_) ImportedRel.Bool_true ->
+Lean.eq x_UU2081_ x_UU2082_
+     : forall T : Type,
+       ImportedRel.DecidableEq T ->
+       (T -> T -> ImportedRel.Bool) -> ImportedRel.List T -> SProp
+
+Arguments Prosa_Util_Rel_antisymmetric_over_list T%_type_scope
+  inst____at___Prosa_Util_Rel1179086148__hygCtx__hyg3 
+  R%_function_scope xs
+Record
+Prosa_Util_Seqset_set@{u Lean.u+1.0 Lean.u+2.0} (T : Type)
+(inst____at___Prosa_Util_Seqset3301436155__hygCtx__hyg3 : 
+ ImportedSeqset.DecidableEq T) : Type := Prosa_Util_Seqset_set_mk
+  { val : ImportedSeqset.List T;  nodup : List_Nodup T val } as default_proj_id.
+
+Prosa_Util_Seqset_set has primitive projections with eta conversion.
+Arguments Prosa_Util_Seqset_set T%_type_scope
+  inst____at___Prosa_Util_Seqset3301436155__hygCtx__hyg3
+Arguments Prosa_Util_Seqset_set_mk T%_type_scope
+  inst____at___Prosa_Util_Seqset3301436155__hygCtx__hyg3 
+  val nodup
+Prosa_Util_Seqset_set_of@{u Lean.u+1.0 Lean.u+2.0} =
+fun (T : Type)
+  (inst____at___Prosa_Util_Seqset3408513127__hygCtx__hyg3 : 
+   ImportedSeqset.DecidableEq T) =>
+Prosa_Util_Seqset_set T
+  inst____at___Prosa_Util_Seqset3408513127__hygCtx__hyg3
+     : forall T : Type, ImportedSeqset.DecidableEq T -> Type
+
+Arguments Prosa_Util_Seqset_set_of T%_type_scope
+  inst____at___Prosa_Util_Seqset3301436155__hygCtx__hyg3
+*** [ Prosa_Util_Seqset_set_uniq@{u Lean.u+1.0 Lean.u+2.0} :
+forall (T : Type)
+  (inst____at___Prosa_Util_Seqset19207430__hygCtx__hyg3 : 
+   ImportedSeqset.DecidableEq T)
+  (s : Prosa_Util_Seqset_set T
+         inst____at___Prosa_Util_Seqset19207430__hygCtx__hyg3),
+List_Nodup T
+  (Prosa_Util_Seqset_set_val T
+     inst____at___Prosa_Util_Seqset19207430__hygCtx__hyg3 s) ]
+
+Arguments Prosa_Util_Seqset_set_uniq T%_type_scope
+  inst____at___Prosa_Util_Seqset19207430__hygCtx__hyg3 
+  s
+List_Nodup@{u Lean.u+1.0 Lean.u+2.0} =
+fun _UU03b1_ : Type =>
+List_Pairwise _UU03b1_
+  (fun
+     x1____at___Init_Data_List_Basic3805720009__hygCtx__hyg12
+      x2____at___Init_Data_List_Basic3805720009__hygCtx__hyg12 : _UU03b1_ =>
+   ImportedSeqset.Ne _UU03b1_
+     x1____at___Init_Data_List_Basic3805720009__hygCtx__hyg12
+     x2____at___Init_Data_List_Basic3805720009__hygCtx__hyg12)
+     : forall _UU03b1_ : Type, ImportedSeqset.List _UU03b1_ -> SProp
+
+Arguments List_Nodup _UU03b1_%_type_scope a____at____internal__hyg0
+List_Pairwise_nil
+     : forall (_UU03b1_ : Type) (R : _UU03b1_ -> _UU03b1_ -> SProp),
+       List_Pairwise _UU03b1_ R (ImportedSeqset.List_nil _UU03b1_)
+List_Pairwise_cons
+     : forall (_UU03b1_ : Type) (R : _UU03b1_ -> _UU03b1_ -> SProp)
+         (a : _UU03b1_) (l : ImportedSeqset.List _UU03b1_),
+       (forall a' : _UU03b1_,
+        ImportedSeqset.Membership_mem _UU03b1_ (ImportedSeqset.List _UU03b1_)
+          (ImportedSeqset.List_instMembership _UU03b1_) l a' ->
+        R a a') ->
+       List_Pairwise _UU03b1_ R l ->
+       List_Pairwise _UU03b1_ R (ImportedSeqset.List_cons _UU03b1_ a l)
+ImportedSeqset.DecidableEq@{u} =
+fun _UU03b1_ : Type =>
+forall a b : _UU03b1_, ImportedSeqset.Decidable (Lean.eq a b)
+     : Type -> Type
+
+Arguments ImportedSeqset.DecidableEq _UU03b1_%_type_scope
+Variant Decidable@{} (p : SProp) : Type :=
+    Decidable_isFalse : ImportedSeqset.Not p -> ImportedSeqset.Decidable p
+  | Decidable_isTrue : p -> ImportedSeqset.Decidable p.
+
+Arguments ImportedSeqset.Decidable p%_type_scope
+Arguments ImportedSeqset.Decidable_isFalse p%_type_scope h
+Arguments ImportedSeqset.Decidable_isTrue p%_type_scope h
+Prosa_Util_Subadditivity_subadditive_at@{} =
+fun (f : Lean.Nat -> Lean.Nat) (h : Lean.Nat) =>
+forall a b : Lean.Nat,
+Lean.eq
+  (HAdd_hAdd_inst7 Lean.Nat Lean.Nat Lean.Nat
+     (instHAdd_inst1 Lean.Nat instAddNat) a b)
+  h ->
+LE_le_inst1 Lean.Nat instLENat (f h)
+  (HAdd_hAdd_inst7 Lean.Nat Lean.Nat Lean.Nat
+     (instHAdd_inst1 Lean.Nat instAddNat) (f a) (f b))
+     : (Lean.Nat -> Lean.Nat) -> Lean.Nat -> SProp
+
+Arguments Prosa_Util_Subadditivity_subadditive_at 
+  f%_function_scope a____at____internal__hyg0%_Nat_scope
+Prosa_Util_Subadditivity_subadditive_until@{} =
+fun (f : Lean.Nat -> Lean.Nat) (h : Lean.Nat) =>
+forall x : Lean.Nat,
+LT_lt_inst1 Lean.Nat instLTNat x h ->
+Prosa_Util_Subadditivity_subadditive_at f x
+     : (Lean.Nat -> Lean.Nat) -> Lean.Nat -> SProp
+
+Arguments Prosa_Util_Subadditivity_subadditive_until 
+  f%_function_scope a____at____internal__hyg0%_Nat_scope
+Prosa_Util_Subadditivity_subadditive@{} =
+fun f : Lean.Nat -> Lean.Nat =>
+forall h : Lean.Nat, Prosa_Util_Subadditivity_subadditive_at f h
+     : (Lean.Nat -> Lean.Nat) -> SProp
+
+Arguments Prosa_Util_Subadditivity_subadditive f%_function_scope
+Prosa_Util_Subadditivity_subadditive_standard@{} =
+fun f : Lean.Nat -> Lean.Nat =>
+forall a b : Lean.Nat,
+LE_le_inst1 Lean.Nat instLENat
+  (f
+     (HAdd_hAdd_inst7 Lean.Nat Lean.Nat Lean.Nat
+        (instHAdd_inst1 Lean.Nat instAddNat) a b))
+  (HAdd_hAdd_inst7 Lean.Nat Lean.Nat Lean.Nat
+     (instHAdd_inst1 Lean.Nat instAddNat) (f a) (f b))
+     : (Lean.Nat -> Lean.Nat) -> SProp
+
+Arguments Prosa_Util_Subadditivity_subadditive_standard f%_function_scope
+*** [ Prosa_Util_Subadditivity_subadditive_standard_equivalence@{} :
+forall f : Lean.Nat -> Lean.Nat,
+Iff (Prosa_Util_Subadditivity_subadditive f)
+  (Prosa_Util_Subadditivity_subadditive_standard f) ]
+
+Arguments Prosa_Util_Subadditivity_subadditive_standard_equivalence
+  f%_function_scope
+*** [ Prosa_Util_Subadditivity_subadditive_leq_mul@{} :
+forall f : Lean.Nat -> Lean.Nat,
+Prosa_Util_Subadditivity_subadditive f ->
+forall n m : Lean.Nat,
+LT_lt_inst1 Lean.Nat instLTNat
+  (OfNat_ofNat_inst1 Lean.Nat Lean.Nat_zero (instOfNatNat Lean.Nat_zero)) m ->
+LE_le_inst1 Lean.Nat instLENat
+  (f
+     (HMul_hMul_inst7 Lean.Nat Lean.Nat Lean.Nat
+        (instHMul_inst1 Lean.Nat instMulNat) m n))
+  (HMul_hMul_inst7 Lean.Nat Lean.Nat Lean.Nat
+     (instHMul_inst1 Lean.Nat instMulNat) m (f n)) ]
+
+Arguments Prosa_Util_Subadditivity_subadditive_leq_mul 
+  f%_function_scope h_subadditive (n m)%_Nat_scope 
+  a____at____internal__hyg0
+Nat_lt@{} =
+fun n m : Lean.Nat => Lean.Nat_le (Lean.Nat_succ n) m
+     : Lean.Nat -> Lean.Nat -> SProp
+
+Arguments Nat_lt (n a____at____internal__hyg0)%_Nat_scope
+instAddNat@{} = Add_mk_inst1 Lean.Nat Lean.Nat_add
+     : Add_inst1 Lean.Nat
+instMulNat@{} = Mul_mk_inst1 Lean.Nat Lean.Nat_mul
+     : Mul_inst1 Lean.Nat
+instLENat@{} = LE_mk_inst1 Lean.Nat Lean.Nat_le
+     : LE_inst1 Lean.Nat
+instLTNat@{} = LT_mk_inst1 Lean.Nat Nat_lt
+     : LT_inst1 Lean.Nat
+HAdd_hAdd_inst7@{} =
+fun (_UU03b1_ _UU03b2_ : Type)
+  (_UU03b3_ : ImportedSubadditivity.outParam Type)
+  (self : HAdd_inst7 _UU03b1_ _UU03b2_ _UU03b3_) =>
+hAdd0 _ _ _ self
+     : forall (_UU03b1_ _UU03b2_ : Type)
+         (_UU03b3_ : ImportedSubadditivity.outParam Type),
+       HAdd_inst7 _UU03b1_ _UU03b2_ _UU03b3_ ->
+       _UU03b1_ -> _UU03b2_ -> _UU03b3_
+
+Arguments HAdd_hAdd_inst7 (_UU03b1_ _UU03b2_)%_type_scope 
+  _UU03b3_ self a____at____internal__hyg0 a____at____internal__hyg0
+HMul_hMul_inst7@{} =
+fun (_UU03b1_ _UU03b2_ : Type)
+  (_UU03b3_ : ImportedSubadditivity.outParam Type)
+  (self : HMul_inst7 _UU03b1_ _UU03b2_ _UU03b3_) =>
+hMul0 _ _ _ self
+     : forall (_UU03b1_ _UU03b2_ : Type)
+         (_UU03b3_ : ImportedSubadditivity.outParam Type),
+       HMul_inst7 _UU03b1_ _UU03b2_ _UU03b3_ ->
+       _UU03b1_ -> _UU03b2_ -> _UU03b3_
+
+Arguments HMul_hMul_inst7 (_UU03b1_ _UU03b2_)%_type_scope 
+  _UU03b3_ self a____at____internal__hyg0 a____at____internal__hyg0
+LE_le_inst1@{} =
+fun (_UU03b1_ : Type) (self : LE_inst1 _UU03b1_) => le0 _ self
+     : forall _UU03b1_ : Type,
+       LE_inst1 _UU03b1_ -> _UU03b1_ -> _UU03b1_ -> SProp
+
+Arguments LE_le_inst1 _UU03b1_%_type_scope self a____at____internal__hyg0
+  a____at____internal__hyg0
+LT_lt_inst1@{} =
+fun (_UU03b1_ : Type) (self : LT_inst1 _UU03b1_) => lt0 _ self
+     : forall _UU03b1_ : Type,
+       LT_inst1 _UU03b1_ -> _UU03b1_ -> _UU03b1_ -> SProp
+
+Arguments LT_lt_inst1 _UU03b1_%_type_scope self a____at____internal__hyg0
+  a____at____internal__hyg0
+Nat_add__f@{} =
+fun (x____at___Init_Prelude2314059840__hygCtx__hyg14 : Lean.Nat)
+  (f : Nat_below (fun _ : Lean.Nat => Lean.Nat -> Lean.Nat)
+         x____at___Init_Prelude2314059840__hygCtx__hyg14)
+  (x____at___Init_Prelude2314059840__hygCtx__hyg13 : Lean.Nat) =>
+Nat_add_match_1
+  (fun
+     _
+      x____at___Init_Prelude2314059840__hygCtx14_Init_Prelude2314059840__hygCtx__hyg35 : Lean.Nat =>
+   Nat_below (fun _ : Lean.Nat => Lean.Nat -> Lean.Nat)
+     x____at___Init_Prelude2314059840__hygCtx14_Init_Prelude2314059840__hygCtx__hyg35 ->
+   Lean.Nat)
+  x____at___Init_Prelude2314059840__hygCtx__hyg13
+  x____at___Init_Prelude2314059840__hygCtx__hyg14
+  (fun (a : Lean.Nat)
+     (_ : Nat_below (fun _ : Lean.Nat => Lean.Nat -> Lean.Nat) Lean.Nat_zero) =>
+   a)
+  (fun (a b : Lean.Nat)
+     (x____at___Init_Prelude2314059840__hygCtx__hyg65 : 
+      Nat_below (fun _ : Lean.Nat => Lean.Nat -> Lean.Nat) 
+        (Lean.Nat_succ b)) =>
+   Lean.Nat_succ
+     (ImportedSubadditivity.fst _ _
+        x____at___Init_Prelude2314059840__hygCtx__hyg65 a))
+  f
+     : forall x____at___Init_Prelude2314059840__hygCtx__hyg14 : Lean.Nat,
+       Nat_below (fun _ : Lean.Nat => Lean.Nat -> Lean.Nat)
+         x____at___Init_Prelude2314059840__hygCtx__hyg14 ->
+       Lean.Nat -> Lean.Nat
+
+Arguments Nat_add__f
+  x____at___Init_Prelude2314059840__hygCtx__hyg14%_Nat_scope 
+  f n%_Nat_scope
+Nat_mul__f@{} =
+fun (x____at___Init_Prelude2075127268__hygCtx__hyg14 : Lean.Nat)
+  (f : Nat_below (fun _ : Lean.Nat => Lean.Nat -> Lean.Nat)
+         x____at___Init_Prelude2075127268__hygCtx__hyg14)
+  (x____at___Init_Prelude2075127268__hygCtx__hyg13 : Lean.Nat) =>
+Nat_mul_match_1
+  (fun
+     _
+      x____at___Init_Prelude2314059840__hygCtx14_Init_Prelude2314059840__hygCtx__hyg35 : Lean.Nat =>
+   Nat_below (fun _ : Lean.Nat => Lean.Nat -> Lean.Nat)
+     x____at___Init_Prelude2314059840__hygCtx14_Init_Prelude2314059840__hygCtx__hyg35 ->
+   Lean.Nat)
+  x____at___Init_Prelude2075127268__hygCtx__hyg13
+  x____at___Init_Prelude2075127268__hygCtx__hyg14
+  (fun (_ : Lean.Nat)
+     (_ : Nat_below (fun _ : Lean.Nat => Lean.Nat -> Lean.Nat)
+            (OfNat_ofNat_inst1 Lean.Nat Lean.Nat_zero
+               (instOfNatNat Lean.Nat_zero))) =>
+   OfNat_ofNat_inst1 Lean.Nat Lean.Nat_zero (instOfNatNat Lean.Nat_zero))
+  (fun (a b : Lean.Nat)
+     (x____at___Init_Prelude2075127268__hygCtx__hyg67 : 
+      Nat_below (fun _ : Lean.Nat => Lean.Nat -> Lean.Nat) 
+        (Lean.Nat_succ b)) =>
+   Lean.Nat_add
+     (ImportedSubadditivity.fst _ _
+        x____at___Init_Prelude2075127268__hygCtx__hyg67 a)
+     a)
+  f
+     : forall x____at___Init_Prelude2314059840__hygCtx__hyg14 : Lean.Nat,
+       Nat_below (fun _ : Lean.Nat => Lean.Nat -> Lean.Nat)
+         x____at___Init_Prelude2314059840__hygCtx__hyg14 ->
+       Lean.Nat -> Lean.Nat
+
+Arguments Nat_mul__f
+  x____at___Init_Prelude2314059840__hygCtx__hyg14%_Nat_scope 
+  f n%_Nat_scope
+Inductive Nat@{} : Set :=
+    Nat_zero : Lean.Nat | Nat_succ : Lean.Nat -> Lean.Nat.
+Lean.Nat_add@{} =
+fix Nat_add (n m : Lean.Nat) {struct m} : Lean.Nat :=
+  match m with
+  | Lean.Nat_zero => n
+  | Lean.Nat_succ p => Lean.Nat_succ (Nat_add n p)
+  end
+     : Lean.Nat -> Lean.Nat -> Lean.Nat
+
+Arguments Lean.Nat_add (n m)%_Nat_scope
+Lean.Nat_mul@{} =
+fix Nat_mul (n m : Lean.Nat) {struct m} : Lean.Nat :=
+  match m with
+  | Lean.Nat_zero => Lean.Nat_zero
+  | Lean.Nat_succ p => Lean.Nat_add (Nat_mul n p) n
+  end
+     : Lean.Nat -> Lean.Nat -> Lean.Nat
+
+Arguments Lean.Nat_mul (n m)%_Nat_scope
+Inductive Nat_le@{} (n : Lean.Nat) : Lean.Nat -> SProp :=
+    Nat_le_refl : Lean.Nat_le n n
+  | Nat_le_step : forall m : Lean.Nat,
+                  Lean.Nat_le n m -> Lean.Nat_le n (Lean.Nat_succ m).
+
+Arguments Lean.Nat_le (n _)%_Nat_scope
+Arguments Lean.Nat_le_refl n%_Nat_scope
+Arguments Lean.Nat_le_step (n m)%_Nat_scope _
+Lean.Nat_le_refl
+     : forall n : Lean.Nat, Lean.Nat_le n n
+Lean.Nat_le_step
+     : forall n m : Lean.Nat,
+       Lean.Nat_le n m -> Lean.Nat_le n (Lean.Nat_succ m)
+*** [ Prosa_Util_Supremum_supremum_unfold@{u Lean.u+1.0 Lean.u+2.0} :
+forall T : Type,
+DecidableEq T ->
+forall (R : T -> T -> Bool) (head : T) (tail : List T),
+Lean.eq (Prosa_Util_Supremum_supremum T R (List_cons T head tail))
+  (Prosa_Util_Supremum_choose_superior T R head
+     (Prosa_Util_Supremum_supremum T R tail)) ]
+
+Arguments Prosa_Util_Supremum_supremum_unfold T%_type_scope
+  inst____at___Prosa_Util_Supremum603302978__hygCtx__hyg3 
+  R%_function_scope head tail
+*** [ Prosa_Util_Supremum_supremum_exists@{u Lean.u+1.0 Lean.u+2.0} :
+forall T : Type,
+DecidableEq T ->
+forall (R : T -> T -> Bool) (x : T) (s : List T),
+Membership_mem T (List T) (List_instMembership T) s x ->
+Ne (Option T) (Prosa_Util_Supremum_supremum T R s) (Option_none T) ]
+
+Arguments Prosa_Util_Supremum_supremum_exists T%_type_scope
+  inst____at___Prosa_Util_Supremum1932700271__hygCtx__hyg3 
+  R%_function_scope x s a____at____internal__hyg0 
+  a____at____internal__hyg0
+*** [ Prosa_Util_Supremum_supremum_none@{u Lean.u+1.0 Lean.u+2.0} :
+forall T : Type,
+DecidableEq T ->
+forall (R : T -> T -> Bool) (s : List T),
+Lean.eq (Prosa_Util_Supremum_supremum T R s) (Option_none T) ->
+Lean.eq s (List_nil T) ]
+
+Arguments Prosa_Util_Supremum_supremum_none T%_type_scope
+  inst____at___Prosa_Util_Supremum765638176__hygCtx__hyg3 
+  R%_function_scope s a____at____internal__hyg0
+*** [ Prosa_Util_Supremum_supremum_in@{u Lean.u+1.0 Lean.u+2.0} :
+forall T : Type,
+DecidableEq T ->
+forall (R : T -> T -> Bool) (x : T) (s : List T),
+Lean.eq (Prosa_Util_Supremum_supremum T R s) (Option_some T x) ->
+Membership_mem T (List T) (List_instMembership T) s x ]
+
+Arguments Prosa_Util_Supremum_supremum_in T%_type_scope
+  inst____at___Prosa_Util_Supremum1260313952__hygCtx__hyg3 
+  R%_function_scope x s a____at____internal__hyg0
+*** [ Prosa_Util_Supremum_supremum_spec@{u Lean.u+1.0 Lean.u+2.0} :
+forall T : Type,
+DecidableEq T ->
+forall R : T -> T -> Bool,
+(forall x : T, Lean.eq (R x x) Bool_true) ->
+(forall x y : T, Lean.eq (Bool_or (R x y) (R y x)) Bool_true) ->
+(forall x y z : T,
+ Lean.eq (R x y) Bool_true ->
+ Lean.eq (R y z) Bool_true -> Lean.eq (R x z) Bool_true) ->
+forall (x : T) (s : List T),
+Lean.eq (Prosa_Util_Supremum_supremum T R s) (Option_some T x) ->
+forall y : T,
+Membership_mem T (List T) (List_instMembership T) s y ->
+Lean.eq (R x y) Bool_true ]
+
+Arguments Prosa_Util_Supremum_supremum_spec T%_type_scope
+  inst____at___Prosa_Util_Supremum4138556652__hygCtx__hyg3
+  (R hRefl hTotal hTrans)%_function_scope x s a____at____internal__hyg0 
+  y a____at____internal__hyg0
+Inductive
+List_Mem@{u Lean.u+1.0} (_UU03b1_ : Type) (a : _UU03b1_)
+  : List _UU03b1_ -> SProp :=
+    List_Mem_head : forall as : List _UU03b1_,
+                    List_Mem _UU03b1_ a (List_cons _UU03b1_ a as)
+  | List_Mem_tail : forall (b : _UU03b1_) (as : List _UU03b1_),
+                    List_Mem _UU03b1_ a as ->
+                    List_Mem _UU03b1_ a (List_cons _UU03b1_ b as).
+
+Arguments List_Mem _UU03b1_%_type_scope a a____at____internal__hyg0
+Arguments List_Mem_head _UU03b1_%_type_scope a as
+Arguments List_Mem_tail _UU03b1_%_type_scope a b as a____at____internal__hyg0
+List_Mem_head
+     : forall (_UU03b1_ : Type) (a : _UU03b1_) (as : List _UU03b1_),
+       List_Mem _UU03b1_ a (List_cons _UU03b1_ a as)
+List_Mem_tail
+     : forall (_UU03b1_ : Type) (a b : _UU03b1_) (as : List _UU03b1_),
+       List_Mem _UU03b1_ a as ->
+       List_Mem _UU03b1_ a (List_cons _UU03b1_ b as)
+Bool_or@{} =
+fun x y : Bool =>
+cond_match_1 (fun _ : Bool => Bool) x (fun _ : Unit => Bool_true)
+  (fun _ : Unit => y)
+     : Bool -> Bool -> Bool
+
+Arguments Bool_or x y
+Ne@{u} =
+fun (_UU03b1_ : Type) (a b : _UU03b1_) => Not (Lean.eq a b)
+     : forall _UU03b1_ : Type, _UU03b1_ -> _UU03b1_ -> SProp
+
+Arguments Ne _UU03b1_%_type_scope a____at____internal__hyg0
+  a____at____internal__hyg0
+Variant False@{} : SProp :=  .
+DecidableEq@{u} =
+fun _UU03b1_ : Type => forall a b : _UU03b1_, Decidable (Lean.eq a b)
+     : Type -> Type
+
+Arguments DecidableEq _UU03b1_%_type_scope
