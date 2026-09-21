@@ -183,6 +183,38 @@ description: 在 Prosa-Shunqi 中将固定 Prosa v0.6 的 Rocq/MathComp/SSReflec
 
 对 theorem，不能以“源 theorem 和目标 theorem 各自是真的”代替翻译验证。完整类型 guards 与 correspondence proof 分开；记录允许的 binder 重排、表示变换和覆盖范围。
 
+### Correspondence 依赖图与复用
+
+把 semantic correspondence 当作独立于 Lean proof graph 的依赖 DAG：
+
+```text
+primitive/type bridges
+        ↓
+operation/function correspondences
+        ↓
+helper correspondences
+        ↓
+target theorem-statement correspondence
+```
+
+开始新证书前，先从现有 certificate、validation database 和 imported
+operation interface 中枚举并查找其类型、函数、谓词和辅助运算依赖。
+已认证的 correspondence 必须直接组合复用；不要在目标证书内再次展开并
+重证。缺失项先提取成最小、具名、可独立编译和审计的 operation-level
+certificate，再供当前与后续目标使用。只有技术上无法抽取时，才保留有
+说明的局部证明。
+
+目标是证明 official Rocq statement 与 actual imported Lean statement 在
+批准的表示关系下对应，而不是重演任一侧 proof。目标 correspondence 不得
+直接或间接使用 source theorem constant 或 imported target theorem constant
+来自证；也不得因两边 theorem 各自可证就宣称 translation correctness。
+
+逐目标报告至少列出：`REUSED_CERTIFIED_DEPENDENCIES`、
+`NEW_CORRESPONDENCE_CERTIFICATES`、`UNRESOLVED_OR_ASSUMED_DEPENDENCIES`，以及
+source/target self-dependency 两项布尔审计。严格区分已认证 correspondence、
+statement-only imported dependency、显式 semantic premise 与未验证假设；
+只有第一类可作为已完成的可复用语义依赖。
+
 **区分 related-input 参数与缺口假设**：`ListRel xsR xsL`、`SubNatFunRel fR fL` 是逻辑关系的输入条件；它们不是自动作弊，也不是不存在。记录为 `input_relations`，说明构造/覆盖。尚未证明的目标操作对应、或直接假设当前结论，是额外 semantic premise，必须标 `CONDITIONAL` 或拒绝。
 
 `CERTIFIED_WITH_PROP_SPROP_FOUNDATION`、importer equality/UIP、statement-only dependencies、源码提取边界分别记录。`Print Assumptions` 不会自动审计所有局部前提，也不能仅凭其不出现一个已证明的常量就断言没有该依赖；复核完整 certificate type 和实际依赖闭包。

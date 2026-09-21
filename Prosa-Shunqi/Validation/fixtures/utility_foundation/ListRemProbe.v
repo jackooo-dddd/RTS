@@ -1,0 +1,54 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedListLast.
+
+Check ImportedListLast.List.
+Check ImportedListLast.List_nil.
+Check ImportedListLast.List_cons.
+Check ImportedListLast.List_Mem.
+Check ImportedListLast.List_Mem_head.
+Check ImportedListLast.List_Mem_tail.
+Check ImportedListLast.Iff.
+Check ImportedListLast.Iff_intro.
+Check ImportedListLast.Iff_mp.
+Check ImportedListLast.Iff_mpr.
+Check ImportedListLast.List_instMembership.
+Check ImportedListLast.Membership_mem.
+Check ImportedListLast.DecidableEq.
+Check ImportedListLast.Decidable_isTrue.
+Check ImportedListLast.Decidable_isFalse.
+Print ImportedListLast.Decidable.
+Check ImportedListLast.Decidable_decide.
+Print ImportedListLast.Decidable_decide.
+Check ImportedListLast.instBEqOfDecidableEq.
+Check ImportedListLast.List_erase.
+Check ImportedListLast.List_eraseDups.
+Check ImportedListLast.List_instDecidableMemOfLawfulBEq.
+Check ImportedListLast.instLawfulBEq.
+Check ImportedListLast.List_filter.
+Check ImportedListLast.List_length.
+Check ImportedListLast.Prosa_Validation_ListLastInterface_generic_erase_nil.
+Check ImportedListLast.Prosa_Validation_ListLastInterface_generic_erase_cons.
+Check ImportedListLast.Prosa_Validation_ListLastInterface_generic_filter_nil.
+Check ImportedListLast.Prosa_Validation_ListLastInterface_generic_filter_cons.
+Check ImportedListLast.Prosa_Validation_ListLastInterface_generic_length_nil.
+Check ImportedListLast.Prosa_Validation_ListLastInterface_generic_length_cons.
+Check ImportedListLast.Prosa_Validation_ListLastInterface_generic_mem_eraseDups.
+Check ImportedListLast.Option.
+Check ImportedListLast.Option_none.
+Check ImportedListLast.Option_some.
+Check ImportedListLast.instDecidableEqList.
+Check ImportedListLast.Option_instDecidableEq.
+Check ImportedListLast.Prosa_Util_List_seq1_some.
+Check ImportedListLast.Prosa_Util_List_seq_elim_last.
+Check ImportedListLast.Prosa_Util_List_in_cat.
+Check ImportedListLast.Exists.
+Check ImportedListLast.Exists_intro.
+Check Lean.And.
+Check Lean.And_intro.
+Check ImportedListLast.List_append.
+Check ImportedListLast.HAppend_hAppend.
+Check ImportedListLast.instHAppendOfAppend.
+Check ImportedListLast.List_instAppend.
+Print ImportedListLast.Prosa_Validation_ListLastInterface_filter_cons_match_1.
+Print ImportedListLast.Prosa_Validation_ListLastInterface_generic_erase_cons.
+Print Assumptions ImportedListLast.Prosa_Validation_ListLastInterface_generic_mem_eraseDups.

@@ -82,4 +82,262 @@ theorem last0_filter (x : Nat) (xs : List Nat) (P : Nat → Bool)
   rw [last0_cat _ [x] (by simp)]
   simp [last0, List.getLastD]
 
+/-- `max0` exposes the maximum of the head and the tail maximum. -/
+theorem max0_cons (x : Nat) (xs : List Nat) :
+    max0 (x :: xs) = Nat.max x (max0 xs) := by
+  unfold max0
+  simp only [List.foldl_cons, Nat.zero_max]
+  induction xs generalizing x with
+  | nil => simp
+  | cons a tl ih =>
+    simp only [List.foldl_cons, Nat.zero_max]
+    rw [ih (Nat.max x a), ih a]
+    exact Nat.max_assoc x a (tl.foldl Nat.max 0)
+
+/-- A non-empty uniform list has the common value as its `max0`. -/
+theorem max0_of_uniform_set (k : Nat) (xs : List Nat)
+    (h1 : xs.length > 0) (h2 : ∀ x, x ∈ xs → x = k) :
+    max0 xs = k := by
+  induction xs with
+  | nil => simp at h1
+  | cons a xs ih =>
+    have ha : a = k := h2 a List.mem_cons_self
+    cases xs with
+    | nil => simp [max0, List.foldl, ha]
+    | cons b xs =>
+      rw [max0_cons, ih]
+      · subst a
+        simp [Nat.max_self]
+      · simp
+      · intro x hx
+        exact h2 x (List.mem_cons_of_mem a hx)
+
+/-- Every member is bounded by `max0`. -/
+theorem in_max0_le (xs : List Nat) (x : Nat) (h : x ∈ xs) :
+    x ≤ max0 xs := by
+  induction xs with
+  | nil => simp at h
+  | cons a xs ih =>
+    rw [max0_cons]
+    rcases List.mem_cons.mp h with rfl | hin
+    · exact Nat.le_max_left x (max0 xs)
+    · exact Nat.le_trans (ih hin) (Nat.le_max_right a (max0 xs))
+
+/-- The maximum of a non-empty list occurs in that list. -/
+theorem max0_in_seq (xs : List Nat) (h : xs ≠ []) :
+    max0 xs ∈ xs := by
+  induction xs with
+  | nil => contradiction
+  | cons a xs ih =>
+    cases xs with
+    | nil => simp [max0, List.foldl]
+    | cons b xs =>
+      rw [max0_cons]
+      rcases Nat.le_total a (max0 (b :: xs)) with hle | hle
+      · simp only [Nat.max_eq_right hle]
+        exact List.mem_cons_of_mem a (ih (List.cons_ne_nil b xs))
+      · simp only [Nat.max_eq_left hle]
+        exact List.mem_cons_self
+
+/-- Duplicating the head does not change `max0`. -/
+theorem max0_2cons_eq (x : Nat) (xs : List Nat) :
+    max0 (x :: x :: xs) = max0 (x :: xs) := by
+  rw [max0_cons x (x :: xs), max0_cons x xs]
+  exact (Nat.max_assoc x x (max0 xs)).symm.trans (by
+    rw [Nat.max_self])
+
+/-- A head dominated by the next element can be removed for `max0`. -/
+theorem max0_2cons_le (x1 x2 : Nat) (xs : List Nat) (h : x1 ≤ x2) :
+    max0 (x1 :: x2 :: xs) = max0 (x2 :: xs) := by
+  rw [max0_cons]
+  exact Nat.max_eq_right
+    (Nat.le_trans h (in_max0_le _ x2 List.mem_cons_self))
+
+/-- Removing zero entries preserves `max0`. -/
+theorem max0_rem0 (xs : List Nat) :
+    max0 (xs.filter (fun x => decide (0 < x))) = max0 xs := by
+  induction xs with
+  | nil => rfl
+  | cons a xs ih =>
+    simp only [List.filter_cons]
+    cases a with
+    | zero =>
+      simp only [Nat.not_lt_zero, decide_false, Bool.false_eq_true, if_false]
+      rw [max0_cons]
+      simp only [Nat.zero_max]
+      exact ih
+    | succ n =>
+      simp only [Nat.succ_pos, decide_true, if_true]
+      rw [max0_cons, max0_cons, ih]
+
+/-- The last element is bounded by the maximum element. -/
+theorem last_of_seq_le_max_of_seq (xs : List Nat) :
+    last0 xs ≤ max0 xs := by
+  cases xs with
+  | nil => simp [last0, max0, List.getLastD, List.foldl]
+  | cons x xs =>
+    induction xs generalizing x with
+    | nil => simp [last0, max0, List.getLastD, List.foldl]
+    | cons y ys ih =>
+      rw [last0_cons x (y :: ys) (List.cons_ne_nil y ys), max0_cons]
+      exact Nat.le_trans (ih y) (Nat.le_max_right x (max0 (y :: ys)))
+
+/-- Pointwise domination under defaulted indexing implies `max0` domination. -/
+theorem max_of_dominating_seq (xs ys : List Nat)
+    (h : ∀ n, xs.getD n 0 ≤ ys.getD n 0) :
+    max0 xs ≤ max0 ys := by
+  suffices key : ∀ (len : Nat) (xs ys : List Nat),
+      xs.length ≤ len → ys.length ≤ len →
+      (∀ n, xs.getD n 0 ≤ ys.getD n 0) → max0 xs ≤ max0 ys by
+    exact key (max xs.length ys.length) xs ys
+      (Nat.le_max_left ..) (Nat.le_max_right ..) h
+  intro len
+  induction len with
+  | zero =>
+    intro xs ys hxs hys hdom
+    cases xs with
+    | nil => simp [max0, List.foldl]
+    | cons _ _ => simp at hxs
+  | succ n ihn =>
+    intro xs ys hxs hys hdom
+    cases xs with
+    | nil => simp [max0, List.foldl]
+    | cons a xs =>
+      cases ys with
+      | nil =>
+        have ha := hdom 0
+        simp [List.getD] at ha
+        have htl : ∀ m, xs.getD m 0 ≤ ([] : List Nat).getD m 0 := by
+          intro m
+          have hm := hdom (m + 1)
+          simp [List.getD] at hm ⊢
+          exact hm
+        have hxzero : max0 xs = 0 := by
+          apply Nat.le_zero.mp
+          have hxs' : xs.length ≤ n := by
+            simpa only [List.length_cons, Nat.add_one,
+              Nat.succ_le_succ_iff] using hxs
+          apply ihn xs [] hxs' (by simp)
+          exact htl
+        rw [max0_cons, hxzero, ha]
+        exact Nat.le_refl _
+      | cons b ys =>
+        rw [max0_cons, max0_cons]
+        have ha := hdom 0
+        simp [List.getD] at ha
+        have htl : ∀ m, xs.getD m 0 ≤ ys.getD m 0 := by
+          intro m
+          have hm := hdom (m + 1)
+          simp [List.getD] at hm ⊢
+          exact hm
+        have hxs' : xs.length ≤ n := by
+          simpa only [List.length_cons, Nat.add_one,
+            Nat.succ_le_succ_iff] using hxs
+        have hys' : ys.length ≤ n := by
+          simpa only [List.length_cons, Nat.add_one,
+            Nat.succ_le_succ_iff] using hys
+        apply Nat.max_le.mpr
+        constructor
+        · exact Nat.le_trans ha (Nat.le_max_left b (max0 ys))
+        · exact Nat.le_trans (ihn xs ys hxs' hys' htl)
+            (Nat.le_max_right b (max0 ys))
+
+/-- Positive-index defaulted lookup on a cons list moves to the predecessor
+    index in the tail. -/
+theorem nth0_cons (x : Nat) (xs : List Nat) (n : Nat) (h : n > 0) :
+    (x :: xs).getD n 0 = xs.getD (n - 1) 0 := by
+  cases n with
+  | zero => simp at h
+  | succ n => simp [List.getD_cons_succ]
+
+/-- Membership after erasing one occurrence implies original membership. -/
+theorem rem_in {T : Type _} [DecidableEq T] (x y : T) (xs : List T)
+    (h : x ∈ xs.erase y) : x ∈ xs := by
+  exact List.mem_of_mem_erase h
+
+/-- An element distinct from the erased value remains present. -/
+theorem in_neq_impl_rem_in {T : Type _} [DecidableEq T]
+    (x y : T) (xs : List T) (hmem : x ∈ xs) (hne : x ≠ y) :
+    x ∈ xs.erase y := by
+  induction xs with
+  | nil => simp at hmem
+  | cons a xs ih =>
+    cases hbeq : a == y with
+    | true =>
+      have hay : a = y := eq_of_beq hbeq
+      simp only [List.erase, hbeq]
+      rcases List.mem_cons.mp hmem with hxa | hx
+      · exact False.elim (hne (hxa.trans hay))
+      · exact hx
+    | false =>
+      simp only [List.erase, hbeq]
+      rcases List.mem_cons.mp hmem with hxa | hx
+      · subst x
+        exact List.mem_cons_self
+      · exact List.mem_cons_of_mem a (ih hx)
+
+/-- Removing a retained element decreases the filtered length by one. -/
+theorem filter_size_rem {T : Type _} [DecidableEq T]
+    (x : T) (xs : List T) (P : T → Bool)
+    (h1 : x ∈ xs) (h2 : P x = true) :
+    (xs.filter P).length = ((xs.erase x).filter P).length + 1 := by
+  induction xs with
+  | nil => simp at h1
+  | cons a xs ih =>
+    by_cases hax : a = x
+    · subst a
+      simp only [List.filter_cons, h2, ite_true, List.length_cons]
+      simp
+    · have hin : x ∈ xs := by
+        rcases List.mem_cons.mp h1 with heq | hin
+        · exact False.elim (hax heq.symm)
+        · exact hin
+      rw [show (a :: xs).erase x = a :: xs.erase x from by simp [hax]]
+      simp only [List.filter_cons]
+      cases hP : P a <;> simp [List.filter_cons, hP, ih hin]
+
+/-- Duplicate removal preserves the Boolean membership observation. -/
+theorem in_seq_equiv_undup {T : Type _} [DecidableEq T]
+    (xs : List T) (x : T) :
+    decide (x ∈ xs.eraseDups) = decide (x ∈ xs) := by
+  simp
+
+/-- Boolean equality of singleton lists agrees with Boolean equality of the
+    corresponding optional values. -/
+theorem seq1_some {T : Type _} [DecidableEq T] (x y : T) :
+    decide (([x] : List T) = [y]) =
+      decide ((some x : Option T) = some y) := by
+  by_cases hxy : x = y <;> simp [hxy]
+
+/-- A list of successor length splits into a prefix of the predecessor length
+    and its last element. -/
+theorem seq_elim_last {T : Type _} (n : Nat) (xs : List T)
+    (h : xs.length = n + 1) :
+    ∃ x pre, xs = pre ++ [x] ∧ pre.length = n := by
+  induction n generalizing xs with
+  | zero =>
+      match xs, h with
+      | [x], _ => exact ⟨x, [], rfl, rfl⟩
+  | succ n ih =>
+      match xs, h with
+      | x :: tail, h =>
+        have htail : tail.length = n + 1 := by
+          simp at h
+          omega
+        obtain ⟨last, pre, hsplit, hlength⟩ := ih tail htail
+        exact ⟨last, x :: pre, by rw [hsplit]; simp,
+          by simp [hlength]⟩
+
+/-- A member splits its list into a prefix, the member, and a suffix. -/
+theorem in_cat {T : Type _} [DecidableEq T] (x : T) (xs : List T)
+    (h : x ∈ xs) :
+    ∃ left right, xs = left ++ [x] ++ right := by
+  induction xs with
+  | nil => simp at h
+  | cons a tail ih =>
+      rcases List.mem_cons.mp h with rfl | hin
+      · exact ⟨[], tail, by simp⟩
+      · obtain ⟨left, right, hsplit⟩ := ih hin
+        exact ⟨a :: left, right, by simp [hsplit]⟩
+
 end Prosa.Util.List

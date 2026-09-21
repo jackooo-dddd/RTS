@@ -522,3 +522,330 @@ validation class, and file-DAG readiness.
   3/25.  Cumulative coverage is now 10 / 357 accepted files and 52 / 2439
   accepted declarations, with zero translated-but-not-certified declarations
   in the currently translated subset.
+
+## 2026-09-21 14:55:54 HKT — List `last0` theorem cluster accepted 5 / 5
+
+- Five additional declarations from pinned official `util/list.v` are now
+  `ACCEPTED_V06_TRANSLATION`: `last0_cons`, `last0_cat`, `last0_nth`,
+  `last0_ex_cat`, and `last0_filter`.  Together with the previously accepted
+  `max0`, `first0`, and `last0`, List progress is **8 / 57 accepted**.  Sum
+  remains **3 / 25 accepted**, so the strict accepted List+Sum total is now
+  **11 declarations**.
+- The fresh end-to-end command
+  `Validation/scripts/validate_utility_list_last.sh` completed successfully in
+  `Validation/.work/runs/utility_list_last.0NiRPl`: isolated Lean rebuild,
+  exact statement-only theorem export, monomorphic computation-interface body
+  export, `rocq-lean-import`, official-source extraction, Rocq certificate
+  compilation, exact-target type guards, Lean/Rocq assumption audits, baseline
+  audit, publication, and `git diff --check` all passed.
+- All five semantic results are
+  `CERTIFIED_WITH_PROP_SPROP_FOUNDATION`.  For every certificate the automatic
+  audit reports `semantic_premises = []`, source theorem dependency `false`,
+  target theorem dependency `false`, and `unexpected = []`.
+- `last0_nth` required observable computation for actual imported `List.length`,
+  truncated Nat subtraction, and `List.getD`.  Instead of importing generic
+  Mathlib proof graphs, the validator exports a validation-only monomorphic
+  interface of Lean-kernel-checked `rfl` equations.  Its additional audited
+  importer boundary is `propext` plus the `PrimInt63` primitive type and
+  operations reached by the imported `List.getD` implementation; these are
+  reported explicitly and are not semantic premises.
+- The certificates compositionally reuse the established Nat and ordered
+  `seq`/`List` correspondences.  The new append, filter, length, `getD`, Bool
+  predicate, existential-witness, and list-roundtrip lemmas are currently
+  artifact-local to this List cluster.  Therefore the strict cross-file
+  reusable representation-family count remains **6**, and the independently
+  audited common-library module count remains **10**; local helpers are not
+  inflated into either total before cross-file extraction and audit.
+- Content hashes for this accepted run include official source
+  `7bb5784d...a6a`, Lean source `3a542ca7...0f74`, fresh production `.olean`
+  `20b14898...00a`, export `1db6417e...6b85`, imported `.vo`
+  `67344f52...d721`, and generated official-source signature `.vo`
+  `06621b81...5bd7`.  Full hashes and per-declaration invalidation keys are in
+  `cluster_results/list_last.json`.
+- Updated cumulative truth: 33 declarations in the active batch are
+  translated, proof-clean, and accepted; cumulative accepted coverage is
+  **10 / 357 files** and **57 / 2439 declarations**.  `util/list.v` remains a
+  `PARTIAL_V06_FILE` because 49 declarations have not yet been translated;
+  translated-but-not-certified debt remains zero.
+
+## 2026-09-21 15:11:48 HKT — current-source revalidation and next List cluster
+
+- Extending the production candidate `Prosa/Util/List.lean` invalidated the
+  content hashes of the earlier List artifacts, so both existing List
+  validators were rerun from fresh isolated build directories.  The starter
+  cluster (`max0`, `first0`, `last0`) passed 3 / 3 and the `last0` theorem
+  cluster passed 5 / 5.  The eight prior declarations are therefore again
+  bound to the current production source and remain accepted; this is not a
+  reuse of stale `.olean` or `.vo` files.
+- Nine further pinned-v0.6 declarations have now been translated and compile
+  with completed Lean proofs: `max0_cons`, `max0_of_uniform_set`,
+  `in_max0_le`, `max0_in_seq`, `max0_2cons_eq`, `max0_2cons_le`, `max0_rem0`,
+  `last_of_seq_le_max_of_seq`, and `max_of_dominating_seq`.  They are presently
+  `PROOF_CLEAN` / `NOT_YET_VALIDATED` and are not included in accepted
+  coverage.
+- A temporary broad `Mathlib.Tactic` import caused the fail-closed Lean axiom
+  audit to detect new `Classical.choice` and `Quot.sound` dependencies in an
+  existing theorem.  The import was removed and the only affected proof was
+  rewritten using explicit `Nat.succ_le_succ_iff` reasoning.  Fresh
+  revalidation then passed, demonstrating that the existing acceptance state
+  was not silently retained across an assumption change.
+- Strict current counts are therefore **List 8 / 57 accepted** plus nine
+  translated/proof-clean candidates, **Sum 3 / 25 accepted**, and **11
+  accepted across List + Sum**.  The next work item is an actual-artifact
+  semantic certificate for the new `max0` cluster, reusing the already audited
+  Nat and ordered seq/List relations rather than switching to a new Sum
+  cluster.
+
+## 2026-09-21 15:23:43 HKT — four `max0`-family statements accepted
+
+- `max0_cons`, `max0_2cons_eq`, `max0_2cons_le`, and
+  `last_of_seq_le_max_of_seq` passed a fresh isolated end-to-end run in
+  `Validation/.work/runs/utility_list_last.s2ecyP`.  The run rebuilt the
+  current production module, exported the exact compiled target theorem types
+  plus the actual `max0 = List.foldl Nat.max 0` body, imported them into Rocq,
+  compiled the independent source/target correspondence, checked exact target
+  type guards, audited assumptions, checked the frozen baseline, and published
+  only after all gates succeeded.
+- Each result is `CERTIFIED_WITH_PROP_SPROP_FOUNDATION`.  Automatic audit
+  reports `semantic_premises = []`, source theorem dependency `false`, target
+  theorem dependency `false`, and `unexpected = []`.  The certificates use
+  the actual imported fold computation and do not invoke either source or
+  target theorem proof constants.
+- The new computation proof is compositional: the existing Nat relation,
+  actual imported Nat order, and order/multiplicity-preserving seq/List map are
+  reused; only an artifact-specific `foldl Nat.max` preservation lemma is
+  added.  Consequently the strict cross-file reusable representation-family
+  count remains **6** (and the independently audited common-module count
+  remains **10**); no unreviewed local helper is counted as a new reusable
+  family.
+- Current strict progress is **List 12 / 57 accepted** and **Sum 3 / 25
+  accepted**, hence **15 accepted across List + Sum**.  Five additional List
+  declarations (`max0_of_uniform_set`, `in_max0_le`, `max0_in_seq`,
+  `max0_rem0`, `max_of_dominating_seq`) are translated and Lean proof-clean
+  but not yet semantically accepted.
+- The generated aggregate status currently counts only declarations present in
+  published semantic manifests, so it reports `translated_but_not_certified =
+  0`.  For the current production source the correct operational debt is **5**;
+  this discrepancy is recorded explicitly and must be corrected in the status
+  generator rather than treating unmanifested production declarations as not
+  translated.
+
+## 2026-09-21 15:39:29 HKT — all nine new List statements closed
+
+- The remaining five translated statements—`max0_of_uniform_set`,
+  `in_max0_le`, `max0_in_seq`, `max0_rem0`, and
+  `max_of_dominating_seq`—also passed the complete fresh actual-artifact gate.
+  Together with the preceding four, all nine declarations added to the
+  production candidate in this phase are now
+  `CERTIFIED_WITH_PROP_SPROP_FOUNDATION` and
+  `ACCEPTED_V06_TRANSLATION`.
+- The key new proof component is a bidirectional relation between MathComp's
+  reflected Boolean sequence membership and the exact imported Lean
+  `List.Mem` inductive.  Its forward and backward directions are proved by
+  structural recursion and preserve both the Nat element map and the ordered,
+  multiplicity-preserving list map.  It is then composed with already audited
+  length, non-emptiness, filter, `getD`, `max0`, Nat equality/order, and
+  logical-quantifier correspondences.  No source or target theorem proof is
+  used.
+- The final isolated run is
+  `Validation/.work/runs/utility_list_last.XAio4e`.  All 14 statements in the
+  combined `last0`/`max0` artifact pass exact-target type guards and automatic
+  assumption audits.  For every certificate:
+  `semantic_premises = []`, target theorem dependency `false`, source theorem
+  dependency `false`, and `unexpected = []`.
+- Content hashes for the accepted run are: official source
+  `7bb5784d...a6a`, current Lean source `2a8cbbb4...5c29`, fresh `.olean`
+  `95e65f04...975f`, export `84b96b37...f65a`, imported `.vo`
+  `ee3b45f5...ad13`, and generated source-signature `.vo`
+  `688e2b64...c603`.  Full hashes and per-declaration invalidation keys are in
+  `cluster_results/list_last.json`.
+- Current strict progress is **List 17 / 57 accepted** and **Sum 3 / 25
+  accepted**, hence **20 accepted across List + Sum**.  The active batch now
+  has 42 translated, proof-clean, and accepted declarations; cumulative
+  coverage is **10 / 357 accepted files** and **66 / 2439 accepted
+  declarations**, with translated-but-not-certified debt back to **0**.
+- Reuse accounting remains conservative: there are **6 cross-file reusable
+  representation-correspondence families** and **10 independently audited
+  common modules**.  The membership work is an actual-artifact instantiation
+  of the existing seq/List-membership family, not a newly invented seventh
+  representation.  This cluster demonstrates reuse of Nat, Nat order,
+  seq/List, membership, Bool/reflection, filter, default-index, and common
+  Prop/SProp combinators across nine downstream statements.
+
+## 2026-09-21 17:01:56 HKT — `nth0_cons` accepted by bridge composition
+
+- The source-ordered Nat/list lookup theorem `nth0_cons` was translated from
+  pinned v0.6 and accepted after a fresh run in
+  `Validation/.work/runs/utility_list_last.vU8Qbh`.  Its certificate composes
+  the already audited cons-list relation, positive Nat order, defaulted lookup,
+  truncated subtraction by one, implication, and equality correspondences.
+- Status is `CERTIFIED_WITH_PROP_SPROP_FOUNDATION`; automatic audit reports no
+  semantic premise, no source or target theorem dependency, and no unexpected
+  assumption.  This is a direct reuse case: no new representation family was
+  introduced.
+- Current hashes are Lean source `a5ebf094...ea63`, fresh `.olean`
+  `7bc81583...9b29`, export `9510e035...3d82`, imported `.vo`
+  `1dccdac0...0098`, and generated source-signature `.vo`
+  `b40edd61...e10b`.
+- Strict progress is now **List 18 / 57**, **Sum 3 / 25**, and **21 accepted
+  across List + Sum**.  Cumulative coverage is **10 / 357 files** and **67 /
+  2439 declarations**.  All 43 declarations translated in the active utility
+  batch are proof-clean and semantically accepted, so the current
+  translated-but-not-certified count is zero.
+
+## 2026-09-21 17:23:39 HKT — generic `rem` correspondence proof compiled
+
+- Four further pinned-v0.6 List declarations are present in the production
+  candidate and pass Lean compilation/proof audit: `rem_in`,
+  `in_neq_impl_rem_in`, `filter_size_rem`, and `in_seq_equiv_undup`.  Adding
+  them changed the production source hash, so all previously accepted 18 List
+  results were rerun against the current source in fresh isolated run
+  `Validation/.work/runs/utility_list_last.5oss6M`; all remained accepted.
+- A new actual-artifact adapter now relates an arbitrary MathComp `eqType` and
+  `seq T` to the imported Lean carrier plus its canonical `DecidableEq` and
+  generic imported `List T`.  It proves two-sided list round trips, Boolean
+  membership versus imported `List.Mem`, equality/disequality observation,
+  and—using the kernel-checked `generic_erase_nil/cons` equations—the
+  computation correspondence `rem y xs` ↔ actual imported `List.erase xs y`.
+- Independent statement-correspondence proofs for `rem_in` and
+  `in_neq_impl_rem_in` now compile in Rocq 9.3 against the current actual
+  imported artifact.  They do not use either source theorem constant or target
+  theorem constant.  Full publication, exact-target guards, and automatic
+  assumption audit are still pending, so the strict accepted count remains
+  **List 18 / 57**, **Sum 3 / 25**, total **21**.  These two results are
+  presently `SEMANTIC_PROOF_COMPILED`, not yet `ACCEPTED`.
+- This work reuses the existing eqType/DecidableEq, ordered seq/List,
+  membership, Bool/reflection, and Prop/SProp components.  It is an
+  artifact-specific instantiation, so the conservative reusable
+  representation-family count remains **6** (10 audited common modules when
+  logical and domain composition modules are included).
+
+## 2026-09-21 17:43:03 HKT — first two generic `rem` theorems accepted
+
+- `rem_in` and `in_neq_impl_rem_in` completed the full fresh pipeline and are
+  now `CERTIFIED_WITH_PROP_SPROP_FOUNDATION` / `ACCEPTED_V06_TRANSLATION`.
+  Exact target-type guards instantiate the actual imported polymorphic Lean
+  theorems with the canonical `eqType`-derived `DecidableEq`; the independent
+  semantic certificates do not invoke those theorem constants.
+- Automatic `Print Assumptions` classification for both reports
+  `semantic_premises = []`, source theorem dependency `false`, target theorem
+  dependency `false`, and `unexpected = []`.  The remaining audited boundary
+  is `PropSPropFoundation.interpret_strict`, plus importer equality/UIP
+  foundations already on the allowlist.
+- The successful source/current-artifact run is recorded under the current
+  `list_last` fresh-work pointer and published in
+  `cluster_results/list_last.json`; the cluster now contains 17 accepted
+  theorem statements.  Strict progress is **List 20 / 57**, **Sum 3 / 25**,
+  hence **23 accepted across List + Sum**.  Cumulative accepted coverage is
+  **69 / 2439 declarations** and **10 / 357 files**.
+- `filter_size_rem` and `in_seq_equiv_undup` remain translated and Lean
+  proof-clean but not semantically accepted.  They are the only current
+  unmanifested List candidates; work proceeds first through the already
+  established erase/filter/length/Nat-add relations, then through the harder
+  `undup`/`eraseDups` computation boundary.
+
+## 2026-09-21 17:49:50 HKT — `filter_size_rem` accepted
+
+- `filter_size_rem` now passes the full fresh pipeline in isolated run
+  `Validation/.work/runs/utility_list_last.zmUQQG`.  The proof composes the
+  already established generic `rem` correspondence with actual imported
+  Boolean `List.filter` computation, generic list length, Nat addition by one,
+  membership, and Nat equality.  It preserves sequence order and multiplicity;
+  no `Finset` representation is introduced.
+- Status is `CERTIFIED_WITH_PROP_SPROP_FOUNDATION`.  The fail-closed audit
+  reports `semantic_premises = []`, source and target theorem dependencies
+  both `false`, and `unexpected = []`.  The exact compiled target type is
+  separately guarded with the canonical `eqType`-derived Lean `DecidableEq`.
+- Strict progress is now **List 21 / 57**, **Sum 3 / 25**, hence **24 accepted
+  across List + Sum**.  Cumulative coverage is **70 / 2439 declarations** and
+  **10 / 357 files**.  Of the four newly translated generic List declarations,
+  only `in_seq_equiv_undup` remains outside semantic acceptance.
+
+## 2026-09-21 18:04:37 HKT — `in_seq_equiv_undup` accepted
+
+- `in_seq_equiv_undup` completed the full fresh build/export/import/certificate
+  pipeline in isolated run `Validation/.work/runs/utility_list_last.AQkMja`.
+  The actual compiled Lean target type is guarded definitionally, while the
+  semantic proof independently relates MathComp `undup` membership to actual
+  imported Lean `List.eraseDups` membership and then transports the canonical
+  membership decisions and Boolean equality.
+- The imported `generic_mem_eraseDups` interface is operation-level evidence,
+  not the Prosa target theorem. Its Lean proof body (`List.mem_eraseDups`) was
+  checked by Lean, exported with its body, imported, and checked by Rocq. The
+  correspondence certificate does not call either
+  `prosa.util.list.in_seq_equiv_undup` or
+  `Prosa_Util_List_in_seq_equiv_undup`.
+- Automatic assumption classification reports
+  `semantic_premises = []`, source theorem dependency `false`, target theorem
+  dependency `false`, and `unexpected = []`. Status is
+  `CERTIFIED_WITH_PROP_SPROP_FOUNDATION`; audited boundaries are
+  `PropSPropFoundation.interpret_strict`, importer equality/UIP, `propext`, and
+  `Quot.sound` from the imported operation proof.
+- Strict progress is now **List 22 / 57**, **Sum 3 / 25**, hence **25 accepted
+  across List + Sum**. Cumulative coverage is **71 / 2439 declarations** and
+  **10 / 357 files**; current translated-but-not-certified debt remains zero.
+  This result reuses the existing eqType/DecidableEq, ordered seq/List,
+  membership, Bool/reflection, and logical-relation families, so the
+  conservative cross-file representation-correspondence count remains **6**.
+
+## 2026-09-21 18:15:20 HKT — `seq1_some` accepted by correspondence composition
+
+- The new v0.6-only `seq1_some` translation compiles and is proof-clean. Its
+  independent Rocq certificate composes the already established
+  eqType/DecidableEq boundary, generic seq/List equality correspondence,
+  Option constructor/equality correspondence, Boolean-decision correspondence,
+  and Boolean equality correspondence. It does not reproduce the Lean proof.
+- Full fresh validation succeeded in
+  `Validation/.work/runs/utility_list_last.AfvxeN`. The exact imported theorem
+  type is separately guarded, and the certificate audit reports
+  `semantic_premises = []`, source theorem dependency `false`, target theorem
+  dependency `false`, and `unexpected = []`. Its status is
+  `CERTIFIED_WITH_PROP_SPROP_FOUNDATION`; the only non-importer logical boundary
+  is `PropSPropFoundation.interpret_strict`.
+- Strict progress is now **List 23 / 57**, **Sum 3 / 25**, and **26 accepted
+  across List + Sum**. Cumulative coverage is **72 / 2439 declarations** and
+  **10 / 357 files**, with translated-but-not-certified debt zero.
+- The project-local `prosa-v06-translation` skill was also tightened to require
+  correspondence-DAG extraction, aggressive reuse of certified lower-level
+  relations, separate certification of missing operation interfaces, explicit
+  reused/new/unresolved dependency reporting, and source/target theorem
+  self-dependency rejection. The updated skill passes its structural validator.
+
+## 2026-09-21 18:24:57 HKT — `seq_elim_last` accepted
+
+- `seq_elim_last` completed the full pipeline in fresh isolated run
+  `Validation/.work/runs/utility_list_last.UQOxpm`. Its certificate relates
+  arbitrary source/target list and Nat inputs, maps nested existential witnesses
+  in both directions, and composes certified length, append, singleton,
+  equality, implication, and conjunction correspondences.
+- This is deliberately not a second proof of the theorem's truth. The forward
+  certificate maps any source theorem-statement witness to a target witness;
+  the backward certificate maps any target witness back to a source witness.
+  Neither source nor target theorem constant occurs in that construction.
+- Automatic audit reports `semantic_premises = []`, source theorem dependency
+  `false`, target theorem dependency `false`, and `unexpected = []`. Status is
+  `CERTIFIED_WITH_PROP_SPROP_FOUNDATION`; assumptions are importer equality and
+  `PropSPropFoundation.interpret_strict`.
+- Strict progress is **List 24 / 57**, **Sum 3 / 25**, hence **27 accepted
+  across List + Sum**. Cumulative coverage is **73 / 2439 declarations** and
+  **10 / 357 files**, with no translated-but-not-certified declaration in the
+  current manifest.
+
+## 2026-09-21 18:31:42 HKT — `in_cat` accepted with reused List DAG
+
+- `in_cat` completed the full actual-artifact pipeline in fresh run
+  `Validation/.work/runs/utility_list_last.B3yazz`. The certificate reuses the
+  accepted eqType/DecidableEq membership relation, seq/List relation, nested
+  existential transport, append, singleton, and list equality correspondence.
+- The official source associates `left ++ ([x] ++ right)`, whereas the compiled
+  Lean statement associates `(left ++ [x]) ++ right`. A small independently
+  checked operation-level append-associativity bridge connects these exact
+  shapes; the theorem is therefore certified as a semantic reformulation rather
+  than incorrectly relying on syntactic identity.
+- Automatic audit reports no semantic premise, no source/target theorem
+  dependency, and no unexpected assumption. Status is
+  `CERTIFIED_WITH_PROP_SPROP_FOUNDATION`, with only importer equality/UIP and
+  `PropSPropFoundation.interpret_strict` in the audited boundary.
+- Strict progress is now **List 25 / 57**, **Sum 3 / 25**, hence **28 accepted
+  across List + Sum**. Cumulative coverage is **74 / 2439 declarations**, with
+  **10 / 357 files** accepted and translated-but-not-certified debt zero.

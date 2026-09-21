@@ -1,5 +1,259 @@
-File "./ImportedListLastTypeProbe.v", line 2, characters 0-56:
-Error:
-The file /Users/shunqiwang/CityuHK/Research/Lean/TranslationProof/Prosa-Shunqi/Validation/.work/runs/utility_list_last_probe.WxHvQ6/imported/ImportedListLast.vo contains library
-ImportedListLast and not library FoundationImported.ImportedListLast.
+Prosa_Util_List_last0
+     : List_inst1 Nat -> Nat
+Prosa_Util_List_last0_cons
+     : forall (x : Nat) (xs : List_inst1 Nat),
+       Ne (List_inst1 Nat) xs (List_nil_inst1 Nat) ->
+       eq (Prosa_Util_List_last0 (List_cons_inst1 Nat x xs))
+         (Prosa_Util_List_last0 xs)
+Prosa_Util_List_last0_cat
+     : forall xs_l xs_r : List_inst1 Nat,
+       Ne (List_inst1 Nat) xs_r (List_nil_inst1 Nat) ->
+       eq
+         (Prosa_Util_List_last0
+            (HAppend_hAppend_inst7 (List_inst1 Nat)
+               (List_inst1 Nat) (List_inst1 Nat)
+               (instHAppendOfAppend_inst1 (List_inst1 Nat)
+                  (List_instAppend_inst1 Nat))
+               xs_l xs_r))
+         (Prosa_Util_List_last0 xs_r)
+Prosa_Util_List_last0_nth
+     : forall xs : List_inst1 Nat,
+       eq (Prosa_Util_List_last0 xs)
+         (List_getD_inst1 Nat xs
+            (HSub_hSub_inst7 Nat Nat Nat (instHSub_inst1 Nat instSubNat)
+               (List_length_inst1 Nat xs)
+               (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1)))
+            (OfNat_ofNat_inst1 Nat 0 (instOfNatNat 0)))
+Prosa_Util_List_last0_ex_cat
+     : forall (x : Nat) (xs : List_inst1 Nat),
+       Ne (List_inst1 Nat) xs (List_nil_inst1 Nat) ->
+       eq (Prosa_Util_List_last0 xs) x ->
+       Exists (List_inst1 Nat)
+         (fun xsh : List_inst1 Nat =>
+          HAppend_hAppend_inst7 (List_inst1 Nat) (List_inst1 Nat)
+            (List_inst1 Nat)
+            (instHAppendOfAppend_inst1 (List_inst1 Nat)
+               (List_instAppend_inst1 Nat))
+            xsh (List_cons_inst1 Nat x (List_nil_inst1 Nat)) =
+          xs)
+Prosa_Util_List_last0_filter
+     : forall (x : Nat) (xs : List_inst1 Nat) (P : Nat -> Bool),
+       Ne (List_inst1 Nat) xs (List_nil_inst1 Nat) ->
+       eq (Prosa_Util_List_last0 xs) x ->
+       eq (P x) Bool_true ->
+       eq (Prosa_Util_List_last0 (List_filter_inst1 Nat P xs)) x
+Prosa_Util_List_last0@{} =
+fun xs : List_inst1 Nat =>
+List_getLastD_inst1 Nat xs (OfNat_ofNat_inst1 Nat 0 (instOfNatNat 0))
+     : List_inst1 Nat -> Nat
 
+Arguments Prosa_Util_List_last0 xs
+*** [ Prosa_Util_List_last0_cons@{} :
+forall (x : Nat) (xs : List_inst1 Nat),
+Ne (List_inst1 Nat) xs (List_nil_inst1 Nat) ->
+eq (Prosa_Util_List_last0 (List_cons_inst1 Nat x xs))
+  (Prosa_Util_List_last0 xs) ]
+
+Arguments Prosa_Util_List_last0_cons x%_Nat_scope xs h
+*** [ Prosa_Util_List_last0_cat@{} :
+forall xs_l xs_r : List_inst1 Nat,
+Ne (List_inst1 Nat) xs_r (List_nil_inst1 Nat) ->
+eq
+  (Prosa_Util_List_last0
+     (HAppend_hAppend_inst7 (List_inst1 Nat) (List_inst1 Nat)
+        (List_inst1 Nat)
+        (instHAppendOfAppend_inst1 (List_inst1 Nat)
+           (List_instAppend_inst1 Nat))
+        xs_l xs_r))
+  (Prosa_Util_List_last0 xs_r) ]
+
+Arguments Prosa_Util_List_last0_cat xs_l xs_r h
+*** [ Prosa_Util_List_last0_nth@{} :
+forall xs : List_inst1 Nat,
+eq (Prosa_Util_List_last0 xs)
+  (List_getD_inst1 Nat xs
+     (HSub_hSub_inst7 Nat Nat Nat (instHSub_inst1 Nat instSubNat)
+        (List_length_inst1 Nat xs) (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1)))
+     (OfNat_ofNat_inst1 Nat 0 (instOfNatNat 0))) ]
+
+Arguments Prosa_Util_List_last0_nth xs
+*** [ Prosa_Util_List_last0_ex_cat@{} :
+forall (x : Nat) (xs : List_inst1 Nat),
+Ne (List_inst1 Nat) xs (List_nil_inst1 Nat) ->
+eq (Prosa_Util_List_last0 xs) x ->
+Exists (List_inst1 Nat)
+  (fun xsh : List_inst1 Nat =>
+   HAppend_hAppend_inst7 (List_inst1 Nat) (List_inst1 Nat)
+     (List_inst1 Nat)
+     (instHAppendOfAppend_inst1 (List_inst1 Nat) (List_instAppend_inst1 Nat))
+     xsh (List_cons_inst1 Nat x (List_nil_inst1 Nat)) =
+   xs) ]
+
+Arguments Prosa_Util_List_last0_ex_cat x%_Nat_scope xs h1 h2
+*** [ Prosa_Util_List_last0_filter@{} :
+forall (x : Nat) (xs : List_inst1 Nat) (P : Nat -> Bool),
+Ne (List_inst1 Nat) xs (List_nil_inst1 Nat) ->
+eq (Prosa_Util_List_last0 xs) x ->
+eq (P x) Bool_true ->
+eq (Prosa_Util_List_last0 (List_filter_inst1 Nat P xs)) x ]
+
+Arguments Prosa_Util_List_last0_filter x%_Nat_scope
+  xs P%_function_scope h1 h2 h3
+List_append_inst1@{} =
+fun (_UU03b1_ : Type)
+  (x____at___Init_Prelude4042049376__hygCtx__hyg12
+   x____at___Init_Prelude4042049376__hygCtx__hyg13 :
+   List_inst1 _UU03b1_) =>
+List_brecOn_inst2 _UU03b1_
+  (fun _ : List_inst1 _UU03b1_ => List_inst1 _UU03b1_ -> List_inst1 _UU03b1_)
+  x____at___Init_Prelude4042049376__hygCtx__hyg12
+  (List_append__f_inst1 _UU03b1_)
+  x____at___Init_Prelude4042049376__hygCtx__hyg13
+     : forall _UU03b1_ : Type,
+       List_inst1 _UU03b1_ -> List_inst1 _UU03b1_ -> List_inst1 _UU03b1_
+
+Arguments List_append_inst1 _UU03b1_%_type_scope xs ys
+List_filter_inst1@{} =
+fun (_UU03b1_ : Type) (p : _UU03b1_ -> Bool)
+  (x____at___Init_Data_List_Basic2342288710__hygCtx__hyg13 :
+   List_inst1 _UU03b1_) =>
+List_brecOn_inst2 _UU03b1_
+  (fun _ : List_inst1 _UU03b1_ => List_inst1 _UU03b1_)
+  x____at___Init_Data_List_Basic2342288710__hygCtx__hyg13
+  (List_filter__f_inst1 _UU03b1_ p)
+     : forall _UU03b1_ : Type,
+       (_UU03b1_ -> Bool) -> List_inst1 _UU03b1_ -> List_inst1 _UU03b1_
+
+Arguments List_filter_inst1 _UU03b1_%_type_scope p%_function_scope tail
+List_getD_inst1@{} =
+fun (_UU03b1_ : Type) (as : List_inst1 _UU03b1_) (i : Nat)
+  (fallback : _UU03b1_) =>
+Option_getD_inst1 _UU03b1_
+  (GetElem__q_getElem__q_inst7 (List_inst1 _UU03b1_) Nat _UU03b1_
+     (fun (as0 : List_inst1 _UU03b1_) (i0 : Nat) =>
+      LT_lt_inst1 Nat instLTNat i0 (List_length_inst1 _UU03b1_ as0))
+     (List_instGetElem__qNatLtLength_inst1 _UU03b1_) as i)
+  fallback
+     : forall _UU03b1_ : Type,
+       List_inst1 _UU03b1_ -> Nat -> _UU03b1_ -> _UU03b1_
+
+Arguments List_getD_inst1 _UU03b1_%_type_scope as
+  i%_Nat_scope a____at____internal__hyg0
+List_length_inst1@{} =
+fun (_UU03b1_ : Type)
+  (x____at___Init_Prelude210037673__hygCtx__hyg9 : List_inst1 _UU03b1_) =>
+List_brecOn_inst2 _UU03b1_ (fun _ : List_inst1 _UU03b1_ => Nat)
+  x____at___Init_Prelude210037673__hygCtx__hyg9
+  (List_length__f_inst1 _UU03b1_)
+     : forall _UU03b1_ : Type, List_inst1 _UU03b1_ -> Nat
+
+Arguments List_length_inst1 _UU03b1_%_type_scope a____at____internal__hyg0
+Nat_sub@{} =
+fun
+  x____at___Init_Prelude462884191__hygCtx__hyg13
+   x____at___Init_Prelude462884191__hygCtx__hyg14 : Nat =>
+Nat_brecOn (fun _ : Nat => Nat -> Nat)
+  x____at___Init_Prelude462884191__hygCtx__hyg14 Nat_sub__f
+  x____at___Init_Prelude462884191__hygCtx__hyg13
+     : Nat -> Nat -> Nat
+
+Arguments Nat_sub
+  (a____at____internal__hyg0 a____at____internal__hyg0)%_Nat_scope
+Prosa_Validation_ListLastInterface_append_nil
+     : forall ys : List_inst1 Nat,
+       eq
+         (HAppend_hAppend_inst7 (List_inst1 Nat) (List_inst1 Nat)
+            (List_inst1 Nat)
+            (instHAppendOfAppend_inst1 (List_inst1 Nat)
+               (List_instAppend_inst1 Nat))
+            (List_nil_inst1 Nat) ys)
+         ys
+Prosa_Validation_ListLastInterface_nat_zero
+     : eq (OfNat_ofNat_inst1 Nat 0 (instOfNatNat 0)) 0
+Prosa_Validation_ListLastInterface_nat_one
+     : eq (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1)) 1
+Prosa_Validation_ListLastInterface_append_cons
+     : forall (x : Nat) (xs ys : List_inst1 Nat),
+       eq
+         (HAppend_hAppend_inst7 (List_inst1 Nat) (List_inst1 Nat)
+            (List_inst1 Nat)
+            (instHAppendOfAppend_inst1 (List_inst1 Nat)
+               (List_instAppend_inst1 Nat))
+            (List_cons_inst1 Nat x xs) ys)
+         (List_cons_inst1 Nat x
+            (HAppend_hAppend_inst7 (List_inst1 Nat)
+               (List_inst1 Nat) (List_inst1 Nat)
+               (instHAppendOfAppend_inst1 (List_inst1 Nat)
+                  (List_instAppend_inst1 Nat))
+               xs ys))
+Prosa_Validation_ListLastInterface_filter_nil
+     : forall P : Nat -> Bool,
+       eq (List_filter_inst1 Nat P (List_nil_inst1 Nat)) (List_nil_inst1 Nat)
+Prosa_Validation_ListLastInterface_filter_cons
+     : forall (P : Nat -> Bool) (x : Nat) (xs : List_inst1 Nat),
+       eq (List_filter_inst1 Nat P (List_cons_inst1 Nat x xs))
+         (Prosa_Validation_ListLastInterface_filter_cons_match_1
+            (fun _ : Bool => List_inst1 Nat) (P x)
+            (fun _ : Unit =>
+             List_cons_inst1 Nat x (List_filter_inst1 Nat P xs))
+            (fun _ : Unit => List_filter_inst1 Nat P xs))
+Prosa_Validation_ListLastInterface_length_nil
+     : eq (List_length_inst1 Nat (List_nil_inst1 Nat))
+         (OfNat_ofNat_inst1 Nat 0 (instOfNatNat 0))
+Prosa_Validation_ListLastInterface_length_cons
+     : forall (x : Nat) (xs : List_inst1 Nat),
+       eq (List_length_inst1 Nat (List_cons_inst1 Nat x xs))
+         (HAdd_hAdd_inst7 Nat Nat Nat (instHAdd_inst1 Nat instAddNat)
+            (List_length_inst1 Nat xs)
+            (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1)))
+Prosa_Validation_ListLastInterface_length_cons_succ
+     : forall (x : Nat) (xs : List_inst1 Nat),
+       eq (List_length_inst1 Nat (List_cons_inst1 Nat x xs))
+         (Nat_succ (List_length_inst1 Nat xs))
+Prosa_Validation_ListLastInterface_getD_nil
+     : forall n : Nat,
+       eq
+         (List_getD_inst1 Nat (List_nil_inst1 Nat) n
+            (OfNat_ofNat_inst1 Nat 0 (instOfNatNat 0)))
+         (OfNat_ofNat_inst1 Nat 0 (instOfNatNat 0))
+Prosa_Validation_ListLastInterface_getD_zero
+     : forall (x : Nat) (xs : List_inst1 Nat),
+       eq
+         (List_getD_inst1 Nat (List_cons_inst1 Nat x xs)
+            (OfNat_ofNat_inst1 Nat 0 (instOfNatNat 0))
+            (OfNat_ofNat_inst1 Nat 0 (instOfNatNat 0)))
+         x
+Prosa_Validation_ListLastInterface_getD_succ
+     : forall (x : Nat) (xs : List_inst1 Nat) (n : Nat),
+       eq
+         (List_getD_inst1 Nat (List_cons_inst1 Nat x xs)
+            (HAdd_hAdd_inst7 Nat Nat Nat (instHAdd_inst1 Nat instAddNat) n
+               (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1)))
+            (OfNat_ofNat_inst1 Nat 0 (instOfNatNat 0)))
+         (List_getD_inst1 Nat xs n (OfNat_ofNat_inst1 Nat 0 (instOfNatNat 0)))
+Prosa_Validation_ListLastInterface_getD_succ_direct
+     : forall (x : Nat) (xs : List_inst1 Nat) (n : Nat),
+       eq
+         (List_getD_inst1 Nat (List_cons_inst1 Nat x xs)
+            (Nat_succ n) (OfNat_ofNat_inst1 Nat 0 (instOfNatNat 0)))
+         (List_getD_inst1 Nat xs n (OfNat_ofNat_inst1 Nat 0 (instOfNatNat 0)))
+Prosa_Validation_ListLastInterface_sub_zero
+     : forall n : Nat,
+       eq
+         (HSub_hSub_inst7 Nat Nat Nat (instHSub_inst1 Nat instSubNat) n
+            (OfNat_ofNat_inst1 Nat 0 (instOfNatNat 0)))
+         n
+Prosa_Validation_ListLastInterface_sub_succ
+     : forall n m : Nat,
+       eq
+         (HSub_hSub_inst7 Nat Nat Nat (instHSub_inst1 Nat instSubNat) n
+            (HAdd_hAdd_inst7 Nat Nat Nat (instHAdd_inst1 Nat instAddNat) m
+               (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1))))
+         (Nat_pred
+            (HSub_hSub_inst7 Nat Nat Nat (instHSub_inst1 Nat instSubNat) n m))
+Prosa_Validation_ListLastInterface_sub_one
+     : forall n : Nat,
+       eq
+         (HSub_hSub_inst7 Nat Nat Nat (instHSub_inst1 Nat instSubNat) n
+            (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1)))
+         (Nat_pred n)

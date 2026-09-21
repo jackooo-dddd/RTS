@@ -136,7 +136,10 @@ def main() -> None:
             raise SystemExit("source acquisition metadata commit mismatch")
         if source_metadata.get("source_file_sha256") != sha(args.source_root / source_file):
             raise SystemExit("source acquisition metadata hash mismatch")
-        if set(source_metadata.get("declarations", {})) != set(configured):
+        metadata_expected = set(configured) | set(
+            config.get("source_acquisition_dependency_declarations", [])
+        )
+        if set(source_metadata.get("declarations", {})) != metadata_expected:
             raise SystemExit("source acquisition metadata declaration coverage mismatch")
     certificate_root = validation / "certificates/utility_foundation"
     common_root = validation / "certificates/common"

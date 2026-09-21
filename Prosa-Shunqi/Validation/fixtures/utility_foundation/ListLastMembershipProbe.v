@@ -1,0 +1,19 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedListLast.
+
+Check ImportedListLast.List_Mem_inst1.
+Check ImportedListLast.List_Mem_head_inst1.
+Check ImportedListLast.List_Mem_tail_inst1.
+Print ImportedListLast.List_instMembership_inst1.
+Print ImportedListLast.Membership_mem_inst3.
+Print ImportedListLast.List_erase.
+Print ImportedListLast.List_eraseDups.
+Print ImportedListLast.instBEqOfDecidableEq.
+Print ImportedListLast.List_filter.
+Print ImportedListLast.List_length.
+Check ImportedListLast.Prosa_Validation_ListLastInterface_generic_erase_nil.
+Check ImportedListLast.Prosa_Validation_ListLastInterface_generic_erase_cons.
+Check ImportedListLast.Prosa_Validation_ListLastInterface_generic_filter_nil.
+Check ImportedListLast.Prosa_Validation_ListLastInterface_generic_filter_cons.
+Check ImportedListLast.Prosa_Validation_ListLastInterface_generic_length_nil.
+Check ImportedListLast.Prosa_Validation_ListLastInterface_generic_length_cons.
