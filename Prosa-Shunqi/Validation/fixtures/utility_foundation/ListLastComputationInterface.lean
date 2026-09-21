@@ -85,6 +85,79 @@ theorem generic_length_nil {T : Type u} :
 theorem generic_length_cons {T : Type u} (a : T) (xs : List T) :
     List.length (a :: xs) = Nat.succ (List.length xs) := by rfl
 
+theorem generic_getD_nil {T : Type u} (n : Nat) (d : T) :
+    List.getD ([] : List T) n d = d := by rfl
+
+theorem generic_getD_zero {T : Type u} (a d : T) (xs : List T) :
+    List.getD (a :: xs) 0 d = a := by rfl
+
+theorem generic_getD_succ {T : Type u} (a d : T) (xs : List T) (n : Nat) :
+    List.getD (a :: xs) (Nat.succ n) d = List.getD xs n d := by rfl
+
+theorem generic_zip_nil_left {T U : Type u} (ys : List U) :
+    List.zip ([] : List T) ys = [] := by rfl
+
+theorem generic_zip_nil_right {T U : Type u} (xs : List T) :
+    List.zip xs ([] : List U) = [] := by
+  cases xs <;> rfl
+
+theorem generic_zip_cons {T U : Type u} (a : T) (xs : List T)
+    (b : U) (ys : List U) :
+    List.zip (a :: xs) (b :: ys) = (a, b) :: List.zip xs ys := by rfl
+
+theorem generic_idxOf_nil {T : Type u} [DecidableEq T] (x : T) :
+    List.idxOf x ([] : List T) = 0 := by rfl
+
+theorem generic_idxOf_cons {T : Type u} [DecidableEq T]
+    (x a : T) (xs : List T) :
+    List.idxOf x (a :: xs) =
+      bif a == x then 0 else List.idxOf x xs + 1 := by
+  exact List.idxOf_cons
+
+theorem generic_all_nil {T : Type u} (P : T → Bool) :
+    List.all ([] : List T) P = true := by rfl
+
+theorem generic_all_cons {T : Type u} (P : T → Bool)
+    (a : T) (xs : List T) :
+    List.all (a :: xs) P = (P a && List.all xs P) := by rfl
+
+theorem generic_any_nil {T : Type u} (P : T → Bool) :
+    List.any ([] : List T) P = false := by rfl
+
+theorem generic_any_cons {T : Type u} (P : T → Bool)
+    (a : T) (xs : List T) :
+    List.any (a :: xs) P = (P a || List.any xs P) := by rfl
+
+theorem generic_isEmpty_nil {T : Type u} :
+    List.isEmpty ([] : List T) = true := by rfl
+
+theorem generic_isEmpty_cons {T : Type u} (a : T) (xs : List T) :
+    List.isEmpty (a :: xs) = false := by rfl
+
+theorem generic_getLastD_nil {T : Type u} (d : T) :
+    List.getLastD ([] : List T) d = d := by rfl
+
+theorem generic_getLastD_singleton {T : Type u} (a d : T) :
+    List.getLastD [a] d = a := by rfl
+
+theorem generic_getLastD_cons_cons {T : Type u}
+    (a b d : T) (xs : List T) :
+    List.getLastD (a :: b :: xs) d = List.getLastD (b :: xs) d := by rfl
+
+theorem generic_boolSorted_nil {T : Type u} (R : T → T → Bool) :
+    Prosa.Util.List.boolSorted R [] := by
+  exact List.IsChain.nil
+
+theorem generic_boolSorted_singleton {T : Type u} (R : T → T → Bool)
+    (a : T) : Prosa.Util.List.boolSorted R [a] := by
+  exact List.IsChain.singleton a
+
+theorem generic_boolSorted_cons_cons {T : Type u}
+    (R : T → T → Bool) (a b : T) (xs : List T) :
+    Prosa.Util.List.boolSorted R (a :: b :: xs) ↔
+      R a b = true ∧ Prosa.Util.List.boolSorted R (b :: xs) := by
+  exact List.isChain_cons_cons
+
 /- This is a validation interface for the actual `eraseDups` implementation.
    Unlike the equations above it is not definitional (`eraseDups` uses its
    tail-recursive loop), so its proof body is exported and checked by both

@@ -4,6 +4,7 @@
 -- source: util/list.v
 
 import Mathlib.Data.List.Basic
+import Mathlib.Data.List.Chain
 import Prosa.Util.Supremum
 
 namespace Prosa.Util.List
@@ -400,5 +401,163 @@ theorem rem_lt_id (x : Nat) (xs : List Nat)
       simp only [rem_all, if_neg hne]
       congr 1
       exact ih (fun y hy => h y (List.mem_cons_of_mem a hy))
+
+/-- A duplicate-free list included in another list cannot be longer. -/
+theorem subseq_leq_size {X : Type _} [DecidableEq X]
+    (xs ys : List X) (huniq : xs.Nodup)
+    (hsub : ∀ x, x ∈ xs → x ∈ ys) :
+    xs.length ≤ ys.length := by
+  exact huniq.length_le_of_subset hsub
+
+/-- Equal-length defaulted lookups at a valid common index give a member of
+    the pointwise zip. -/
+theorem in_zip {X Y : Type _} [DecidableEq X] [DecidableEq Y]
+    (xs : List X) (ys : List Y) (x xDefault : X) (y yDefault : Y)
+    (hlen : xs.length = ys.length)
+    (hlookup : ∃ idx, idx < xs.length ∧
+      xs.getD idx xDefault = x ∧ ys.getD idx yDefault = y) :
+    (x, y) ∈ xs.zip ys := by
+  obtain ⟨idx, hidx, hx, hy⟩ := hlookup
+  induction xs generalizing ys idx with
+  | nil => simp at hidx
+  | cons a xs ih =>
+      cases ys with
+      | nil => simp at hlen
+      | cons b ys =>
+          cases idx with
+          | zero =>
+              simp [List.getD] at hx hy
+              subst x
+              subst y
+              simp
+          | succ idx =>
+              have hlen' : xs.length = ys.length := by
+                simpa using Nat.succ.inj hlen
+              have hidx' : idx < xs.length := by
+                simpa using hidx
+              have hx' : xs.getD idx xDefault = x := by
+                simpa [List.getD_cons_succ] using hx
+              have hy' : ys.getD idx yDefault = y := by
+                simpa [List.getD_cons_succ] using hy
+              exact List.mem_cons_of_mem (a, b)
+                (ih ys hlen' idx hidx' hx' hy')
+
+/-- Two members with the same first index are equal. -/
+theorem eq_ind_in_seq {X : Type _} [DecidableEq X]
+    (a b : X) (xs : List X)
+    (hidx : xs.idxOf a = xs.idxOf b)
+    (ha : a ∈ xs) (_hb : b ∈ xs) :
+    a = b := by
+  exact (List.idxOf_inj ha).mp hidx
+
+/-- A defaulted lookup returns either the default or a list member. -/
+theorem default_or_in {X : Type _} [DecidableEq X]
+    (n : Nat) (d : X) (xs : List X) :
+    xs.getD n d = d ∨ xs.getD n d ∈ xs := by
+  induction xs generalizing n with
+  | nil => simp [List.getD]
+  | cons a xs ih =>
+      cases n with
+      | zero => simp [List.getD]
+      | succ n =>
+          rw [List.getD_cons_succ]
+          rcases ih n with h | h
+          · exact Or.inl h
+          · exact Or.inr (List.mem_cons_of_mem a h)
+
+/-- A duplicate-free list of length greater than one has two distinct
+    members. -/
+theorem exists_two {X : Type _} [DecidableEq X]
+    (xs : List X) (hlen : 1 < xs.length) (huniq : xs.Nodup) :
+    ∃ a b, a ≠ b ∧ a ∈ xs ∧ b ∈ xs := by
+  cases xs with
+  | nil => simp at hlen
+  | cons a xs =>
+      cases xs with
+      | nil => simp at hlen
+      | cons b xs =>
+          have hnot : a ∉ b :: xs := (List.nodup_cons.mp huniq).1
+          have hab : a ≠ b := by
+            intro hab
+            apply hnot
+            simp [hab]
+          exact ⟨a, b, hab, by simp, by simp⟩
+
+/-- If every member satisfies a Boolean predicate and the list is non-empty,
+    then some member satisfies it. -/
+theorem has_all_nilp {T : Type _} [DecidableEq T]
+    (s : List T) (P : T → Bool)
+    (hall : s.all P = true) (hnil : s.isEmpty = false) :
+    s.any P = true := by
+  cases s with
+  | nil => simp at hnil
+  | cons a s =>
+      simp only [List.all_cons, Bool.and_eq_true] at hall
+      simp [List.any_cons, hall.1]
+
+/-- LEAN_HELPER: adjacent Boolean relation observations for the MathComp
+    `sorted` representation. -/
+def boolSorted {X : Type _} (R : X → X → Bool) (xs : List X) : Prop :=
+  xs.IsChain (fun x y => R x y = true)
+
+/-- A list sorted by a natural-valued key splits its filtered members at a
+    threshold into the lower and upper contiguous parts. -/
+theorem sorted_split {X : Type _} [DecidableEq X]
+    (xs : List X) (P : X → Bool) (f : X → Nat) (t : Nat)
+    (hsorted : boolSorted (fun x y => decide (f x ≤ f y)) xs) :
+    xs.filter P =
+      xs.filter (fun x => P x && decide (f x ≤ t)) ++
+      xs.filter (fun x => P x && decide (t < f x)) := by
+  induction xs with
+  | nil => rfl
+  | cons a xs ih =>
+      have htail : boolSorted (fun x y => decide (f x ≤ f y)) xs := by
+        exact List.IsChain.of_cons hsorted
+      have ihEq := ih htail
+      cases hPa : P a with
+      | false =>
+          simpa [List.filter_cons, hPa] using ihEq
+      | true =>
+          by_cases hle : f a ≤ t
+          · have hnlt : ¬ t < f a := Nat.not_lt_of_ge hle
+            simpa [List.filter_cons, hPa, hle, hnlt] using
+              congrArg (List.cons a) ihEq
+          · have hgt : t < f a := Nat.lt_of_not_ge hle
+            have hsortedNat :
+                (a :: xs).IsChain (fun x y => f x ≤ f y) := by
+              apply hsorted.imp
+              intro x y hxy
+              exact of_decide_eq_true hxy
+            have hpair :
+                (a :: xs).Pairwise (fun x y => f x ≤ f y) :=
+              hsortedNat.pairwise
+            have hhead : ∀ x ∈ xs, f a ≤ f x :=
+              (List.pairwise_cons.mp hpair).1
+            have hlowFalse : ∀ x, x ∈ xs →
+                (P x && decide (f x ≤ t)) = false := by
+              intro x hx
+              have hax : f a ≤ f x := hhead x hx
+              have hnot : ¬ f x ≤ t := by omega
+              simp [hnot]
+            have hlowNil :
+                xs.filter (fun x => P x && decide (f x ≤ t)) = [] :=
+              filter_in_pred0 xs _ hlowFalse
+            simp [List.filter_cons, hPa, hle, hgt, ihEq, hlowNil]
+
+/-- Sortedness of an append implies sortedness of each component. -/
+theorem sorted_cat {X : Type _} [DecidableEq X]
+    (R : X → X → Bool) (xs1 xs2 : List X)
+    (_htrans : ∀ x y z, R x y = true → R y z = true → R x z = true)
+    (hsorted : boolSorted R (xs1 ++ xs2)) :
+    boolSorted R xs1 ∧ boolSorted R xs2 := by
+  exact ⟨hsorted.left_of_append, hsorted.right_of_append⟩
+
+/-- The default does not affect `getLastD` on a non-empty list. -/
+theorem nonnil_last {X : Type _} [DecidableEq X]
+    (xs : List X) (d1 d2 : X) (hne : xs ≠ []) :
+    xs.getLastD d1 = xs.getLastD d2 := by
+  cases xs with
+  | nil => contradiction
+  | cons a xs => simp [List.getLastD]
 
 end Prosa.Util.List

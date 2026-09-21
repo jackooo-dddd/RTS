@@ -54,8 +54,10 @@ fi
 
 common_modules=(PropSPropFoundation LogicalRelation SubadditivityNatCorrespondence)
 certificate_modules=(ListSimpleCertificate ListLastCertificate ListRemCertificate \
-  ListBatch2Certificate ListSimpleAssumptionAudit ListLastTypeAudit \
-  ListBatch2TypeAudit ListLastAssumptionAudit ListBatch2AssumptionAudit)
+  ListBatch2Certificate ListBatch3Operations ListBatch3Certificate \
+  ListSimpleAssumptionAudit ListLastTypeAudit ListBatch2TypeAudit \
+  ListBatch3TypeAudit ListLastAssumptionAudit ListBatch2AssumptionAudit \
+  ListBatch3AssumptionAudit)
 for module in "${common_modules[@]}" "${certificate_modules[@]}"; do
   path="$cert_src/$module.v"
   [[ -f "$path" ]] || path="$common_src/$module.v"
@@ -85,6 +87,7 @@ python3 - \
   "$fixture_dir/list_simple_axiom_config.json" \
   "$fixture_dir/list_last_axiom_config.json" \
   "$fixture_dir/list_batch2_axiom_config.json" \
+  "$fixture_dir/list_batch3_axiom_config.json" \
   "$run_log/combined_lean_axiom_config.json" <<'PY'
 import json, sys
 from pathlib import Path
@@ -101,6 +104,7 @@ python3 - \
   "$cert_src/list_simple_assumption_config.json" \
   "$cert_src/list_last_assumption_config.json" \
   "$cert_src/list_batch2_assumption_config.json" \
+  "$cert_src/list_batch3_assumption_config.json" \
   "$run_log/combined_assumption_config.json" <<'PY'
 import json, sys
 from pathlib import Path
@@ -145,6 +149,7 @@ start=$(now_ns)
   lean -DautoImplicit=false "$fixture_dir/LeanListMaxAudit.lean"
   lean -DautoImplicit=false "$fixture_dir/LeanListRemAudit.lean"
   lean -DautoImplicit=false "$fixture_dir/LeanListBatch2Audit.lean"
+  lean -DautoImplicit=false "$fixture_dir/LeanListBatch3Audit.lean"
 } > "$run_log/lean_freeze_and_axioms.log" 2>&1
 python3 "$script_dir/audit_lean_axioms.py" \
   --config "$run_log/combined_lean_axiom_config.json" \
@@ -155,6 +160,7 @@ python3 "$script_dir/audit_lean_axioms.py" \
   cat "$run_log/rocq_ListSimpleAssumptionAudit.log"
   cat "$run_log/rocq_ListLastAssumptionAudit.log"
   cat "$run_log/rocq_ListBatch2AssumptionAudit.log"
+  cat "$run_log/rocq_ListBatch3AssumptionAudit.log"
 } > "$run_log/assumptions.log"
 python3 "$script_dir/audit_assumptions.py" \
   --config "$run_log/combined_assumption_config.json" \
@@ -193,6 +199,11 @@ python3 "$script_dir/publish_utility_cluster.py" \
   --config "$cert_src/list_last_cluster_config.json" \
   --output "$cluster_dir/list_last.json" \
   > "$run_log/publication_list.log"
+python3 "$script_dir/publish_utility_cluster.py" \
+  "${publisher_args[@]}" \
+  --config "$cert_src/list_batch3_cluster_config.json" \
+  --output "$cluster_dir/list_batch3.json" \
+  > "$run_log/publication_batch3.log"
 
 for stem in ListSimple ListLast; do
   cp "$work/imported/$stem.out" "$publish_dir/$stem.out"
@@ -202,7 +213,8 @@ done
 for module in ListSimpleCertificate ListSimpleAssumptionAudit \
   ListLastCertificate ListRemCertificate ListLastTypeAudit \
   ListLastAssumptionAudit ListBatch2Certificate ListBatch2TypeAudit \
-  ListBatch2AssumptionAudit; do
+  ListBatch2AssumptionAudit ListBatch3Operations ListBatch3Certificate \
+  ListBatch3TypeAudit ListBatch3AssumptionAudit; do
   cp "$work/certificates/$module.vo" "$publish_dir/$module.vo"
 done
 python3 "$script_dir/generate_utility_foundation_results.py" \
@@ -244,6 +256,6 @@ path.write_text(json.dumps({
 }, indent=2, sort_keys=True) + "\n")
 PY
 
-echo "util/list.v unified regression: 30 / 57 ACCEPTED"
+echo "util/list.v unified regression: 39 / 57 ACCEPTED"
 echo "snapshot: $snapshot_id"
 echo "final work directory: $work"

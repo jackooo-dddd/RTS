@@ -18,7 +18,8 @@ common_src="$VALIDATION_ROOT/certificates/common"
 cert_src="$VALIDATION_ROOT/certificates/utility_foundation"
 base_sources=(PropSPropFoundation LogicalRelation SubadditivityNatCorrespondence \
   ListLastCertificate ListRemCertificate)
-target_sources=(ListBatch2Certificate ListBatch2TypeAudit ListBatch2AssumptionAudit)
+target_sources=(ListBatch2Certificate ListBatch3Operations \
+  ListBatch3Certificate ListBatch3TypeAudit ListBatch3AssumptionAudit)
 
 for module in "${base_sources[@]}" "${target_sources[@]}"; do
   path="$cert_src/$module.v"
@@ -139,9 +140,9 @@ python3 "$state_tool" record --output "$events" --stage certificate_compile \
   --mode FRESH --executed true --start-ns "$start" --end-ns "$end"
 
 start=$(now_ns)
-cp "$run_log/rocq_ListBatch2AssumptionAudit.log" "$run_log/assumptions.log"
+cp "$run_log/rocq_ListBatch3AssumptionAudit.log" "$run_log/assumptions.log"
 python3 "$script_dir/audit_assumptions.py" \
-  --config "$cert_src/list_batch2_assumption_config.json" \
+  --config "$cert_src/list_batch3_assumption_config.json" \
   --log "$run_log/assumptions.log" \
   --output "$run_log/assumption_summary.json" \
   > "$run_log/assumption_classifier.log"
