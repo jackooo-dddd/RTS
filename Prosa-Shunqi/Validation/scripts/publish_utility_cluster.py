@@ -72,6 +72,11 @@ def main() -> None:
     validation = args.validation_root.resolve()
     config = json.loads(args.config.read_text())
     source_file = config["source_file"]
+    validation_source_file = config.get("validation_source_file", source_file)
+    source_validation_vo = config.get(
+        "source_validation_vo", source_file.replace(".v", ".vo")
+    )
+    source_metadata_name = config.get("source_acquisition_metadata")
     stem = config["artifact_stem"]
     inventory = [
         row for row in csv.DictReader(
@@ -86,7 +91,18 @@ def main() -> None:
     }
     configured = config["declarations"]
     source_names = {row["declaration_name"] for row in inventory}
-    if source_names != set(configured):
+    partial_inventory = bool(config.get("partial_inventory", False))
+    if partial_inventory:
+        unknown = set(configured) - source_names
+        if unknown:
+            raise SystemExit(
+                f"partial-cluster config has declarations absent from {source_file}: "
+                f"{sorted(unknown)}"
+            )
+        inventory = [
+            row for row in inventory if row["declaration_name"] in configured
+        ]
+    elif source_names != set(configured):
         raise SystemExit(
             f"whole-file config mismatch for {source_file}: "
             f"missing={sorted(source_names-set(configured))}, "
@@ -106,9 +122,41 @@ def main() -> None:
     olean = args.work / "olean" / config["lean_file"].replace(".lean", ".olean")
     export = args.work / "imported" / f"{stem}.out"
     imported_vo = args.work / "imported" / f"Imported{stem}.vo"
-    official_vo = args.work / "source" / source_file.replace(".v", ".vo")
+    validation_source = args.work / "source" / validation_source_file
+    source_vo = args.work / "source" / source_validation_vo
+    source_metadata = None
+    source_metadata_sha256 = None
+    if source_metadata_name is not None:
+        source_metadata_path = args.work / "source" / source_metadata_name
+        source_metadata = json.loads(source_metadata_path.read_text())
+        source_metadata_sha256 = sha(source_metadata_path)
+        if source_metadata.get("source_file") != source_file:
+            raise SystemExit("source acquisition metadata file mismatch")
+        if source_metadata.get("source_commit") != git(args.source_root, "rev-parse", "HEAD"):
+            raise SystemExit("source acquisition metadata commit mismatch")
+        if source_metadata.get("source_file_sha256") != sha(args.source_root / source_file):
+            raise SystemExit("source acquisition metadata hash mismatch")
+        if set(source_metadata.get("declarations", {})) != set(configured):
+            raise SystemExit("source acquisition metadata declaration coverage mismatch")
     certificate_root = validation / "certificates/utility_foundation"
     common_root = validation / "certificates/common"
+    evidence_roots = {
+        "project": project,
+        "validation": validation,
+        "work": args.work,
+    }
+    additional_evidence = {}
+    for label, evidence in config.get("additional_evidence", {}).items():
+        base = evidence_roots.get(evidence["base"])
+        if base is None:
+            raise SystemExit(f"unknown additional-evidence base: {evidence['base']}")
+        path = base / evidence["path"]
+        if not path.is_file() or not path.stat().st_size:
+            raise SystemExit(f"additional evidence absent or empty: {path}")
+        additional_evidence[label] = {
+            "path": str(path),
+            "sha256": sha(path),
+        }
 
     rows = []
     for row in inventory:
@@ -127,6 +175,12 @@ def main() -> None:
         if not accepted:
             raise SystemExit(f"semantic audit failed: {lean_name}: {audit['status']}")
         cert_source = certificate_root / spec["certificate_file"]
+        if not cert_source.is_file():
+            cert_source = common_root / spec["certificate_file"]
+        if not cert_source.is_file():
+            raise SystemExit(
+                f"certificate source not found: {spec['certificate_file']}"
+            )
         cert_vo = args.work / "certificates" / spec["certificate_file"].replace(".v", ".vo")
         bridge_hashes = {}
         for bridge in spec["bridge_files"]:
@@ -136,6 +190,9 @@ def main() -> None:
         invalidation_material = {
             "source_command": row["source_command_sha256"],
             "source_type": row["final_type_or_type_fingerprint"],
+            "validation_source": sha(validation_source),
+            "source_validation_vo": sha(source_vo),
+            "source_acquisition_metadata": source_metadata_sha256,
             "lean_source": sha(lean_source),
             "lean_type": text_sha(freezes[lean_name]),
             "olean": sha(olean),
@@ -145,6 +202,7 @@ def main() -> None:
             "certificate_vo": sha(cert_vo),
             "assumptions": audit["raw_section_sha256"],
             "bridges": bridge_hashes,
+            "additional_evidence": additional_evidence,
         }
         rows.append({
             "source_file": source_file,
@@ -161,7 +219,10 @@ def main() -> None:
             "fresh_olean_sha256": sha(olean),
             "export_sha256": sha(export),
             "imported_vo_sha256": sha(imported_vo),
-            "official_source_vo_sha256": sha(official_vo),
+            "source_validation_vo_sha256": sha(source_vo),
+            "official_source_vo_sha256": (
+                sha(source_vo) if validation_source_file == source_file else None
+            ),
             "lean_proof_audit": lean_audit,
             "certificate": spec["certificate"],
             "certificate_module": spec["certificate_file"],
@@ -183,18 +244,32 @@ def main() -> None:
 
     result = {
         "source_file": source_file,
-        "file_status": "ACCEPTED_V06_FILE",
+        "file_status": (
+            "PARTIAL_V06_FILE" if partial_inventory else "ACCEPTED_V06_FILE"
+        ),
+        "inventory_scope": (
+            "DECLARATION_CLUSTER" if partial_inventory else "WHOLE_FILE"
+        ),
         "fresh_build": True,
         "source_commit": git(args.source_root, "rev-parse", "HEAD"),
         "source_tree": git(args.source_root, "rev-parse", "HEAD^{tree}"),
         "source_sha256": sha(args.source_root / source_file),
-        "validation_source_sha256": sha(args.work / "source" / source_file),
+        "source_acquisition_mode": (
+            "AUTO_EXTRACT" if source_metadata is not None else "DIRECT_IMPORT"
+        ),
+        "validation_source_file": validation_source_file,
+        "validation_source_sha256": sha(validation_source),
+        "source_acquisition_metadata_sha256": source_metadata_sha256,
         "lean_source_sha256": sha(lean_source),
         "fresh_olean_sha256": sha(olean),
         "export_sha256": sha(export),
         "imported_vo_sha256": sha(imported_vo),
-        "official_source_vo_sha256": sha(official_vo),
+        "source_validation_vo_sha256": sha(source_vo),
+        "official_source_vo_sha256": (
+            sha(source_vo) if validation_source_file == source_file else None
+        ),
         "baseline_audit": baseline,
+        "additional_evidence": additional_evidence,
         "tooling": {
             "lean4export_base_commit": git(args.exporter_root, "rev-parse", "HEAD"),
             "lean4export_binary_sha256": sha(

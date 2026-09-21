@@ -63,6 +63,21 @@ Definition imported_exists_intermediate_point_leq_type_guard :
           (Lean.eq (f xmid) y)) :=
   ImportedUnitGrowth.Prosa_Util_UnitGrowth_exists_intermediate_point_leq.
 
+Definition imported_exists_first_intermediate_point_type_guard :
+  forall (P : Lean.Nat -> ImportedUnitGrowth.Bool)
+      (t1 t2 : Lean.Nat),
+    ug_le t1 t2 ->
+    Lean.eq (P t1) ImportedUnitGrowth.Bool_false ->
+    Lean.eq (P t2) ImportedUnitGrowth.Bool_true ->
+    ImportedUnitGrowth.Exists Lean.Nat (fun t =>
+      Lean.And (Lean.And (ug_lt t1 t) (ug_le t t2))
+        (Lean.And
+          (forall x : Lean.Nat,
+            Lean.And (ug_le t1 x) (ug_lt x t) ->
+            Lean.eq (P x) ImportedUnitGrowth.Bool_false)
+          (Lean.eq (P t) ImportedUnitGrowth.Bool_true))) :=
+  ImportedUnitGrowth.Prosa_Util_UnitGrowth_exists_first_intermediate_point.
+
 Definition imported_bound_preserved_under_slowed_type_guard :
   forall (f : Lean.Nat -> Lean.Nat) (delta A F : Lean.Nat),
     ug_le A (ug_sub F (f delta)) ->
@@ -297,6 +312,152 @@ Proof.
         (prop_to_sprop _ _ Hhi HhiR)).
 Qed.
 
+(** This source shell deliberately retains MathComp's Boolean conjunctions.
+    The following guard is definitionally equal to the exact post-Section
+    type acquired from the pinned v0.6 source. *)
+Definition ug_source_exists_first_result
+    (P : nat -> bool) (t1 t2 : nat) : Prop :=
+  exists t : nat,
+    is_true (ltn t1 t && leq t t2) /\
+    (forall x : nat,
+      is_true (leq t1 x && ltn x t) -> is_true (~~ P x)) /\
+    is_true (P t).
+
+Definition ug_source_exists_first_statement
+    (P : nat -> bool) (t1 t2 : nat) : Prop :=
+  is_true (leq t1 t2) ->
+  is_true (~~ P t1) ->
+  is_true (P t2) ->
+  ug_source_exists_first_result P t1 t2.
+
+Definition generated_exists_first_intermediate_point_type_guard :
+  Logic.eq
+    GeneratedUnitGrowthSource.statement_exists_first_intermediate_point
+    (forall (P : nat -> bool) (t1 t2 : nat),
+      ug_source_exists_first_statement P t1 t2) :=
+  Logic.eq_refl _.
+
+Definition ug_target_exists_first_result
+    (P : Lean.Nat -> ImportedUnitGrowth.Bool)
+    (t1 t2 : Lean.Nat) : SProp :=
+  ImportedUnitGrowth.Exists Lean.Nat (fun t =>
+    Lean.And (Lean.And (ug_lt t1 t) (ug_le t t2))
+      (Lean.And
+        (forall x : Lean.Nat,
+          Lean.And (ug_le t1 x) (ug_lt x t) ->
+          Lean.eq (P x) ImportedUnitGrowth.Bool_false)
+        (Lean.eq (P t) ImportedUnitGrowth.Bool_true))).
+
+Definition ug_target_exists_first_statement
+    (P : Lean.Nat -> ImportedUnitGrowth.Bool)
+    (t1 t2 : Lean.Nat) : SProp :=
+  ug_le t1 t2 ->
+  Lean.eq (P t1) ImportedUnitGrowth.Bool_false ->
+  Lean.eq (P t2) ImportedUnitGrowth.Bool_true ->
+  ug_target_exists_first_result P t1 t2.
+
+Lemma ug_first_result_backward_strict :
+  forall (PR : nat -> bool)
+      (PL : Lean.Nat -> ImportedUnitGrowth.Bool),
+    UgBoolFunRel PR PL ->
+    forall t1R t1L t2R t2L,
+      SubNatRel t1R t1L -> SubNatRel t2R t2L ->
+      ug_target_exists_first_result PL t1L t2L ->
+      StrictlyInhabited (ug_source_exists_first_result PR t1R t2R).
+Proof.
+  intros PR PL Hpred t1R t1L t2R t2L Ht1 Ht2 HresultL.
+  destruct HresultL as [tL HbodyL].
+  destruct HbodyL as [HboundsL HrestL].
+  destruct HboundsL as [HlowerL HupperL].
+  destruct HrestL as [HallL HtrueL].
+  set (tR := sub_nat_to_rocq tL).
+  have Ht : SubNatRel tR tL := sub_nat_rel_surjective tL.
+  apply strictly_inhabits. exists tR. split.
+  - apply/andP. split.
+    + exact (sprop_to_prop _ _
+        (ug_lt_correspondence _ _ _ _ Ht1 Ht) HlowerL).
+    + exact (sprop_to_prop _ _
+        (ug_le_correspondence _ _ _ _ Ht Ht2) HupperL).
+  - split.
+    + intros xR HboundsR. move/andP: HboundsR => [HlowerR HupperR].
+      have Hx := sub_nat_rel_canonical xR.
+      have HfalseL := HallL (sub_nat_to_imported xR)
+        (Lean.And_intro _ _
+          (prop_to_sprop _ _
+            (ug_le_correspondence _ _ _ _ Ht1 Hx) HlowerR)
+          (prop_to_sprop _ _
+            (ug_lt_correspondence _ _ _ _ Hx Ht) HupperR)).
+      exact (sprop_to_prop _ _
+        (ug_bool_false_correspondence _ _ (Hpred _ _ Hx)) HfalseL).
+    + exact (sprop_to_prop _ _
+        (ug_bool_true_correspondence _ _ (Hpred _ _ Ht)) HtrueL).
+Qed.
+
+Lemma exists_first_intermediate_point_statement_certificate :
+  forall (PR : nat -> bool)
+      (PL : Lean.Nat -> ImportedUnitGrowth.Bool),
+    UgBoolFunRel PR PL ->
+    forall t1R t1L t2R t2L,
+      SubNatRel t1R t1L -> SubNatRel t2R t2L ->
+      PropSPropRel
+        (ug_source_exists_first_statement PR t1R t2R)
+        (ug_target_exists_first_statement PL t1L t2L).
+Proof.
+  intros PR PL Hpred t1R t1L t2R t2L Ht1 Ht2.
+  have Hinterval := ug_le_correspondence _ _ _ _ Ht1 Ht2.
+  have HPt1 := Hpred _ _ Ht1.
+  have HPt2 := Hpred _ _ Ht2.
+  apply prop_sprop_rel_intro.
+  - intros HR HintervalL HfalseL HtrueL.
+    have HresultR := HR
+      (sprop_to_prop _ _ Hinterval HintervalL)
+      (sprop_to_prop _ _
+        (ug_bool_false_correspondence _ _ HPt1) HfalseL)
+      (sprop_to_prop _ _
+        (ug_bool_true_correspondence _ _ HPt2) HtrueL).
+    destruct HresultR as [tR [HboundsR [HallR HtrueR]]].
+    have HlowerR := ug_and_left _ _ HboundsR.
+    have HupperR := ug_and_right _ _ HboundsR.
+    have Ht := sub_nat_rel_canonical tR.
+    exact (ImportedUnitGrowth.Exists_intro Lean.Nat _
+      (sub_nat_to_imported tR)
+      (Lean.And_intro _ _
+        (Lean.And_intro _ _
+          (prop_to_sprop _ _
+            (ug_lt_correspondence _ _ _ _ Ht1 Ht) HlowerR)
+          (prop_to_sprop _ _
+            (ug_le_correspondence _ _ _ _ Ht Ht2) HupperR))
+        (Lean.And_intro _ _
+          (fun xL HboundsL =>
+            let xR := sub_nat_to_rocq xL in
+            let Hx : SubNatRel xR xL := sub_nat_rel_surjective xL in
+            let Hpx := Hpred xR xL Hx in
+            match HboundsL with
+            | Lean.And_intro HlowerL HupperL =>
+                prop_to_sprop _ _
+                  (ug_bool_false_correspondence _ _ Hpx)
+                  (HallR xR
+                    (ug_and_intro _ _
+                      (sprop_to_prop _ _
+                        (ug_le_correspondence _ _ _ _ Ht1 Hx) HlowerL)
+                      (sprop_to_prop _ _
+                        (ug_lt_correspondence _ _ _ _ Hx Ht) HupperL)))
+            end)
+          (prop_to_sprop _ _
+            (ug_bool_true_correspondence _ _ (Hpred _ _ Ht)) HtrueR)))).
+  - intro HL. apply strictly_inhabits.
+    intros HintervalR HfalseR HtrueR.
+    have HresultL := HL
+      (prop_to_sprop _ _ Hinterval HintervalR)
+      (prop_to_sprop _ _
+        (ug_bool_false_correspondence _ _ HPt1) HfalseR)
+      (prop_to_sprop _ _
+        (ug_bool_true_correspondence _ _ HPt2) HtrueR).
+    exact (interpret_strict _
+      (ug_first_result_backward_strict
+        PR PL Hpred t1R t1L t2R t2L Ht1 Ht2 HresultL)).
+Qed.
+
 Lemma ug_pointwise_le_up_to_correspondence :
   forall (fR FR : nat -> nat) (fL FL : Lean.Nat -> Lean.Nat),
     SubNatFunRel fR fL -> SubNatFunRel FR FL ->
@@ -526,5 +687,6 @@ Print Assumptions slowed_respects_monotone_statement_certificate.
 Print Assumptions slowed_never_exceeds_statement_certificate.
 Print Assumptions exists_intermediate_point_statement_certificate.
 Print Assumptions exists_intermediate_point_leq_statement_certificate.
+Print Assumptions exists_first_intermediate_point_statement_certificate.
 Print Assumptions bound_preserved_under_slowed_statement_certificate.
 Print Assumptions slowed_subtraction_value_preservation_statement_certificate.

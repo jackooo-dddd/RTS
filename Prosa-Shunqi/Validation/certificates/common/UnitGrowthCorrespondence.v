@@ -176,8 +176,55 @@ Qed.
 Inductive UgTruth : SProp := ug_truth_intro.
 Inductive UgFalse : SProp := .
 
+Definition UgBoolTruth (b : bool) : SProp :=
+  match b with true => UgTruth | false => UgFalse end.
+
+Definition UgBoolRel
+    (bR : bool) (bL : ImportedUnitGrowth.Bool) : SProp :=
+  match bR, bL with
+  | true, ImportedUnitGrowth.Bool_true => UgTruth
+  | false, ImportedUnitGrowth.Bool_false => UgTruth
+  | _, _ => UgFalse
+  end.
+
+Definition UgBoolFunRel
+    (pR : nat -> bool) (pL : Lean.Nat -> ImportedUnitGrowth.Bool) : SProp :=
+  forall nR nL, SubNatRel nR nL -> UgBoolRel (pR nR) (pL nL).
+
 Definition ug_false_elim (P : SProp) (H : UgFalse) : P :=
   match H return P with end.
+
+Definition ug_bool_prop_to_truth (b : bool) :
+    is_true b -> UgBoolTruth b :=
+  match b return is_true b -> UgBoolTruth b with
+  | true => fun _ => ug_truth_intro
+  | false => fun H =>
+      match H in Logic.eq _ z return
+        match z with true => UgFalse | false => UgTruth end
+      with Logic.eq_refl => ug_truth_intro end
+  end.
+
+Lemma ug_and_intro (a b : bool) :
+  is_true a -> is_true b -> is_true (a && b).
+Proof. by case: a; case: b. Qed.
+
+Definition ug_and_left (a b : bool) :
+    is_true (a && b) -> is_true a :=
+  match a, b return is_true (a && b) -> is_true a with
+  | true, true => fun _ => Logic.eq_refl true
+  | true, false => fun _ => Logic.eq_refl true
+  | false, true => fun H => H
+  | false, false => fun H => H
+  end.
+
+Definition ug_and_right (a b : bool) :
+    is_true (a && b) -> is_true b :=
+  match a, b return is_true (a && b) -> is_true b with
+  | true, true => fun _ => Logic.eq_refl true
+  | true, false => fun H => H
+  | false, true => fun _ => Logic.eq_refl true
+  | false, false => fun H => H
+  end.
 
 Definition ug_imported_false_ne_true
     (H : Lean.eq ImportedUnitGrowth.Bool_false
@@ -188,6 +235,56 @@ Definition ug_imported_false_ne_true
     | ImportedUnitGrowth.Bool_true => UgFalse
     end
   with Lean.eq_refl => ug_truth_intro end.
+
+Definition ug_imported_true_ne_false
+    (H : Lean.eq ImportedUnitGrowth.Bool_true
+      ImportedUnitGrowth.Bool_false) : UgFalse :=
+  match H in Lean.eq _ z return
+    match z with
+    | ImportedUnitGrowth.Bool_true => UgTruth
+    | ImportedUnitGrowth.Bool_false => UgFalse
+    end
+  with Lean.eq_refl => ug_truth_intro end.
+
+Lemma ug_bool_true_correspondence
+    (bR : bool) (bL : ImportedUnitGrowth.Bool) :
+  UgBoolRel bR bL ->
+  PropSPropRel (is_true bR)
+    (Lean.eq bL ImportedUnitGrowth.Bool_true).
+Proof.
+  intro Hrel. apply prop_sprop_rel_intro.
+  - destruct bR, bL; cbn in Hrel |- *.
+    + exact (ug_false_elim _ Hrel).
+    + intros _. exact (@Lean.eq_refl ImportedUnitGrowth.Bool
+        ImportedUnitGrowth.Bool_true).
+    + intro H. exact (ug_false_elim _ (ug_bool_prop_to_truth false H)).
+    + exact (ug_false_elim _ Hrel).
+  - destruct bR, bL; cbn in Hrel |- *; intro Heq.
+    + exact (ug_false_elim _ Hrel).
+    + exact (strictly_inhabits (Logic.eq_refl true)).
+    + exact (ug_false_elim _ (ug_imported_false_ne_true Heq)).
+    + exact (ug_false_elim _ Hrel).
+Qed.
+
+Lemma ug_bool_false_correspondence
+    (bR : bool) (bL : ImportedUnitGrowth.Bool) :
+  UgBoolRel bR bL ->
+  PropSPropRel (is_true (~~ bR))
+    (Lean.eq bL ImportedUnitGrowth.Bool_false).
+Proof.
+  intro Hrel. apply prop_sprop_rel_intro.
+  - destruct bR, bL; cbn in Hrel |- *.
+    + exact (ug_false_elim _ Hrel).
+    + intro H. exact (ug_false_elim _ (ug_bool_prop_to_truth false H)).
+    + intros _. exact (@Lean.eq_refl ImportedUnitGrowth.Bool
+        ImportedUnitGrowth.Bool_false).
+    + exact (ug_false_elim _ Hrel).
+  - destruct bR, bL; cbn in Hrel |- *; intro Heq.
+    + exact (ug_false_elim _ Hrel).
+    + exact (ug_false_elim _ (ug_imported_true_ne_false Heq)).
+    + exact (strictly_inhabits (Logic.eq_refl true)).
+    + exact (ug_false_elim _ Hrel).
+Qed.
 
 Definition ug_decide_forward (P : SProp)
     (d : ImportedUnitGrowth.Decidable P) :
@@ -332,6 +429,8 @@ Qed.
 Print Assumptions ug_min_correspondence.
 Print Assumptions ug_sub_correspondence.
 Print Assumptions ug_decide_le_true_correspondence.
+Print Assumptions ug_bool_true_correspondence.
+Print Assumptions ug_bool_false_correspondence.
 Print Assumptions ug_unit_growth_correspondence.
 Print Assumptions ug_monotone_correspondence.
 Print Assumptions ug_slowed_correspondence.

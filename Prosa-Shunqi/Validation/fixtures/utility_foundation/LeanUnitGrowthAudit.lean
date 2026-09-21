@@ -50,10 +50,12 @@ import Prosa.Util.UnitGrowth
 #check @Prosa.Util.UnitGrowth.slowed_subtraction_value_preservation
 #eval IO.println "FREEZE_END Prosa.Util.UnitGrowth.slowed_subtraction_value_preservation"
 
+#print axioms Prosa.Util.UnitGrowth.unit_growth_function
 #print axioms Prosa.Util.UnitGrowth.unit_growth_function_k_steps_bounded
 #print axioms Prosa.Util.UnitGrowth.exists_intermediate_point
 #print axioms Prosa.Util.UnitGrowth.exists_intermediate_point_leq
 #print axioms Prosa.Util.UnitGrowth.exists_first_intermediate_point
+#print axioms Prosa.Util.UnitGrowth.slowed
 #print axioms Prosa.Util.UnitGrowth.slowed_respects_pointwise_leq
 #print axioms Prosa.Util.UnitGrowth.slowed_is_unit_step
 #print axioms Prosa.Util.UnitGrowth.slowed_respects_monotone

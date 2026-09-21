@@ -1,0 +1,13 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedListSimple.
+
+Check ImportedListSimple.Prosa_Util_List_max0.
+Check ImportedListSimple.Prosa_Util_List_first0.
+Check ImportedListSimple.Prosa_Util_List_last0.
+
+Print ImportedListSimple.Prosa_Util_List_max0.
+Print ImportedListSimple.Prosa_Util_List_first0.
+Print ImportedListSimple.Prosa_Util_List_last0.
+Print ImportedListSimple.List_foldl_inst3.
+Print ImportedListSimple.List_headD_inst1.
+Print ImportedListSimple.List_getLastD_inst1.

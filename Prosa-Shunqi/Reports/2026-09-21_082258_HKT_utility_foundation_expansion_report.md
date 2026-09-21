@@ -247,3 +247,196 @@ validation class, and file-DAG readiness.
   22 translated and Lean proof-clean; 13 with a compiling Rocq semantic proof
   (the 2 accepted Nat declarations plus 11 preliminary UnitGrowth results);
   and 2 fully accepted after the complete audit/publication gate.
+
+## 2026-09-21 11:23:55 HKT — UnitGrowth reaches 12 / 12 semantic proof bodies
+
+- Added the missing compositional certificate for
+  `exists_first_intermediate_point`. It connects the exact pinned-source
+  Boolean interval statement to the actual imported compiled Lean theorem
+  type, including related predicates, Boolean `false`/`true`, strict and
+  non-strict Nat bounds, the first-witness universal condition, and the
+  existential witness.
+- The source guard is definitionally equal to the extractor's exact
+  post-Section v0.6 type. In particular it retains MathComp Boolean
+  conjunctions rather than replacing them with an untracked Prop model.
+- `UnitGrowthCorrespondence.v` and `UnitGrowthCertificate.v` both compile
+  under Rocq 9.3. All 12 / 12 UnitGrowth declarations now have compiling
+  semantic proof bodies. The new proof uses no target theorem proof, source
+  theorem proof, validation-specific premise, `Admitted`, or new axiom.
+- Current certificate-source hashes are
+  `UnitGrowthCorrespondence.v 8ceb5a02...49f5` and
+  `UnitGrowthCertificate.v 668cf5f9...9fd1`. These are still intermediate
+  hashes: UnitGrowth is not marked accepted until a new isolated build,
+  export/import, automatic assumption audit, baseline audit, and publication
+  all pass.
+
+## 2026-09-21 11:35:41 HKT — `util/unit_growth.v` accepted 12 / 12
+
+- The complete fresh pipeline passed from a new isolated work directory:
+  Lean dependency rebuild, UnitGrowth rebuild, proof/axiom audit, actual
+  `lean4export`, `rocq-lean-import`, source-signature acquisition, all common
+  bridge and certificate compilations, fail-closed `Print Assumptions`
+  classification, frozen-baseline audit, content-addressed publication, and
+  `git diff --check`.
+- All 12 declarations are now `ACCEPTED_V06_TRANSLATION`; the whole source
+  file is `ACCEPTED_V06_FILE`. All 12 have status
+  `CERTIFIED_WITH_PROP_SPROP_FOUNDATION`. For every declaration:
+  `semantic_premises = []`, target theorem dependency is false, source theorem
+  dependency is false, and unexpected assumptions are empty.
+- The only non-importer logical boundary is the existing audited
+  `PropSPropFoundation.interpret_strict`; no new semantic axiom was introduced.
+  The two imported recursive equation proofs for `slowed` were independently
+  Lean-audited as axiom-free.
+- Final fresh hashes include `.olean b08ffde3...5a20`, export
+  `998976a4...109`, imported `.vo 741c7b7b...512`, generated source-signature
+  `.vo 7d0622a3...437`, and source-acquisition metadata
+  `9dc76085...87e`.
+- Cumulative accepted coverage is now 9 / 357 files and 38 / 2439 public
+  declarations. Within the current 104-declaration batch, 14 are accepted.
+
+## 2026-09-21 11:38:31 HKT — incremental status model corrected
+
+- The aggregate generator now consumes both fully accepted cluster evidence
+  and explicit in-progress evidence. It distinguishes `NOT_STARTED`,
+  `TRANSLATED`, `PROOF_CLEAN`, `SEMANTIC_PROOF_COMPILED`,
+  `BLOCKED_SEMANTIC_VALIDATION`, and accepted results instead of treating every
+  non-accepted file as not started.
+- `util/unit_growth.v` is correctly shown as 12 translated, 12 proof-clean,
+  12 semantic-proof-compiled, and 12 accepted.
+- `util/search_arg.v` is correctly shown as 8 translated and 8 proof-clean,
+  with 0 accepted and semantic validation still pending. Its fresh `.olean`,
+  export, imported `.vo`, and generated source-signature hashes are bound in
+  the progress record; this is not an acceptance claim.
+- Current batch truth is 22 translated/proof-clean, 14 accepted, and 8
+  translated-but-not-certified. Repository cache policy now ignores Python
+  bytecode and `.lia.cache`; the existing generated `__pycache__` was removed.
+  `git diff --check` passes.
+
+## 2026-09-21 11:55:21 HKT — repository skill installed; SearchArg recursion bridge compiles
+
+- Installed the user-supplied `prosa-v06-translation` repository skill at
+  `.agents/skills/prosa-v06-translation/`. All 9 installed files are
+  byte-identical to the supplied package. The original package remains in
+  place, and no `AGENTS.md` was overwritten.
+- Re-read the current utility manifest, status, approved representation
+  policy, and foundational decisions before continuing. The current truth is
+  9 / 357 accepted files and 38 / 2439 accepted declarations; this paragraph
+  does not infer acceptance from file existence.
+- SearchArg recovery approach 1 succeeded at the computational-definition
+  level. `search_arg_definition_certificate` uses the actual imported
+  `search_arg_eq_1` and `search_arg_eq_2` equations, induction on `b`, and
+  canonical Nat/Bool/Option maps. It does not inspect the generated
+  `Nat_brecOn` / `Nat_below` body.
+- Rocq 9.3 compiled the certificate. `Print Assumptions` currently reports
+  importer definitional-UIP foundations and the already-audited
+  `PropSPropFoundation.interpret_strict`; no new semantic axiom was added.
+  This is intermediate `SEMANTIC_PROOF_COMPILED` evidence for the `search_arg`
+  Fixpoint only. The seven theorem statement certificates and the complete
+  fail-closed publication audit remain open, so `util/search_arg.v` is not yet
+  accepted.
+
+## 2026-09-21 12:00:20 HKT — List and Sum starter clusters compile
+
+- Started `util/list.v` without waiting for the remaining SearchArg theorem
+  certificates. The first source-ordered cluster now has production candidates
+  for `max0`, `first0`, and `last0` (3 / 57). Their actual compiled interfaces
+  are respectively `List Nat -> Nat` with bodies `List.foldl Nat.max 0`,
+  `List.headD 0`, and `List.getLastD 0`. Lean reports no axioms for these three
+  computational definitions.
+- Started `util/sum.v` because the authoritative file-DAG prerequisite
+  `util/nat.v` is accepted. The requested starter cluster now has production
+  candidates for `sum_of_ones`, `big_nat_eq0`, and
+  `sum_le_summation_range` (3 / 25), using the approved half-open
+  `Finset.Ico` representation.
+- Both production modules compile under pinned Lean 4.33.1 / Mathlib. The Sum
+  theorem proof audit reports only the currently allowed Lean foundations
+  `propext`, `Classical.choice`, and `Quot.sound`; no `sorryAx` or custom axiom
+  appears. These are compilation/proof-clean results, not semantic acceptance.
+- Current workflow totals are 28 translated and proof-clean declarations, 14
+  fully accepted declarations, and one additional SearchArg declaration with
+  an intermediate compiling semantic proof. Cumulative accepted coverage
+  remains 9 / 357 files and 38 / 2439 declarations until fresh artifact
+  validation and assumption audits pass.
+
+## 2026-09-21 12:14:28 HKT — List simple-definition certificates compile
+
+- Added semantic certificates for the source-ordered `util/list.v` starter
+  cluster: `max0`, `first0`, and `last0`. They refer directly to the actual
+  declarations imported from the fresh compiled `Prosa.Util.List` artifact.
+- Before proving correspondence, inspected the imported computational
+  interface. The target artifact contains a monomorphic exported list carrier
+  distinct from the generic support carrier, so the proof deliberately maps
+  MathComp sequences to the exact `List_inst1 Nat` used by the three target
+  declarations. It does not apply generic list equations to the wrong carrier.
+- Kernel reduction establishes the actual monomorphic `foldl`, `headD`, and
+  `getLastD` equations needed by the proof. The `max0` proof additionally
+  connects MathComp `maxn` with the actual imported `Nat.max` decision tree.
+- Rocq 9.3 compiled all three certificates. The fail-closed probe audit
+  classifies `first0` and `last0` as `CERTIFIED` with importer equality
+  foundations only, and `max0` as
+  `CERTIFIED_WITH_PROP_SPROP_FOUNDATION` because its imported Nat-order
+  branch uses the existing `interpret_strict` boundary. Semantic premises,
+  source/target theorem dependencies, and unexpected assumptions are empty.
+- This remains pre-publication evidence: a complete new isolated rebuild,
+  source acquisition, export/import, baseline check, artifact hashing, and
+  publication run is still required before these three are counted as
+  accepted.
+
+## 2026-09-21 12:18:24 HKT — List starter cluster accepted 3 / 57
+
+- The new reusable entry point
+  `Validation/scripts/validate_utility_list_simple.sh` completed from a new
+  isolated work directory. It rebuilt the Lean dependency path, exported the
+  three actual compiled bodies, automatically extracted the exact pinned-v0.6
+  source bodies, imported the artifact into Rocq, compiled the certificates,
+  ran the fail-closed assumption classifier and baseline audit, and published
+  content-addressed evidence only after all gates passed.
+- `max0`, `first0`, and `last0` are now individually
+  `ACCEPTED_V06_TRANSLATION`. `first0` and `last0` are `CERTIFIED`; `max0` is
+  `CERTIFIED_WITH_PROP_SPROP_FOUNDATION`. All three have no semantic premise,
+  no source/target theorem dependency, and no unexpected assumption.
+- Fresh hashes include `.olean 0991e257...f79e`, export
+  `033db5ef...dd8e`, imported `.vo c35b1066...5156`, and generated official
+  source `.vo 5959f59e...be2b`.
+- The file remains `PARTIAL_V06_FILE`, correctly: only 3 of its 57 public
+  declarations have been translated and accepted. Cumulative accepted
+  declaration coverage rises from 38 to 41 / 2439; accepted whole-file
+  coverage remains 9 / 357. Current translated-but-not-certified debt is 11
+  declarations (8 SearchArg plus 3 Sum).
+
+## 2026-09-21 12:39:32 HKT — Sum interval cluster accepted 3 / 25
+
+- The workspace-local entry point
+  `Validation/scripts/validate_utility_sum_interval.sh` completed from the new
+  isolated work directory `Validation/.work/runs/utility_sum_interval.VJUeQ1`.
+  It freshly rebuilt the dependency path and `Prosa.Util.Sum`, audited the
+  Lean proofs, kernel-checked target-type normalization, exported the actual
+  artifact, automatically extracted the pinned-v0.6 source statements,
+  imported the result into Rocq, compiled the semantic certificates, and ran
+  the fail-closed assumption and baseline audits before publication.
+- `sum_of_ones`, `big_nat_eq0`, and `sum_le_summation_range` are now
+  individually `ACCEPTED_V06_TRANSLATION`, all with status
+  `CERTIFIED_WITH_PROP_SPROP_FOUNDATION`. Their certificates have no semantic
+  premises, no source theorem dependency, no target theorem dependency, and no
+  unexpected assumptions. The visible trust boundary is
+  `PropSPropFoundation.interpret_strict` plus the importer equality foundation;
+  `SubNatTrue` is classified as Rocq/SProp definitional UIP rather than a new
+  semantic premise.
+- The reusable `SumIntervalCorrespondence.v` bridge proves the value
+  correspondence between MathComp's half-open interval big sum and the actual
+  imported Lean `List.range'`/`map`/`foldr` computation obtained from
+  `Finset.sum (Finset.Ico ...)`. It preserves the exact `[m,n)` endpoints,
+  ordering and multiplicity, and its own audit is `CERTIFIED`.
+- Each normalized theorem type is tied to this build's exact compiled theorem
+  type by a Lean-kernel-checked equality guard in addition to the exporter
+  `Meta.isDefEq` check. A validation-only mutation changing the fold identity
+  from `0` to `1` was rejected with the expected definitional-equality failure.
+- Fresh hashes are `.olean a3709f82...63f2`, export
+  `1d05393f...bd6`, imported `.vo 8809b61c...4a36`, and generated source
+  `.vo 1f861ee3...e59`; the machine-readable manifest contains the full exact
+  values.
+- `util/sum.v` remains `PARTIAL_V06_FILE` because 22 declarations remain.
+  Cumulative accepted coverage is now 9 / 357 whole files and 44 / 2439
+  declarations. Current translated-but-not-certified debt falls to 8, all in
+  `util/search_arg.v`; List and Sum have no translated-but-uncertified starter
+  declaration.

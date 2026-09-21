@@ -1,0 +1,32 @@
+Inductive List_inst1@{} (_UU03b1_ : Type) : Type :=
+    List_nil_inst1 : List_inst1 _UU03b1_
+  | List_cons_inst1 : _UU03b1_ -> List_inst1 _UU03b1_ -> List_inst1 _UU03b1_.
+
+Arguments List_inst1 _UU03b1_%_type_scope
+Arguments List_nil_inst1 _UU03b1_%_type_scope
+Arguments List_cons_inst1 _UU03b1_%_type_scope head tail
+Inductive List@{u Lean.u+1.0} (_UU03b1_ : Type) : Type :=
+    List_nil : List _UU03b1_
+  | List_cons : _UU03b1_ -> List _UU03b1_ -> List _UU03b1_.
+
+Arguments List _UU03b1_%_type_scope
+Arguments List_nil _UU03b1_%_type_scope
+Arguments List_cons _UU03b1_%_type_scope head tail
+List_foldl_inst3@{} =
+fun (_UU03b1_ _UU03b2_ : Type) (f : _UU03b1_ -> _UU03b2_ -> _UU03b1_)
+  (x____at___Init_Prelude1478953397__hygCtx__hyg15 : _UU03b1_)
+  (x____at___Init_Prelude1478953397__hygCtx__hyg16 : List_inst1 _UU03b2_) =>
+List_brecOn_inst2 _UU03b2_
+  (fun _ : List_inst1 _UU03b2_ => _UU03b1_ -> _UU03b1_)
+  x____at___Init_Prelude1478953397__hygCtx__hyg16
+  (List_foldl__f_inst3 _UU03b1_ _UU03b2_ f)
+  x____at___Init_Prelude1478953397__hygCtx__hyg15
+     : forall _UU03b1_ _UU03b2_ : Type,
+       (_UU03b1_ -> _UU03b2_ -> _UU03b1_) ->
+       _UU03b1_ -> List_inst1 _UU03b2_ -> _UU03b1_
+
+Arguments List_foldl_inst3 (_UU03b1_ _UU03b2_)%_type_scope 
+  f%_function_scope init a____at____internal__hyg0
+File "/tmp/ListEqProbe2.v", line 6, characters 6-44:
+Error: ImportedListSimple.List_foldl_inst3__f not a defined object.
+

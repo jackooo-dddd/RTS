@@ -16,9 +16,15 @@ def main() -> None:
     )
     cluster_dir = validation / "logs/utility_foundation_expansion/cluster_results"
     clusters = [json.loads(path.read_text()) for path in sorted(cluster_dir.glob("*.json"))]
+    progress_dir = validation / "logs/utility_foundation_expansion/progress_results"
+    progress = [json.loads(path.read_text()) for path in sorted(progress_dir.glob("*.json"))]
     accepted_by_name = {
         row["rocq_declaration"]: row
         for cluster in clusters for row in cluster["declarations"]
+    }
+    progress_by_name = {
+        row["rocq_declaration"]: row
+        for result in progress for row in result["declarations"]
     }
 
     declarations = []
@@ -27,6 +33,8 @@ def main() -> None:
             qname = selected["rocq_declaration"]
             if qname in accepted_by_name:
                 declarations.append(accepted_by_name[qname])
+            elif qname in progress_by_name:
+                declarations.append(progress_by_name[qname])
             else:
                 declarations.append({
                     "source_file": file_info["source_file"],
@@ -34,26 +42,59 @@ def main() -> None:
                     "kind": selected["kind"],
                     "migration_action": selected["migration_action"],
                     "validation_class": selected["validation_class"],
-                    "translation_status": "NOT_YET_TRANSLATED",
+                    "translation_status": "NOT_STARTED",
                     "semantic_status": "NOT_YET_VALIDATED",
                     "acceptance": "NOT_ACCEPTED",
                 })
 
     file_rows = {}
+    proof_clean_states = {
+        "PROOF_CLEAN", "SEMANTIC_PROOF_COMPILED", "ACCEPTED"
+    }
     for file_info in selection["selection"]["files"]:
         source_file = file_info["source_file"]
         rows = [row for row in declarations if row["source_file"] == source_file]
         translated = sum(row.get("lean_declaration") is not None for row in rows)
         accepted = sum(row["acceptance"] == "ACCEPTED_V06_TRANSLATION" for row in rows)
+        proof_clean = sum(
+            row["acceptance"] == "ACCEPTED_V06_TRANSLATION"
+            or row.get("translation_status") in proof_clean_states
+            for row in rows
+        )
+        semantic_compiled = sum(
+            row["acceptance"] == "ACCEPTED_V06_TRANSLATION"
+            or row.get("translation_status") == "SEMANTIC_PROOF_COMPILED"
+            or row.get("semantic_status") == "SEMANTIC_PROOF_COMPILED"
+            for row in rows
+        )
+        blocked_semantic = sum(
+            row.get("semantic_status") == "BLOCKED_SEMANTIC_VALIDATION"
+            for row in rows
+        )
+        if accepted == len(rows):
+            workflow_status = "ACCEPTED_V06_FILE"
+        elif blocked_semantic:
+            workflow_status = "BLOCKED_SEMANTIC_VALIDATION"
+        elif semantic_compiled:
+            workflow_status = "SEMANTIC_PROOF_COMPILED"
+        elif proof_clean:
+            workflow_status = "PROOF_CLEAN"
+        elif translated:
+            workflow_status = "TRANSLATED"
+        else:
+            workflow_status = "NOT_STARTED"
         file_rows[source_file] = {
             "public_declarations": len(rows),
             "translated": translated,
-            "proof_clean": accepted,
+            "proof_clean": proof_clean,
+            "semantic_proof_compiled": semantic_compiled,
             "certified": accepted,
+            "blocked_semantic_validation": blocked_semantic,
             "not_yet_validated": sum(
                 row["semantic_status"] == "NOT_YET_VALIDATED" for row in rows
             ),
-            "status": (
+            "status": workflow_status,
+            "acceptance_status": (
                 "ACCEPTED_V06_FILE" if accepted == len(rows)
                 else "PARTIAL_V06_FILE" if translated else "NOT_STARTED"
             ),
@@ -69,7 +110,8 @@ def main() -> None:
         for row in declarations
     )
     accepted_files_new = sum(
-        row["status"] == "ACCEPTED_V06_FILE" for row in file_rows.values()
+        row["acceptance_status"] == "ACCEPTED_V06_FILE"
+        for row in file_rows.values()
     )
     main_pass = accepted_new == 104
 
@@ -81,6 +123,7 @@ def main() -> None:
             (pipeline / "utility_foundation_expansion_selection.json").read_bytes()
         ).hexdigest(),
         "clusters": clusters,
+        "progress_results": progress,
         "declarations": declarations,
     }
     (pipeline / "utility_foundation_expansion_manifest.json").write_text(
@@ -95,14 +138,29 @@ def main() -> None:
         "OPTIONAL_EXPANSION_STATUS": "NOT_STARTED",
         "files_attempted": attempted_files,
         "files_accepted": accepted_files_new,
-        "files_partial": sum(row["status"] == "PARTIAL_V06_FILE" for row in file_rows.values()),
+        "files_partial": sum(
+            row["acceptance_status"] == "PARTIAL_V06_FILE"
+            for row in file_rows.values()
+        ),
         "declarations_attempted": sum(
             row.get("lean_declaration") is not None for row in declarations
         ),
         "declarations_compiled": sum(
             row.get("lean_declaration") is not None for row in declarations
         ),
-        "declarations_proof_clean": accepted_new,
+        "declarations_proof_clean": sum(
+            row["acceptance"] == "ACCEPTED_V06_TRANSLATION"
+            or row.get("translation_status") in proof_clean_states
+            for row in declarations
+        ),
+        "declarations_SEMANTIC_PROOF_COMPILED": sum(
+            row.get("translation_status") == "SEMANTIC_PROOF_COMPILED"
+            or row.get("semantic_status") == "SEMANTIC_PROOF_COMPILED"
+            for row in declarations
+        ),
+        "declarations_BLOCKED_SEMANTIC_VALIDATION": statuses[
+            "BLOCKED_SEMANTIC_VALIDATION"
+        ],
         "declarations_CERTIFIED": statuses["CERTIFIED"],
         "declarations_CERTIFIED_WITH_PROP_SPROP_FOUNDATION": statuses[
             "CERTIFIED_WITH_PROP_SPROP_FOUNDATION"

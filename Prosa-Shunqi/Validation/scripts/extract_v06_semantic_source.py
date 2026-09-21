@@ -18,11 +18,12 @@ from pathlib import Path
 
 DECL_RE = re.compile(
     r"(?ms)^[ \t]*(?:Lemma|Theorem|Fact|Corollary|Remark|Proposition)\s+"
-    r"([A-Za-z0-9_']+)\b.*?^[^\n]*(?:Qed|Defined)\.\s*$"
+    r"([A-Za-z0-9_']+)\b.*?^[^\n]*(?:Qed|Defined)\.[ \t]*$"
 )
 BODY_RE = re.compile(
     r"(?ms)^[ \t]*(?:Fixpoint|CoFixpoint|Definition)\s+"
-    r"([A-Za-z0-9_']+)\b.*?^[^\n]*\.\s*$"
+    r"([A-Za-z0-9_']+)\b.*?\.[ \t]*$"
+    r"(?:\n(?:[ \t]*\n)*[ \t]*Proof\.[ \t]*$.*?^[^\n]*Defined\.[ \t]*$)?"
 )
 
 
@@ -67,15 +68,30 @@ def active_context(text: str, stop: int) -> list[str]:
 
 
 def theorem_statement(name: str, block: str) -> str:
-    header = re.split(r"(?m)^[ \t]*Proof\.[ \t]*$", block, maxsplit=1)[0].strip()
+    header = re.split(r"(?m)^[ \t]*Proof\.", block, maxsplit=1)[0].strip()
     match = re.match(
         rf"(?s)^(?:Lemma|Theorem|Fact|Corollary|Remark|Proposition)\s+"
-        rf"{re.escape(name)}\s*:\s*(.*)\.\s*$",
+        rf"{re.escape(name)}\b(.*)\.\s*$",
         header,
     )
     if not match:
         raise SystemExit(f"cannot isolate theorem statement: {name}")
-    return match.group(1).strip()
+    remainder = match.group(1).strip()
+    depth = 0
+    separator = None
+    for index, char in enumerate(remainder):
+        if char in "([{":
+            depth += 1
+        elif char in ")]}":
+            depth -= 1
+        elif char == ":" and depth == 0:
+            separator = index
+            break
+    if separator is None:
+        raise SystemExit(f"cannot isolate theorem statement: {name}")
+    binders = remainder[:separator].strip()
+    conclusion = remainder[separator + 1:].strip()
+    return conclusion if not binders else f"forall {binders}, {conclusion}"
 
 
 def normalized(text: str) -> str:

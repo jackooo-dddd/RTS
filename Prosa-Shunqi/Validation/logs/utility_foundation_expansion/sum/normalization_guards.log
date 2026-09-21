@@ -1,0 +1,21 @@
+KERNEL_NORMALIZATION_GUARD target=Prosa.Util.Sum.big_nat_eq0 guard=Prosa.Validation.FiniteSumNormalization.big_nat_eq0_guard original_hash=3868918011 normalized_hash=783880789 proof=Eq.refl
+KERNEL_NORMALIZATION_GUARD target=Prosa.Util.Sum.sum_of_ones guard=Prosa.Validation.FiniteSumNormalization.sum_of_ones_guard original_hash=406666510 normalized_hash=1612875744 proof=Eq.refl
+KERNEL_NORMALIZATION_GUARD target=Prosa.Util.Sum.sum_le_summation_range guard=Prosa.Validation.FiniteSumNormalization.sum_le_summation_range_guard original_hash=1525648494 normalized_hash=229062228 proof=Eq.refl
+Prosa.Validation.FiniteSumNormalization.big_nat_eq0_guard :
+  (∀ (m n : ℕ) (F : ℕ → ℕ), ∑ i ∈ Finset.Ico m n, F i = 0 ↔ ∀ (i : ℕ), m ≤ i ∧ i < n → F i = 0) =
+    ∀ (m n : ℕ) (F : ℕ → ℕ),
+      List.foldr Nat.add Nat.zero (List.map (fun i => F i) (List.range' m (n.sub m) 1)) = 0 ↔
+        ∀ (i : ℕ), m ≤ i ∧ i < n → F i = 0
+Prosa.Validation.FiniteSumNormalization.sum_of_ones_guard :
+  (∀ (t Δ : ℕ), ∑ x ∈ Finset.Ico t (t + Δ), 1 = Δ) =
+    ∀ (t Δ : ℕ), List.foldr Nat.add Nat.zero (List.map (fun x => 1) (List.range' t ((t.add Δ).sub t) 1)) = Δ
+Prosa.Validation.FiniteSumNormalization.sum_le_summation_range_guard :
+  (∀ (f : ℕ → ℕ) (t Δ : ℕ), ∑ x ∈ Finset.Ico t (t + Δ), f x < Δ → ∃ x, t ≤ x ∧ x < t + Δ ∧ f x = 0) =
+    ∀ (f : ℕ → ℕ) (t Δ : ℕ),
+      List.foldr Nat.add Nat.zero (List.map (fun x => f x) (List.range' t ((t + Δ).sub t) Nat.zero.succ)) < Δ →
+        ∃ x, t.le x ∧ x.succ.le (t.add Δ) ∧ f x = 0
+'Prosa.Validation.FiniteSumNormalization.big_nat_eq0_guard' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Prosa.Validation.FiniteSumNormalization.sum_of_ones_guard' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Prosa.Validation.FiniteSumNormalization.sum_le_summation_range_guard' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]

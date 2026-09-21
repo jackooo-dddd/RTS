@@ -1,0 +1,47 @@
+FREEZE_BEGIN Prosa.Util.Sum.sum_of_ones
+Prosa.Util.Sum.sum_of_ones : ∀ (t Δ : ℕ), ∑ x ∈ Finset.Ico t (t + Δ), 1 = Δ
+theorem Prosa.Util.Sum.sum_of_ones : ∀ (t Δ : ℕ), ∑ x ∈ Finset.Ico t (t + Δ), 1 = Δ :=
+fun t Δ =>
+  of_eq_true
+    (Eq.trans
+      (congrFun'
+        (congrArg Eq
+          (Eq.trans (Finset.sum_const 1)
+            (Eq.trans
+              (congrFun' (congrArg HSMul.hSMul (Eq.trans (Nat.card_Ico t (t + Δ)) (add_tsub_cancel_left t Δ))) 1)
+              (mul_one Δ))))
+        Δ)
+      (eq_self Δ))
+FREEZE_END Prosa.Util.Sum.sum_of_ones
+FREEZE_BEGIN Prosa.Util.Sum.big_nat_eq0
+Prosa.Util.Sum.big_nat_eq0 : ∀ (m n : ℕ) (F : ℕ → ℕ), ∑ i ∈ Finset.Ico m n, F i = 0 ↔ ∀ (i : ℕ), m ≤ i ∧ i < n → F i = 0
+theorem Prosa.Util.Sum.big_nat_eq0 : ∀ (m n : ℕ) (F : ℕ → ℕ),
+  ∑ i ∈ Finset.Ico m n, F i = 0 ↔ ∀ (i : ℕ), m ≤ i ∧ i < n → F i = 0 :=
+fun m n F =>
+  { mp := fun hsum i hi => Finset.sum_eq_zero_iff.mp hsum i (Finset.mem_Ico.mpr hi),
+    mpr := fun hall => Finset.sum_eq_zero fun i hi => hall i (Finset.mem_Ico.mp hi) }
+FREEZE_END Prosa.Util.Sum.big_nat_eq0
+FREEZE_BEGIN Prosa.Util.Sum.sum_le_summation_range
+Prosa.Util.Sum.sum_le_summation_range : ∀ (f : ℕ → ℕ) (t Δ : ℕ),
+  ∑ x ∈ Finset.Ico t (t + Δ), f x < Δ → ∃ x, t ≤ x ∧ x < t + Δ ∧ f x = 0
+theorem Prosa.Util.Sum.sum_le_summation_range : ∀ (f : ℕ → ℕ) (t Δ : ℕ),
+  ∑ x ∈ Finset.Ico t (t + Δ), f x < Δ → ∃ x, t ≤ x ∧ x < t + Δ ∧ f x = 0 :=
+fun f t Δ h =>
+  Classical.byContradiction fun hall =>
+    have hle :=
+      Trans.trans (Eq.symm (Prosa.Util.Sum.sum_of_ones t Δ))
+        (Finset.sum_le_sum fun i hi =>
+          have hirange := Finset.mem_Ico.mp hi;
+          have hne :=
+            Eq.mp
+              (Eq.trans (Mathlib.Tactic.Push.not_exists._simp_1 fun x => t ≤ x ∧ x < t + Δ ∧ f x = 0)
+                (forall_congr fun x =>
+                  Eq.trans (Mathlib.Tactic.Push.not_and_eq (t ≤ x) (x < t + Δ ∧ f x = 0))
+                    (implies_congr (Eq.refl (t ≤ x)) (Mathlib.Tactic.Push.not_and_eq (x < t + Δ) (f x = 0)))))
+              hall i hirange.left hirange.right;
+          Decidable.byContradiction fun a => Prosa.Util.Sum.sum_le_summation_range._proof_1_1 f t Δ i hne a);
+    Prosa.Util.Sum.sum_le_summation_range._proof_1_2 f t Δ h hle
+FREEZE_END Prosa.Util.Sum.sum_le_summation_range
+'Prosa.Util.Sum.sum_of_ones' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Prosa.Util.Sum.big_nat_eq0' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Prosa.Util.Sum.sum_le_summation_range' depends on axioms: [propext, Classical.choice, Quot.sound]

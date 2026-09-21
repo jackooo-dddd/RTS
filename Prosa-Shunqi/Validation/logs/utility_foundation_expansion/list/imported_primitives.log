@@ -1,0 +1,74 @@
+Nat_instMax@{} = maxOfLe_inst1 Nat instLENat Nat_decLe
+     : Max_inst1 Nat
+maxOfLe_inst1@{} =
+fun (_UU03b1_ : Type)
+  (inst____at___Init_Prelude3402483185__hygCtx__hyg5 : LE_inst1 _UU03b1_)
+  (inst____at___Init_Prelude3402483185__hygCtx__hyg8 : 
+   DecidableRel _UU03b1_ _UU03b1_
+     (LE_le_inst1 _UU03b1_ inst____at___Init_Prelude3402483185__hygCtx__hyg5)) =>
+Max_mk_inst1 _UU03b1_
+  (fun x y : _UU03b1_ =>
+   ite _UU03b1_
+     (LE_le_inst1 _UU03b1_ inst____at___Init_Prelude3402483185__hygCtx__hyg5
+        x y)
+     (inst____at___Init_Prelude3402483185__hygCtx__hyg8 x y) y x)
+     : forall (_UU03b1_ : Type)
+         (inst____at___Init_Prelude3402483185__hygCtx__hyg5 : 
+          LE_inst1 _UU03b1_),
+       DecidableRel _UU03b1_ _UU03b1_
+         (LE_le_inst1 _UU03b1_
+            inst____at___Init_Prelude3402483185__hygCtx__hyg5) ->
+       Max_inst1 _UU03b1_
+
+Arguments maxOfLe_inst1 _UU03b1_%_type_scope
+  inst____at___Init_Prelude3402483185__hygCtx__hyg5
+  inst____at___Init_Prelude3402483185__hygCtx__hyg8
+Nat_decLe@{} =
+fun n m : Nat =>
+dite (Decidable (LE_le_inst1 Nat instLENat n m)) (eq (Nat_ble n m) Bool_true)
+  (instDecidableEqBool (Nat_ble n m) Bool_true)
+  (fun h : eq (Nat_ble n m) Bool_true =>
+   Decidable_isTrue (LE_le_inst1 Nat instLENat n m)
+     (Nat_le_of_ble_eq_true n m h))
+  (fun h : Not (eq (Nat_ble n m) Bool_true) =>
+   Decidable_isFalse (LE_le_inst1 Nat instLENat n m)
+     (Nat_not_le_of_not_ble_eq_true n m h))
+     : forall n m : Nat, Decidable (LE_le_inst1 Nat instLENat n m)
+
+Arguments Nat_decLe (n m)%_Nat_scope
+Nat_max@{} =
+fun n m : Nat => Max_max_inst1 Nat Nat_instMax n m
+     : Nat -> Nat -> Nat
+
+Arguments Nat_max (n n)%_Nat_scope
+List_getLastD_inst1@{} =
+fun (_UU03b1_ : Type)
+  (x____at___Init_Data_List_Basic1243209826__hygCtx__hyg11 : 
+   List_inst1 _UU03b1_)
+  (x____at___Init_Data_List_Basic1243209826__hygCtx__hyg12 : _UU03b1_) =>
+List_getLastD_match_1_inst1 _UU03b1_
+  (fun (_ : List_inst1 _UU03b1_) (_ : _UU03b1_) => _UU03b1_)
+  x____at___Init_Data_List_Basic1243209826__hygCtx__hyg11
+  x____at___Init_Data_List_Basic1243209826__hygCtx__hyg12
+  (fun fallback : _UU03b1_ => fallback)
+  (fun (a : _UU03b1_) (as : List_inst1 _UU03b1_) (_ : _UU03b1_) =>
+   List_getLast_inst1 _UU03b1_ (List_cons_inst1 _UU03b1_ a as)
+     (List_getLast__proof_2_inst1 _UU03b1_ a as))
+     : forall _UU03b1_ : Type, List_inst1 _UU03b1_ -> _UU03b1_ -> _UU03b1_
+
+Arguments List_getLastD_inst1 _UU03b1_%_type_scope 
+  as a____at____internal__hyg0
+List_headD_inst1@{} =
+fun (_UU03b1_ : Type)
+  (x____at___Init_Data_List_Basic3964265678__hygCtx__hyg11 : 
+   List_inst1 _UU03b1_)
+  (x____at___Init_Data_List_Basic3964265678__hygCtx__hyg12 : _UU03b1_) =>
+List_getLastD_match_1_inst1 _UU03b1_
+  (fun (_ : List_inst1 _UU03b1_) (_ : _UU03b1_) => _UU03b1_)
+  x____at___Init_Data_List_Basic3964265678__hygCtx__hyg11
+  x____at___Init_Data_List_Basic3964265678__hygCtx__hyg12
+  (fun fallback : _UU03b1_ => fallback)
+  (fun (a : _UU03b1_) (_ : List_inst1 _UU03b1_) (_ : _UU03b1_) => a)
+     : forall _UU03b1_ : Type, List_inst1 _UU03b1_ -> _UU03b1_ -> _UU03b1_
+
+Arguments List_headD_inst1 _UU03b1_%_type_scope as a____at____internal__hyg0
