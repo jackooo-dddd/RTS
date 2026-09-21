@@ -2,16 +2,12 @@
 
 ## 使用方式
 
-本文件是**调度计划，不是 acceptance 证据**。正式 workspace 为 `Prosa-Shunqi/`，历史 `Prosa-fei/` 只读。
-建议把本目录放入 `Prosa-Shunqi/Validation/planning/v06_pipeline/execution_order/`。
-Agent 先读本文件及 `.agents/skills/prosa-v06-translation/SKILL.md`，然后在 RTS 根目录运行：
-
-```bash
-python3 Prosa-Shunqi/Validation/planning/v06_pipeline/execution_order/check_v06_file_translation_order.py --workspace Prosa-Shunqi
-```
-
-该检查只审计计划、文件覆盖和依赖顺序；**不会编译 Lean/Rocq，也不会修改 status/manifest 或授予 acceptance**。
-需要机器可读的逐文件声明数和直接依赖时，可额外指定 `--emit-enriched <一个尚不存在的JSON路径>`。
+本文件是**正式 file execution order，但不是 acceptance 证据**。正式路径固定为
+`Prosa-Shunqi/v06_file_translation_order.md`；正式 workspace 为
+`Prosa-Shunqi/`，历史 `Prosa-fei/` 只读。Agent 开始新文件前必须重读本文件、
+`.agents/skills/prosa-v06-translation/SKILL.md`、最新 pipeline manifest/status
+以及 authoritative file DAG。file DAG 决定 READY；本文件只在多个 READY 文件间
+决定先后。
 
 ## Authority 与快照
 
@@ -31,7 +27,7 @@ JSON 内锁定了四个 planning input 的 Git blob SHA。正常的新翻译 com
 3. 一个任务优先以 **whole file** 为单位。通常 ≤15 个声明整文件一批；16–20 个先检查新语义边界；>20 个按相互关联的声明组拆分。大文件内部允许分批，但整文件没收尾之前仍不能放行下游。声明 DAG 只细化文件内顺序，不替代文件 DAG。
 4. 每个新 class/计算边界先做最小 actual-artifact 预检；之后收齐本文件候选并冻结 snapshot，复用 prepare→check→finalize 模式。共享的是同一冻结输入的准备产物，不是承诺整个文件永远只需要一次试验。输入变了必须重新准备。
 5. 新文件优先组合已认证 correspondence DAG。缺失操作做最小、具名、可复用的证书；不复证已有 List/Nat/equality，不用 source/target 业务 theorem 自证。每项继续要求 `semantic_premises=[]`、source/target self-dependency=false、unexpected assumptions=[]，并保留准确的 foundation 分类。
-6. **每个 authoritative source file 恰好维护一个 file-level report，不多也不少。** 固定放在 `Prosa-Shunqi/Reports/files/<source path without .v>.md`，例如 `util/list.v` 对应 `Reports/files/util/list.md`。首次处理该文件时创建；后续内部 batch、重试、blocker、revalidation 都追加/更新同一个 report，禁止再为同一 source file 创建第二份 report。零声明文件也需要自己的 report。Report 至少记录 source identity、处理范围、translation/proof/semantic-validation 状态、reused/new correspondence、blocker、最终 acceptance 和关键 artifact/certificate evidence。
+6. **每个 authoritative source file 恰好维护一个 file-level report，不多也不少。** 固定放在 `Prosa-Shunqi/Reports/files/<source directory>/<first-report-timestamp>_<source basename>.md`；时间戳继承该 file 最早历史 report 的时间、不带 timezone 后缀，后续更新不改变文件名。例如当前 `util/list.v` 对应 `Reports/files/util/2026-09-21_082258_list.md`。首次处理该文件时创建；后续内部 batch、重试、blocker、revalidation 都追加/更新同一个 report，禁止再为同一 source file 创建第二份 report。零声明文件也需要自己的 report。Report 至少记录 source identity、处理范围、translation/proof/semantic-validation 状态、reused/new correspondence、blocker、最终 acceptance 和关键 artifact/certificate evidence。
 7. **不要因为普通证明困难就改写已经忠实的 Lean translation。** 默认先尝试已有 bridge、局部 proof 重构、actual-artifact equations、最小 operation certificate 和合理的 validation adapter。只有同一个具体语义卡点已经持续非常久、经过多种实质不同的方法和多轮实际验证仍无法闭合，并且有证据表明当前 Lean 表示/实现本身是主要障碍时，才允许重写受影响的 Lean translation。重写必须仍忠实于 v0.6 source 和已批准 representation policy；重写后相关 snapshot、artifact、certificate 和 acceptance evidence 一律视为失效并重新验证。不得为了“更容易证明”而改变 source semantics。
 8. 文件 acceptance 来自正式 validator/publication。不能以本 JSON 的参考状态、一个文件存在、一个历史 PASS，或单纯 `Print Assumptions` 没列出某个常量代替完整检查。
 

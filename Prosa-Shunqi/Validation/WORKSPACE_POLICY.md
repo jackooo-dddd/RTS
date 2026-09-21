@@ -15,6 +15,13 @@
    `Validation/planning/v06_pipeline/*status.json` and `*manifest.json`.
 7. The authoritative source is always Prosa v0.6 commit
    `414e66760333eaa4ef78c685bcf53291c527a548`.
+8. File readiness is determined by the authoritative file DAG. Among ready,
+   unfinished files, execution follows `../v06_file_translation_order.md`.
+9. Each started source file has one canonical report under `../Reports/files/`.
+   Its filename begins with the timestamp of the earliest historical report
+   for that source file, without a timezone suffix. Later batches and
+   revalidation update that same report; legacy date/batch reports are not the
+   current status authority.
 
 Current Lean and historical Prosa sources are references only and may never
 override the pinned v0.6 semantics.

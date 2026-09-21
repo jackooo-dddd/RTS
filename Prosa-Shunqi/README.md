@@ -35,3 +35,17 @@ The accepted dependency and mapping snapshots are under
 `Validation/planning/v06_mapping/`. File-DAG order is authoritative for
 translation readiness; the declaration DAG is a fine-grained aid and does not
 prove independence from implicit instances or canonical/HB resolution.
+
+The canonical file execution order is `v06_file_translation_order.md`. For
+each step, the file DAG first determines which files are ready; the execution
+order breaks ties among ready, unfinished files. A file is completed before
+the next ready file is started, although a large file may use internal
+semantic batches.
+
+Human-readable translation history is maintained one report per authoritative
+source file under
+`Reports/files/<source-directory>/<first-report-timestamp>_<source-basename>.md`.
+The timestamp is inherited from the earliest historical report that covered
+the file, is written without a timezone suffix, and stays fixed as later work
+is appended to the same canonical report. Reports under `Reports/legacy/` are
+immutable historical evidence and are not the current file-status authority.
