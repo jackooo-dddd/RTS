@@ -1,0 +1,52 @@
+FREEZE_BEGIN Prosa.Util.Minmax.leq_bigmax_cond_seq
+@Prosa.Util.Minmax.leq_bigmax_cond_seq : ∀ {X : Type u_1} [DecidableEq X] (F : X → ℕ) (P : X → Bool) (xs : List X),
+  ∀ x ∈ xs, P x = true → F x ≤ Prosa.Util.Minmax.bigMaxListCond xs P F
+FREEZE_END Prosa.Util.Minmax.leq_bigmax_cond_seq
+'Prosa.Util.Minmax.leq_bigmax_cond_seq' depends on axioms: [propext, Classical.choice, Quot.sound]
+FREEZE_BEGIN Prosa.Util.Minmax.leq_bigmax_sup
+@Prosa.Util.Minmax.leq_bigmax_sup : ∀ {X : Type u_1} [DecidableEq X] (P : X → Bool) (F : X → ℕ) (xs : List X) (n : ℕ),
+  (∃ x ∈ xs, P x = true ∧ n ≤ F x) → n ≤ Prosa.Util.Minmax.bigMaxListCond xs P F
+FREEZE_END Prosa.Util.Minmax.leq_bigmax_sup
+'Prosa.Util.Minmax.leq_bigmax_sup' depends on axioms: [propext, Classical.choice, Quot.sound]
+FREEZE_BEGIN Prosa.Util.Minmax.bigmax_leq_seqP
+@Prosa.Util.Minmax.bigmax_leq_seqP : ∀ {X : Type u_1} [DecidableEq X] (F : X → ℕ) (P : X → Bool) (xs : List X) (m : ℕ),
+  Prosa.Util.Minmax.bigMaxListCond xs P F ≤ m ↔ ∀ x ∈ xs, P x = true → F x ≤ m
+FREEZE_END Prosa.Util.Minmax.bigmax_leq_seqP
+'Prosa.Util.Minmax.bigmax_leq_seqP' depends on axioms: [propext, Classical.choice, Quot.sound]
+FREEZE_BEGIN Prosa.Util.Minmax.leq_big_max
+@Prosa.Util.Minmax.leq_big_max : ∀ {X : Type u_1} [DecidableEq X] (F₁ F₂ : X → ℕ) (P : X → Bool) (xs : List X),
+  (∀ x ∈ xs, P x = true → F₁ x ≤ F₂ x) →
+    Prosa.Util.Minmax.bigMaxListCond xs P F₁ ≤ Prosa.Util.Minmax.bigMaxListCond xs P F₂
+FREEZE_END Prosa.Util.Minmax.leq_big_max
+'Prosa.Util.Minmax.leq_big_max' depends on axioms: [propext, Classical.choice, Quot.sound]
+FREEZE_BEGIN Prosa.Util.Minmax.bigmax_ord_ltn_identity
+Prosa.Util.Minmax.bigmax_ord_ltn_identity : ∀ n > 0, (Prosa.Util.Minmax.bigMaxNatRange n fun x => true) < n
+FREEZE_END Prosa.Util.Minmax.bigmax_ord_ltn_identity
+'Prosa.Util.Minmax.bigmax_ord_ltn_identity' depends on axioms: [propext, Classical.choice, Quot.sound]
+FREEZE_BEGIN Prosa.Util.Minmax.bigmax_ltn_ord
+Prosa.Util.Minmax.bigmax_ltn_ord : ∀ (n : ℕ) (P : ℕ → Bool) (i₀ : Fin n),
+  P ↑i₀ = true → Prosa.Util.Minmax.bigMaxNatRange n P < n
+FREEZE_END Prosa.Util.Minmax.bigmax_ltn_ord
+'Prosa.Util.Minmax.bigmax_ltn_ord' depends on axioms: [propext, Classical.choice, Quot.sound]
+FREEZE_BEGIN Prosa.Util.Minmax.bigmax_pred
+Prosa.Util.Minmax.bigmax_pred : ∀ (n : ℕ) (P : ℕ → Bool) (i₀ : Fin n),
+  P ↑i₀ = true → P (Prosa.Util.Minmax.bigMaxNatRange n P) = true
+FREEZE_END Prosa.Util.Minmax.bigmax_pred
+'Prosa.Util.Minmax.bigmax_pred' depends on axioms: [propext, Quot.sound]
+FREEZE_BEGIN Prosa.Util.Minmax.bigmax_witness
+@Prosa.Util.Minmax.bigmax_witness : ∀ {X : Type u_1} [DecidableEq X] {xs : List X} {P : X → Bool} (F : X → ℕ),
+  xs.any P = true → ∃ x ∈ xs, P x = true ∧ F x = Prosa.Util.Minmax.bigMaxListCond xs P F
+FREEZE_END Prosa.Util.Minmax.bigmax_witness
+'Prosa.Util.Minmax.bigmax_witness' depends on axioms: [propext, Quot.sound]
+FREEZE_BEGIN Prosa.Util.Minmax.bigmax_witness_diff
+@Prosa.Util.Minmax.bigmax_witness_diff : ∀ {X : Type u_1} [DecidableEq X] {xs : List X} {P₁ P₂ : X → Bool} {F : X → ℕ},
+  Prosa.Util.Minmax.bigMaxListCond xs P₁ F < Prosa.Util.Minmax.bigMaxListCond xs P₂ F →
+    ∃ x ∈ xs, P₁ x = false ∧ P₂ x = true
+FREEZE_END Prosa.Util.Minmax.bigmax_witness_diff
+'Prosa.Util.Minmax.bigmax_witness_diff' depends on axioms: [propext, Classical.choice, Quot.sound]
+FREEZE_BEGIN Prosa.Util.Minmax.bigmax_subset
+@Prosa.Util.Minmax.bigmax_subset : ∀ {X : Type u_1} [DecidableEq X] {xs : List X} {P₁ P₂ : X → Bool} {F : X → ℕ},
+  (∀ x ∈ xs, P₁ x = true → P₂ x = true) →
+    Prosa.Util.Minmax.bigMaxListCond xs P₁ F ≤ Prosa.Util.Minmax.bigMaxListCond xs P₂ F
+FREEZE_END Prosa.Util.Minmax.bigmax_subset
+'Prosa.Util.Minmax.bigmax_subset' depends on axioms: [propext, Classical.choice, Quot.sound]

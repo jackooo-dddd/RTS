@@ -1,0 +1,277 @@
+File "./BigcatTypeAudit.v", line 1, characters 0-86:
+Warning: Notation "_ + _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./BigcatTypeAudit.v", line 1, characters 0-86:
+Warning: Notation "_ - _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./BigcatTypeAudit.v", line 1, characters 0-86:
+Warning: Notation "_ <= _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./BigcatTypeAudit.v", line 1, characters 0-86:
+Warning: Notation "_ < _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./BigcatTypeAudit.v", line 1, characters 0-86:
+Warning: Notation "_ >= _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./BigcatTypeAudit.v", line 1, characters 0-86:
+Warning: Notation "_ > _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./BigcatTypeAudit.v", line 1, characters 0-86:
+Warning: Notation "_ <= _ <= _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./BigcatTypeAudit.v", line 1, characters 0-86:
+Warning: Notation "_ < _ <= _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./BigcatTypeAudit.v", line 1, characters 0-86:
+Warning: Notation "_ <= _ < _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./BigcatTypeAudit.v", line 1, characters 0-86:
+Warning: Notation "_ < _ < _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./BigcatTypeAudit.v", line 1, characters 0-86:
+Warning: Notation "_ * _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+GeneratedBigcatSource.statement_mem_bigcat_nat
+     : Prop
+GeneratedBigcatSource.statement_mem_bigcat_nat_exists
+     : Prop
+GeneratedBigcatSource.statement_mem_bigcat_ord
+     : Prop
+GeneratedBigcatSource.statement_bigcat_nat_uniq
+     : Prop
+GeneratedBigcatSource.statement_bigcat_nat_filter_eq_filter_bigcat_nat
+     : Prop
+GeneratedBigcatSource.statement_size_big_nat
+     : Prop
+GeneratedBigcatSource.statement_mem_bigcat
+     : Prop
+GeneratedBigcatSource.statement_mem_bigcat_exists
+     : Prop
+GeneratedBigcatSource.statement_bigcat_filter_eq_filter_bigcat
+     : Prop
+GeneratedBigcatSource.statement_bigcat_uniq
+     : Prop
+GeneratedBigcatSource.statement_seq_different_elements_nil
+     : Prop
+GeneratedBigcatSource.statement_bigcat_seq_uniqK
+     : Prop
+GeneratedBigcatSource.statement_bigcat_partitions
+     : Prop
+Axioms:
+Lean.eq relies on definitional UIP.
+Prosa_Util_Bigcat_mem_bigcat_nat :
+  forall T : Type,
+  DecidableEq T ->
+  forall (f : Lean.Nat -> List T) (x : T) (m n j : Lean.Nat),
+  Lean.And (LE_le_inst1 Lean.Nat instLENat m j)
+    (LT_lt_inst1 Lean.Nat instLTNat j n) ->
+  Membership_mem T (List T) (List_instMembership T) (f j) x ->
+  Membership_mem T (List T) (List_instMembership T)
+    (Prosa_Util_Notation_bigCat T m n f) x
+Axioms:
+Lean.eq relies on definitional UIP.
+Prosa_Util_Bigcat_mem_bigcat_nat_exists :
+  forall T : Type,
+  DecidableEq T ->
+  forall (f : Lean.Nat -> List T) (x : T) (m n : Lean.Nat),
+  Membership_mem T (List T) (List_instMembership T)
+    (Prosa_Util_Notation_bigCat T m n f) x ->
+  Exists Lean.Nat
+    (fun i : Lean.Nat =>
+     Lean.And (Membership_mem T (List T) (List_instMembership T) (f i) x)
+       (Lean.And (LE_le_inst1 Lean.Nat instLENat m i)
+          (LT_lt_inst1 Lean.Nat instLTNat i n)))
+Axioms:
+Lean.eq_inst1 relies on definitional UIP.
+Lean.eq relies on definitional UIP.
+SubNatTrue relies on definitional UIP.
+HEq_inst1 relies on definitional UIP.
+PropSPropFoundation.interpret_strict :
+  forall P : Prop, PropSPropFoundation.StrictlyInhabited P -> P
+Prosa_Util_Bigcat_mem_bigcat_ord :
+  forall T : Type,
+  DecidableEq T ->
+  forall (x : T) (n : Lean.Nat) (j : Lean.Fin n) (g : Lean.Fin n -> List T),
+  LT_lt_inst1 Lean.Nat instLTNat (Fin_val n j) n ->
+  Membership_mem T (List T) (List_instMembership T) (g j) x ->
+  Membership_mem T (List T) (List_instMembership T)
+    (Prosa_Util_Bigcat_bigCatFin T n g) x
+Axioms:
+Lean.eq relies on definitional UIP.
+Prosa_Util_Bigcat_bigcat_nat_uniq :
+  forall T : Type,
+  DecidableEq T ->
+  forall f : Lean.Nat -> List T,
+  (forall i : Lean.Nat, List_Nodup T (f i)) ->
+  (forall (x : T) (i_UU2081_ i_UU2082_ : Lean.Nat),
+   Membership_mem T (List T) (List_instMembership T) (f i_UU2081_) x ->
+   Membership_mem T (List T) (List_instMembership T) (f i_UU2082_) x ->
+   Lean.eq i_UU2081_ i_UU2082_) ->
+  forall n_UU2081_ n_UU2082_ : Lean.Nat,
+  List_Nodup T (Prosa_Util_Notation_bigCat T n_UU2081_ n_UU2082_ f)
+Axioms:
+Lean.eq relies on definitional UIP.
+Prosa_Util_Bigcat_bigcat_nat_filter_eq_filter_bigcat_nat :
+  forall (X : Type) (F : Lean.Nat -> List X) (P : X -> Bool)
+    (t_UU2081_ t_UU2082_ : Lean.Nat),
+  Lean.eq
+    (List_filter X P (Prosa_Util_Notation_bigCat X t_UU2081_ t_UU2082_ F))
+    (Prosa_Util_Notation_bigCat X t_UU2081_ t_UU2082_
+       (fun t : Lean.Nat => List_filter X P (F t)))
+Axioms:
+Lean.eq relies on definitional UIP.
+Prosa_Util_Bigcat_size_big_nat :
+  forall (X : Type) (F : Lean.Nat -> List X) (t_UU2081_ t_UU2082_ : Lean.Nat),
+  Lean.eq
+    (List_foldr_inst3 Lean.Nat Lean.Nat Lean.Nat_add Lean.Nat_zero
+       (List_map_inst3 Lean.Nat Lean.Nat
+          (fun t : Lean.Nat => List_length X (F t))
+          (List_range' t_UU2081_ (Nat_sub t_UU2082_ t_UU2081_)
+             (Lean.Nat_succ Lean.Nat_zero))))
+    (List_length X
+       (List_flatten X
+          (List_map_inst1 Lean.Nat (List X)
+             (fun i : Lean.Nat => F (Lean.Nat_add t_UU2081_ i))
+             (List_range_loop (Nat_sub t_UU2082_ t_UU2081_)
+                (List_nil_inst1 Lean.Nat)))))
+Axioms:
+Lean.eq relies on definitional UIP.
+Prosa_Util_Bigcat_mem_bigcat :
+  forall X Y : Type,
+  DecidableEq X ->
+  DecidableEq Y ->
+  forall (f : X -> List Y) (x : X) (y : Y) (s : List X),
+  Membership_mem X (List X) (List_instMembership X) s x ->
+  Membership_mem Y (List Y) (List_instMembership Y) (f x) y ->
+  Membership_mem Y (List Y) (List_instMembership Y)
+    (Prosa_Util_Bigcat_bigCatSeqAll X Y s f) y
+Axioms:
+Lean.eq relies on definitional UIP.
+Prosa_Util_Bigcat_mem_bigcat_exists :
+  forall X Y : Type,
+  DecidableEq X ->
+  DecidableEq Y ->
+  forall (f : X -> List Y) (P : X -> Bool) (s : List X) (y : Y),
+  Membership_mem Y (List Y) (List_instMembership Y)
+    (Prosa_Util_Bigcat_bigCatSeq X Y s P f) y ->
+  Exists X
+    (fun x : X =>
+     Lean.And (Membership_mem X (List X) (List_instMembership X) s x)
+       (Membership_mem Y (List Y) (List_instMembership Y) (f x) y))
+Axioms:
+Lean.eq relies on definitional UIP.
+Prosa_Util_Bigcat_bigcat_filter_eq_filter_bigcat :
+  forall X Y : Type,
+  DecidableEq X ->
+  DecidableEq Y ->
+  forall (f : X -> List Y) (xss : List X) (P : Y -> Bool),
+  Lean.eq (List_filter Y P (Prosa_Util_Bigcat_bigCatSeqAll X Y xss f))
+    (Prosa_Util_Bigcat_bigCatSeqAll X Y xss
+       (fun x : X => List_filter Y P (f x)))
+Axioms:
+Lean.eq relies on definitional UIP.
+Prosa_Util_Bigcat_bigcat_uniq :
+  forall X Y : Type,
+  DecidableEq X ->
+  DecidableEq Y ->
+  forall (f : X -> List Y) (xs : List X) (P : X -> Bool),
+  (forall x : X, Lean.eq (P x) Bool_true -> List_Nodup Y (f x)) ->
+  (forall (x : Y) (y z : X),
+   Membership_mem Y (List Y) (List_instMembership Y) (f y) x ->
+   Membership_mem Y (List Y) (List_instMembership Y) (f z) x -> Lean.eq y z) ->
+  List_Nodup X xs -> List_Nodup Y (Prosa_Util_Bigcat_bigCatSeq X Y xs P f)
+Axioms:
+Lean.eq relies on definitional UIP.
+Prosa_Util_Bigcat_seq_different_elements_nil :
+  forall (X Y : Type)
+    (inst____at___Prosa_Util_Bigcat358557551__hygCtx__hyg4 : DecidableEq X),
+  DecidableEq Y ->
+  forall (f : X -> List Y) (g : Y -> X),
+  (forall (x : X) (y : Y),
+   Membership_mem Y (List Y) (List_instMembership Y) (f x) y ->
+   Lean.eq (g y) x) ->
+  forall x_UU2081_ x_UU2082_ : X,
+  Ne X x_UU2081_ x_UU2082_ ->
+  Lean.eq
+    (List_filter Y
+       (fun x : Y =>
+        Decidable_decide (Lean.eq (g x) x_UU2082_)
+          (inst____at___Prosa_Util_Bigcat358557551__hygCtx__hyg4 
+             (g x) x_UU2082_))
+       (f x_UU2081_))
+    (List_nil Y)
+Axioms:
+Lean.eq relies on definitional UIP.
+Prosa_Util_Bigcat_bigcat_seq_uniqK :
+  forall (X Y : Type)
+    (inst____at___Prosa_Util_Bigcat371317755__hygCtx__hyg4 : DecidableEq X),
+  DecidableEq Y ->
+  forall (f : X -> List Y) (g : Y -> X),
+  (forall (x : X) (y : Y),
+   Membership_mem Y (List Y) (List_instMembership Y) (f x) y ->
+   Lean.eq (g y) x) ->
+  forall (y : X) (xs : List X),
+  Membership_mem X (List X) (List_instMembership X) xs y ->
+  List_Nodup X xs ->
+  Lean.eq
+    (Prosa_Util_Bigcat_bigCatSeqAll X Y xs
+       (fun x : X =>
+        List_filter Y
+          (fun x' : Y =>
+           Decidable_decide (Lean.eq (g x') y)
+             (inst____at___Prosa_Util_Bigcat371317755__hygCtx__hyg4 (g x') y))
+          (f x)))
+    (f y)
+Axioms:
+Lean.eq_inst1 relies on definitional UIP.
+Lean.eq relies on definitional UIP.
+True relies on definitional UIP.
+HEq_inst1 relies on definitional UIP.
+propext : forall a b : SProp, Iff a b -> Lean.eq a b
+Prosa_Util_Bigcat_bigcat_partitions :
+  forall (X Y : Type)
+    (inst____at___Prosa_Util_Bigcat3424149449__hygCtx__hyg4 : DecidableEq X)
+    (inst____at___Prosa_Util_Bigcat3424149449__hygCtx__hyg7 : DecidableEq Y)
+    (xs : List X) (ys : List Y) (P : X -> Bool) (xToY : X -> Y),
+  (forall x : X,
+   Membership_mem X (List X) (List_instMembership X) xs x ->
+   Lean.eq (P x) Bool_true ->
+   Membership_mem Y (List Y) (List_instMembership Y) ys (xToY x)) ->
+  forall j : X,
+  Lean.eq
+    (Decidable_decide
+       (Membership_mem X (List X) (List_instMembership X)
+          (List_filter X P xs) j)
+       (List_instDecidableMemOfLawfulBEq X
+          (instBEqOfDecidableEq X
+             inst____at___Prosa_Util_Bigcat3424149449__hygCtx__hyg4)
+          (instLawfulBEq X
+             inst____at___Prosa_Util_Bigcat3424149449__hygCtx__hyg4)
+          j (List_filter X P xs)))
+    (Decidable_decide
+       (Membership_mem X (List X) (List_instMembership X)
+          (Prosa_Util_Bigcat_bigCatSeqAll Y X ys
+             (fun y : Y =>
+              List_filter X
+                (fun x : X =>
+                 Bool_and (P x)
+                   (Decidable_decide (Lean.eq (xToY x) y)
+                      (inst____at___Prosa_Util_Bigcat3424149449__hygCtx__hyg7
+                         (xToY x) y)))
+                xs))
+          j)
+       (List_instDecidableMemOfLawfulBEq X
+          (instBEqOfDecidableEq X
+             inst____at___Prosa_Util_Bigcat3424149449__hygCtx__hyg4)
+          (instLawfulBEq X
+             inst____at___Prosa_Util_Bigcat3424149449__hygCtx__hyg4)
+          j
+          (Prosa_Util_Bigcat_bigCatSeqAll Y X ys
+             (fun y : Y =>
+              List_filter X
+                (fun x : X =>
+                 Bool_and (P x)
+                   (Decidable_decide (Lean.eq (xToY x) y)
+                      (inst____at___Prosa_Util_Bigcat3424149449__hygCtx__hyg7
+                         (xToY x) y)))
+                xs))))

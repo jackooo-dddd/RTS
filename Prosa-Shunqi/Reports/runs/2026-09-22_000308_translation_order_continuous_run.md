@@ -353,3 +353,117 @@ The complete 13-declaration production candidate now compiles under the pinned L
 - No Bigcat declaration is published yet.  The next work is to compose the Nat
   interval certificates, add the ordinal enumeration correspondence, and run
   exact-type/self-dependency/assumption audits for all thirteen declarations.
+
+## 2026-09-22 08:02:30 — Bigcat reaches 13/13 compiled semantic proofs
+
+- All thirteen independent source-to-actual-target statement certificates now
+  compile in Rocq 9.3.
+- The remaining Nat interval statements compose the previously certified
+  half-open interval operation bridge and normalized interval-sum value.
+- The ordinal case adds a reusable MathComp ordinal / imported Lean `Fin`
+  payload relation and canonical-enumeration Bigcat correspondence.
+- A proof interface using `List.ofFn_succ'` was discarded because it caused
+  exporter/importer proof-graph blow-up; the checked core `List.ofFn_succ`
+  equation gives the same required computation interface with a tractable
+  artifact.
+- Coverage is deliberately still 16/357 files and 133/2439 declarations:
+  exact-target guards and the fail-closed whole-file audit have not yet been
+  published.
+
+## 2026-09-22 08:14:09 — Bigcat semantic audit closes cleanly
+
+- All 13 actual-target specialization guards compile.
+- The guard work exposed and corrected one validator-side expression mismatch
+  for `bigcat_filter_eq_filter_bigcat`; the revised target encoding now uses
+  the actual imported `List.filter` expression and reuses the certified filter
+  correspondence.
+- Automated `Print Assumptions` classification gives 13/13
+  `CERTIFIED_WITH_PROP_SPROP_FOUNDATION`, no semantic premise, no source or
+  target theorem self-dependency, and no unexpected assumption.
+- A fresh full validation/publication run is the last gate.  No acceptance
+  totals are incremented before that run succeeds.
+
+## 2026-09-22 08:23:54 — `util/bigcat.v` accepted
+
+- The final validator ran from fresh isolated work directory
+  `translation_order_bigcat.UnNizx`; no preflight `.olean` or `.vo` was reused.
+- Fresh Lean build, normalization guard, export, source extraction, Rocq
+  import, all certificates, exact-target guards, proof audits, baseline audit,
+  and content-addressed publication passed.
+- All 13 declarations are `ACCEPTED_V06_TRANSLATION` and
+  `CERTIFIED_WITH_PROP_SPROP_FOUNDATION`, with no semantic premise, no
+  source/target theorem self-dependency, and no unexpected assumption.
+- Cumulative state is now 17/357 accepted files and 146/2439 accepted
+  declarations; translated-but-not-certified remains zero.
+- The next READY unfinished file by approved order is rank 18
+  `util/minmax.v`.
+
+## 2026-09-22 08:25:37 — rank 18 `util/minmax.v` started
+
+All four direct internal dependencies are accepted, so the file is DAG-ready.
+Its ten declarations concern conditional maxima over ordered sequences and
+canonical finite ordinal ranges.  Six historical candidates require v0.6
+signature adaptation and four declarations are new.  In particular, the old
+propositional-predicate `foldl` helper will not be copied as specification;
+the current plan uses a Boolean conditional `foldr Nat.max 0`, closely
+matching the source big-operator computation and the approved List/Bool
+representations.
+
+## 2026-09-22 08:36:39 — Minmax Lean translation reaches 10/10
+
+- All ten public declarations compile in the pinned Lean environment.
+- The candidate retains Bool predicates, ordered Lists, zero identity, and a
+  validation-friendly `foldr Nat.max` computation.
+- A private maximum-witness lemma is reused by three production proofs; it is
+  a proof implementation detail, not additional source coverage or semantic
+  evidence.
+- No Minmax declaration is counted accepted until proof-clean and fresh
+  actual-artifact semantic validation finish.
+
+## 2026-09-22 10:35:27 — `util/minmax.v` accepted
+
+- Completed all ten production translations and Lean proofs, including the
+  v0.6-only witness/subset group and the informative `reflect` theorem.
+- Fresh actual-artifact export/import and ten independent Rocq correspondence
+  certificates passed. The shared operation layer covers conditional maximum,
+  Bool existential, ordinal/Fin enumeration, and Nat maximum/order.
+- The automatic assumption audit classified all ten as
+  `CERTIFIED_WITH_PROP_SPROP_FOUNDATION`; semantic premises and unexpected
+  assumptions are empty, and source/target theorem self-dependencies are
+  false.
+- Published `minmax_module_manifest.json` and
+  `minmax_module_status.json`. Cumulative state is now 18/357 files and
+  156/2439 declarations, with zero translated-but-not-certified debt.
+
+## 2026-09-22 10:39:19 — rank 19 `util/div_mod.v` started
+
+Both direct file dependencies (`util/nat.v` and `util/subadditivity.v`) have
+valid accepted-file evidence, so the file is DAG-ready. The complete 15-item
+contract was read from the pinned source. Twelve items require new translation
+and three are adaptations of credible historical candidates. The first
+preflight focuses on a reusable actual-artifact correspondence for natural
+division, remainder, divisibility, ceiling division, and truncated
+subtraction; no DivMod coverage is claimed yet.
+
+## 2026-09-22 11:27:51 — validation workflow optimization regression passed
+
+- Translation work was paused before DivMod semantic publication; its 15 Lean
+  candidates compile, but 0/15 are accepted and cumulative coverage remains
+  18 files / 156 declarations.
+- The project skill now requires common-bridge lookup, parameterized or
+  generated artifact adapters, config-driven incremental
+  `prepare/check/finalize`, seven-stage timing/cache evidence, and reuse of
+  audited exporter/importer patterns.
+- A generic content-addressed driver and state engine were added. The cold
+  Sum/Poet/Bigcat prepare spent 100.29 s in the isolated Lean build. Repeating
+  the same snapshot executed no prepare stage, verified four cache groups in
+  0.019 s, and retained exact output hashes.
+- One generated Rocq adapter template was instantiated against the actual
+  imported Sum, Poet, and Bigcat datatypes. Eighteen roundtrip/truth/membership
+  assumption checks passed; six expected truth/membership checks expose the
+  existing Prop/SProp foundation, while none has a semantic premise or an
+  unexpected assumption.
+- Existing semantic results (25 Sum + 1 Poet + 13 Bigcat) and their acceptance
+  gates were unchanged. A first failed finalize was retained as evidence: it
+  found an ambiguous `True` marker and a shell hook error-propagation flaw,
+  and no result was published until both were corrected.

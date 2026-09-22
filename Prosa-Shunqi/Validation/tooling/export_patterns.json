@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "patterns": {
+    "statement_only": {
+      "purpose": "Export the exact compiled theorem type without following its proof dependency graph.",
+      "environment": "LEAN4EXPORT_STATEMENT_ONLY",
+      "required_evidence": [
+        "actual compiled declaration identity",
+        "Lean proof-clean audit",
+        "Rocq exact-type guard",
+        "target self-dependency audit"
+      ]
+    },
+    "body_theorem_equation": {
+      "purpose": "Export proof bodies for small computation equations tied to the actual definition.",
+      "environment": "LEAN4EXPORT_BODY_THEOREMS",
+      "required_evidence": [
+        "equation references actual target definition",
+        "imported proof body is Rocq-kernel checked"
+      ]
+    },
+    "definition_body_projection": {
+      "purpose": "Project only the audited computational body needed by a semantic bridge.",
+      "environment": "LEAN4EXPORT_DEFINITION_BODY_PROJECTIONS",
+      "required_evidence": [
+        "actual definition body hash",
+        "projection configuration hash",
+        "kernel-checkable guard"
+      ]
+    },
+    "guarded_normalization": {
+      "purpose": "Normalize a known expensive subexpression such as Finset.sum over a half-open interval.",
+      "environment": [
+        "LEAN4EXPORT_NORMALIZE_THEOREM_TYPES",
+        "LEAN4EXPORT_NORMALIZE_SUBEXPRESSION_HEADS",
+        "LEAN4EXPORT_NORMALIZE_DEFINITION_BODIES"
+      ],
+      "known_heads": ["Finset.sum"],
+      "required_evidence": [
+        "Meta.isDefEq preflight",
+        "kernel-checked guard bound to this compiled expression",
+        "negative normalization test"
+      ]
+    },
+    "universe_sensitive_datatype_interface": {
+      "purpose": "Export constructor/equation interfaces for artifact-local List and other universe-sensitive datatypes.",
+      "required_evidence": [
+        "imported datatype identity",
+        "constructor equations with imported bodies",
+        "artifact-local adapter kernel compilation"
+      ]
+    }
+  }
+}

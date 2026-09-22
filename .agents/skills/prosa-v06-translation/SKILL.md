@@ -143,6 +143,20 @@ description: 在 Prosa-Shunqi 中将固定 Prosa v0.6 的 Rocq/MathComp/SSReflec
 4. 在验证器可用时，试导出/导入最小切片，查看引入的定义与 assumptions。
 5. 确定验证路径后再扩展该定义的下游证明。
 
+预检还要先查找已经审核过的 exporter/importer pattern，而不是为每个文件
+重新探索同一个问题。至少复用：statement-only theorem type export、
+definition-body projection、实际 computation equations、`Finset.sum`/半开区间
+的 guarded normalization、universe-sensitive `List`/datatype interface，以及由
+kernel `Eq.refl` 或 `Meta.isDefEq` 检查的 normalization guard。命中已有 pattern
+时，把目标名、实际类型和 artifact hash 参数化进现有配置/helper；只有模式不
+适用时才新增接口。
+
+任何 projection 或 normalization 都必须来自本次 actual compiled artifact，
+保存原表达式与变换后表达式的 provenance，并有 kernel-checkable guard；
+`Meta.isDefEq` 是有用的预检，但不能单独冒充 kernel certificate。预检同时记录
+export 大小、依赖爆炸、universe 和 imported datatype identity，尽早选择最小但
+完整的 actual-artifact interface。
+
 **允许使用目标定义的已证递归 equations**：它们是计算规律，不是把目标业务定理当成自身 correctness 的证明。
 但 equations 必须绑定实际定义，proof body 在 Rocq 中导入并检查，或在 Rocq 对真实导入体重证。只有 statement 的 equation 仍是 assumption，不能伪装成闭合桥接。
 
@@ -204,6 +218,29 @@ operation interface 中枚举并查找其类型、函数、谓词和辅助运算
 certificate，再供当前与后续目标使用。只有技术上无法抽取时，才保留有
 说明的局部证明。
 
+高频 primitive/operation（尤其 `Bool`、`nat`、`seq`/`List`、
+`eqType`/`DecidableEq`、membership、length、append、filter、roundtrip 和逻辑
+连接词）的默认顺序是：
+
+```text
+certified common bridge
+→ 参数化或实例化
+→ 生成最小 artifact-local adapter
+→ 最后才手写新的 correspondence proof
+```
+
+artifact-local adapter 可以由小型模板/生成器产生，但生成物必须显式引用实际
+imported constructors/equations，作为普通 Rocq 源码进入 kernel 编译、
+`Print Assumptions` 和 fail-closed audit；生成器本身不能把对应关系写成 axiom
+或未证明 premise。common bridge 的复用也必须检查其输入 relation、universe、
+datatype identity 和 artifact hash，不能只因名称相同就套用。
+
+对已经具备 operation bridges 的普通 theorem statement，优先用可审计的
+combinator/tactic/template 自动组合 `forall`、`exists`、`And`、`Or`、蕴含、
+等式、membership、Bool truth 以及 List/Nat 运算。自动化遇到缺失 operation
+relation 时应留下明确 subgoal；先补一个最小可复用 bridge，再继续组合，而不
+在每个 theorem 内复制基础语义证明。
+
 目标是证明 official Rocq statement 与 actual imported Lean statement 在
 批准的表示关系下对应，而不是重演任一侧 proof。目标 correspondence 不得
 直接或间接使用 source theorem constant 或 imported target theorem constant
@@ -219,10 +256,36 @@ statement-only imported dependency、显式 semantic premise 与未验证假设�
 
 `CERTIFIED_WITH_PROP_SPROP_FOUNDATION`、importer equality/UIP、statement-only dependencies、源码提取边界分别记录。`Print Assumptions` 不会自动审计所有局部前提，也不能仅凭其不出现一个已证明的常量就断言没有该依赖；复核完整 certificate type 和实际依赖闭包。
 
-## 10. 批量执行与卡点管理
+## 10. 批量执行、增量验证与卡点管理
 
 按依赖独立的 semantic cluster 推进：契约 → 定义/表示预检 → proof → 验证 → 记录。
 整文件所有源声明必须有映射与状态；允许局部进展，不把局部成功说成整文件 accepted。
+
+除非目标已有更严格入口，文件/批次验证默认分为：
+
+```text
+prepare  → 固定 snapshot 的 Lean build、source acquisition、export、Rocq import
+check    → 只编译受影响 certificate DAG 并运行局部 assumption audit
+finalize → 对当前 snapshot 做 whole-file regression、完整 audit 和 publication
+```
+
+同一 snapshot 共用一次 prepare。certificate-only 修改不得触发 Lean build、
+export 或 import；production/source、transitive relevant dependency、计算接口、
+export 配置、工具链、模块加载配置或工具 binary/patch 变化时，必须准确使相关
+prepare cache 失效。缺失、hash 不符或损坏的 cache 一律重建或 fail closed，
+不得从其它 workspace 静默加载同名 `.olean`/`.vo`。保留 `CLEAN_FULL`（或等价）
+路径，在 batch publication 和独立复现时比较增量路径的结论与 trust boundary。
+
+新 validator 优先使用配置驱动的通用 prepare/check/finalize helper；per-file
+代码只描述目标、source acquisition、export interface、certificate DAG 和
+publication schema。不要复制一整套大型 shell pipeline。抽取复用逻辑时保持
+原有 fail-closed 行为，避免为了“通用”而扩大 cache key 或缩小审计范围。
+
+每次运行统一记录以下 stage：`lean_build`、`source_acquisition`、`export`、
+`rocq_import`、`certificate_compile`、`assumption_audit`、`publication`。每项
+至少含 execution count、`FRESH`/`VERIFIED_CACHE`/失败模式、elapsed time、
+input fingerprint 和输出 hashes；失败尝试记录 stage 和原因。报告瓶颈必须
+来自这些 evidence，而不是从 report 时间戳间隔推测。
 
 优先收尾接近验收的 cluster。单个未闭合边界默认最多三种实质方法：已有桥接/局部归约、已证 equations 加强归纳、经过审查的表示调整。三者不是必做清单，也不限制必要的普通 tactic 调试。
 
@@ -237,6 +300,12 @@ statement-only imported dependency、显式 semantic premise 与未验证假设�
 这些是不同维度，不是一条强制线性状态链。
 
 每个状态附对应源码/artifact hash 和日志证据；未重跑不得标 fresh。已改源码与旧成功结果不匹配时显示 STALE。不能把 not accepted 写成 NOT_STARTED。
+
+publication 明确区分 `FRESH` 与 `VERIFIED_CACHE`，并区分当前 snapshot evidence
+与历史 evidence。只有先验证证据的 snapshot/input fingerprint 与当前发布对象
+一致，才能汇总为 accepted；`fresh_build=true` 不得硬编码。审计规则变化至少
+使 audit stage 失效，certificate 变化使其下游 compile/audit/publication 失效，
+Lean/source/interface 变化则使 prepare 及全部下游失效。
 
 hash 用真实字节/实际 expression 生成；不要对硬编码的 `"Type"`/`"Nat"` 字符串冒充提取结果。记录 hash 不等于实现失效检查；复用前必须比对。
 

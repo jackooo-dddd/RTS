@@ -560,7 +560,8 @@ Definition bc_target_bigcat_filter_eq_statement : SProp :=
       (bc_target_bigCatSeqAll X Y (bc_to_imported xss)
         (bc_family_to_imported f)))
     (bc_target_bigCatSeqAll X Y (bc_to_imported xss)
-      (bc_family_to_imported (fun x => [seq y <- f x | P y]))).
+      (fun x => bc_target_filter (bc_pred_to_imported P)
+        (bc_family_to_imported f x))).
 
 Lemma bc_bigcat_filter_result_correspondence
     (X Y : eqType) (f : X -> seq Y) (xss : seq X) (P : Y -> bool) :
@@ -572,7 +573,8 @@ Lemma bc_bigcat_filter_result_correspondence
         (bc_target_bigCatSeqAll X Y (bc_to_imported xss)
           (bc_family_to_imported f)))
       (bc_target_bigCatSeqAll X Y (bc_to_imported xss)
-        (bc_family_to_imported (fun x => [seq y <- f x | P y])))).
+        (fun x => bc_target_filter (bc_pred_to_imported P)
+          (bc_family_to_imported f x)))).
 Proof.
   have Hall := bc_bigCatSeqAll_related X Y f (bc_family_to_imported f)
     xss (bc_to_imported xss) (bc_family_canonical f) (@Lean.eq_refl _ _).
@@ -582,9 +584,12 @@ Proof.
       (bc_family_to_imported f)) (bc_pred_canonical P) Hall.
   have Hright := bc_bigCatSeqAll_related X Y
     (fun x => [seq y <- f x | P y])
-    (bc_family_to_imported (fun x => [seq y <- f x | P y]))
+    (fun x => bc_target_filter (bc_pred_to_imported P)
+      (bc_family_to_imported f x))
     xss (bc_to_imported xss)
-    (bc_family_canonical (fun x => [seq y <- f x | P y]))
+    (fun x => bc_filter_related Y P (bc_pred_to_imported P)
+      (f x) (bc_family_to_imported f x)
+      (bc_pred_canonical P) (@Lean.eq_refl _ _))
     (@Lean.eq_refl _ _).
   exact (bc_list_eq_correspondence Y _ _ _ _ Hleft Hright).
 Qed.
@@ -990,10 +995,16 @@ Proof.
       (Htarget X Y xs ys P xToY HmissingL j)).
 Qed.
 
+Print Assumptions mem_bigcat_nat_statement_certificate.
+Print Assumptions mem_bigcat_nat_exists_statement_certificate.
+Print Assumptions mem_bigcat_ord_statement_certificate.
+Print Assumptions bigcat_nat_uniq_statement_certificate.
+Print Assumptions bigcat_nat_filter_eq_filter_bigcat_nat_statement_certificate.
+Print Assumptions size_big_nat_statement_certificate.
 Print Assumptions mem_bigcat_statement_certificate.
 Print Assumptions mem_bigcat_exists_statement_certificate.
 Print Assumptions bigcat_filter_eq_filter_bigcat_statement_certificate.
+Print Assumptions bigcat_uniq_statement_certificate.
 Print Assumptions seq_different_elements_nil_statement_certificate.
 Print Assumptions bigcat_seq_uniqK_statement_certificate.
-Print Assumptions bigcat_uniq_statement_certificate.
 Print Assumptions bigcat_partitions_statement_certificate.

@@ -1,0 +1,195 @@
+File "./MinmaxTypeAudit.v", line 1, characters 0-86:
+Warning: Notation "_ + _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./MinmaxTypeAudit.v", line 1, characters 0-86:
+Warning: Notation "_ - _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./MinmaxTypeAudit.v", line 1, characters 0-86:
+Warning: Notation "_ <= _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./MinmaxTypeAudit.v", line 1, characters 0-86:
+Warning: Notation "_ < _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./MinmaxTypeAudit.v", line 1, characters 0-86:
+Warning: Notation "_ >= _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./MinmaxTypeAudit.v", line 1, characters 0-86:
+Warning: Notation "_ > _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./MinmaxTypeAudit.v", line 1, characters 0-86:
+Warning: Notation "_ <= _ <= _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./MinmaxTypeAudit.v", line 1, characters 0-86:
+Warning: Notation "_ < _ <= _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./MinmaxTypeAudit.v", line 1, characters 0-86:
+Warning: Notation "_ <= _ < _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./MinmaxTypeAudit.v", line 1, characters 0-86:
+Warning: Notation "_ < _ < _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./MinmaxTypeAudit.v", line 1, characters 0-86:
+Warning: Notation "_ * _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+GeneratedMinmaxSource.statement_leq_bigmax_cond_seq
+     : Prop
+GeneratedMinmaxSource.statement_leq_bigmax_sup
+     : Prop
+GeneratedMinmaxSource.statement_bigmax_leq_seqP
+     : Type
+GeneratedMinmaxSource.statement_leq_big_max
+     : Prop
+GeneratedMinmaxSource.statement_bigmax_ord_ltn_identity
+     : Prop
+GeneratedMinmaxSource.statement_bigmax_ltn_ord
+     : Prop
+GeneratedMinmaxSource.statement_bigmax_pred
+     : Prop
+GeneratedMinmaxSource.statement_bigmax_witness
+     : Prop
+GeneratedMinmaxSource.statement_bigmax_witness_diff
+     : Prop
+GeneratedMinmaxSource.statement_bigmax_subset
+     : Prop
+Axioms:
+Lean.eq_inst1 relies on definitional UIP.
+Lean.eq relies on definitional UIP.
+True relies on definitional UIP.
+HEq_inst1 relies on definitional UIP.
+Prosa_Util_Minmax_leq_bigmax_cond_seq :
+  forall X : Type,
+  DecidableEq X ->
+  forall (F : X -> Lean.Nat) (P : X -> Bool) (xs : List X) (x : X),
+  Membership_mem X (List X) (List_instMembership X) xs x ->
+  Lean.eq (P x) Bool_true ->
+  LE_le_inst1 Lean.Nat instLENat (F x)
+    (Prosa_Util_Minmax_bigMaxListCond X xs P F)
+Axioms:
+Lean.eq_inst1 relies on definitional UIP.
+Lean.eq relies on definitional UIP.
+True relies on definitional UIP.
+HEq_inst1 relies on definitional UIP.
+Prosa_Util_Minmax_leq_bigmax_sup :
+  forall X : Type,
+  DecidableEq X ->
+  forall (P : X -> Bool) (F : X -> Lean.Nat) (xs : List X) (n : Lean.Nat),
+  Exists X
+    (fun x : X =>
+     Lean.And (Membership_mem X (List X) (List_instMembership X) xs x)
+       (Lean.And (Lean.eq (P x) Bool_true)
+          (LE_le_inst1 Lean.Nat instLENat n (F x)))) ->
+  LE_le_inst1 Lean.Nat instLENat n
+    (Prosa_Util_Minmax_bigMaxListCond X xs P F)
+Axioms:
+Lean.eq_inst1 relies on definitional UIP.
+Lean.eq relies on definitional UIP.
+True relies on definitional UIP.
+HEq_inst1 relies on definitional UIP.
+Prosa_Util_Minmax_bigmax_leq_seqP :
+  forall X : Type,
+  DecidableEq X ->
+  forall (F : X -> Lean.Nat) (P : X -> Bool) (xs : List X) (m : Lean.Nat),
+  Iff
+    (LE_le_inst1 Lean.Nat instLENat
+       (Prosa_Util_Minmax_bigMaxListCond X xs P F) m)
+    (forall x : X,
+     Membership_mem X (List X) (List_instMembership X) xs x ->
+     Lean.eq (P x) Bool_true -> LE_le_inst1 Lean.Nat instLENat (F x) m)
+Axioms:
+Lean.eq_inst1 relies on definitional UIP.
+Lean.eq relies on definitional UIP.
+True relies on definitional UIP.
+HEq_inst1 relies on definitional UIP.
+Prosa_Util_Minmax_leq_big_max :
+  forall X : Type,
+  DecidableEq X ->
+  forall (F_UU2081_ F_UU2082_ : X -> Lean.Nat) (P : X -> Bool) (xs : List X),
+  (forall x : X,
+   Membership_mem X (List X) (List_instMembership X) xs x ->
+   Lean.eq (P x) Bool_true ->
+   LE_le_inst1 Lean.Nat instLENat (F_UU2081_ x) (F_UU2082_ x)) ->
+  LE_le_inst1 Lean.Nat instLENat
+    (Prosa_Util_Minmax_bigMaxListCond X xs P F_UU2081_)
+    (Prosa_Util_Minmax_bigMaxListCond X xs P F_UU2082_)
+Axioms:
+Lean.eq_inst1 relies on definitional UIP.
+Lean.eq relies on definitional UIP.
+True relies on definitional UIP.
+HEq_inst1 relies on definitional UIP.
+Prosa_Util_Minmax_bigmax_ord_ltn_identity :
+  forall n : Lean.Nat,
+  GT_gt_inst1 Lean.Nat instLTNat n
+    (OfNat_ofNat_inst1 Lean.Nat Lean.Nat_zero (instOfNatNat Lean.Nat_zero)) ->
+  LT_lt_inst1 Lean.Nat instLTNat
+    (Prosa_Util_Minmax_bigMaxNatRange n (fun=> Bool_true)) n
+Axioms:
+Lean.eq_inst1 relies on definitional UIP.
+Lean.eq relies on definitional UIP.
+True relies on definitional UIP.
+SubNatTrue relies on definitional UIP.
+HEq_inst1 relies on definitional UIP.
+PropSPropFoundation.interpret_strict :
+  forall P : Prop, PropSPropFoundation.StrictlyInhabited P -> P
+Prosa_Util_Minmax_bigmax_ltn_ord :
+  forall (n : Lean.Nat) (P : Lean.Nat -> Bool) (i_UU2080_ : Lean.Fin n),
+  Lean.eq (P (Fin_val n i_UU2080_)) Bool_true ->
+  LT_lt_inst1 Lean.Nat instLTNat (Prosa_Util_Minmax_bigMaxNatRange n P) n
+Axioms:
+Lean.eq_inst1 relies on definitional UIP.
+Lean.eq relies on definitional UIP.
+True relies on definitional UIP.
+SubNatTrue relies on definitional UIP.
+HEq_inst1 relies on definitional UIP.
+PropSPropFoundation.interpret_strict :
+  forall P : Prop, PropSPropFoundation.StrictlyInhabited P -> P
+Prosa_Util_Minmax_bigmax_pred :
+  forall (n : Lean.Nat) (P : Lean.Nat -> Bool) (i_UU2080_ : Lean.Fin n),
+  Lean.eq (P (Fin_val n i_UU2080_)) Bool_true ->
+  Lean.eq (P (Prosa_Util_Minmax_bigMaxNatRange n P)) Bool_true
+Axioms:
+Lean.eq_inst1 relies on definitional UIP.
+Lean.eq relies on definitional UIP.
+True relies on definitional UIP.
+HEq_inst1 relies on definitional UIP.
+Prosa_Util_Minmax_bigmax_witness :
+  forall X : Type,
+  DecidableEq X ->
+  forall (xs : List X) (P : X -> Bool) (F : X -> Lean.Nat),
+  Lean.eq (List_any X xs P) Bool_true ->
+  Exists X
+    (fun x : X =>
+     Lean.And (Membership_mem X (List X) (List_instMembership X) xs x)
+       (Lean.And (Lean.eq (P x) Bool_true)
+          (Lean.eq (F x) (Prosa_Util_Minmax_bigMaxListCond X xs P F))))
+Axioms:
+Lean.eq_inst1 relies on definitional UIP.
+Lean.eq relies on definitional UIP.
+True relies on definitional UIP.
+HEq_inst1 relies on definitional UIP.
+Prosa_Util_Minmax_bigmax_witness_diff :
+  forall X : Type,
+  DecidableEq X ->
+  forall (xs : List X) (P_UU2081_ P_UU2082_ : X -> Bool) (F : X -> Lean.Nat),
+  LT_lt_inst1 Lean.Nat instLTNat
+    (Prosa_Util_Minmax_bigMaxListCond X xs P_UU2081_ F)
+    (Prosa_Util_Minmax_bigMaxListCond X xs P_UU2082_ F) ->
+  Exists X
+    (fun x : X =>
+     Lean.And (Membership_mem X (List X) (List_instMembership X) xs x)
+       (Lean.And (Lean.eq (P_UU2081_ x) Bool_false)
+          (Lean.eq (P_UU2082_ x) Bool_true)))
+Axioms:
+Lean.eq_inst1 relies on definitional UIP.
+Lean.eq relies on definitional UIP.
+True relies on definitional UIP.
+HEq_inst1 relies on definitional UIP.
+Prosa_Util_Minmax_bigmax_subset :
+  forall X : Type,
+  DecidableEq X ->
+  forall (xs : List X) (P_UU2081_ P_UU2082_ : X -> Bool) (F : X -> Lean.Nat),
+  (forall x : X,
+   Membership_mem X (List X) (List_instMembership X) xs x ->
+   Lean.eq (P_UU2081_ x) Bool_true -> Lean.eq (P_UU2082_ x) Bool_true) ->
+  LE_le_inst1 Lean.Nat instLENat
+    (Prosa_Util_Minmax_bigMaxListCond X xs P_UU2081_ F)
+    (Prosa_Util_Minmax_bigMaxListCond X xs P_UU2082_ F)

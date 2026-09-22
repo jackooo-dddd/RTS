@@ -2,8 +2,10 @@
 """Extract proof-independent semantic source signatures from pinned Prosa.
 
 Computational declarations are copied byte-for-byte.  Lemma/theorem blocks
-are represented by Prop-valued definitions whose bodies are the exact source
-statement text.  No proof constant, axiom, or admitted term is generated.
+are represented by definitions whose bodies are the exact source statement
+text.  They are Prop-valued by default; explicitly listed informative views
+(for example MathComp [reflect]) retain their elaborated Type-valued sort.
+No proof constant, axiom, or admitted term is generated.
 """
 
 from __future__ import annotations
@@ -106,6 +108,11 @@ def main() -> None:
     parser.add_argument("--declarations", required=True)
     parser.add_argument("--computational", default="")
     parser.add_argument(
+        "--type-valued", default="",
+        help=("comma-separated theorem declarations whose elaborated statement "
+              "lives in Type/Set rather than Prop (for example reflect views)"),
+    )
+    parser.add_argument(
         "--elaborated-evidence", type=Path,
         help=("optional declaration_type_evidence.json; when present, theorem "
               "statement definitions use the verified post-Section Rocq type"),
@@ -129,6 +136,7 @@ def main() -> None:
 
     requested = [name for name in args.declarations.split(",") if name]
     computational = {name for name in args.computational.split(",") if name}
+    type_valued = {name for name in args.type_valued.split(",") if name}
     bindings: dict[str, str] = {}
     for item in args.local_binding:
         if "=" not in item:
@@ -150,6 +158,9 @@ def main() -> None:
     for name in computational:
         if declarations[name][1] != "computational":
             raise SystemExit(f"not a computational declaration: {name}")
+    for name in type_valued:
+        if declarations[name][1] != "theorem":
+            raise SystemExit(f"not a theorem declaration: {name}")
 
     requested_drop_imports = set(args.drop_import)
     imports = [
@@ -178,11 +189,12 @@ def main() -> None:
         "transformations": {
             "computational": "byte-identical declaration block",
             "theorem": (
-                "verified post-Section Check type converted to a Prop-valued "
-                "Definition; exact source header retained as provenance; opaque "
-                "proof omitted"
+                "verified post-Section Check type converted to a definition "
+                "with its declared Prop/Type sort preserved; exact source header "
+                "retained as provenance; opaque proof omitted"
                 if elaborated_evidence is not None else
-                "exact source statement converted to a Prop-valued Definition; opaque proof omitted"
+                "exact source statement converted to a definition with its "
+                "declared Prop/Type sort preserved; opaque proof omitted"
             ),
             "local_bindings": bindings,
             "dropped_irrelevant_imports": sorted(requested_drop_imports),
@@ -218,12 +230,17 @@ def main() -> None:
                 if not check or ":" not in check:
                     raise SystemExit(f"malformed elaborated type evidence: {key}")
                 elaborated_type = check.split(":", 1)[1].strip()
+                statement_sort = "Type" if name in type_valued else "Prop"
                 generated = (
-                    f"Definition statement_{name} : Prop :=\n"
+                    f"Definition statement_{name} : {statement_sort} :=\n"
                     f"  ({elaborated_type})."
                 )
             else:
-                generated = f"Definition statement_{name} : Prop :=\n  ({statement})."
+                statement_sort = "Type" if name in type_valued else "Prop"
+                generated = (
+                    f"Definition statement_{name} : {statement_sort} :=\n"
+                    f"  ({statement})."
+                )
             output.extend([generated, ""])
             mode = "STATEMENT_EXACT_PROOF_OMITTED"
         if context:
@@ -242,6 +259,10 @@ def main() -> None:
             "elaborated_type_evidence": (
                 None if kind == "computational" or elaborated_evidence is None
                 else "ELABORATED_ROCQ_CHECK"
+            ),
+            "statement_sort": (
+                None if kind == "computational"
+                else ("Type" if name in type_valued else "Prop")
             ),
             "context": context,
             "local_bindings": active_bindings,

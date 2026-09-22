@@ -1,0 +1,84 @@
+{
+  "schema_version": 1,
+  "scope": "workflow_regression_sum_poet_bigcat",
+  "inputs": [
+    {"name": "lean_toolchain", "root": "project", "path": "lean-toolchain"},
+    {"name": "lakefile", "root": "project", "path": "lakefile.lean"},
+    {"name": "lake_manifest", "root": "project", "path": "lake-manifest.json"},
+    {"name": "lean_tactics", "root": "project", "path": "Prosa/Util/Tactics.lean"},
+    {"name": "lean_supremum", "root": "project", "path": "Prosa/Util/Supremum.lean"},
+    {"name": "lean_list", "root": "project", "path": "Prosa/Util/List.lean"},
+    {"name": "lean_notation", "root": "project", "path": "Prosa/Util/Notation.lean"},
+    {"name": "lean_rel", "root": "project", "path": "Prosa/Util/Rel.lean"},
+    {"name": "lean_nat", "root": "project", "path": "Prosa/Util/Nat.lean"},
+    {"name": "lean_sum", "root": "project", "path": "Prosa/Util/Sum.lean"},
+    {"name": "lean_poet", "root": "project", "path": "Prosa/Util/Poet.lean"},
+    {"name": "lean_bigcat", "root": "project", "path": "Prosa/Util/Bigcat.lean"},
+    {"name": "source_sum", "root": "source", "path": "util/sum.v"},
+    {"name": "source_poet", "root": "source", "path": "util/poet.v"},
+    {"name": "source_bigcat", "root": "source", "path": "util/bigcat.v"},
+    {"name": "sum_status", "root": "validation", "path": "planning/v06_pipeline/utility_foundation_expansion_status.json"},
+    {"name": "sum_interval_result", "root": "validation", "path": "logs/utility_foundation_expansion/cluster_results/sum_interval.json"},
+    {"name": "sum_sequence_result", "root": "validation", "path": "logs/utility_foundation_expansion/cluster_results/sum_sequence.json"},
+    {"name": "poet_manifest", "root": "validation", "path": "planning/v06_pipeline/poet_module_manifest.json"},
+    {"name": "poet_status", "root": "validation", "path": "planning/v06_pipeline/poet_module_status.json"},
+    {"name": "poet_result", "root": "validation", "path": "logs/translation_order/cluster_results/poet.json"},
+    {"name": "bigcat_manifest", "root": "validation", "path": "planning/v06_pipeline/bigcat_module_manifest.json"},
+    {"name": "bigcat_status", "root": "validation", "path": "planning/v06_pipeline/bigcat_module_status.json"},
+    {"name": "bigcat_result", "root": "validation", "path": "logs/translation_order/cluster_results/bigcat.json"},
+    {"name": "sum_export", "root": "validation", "path": "imported/utility_foundation/SumSequence.out"},
+    {"name": "sum_import", "root": "validation", "path": "imported/utility_foundation/ImportedSumSequence.vo"},
+    {"name": "poet_export", "root": "validation", "path": "imported/translation_order/poet/Poet.out"},
+    {"name": "poet_import", "root": "validation", "path": "imported/translation_order/poet/ImportedPoet.vo"},
+    {"name": "bigcat_export", "root": "validation", "path": "imported/translation_order/bigcat/Bigcat.out"},
+    {"name": "bigcat_import", "root": "validation", "path": "imported/translation_order/bigcat/ImportedBigcat.vo"},
+    {"name": "accepted_subadditivity", "root": "validation", "path": "imported/foundation_slice_2_closure/ImportedSubadditivity.vo"},
+    {"name": "lean4export", "root": "exporter", "path": ".lake/build/bin/lean4export"},
+    {"name": "rocq_import", "root": "importer", "path": "src/lean_import.cmxs"},
+    {"name": "rocq_foundation", "root": "importer", "path": "src/Lean.vo"}
+  ],
+  "git_repositories": [
+    {"name": "authoritative_source", "root": "source", "path": "", "require_clean": true},
+    {"name": "mathlib", "root": "project", "path": ".lake/packages/mathlib", "require_clean": true}
+  ],
+  "command_inputs": [
+    {"name": "lean_version", "argv": ["lean", "--version"]},
+    {"name": "rocq_version", "argv": ["opam", "exec", "--switch=rocq93rc1", "--", "rocq", "--version"]}
+  ],
+  "module_loading": {
+    "lean_root": "project",
+    "rocq_source_prefix": "prosa",
+    "imported_prefix": "FoundationImported",
+    "certificate_prefix": "FoundationCertificates",
+    "autoImplicit": false
+  },
+  "prepared_outputs": {
+    "lean_build": [
+      "olean/Prosa/Util/Tactics.olean",
+      "olean/Prosa/Util/Supremum.olean",
+      "olean/Prosa/Util/List.olean",
+      "olean/Prosa/Util/Notation.olean",
+      "olean/Prosa/Util/Rel.olean",
+      "olean/Prosa/Util/Nat.olean",
+      "olean/Prosa/Util/Sum.olean",
+      "olean/Prosa/Util/Poet.olean",
+      "olean/Prosa/Util/Bigcat.olean"
+    ],
+    "source_acquisition": [
+      "source/util/sum.v",
+      "source/util/poet.v",
+      "source/util/bigcat.v"
+    ],
+    "export": [
+      "imported/SumSequence.out",
+      "imported/Poet.out",
+      "imported/Bigcat.out"
+    ],
+    "rocq_import": [
+      "imported/ImportedSubadditivity.vo",
+      "imported/ImportedSumSequence.vo",
+      "imported/ImportedPoet.vo",
+      "imported/ImportedBigcat.vo"
+    ]
+  }
+}
