@@ -1,0 +1,54 @@
+From prosa Require Import behavior.arrival_sequence.
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedArrivalSequence.
+From FoundationCertificates Require Import ArrivalSequenceCorrespondence.
+
+(** Exact official source declarations elaborated from the byte-identical
+    pinned v0.6 file. *)
+Check @prosa.behavior.arrival_sequence.arrival_sequence.
+Check @prosa.behavior.arrival_sequence.arrivals_at.
+Check @prosa.behavior.arrival_sequence.arrives_at.
+Check @prosa.behavior.arrival_sequence.arrives_in.
+Check @prosa.behavior.arrival_sequence.consistent_arrival_times.
+Check @prosa.behavior.arrival_sequence.arrival_sequence_uniq.
+Check @prosa.behavior.arrival_sequence.valid_arrival_sequence.
+Check @prosa.behavior.arrival_sequence.has_arrived.
+Check @prosa.behavior.arrival_sequence.arrived_before.
+Check @prosa.behavior.arrival_sequence.arrived_between.
+Check @prosa.behavior.arrival_sequence.arrivals_between.
+Check @prosa.behavior.arrival_sequence.arrivals_up_to.
+Check @prosa.behavior.arrival_sequence.arrivals_before.
+Check @prosa.behavior.arrival_sequence.arrivals_between_P.
+
+(** Actual imported compiled Lean definitions. *)
+Check ImportedArrivalSequence.Prosa_Behavior_Arrival_sequence_arrival_sequence.
+Check ImportedArrivalSequence.Prosa_Behavior_Arrival_sequence_arrivals_at.
+Check ImportedArrivalSequence.Prosa_Behavior_Arrival_sequence_arrives_at.
+Check ImportedArrivalSequence.Prosa_Behavior_Arrival_sequence_arrives_in.
+Check ImportedArrivalSequence.Prosa_Behavior_Arrival_sequence_consistent_arrival_times.
+Check ImportedArrivalSequence.Prosa_Behavior_Arrival_sequence_arrival_sequence_uniq.
+Check ImportedArrivalSequence.Prosa_Behavior_Arrival_sequence_valid_arrival_sequence.
+Check ImportedArrivalSequence.Prosa_Behavior_Arrival_sequence_has_arrived.
+Check ImportedArrivalSequence.Prosa_Behavior_Arrival_sequence_arrived_before.
+Check ImportedArrivalSequence.Prosa_Behavior_Arrival_sequence_arrived_between.
+Check ImportedArrivalSequence.Prosa_Behavior_Arrival_sequence_arrivals_between.
+Check ImportedArrivalSequence.Prosa_Behavior_Arrival_sequence_arrivals_up_to.
+Check ImportedArrivalSequence.Prosa_Behavior_Arrival_sequence_arrivals_before.
+Check ImportedArrivalSequence.Prosa_Behavior_Arrival_sequence_arrivals_between_P.
+
+(** Certificate types bind both sides above; successful elaboration is the
+    exact-type guard for the semantic propositions actually audited. *)
+Check arrival_sequence_correspondence_certificate.
+Check arrivals_at_correspondence_certificate.
+Check arrives_at_correspondence_certificate.
+Check arrives_in_correspondence_certificate.
+Check consistent_arrival_times_correspondence_certificate.
+Check arrival_sequence_uniq_correspondence_certificate.
+Check valid_arrival_sequence_correspondence_certificate.
+Check has_arrived_correspondence_certificate.
+Check arrived_before_correspondence_certificate.
+Check arrived_between_correspondence_certificate.
+Check arrivals_between_correspondence_certificate.
+Check arrivals_up_to_correspondence_certificate.
+Check arrivals_before_correspondence_certificate.
+Check arrivals_between_P_correspondence_certificate.

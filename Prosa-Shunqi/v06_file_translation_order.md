@@ -24,9 +24,9 @@ JSON 内锁定了四个 planning input 的 Git blob SHA。正常的新翻译 com
 
 1. **按本文件的 rank 顺序，选择下一个尚未完整完成的 source file。** 若该文件已存在有效的 `ACCEPTED_V06_FILE` 证据，则检查证据仍与当前 source/artifact/certificate 匹配后跳过；否则继续完成该文件。开始前仍必须满足 scope 允许且 **所有直接文件依赖均已有效验收**。
 2. 依赖文件只有部分 declarations accepted、证据 stale 或只有 compile PASS，都不满足文件门槛。某项被阻塞时记录 blocker，可继续其他已 READY 的独立文件；不可启动其下游，不可删 DAG 边制造 READY。记录跳过原因，解除阻塞后回到较早 rank。
-3. 一个任务优先以 **whole file** 为单位。通常 ≤15 个声明整文件一批；16–20 个先检查新语义边界；>20 个按相互关联的声明组拆分。大文件内部允许分批，但整文件没收尾之前仍不能放行下游。声明 DAG 只细化文件内顺序，不替代文件 DAG。
-4. 每个新 class/计算边界先做最小 actual-artifact 预检；之后收齐本文件候选并冻结 snapshot，复用 prepare→check→finalize 模式。共享的是同一冻结输入的准备产物，不是承诺整个文件永远只需要一次试验。输入变了必须重新准备。
-5. 新文件优先组合已认证 correspondence DAG。缺失操作做最小、具名、可复用的证书；不复证已有 List/Nat/equality，不用 source/target 业务 theorem 自证。每项继续要求 `semantic_premises=[]`、source/target self-dependency=false、unexpected assumptions=[]，并保留准确的 foundation 分类。
+3. 一个任务优先以 **whole file** 为单位。通常 ≤15 个声明整文件一批；16–20 个先检查新语义边界；>20 个先完成 whole-file operation inventory、核对已有 bridges 和计算/export interface，再冻结 snapshot 并按相互关联的声明组开发证书。大文件内部允许分批，但整文件没收尾之前仍不能放行下游。声明 DAG 只细化文件内顺序，不替代文件 DAG。
+4. 每个新 class/计算边界先做最小 actual-artifact 预检；之后收齐本文件候选并冻结 snapshot，复用 prepare→check→finalize。输入、完整相关依赖、工具链及配置 hash 全匹配时，优先复用已验证的 accepted dependency artifact；certificate-only 修改不重跑 Lean/export/import，输入变化或 cache 损坏则准确失效并 fail closed。
+5. 新文件先匹配已审核的 source/export/import/normalization pattern，并优先组合已认证 correspondence DAG 或生成最小 artifact-local adapter。只为真正缺失的操作新增具名、可复用证书；不复证已有 List/Nat/equality，不用 source/target 业务 theorem 自证。每项继续要求 `semantic_premises=[]`、source/target self-dependency=false、unexpected assumptions=[]，并保留准确的 foundation 分类。
 6. **每个 authoritative source file 恰好维护一个 file-level report，不多也不少。** 固定放在 `Prosa-Shunqi/Reports/files/<source directory>/<first-report-timestamp>_<source basename>.md`；时间戳继承该 file 最早历史 report 的时间、不带 timezone 后缀，后续更新不改变文件名。例如当前 `util/list.v` 对应 `Reports/files/util/2026-09-21_082258_list.md`。首次处理该文件时创建；后续内部 batch、重试、blocker、revalidation 都追加/更新同一个 report，禁止再为同一 source file 创建第二份 report。零声明文件也需要自己的 report。Report 至少记录 source identity、处理范围、translation/proof/semantic-validation 状态、reused/new correspondence、blocker、最终 acceptance 和关键 artifact/certificate evidence。
 7. **不要因为普通证明困难就改写已经忠实的 Lean translation。** 默认先尝试已有 bridge、局部 proof 重构、actual-artifact equations、最小 operation certificate 和合理的 validation adapter。只有同一个具体语义卡点已经持续非常久、经过多种实质不同的方法和多轮实际验证仍无法闭合，并且有证据表明当前 Lean 表示/实现本身是主要障碍时，才允许重写受影响的 Lean translation。重写必须仍忠实于 v0.6 source 和已批准 representation policy；重写后相关 snapshot、artifact、certificate 和 acceptance evidence 一律视为失效并重新验证。不得为了“更容易证明”而改变 source semantics。
 8. 文件 acceptance 来自正式 validator/publication。不能以本 JSON 的参考状态、一个文件存在、一个历史 PASS，或单纯 `Print Assumptions` 没列出某个常量代替完整检查。
@@ -100,350 +100,350 @@ JSON 内锁定了四个 planning input 的 Git blob SHA。正常的新翻译 com
 列表中的路径全是官方 v0.6 source identity；对应 Lean 路径/声明从现有 mapping 解析，不能用旧 v0.4 名称或机械改后缀替代。
 
 ```text
-Rank Layer Source file
-001  L00  behavior/time.v
-002  L00  util/tactics.v
-003  L00  util/notation.v
-004  L00  util/rel.v
-005  L00  util/seqset.v
-006  L00  util/subadditivity.v
-007  L00  util/supremum.v
-008  L01  util/nat.v
-009  L01  util/unit_growth.v
-010  L01  util/search_arg.v
-011  L01  util/list.v
-012  L02  util/sum.v
-013  L00  util/epsilon.v
-014  L00  util/bigop.v
-015  L00  util/setoid.v
-016  L02  util/poet.v
-017  L02  util/bigcat.v
-018  L02  util/minmax.v
-019  L02  util/div_mod.v
-020  L02  util/nondecreasing.v
-021  L03  util/all.v
-022  L04  behavior/job.v
-023  L05  behavior/arrival_sequence.v
-024  L06  behavior/schedule.v
-025  L07  behavior/service.v
-026  L08  behavior/ready.v
-027  L09  behavior/all.v
-028  L07  model/processor/supply.v
-029  L00  util/int.v
-030  L01  util/lcmseq.v
-031  L03  util/fixpoint.v
-032  L02  util/superadditivity.v
-033  L04  implementation/definitions/extrapolated_arrival_curve.v
-034  L05  analysis/definitions/sbf/sbf.v
-035  L05  implementation/definitions/arrival_bound.v
-036  L05  implementation/facts/extrapolated_arrival_curve.v
-037  L08  analysis/definitions/completion_sequence.v
-038  L08  analysis/definitions/finish_time.v
-039  L08  analysis/definitions/sbf/average.v
-040  L08  analysis/definitions/sbf/periodic.v
-041  L08  analysis/definitions/sbf/pred.v
-042  L08  analysis/definitions/service.v
-043  L09  analysis/definitions/sbf/plain.v
-044  L09  analysis/definitions/schedule_prefix.v
-045  L10  analysis/definitions/job_response_time.v
-046  L10  analysis/transform/swap.v
-047  L10  model/job/properties.v
-048  L10  model/processor/ideal.v
-049  L10  model/processor/ideal_uni_exceed.v
-050  L10  model/processor/overheads.v
-051  L10  model/processor/platform_properties.v
-052  L10  model/processor/restricted_supply.v
-053  L10  model/processor/spin.v
-054  L10  model/processor/varspeed.v
-055  L10  model/readiness/basic.v
-056  L10  model/readiness/jitter.v
-057  L10  model/schedule/edf.v
-058  L10  model/schedule/nonpreemptive.v
-059  L10  model/schedule/scheduled.v
-060  L10  model/schedule/work_conserving.v
-061  L10  model/task/concept.v
-062  L11  analysis/abstract/definitions.v
-063  L11  analysis/abstract/search_space.v
-064  L11  analysis/definitions/overheads/schedule_change.v
-065  L11  analysis/definitions/task_schedule.v
-066  L11  analysis/facts/behavior/supply.v
-067  L11  analysis/facts/model/ideal_uni_exceed.v
-068  L11  analysis/facts/model/restricted_supply/schedule.v
-069  L11  analysis/facts/model/task_cost.v
-070  L11  analysis/facts/model/uniprocessor.v
-071  L11  implementation/definitions/generic_scheduler.v
-072  L11  model/priority/definitions.v
-073  L11  model/schedule/tdma.v
-074  L11  model/task/absolute_deadline.v
-075  L11  model/task/arrival/sporadic.v
-076  L11  model/task/arrivals.v
-077  L11  model/task/jitter.v
-078  L12  analysis/abstract/restricted_supply/busy_sbf.v
-079  L12  analysis/definitions/infinite_jobs.v
-080  L12  analysis/definitions/readiness_interference.v
-081  L12  analysis/facts/SBF.v
-082  L12  analysis/facts/behavior/arrivals.v
-083  L12  analysis/facts/tdma.v
-084  L12  model/priority/coercion.v
-085  L12  model/task/arrival/curves.v
-086  L12  model/task/arrival/request_bound_functions.v
-087  L12  model/task/arrival/task_max_inter_arrival.v
-088  L12  model/task/sequentiality.v
-089  L13  analysis/definitions/delay_propagation.v
-090  L13  analysis/facts/model/scheduled.v
-091  L13  analysis/facts/model/task_arrivals.v
-092  L13  implementation/definitions/maximal_arrival_sequence.v
-093  L13  model/composite/valid_task_arrival_sequence.v
-094  L13  model/priority/classes.v
-095  L13  model/readiness/sequential.v
-096  L13  model/task/arrival/curve_as_rbf.v
-097  L14  analysis/definitions/always_higher_priority.v
-098  L14  analysis/definitions/carry_in.v
-099  L14  analysis/definitions/overheads/priority_bump.v
-100  L14  analysis/definitions/priority/classes.v
-101  L14  analysis/definitions/work_bearing_readiness.v
-102  L14  analysis/facts/behavior/service.v
-103  L14  analysis/facts/delay_propagation.v
-104  L14  analysis/facts/job_index.v
-105  L14  analysis/facts/model/arrival_curves.v
-106  L14  analysis/facts/model/sbf/average.v
-107  L14  analysis/facts/model/sbf/periodic.v
-108  L14  analysis/facts/sporadic/arrival_bound.v
-109  L14  implementation/facts/maximal_arrival_sequence.v
-110  L14  model/aggregate/service_of_jobs.v
-111  L14  model/aggregate/workload.v
-112  L14  model/preemption/parameter.v
-113  L14  model/priority/deadline_monotonic.v
-114  L14  model/priority/edf.v
-115  L14  model/priority/fifo.v
-116  L14  model/priority/gel.v
-117  L14  model/priority/numeric_fixed_priority.v
-118  L14  model/priority/rate_monotonic.v
-119  L15  analysis/definitions/interference.v
-120  L15  analysis/definitions/progress.v
-121  L15  analysis/definitions/readiness.v
-122  L15  analysis/facts/behavior/completion.v
-123  L15  analysis/facts/model/ideal/schedule.v
-124  L15  analysis/facts/model/ideal/service_of_jobs.v
-125  L15  analysis/facts/model/task_schedule.v
-126  L15  analysis/facts/model/workload.v
-127  L15  analysis/facts/priority/classes.v
-128  L15  analysis/facts/sporadic/arrival_times.v
-129  L15  implementation/definitions/task.v
-130  L15  model/preemption/fully_nonpreemptive.v
-131  L15  model/preemption/fully_preemptive.v
-132  L15  model/preemption/limited_preemptive.v
-133  L15  model/priority/elf.v
-134  L15  model/processor/multiprocessor.v
-135  L15  model/schedule/limited_preemptive.v
-136  L15  model/schedule/preemption_time.v
-137  L15  model/task/arrival/sporadic_as_curve.v
-138  L15  model/task/preemption/parameters.v
-139  L16  analysis/definitions/blocking_bound/edf.v
-140  L16  analysis/definitions/blocking_bound/elf.v
-141  L16  analysis/definitions/blocking_bound/fp.v
-142  L16  analysis/definitions/busy_interval/classical.v
-143  L16  analysis/definitions/request_bound_function.v
-144  L16  analysis/definitions/schedulability.v
-145  L16  analysis/definitions/service_inversion/pred.v
-146  L16  analysis/facts/behavior/deadlines.v
-147  L16  analysis/facts/preemption/job/preemptive.v
-148  L16  analysis/facts/priority/jlfp_with_fp.v
-149  L16  analysis/facts/readiness/backlogged.v
-150  L16  analysis/facts/readiness/basic.v
-151  L16  analysis/facts/readiness/sequential.v
-152  L16  analysis/facts/sporadic/arrival_sequence.v
-153  L16  analysis/facts/transform/replace_at.v
-154  L16  implementation/definitions/job_constructor.v
-155  L16  model/readiness/suspension.v
-156  L16  model/schedule/priority_driven.v
-157  L16  model/task/preemption/floating_nonpreemptive.v
-158  L16  model/task/preemption/fully_nonpreemptive.v
-159  L16  model/task/preemption/fully_preemptive.v
-160  L16  model/task/preemption/limited_preemptive.v
-161  L17  analysis/abstract/restricted_supply/busy_prefix.v
-162  L17  analysis/definitions/busy_interval/edf_pi_bound.v
-163  L17  analysis/definitions/demand_bound_function.v
-164  L17  analysis/definitions/priority_inversion.v
-165  L17  analysis/definitions/sbf/busy.v
-166  L17  analysis/definitions/service_inversion/busy_prefix.v
-167  L17  analysis/definitions/service_inversion/readiness_aware.v
-168  L17  analysis/definitions/tardiness.v
-169  L17  analysis/definitions/workload/bounded.v
-170  L17  analysis/definitions/workload/edf_athep_bound.v
-171  L17  analysis/definitions/workload/elf_athep_bound.v
-172  L17  analysis/facts/behavior/all.v
-173  L17  analysis/facts/busy_interval/quiet_time.v
-174  L17  analysis/facts/edf_definitions.v
-175  L17  analysis/facts/jitter.v
-176  L17  analysis/facts/model/preemption.v
-177  L17  analysis/facts/preemption/task/preemptive.v
-178  L17  analysis/facts/suspension.v
-179  L17  analysis/facts/transform/swaps.v
-180  L17  implementation/definitions/ideal_uni_scheduler.v
-181  L17  implementation/facts/generic_schedule.v
-182  L17  implementation/facts/job_constructor.v
-183  L17  model/task/suspension/dynamic.v
-184  L18  analysis/facts/completes_at.v
-185  L18  analysis/facts/model/dynamic_suspension.v
-186  L18  analysis/facts/model/exceedance/SBF.v
-187  L18  analysis/facts/model/rbf.v
-188  L18  analysis/facts/model/sequential.v
-189  L18  analysis/facts/model/service_of_jobs.v
-190  L18  analysis/facts/preemption/job/nonpreemptive.v
-191  L18  analysis/facts/preemption/rtc_threshold/job_preemptable.v
-192  L18  analysis/facts/priority/inversion.v
-193  L18  analysis/facts/priority/sequential.v
-194  L18  analysis/transform/prefix.v
-195  L18  implementation/facts/ideal_uni/preemption_aware.v
-196  L18  model/task/offset.v
-197  L19  analysis/abstract/iw_auxiliary.v
-198  L19  analysis/abstract/restricted_supply/search_space/fp.v
-199  L19  analysis/facts/busy_interval/existence.v
-200  L19  analysis/facts/interference.v
-201  L19  analysis/facts/model/dbf.v
-202  L19  analysis/facts/model/ideal/priority_inversion.v
-203  L19  analysis/facts/model/offset.v
-204  L19  analysis/facts/preemption/job/limited.v
-205  L19  analysis/facts/preemption/rtc_threshold/nonpreemptive.v
-206  L19  analysis/facts/preemption/rtc_threshold/preemptive.v
-207  L19  analysis/facts/preemption/task/nonpreemptive.v
-208  L19  analysis/facts/priority/edf.v
-209  L19  analysis/facts/priority/gel.v
-210  L19  analysis/facts/workload/edf_athep_bound.v
-211  L19  analysis/facts/workload/elf_athep_bound.v
-212  L19  analysis/transform/edf_trans.v
-213  L19  analysis/transform/wc_trans.v
-214  L19  implementation/facts/ideal_uni/prio_aware.v
-215  L19  model/task/arrival/periodic.v
-216  L19  results/transfer_schedulability/criterion.v
-217  L20  analysis/abstract/busy_interval.v
-218  L20  analysis/abstract/restricted_supply/search_space/edf.v
-219  L20  analysis/abstract/restricted_supply/search_space/elf.v
-220  L20  analysis/definitions/hyperperiod.v
-221  L20  analysis/facts/busy_interval/carry_in.v
-222  L20  analysis/facts/busy_interval/hep_at_pt.v
-223  L20  analysis/facts/preemption/task/floating.v
-224  L20  analysis/facts/preemption/task/limited.v
-225  L20  analysis/facts/priority/elf.v
-226  L20  analysis/facts/readiness_interference.v
-227  L20  analysis/facts/transform/edf_opt.v
-228  L20  analysis/facts/transform/wc_correctness.v
-229  L20  model/task/arrival/periodic_as_sporadic.v
-230  L20  results/transfer_schedulability/paper_model.v
-231  L21  analysis/abstract/lower_bound_on_service.v
-232  L21  analysis/facts/busy_interval/arrival.v
-233  L21  analysis/facts/busy_interval/pi.v
-234  L21  analysis/facts/periodic/arrival_separation.v
-235  L21  analysis/facts/preemption/rtc_threshold/floating.v
-236  L21  analysis/facts/preemption/rtc_threshold/limited.v
-237  L21  analysis/facts/transform/edf_wc.v
-238  L21  model/task/arrival/example.v
-239  L21  results/generality/elf.v
-240  L22  analysis/abstract/abstract_rta.v
-241  L22  analysis/facts/blocking_bound/edf.v
-242  L22  analysis/facts/blocking_bound/elf.v
-243  L22  analysis/facts/blocking_bound/fp.v
-244  L22  analysis/facts/busy_interval/pi_bound.v
-245  L22  analysis/facts/busy_interval/pi_cond.v
-246  L22  analysis/facts/busy_interval/service_inversion.v
-247  L22  analysis/facts/model/overheads/schedule.v
-248  L22  analysis/facts/periodic/max_inter_arrival.v
-249  L22  results/optimality/edf.v
-250  L23  analysis/abstract/IBF/supply.v
-251  L23  analysis/abstract/IBF/task.v
-252  L23  analysis/abstract/ideal/abstract_rta.v
-253  L23  analysis/facts/busy_interval/all.v
-254  L23  analysis/facts/model/overheads/priority_bump.v
-255  L23  analysis/facts/model/overheads/schedule_change.v
-256  L23  analysis/facts/periodic/arrival_times.v
-257  L24  analysis/abstract/IBF/supply_task.v
-258  L24  analysis/abstract/ideal/abstract_seq_rta.v
-259  L24  analysis/abstract/ideal/iw_instantiation.v
-260  L24  analysis/abstract/restricted_supply/abstract_rta.v
-261  L24  analysis/facts/model/overheads/schedule_change_bound.v
-262  L24  analysis/facts/periodic/task_arrivals_size.v
-263  L24  analysis/facts/priority/fifo.v
-264  L24  model/processor/overhead_resource_model.v
-265  L25  analysis/abstract/ideal/cumulative_bounds.v
-266  L25  analysis/abstract/restricted_supply/abstract_seq_rta.v
-267  L25  analysis/abstract/restricted_supply/iw_instantiation.v
-268  L25  analysis/abstract/restricted_supply/iw_readiness.v
-269  L25  analysis/abstract/restricted_supply/search_space/fifo.v
-270  L25  analysis/facts/hyperperiod.v
-271  L25  analysis/facts/model/overheads/blackout_bound.v
-272  L25  analysis/facts/priority/fifo_ahep_bound.v
-273  L25  results/generality/gel.v
-274  L25  results/rta/ideal/fp/bounded_pi.v
-275  L26  analysis/abstract/restricted_supply/bounded_bi/aux.v
-276  L26  analysis/abstract/restricted_supply/search_space/fifo_fixpoint.v
-277  L26  analysis/abstract/restricted_supply/task_ibf_readiness.v
-278  L26  analysis/abstract/restricted_supply/task_intra_interference_bound.v
-279  L26  analysis/facts/model/overheads/sbf/fifo.v
-280  L26  analysis/facts/model/overheads/sbf/fp.v
-281  L26  analysis/facts/model/overheads/sbf/jlfp.v
-282  L26  analysis/facts/shifted_job_costs.v
-283  L26  results/rta/ideal/edf/bounded_pi.v
-284  L26  results/rta/ideal/elf/bounded_pi.v
-285  L26  results/rta/ideal/fifo/bounded_nps.v
-286  L26  results/rta/ideal/fp/bounded_nps.v
-287  L26  results/rta/ideal/fp/nonseq/bounded_pi.v
-288  L26  results/rta/ideal/gel/bounded_pi.v
-289  L27  analysis/abstract/restricted_supply/bounded_bi/edf.v
-290  L27  analysis/abstract/restricted_supply/bounded_bi/elf.v
-291  L27  analysis/abstract/restricted_supply/bounded_bi/fp.v
-292  L27  analysis/abstract/restricted_supply/bounded_bi/jlfp.v
-293  L27  results/rta/ideal/edf/bounded_nps.v
-294  L27  results/rta/ideal/fp/floating_nonpreemptive.v
-295  L27  results/rta/ideal/fp/fully_nonpreemptive.v
-296  L27  results/rta/ideal/fp/fully_preemptive.v
-297  L27  results/rta/ideal/fp/limited_preemptive.v
-298  L28  results/rta/arm/edf/floating_nonpreemptive.v
-299  L28  results/rta/arm/edf/fully_nonpreemptive.v
-300  L28  results/rta/arm/edf/fully_preemptive.v
-301  L28  results/rta/arm/edf/limited_preemptive.v
-302  L28  results/rta/arm/fifo/bounded_nps.v
-303  L28  results/rta/arm/fp/floating_nonpreemptive.v
-304  L28  results/rta/arm/fp/fully_nonpreemptive.v
-305  L28  results/rta/arm/fp/fully_preemptive.v
-306  L28  results/rta/arm/fp/limited_preemptive.v
-307  L28  results/rta/exc/fp/fully_nonpreemptive.v
-308  L28  results/rta/ideal/edf/floating_nonpreemptive.v
-309  L28  results/rta/ideal/edf/fully_nonpreemptive.v
-310  L28  results/rta/ideal/edf/fully_preemptive.v
-311  L28  results/rta/ideal/edf/limited_preemptive.v
-312  L28  results/rta/ideal/fp/comp/fully_preemptive.v
-313  L28  results/rta/ovh/edf/floating_nonpreemptive.v
-314  L28  results/rta/ovh/edf/fully_nonpreemptive.v
-315  L28  results/rta/ovh/edf/fully_preemptive.v
-316  L28  results/rta/ovh/edf/limited_preemptive.v
-317  L28  results/rta/ovh/fifo/bounded_nps.v
-318  L28  results/rta/ovh/fp/floating_nonpreemptive.v
-319  L28  results/rta/ovh/fp/fully_nonpreemptive.v
-320  L28  results/rta/ovh/fp/fully_preemptive.v
-321  L28  results/rta/ovh/fp/limited_preemptive.v
-322  L28  results/rta/prm/edf/floating_nonpreemptive.v
-323  L28  results/rta/prm/edf/fully_nonpreemptive.v
-324  L28  results/rta/prm/edf/fully_preemptive.v
-325  L28  results/rta/prm/edf/limited_preemptive.v
-326  L28  results/rta/prm/fifo/bounded_nps.v
-327  L28  results/rta/prm/fp/floating_nonpreemptive.v
-328  L28  results/rta/prm/fp/fully_nonpreemptive.v
-329  L28  results/rta/prm/fp/fully_preemptive.v
-330  L28  results/rta/prm/fp/limited_preemptive.v
-331  L28  results/rta/rs/edf/floating_nonpreemptive.v
-332  L28  results/rta/rs/edf/fully_nonpreemptive.v
-333  L28  results/rta/rs/edf/fully_preemptive.v
-334  L28  results/rta/rs/edf/limited_preemptive.v
-335  L28  results/rta/rs/elf/floating_nonpreemptive.v
-336  L28  results/rta/rs/elf/fully_nonpreemptive.v
-337  L28  results/rta/rs/elf/fully_preemptive.v
-338  L28  results/rta/rs/elf/limited_preemptive.v
-339  L28  results/rta/rs/fifo/bounded_nps.v
-340  L28  results/rta/rs/fp/floating_nonpreemptive.v
-341  L28  results/rta/rs/fp/fully_nonpreemptive.v
-342  L28  results/rta/rs/fp/fully_preemptive.v
-343  L28  results/rta/rs/fp/limited_preemptive.v
+Rank Layer Source file Public declarations
+001  L00  behavior/time.v  2
+002  L00  util/tactics.v  2
+003  L00  util/notation.v  1
+004  L00  util/rel.v  3
+005  L00  util/seqset.v  3
+006  L00  util/subadditivity.v  6
+007  L00  util/supremum.v  7
+008  L01  util/nat.v  2
+009  L01  util/unit_growth.v  12
+010  L01  util/search_arg.v  8
+011  L01  util/list.v  57
+012  L02  util/sum.v  25
+013  L00  util/epsilon.v  0
+014  L00  util/bigop.v  1
+015  L00  util/setoid.v  3
+016  L02  util/poet.v  1
+017  L02  util/bigcat.v  13
+018  L02  util/minmax.v  10
+019  L02  util/div_mod.v  15
+020  L02  util/nondecreasing.v  33
+021  L03  util/all.v  0
+022  L04  behavior/job.v  5
+023  L05  behavior/arrival_sequence.v  14
+024  L06  behavior/schedule.v  5
+025  L07  behavior/service.v  12
+026  L08  behavior/ready.v  7
+027  L09  behavior/all.v  0
+028  L07  model/processor/supply.v  5
+029  L00  util/int.v  0
+030  L01  util/lcmseq.v  5
+031  L03  util/fixpoint.v  17
+032  L02  util/superadditivity.v  12
+033  L04  implementation/definitions/extrapolated_arrival_curve.v  21
+034  L05  analysis/definitions/sbf/sbf.v  1
+035  L05  implementation/definitions/arrival_bound.v  3
+036  L05  implementation/facts/extrapolated_arrival_curve.v  10
+037  L08  analysis/definitions/completion_sequence.v  1
+038  L08  analysis/definitions/finish_time.v  5
+039  L08  analysis/definitions/sbf/average.v  2
+040  L08  analysis/definitions/sbf/periodic.v  2
+041  L08  analysis/definitions/sbf/pred.v  5
+042  L08  analysis/definitions/service.v  2
+043  L09  analysis/definitions/sbf/plain.v  3
+044  L09  analysis/definitions/schedule_prefix.v  3
+045  L10  analysis/definitions/job_response_time.v  1
+046  L10  analysis/transform/swap.v  2
+047  L10  model/job/properties.v  2
+048  L10  model/processor/ideal.v  2
+049  L10  model/processor/ideal_uni_exceed.v  7
+050  L10  model/processor/overheads.v  13
+051  L10  model/processor/platform_properties.v  6
+052  L10  model/processor/restricted_supply.v  5
+053  L10  model/processor/spin.v  5
+054  L10  model/processor/varspeed.v  5
+055  L10  model/readiness/basic.v  0
+056  L10  model/readiness/jitter.v  2
+057  L10  model/schedule/edf.v  2
+058  L10  model/schedule/nonpreemptive.v  1
+059  L10  model/schedule/scheduled.v  3
+060  L10  model/schedule/work_conserving.v  2
+061  L10  model/task/concept.v  19
+062  L11  analysis/abstract/definitions.v  15
+063  L11  analysis/abstract/search_space.v  6
+064  L11  analysis/definitions/overheads/schedule_change.v  4
+065  L11  analysis/definitions/task_schedule.v  7
+066  L11  analysis/facts/behavior/supply.v  16
+067  L11  analysis/facts/model/ideal_uni_exceed.v  7
+068  L11  analysis/facts/model/restricted_supply/schedule.v  3
+069  L11  analysis/facts/model/task_cost.v  2
+070  L11  analysis/facts/model/uniprocessor.v  1
+071  L11  implementation/definitions/generic_scheduler.v  4
+072  L11  model/priority/definitions.v  20
+073  L11  model/schedule/tdma.v  15
+074  L11  model/task/absolute_deadline.v  1
+075  L11  model/task/arrival/sporadic.v  5
+076  L11  model/task/arrivals.v  13
+077  L11  model/task/jitter.v  3
+078  L12  analysis/abstract/restricted_supply/busy_sbf.v  2
+079  L12  analysis/definitions/infinite_jobs.v  1
+080  L12  analysis/definitions/readiness_interference.v  3
+081  L12  analysis/facts/SBF.v  3
+082  L12  analysis/facts/behavior/arrivals.v  45
+083  L12  analysis/facts/tdma.v  6
+084  L12  model/priority/coercion.v  10
+085  L12  model/task/arrival/curves.v  14
+086  L12  model/task/arrival/request_bound_functions.v  8
+087  L12  model/task/arrival/task_max_inter_arrival.v  5
+088  L12  model/task/sequentiality.v  2
+089  L13  analysis/definitions/delay_propagation.v  7
+090  L13  analysis/facts/model/scheduled.v  14
+091  L13  analysis/facts/model/task_arrivals.v  23
+092  L13  implementation/definitions/maximal_arrival_sequence.v  7
+093  L13  model/composite/valid_task_arrival_sequence.v  6
+094  L13  model/priority/classes.v  0
+095  L13  model/readiness/sequential.v  0
+096  L13  model/task/arrival/curve_as_rbf.v  12
+097  L14  analysis/definitions/always_higher_priority.v  2
+098  L14  analysis/definitions/carry_in.v  1
+099  L14  analysis/definitions/overheads/priority_bump.v  1
+100  L14  analysis/definitions/priority/classes.v  1
+101  L14  analysis/definitions/work_bearing_readiness.v  1
+102  L14  analysis/facts/behavior/service.v  57
+103  L14  analysis/facts/delay_propagation.v  12
+104  L14  analysis/facts/job_index.v  21
+105  L14  analysis/facts/model/arrival_curves.v  3
+106  L14  analysis/facts/model/sbf/average.v  3
+107  L14  analysis/facts/model/sbf/periodic.v  9
+108  L14  analysis/facts/sporadic/arrival_bound.v  4
+109  L14  implementation/facts/maximal_arrival_sequence.v  14
+110  L14  model/aggregate/service_of_jobs.v  8
+111  L14  model/aggregate/workload.v  8
+112  L14  model/preemption/parameter.v  14
+113  L14  model/priority/deadline_monotonic.v  4
+114  L14  model/priority/edf.v  4
+115  L14  model/priority/fifo.v  4
+116  L14  model/priority/gel.v  7
+117  L14  model/priority/numeric_fixed_priority.v  7
+118  L14  model/priority/rate_monotonic.v  4
+119  L15  analysis/definitions/interference.v  15
+120  L15  analysis/definitions/progress.v  4
+121  L15  analysis/definitions/readiness.v  3
+122  L15  analysis/facts/behavior/completion.v  30
+123  L15  analysis/facts/model/ideal/schedule.v  19
+124  L15  analysis/facts/model/ideal/service_of_jobs.v  2
+125  L15  analysis/facts/model/task_schedule.v  10
+126  L15  analysis/facts/model/workload.v  17
+127  L15  analysis/facts/priority/classes.v  22
+128  L15  analysis/facts/sporadic/arrival_times.v  3
+129  L15  implementation/definitions/task.v  15
+130  L15  model/preemption/fully_nonpreemptive.v  0
+131  L15  model/preemption/fully_preemptive.v  0
+132  L15  model/preemption/limited_preemptive.v  5
+133  L15  model/priority/elf.v  1
+134  L15  model/processor/multiprocessor.v  6
+135  L15  model/schedule/limited_preemptive.v  1
+136  L15  model/schedule/preemption_time.v  1
+137  L15  model/task/arrival/sporadic_as_curve.v  5
+138  L15  model/task/preemption/parameters.v  13
+139  L16  analysis/definitions/blocking_bound/edf.v  2
+140  L16  analysis/definitions/blocking_bound/elf.v  1
+141  L16  analysis/definitions/blocking_bound/fp.v  1
+142  L16  analysis/definitions/busy_interval/classical.v  5
+143  L16  analysis/definitions/request_bound_function.v  6
+144  L16  analysis/definitions/schedulability.v  6
+145  L16  analysis/definitions/service_inversion/pred.v  4
+146  L16  analysis/facts/behavior/deadlines.v  4
+147  L16  analysis/facts/preemption/job/preemptive.v  3
+148  L16  analysis/facts/priority/jlfp_with_fp.v  8
+149  L16  analysis/facts/readiness/backlogged.v  5
+150  L16  analysis/facts/readiness/basic.v  3
+151  L16  analysis/facts/readiness/sequential.v  4
+152  L16  analysis/facts/sporadic/arrival_sequence.v  7
+153  L16  analysis/facts/transform/replace_at.v  7
+154  L16  implementation/definitions/job_constructor.v  4
+155  L16  model/readiness/suspension.v  4
+156  L16  model/schedule/priority_driven.v  3
+157  L16  model/task/preemption/floating_nonpreemptive.v  2
+158  L16  model/task/preemption/fully_nonpreemptive.v  1
+159  L16  model/task/preemption/fully_preemptive.v  1
+160  L16  model/task/preemption/limited_preemptive.v  8
+161  L17  analysis/abstract/restricted_supply/busy_prefix.v  2
+162  L17  analysis/definitions/busy_interval/edf_pi_bound.v  1
+163  L17  analysis/definitions/demand_bound_function.v  2
+164  L17  analysis/definitions/priority_inversion.v  8
+165  L17  analysis/definitions/sbf/busy.v  2
+166  L17  analysis/definitions/service_inversion/busy_prefix.v  2
+167  L17  analysis/definitions/service_inversion/readiness_aware.v  3
+168  L17  analysis/definitions/tardiness.v  1
+169  L17  analysis/definitions/workload/bounded.v  1
+170  L17  analysis/definitions/workload/edf_athep_bound.v  1
+171  L17  analysis/definitions/workload/elf_athep_bound.v  4
+172  L17  analysis/facts/behavior/all.v  0
+173  L17  analysis/facts/busy_interval/quiet_time.v  4
+174  L17  analysis/facts/edf_definitions.v  3
+175  L17  analysis/facts/jitter.v  14
+176  L17  analysis/facts/model/preemption.v  14
+177  L17  analysis/facts/preemption/task/preemptive.v  2
+178  L17  analysis/facts/suspension.v  11
+179  L17  analysis/facts/transform/swaps.v  22
+180  L17  implementation/definitions/ideal_uni_scheduler.v  5
+181  L17  implementation/facts/generic_schedule.v  6
+182  L17  implementation/facts/job_constructor.v  6
+183  L17  model/task/suspension/dynamic.v  2
+184  L18  analysis/facts/completes_at.v  5
+185  L18  analysis/facts/model/dynamic_suspension.v  2
+186  L18  analysis/facts/model/exceedance/SBF.v  4
+187  L18  analysis/facts/model/rbf.v  27
+188  L18  analysis/facts/model/sequential.v  3
+189  L18  analysis/facts/model/service_of_jobs.v  22
+190  L18  analysis/facts/preemption/job/nonpreemptive.v  4
+191  L18  analysis/facts/preemption/rtc_threshold/job_preemptable.v  14
+192  L18  analysis/facts/priority/inversion.v  7
+193  L18  analysis/facts/priority/sequential.v  1
+194  L18  analysis/transform/prefix.v  3
+195  L18  implementation/facts/ideal_uni/preemption_aware.v  10
+196  L18  model/task/offset.v  7
+197  L19  analysis/abstract/iw_auxiliary.v  6
+198  L19  analysis/abstract/restricted_supply/search_space/fp.v  2
+199  L19  analysis/facts/busy_interval/existence.v  14
+200  L19  analysis/facts/interference.v  17
+201  L19  analysis/facts/model/dbf.v  8
+202  L19  analysis/facts/model/ideal/priority_inversion.v  4
+203  L19  analysis/facts/model/offset.v  2
+204  L19  analysis/facts/preemption/job/limited.v  10
+205  L19  analysis/facts/preemption/rtc_threshold/nonpreemptive.v  3
+206  L19  analysis/facts/preemption/rtc_threshold/preemptive.v  1
+207  L19  analysis/facts/preemption/task/nonpreemptive.v  2
+208  L19  analysis/facts/priority/edf.v  5
+209  L19  analysis/facts/priority/gel.v  6
+210  L19  analysis/facts/workload/edf_athep_bound.v  4
+211  L19  analysis/facts/workload/elf_athep_bound.v  6
+212  L19  analysis/transform/edf_trans.v  6
+213  L19  analysis/transform/wc_trans.v  6
+214  L19  implementation/facts/ideal_uni/prio_aware.v  5
+215  L19  model/task/arrival/periodic.v  5
+216  L19  results/transfer_schedulability/criterion.v  40
+217  L20  analysis/abstract/busy_interval.v  15
+218  L20  analysis/abstract/restricted_supply/search_space/edf.v  2
+219  L20  analysis/abstract/restricted_supply/search_space/elf.v  2
+220  L20  analysis/definitions/hyperperiod.v  7
+221  L20  analysis/facts/busy_interval/carry_in.v  9
+222  L20  analysis/facts/busy_interval/hep_at_pt.v  8
+223  L20  analysis/facts/preemption/task/floating.v  2
+224  L20  analysis/facts/preemption/task/limited.v  2
+225  L20  analysis/facts/priority/elf.v  8
+226  L20  analysis/facts/readiness_interference.v  2
+227  L20  analysis/facts/transform/edf_opt.v  43
+228  L20  analysis/facts/transform/wc_correctness.v  33
+229  L20  model/task/arrival/periodic_as_sporadic.v  5
+230  L20  results/transfer_schedulability/paper_model.v  19
+231  L21  analysis/abstract/lower_bound_on_service.v  3
+232  L21  analysis/facts/busy_interval/arrival.v  3
+233  L21  analysis/facts/busy_interval/pi.v  24
+234  L21  analysis/facts/periodic/arrival_separation.v  3
+235  L21  analysis/facts/preemption/rtc_threshold/floating.v  1
+236  L21  analysis/facts/preemption/rtc_threshold/limited.v  3
+237  L21  analysis/facts/transform/edf_wc.v  11
+238  L21  model/task/arrival/example.v  0
+239  L21  results/generality/elf.v  3
+240  L22  analysis/abstract/abstract_rta.v  14
+241  L22  analysis/facts/blocking_bound/edf.v  1
+242  L22  analysis/facts/blocking_bound/elf.v  1
+243  L22  analysis/facts/blocking_bound/fp.v  1
+244  L22  analysis/facts/busy_interval/pi_bound.v  1
+245  L22  analysis/facts/busy_interval/pi_cond.v  1
+246  L22  analysis/facts/busy_interval/service_inversion.v  12
+247  L22  analysis/facts/model/overheads/schedule.v  6
+248  L22  analysis/facts/periodic/max_inter_arrival.v  3
+249  L22  results/optimality/edf.v  4
+250  L23  analysis/abstract/IBF/supply.v  3
+251  L23  analysis/abstract/IBF/task.v  18
+252  L23  analysis/abstract/ideal/abstract_rta.v  2
+253  L23  analysis/facts/busy_interval/all.v  0
+254  L23  analysis/facts/model/overheads/priority_bump.v  3
+255  L23  analysis/facts/model/overheads/schedule_change.v  6
+256  L23  analysis/facts/periodic/arrival_times.v  3
+257  L24  analysis/abstract/IBF/supply_task.v  3
+258  L24  analysis/abstract/ideal/abstract_seq_rta.v  2
+259  L24  analysis/abstract/ideal/iw_instantiation.v  20
+260  L24  analysis/abstract/restricted_supply/abstract_rta.v  10
+261  L24  analysis/facts/model/overheads/schedule_change_bound.v  3
+262  L24  analysis/facts/periodic/task_arrivals_size.v  8
+263  L24  analysis/facts/priority/fifo.v  12
+264  L24  model/processor/overhead_resource_model.v  10
+265  L25  analysis/abstract/ideal/cumulative_bounds.v  2
+266  L25  analysis/abstract/restricted_supply/abstract_seq_rta.v  3
+267  L25  analysis/abstract/restricted_supply/iw_instantiation.v  17
+268  L25  analysis/abstract/restricted_supply/iw_readiness.v  18
+269  L25  analysis/abstract/restricted_supply/search_space/fifo.v  2
+270  L25  analysis/facts/hyperperiod.v  10
+271  L25  analysis/facts/model/overheads/blackout_bound.v  11
+272  L25  analysis/facts/priority/fifo_ahep_bound.v  1
+273  L25  results/generality/gel.v  5
+274  L25  results/rta/ideal/fp/bounded_pi.v  6
+275  L26  analysis/abstract/restricted_supply/bounded_bi/aux.v  3
+276  L26  analysis/abstract/restricted_supply/search_space/fifo_fixpoint.v  1
+277  L26  analysis/abstract/restricted_supply/task_ibf_readiness.v  2
+278  L26  analysis/abstract/restricted_supply/task_intra_interference_bound.v  2
+279  L26  analysis/facts/model/overheads/sbf/fifo.v  6
+280  L26  analysis/facts/model/overheads/sbf/fp.v  6
+281  L26  analysis/facts/model/overheads/sbf/jlfp.v  6
+282  L26  analysis/facts/shifted_job_costs.v  3
+283  L26  results/rta/ideal/edf/bounded_pi.v  8
+284  L26  results/rta/ideal/elf/bounded_pi.v  22
+285  L26  results/rta/ideal/fifo/bounded_nps.v  8
+286  L26  results/rta/ideal/fp/bounded_nps.v  3
+287  L26  results/rta/ideal/fp/nonseq/bounded_pi.v  10
+288  L26  results/rta/ideal/gel/bounded_pi.v  10
+289  L27  analysis/abstract/restricted_supply/bounded_bi/edf.v  2
+290  L27  analysis/abstract/restricted_supply/bounded_bi/elf.v  1
+291  L27  analysis/abstract/restricted_supply/bounded_bi/fp.v  1
+292  L27  analysis/abstract/restricted_supply/bounded_bi/jlfp.v  1
+293  L27  results/rta/ideal/edf/bounded_nps.v  5
+294  L27  results/rta/ideal/fp/floating_nonpreemptive.v  1
+295  L27  results/rta/ideal/fp/fully_nonpreemptive.v  1
+296  L27  results/rta/ideal/fp/fully_preemptive.v  1
+297  L27  results/rta/ideal/fp/limited_preemptive.v  1
+298  L28  results/rta/arm/edf/floating_nonpreemptive.v  3
+299  L28  results/rta/arm/edf/fully_nonpreemptive.v  3
+300  L28  results/rta/arm/edf/fully_preemptive.v  3
+301  L28  results/rta/arm/edf/limited_preemptive.v  3
+302  L28  results/rta/arm/fifo/bounded_nps.v  3
+303  L28  results/rta/arm/fp/floating_nonpreemptive.v  3
+304  L28  results/rta/arm/fp/fully_nonpreemptive.v  3
+305  L28  results/rta/arm/fp/fully_preemptive.v  3
+306  L28  results/rta/arm/fp/limited_preemptive.v  3
+307  L28  results/rta/exc/fp/fully_nonpreemptive.v  3
+308  L28  results/rta/ideal/edf/floating_nonpreemptive.v  1
+309  L28  results/rta/ideal/edf/fully_nonpreemptive.v  1
+310  L28  results/rta/ideal/edf/fully_preemptive.v  1
+311  L28  results/rta/ideal/edf/limited_preemptive.v  1
+312  L28  results/rta/ideal/fp/comp/fully_preemptive.v  1
+313  L28  results/rta/ovh/edf/floating_nonpreemptive.v  3
+314  L28  results/rta/ovh/edf/fully_nonpreemptive.v  3
+315  L28  results/rta/ovh/edf/fully_preemptive.v  3
+316  L28  results/rta/ovh/edf/limited_preemptive.v  3
+317  L28  results/rta/ovh/fifo/bounded_nps.v  3
+318  L28  results/rta/ovh/fp/floating_nonpreemptive.v  3
+319  L28  results/rta/ovh/fp/fully_nonpreemptive.v  3
+320  L28  results/rta/ovh/fp/fully_preemptive.v  3
+321  L28  results/rta/ovh/fp/limited_preemptive.v  3
+322  L28  results/rta/prm/edf/floating_nonpreemptive.v  3
+323  L28  results/rta/prm/edf/fully_nonpreemptive.v  3
+324  L28  results/rta/prm/edf/fully_preemptive.v  3
+325  L28  results/rta/prm/edf/limited_preemptive.v  3
+326  L28  results/rta/prm/fifo/bounded_nps.v  3
+327  L28  results/rta/prm/fp/floating_nonpreemptive.v  3
+328  L28  results/rta/prm/fp/fully_nonpreemptive.v  3
+329  L28  results/rta/prm/fp/fully_preemptive.v  3
+330  L28  results/rta/prm/fp/limited_preemptive.v  3
+331  L28  results/rta/rs/edf/floating_nonpreemptive.v  3
+332  L28  results/rta/rs/edf/fully_nonpreemptive.v  3
+333  L28  results/rta/rs/edf/fully_preemptive.v  3
+334  L28  results/rta/rs/edf/limited_preemptive.v  3
+335  L28  results/rta/rs/elf/floating_nonpreemptive.v  3
+336  L28  results/rta/rs/elf/fully_nonpreemptive.v  3
+337  L28  results/rta/rs/elf/fully_preemptive.v  3
+338  L28  results/rta/rs/elf/limited_preemptive.v  3
+339  L28  results/rta/rs/fifo/bounded_nps.v  3
+340  L28  results/rta/rs/fp/floating_nonpreemptive.v  3
+341  L28  results/rta/rs/fp/fully_nonpreemptive.v  3
+342  L28  results/rta/rs/fp/fully_preemptive.v  3
+343  L28  results/rta/rs/fp/limited_preemptive.v  3
 ```
 
 ## Deferred：refinement / CoqEAL 边界
@@ -451,28 +451,33 @@ Rank Layer Source file
 以下14项保留在完整范围中，不计为已完成、也不从分母删除。启动前需要明确批准扩展范围，并解决对应外部构建、source elaboration 和语义验证边界。
 
 ```text
-Rank Layer Source file
-344  L16  implementation/refinements/refinements.v
-345  L17  implementation/refinements/arrival_bound.v
-346  L18  implementation/refinements/task.v
-347  L19  implementation/refinements/arrival_curve.v
-348  L20  implementation/refinements/EDF/nonpreemptive_sched.v
-349  L20  implementation/refinements/EDF/preemptive_sched.v
-350  L20  implementation/refinements/FP/nonpreemptive_sched.v
-351  L20  implementation/refinements/FP/preemptive_sched.v
-352  L20  implementation/refinements/arrival_curve_prefix.v
-353  L21  implementation/refinements/fast_search_space_computation.v
-354  L27  implementation/refinements/FP/fast_search_space.v
-355  L28  implementation/refinements/EDF/fast_search_space.v
-356  L28  implementation/refinements/FP/refinements.v
-357  L29  implementation/refinements/EDF/refinements.v
+Rank Layer Source file Public declarations
+344  L16  implementation/refinements/refinements.v  42
+345  L17  implementation/refinements/arrival_bound.v  36
+346  L18  implementation/refinements/task.v  24
+347  L19  implementation/refinements/arrival_curve.v  20
+348  L20  implementation/refinements/EDF/nonpreemptive_sched.v  9
+349  L20  implementation/refinements/EDF/preemptive_sched.v  6
+350  L20  implementation/refinements/FP/nonpreemptive_sched.v  9
+351  L20  implementation/refinements/FP/preemptive_sched.v  6
+352  L20  implementation/refinements/arrival_curve_prefix.v  4
+353  L21  implementation/refinements/fast_search_space_computation.v  8
+354  L27  implementation/refinements/FP/fast_search_space.v  10
+355  L28  implementation/refinements/EDF/fast_search_space.v  14
+356  L28  implementation/refinements/FP/refinements.v  28
+357  L29  implementation/refinements/EDF/refinements.v  23
 ```
 
 ## 核对范围与运行前检查
 
-本次逐段读取了357个文件的路径和层级，单独读取了前置主线与 deferred 相关46个文件的全部直接依赖（111条），并对交付的顺序做了节点唯一性、范围和这些已读依赖的程序检查。其余 main 按 authoritative layer/path 排列；deferred 的直接下游均仍在 deferred 区域，因此推迟它们不切断 main 的前置。
-
-**本次没有在完整本地 repo 上执行全部1359条边的审计，也没有重跑 Lean/Rocq。** 附带脚本在 agent 的实际 repo 中读取完整 CSV 后，会逐一检查全部1359条边、357文件精确覆盖、层级、343/14分组、2439个声明及输入 hash；这一步必须在执行计划前通过。11项本地单元测试检查了正常排序及反向依赖、遗漏、重复、错误层级、主线依赖 deferred、CSV 引号解析、hash 变化等拒绝路径；它们不是全仓库验证的替代品。
+`Validation/scripts/update_v06_translation_order.py` 已在当前 repo 中读取完整
+authoritative CSV/JSON，并核对 357 个文件精确覆盖、rank 1–357 唯一连续、
+343/14 main/refinement 分组、全部 1359 条内部依赖边、DAG 层号、0 个 cycle，
+以及 2439 个 public declarations。每行 declaration 数直接由
+`declaration_inventory.csv` 聚合生成；检查模式会拒绝过期数量。当前审计为
+`PASS`，没有反向 dependency edge 或 layer mismatch，机器证据位于
+`Validation/planning/v06_pipeline/file_translation_order_audit.json`。这次顺序
+审计不需要也没有重跑无关 Lean/Rocq validation。
 
 本计划始终让最新有效 validator 证据决定 READY/accepted。审计输出 `order_audit=PASS` 只代表顺序检查通过，绝不代表任何翻译或证书通过。
 

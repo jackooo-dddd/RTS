@@ -1,5 +1,23 @@
 # Translation-order continuous run
 
+### 2026-09-23 00:51:23 +08:00 — Schedule export integrity blocker
+
+The first actual Schedule export was not publishable.  Although it contained
+the imported ProcessorState record/projections, `lean4export` emitted repeated
+`Option.get!` panics and the Rocq importer rejected the artifact after 37.86 s
+because `_inhabitedExprDummy` was referenced but missing.  The exact artifact
+hash and importer error are preserved in the canonical Schedule report.
+Acceptance remains 0/5 while the export closure is repaired; no semantic
+status was weakened.
+
+### 2026-09-23 00:56:53 +08:00 — Schedule actual artifact imported
+
+The blocker was closed by replacing five parser-alias target names with the
+actual `ProcessorState.*` environment constants.  The same frozen Lean
+artifact then exported with zero panic and imported all 1,865 entries into
+Rocq 9.3.  No production semantics changed.  Schedule now advances to its
+representation and finite-enumeration certificates, still at 0/5 accepted.
+
 Run started: **2026-09-22 00:03:08 +08:00**.
 
 This report summarizes the current continuous execution across source files.
@@ -643,3 +661,262 @@ subtraction; no DivMod coverage is claimed yet.
   export/import, 14 Rocq correspondence certificates, assumption audit, and
   publication remain, so formal coverage stays 22/357 files and 209/2439
   declarations.
+
+## 2026-09-22 23:10:39 — complete execution order regenerated and audited
+
+- `v06_file_translation_order.md` now gives rank, authoritative DAG layer,
+  source path, and inventory-derived public-declaration count for every one of
+  the 357 source files, including the 14 deferred refinement files.
+- The reproducible order audit checked all 1359 internal file edges, exact
+  357-file coverage, layer agreement, ranks 1–357, the 343/14 scope split,
+  zero cycles, and the complete 2439-declaration total. It found no
+  topological violation or layer mismatch.
+- Runtime acceptance remains manifest-driven rather than embedded in the
+  order. The earliest unfinished READY file remains rank 23,
+  `behavior/arrival_sequence.v`, whose existing 14/14 compiled candidate is
+  now continuing into actual-artifact validation.
+- Order SHA-256:
+  `f4c6892db7fef605597e0df7bb08e2e2602b0ab83dd6fdab45e2778950597614`;
+  audit JSON SHA-256:
+  `cf61842664f7fecb7d7d4f744c8e09176dc08ae91331e372e2f5de490a6ea0f5`.
+
+## 2026-09-22 23:30:08 — Arrival Sequence actual-artifact preflight complete
+
+- The exact official v0.6 source now compiles under Rocq 9.3 through an
+  isolated, declaration-free MathComp compatibility import surface. No source
+  declaration, statement, or body was changed.
+- All 14 compiled Lean definitions were exported with their real bodies into
+  a 137,823-byte artifact and imported successfully into Rocq. Export/import
+  SHA-256 values are
+  `e79f965ef4098667040afdc50d6dbe057b9997380c2d25309f52aa8e8a49923b`
+  and
+  `7dedc48b5d88080e1c94b772bdb3a0f91dc43c810c13110bfe7585ee01dfb5a8`.
+- The generated artifact-local Bool/eqType/List/membership adapter compiles
+  against that import. A stale-foundation accepted dependency `.vo` was
+  rejected and regenerated from its stable `.out`, confirming fail-closed
+  artifact reuse.
+- This closes source acquisition and actual-artifact import, not semantic
+  acceptance. The next work is the reusable `bigCat`/filter/Nodup/Nat/JobArrival
+  operation layer followed by 14 correspondence certificates. Coverage remains
+  22/357 files and 209/2439 declarations.
+
+## 2026-09-22 23:50:16 — Arrival Sequence reaches 14/14 compiled correspondences
+
+- One actual-artifact computation interface exported the 14 production
+  definitions plus seven Lean-kernel-checked `bigCat`/append/filter equations.
+  The resulting export/import hashes are
+  `8dd59d13fe7d6cc46b37138f1d54c732afaa0f8b7194d0d87ed60de28b9f88f1`
+  and
+  `8cb4e8ec7c29de129083ae941a543d8dfa68446c1d39cce8b2878789b03fabbb`.
+- A reusable operation layer now closes Bool decisions, List filter/Nodup,
+  Nat order, JobArrival projection, arrival-sequence function, and half-open
+  big-concatenation correspondence against that artifact.
+- All 14 declaration certificates compile in Rocq 9.3. They compose source
+  and target operations and do not use source or target business theorem
+  constants. Exact-type, automatic assumption/self-dependency audit, and a
+  formal clean publication run remain, so accepted coverage is intentionally
+  unchanged at 22 files and 209 declarations.
+
+## 2026-09-22 23:56:13 — Arrival Sequence pre-audit clean
+
+- Exact-type guards for 14 official source declarations, 14 actual imported
+  targets, and all correspondence propositions compile.
+- The automatic assumptions classifier yields 2 `CERTIFIED` and 12
+  `CERTIFIED_WITH_PROP_SPROP_FOUNDATION`; there are no semantic premises,
+  unexpected assumptions, missing audit blocks, or source/target declaration
+  self-dependencies.
+- The formal clean prepare/check/finalize reproduction and content-addressed
+  publication remain. Coverage is therefore still 22/357 and 209/2439 rather
+  than prematurely counting preflight evidence.
+
+## 2026-09-23 00:08:14 — Arrival Sequence formal validator wired
+
+- A content-addressed per-file hook now connects the 14 compiled
+  correspondences to the generic `prepare → check → finalize` workflow.
+- The snapshot binds the exact source and prior Job baseline, 25 fresh Lean
+  modules, the actual computation-interface export/import, certificate DAG,
+  Lean axiom policy, Rocq assumption policy, and publication manifest.
+- Shell syntax and `git diff --check` preflight passed. A clean full formal run
+  is starting next; accepted coverage remains 22 files / 209 declarations
+  until that run and publication complete.
+
+## 2026-09-23 00:17:08 — clean stages pass; publication ordering bug isolated
+
+- Fresh timings: Lean 419.79s, source 4.88s, export 49.24s, import 4.98s,
+  certificates 8.33s, assumptions 0.14s.
+- All semantic gates passed. Publication alone rejected a false invariant
+  about JSON key insertion order; the 14 named audit records and their
+  classifications were intact.
+- The correction is check/publication-only, so the next finalize run must use
+  the verified clean prepare cache rather than repeat compilation/export/import.
+  Accepted coverage remains 22/357 and 209/2439 until publication passes.
+
+## 2026-09-23 00:23:01 — Arrival Sequence accepted
+
+- The publication-only retry used four verified prepare-cache hits and did not
+  rerun Lean build, source acquisition, export, or Rocq import. Certificate
+  compile took 8.11s, assumption audit 0.14s, and publication 0.11s.
+- All 14 source declarations are now `ACCEPTED_V06_TRANSLATION`: two are
+  `CERTIFIED`, twelve are `CERTIFIED_WITH_PROP_SPROP_FOUNDATION`, and none has
+  semantic premises, unexpected assumptions, or source/target self-dependency.
+- `behavior/arrival_sequence.v` is `ACCEPTED_V06_FILE`. Machine coverage is
+  now **23 / 357 files**, **223 / 2439 declarations**, and zero semantic debt.
+- One interrupted duplicate prepare exposed that `CLEAN_FULL` output was
+  sealed but not canonicalized automatically. It was not used; the original
+  sealed clean prepare was independently verified and promoted before retry.
+  This is recorded as a workflow finding rather than hidden from timings.
+
+## 2026-09-23 00:27:20 — rank 24 Schedule starts
+
+- Latest machine state makes `behavior/schedule.v` READY: its sole direct
+  dependency is the newly accepted Arrival Sequence file.
+- The five-declaration source contract was rechecked against the authoritative
+  elaborated inventory and representation policy. The v0.6 `ProcessorState`
+  owns `State`, finite `Core`, three per-core observations, and two laws.
+- The v0.4-derived Lean reference is structurally unsuitable because it stores
+  aggregate service and omits the new per-core supply/service boundary. The
+  production candidate will therefore adapt/new-translate the approved nested
+  carrier structure rather than copy the historical class.
+- Current Schedule acceptance is 0/5; project acceptance remains 23 files and
+  223 declarations while the production/actual-artifact preflight begins.
+
+## 2026-09-23 00:40:11 — Schedule Lean candidate compiles
+
+- All five source declarations now have v0.6 production counterparts using
+  owned `State`/finite `Core`, per-core observations and laws, direct Boolean
+  finite existential, and finite Nat sums.
+- Isolated compile against the accepted Arrival snapshot passed. Source and
+  `.olean` hashes are `d061d1c0…` and `95717a95…`.
+- An accidental broad Lake target rebuild was stopped; the pinned Mathlib
+  cache was restored and the successful check used accepted dependency
+  artifacts. No semantic status changed: Schedule remains 0/5 accepted while
+  actual-artifact preflight starts.
+
+## 2026-09-23 01:24:25 — Schedule actual-artifact interface advances
+
+- A bad first exporter configuration was fail-closed: five parser aliases for
+  class projections were not real environment constants and produced a
+  dangling `_inhabitedExprDummy`.  Replacing them with the actual compiled
+  projection names made export/import succeed without changing production
+  Lean or either tool.
+- The imported artifact now exposes the real finite-core enumeration, its
+  `Nodup`/completeness observations, Boolean-existential truth, finite-sum and
+  list-sum equations, and the schedule alias.  A pre-final-interface export
+  and import have hashes `4ee534eb…` and `cb587229…`; they are retained but
+  invalidated for publication after adding the last permutation helper.
+- The official source module and separate source/imported type audits compile.
+  A generated artifact-local Bool/eqType/List adapter also compiles after
+  stale importer-foundation dependencies were correctly rebuilt rather than
+  silently reused.
+- Remaining work is the finite-enumeration permutation/sum bridge and the
+  ProcessorState observational correspondence.  No Schedule declaration is
+  accepted yet, so project coverage remains 23/357 files and 223/2439
+  declarations.
+
+## 2026-09-23 01:32:59 — Schedule proof-closure preflight fails closed
+
+- A validation-only `List.Perm.foldr_eq` helper was tested and rejected: its
+  Lean proof body expanded to about 92,000 export lines and the importer
+  segfaulted inside unrelated Prelude/BitVec/String dependencies.
+- Removing that helper reproduced the previous interface `.olean` byte for
+  byte (`66128db8…`).  The prior export/import (`4ee534eb…` / `cb587229…`)
+  were restored only after exact hash validation, so this is verified cache
+  reuse rather than a stale-artifact shortcut.
+- The sum/permutation obligation will instead be discharged in the independent
+  Rocq semantic layer from smaller imported computation interfaces.  Status
+  remains 0/5 for Schedule while that bridge is developed.
+
+## 2026-09-23 02:06:13 — Schedule reaches 5/5 compiled correspondences
+
+- A new operation-level certificate proves finite MathComp big-sum ↔ actual
+  imported Lean list-sum correspondence from enum/map/fold/Nat relations; it
+  does not depend on the rejected Lean permutation proof graph.
+- Independent certificates now compile for `scheduled_in`, `supply_in`,
+  `service_in`, and both directions of the `schedule` function relation.
+- The `ProcessorState` certificate records two-sided state/core maps and
+  roundtrips, finite enumeration, all observable operation fields, and both
+  laws.  The laws are derived compositionally and expose only the approved
+  Prop/SProp interpretation boundary.
+- Exact-type, automated assumption/self-dependency audit, and the formal clean
+  publication run remain.  Coverage is still 23/357 and 223/2439 until those
+  gates complete.
+
+## 2026-09-23 02:13:59 — Schedule exact-type and assumptions pass
+
+- Rocq compiled a direct exact-type guard over the official v0.6 source
+  declarations, actual imported Lean declarations, and all six correspondence
+  entry points.
+- The shared fail-closed classifier reports one
+  `CERTIFIED_WITH_PROP_SPROP_FOUNDATION` component (`ProcessorState`) and five
+  `CERTIFIED` components (the three aggregates and both schedule directions).
+- Every component has no semantic premise, no source/target self-dependency,
+  and no unexpected assumption.  Formal clean reproduction/publication is the
+  only remaining acceptance gate, so coverage intentionally remains 23 files
+  and 223 declarations for now.
+
+
+## 2026-09-23T02:38:18.296945+08:00 — Schedule formally accepted
+
+- The clean content-addressed prepare/check/finalize run passed for snapshot
+  `b43719db2c6f855d3fbdf49693518e99c75c025d78ba95391191f3f2456c227d`.
+- All five v0.6 declarations are accepted: four `CERTIFIED`, and
+  `ProcessorState` explicitly
+  `CERTIFIED_WITH_PROP_SPROP_FOUNDATION` for its two class laws.
+- Semantic premises, unexpected assumptions, and source/target
+  self-dependencies are all empty/false.  Coverage is now **24 / 357 files**
+  and **228 / 2439 declarations**, with zero validation debt.
+
+
+## 2026-09-23T04:23:33.287035+08:00 — Service formally accepted
+
+- The clean content-addressed prepare/check/finalize run passed for snapshot
+  `179712812dd6e87c3e4cdf704a1a62b6c6d629af96f0d14acca3ee7207f84fca`.
+- All twelve v0.6 definitions are accepted: five `CERTIFIED` and seven
+  explicitly `CERTIFIED_WITH_PROP_SPROP_FOUNDATION`.
+- Semantic premises, unexpected assumptions, and source/target
+  self-dependencies are empty/false.  Coverage is now **25 / 357 files** and
+  **240 / 2439 declarations**, with zero validation debt.
+
+
+## 2026-09-23T05:38:28.272272+08:00 — Ready formally accepted
+
+- The clean content-addressed run passed for snapshot `0005a8a78597bde2fe967345a971dbafe995f4c5543acd95bc7844d244bceb8b`.
+- All seven v0.6 declarations are accepted: one `CERTIFIED` and six
+  `CERTIFIED_WITH_PROP_SPROP_FOUNDATION`.
+- Semantic premises and self-dependencies are absent. Coverage is now
+  **26 / 357 files** and **247 / 2439 declarations**, with zero debt.
+
+## 2026-09-23 05:55:57 +08:00 — Behavior aggregation formally accepted
+
+- `behavior/all.v` contains zero named declarations, so it passed the
+  dedicated module-interface gate rather than receiving a vacuous semantic
+  certificate.
+- The exact six Rocq re-exports and Lean imports, six accepted dependency
+  bindings, the byte-identical official Rocq module, the actual Lean
+  aggregator, and an aggregator-only interface fixture all passed.
+- A first run exposed a Lean search-root materialization issue after source
+  compilation passed; no status was published. The corrected run re-hashed
+  and materialized all 30 accepted dependency `.olean`s into the isolated
+  root, then passed without rebuilding them.
+- Coverage is now **27 / 357 files**, **247 / 2439 declarations**, and zero
+  validation debt. The next ordered READY candidate is rank 28,
+  `model/processor/supply.v`.
+
+
+## 2026-09-23T07:19:02.100251+08:00 — processor Supply formally accepted
+
+- All five v0.6 definitions passed actual-artifact correspondence and
+  fail-closed assumption audits: two `CERTIFIED`, three explicitly
+  `CERTIFIED_WITH_PROP_SPROP_FOUNDATION`.
+- The new Bool-to-Nat bridge is independently kernel-certified. Semantic
+  premises and unexpected assumptions are empty; source/target self-dependency
+  flags are false.
+- Coverage is now **28 / 357 files** and **252 / 2439 declarations**, with
+  zero validation debt.
+
+
+## 2026-09-23T07:31:32.778249+08:00 — util/int module boundary accepted
+
+- The source contains zero named declarations; exact source re-exports and the actual compiled Lean Int interface passed.
+- No declaration-level certificate was invented; future integer users retain operation-level correspondence obligations.
+- Coverage is now **29 / 357 files** and **252 / 2439 declarations**, with zero validation debt.

@@ -1,0 +1,31 @@
+From prosa Require Import behavior.ready.
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedReady.
+From FoundationCertificates Require Import ReadyCorrespondence.
+
+Check prosa.behavior.ready.JobReady.
+Check @prosa.behavior.ready.job_ready.
+Check @prosa.behavior.ready.backlogged.
+Check @prosa.behavior.ready.jobs_come_from_arrival_sequence.
+Check @prosa.behavior.ready.jobs_must_arrive_to_execute.
+Check @prosa.behavior.ready.jobs_must_be_ready_to_execute.
+Check @prosa.behavior.ready.completed_jobs_dont_execute.
+Check @prosa.behavior.ready.valid_schedule.
+
+Check ImportedReady.Prosa_Behavior_Ready_JobReady.
+Check ImportedReady.Prosa_Behavior_Ready_JobReady_job_ready.
+Check ImportedReady.Prosa_Behavior_Ready_JobReady_ready_implies_pending.
+Check ImportedReady.Prosa_Behavior_Ready_backlogged.
+Check ImportedReady.Prosa_Behavior_Ready_jobs_come_from_arrival_sequence.
+Check ImportedReady.Prosa_Behavior_Ready_jobs_must_arrive_to_execute.
+Check ImportedReady.Prosa_Behavior_Ready_jobs_must_be_ready_to_execute.
+Check ImportedReady.Prosa_Behavior_Ready_completed_jobs_dont_execute.
+Check ImportedReady.Prosa_Behavior_Ready_valid_schedule.
+
+Check job_ready_class_correspondence.
+Check backlogged_correspondence.
+Check jobs_come_from_arrival_sequence_correspondence.
+Check jobs_must_arrive_to_execute_correspondence.
+Check jobs_must_be_ready_to_execute_correspondence.
+Check completed_jobs_dont_execute_correspondence.
+Check valid_schedule_correspondence.

@@ -1,0 +1,52 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedSchedule.
+
+(** Exact imported interface for the frozen, actual compiled Schedule
+    artifact.  This file is a diagnostic/type guard, not a semantic
+    certificate. *)
+Check ImportedSchedule.Prosa_Behavior_Schedule_ProcessorState.
+Check ImportedSchedule.Prosa_Behavior_Schedule_ProcessorState_mk.
+Check ImportedSchedule.Prosa_Behavior_Schedule_ProcessorState_State.
+Check ImportedSchedule.Prosa_Behavior_Schedule_ProcessorState_Core.
+Check ImportedSchedule.Prosa_Behavior_Schedule_ProcessorState_coreFintype.
+Check ImportedSchedule.Prosa_Behavior_Schedule_ProcessorState_coreDecidableEq.
+Check ImportedSchedule.Prosa_Behavior_Schedule_ProcessorState_scheduled_on.
+Check ImportedSchedule.Prosa_Behavior_Schedule_ProcessorState_supply_on.
+Check ImportedSchedule.Prosa_Behavior_Schedule_ProcessorState_service_on.
+Check ImportedSchedule.Prosa_Behavior_Schedule_ProcessorState_service_on_le_supply_on.
+Check ImportedSchedule.Prosa_Behavior_Schedule_ProcessorState_service_on_implies_scheduled_on.
+
+Check ImportedSchedule.Prosa_Behavior_Schedule_ProcessorState_scheduled_in.
+Check ImportedSchedule.Prosa_Behavior_Schedule_ProcessorState_supply_in.
+Check ImportedSchedule.Prosa_Behavior_Schedule_ProcessorState_service_in.
+Check ImportedSchedule.Prosa_Behavior_Schedule_schedule.
+
+Check ImportedSchedule.Prosa_Behavior_Schedule_ProcessorState_scheduled_in_eq_true_iff.
+Check ImportedSchedule.Prosa_Validation_ScheduleInterface_production_scheduled_in_eq_true_iff.
+Check ImportedSchedule.Prosa_Validation_ScheduleInterface_coreEnumeration.
+Check ImportedSchedule.Prosa_Validation_ScheduleInterface_coreEnumeration_nodup.
+Check ImportedSchedule.Prosa_Validation_ScheduleInterface_coreEnumeration_complete.
+Check ImportedSchedule.Prosa_Validation_ScheduleInterface_production_supply_in_eq.
+Check ImportedSchedule.Prosa_Validation_ScheduleInterface_production_service_in_eq.
+Check ImportedSchedule.Prosa_Validation_ScheduleInterface_production_supply_in_as_list_sum.
+Check ImportedSchedule.Prosa_Validation_ScheduleInterface_production_service_in_as_list_sum.
+Check ImportedSchedule.Prosa_Validation_ScheduleInterface_production_schedule_eq.
+
+(** Finite-enumeration representation primitives needed by the class and
+    aggregate-operation correspondence. *)
+Check ImportedSchedule.Fintype_mk.
+Check ImportedSchedule.Fintype_elems.
+Check ImportedSchedule.Fintype_complete.
+Check ImportedSchedule.Finset_mk.
+Check ImportedSchedule.Finset_val.
+Check ImportedSchedule.Quotient_mk.
+Check ImportedSchedule.List_Nodup.
+Check ImportedSchedule.Multiset_Nodup.
+Check ImportedSchedule.Finset_sum_map_toList.
+Check ImportedSchedule.List_perm_ext_iff_of_nodup.
+Check ImportedSchedule.List_Perm_map_inst2.
+Check ImportedSchedule.List_sum_inst1.
+Check ImportedSchedule.List_map_inst2.
+Check ImportedSchedule.List_foldr_inst3.
+Check ImportedSchedule.Nat_add_comm.
+Check ImportedSchedule.Nat_add_assoc.

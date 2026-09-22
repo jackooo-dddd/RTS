@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "scope": "translation_order_behavior_schedule",
+  "inputs": [
+    {"name": "lean_toolchain", "root": "project", "path": "lean-toolchain"},
+    {"name": "lakefile", "root": "project", "path": "lakefile.lean"},
+    {"name": "lake_manifest", "root": "project", "path": "lake-manifest.json"},
+    {"name": "lean_schedule", "root": "project", "path": "Prosa/Behavior/Schedule.lean"},
+    {"name": "lean_arrival", "root": "project", "path": "Prosa/Behavior/Arrival_sequence.lean"},
+    {"name": "lean_job", "root": "project", "path": "Prosa/Behavior/Job.lean"},
+    {"name": "lean_time", "root": "project", "path": "Prosa/Behavior/Time.lean"},
+    {"name": "lean_util_all", "root": "project", "path": "Prosa/Util/All.lean"},
+    {"name": "lean_schedule_interface", "root": "validation", "path": "fixtures/translation_order/ScheduleComputationInterface.lean"},
+    {"name": "lean_schedule_audit", "root": "validation", "path": "fixtures/translation_order/LeanScheduleAudit.lean"},
+    {"name": "lean_schedule_axiom_config", "root": "validation", "path": "fixtures/translation_order/schedule_lean_axiom_config.json"},
+    {"name": "source_schedule", "root": "source", "path": "behavior/schedule.v"},
+    {"name": "source_arrival", "root": "source", "path": "behavior/arrival_sequence.v"},
+    {"name": "source_job", "root": "source", "path": "behavior/job.v"},
+    {"name": "source_time", "root": "source", "path": "behavior/time.v"},
+    {"name": "source_notation", "root": "source", "path": "util/notation.v"},
+    {"name": "source_compat", "root": "validation", "path": "fixtures/translation_order/source_compat/arrival_sequence/util/all.v"},
+    {"name": "declaration_inventory", "root": "validation", "path": "planning/v06_dependency/declaration_inventory.csv"},
+    {"name": "source_type_evidence", "root": "validation", "path": "planning/v06_dependency/declaration_type_evidence.json"},
+    {"name": "selection", "root": "validation", "path": "planning/v06_pipeline/behavior_schedule_selection.json"},
+    {"name": "previous_status", "root": "validation", "path": "planning/v06_pipeline/behavior_arrival_sequence_module_status.json"},
+    {"name": "previous_manifest", "root": "validation", "path": "planning/v06_pipeline/behavior_arrival_sequence_module_manifest.json"},
+    {"name": "subadditivity_export", "root": "validation", "path": "imported/foundation_slice_2/Subadditivity.out"},
+    {"name": "subadditivity_import_fixture", "root": "validation", "path": "imported/foundation_slice_2/ImportedSubadditivity.v"},
+    {"name": "schedule_export_config", "root": "validation", "path": "tooling/behavior_schedule_export_config.json"},
+    {"name": "schedule_import_fixture", "root": "validation", "path": "fixtures/translation_order/ImportedSchedule.v"},
+    {"name": "adapter_template", "root": "validation", "path": "templates/ArtifactBoolListAdapter.v.tpl"},
+    {"name": "adapter_generator", "root": "validation", "path": "scripts/generate_artifact_bool_list_adapter.py"},
+    {"name": "lean4export", "root": "exporter", "path": ".lake/build/bin/lean4export"},
+    {"name": "rocq_import", "root": "importer", "path": "src/lean_import.cmxs"},
+    {"name": "rocq_foundation", "root": "importer", "path": "src/Lean.vo"}
+  ],
+  "git_repositories": [
+    {"name": "authoritative_source", "root": "source", "path": "", "require_clean": true},
+    {"name": "mathlib", "root": "project", "path": ".lake/packages/mathlib", "require_clean": true}
+  ],
+  "command_inputs": [
+    {"name": "lean_version", "argv": ["lean", "--version"]},
+    {"name": "rocq_version", "argv": ["opam", "exec", "--switch=rocq93rc1", "--", "rocq", "--version"]}
+  ],
+  "module_loading": {
+    "lean_root": "project",
+    "rocq_source_prefix": "prosa",
+    "imported_prefix": "FoundationImported",
+    "certificate_prefix": "FoundationCertificates",
+    "autoImplicit": false
+  },
+  "prepared_outputs": {
+    "lean_build": [
+      "olean/Prosa/Behavior/Schedule.olean",
+      "olean/Validation/fixtures/translation_order/ScheduleComputationInterface.olean",
+      "lean_freeze_and_axioms.log",
+      "lean_axiom_summary.json",
+      "dependency_build_manifest.json"
+    ],
+    "source_acquisition": [
+      "source/util/all.vo",
+      "source/util/notation.vo",
+      "source/behavior/time.vo",
+      "source/behavior/job.vo",
+      "source/behavior/arrival_sequence.vo",
+      "source/behavior/schedule.vo",
+      "source/schedule_source_acquisition.json"
+    ],
+    "export": [
+      "imported/Schedule.out",
+      "imported/schedule_export_metadata.json"
+    ],
+    "rocq_import": [
+      "imported/ImportedSubadditivity.vo",
+      "imported/ImportedSchedule.v",
+      "imported/ImportedSchedule.vo"
+    ]
+  }
+}

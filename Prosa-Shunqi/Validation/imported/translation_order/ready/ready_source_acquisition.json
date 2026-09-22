@@ -1,0 +1,59 @@
+{
+  "authoritative_source_sha256": "663bf64b0bbb7e5010df3d88e881fd22bab8ce2ce0ec98dca02dcb2c0f2115b2",
+  "byte_identical_authoritative_source": true,
+  "compiled_source_sha256": "663bf64b0bbb7e5010df3d88e881fd22bab8ce2ce0ec98dca02dcb2c0f2115b2",
+  "declarations": {
+    "JobReady": {
+      "elaborated_type_sha256": "07d189709f956d47c15862575afcbe91cd0c656d8902a1c449fa97ea8b9af48b",
+      "kind": "Class",
+      "normalized_check": "JobReady : forall Job : JobType, ProcessorState Job -> JobCost Job -> JobArrival Job -> Type",
+      "qualified_name": "prosa.behavior.ready.JobReady",
+      "source_command_sha256": "e540b6f7696e7c80156b12a3e2210eda3027db688e80b373d50e295e0f71dce8"
+    },
+    "backlogged": {
+      "elaborated_type_sha256": "309f746d16e30d8ffec6ca1dbe01bd94355a765398fb49bf81523ab52f24a23d",
+      "kind": "Definition",
+      "normalized_check": "@backlogged : forall (Job : JobType) (PState : ProcessorState Job) (jc : JobCost Job) (ja : JobArrival Job), JobReady Job PState -> schedule PState -> Job -> instant -> bool",
+      "qualified_name": "prosa.behavior.ready.backlogged",
+      "source_command_sha256": "922c2d60017eb3515153af807bbee275dbf567c9fe1f45a23319cba700432cd5"
+    },
+    "completed_jobs_dont_execute": {
+      "elaborated_type_sha256": "b2131c770b716524af88b2ec3c6cd19da53f5282bc02392f2f138354d37b5ca2",
+      "kind": "Definition",
+      "normalized_check": "@completed_jobs_dont_execute : forall (Job : JobType) (PState : ProcessorState Job), schedule PState -> JobCost Job -> Prop",
+      "qualified_name": "prosa.behavior.ready.completed_jobs_dont_execute",
+      "source_command_sha256": "ea80134cb2dcfb052136a9ec2ef7d227bdf056a7b112b1aade149591af4712b2"
+    },
+    "jobs_come_from_arrival_sequence": {
+      "elaborated_type_sha256": "5ae29cac73eb7e916d806508a9215235f144e230f9f13f597d946c5c35197bbd",
+      "kind": "Definition",
+      "normalized_check": "@jobs_come_from_arrival_sequence : forall (Job : JobType) (PState : ProcessorState Job), schedule PState -> arrival_sequence Job -> Prop",
+      "qualified_name": "prosa.behavior.ready.jobs_come_from_arrival_sequence",
+      "source_command_sha256": "5274459a138639c53300edc5f10fb36a702bbd17a89c922452f4acf7b76af405"
+    },
+    "jobs_must_arrive_to_execute": {
+      "elaborated_type_sha256": "bc8a3d3811089487f95567d099c47c49df0874151f9bcf236b9f8fa1c27ce488",
+      "kind": "Definition",
+      "normalized_check": "@jobs_must_arrive_to_execute : forall Job : JobType, JobArrival Job -> forall PState : ProcessorState Job, schedule PState -> Prop",
+      "qualified_name": "prosa.behavior.ready.jobs_must_arrive_to_execute",
+      "source_command_sha256": "2b7dc7ce23b4077c613812072107bdfc4e1b50ee4525538e5a2d0c5820753e81"
+    },
+    "jobs_must_be_ready_to_execute": {
+      "elaborated_type_sha256": "2b31a2a7ea401136024b7d1b81be5721836f818155e1a4aff706c876610551ed",
+      "kind": "Definition",
+      "normalized_check": "@jobs_must_be_ready_to_execute : forall (Job : JobType) (H : JobArrival Job) (PState : ProcessorState Job), schedule PState -> forall H0 : JobCost Job, JobReady Job PState -> Prop",
+      "qualified_name": "prosa.behavior.ready.jobs_must_be_ready_to_execute",
+      "source_command_sha256": "24ede930e2a241f39750da400858e99c42ab914505186a62c3bfbd4ef14c9c98"
+    },
+    "valid_schedule": {
+      "elaborated_type_sha256": "1195ffe5a4c5da38f5c2285d461cb335f8bd959877fd59cfea8fb665cbb9f512",
+      "kind": "Definition",
+      "normalized_check": "@valid_schedule : forall (Job : JobType) (H : JobArrival Job) (PState : ProcessorState Job), schedule PState -> forall H0 : JobCost Job, JobReady Job PState -> arrival_sequence Job -> Prop",
+      "qualified_name": "prosa.behavior.ready.valid_schedule",
+      "source_command_sha256": "67bb0ece60a484b5d3e928396f3ae9a11b5bca38f179644a75c9d5124b25a358"
+    }
+  },
+  "source_commit": "414e66760333eaa4ef78c685bcf53291c527a548",
+  "source_file": "behavior/ready.v",
+  "status": "PASS"
+}

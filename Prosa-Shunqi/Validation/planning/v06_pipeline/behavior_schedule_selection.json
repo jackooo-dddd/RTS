@@ -1,0 +1,44 @@
+{
+  "slice": "TRANSLATION_ORDER_BEHAVIOR_SCHEDULE",
+  "selected_at": "2026-09-23T00:27:20+08:00",
+  "source_file": "behavior/schedule.v",
+  "module": "prosa.behavior.schedule",
+  "file_layer": 6,
+  "public_declarations": 5,
+  "source_loc": 106,
+  "source_sha256": "4e5f3cdf60fe6d7cf8872345f64a3126ea500f34618ca322e4d754d9b626e50d",
+  "direct_internal_dependencies": [
+    {
+      "source_file": "behavior/arrival_sequence.v",
+      "status": "ACCEPTED_V06_FILE",
+      "status_file": "behavior_arrival_sequence_module_status.json",
+      "accepted_snapshot": "c1d257c3b0ec6199ee42ca57b25a48c34cfea4514dfdd98249295bc68b32b78e"
+    }
+  ],
+  "FILE_DAG_READY": true,
+  "declarations": [
+    "ProcessorState",
+    "scheduled_in",
+    "supply_in",
+    "service_in",
+    "schedule"
+  ],
+  "migration_actions": {
+    "ADAPT_OLD_LEAN": 3,
+    "NEW_TRANSLATION": 1,
+    "REFERENCE_ONLY": 1
+  },
+  "representation_policy": "PROCESSOR_STATE_NESTED_CARRIERS",
+  "representation_boundaries": [
+    "Job eqType carrier plus explicit DecidableEq evidence",
+    "ProcessorState owns State and Core",
+    "Core finType becomes the same carrier with Fintype and DecidableEq evidence",
+    "scheduled_on remains Bool",
+    "scheduled_in is direct finite Boolean-or enumeration",
+    "supply_in and service_in are finite Nat sums",
+    "both per-core source laws remain structure fields"
+  ],
+  "known_historical_mismatch": "The v0.4-derived class externalized State, omitted supply_on/service_on and their per-core laws, and stored aggregate service_in; it is reference material only.",
+  "validation_plan": "Translate the approved owned-carrier structure, preflight all actual compiled structure/projection/fold/sum interfaces, then establish a finite-core representation relation and observational certificates for all five declarations.",
+  "expected_validation_difficulty": "HIGH_FOUNDATIONAL_REPRESENTATION"
+}

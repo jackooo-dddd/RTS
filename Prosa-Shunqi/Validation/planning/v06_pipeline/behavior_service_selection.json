@@ -1,0 +1,41 @@
+{
+  "slice": "TRANSLATION_ORDER_BEHAVIOR_SERVICE",
+  "selected_at": "2026-09-23T02:39:52+08:00",
+  "source_file": "behavior/service.v",
+  "module": "prosa.behavior.service",
+  "file_layer": 7,
+  "public_declarations": 12,
+  "source_sha256": "3fd8cf88d667d3c43fae1a7ec62a88f6cef75fcd8e622a59f5a747153c1c4870",
+  "direct_internal_dependencies": [
+    {
+      "source_file": "behavior/schedule.v",
+      "status": "ACCEPTED_V06_FILE",
+      "status_file": "behavior_schedule_module_status.json",
+      "accepted_snapshot": "b43719db2c6f855d3fbdf49693518e99c75c025d78ba95391191f3f2456c227d"
+    }
+  ],
+  "FILE_DAG_READY": true,
+  "declarations": [
+    "scheduled_at",
+    "service_at",
+    "receives_service_at",
+    "service_during",
+    "service",
+    "completed_by",
+    "completes_at",
+    "job_response_time_bound",
+    "job_meets_deadline",
+    "pending",
+    "pending_earlier_and_at",
+    "remaining_cost"
+  ],
+  "representation_boundaries": [
+    "reuse the accepted owned-carrier ProcessorState and schedule relation",
+    "all seven source predicates remain Bool, not Prop",
+    "service_during is the half-open Nat interval sum [t1,t2)",
+    "completes_at preserves the v0.6 t == 0 disjunct",
+    "remaining_cost uses truncated Nat subtraction"
+  ],
+  "validation_plan": "Translate all twelve definitions, preflight the actual service/sum/Bool computation interface, then compose accepted Schedule, Job, Arrival, Nat comparison, interval-sum, Boolean, and subtraction correspondences.",
+  "expected_validation_difficulty": "MEDIUM_COMPOSITIONAL_SERVICE_CHAIN"
+}

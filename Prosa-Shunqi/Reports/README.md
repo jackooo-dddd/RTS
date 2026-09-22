@@ -1,5 +1,32 @@
 # Reports
 
+## Latest published validation
+
+The latest formally published file is `model/processor/supply.v`:
+
+- [canonical processor Supply report](files/model/processor/2026-09-23_055700_supply.md)
+- [current continuous-run summary](runs/2026-09-22_000308_translation_order_continuous_run.md)
+- machine authority:
+  `../Validation/planning/v06_pipeline/model_processor_supply_module_status.json`
+
+All five Supply definitions passed actual-artifact correspondence and
+fail-closed assumption audits. Current machine-published coverage is **28 /
+357 files** and **252 / 2439 declarations**, with **0** translated but
+uncertified declarations. Reports are organized below `files/` and `runs/`;
+this README is the visible entry point rather than a duplicate status
+authority.
+
+## Latest work in progress
+
+The next ordered candidate is `util/int.v` (execution rank 29). Work has not
+yet been published for it; its source contains zero named public declarations,
+so it requires an imports/notation/instance interface audit rather than a
+vacuous declaration certificate.
+
+Work-in-progress reports appear here even though they do not change the
+formally published coverage above. Their presence never implies
+`ACCEPTED_V06_FILE`; acceptance remains controlled by machine manifests.
+
 ## Canonical file reports
 
 Each authoritative Prosa v0.6 source file has at most one current report at:
@@ -42,20 +69,24 @@ Current canonical reports, in the approved execution order:
 | 20 | `util/nondecreasing.v` | [nondecreasing](files/util/2026-09-22_133028_nondecreasing.md) | `ACCEPTED_V06_FILE` |
 | 21 | `util/all.v` | [all](files/util/2026-09-22_203705_all.md) | `ACCEPTED_V06_FILE` |
 | 22 | `behavior/job.v` | [job](files/behavior/2026-09-22_210645_job.md) | `ACCEPTED_V06_FILE` |
-| 23 | `behavior/arrival_sequence.v` | [arrival_sequence](files/behavior/2026-09-22_222929_arrival_sequence.md) | `IN_PROGRESS` — 14/14 Lean candidates compile; 0/14 semantically accepted |
+| 23 | `behavior/arrival_sequence.v` | [arrival_sequence](files/behavior/2026-09-22_222929_arrival_sequence.md) | `ACCEPTED_V06_FILE` |
+| 24 | `behavior/schedule.v` | [schedule](files/behavior/2026-09-23_002720_schedule.md) | `ACCEPTED_V06_FILE` |
+| 25 | `behavior/service.v` | [service](files/behavior/2026-09-23_023952_service.md) | `ACCEPTED_V06_FILE` |
+| 26 | `behavior/ready.v` | [ready](files/behavior/2026-09-23_042533_ready.md) | `ACCEPTED_V06_FILE` |
+| 27 | `behavior/all.v` | [all](files/behavior/2026-09-23_054506_all.md) | `ACCEPTED_V06_FILE` |
+| 28 | `model/processor/supply.v` | [supply](files/model/processor/2026-09-23_055700_supply.md) | `ACCEPTED_V06_FILE` |
 
 ## Current proof progress
 
-Machine-published acceptance is now **22 / 357 source files** and
-**209 / 2439 public declarations**, with **0 translated-but-not-certified**.
-The latest completed file is `behavior/job.v`: all five declarations have
-actual-artifact bidirectional/observational semantic certificates, and all 16
-component assumption checks are `CERTIFIED` without Prop/SProp foundation or
-semantic premises. Work is now active on rank 23,
-`behavior/arrival_sequence.v`: all 14 production Lean candidates have been
-written and pass an isolated Lean 4.33.1 compile, but actual-artifact
-export/import, Rocq correspondence certificates, and publication are still
-pending. Therefore none of those 14 declarations is counted as accepted yet.
+Machine-published acceptance is now **28 / 357 source files** and **252 / 2439
+public declarations**, with **0 translated-but-not-certified**. The latest
+completed file is `model/processor/supply.v`: two definitions are `CERTIFIED`
+and three are explicitly `CERTIFIED_WITH_PROP_SPROP_FOUNDATION`. The clean run
+also independently certified the Bool-to-Nat bridge and found no semantic
+premise, unexpected assumption, or source/target self-dependency. The
+preceding zero-declaration `behavior/all.v` interface audit remains accepted.
+Machine-readable status/manifest remain the acceptance source; this dashboard
+is a human-readable reflection of them.
 
 The formal scheduling document is
 [`../v06_file_translation_order.md`](../v06_file_translation_order.md).
