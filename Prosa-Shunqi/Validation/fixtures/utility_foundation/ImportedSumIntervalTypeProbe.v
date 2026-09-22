@@ -1,0 +1,10 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedSumInterval.
+
+Check ImportedSumInterval.Prosa_Util_Sum_big_sum_eq_in_eq_sized_intervals.
+Check ImportedSumInterval.Prosa_Util_Sum_pigeonhole_on_interval.
+Check ImportedSumInterval.Prosa_Util_Sum_sum_ge_2_nat.
+
+Print ImportedSumInterval.Prosa_Util_Sum_big_sum_eq_in_eq_sized_intervals.
+Print ImportedSumInterval.Prosa_Util_Sum_pigeonhole_on_interval.
+Print ImportedSumInterval.Prosa_Util_Sum_sum_ge_2_nat.

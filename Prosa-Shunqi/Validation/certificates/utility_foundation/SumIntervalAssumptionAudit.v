@@ -17,3 +17,14 @@ Goal True. idtac "AUDIT_BEGIN sum_le_summation_range". exact I. Qed.
 Print Assumptions sum_le_summation_range_statement_certificate.
 Goal True. idtac "AUDIT_END sum_le_summation_range". exact I. Qed.
 
+Goal True. idtac "AUDIT_BEGIN big_sum_eq_in_eq_sized_intervals". exact I. Qed.
+Print Assumptions big_sum_eq_in_eq_sized_intervals_statement_certificate.
+Goal True. idtac "AUDIT_END big_sum_eq_in_eq_sized_intervals". exact I. Qed.
+
+Goal True. idtac "AUDIT_BEGIN pigeonhole_on_interval". exact I. Qed.
+Print Assumptions pigeonhole_on_interval_statement_certificate.
+Goal True. idtac "AUDIT_END pigeonhole_on_interval". exact I. Qed.
+
+Goal True. idtac "AUDIT_BEGIN sum_ge_2_nat". exact I. Qed.
+Print Assumptions sum_ge_2_nat_statement_certificate.
+Goal True. idtac "AUDIT_END sum_ge_2_nat". exact I. Qed.

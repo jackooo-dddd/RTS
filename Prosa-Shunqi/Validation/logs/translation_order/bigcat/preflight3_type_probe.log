@@ -1,0 +1,405 @@
+Prosa_Util_Bigcat_mem_bigcat_nat
+     : forall T : Type,
+       DecidableEq T ->
+       forall (f : Nat -> List T) (x : T) (m n j : Nat),
+       And (LE_le_inst1 Nat instLENat m j) (LT_lt_inst1 Nat instLTNat j n) ->
+       Membership_mem T (List T) (List_instMembership T) (f j) x ->
+       Membership_mem T (List T) (List_instMembership T)
+         (Prosa_Util_Notation_bigCat T m n f) x
+Prosa_Util_Bigcat_mem_bigcat_nat_exists
+     : forall T : Type,
+       DecidableEq T ->
+       forall (f : Nat -> List T) (x : T) (m n : Nat),
+       Membership_mem T (List T) (List_instMembership T)
+         (Prosa_Util_Notation_bigCat T m n f) x ->
+       Exists Nat
+         (fun i : Nat =>
+          And (Membership_mem T (List T) (List_instMembership T) (f i) x)
+            (And (LE_le_inst1 Nat instLENat m i)
+               (LT_lt_inst1 Nat instLTNat i n)))
+Prosa_Util_Bigcat_mem_bigcat_ord
+     : forall T : Type,
+       DecidableEq T ->
+       forall (x : T) (n : Nat) (j : Fin n) (g : Fin n -> List T),
+       LT_lt_inst1 Nat instLTNat (Fin_val n j) n ->
+       Membership_mem T (List T) (List_instMembership T) (g j) x ->
+       Membership_mem T (List T) (List_instMembership T)
+         (Prosa_Util_Bigcat_bigCatFin T n g) x
+Prosa_Util_Bigcat_bigcat_nat_uniq
+     : forall T : Type,
+       DecidableEq T ->
+       forall f : Nat -> List T,
+       (forall i : Nat, List_Nodup T (f i)) ->
+       (forall (x : T) (i_UU2081_ i_UU2082_ : Nat),
+        Membership_mem T (List T) (List_instMembership T) (f i_UU2081_) x ->
+        Membership_mem T (List T) (List_instMembership T) (f i_UU2082_) x ->
+        eq i_UU2081_ i_UU2082_) ->
+       forall n_UU2081_ n_UU2082_ : Nat,
+       List_Nodup T (Prosa_Util_Notation_bigCat T n_UU2081_ n_UU2082_ f)
+Prosa_Util_Bigcat_bigcat_nat_filter_eq_filter_bigcat_nat
+     : forall (X : Type) (F : Nat -> List X) (P : X -> Bool)
+         (t_UU2081_ t_UU2082_ : Nat),
+       eq
+         (List_filter X P
+            (Prosa_Util_Notation_bigCat X t_UU2081_ t_UU2082_ F))
+         (Prosa_Util_Notation_bigCat X t_UU2081_ t_UU2082_
+            (fun t : Nat => List_filter X P (F t)))
+Prosa_Util_Bigcat_size_big_nat
+     : forall (X : Type) (F : Nat -> List X) (t_UU2081_ t_UU2082_ : Nat),
+       eq
+         (List_foldr_inst3 Nat Nat Nat_add 0
+            (List_map_inst3 Nat Nat (fun t : Nat => List_length X (F t))
+               (List_range' t_UU2081_ (Nat_sub t_UU2082_ t_UU2081_) 1)))
+         (List_length X (Prosa_Util_Notation_bigCat X t_UU2081_ t_UU2082_ F))
+Prosa_Util_Bigcat_mem_bigcat
+     : forall X Y : Type,
+       DecidableEq X ->
+       DecidableEq Y ->
+       forall (f : X -> List Y) (x : X) (y : Y) (s : List X),
+       Membership_mem X (List X) (List_instMembership X) s x ->
+       Membership_mem Y (List Y) (List_instMembership Y) (f x) y ->
+       Membership_mem Y (List Y) (List_instMembership Y)
+         (Prosa_Util_Bigcat_bigCatSeqAll X Y s f) y
+Prosa_Util_Bigcat_mem_bigcat_exists
+     : forall X Y : Type,
+       DecidableEq X ->
+       DecidableEq Y ->
+       forall (f : X -> List Y) (P : X -> Bool) (s : List X) (y : Y),
+       Membership_mem Y (List Y) (List_instMembership Y)
+         (Prosa_Util_Bigcat_bigCatSeq X Y s P f) y ->
+       Exists X
+         (fun x : X =>
+          And (Membership_mem X (List X) (List_instMembership X) s x)
+            (Membership_mem Y (List Y) (List_instMembership Y) (f x) y))
+Prosa_Util_Bigcat_bigcat_filter_eq_filter_bigcat
+     : forall X Y : Type,
+       DecidableEq X ->
+       DecidableEq Y ->
+       forall (f : X -> List Y) (xss : List X) (P : Y -> Bool),
+       eq (List_filter Y P (Prosa_Util_Bigcat_bigCatSeqAll X Y xss f))
+         (Prosa_Util_Bigcat_bigCatSeqAll X Y xss
+            (fun x : X => List_filter Y P (f x)))
+Prosa_Util_Bigcat_bigcat_uniq
+     : forall X Y : Type,
+       DecidableEq X ->
+       DecidableEq Y ->
+       forall (f : X -> List Y) (xs : List X) (P : X -> Bool),
+       (forall x : X, eq (P x) Bool_true -> List_Nodup Y (f x)) ->
+       (forall (x : Y) (y z : X),
+        Membership_mem Y (List Y) (List_instMembership Y) (f y) x ->
+        Membership_mem Y (List Y) (List_instMembership Y) (f z) x -> eq y z) ->
+       List_Nodup X xs ->
+       List_Nodup Y (Prosa_Util_Bigcat_bigCatSeq X Y xs P f)
+Prosa_Util_Bigcat_seq_different_elements_nil
+     : forall (X Y : Type)
+         (inst____at___Prosa_Util_Bigcat358557551__hygCtx__hyg4 : 
+          DecidableEq X),
+       DecidableEq Y ->
+       forall (f : X -> List Y) (g : Y -> X),
+       (forall (x : X) (y : Y),
+        Membership_mem Y (List Y) (List_instMembership Y) (f x) y ->
+        eq (g y) x) ->
+       forall x_UU2081_ x_UU2082_ : X,
+       Ne X x_UU2081_ x_UU2082_ ->
+       eq
+         (List_filter Y
+            (fun x : Y =>
+             Decidable_decide (eq (g x) x_UU2082_)
+               (inst____at___Prosa_Util_Bigcat358557551__hygCtx__hyg4 
+                  (g x) x_UU2082_))
+            (f x_UU2081_))
+         (List_nil Y)
+Prosa_Util_Bigcat_bigcat_seq_uniqK
+     : forall (X Y : Type)
+         (inst____at___Prosa_Util_Bigcat371317755__hygCtx__hyg4 : 
+          DecidableEq X),
+       DecidableEq Y ->
+       forall (f : X -> List Y) (g : Y -> X),
+       (forall (x : X) (y : Y),
+        Membership_mem Y (List Y) (List_instMembership Y) (f x) y ->
+        eq (g y) x) ->
+       forall (y : X) (xs : List X),
+       Membership_mem X (List X) (List_instMembership X) xs y ->
+       List_Nodup X xs ->
+       eq
+         (Prosa_Util_Bigcat_bigCatSeqAll X Y xs
+            (fun x : X =>
+             List_filter Y
+               (fun x' : Y =>
+                Decidable_decide (eq (g x') y)
+                  (inst____at___Prosa_Util_Bigcat371317755__hygCtx__hyg4
+                     (g x') y))
+               (f x)))
+         (f y)
+Prosa_Util_Bigcat_bigcat_partitions
+     : forall (X Y : Type)
+         (inst____at___Prosa_Util_Bigcat3424149449__hygCtx__hyg4 : 
+          DecidableEq X)
+         (inst____at___Prosa_Util_Bigcat3424149449__hygCtx__hyg7 : 
+          DecidableEq Y)
+         (xs : List X) (ys : List Y) (P : X -> Bool) 
+         (xToY : X -> Y),
+       (forall x : X,
+        Membership_mem X (List X) (List_instMembership X) xs x ->
+        eq (P x) Bool_true ->
+        Membership_mem Y (List Y) (List_instMembership Y) ys (xToY x)) ->
+       forall j : X,
+       eq
+         (Decidable_decide
+            (Membership_mem X (List X) (List_instMembership X)
+               (List_filter X P xs) j)
+            (List_instDecidableMemOfLawfulBEq X
+               (instBEqOfDecidableEq X
+                  inst____at___Prosa_Util_Bigcat3424149449__hygCtx__hyg4)
+               (instLawfulBEq X
+                  inst____at___Prosa_Util_Bigcat3424149449__hygCtx__hyg4)
+               j (List_filter X P xs)))
+         (Decidable_decide
+            (Membership_mem X (List X) (List_instMembership X)
+               (Prosa_Util_Bigcat_bigCatSeqAll Y X ys
+                  (fun y : Y =>
+                   List_filter X
+                     (fun x : X =>
+                      Bool_and (P x)
+                        (Decidable_decide (eq (xToY x) y)
+                           (inst____at___Prosa_Util_Bigcat3424149449__hygCtx__hyg7
+                              (xToY x) y)))
+                     xs))
+               j)
+            (List_instDecidableMemOfLawfulBEq X
+               (instBEqOfDecidableEq X
+                  inst____at___Prosa_Util_Bigcat3424149449__hygCtx__hyg4)
+               (instLawfulBEq X
+                  inst____at___Prosa_Util_Bigcat3424149449__hygCtx__hyg4)
+               j
+               (Prosa_Util_Bigcat_bigCatSeqAll Y X ys
+                  (fun y : Y =>
+                   List_filter X
+                     (fun x : X =>
+                      Bool_and (P x)
+                        (Decidable_decide (eq (xToY x) y)
+                           (inst____at___Prosa_Util_Bigcat3424149449__hygCtx__hyg7
+                              (xToY x) y)))
+                     xs))))
+Prosa_Util_Notation_bigCat
+     : forall _UU03b1_ : Type,
+       Nat -> Nat -> (Nat -> List _UU03b1_) -> List _UU03b1_
+Prosa_Util_Bigcat_bigCatFin
+     : forall (_UU03b1_ : Type) (n : Nat),
+       (Fin n -> List _UU03b1_) -> List _UU03b1_
+Prosa_Util_Bigcat_bigCatSeq
+     : forall _UU03b1_ _UU03b2_ : Type,
+       List _UU03b1_ ->
+       (_UU03b1_ -> Bool) -> (_UU03b1_ -> List _UU03b2_) -> List _UU03b2_
+Prosa_Util_Bigcat_bigCatSeqAll
+     : forall _UU03b1_ _UU03b2_ : Type,
+       List _UU03b1_ -> (_UU03b1_ -> List _UU03b2_) -> List _UU03b2_
+Prosa_Validation_BigcatInterface_production_bigCat_eq
+     : forall (T : Type) (m n : Nat) (f : Nat -> List T),
+       eq (Prosa_Util_Notation_bigCat T m n f)
+         (List_flatten T
+            (List_map_inst1 Nat (List T)
+               (fun i : Nat =>
+                f
+                  (HAdd_hAdd_inst7 Nat Nat Nat
+                     (instHAdd_inst1 Nat instAddNat) m i))
+               (List_range
+                  (HSub_hSub_inst7 Nat Nat Nat
+                     (instHSub_inst1 Nat instSubNat) n m))))
+Prosa_Validation_BigcatInterface_production_bigCatFin_eq
+     : forall (T : Type) (n : Nat) (f : Fin n -> List T),
+       eq (Prosa_Util_Bigcat_bigCatFin T n f)
+         (List_flatten T (List_ofFn (List T) n f))
+Prosa_Validation_BigcatInterface_production_bigCatSeq_eq
+     : forall (X Y : Type) (xs : List X) (p : X -> Bool) (f : X -> List Y),
+       eq (Prosa_Util_Bigcat_bigCatSeq X Y xs p f)
+         (List_flatMap X Y f (List_filter X p xs))
+Prosa_Validation_BigcatInterface_production_bigCatSeqAll_eq
+     : forall (X Y : Type) (xs : List X) (f : X -> List Y),
+       eq (Prosa_Util_Bigcat_bigCatSeqAll X Y xs f) (List_flatMap X Y f xs)
+Prosa_Validation_BigcatInterface_production_range_zero
+     : eq (List_range (OfNat_ofNat_inst1 Nat 0 (instOfNatNat 0)))
+         (List_nil_inst1 Nat)
+Prosa_Validation_BigcatInterface_production_map_nil
+     : forall (A B : Type) (f : A -> B),
+       eq (List_map A B f (List_nil A)) (List_nil B)
+Prosa_Validation_BigcatInterface_production_map_cons
+     : forall (A B : Type) (f : A -> B) (x : A) (xs : List A),
+       eq (List_map A B f (List_cons A x xs))
+         (List_cons B (f x) (List_map A B f xs))
+Prosa_Validation_BigcatInterface_production_flatten_nil
+     : forall A : Type, eq (List_flatten A (List_nil (List A))) (List_nil A)
+Prosa_Validation_BigcatInterface_production_flatten_cons
+     : forall (A : Type) (xs : List A) (xss : List (List A)),
+       eq (List_flatten A (List_cons (List A) xs xss))
+         (HAppend_hAppend (List A) (List A) (List A)
+            (instHAppendOfAppend (List A) (List_instAppend A)) xs
+            (List_flatten A xss))
+Prosa_Validation_BigcatInterface_production_flatMap_nil
+     : forall (A B : Type) (f : A -> List B),
+       eq (List_flatMap A B f (List_nil A)) (List_nil B)
+Prosa_Validation_BigcatInterface_production_flatMap_cons
+     : forall (A B : Type) (f : A -> List B) (x : A) (xs : List A),
+       eq (List_flatMap A B f (List_cons A x xs))
+         (HAppend_hAppend (List B) (List B) (List B)
+            (instHAppendOfAppend (List B) (List_instAppend B)) 
+            (f x) (List_flatMap A B f xs))
+Prosa_Validation_BigcatInterface_production_filter_nil
+     : forall (A : Type) (p : A -> Bool),
+       eq (List_filter A p (List_nil A)) (List_nil A)
+Prosa_Validation_BigcatInterface_production_filter_cons
+     : forall (A : Type) (p : A -> Bool) (x : A) (xs : List A),
+       eq (List_filter A p (List_cons A x xs))
+         (Prosa_Validation_BigcatInterface_production_filter_cons_match_1
+            (fun _ : Bool => List A) (p x)
+            (fun _ : Unit => List_cons A x (List_filter A p xs))
+            (fun _ : Unit => List_filter A p xs))
+Prosa_Validation_BigcatInterface_production_length_nil
+     : forall A : Type,
+       eq (List_length A (List_nil A))
+         (OfNat_ofNat_inst1 Nat 0 (instOfNatNat 0))
+Prosa_Validation_BigcatInterface_production_length_cons
+     : forall (A : Type) (x : A) (xs : List A),
+       eq (List_length A (List_cons A x xs)) (Nat_succ (List_length A xs))
+List
+     : Type -> Type
+List_inst1
+     : Type -> Type
+List_filter
+     : forall _UU03b1_ : Type,
+       (_UU03b1_ -> Bool) -> List _UU03b1_ -> List _UU03b1_
+List_flatMap
+     : forall _UU03b1_ _UU03b2_ : Type,
+       (_UU03b1_ -> List _UU03b2_) -> List _UU03b1_ -> List _UU03b2_
+List_flatten
+     : forall _UU03b1_ : Type, List (List _UU03b1_) -> List _UU03b1_
+List_Nodup
+     : forall _UU03b1_ : Type, List _UU03b1_ -> SProp
+Fin_val
+     : forall n : Nat, Fin n -> Nat
+List_ofFn
+     : forall (_UU03b1_ : Type) (n : Nat),
+       (Fin n -> _UU03b1_) -> List _UU03b1_
+Fin
+     : Nat -> Set
+Record Fin@{} (n : Nat) : Set := Fin_mk
+  { val : Nat;  isLt : Nat_succ val <= n }.
+
+Fin has primitive projections with eta conversion.
+Arguments Fin n%_Nat_scope
+Arguments Fin_mk (n val)%_Nat_scope isLt
+Arguments val n%_Nat_scope f
+Arguments isLt n%_Nat_scope f
+Prosa_Util_Bigcat_mem_bigcat_ord
+     : forall (T : Type) (_ : DecidableEq T) (x : T) 
+         (n : Nat) (j : Fin n) (g : forall _ : Fin n, List T)
+         (_ : LT_lt_inst1 Nat instLTNat (Fin_val n j) n)
+         (_ : Membership_mem T (List T) (List_instMembership T) (g j) x),
+       Membership_mem T (List T) (List_instMembership T)
+         (Prosa_Util_Bigcat_bigCatFin T n g) x
+List_range'@{} =
+fun
+  x____at___Init_Data_List_Basic527151790__hygCtx__hyg14
+   x____at___Init_Data_List_Basic527151790__hygCtx__hyg15
+   x____at___Init_Data_List_Basic527151790__hygCtx__hyg16 : Nat =>
+Nat_brecOn (fun _ : Nat => Nat -> Nat -> List_inst1 Nat)
+  x____at___Init_Data_List_Basic527151790__hygCtx__hyg15 List_range'__f
+  x____at___Init_Data_List_Basic527151790__hygCtx__hyg14
+  x____at___Init_Data_List_Basic527151790__hygCtx__hyg16
+     : Nat ->
+       Nat ->
+       optParam Nat (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1)) ->
+       List_inst1 Nat
+
+Arguments List_range' (start len)%_Nat_scope step
+List_range@{} =
+fun n : Nat => List_range_loop n (List_nil_inst1 Nat)
+     : Nat -> List_inst1 Nat
+
+Arguments List_range n%_Nat_scope
+List_flatMap@{u v Lean.u+1.0 Lean.max__u+1_v+1.0 Lean.v+1.0
+Lean.max__u+2_v+2.0 Lean.v+2.0} =
+fun (_UU03b1_ _UU03b2_ : Type) (b : _UU03b1_ -> List _UU03b2_)
+  (as : List _UU03b1_) =>
+List_flatten _UU03b2_ (List_map _UU03b1_ (List _UU03b2_) b as)
+     : forall _UU03b1_ _UU03b2_ : Type,
+       (_UU03b1_ -> List _UU03b2_) -> List _UU03b1_ -> List _UU03b2_
+
+Arguments List_flatMap (_UU03b1_ _UU03b2_)%_type_scope b%_function_scope as
+List_filter@{u Lean.u+1.0 Lean.u+2.0} =
+fun (_UU03b1_ : Type) (p : _UU03b1_ -> Bool)
+  (x____at___Init_Data_List_Basic2342288710__hygCtx__hyg13 : List _UU03b1_) =>
+List_brecOn _UU03b1_ (fun _ : List _UU03b1_ => List _UU03b1_)
+  x____at___Init_Data_List_Basic2342288710__hygCtx__hyg13
+  (List_filter__f _UU03b1_ p)
+     : forall _UU03b1_ : Type,
+       (_UU03b1_ -> Bool) -> List _UU03b1_ -> List _UU03b1_
+
+Arguments List_filter _UU03b1_%_type_scope p%_function_scope tail
+Record And@{} (a a0 : SProp) : SProp := And_intro { left : a;  right : a0 }.
+
+And has primitive projections with eta conversion.
+Arguments And (a a0)%_type_scope
+Arguments And_intro (a a0)%_type_scope left right
+Arguments left (a a0)%_type_scope a
+Arguments right (a a0)%_type_scope a
+And_intro
+     : forall a a0 : SProp, a -> a0 -> And a a0
+And_casesOn
+     : forall (a b : SProp) (motive : And a b -> Type) (t : And a b),
+       (forall (left : a) (right : b),
+        motive {| left := left; right := right |}) ->
+       motive t
+File "./ImportedBigcatTypeProbe.v", line 59, characters 6-29:
+Error: The reference ImportedBigcat.And_left was not found in the current
+environment. Did you mean ImportedBigcat.And_recl, ImportedBigcat.And_right,
+ImportedBigcat.And_indl, ImportedBigcat.Add_recl, ImportedBigcat.Nat_lt,
+ImportedBigcat.LT_lt, ImportedBigcat.LE_le, ImportedBigcat.HEq_refl,
+ImportedBigcat.HAdd_recl, ImportedBigcat.Add_mk, ImportedBigcat.Add_inst1,
+ImportedBigcat.Add_indl, ImportedBigcat.Add_add, ImportedBigcat.snd0,
+ImportedBigcat.snd, ImportedBigcat.propext, ImportedBigcat.lt,
+ImportedBigcat.le0, ImportedBigcat.le, ImportedBigcat.id_inst1,
+ImportedBigcat.eq_self, ImportedBigcat.dite, ImportedBigcat.Unit_unit,
+ImportedBigcat.Unit, ImportedBigcat.Sub_recl, ImportedBigcat.Nat_recl,
+ImportedBigcat.Nat_beq, ImportedBigcat.Mul_recl, ImportedBigcat.List_rect,
+ImportedBigcat.LT_recl, ImportedBigcat.LE_recl, ImportedBigcat.Iff_recl,
+ImportedBigcat.HEq_recl, ImportedBigcat.HAdd_mk, ImportedBigcat.HAdd_inst7,
+ImportedBigcat.HAdd_indl, ImportedBigcat.HAdd_hAdd, ImportedBigcat.Fin_recl,
+ImportedBigcat.Eq_recl, ImportedBigcat.BEq_rfl, ImportedBigcat.BEq_recl,
+ImportedBigcat.BEq_beq, ImportedBigcat.Append_recl, ImportedBigcat.Append,
+ImportedBigcat.And_casesOn, ImportedBigcat.Add, ImportedBigcat.rfl_inst1,
+ImportedBigcat.rfl0, ImportedBigcat.rfl, ImportedBigcat.ofNat,
+ImportedBigcat.mul0, ImportedBigcat.mul, ImportedBigcat.mem,
+ImportedBigcat.lt0, ImportedBigcat.instMulNat, ImportedBigcat.instLTNat,
+ImportedBigcat.instLENat, ImportedBigcat.instHSub, ImportedBigcat.instHMul,
+ImportedBigcat.instHAdd, ImportedBigcat.id, ImportedBigcat.hMul0,
+ImportedBigcat.hMul, ImportedBigcat.hAppend, ImportedBigcat.hAdd0,
+ImportedBigcat.hAdd, ImportedBigcat.fst, ImportedBigcat.eq_true,
+ImportedBigcat.cast, ImportedBigcat.beq0, ImportedBigcat.beq,
+ImportedBigcat.append, ImportedBigcat.add0, ImportedBigcat.add,
+ImportedBigcat.True_recl, ImportedBigcat.True, ImportedBigcat.Sub_sub,
+ImportedBigcat.Sub_mk, ImportedBigcat.Sub_inst1, ImportedBigcat.Sub_indl,
+ImportedBigcat.ReflBEq, ImportedBigcat.PUnit_unit, ImportedBigcat.PUnit_recl,
+ImportedBigcat.PUnit, ImportedBigcat.PProd_recl, ImportedBigcat.OfNat,
+ImportedBigcat.Not, ImportedBigcat.Ne, ImportedBigcat.Nat_sub,
+ImportedBigcat.Nat_pred, ImportedBigcat.Nat_le_refl,
+ImportedBigcat.Nat_le_of_lt, ImportedBigcat.Nat_indl,
+ImportedBigcat.Nat_below, ImportedBigcat.Mul_mul, ImportedBigcat.Mul_mk,
+ImportedBigcat.Mul_inst1, ImportedBigcat.Mul_indl, ImportedBigcat.Mul,
+ImportedBigcat.List_recl, ImportedBigcat.List_rec,
+ImportedBigcat.List_length, ImportedBigcat.List_elem,
+ImportedBigcat.List_Mem, ImportedBigcat.List, ImportedBigcat.LT_mk,
+ImportedBigcat.LT_inst1, ImportedBigcat.LT_indl, ImportedBigcat.LE_mk,
+ImportedBigcat.LE_inst1, ImportedBigcat.LE_indl, ImportedBigcat.Iff_mpr,
+ImportedBigcat.Iff_mp, ImportedBigcat.Iff_indl, ImportedBigcat.Iff,
+ImportedBigcat.HSub_recl, ImportedBigcat.HMul_recl, ImportedBigcat.HMul_mk,
+ImportedBigcat.HMul, ImportedBigcat.HEq_inst1, ImportedBigcat.HEq_indl,
+ImportedBigcat.HAppend_recl, ImportedBigcat.HAppend, ImportedBigcat.HAdd,
+ImportedBigcat.Fin_val, ImportedBigcat.Fin_indl, ImportedBigcat.False,
+ImportedBigcat.Eq_symm, ImportedBigcat.Eq_subst, ImportedBigcat.Eq_ndrec,
+ImportedBigcat.Eq_mpr, ImportedBigcat.Eq_mp, ImportedBigcat.Eq_indl,
+ImportedBigcat.Bool_recl, ImportedBigcat.Bool_and, ImportedBigcat.Bool,
+ImportedBigcat.BEq_mk, ImportedBigcat.BEq_inst1, ImportedBigcat.BEq_indl,
+ImportedBigcat.Append_mk, ImportedBigcat.Append_inst1 or
+ImportedBigcat.Append_indl?
+

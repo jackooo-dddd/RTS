@@ -1,0 +1,414 @@
+Prosa_Util_Sum_sumSeq
+     : forall I : Type, List I -> (I -> Nat) -> Nat
+Prosa_Util_Sum_sumFiltered
+     : forall I : Type, List I -> (I -> Bool) -> (I -> Nat) -> Nat
+Prosa_Util_Sum_maxFiltered
+     : forall I : Type, List I -> (I -> Bool) -> (I -> Nat) -> Nat
+Prosa_Util_Sum_subseqb
+     : forall I : Type, DecidableEq I -> List I -> List I -> Bool
+Prosa_Util_Sum_sum_nat_eq0_nat
+     : forall I : Type,
+       DecidableEq I ->
+       forall (r : List I) (P : I -> Bool) (F : I -> Nat),
+       eq
+         (Decidable_decide
+            (eq (Prosa_Util_Sum_sumFiltered I r P F)
+               (OfNat_ofNat_inst1 Nat 0 (instOfNatNat 0)))
+            (instDecidableEqNat (Prosa_Util_Sum_sumFiltered I r P F)
+               (OfNat_ofNat_inst1 Nat 0 (instOfNatNat 0))))
+         (List_all I r
+            (fun x : I =>
+             Bool_or (Bool_not (P x))
+               (Decidable_decide
+                  (eq (F x) (OfNat_ofNat_inst1 Nat 0 (instOfNatNat 0)))
+                  (instDecidableEqNat (F x)
+                     (OfNat_ofNat_inst1 Nat 0 (instOfNatNat 0))))))
+Prosa_Util_Sum_sum_nat_gt0
+     : forall I : Type,
+       DecidableEq I ->
+       forall (r : List I) (P : I -> Bool) (F : I -> Nat),
+       eq
+         (Decidable_decide
+            (LT_lt_inst1 Nat instLTNat
+               (OfNat_ofNat_inst1 Nat 0 (instOfNatNat 0))
+               (Prosa_Util_Sum_sumFiltered I r P F))
+            (Nat_decLt (OfNat_ofNat_inst1 Nat 0 (instOfNatNat 0))
+               (Prosa_Util_Sum_sumFiltered I r P F)))
+         (List_any I r
+            (fun x : I =>
+             Bool_and (P x)
+               (Decidable_decide
+                  (LT_lt_inst1 Nat instLTNat
+                     (OfNat_ofNat_inst1 Nat 0 (instOfNatNat 0)) 
+                     (F x))
+                  (Nat_decLt (OfNat_ofNat_inst1 Nat 0 (instOfNatNat 0)) (F x)))))
+Prosa_Util_Sum_sum_majorant_constant
+     : forall I : Type,
+       DecidableEq I ->
+       forall (r : List I) (P : I -> Bool) (F : I -> Nat) (c : Nat),
+       (forall a : I,
+        Membership_mem I (List I) (List_instMembership I) r a ->
+        eq (P a) Bool_true -> LE_le_inst1 Nat instLENat (F a) c) ->
+       LE_le_inst1 Nat instLENat (Prosa_Util_Sum_sumFiltered I r P F)
+         (HMul_hMul_inst7 Nat Nat Nat (instHMul_inst1 Nat instMulNat) c
+            (List_length I (List_filter I P r)))
+Prosa_Util_Sum_sum_split_exhaustive_mutually_exclusive_preds
+     : forall I : Type,
+       DecidableEq I ->
+       forall (r : List I) (P : I -> Bool) (F : I -> Nat) (Q R : I -> Bool),
+       (forall x : I, eq (P x) (Bool_or (Q x) (R x))) ->
+       (forall x : I,
+        eq
+          (Bool_not
+             (Decidable_decide (eq (Bool_and (Q x) (R x)) Bool_true)
+                (instDecidableEqBool (Bool_and (Q x) (R x)) Bool_true)))
+          Bool_true) ->
+       eq (Prosa_Util_Sum_sumFiltered I r P F)
+         (HAdd_hAdd_inst7 Nat Nat Nat (instHAdd_inst1 Nat instAddNat)
+            (Prosa_Util_Sum_sumFiltered I r Q F)
+            (Prosa_Util_Sum_sumFiltered I r R F))
+Prosa_Util_Sum_bigmax_leq_sum
+     : forall I : Type,
+       DecidableEq I ->
+       forall (r : List I) (P : I -> Bool) (F : I -> Nat),
+       LE_le_inst1 Nat instLENat (Prosa_Util_Sum_maxFiltered I r P F)
+         (Prosa_Util_Sum_sumFiltered I r P F)
+Prosa_Util_Sum_sum_le_subseq
+     : forall (I : Type)
+         (inst____at___Prosa_Util_Sum1937026005__hygCtx__hyg3 : 
+          DecidableEq I)
+         (P : I -> Bool) (F : I -> Nat) (r1 r2 : List I),
+       eq
+         (Prosa_Util_Sum_subseqb I
+            inst____at___Prosa_Util_Sum1937026005__hygCtx__hyg3 r1 r2)
+         Bool_true ->
+       LE_le_inst1 Nat instLENat (Prosa_Util_Sum_sumFiltered I r1 P F)
+         (Prosa_Util_Sum_sumFiltered I r2 P F)
+Prosa_Util_Sum_leq_sum_seq
+     : forall I : Type,
+       DecidableEq I ->
+       forall (r : List I) (P : I -> Bool) (E1 E2 : I -> Nat),
+       (forall i : I,
+        Membership_mem I (List I) (List_instMembership I) r i ->
+        eq (P i) Bool_true -> LE_le_inst1 Nat instLENat (E1 i) (E2 i)) ->
+       LE_le_inst1 Nat instLENat (Prosa_Util_Sum_sumFiltered I r P E1)
+         (Prosa_Util_Sum_sumFiltered I r P E2)
+Prosa_Util_Sum_eq_sum_seq
+     : forall I : Type,
+       DecidableEq I ->
+       forall (r : List I) (P : I -> Bool) (E1 E2 : I -> Nat),
+       (forall i : I,
+        Membership_mem I (List I) (List_instMembership I) r i ->
+        eq (P i) Bool_true ->
+        eq
+          (Decidable_decide (eq (E1 i) (E2 i))
+             (instDecidableEqNat (E1 i) (E2 i)))
+          Bool_true) ->
+       eq (Prosa_Util_Sum_sumFiltered I r P E1)
+         (Prosa_Util_Sum_sumFiltered I r P E2)
+Prosa_Util_Sum_leq_sum_seq_pred
+     : forall I : Type,
+       DecidableEq I ->
+       forall (r : List I) (E : I -> Nat) (P1 P2 : I -> Bool),
+       (forall i : I,
+        Membership_mem I (List I) (List_instMembership I) r i ->
+        eq (P1 i) Bool_true -> eq (P2 i) Bool_true) ->
+       LE_le_inst1 Nat instLENat (Prosa_Util_Sum_sumFiltered I r P1 E)
+         (Prosa_Util_Sum_sumFiltered I r P2 E)
+Prosa_Util_Sum_leq_sum_subseq
+     : forall (I : Type)
+         (inst____at___Prosa_Util_Sum2654039778__hygCtx__hyg3 : 
+          DecidableEq I)
+         (r r' : List I) (P : I -> Bool) (F : I -> Nat),
+       eq
+         (Prosa_Util_Sum_subseqb I
+            inst____at___Prosa_Util_Sum2654039778__hygCtx__hyg3 r r')
+         Bool_true ->
+       LE_le_inst1 Nat instLENat (Prosa_Util_Sum_sumFiltered I r P F)
+         (Prosa_Util_Sum_sumFiltered I r' P F)
+Prosa_Util_Sum_leq_sum_sub_uniq
+     : forall I : Type,
+       DecidableEq I ->
+       forall (r : List I) (F : I -> Nat) (rs : List I),
+       List_Nodup I r ->
+       (forall x : I,
+        Membership_mem I (List I) (List_instMembership I) r x ->
+        Membership_mem I (List I) (List_instMembership I) rs x) ->
+       LE_le_inst1 Nat instLENat (Prosa_Util_Sum_sumSeq I r F)
+         (Prosa_Util_Sum_sumSeq I rs F)
+Prosa_Util_Sum_ltn_sum_leq_seq
+     : forall I : Type,
+       DecidableEq I ->
+       forall (r : List I) (P : I -> Bool) (E1 E2 : I -> Nat) (j : I),
+       Membership_mem I (List I) (List_instMembership I) r j ->
+       eq (P j) Bool_true ->
+       LT_lt_inst1 Nat instLTNat (E1 j) (E2 j) ->
+       (forall i : I,
+        Membership_mem I (List I) (List_instMembership I) r i ->
+        eq (P i) Bool_true -> LE_le_inst1 Nat instLENat (E1 i) (E2 i)) ->
+       LT_lt_inst1 Nat instLTNat (Prosa_Util_Sum_sumFiltered I r P E1)
+         (Prosa_Util_Sum_sumFiltered I r P E2)
+Prosa_Util_Sum_eq_sum_leq_seq
+     : forall I : Type,
+       DecidableEq I ->
+       forall (r : List I) (P : I -> Bool) (E1 E2 : I -> Nat),
+       (forall i : I,
+        Membership_mem I (List I) (List_instMembership I) r i ->
+        eq (P i) Bool_true -> LE_le_inst1 Nat instLENat (E1 i) (E2 i)) ->
+       eq
+         (Decidable_decide
+            (eq (Prosa_Util_Sum_sumFiltered I r P E1)
+               (Prosa_Util_Sum_sumFiltered I r P E2))
+            (instDecidableEqNat (Prosa_Util_Sum_sumFiltered I r P E1)
+               (Prosa_Util_Sum_sumFiltered I r P E2)))
+         (List_all I r
+            (fun x : I =>
+             Bool_or (Bool_not (P x))
+               (Decidable_decide (eq (E1 x) (E2 x))
+                  (instDecidableEqNat (E1 x) (E2 x)))))
+Prosa_Util_Sum_sumSeq@{u_1 Lean.u_1+1.0 Lean.u_1+2.0} =
+fun (I : Type) (r : List I) (F : I -> Nat) =>
+List_sum_inst1 Nat instAddNat
+  (MulZeroClass_toZero_inst1 Nat Nat_instMulZeroClass)
+  (List_map_inst2 I Nat F r)
+     : forall I : Type, List I -> (I -> Nat) -> Nat
+
+Arguments Prosa_Util_Sum_sumSeq I%_type_scope r F%_function_scope
+Prosa_Util_Sum_sumFiltered@{u_1 Lean.u_1+1.0 Lean.u_1+2.0} =
+fun (I : Type) (r : List I) (P : I -> Bool) (F : I -> Nat) =>
+List_sum_inst1 Nat instAddNat
+  (MulZeroClass_toZero_inst1 Nat Nat_instMulZeroClass)
+  (List_map_inst2 I Nat F (List_filter I P r))
+     : forall I : Type, List I -> (I -> Bool) -> (I -> Nat) -> Nat
+
+Arguments Prosa_Util_Sum_sumFiltered I%_type_scope r (P F)%_function_scope
+Prosa_Util_Sum_maxFiltered@{u_1 Lean.u_1+1.0 Lean.u_1+2.0} =
+fun (I : Type) (r : List I) (P : I -> Bool) (F : I -> Nat) =>
+List_foldr_inst3 Nat Nat (Max_max_inst1 Nat Nat_instMax)
+  (OfNat_ofNat_inst1 Nat 0 (instOfNatNat 0))
+  (List_map_inst2 I Nat F (List_filter I P r))
+     : forall I : Type, List I -> (I -> Bool) -> (I -> Nat) -> Nat
+
+Arguments Prosa_Util_Sum_maxFiltered I%_type_scope r (P F)%_function_scope
+Prosa_Util_Sum_subseqb@{u_1 Lean.u_1+1.0 Lean.u_1+2.0} =
+fun (I : Type)
+  (inst____at___Prosa_Util_Sum2449666367__hygCtx__hyg3 : DecidableEq I)
+  (xs x____at___Prosa_Util_Sum2449666367__hygCtx__hyg12 : List I) =>
+List_brecOn I (fun _ : List I => List I -> Bool)
+  x____at___Prosa_Util_Sum2449666367__hygCtx__hyg12
+  (Prosa_Util_Sum_subseqb__f I
+     inst____at___Prosa_Util_Sum2449666367__hygCtx__hyg3)
+  xs
+     : forall I : Type, DecidableEq I -> List I -> List I -> Bool
+
+Arguments Prosa_Util_Sum_subseqb I%_type_scope
+  inst____at___Prosa_Util_Sum2449666367__hygCtx__hyg3 
+  xs a____at____internal__hyg0
+*** [ Prosa_Util_Sum_sum_nat_eq0_nat@{u_1 Lean.u_1+1.0 Lean.u_1+2.0} :
+forall I : Type,
+DecidableEq I ->
+forall (r : List I) (P : I -> Bool) (F : I -> Nat),
+eq
+  (Decidable_decide
+     (eq (Prosa_Util_Sum_sumFiltered I r P F)
+        (OfNat_ofNat_inst1 Nat 0 (instOfNatNat 0)))
+     (instDecidableEqNat (Prosa_Util_Sum_sumFiltered I r P F)
+        (OfNat_ofNat_inst1 Nat 0 (instOfNatNat 0))))
+  (List_all I r
+     (fun x : I =>
+      Bool_or (Bool_not (P x))
+        (Decidable_decide
+           (eq (F x) (OfNat_ofNat_inst1 Nat 0 (instOfNatNat 0)))
+           (instDecidableEqNat (F x)
+              (OfNat_ofNat_inst1 Nat 0 (instOfNatNat 0)))))) ]
+
+Arguments Prosa_Util_Sum_sum_nat_eq0_nat I%_type_scope
+  inst____at___Prosa_Util_Sum2704348948__hygCtx__hyg3 
+  r (P F)%_function_scope
+*** [ Prosa_Util_Sum_sum_nat_gt0@{u_1 Lean.u_1+1.0 Lean.u_1+2.0} :
+forall I : Type,
+DecidableEq I ->
+forall (r : List I) (P : I -> Bool) (F : I -> Nat),
+eq
+  (Decidable_decide
+     (LT_lt_inst1 Nat instLTNat (OfNat_ofNat_inst1 Nat 0 (instOfNatNat 0))
+        (Prosa_Util_Sum_sumFiltered I r P F))
+     (Nat_decLt (OfNat_ofNat_inst1 Nat 0 (instOfNatNat 0))
+        (Prosa_Util_Sum_sumFiltered I r P F)))
+  (List_any I r
+     (fun x : I =>
+      Bool_and (P x)
+        (Decidable_decide
+           (LT_lt_inst1 Nat instLTNat
+              (OfNat_ofNat_inst1 Nat 0 (instOfNatNat 0)) 
+              (F x))
+           (Nat_decLt (OfNat_ofNat_inst1 Nat 0 (instOfNatNat 0)) (F x))))) ]
+
+Arguments Prosa_Util_Sum_sum_nat_gt0 I%_type_scope
+  inst____at___Prosa_Util_Sum1756397210__hygCtx__hyg3 
+  r (P F)%_function_scope
+*** [ Prosa_Util_Sum_sum_majorant_constant@{u_1 Lean.u_1+1.0 Lean.u_1+2.0} :
+forall I : Type,
+DecidableEq I ->
+forall (r : List I) (P : I -> Bool) (F : I -> Nat) (c : Nat),
+(forall a : I,
+ Membership_mem I (List I) (List_instMembership I) r a ->
+ eq (P a) Bool_true -> LE_le_inst1 Nat instLENat (F a) c) ->
+LE_le_inst1 Nat instLENat (Prosa_Util_Sum_sumFiltered I r P F)
+  (HMul_hMul_inst7 Nat Nat Nat (instHMul_inst1 Nat instMulNat) c
+     (List_length I (List_filter I P r))) ]
+
+Arguments Prosa_Util_Sum_sum_majorant_constant I%_type_scope
+  inst____at___Prosa_Util_Sum1572467168__hygCtx__hyg3 
+  r (P F)%_function_scope c%_Nat_scope h%_function_scope
+*** [ Prosa_Util_Sum_sum_split_exhaustive_mutually_exclusive_preds@{u_1
+Lean.u_1+1.0 Lean.u_1+2.0} :
+forall I : Type,
+DecidableEq I ->
+forall (r : List I) (P : I -> Bool) (F : I -> Nat) (Q R : I -> Bool),
+(forall x : I, eq (P x) (Bool_or (Q x) (R x))) ->
+(forall x : I,
+ eq
+   (Bool_not
+      (Decidable_decide (eq (Bool_and (Q x) (R x)) Bool_true)
+         (instDecidableEqBool (Bool_and (Q x) (R x)) Bool_true)))
+   Bool_true) ->
+eq (Prosa_Util_Sum_sumFiltered I r P F)
+  (HAdd_hAdd_inst7 Nat Nat Nat (instHAdd_inst1 Nat instAddNat)
+     (Prosa_Util_Sum_sumFiltered I r Q F)
+     (Prosa_Util_Sum_sumFiltered I r R F)) ]
+
+Arguments Prosa_Util_Sum_sum_split_exhaustive_mutually_exclusive_preds
+  I%_type_scope inst____at___Prosa_Util_Sum259654701__hygCtx__hyg3 
+  r (P F Q R hexhaustive hexclusive)%_function_scope
+*** [ Prosa_Util_Sum_bigmax_leq_sum@{u_1 Lean.u_1+1.0 Lean.u_1+2.0} :
+forall I : Type,
+DecidableEq I ->
+forall (r : List I) (P : I -> Bool) (F : I -> Nat),
+LE_le_inst1 Nat instLENat (Prosa_Util_Sum_maxFiltered I r P F)
+  (Prosa_Util_Sum_sumFiltered I r P F) ]
+
+Arguments Prosa_Util_Sum_bigmax_leq_sum I%_type_scope
+  inst____at___Prosa_Util_Sum3558853454__hygCtx__hyg3 
+  r (P F)%_function_scope
+*** [ Prosa_Util_Sum_sum_le_subseq@{u_1 Lean.u_1+1.0 Lean.u_1+2.0} :
+forall (I : Type)
+  (inst____at___Prosa_Util_Sum1937026005__hygCtx__hyg3 : DecidableEq I)
+  (P : I -> Bool) (F : I -> Nat) (r1 r2 : List I),
+eq
+  (Prosa_Util_Sum_subseqb I
+     inst____at___Prosa_Util_Sum1937026005__hygCtx__hyg3 r1 r2)
+  Bool_true ->
+LE_le_inst1 Nat instLENat (Prosa_Util_Sum_sumFiltered I r1 P F)
+  (Prosa_Util_Sum_sumFiltered I r2 P F) ]
+
+Arguments Prosa_Util_Sum_sum_le_subseq I%_type_scope
+  inst____at___Prosa_Util_Sum1937026005__hygCtx__hyg3 
+  (P F)%_function_scope r1 r2 hsub
+*** [ Prosa_Util_Sum_leq_sum_seq@{u_1 Lean.u_1+1.0 Lean.u_1+2.0} :
+forall I : Type,
+DecidableEq I ->
+forall (r : List I) (P : I -> Bool) (E1 E2 : I -> Nat),
+(forall i : I,
+ Membership_mem I (List I) (List_instMembership I) r i ->
+ eq (P i) Bool_true -> LE_le_inst1 Nat instLENat (E1 i) (E2 i)) ->
+LE_le_inst1 Nat instLENat (Prosa_Util_Sum_sumFiltered I r P E1)
+  (Prosa_Util_Sum_sumFiltered I r P E2) ]
+
+Arguments Prosa_Util_Sum_leq_sum_seq I%_type_scope
+  inst____at___Prosa_Util_Sum3735218082__hygCtx__hyg3 
+  r (P E1 E2 h)%_function_scope
+*** [ Prosa_Util_Sum_eq_sum_seq@{u_1 Lean.u_1+1.0 Lean.u_1+2.0} :
+forall I : Type,
+DecidableEq I ->
+forall (r : List I) (P : I -> Bool) (E1 E2 : I -> Nat),
+(forall i : I,
+ Membership_mem I (List I) (List_instMembership I) r i ->
+ eq (P i) Bool_true ->
+ eq (Decidable_decide (eq (E1 i) (E2 i)) (instDecidableEqNat (E1 i) (E2 i)))
+   Bool_true) ->
+eq (Prosa_Util_Sum_sumFiltered I r P E1)
+  (Prosa_Util_Sum_sumFiltered I r P E2) ]
+
+Arguments Prosa_Util_Sum_eq_sum_seq I%_type_scope
+  inst____at___Prosa_Util_Sum2593617944__hygCtx__hyg3 
+  r (P E1 E2 h)%_function_scope
+*** [ Prosa_Util_Sum_leq_sum_seq_pred@{u_1 Lean.u_1+1.0 Lean.u_1+2.0} :
+forall I : Type,
+DecidableEq I ->
+forall (r : List I) (E : I -> Nat) (P1 P2 : I -> Bool),
+(forall i : I,
+ Membership_mem I (List I) (List_instMembership I) r i ->
+ eq (P1 i) Bool_true -> eq (P2 i) Bool_true) ->
+LE_le_inst1 Nat instLENat (Prosa_Util_Sum_sumFiltered I r P1 E)
+  (Prosa_Util_Sum_sumFiltered I r P2 E) ]
+
+Arguments Prosa_Util_Sum_leq_sum_seq_pred I%_type_scope
+  inst____at___Prosa_Util_Sum3945581776__hygCtx__hyg3 
+  r (E P1 P2 h)%_function_scope
+*** [ Prosa_Util_Sum_leq_sum_subseq@{u_1 Lean.u_1+1.0 Lean.u_1+2.0} :
+forall (I : Type)
+  (inst____at___Prosa_Util_Sum2654039778__hygCtx__hyg3 : DecidableEq I)
+  (r r' : List I) (P : I -> Bool) (F : I -> Nat),
+eq
+  (Prosa_Util_Sum_subseqb I
+     inst____at___Prosa_Util_Sum2654039778__hygCtx__hyg3 r r')
+  Bool_true ->
+LE_le_inst1 Nat instLENat (Prosa_Util_Sum_sumFiltered I r P F)
+  (Prosa_Util_Sum_sumFiltered I r' P F) ]
+
+Arguments Prosa_Util_Sum_leq_sum_subseq I%_type_scope
+  inst____at___Prosa_Util_Sum2654039778__hygCtx__hyg3 
+  r r' (P F)%_function_scope hsub
+*** [ Prosa_Util_Sum_leq_sum_sub_uniq@{u_1 Lean.u_1+1.0 Lean.u_1+2.0} :
+forall I : Type,
+DecidableEq I ->
+forall (r : List I) (F : I -> Nat) (rs : List I),
+List_Nodup I r ->
+(forall x : I,
+ Membership_mem I (List I) (List_instMembership I) r x ->
+ Membership_mem I (List I) (List_instMembership I) rs x) ->
+LE_le_inst1 Nat instLENat (Prosa_Util_Sum_sumSeq I r F)
+  (Prosa_Util_Sum_sumSeq I rs F) ]
+
+Arguments Prosa_Util_Sum_leq_sum_sub_uniq I%_type_scope
+  inst____at___Prosa_Util_Sum640916918__hygCtx__hyg3 
+  r F%_function_scope rs huniq hsub%_function_scope
+*** [ Prosa_Util_Sum_ltn_sum_leq_seq@{u_1 Lean.u_1+1.0 Lean.u_1+2.0} :
+forall I : Type,
+DecidableEq I ->
+forall (r : List I) (P : I -> Bool) (E1 E2 : I -> Nat) (j : I),
+Membership_mem I (List I) (List_instMembership I) r j ->
+eq (P j) Bool_true ->
+LT_lt_inst1 Nat instLTNat (E1 j) (E2 j) ->
+(forall i : I,
+ Membership_mem I (List I) (List_instMembership I) r i ->
+ eq (P i) Bool_true -> LE_le_inst1 Nat instLENat (E1 i) (E2 i)) ->
+LT_lt_inst1 Nat instLTNat (Prosa_Util_Sum_sumFiltered I r P E1)
+  (Prosa_Util_Sum_sumFiltered I r P E2) ]
+
+Arguments Prosa_Util_Sum_ltn_sum_leq_seq I%_type_scope
+  inst____at___Prosa_Util_Sum2563406884__hygCtx__hyg3 
+  r (P E1 E2)%_function_scope j hj hPj hlt hle%_function_scope
+*** [ Prosa_Util_Sum_eq_sum_leq_seq@{u_1 Lean.u_1+1.0 Lean.u_1+2.0} :
+forall I : Type,
+DecidableEq I ->
+forall (r : List I) (P : I -> Bool) (E1 E2 : I -> Nat),
+(forall i : I,
+ Membership_mem I (List I) (List_instMembership I) r i ->
+ eq (P i) Bool_true -> LE_le_inst1 Nat instLENat (E1 i) (E2 i)) ->
+eq
+  (Decidable_decide
+     (eq (Prosa_Util_Sum_sumFiltered I r P E1)
+        (Prosa_Util_Sum_sumFiltered I r P E2))
+     (instDecidableEqNat (Prosa_Util_Sum_sumFiltered I r P E1)
+        (Prosa_Util_Sum_sumFiltered I r P E2)))
+  (List_all I r
+     (fun x : I =>
+      Bool_or (Bool_not (P x))
+        (Decidable_decide (eq (E1 x) (E2 x))
+           (instDecidableEqNat (E1 x) (E2 x))))) ]
+
+Arguments Prosa_Util_Sum_eq_sum_leq_seq I%_type_scope
+  inst____at___Prosa_Util_Sum3556612700__hygCtx__hyg3 
+  r (P E1 E2 hle)%_function_scope

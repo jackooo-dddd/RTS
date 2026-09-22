@@ -1,0 +1,7 @@
+FREEZE_BEGIN Prosa.Util.Poet.forall_exists_implied_by_forall_in_zip
+@Prosa.Util.Poet.forall_exists_implied_by_forall_in_zip : ∀ {X : Type u_1} {Y : Type u_2} [DecidableEq X]
+  [DecidableEq Y] (PBool : X × Y → Bool) (PProp : X → Y → Prop) (xs : List X),
+  (∀ (x : X) (y : Y), PBool (x, y) = true ↔ PProp x y) →
+    (∃ ys, xs.length = ys.length ∧ (xs.zip ys).all PBool = true) → ∀ (x : X), x ∈ xs → ∃ y, PProp x y
+FREEZE_END Prosa.Util.Poet.forall_exists_implied_by_forall_in_zip
+'Prosa.Util.Poet.forall_exists_implied_by_forall_in_zip' depends on axioms: [propext, Quot.sound]

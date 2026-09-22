@@ -69,7 +69,7 @@ lean -DautoImplicit=false -R "$PROJECT_ROOT" \
   "$fixture_dir/FiniteSumNormalizationGuards.lean" \
   > "$log_dir/normalization_guards.log" 2>&1
 [[ $(rg -c 'KERNEL_NORMALIZATION_GUARD .* proof=Eq.refl' \
-  "$log_dir/normalization_guards.log") == 3 ]]
+  "$log_dir/normalization_guards.log") == 6 ]]
 set +e
 lean -DautoImplicit=false -R "$PROJECT_ROOT" \
   "$fixture_dir/FiniteSumNormalizationBadIdentity.lean" \
@@ -85,19 +85,23 @@ if [[ $negative_rc -eq 0 ]] || \
   exit 1
 fi
 
-theorems=$'Prosa.Util.Sum.sum_of_ones\nProsa.Util.Sum.big_nat_eq0\nProsa.Util.Sum.sum_le_summation_range'
+theorems=$'Prosa.Util.Sum.sum_of_ones\nProsa.Util.Sum.big_nat_eq0\nProsa.Util.Sum.sum_le_summation_range\nProsa.Util.Sum.big_sum_eq_in_eq_sized_intervals\nProsa.Util.Sum.pigeonhole_on_interval\nProsa.Util.Sum.sum_ge_2_nat'
 export LEAN4EXPORT_STATEMENT_ONLY="$theorems"
 export LEAN4EXPORT_BODY_THEOREMS=
 export LEAN4EXPORT_NORMALIZE_THEOREM_TYPES="$theorems"
 export LEAN4EXPORT_NORMALIZE_SUBEXPRESSION_HEADS=Finset.sum
+export LEAN4EXPORT_PRESERVE_REDUCIBLE_THEOREM_TYPES=1
 export LEAN4EXPORT_NORMALIZE_DEFINITION_BODIES=
 export LEAN4EXPORT_DEFINITION_BODY_PROJECTIONS=
 "$EXPORTER_ROOT/.lake/build/bin/lean4export" "Prosa.Util.Sum" -- \
   Prosa.Util.Sum.sum_of_ones \
   Prosa.Util.Sum.big_nat_eq0 \
   Prosa.Util.Sum.sum_le_summation_range \
+  Prosa.Util.Sum.big_sum_eq_in_eq_sized_intervals \
+  Prosa.Util.Sum.pigeonhole_on_interval \
+  Prosa.Util.Sum.sum_ge_2_nat \
   > "$work/imported/SumInterval.out" 2> "$log_dir/export.log"
-[[ $(rg -c 'NORMALIZED_THEOREM_TYPE .* defeq=true' "$log_dir/export.log") == 3 ]]
+[[ $(rg -c 'NORMALIZED_THEOREM_TYPE .* defeq=true' "$log_dir/export.log") == 6 ]]
 
 cp "$SOURCE_ROOT/util/tactics.v" "$work/source/util/tactics.v"
 cp "$SOURCE_ROOT/util/notation.v" "$work/source/util/notation.v"
@@ -115,7 +119,7 @@ python3 "$script_dir/extract_v06_semantic_source.py" \
   --source-root "$SOURCE_ROOT" \
   --source-file util/sum.v \
   --module GeneratedSumIntervalSource \
-  --declarations sum_of_ones,big_nat_eq0,sum_le_summation_range \
+  --declarations sum_of_ones,big_nat_eq0,sum_le_summation_range,big_sum_eq_in_eq_sized_intervals,pigeonhole_on_interval,sum_ge_2_nat \
   --elaborated-evidence \
     "$VALIDATION_ROOT/planning/v06_dependency/declaration_type_evidence.json" \
   --qualified-prefix prosa.util.sum \
@@ -187,5 +191,5 @@ python3 "$script_dir/generate_utility_foundation_results.py" \
 
 (cd "$REPO_ROOT" && git diff --check)
 
-echo "util/sum.v interval cluster: 3 / 25 ACCEPTED"
+echo "util/sum.v interval cluster: 6 / 25 ACCEPTED"
 echo "fresh work directory: $work"

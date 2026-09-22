@@ -1,0 +1,76 @@
+File "./Validation/fixtures/translation_order/BigcatOrdinalProbe.v", line 1, characters 0-86:
+Warning: Notation "_ + _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./Validation/fixtures/translation_order/BigcatOrdinalProbe.v", line 1, characters 0-86:
+Warning: Notation "_ - _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./Validation/fixtures/translation_order/BigcatOrdinalProbe.v", line 1, characters 0-86:
+Warning: Notation "_ <= _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./Validation/fixtures/translation_order/BigcatOrdinalProbe.v", line 1, characters 0-86:
+Warning: Notation "_ < _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./Validation/fixtures/translation_order/BigcatOrdinalProbe.v", line 1, characters 0-86:
+Warning: Notation "_ >= _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./Validation/fixtures/translation_order/BigcatOrdinalProbe.v", line 1, characters 0-86:
+Warning: Notation "_ > _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./Validation/fixtures/translation_order/BigcatOrdinalProbe.v", line 1, characters 0-86:
+Warning: Notation "_ <= _ <= _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./Validation/fixtures/translation_order/BigcatOrdinalProbe.v", line 1, characters 0-86:
+Warning: Notation "_ < _ <= _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./Validation/fixtures/translation_order/BigcatOrdinalProbe.v", line 1, characters 0-86:
+Warning: Notation "_ <= _ < _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./Validation/fixtures/translation_order/BigcatOrdinalProbe.v", line 1, characters 0-86:
+Warning: Notation "_ < _ < _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./Validation/fixtures/translation_order/BigcatOrdinalProbe.v", line 1, characters 0-86:
+Warning: Notation "_ * _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+Ordinal
+     : forall n m : nat, m < n -> 'I_n
+@ord0
+     : forall n' : nat, 'I_n'.+1
+lift
+     : forall n : nat, 'I_n -> 'I_n.-1 -> 'I_n
+bump
+     : nat -> nat -> nat
+big_ord_recl
+     : forall (R : Type) (idx : R) (op : R -> R -> R) 
+         (n : nat) (F : 'I_n.+1 -> R),
+       \big[op/idx]_(i < n.+1) F i =
+       op (F ord0) (\big[op/idx]_(i < n) F (lift ord0 i))
+big_ord_recr
+     : forall (R : Type) (idx : R) (op : Monoid.Law.type idx) 
+         (n : nat) (F : 'I_n.+1 -> R),
+       \big[op/idx]_(i < n.+1) F i =
+       op (\big[op/idx]_(i < n) F (widen_ord (m:=n.+1) (leqnSn n) i))
+         (F ord_max)
+ltn_ord
+     : forall (n : nat) (i : 'I_n), i < n
+@val_inj
+     : forall (T : Type) (P : pred T) (sT : subType (T:=T) P), injective \val
+big_ord_recl
+     : forall (R : Type) (idx : R) (op : forall (_ : R) (_ : R), R) 
+         (n : nat) (F : forall _ : ordinal (S n), R),
+       @eq R
+         (@bigop.body R
+            (Finite.sort (fintype_ordinal__canonical__fintype_Finite (S n)))
+            idx
+            (index_enum (fintype_ordinal__canonical__fintype_Finite (S n)))
+            (fun i : ordinal (S n) =>
+             @BigBody R (ordinal (S n)) i op true (F i)))
+         (op (F (@ord0 n))
+            (@bigop.body R
+               (Finite.sort (fintype_ordinal__canonical__fintype_Finite n))
+               idx
+               (index_enum (fintype_ordinal__canonical__fintype_Finite n))
+               (fun i : ordinal n =>
+                @BigBody R (ordinal n) i op true
+                  (F (@lift (S n) (@ord0 n) i)))))
+lift
+     : forall (n : nat) (_ : ordinal n) (_ : ordinal (Nat.pred n)), ordinal n

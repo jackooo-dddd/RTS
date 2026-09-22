@@ -45,7 +45,7 @@ def normalizedTargetType (target : Name) : MetaM Expr := do
   let env ← getEnv
   let some (.thmInfo info) := env.find? target
     | throwError "normalization target is not a theorem: {target}"
-  Meta.reduceAll (← projectSums info.type)
+  projectSums info.type
 
 def addNormalizationGuard (target guard : Name) : MetaM Unit := do
   let env ← getEnv
@@ -53,6 +53,7 @@ def addNormalizationGuard (target guard : Name) : MetaM Unit := do
     | throwError "normalization target is not a theorem: {target}"
   let normalized ← normalizedTargetType target
   unless ← Meta.isDefEq info.type normalized do
+    logInfo m!"NORMALIZATION_MISMATCH target={target} original={info.type} normalized={normalized}"
     throwError "normalization is not definitionally equal: {target}"
   let guardType ← Meta.mkEq info.type normalized
   let guardValue ← Meta.mkEqRefl info.type
@@ -71,13 +72,24 @@ run_cmd liftTermElabM do
     "Prosa.Validation.FiniteSumNormalization.sum_of_ones_guard".toName
   addNormalizationGuard ``Prosa.Util.Sum.sum_le_summation_range
     "Prosa.Validation.FiniteSumNormalization.sum_le_summation_range_guard".toName
+  addNormalizationGuard ``Prosa.Util.Sum.big_sum_eq_in_eq_sized_intervals
+    "Prosa.Validation.FiniteSumNormalization.big_sum_eq_in_eq_sized_intervals_guard".toName
+  addNormalizationGuard ``Prosa.Util.Sum.pigeonhole_on_interval
+    "Prosa.Validation.FiniteSumNormalization.pigeonhole_on_interval_guard".toName
+  addNormalizationGuard ``Prosa.Util.Sum.sum_ge_2_nat
+    "Prosa.Validation.FiniteSumNormalization.sum_ge_2_nat_guard".toName
 
 #check big_nat_eq0_guard
 #check sum_of_ones_guard
 #check sum_le_summation_range_guard
+#check big_sum_eq_in_eq_sized_intervals_guard
+#check pigeonhole_on_interval_guard
+#check sum_ge_2_nat_guard
 #print axioms big_nat_eq0_guard
 #print axioms sum_of_ones_guard
 #print axioms sum_le_summation_range_guard
+#print axioms big_sum_eq_in_eq_sized_intervals_guard
+#print axioms pigeonhole_on_interval_guard
+#print axioms sum_ge_2_nat_guard
 
 end Prosa.Validation.FiniteSumNormalization
-

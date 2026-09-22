@@ -118,6 +118,11 @@ def main() -> None:
         "--local-binding", action="append", default=[],
         help="NAME=TERM local notation used to reconnect a closed Section declaration",
     )
+    parser.add_argument(
+        "--drop-import", action="append", default=[],
+        help=("exact import command to omit when it is irrelevant to every "
+              "extracted declaration; the omission is recorded in metadata"),
+    )
     parser.add_argument("--output", required=True, type=Path)
     parser.add_argument("--metadata", required=True, type=Path)
     args = parser.parse_args()
@@ -146,10 +151,21 @@ def main() -> None:
         if declarations[name][1] != "computational":
             raise SystemExit(f"not a computational declaration: {name}")
 
+    requested_drop_imports = set(args.drop_import)
     imports = [
         line for line in text.splitlines()
         if line.strip().startswith(("From ", "Require "))
+        and line.strip() not in requested_drop_imports
     ]
+    source_imports = {
+        line.strip() for line in text.splitlines()
+        if line.strip().startswith(("From ", "Require "))
+    }
+    unknown_drop_imports = requested_drop_imports - source_imports
+    if unknown_drop_imports:
+        raise SystemExit(
+            f"--drop-import commands absent from source: {sorted(unknown_drop_imports)}"
+        )
     output = [*imports, "", f"Module {args.module}.", ""]
     metadata: dict[str, object] = {
         "mode": "proof_independent_semantic_source_signature",
@@ -169,6 +185,7 @@ def main() -> None:
                 "exact source statement converted to a Prop-valued Definition; opaque proof omitted"
             ),
             "local_bindings": bindings,
+            "dropped_irrelevant_imports": sorted(requested_drop_imports),
         },
         "declarations": {},
     }

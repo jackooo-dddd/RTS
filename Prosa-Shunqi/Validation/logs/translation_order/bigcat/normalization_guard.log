@@ -1,0 +1,8 @@
+KERNEL_NORMALIZATION_GUARD target=Prosa.Util.Bigcat.size_big_nat guard=Prosa.Validation.BigcatNormalization.size_big_nat_guard original_hash=2437092869 normalized_hash=1035399716 proof=Eq.refl
+Prosa.Validation.BigcatNormalization.size_big_nat_guard.{u} :
+  (∀ {X : Type u} (F : ℕ → List X) (t₁ t₂ : ℕ),
+      ∑ t ∈ Finset.Ico t₁ t₂, (F t).length = (Util.Notation.bigCat t₁ t₂ F).length) =
+    ∀ {X : Type u} (F : ℕ → List X) (t₁ t₂ : ℕ),
+      List.foldr Nat.add Nat.zero (List.map (fun t => (F t).length) (List.range' t₁ (t₂.sub t₁) Nat.zero.succ)) =
+        (Util.Notation.bigCat t₁ t₂ F).length
+'Prosa.Validation.BigcatNormalization.size_big_nat_guard' depends on axioms: [propext, Classical.choice, Quot.sound]

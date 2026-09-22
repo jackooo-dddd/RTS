@@ -1,0 +1,501 @@
+File "./SumSequenceTypeAudit.v", line 1, characters 0-65:
+Warning: Notation "_ + _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./SumSequenceTypeAudit.v", line 1, characters 0-65:
+Warning: Notation "_ - _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./SumSequenceTypeAudit.v", line 1, characters 0-65:
+Warning: Notation "_ <= _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./SumSequenceTypeAudit.v", line 1, characters 0-65:
+Warning: Notation "_ < _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./SumSequenceTypeAudit.v", line 1, characters 0-65:
+Warning: Notation "_ >= _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./SumSequenceTypeAudit.v", line 1, characters 0-65:
+Warning: Notation "_ > _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./SumSequenceTypeAudit.v", line 1, characters 0-65:
+Warning: Notation "_ <= _ <= _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./SumSequenceTypeAudit.v", line 1, characters 0-65:
+Warning: Notation "_ < _ <= _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./SumSequenceTypeAudit.v", line 1, characters 0-65:
+Warning: Notation "_ <= _ < _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./SumSequenceTypeAudit.v", line 1, characters 0-65:
+Warning: Notation "_ < _ < _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./SumSequenceTypeAudit.v", line 1, characters 0-65:
+Warning: Notation "_ * _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+Axioms:
+eq_inst1 relies on definitional UIP.
+eq relies on definitional UIP.
+True relies on definitional UIP.
+HEq_inst1 relies on definitional UIP.
+propext : forall a b : SProp, Iff a b -> eq a b
+PrimInt63.lsr : PrimInt63.int -> PrimInt63.int -> PrimInt63.int
+PrimInt63.land : PrimInt63.int -> PrimInt63.int -> PrimInt63.int
+PrimInt63.int : Set
+PrimInt63.eqb : PrimInt63.int -> PrimInt63.int -> bool
+Prosa_Util_Sum_sum_nat_eq0_nat :
+  forall I : Type,
+  DecidableEq I ->
+  forall (r : List I) (P : I -> Bool) (F : I -> Nat),
+  eq
+    (Decidable_decide
+       (eq (Prosa_Util_Sum_sumFiltered I r P F)
+          (OfNat_ofNat_inst1 Nat 0 (instOfNatNat 0)))
+       (instDecidableEqNat (Prosa_Util_Sum_sumFiltered I r P F)
+          (OfNat_ofNat_inst1 Nat 0 (instOfNatNat 0))))
+    (List_all I r
+       (fun x : I =>
+        Bool_or (Bool_not (P x))
+          (Decidable_decide
+             (eq (F x) (OfNat_ofNat_inst1 Nat 0 (instOfNatNat 0)))
+             (instDecidableEqNat (F x)
+                (OfNat_ofNat_inst1 Nat 0 (instOfNatNat 0))))))
+Axioms:
+eq_inst1 relies on definitional UIP.
+eq relies on definitional UIP.
+True relies on definitional UIP.
+HEq_inst1 relies on definitional UIP.
+propext : forall a b : SProp, Iff a b -> eq a b
+PrimInt63.lsr : PrimInt63.int -> PrimInt63.int -> PrimInt63.int
+PrimInt63.land : PrimInt63.int -> PrimInt63.int -> PrimInt63.int
+PrimInt63.int : Set
+PrimInt63.eqb : PrimInt63.int -> PrimInt63.int -> bool
+Prosa_Util_Sum_sum_nat_gt0 :
+  forall I : Type,
+  DecidableEq I ->
+  forall (r : List I) (P : I -> Bool) (F : I -> Nat),
+  eq
+    (Decidable_decide
+       (LT_lt_inst1 Nat instLTNat (OfNat_ofNat_inst1 Nat 0 (instOfNatNat 0))
+          (Prosa_Util_Sum_sumFiltered I r P F))
+       (Nat_decLt (OfNat_ofNat_inst1 Nat 0 (instOfNatNat 0))
+          (Prosa_Util_Sum_sumFiltered I r P F)))
+    (List_any I r
+       (fun x : I =>
+        Bool_and (P x)
+          (Decidable_decide
+             (LT_lt_inst1 Nat instLTNat
+                (OfNat_ofNat_inst1 Nat 0 (instOfNatNat 0)) 
+                (F x))
+             (Nat_decLt (OfNat_ofNat_inst1 Nat 0 (instOfNatNat 0)) (F x)))))
+Axioms:
+eq_inst1 relies on definitional UIP.
+eq relies on definitional UIP.
+True relies on definitional UIP.
+HEq_inst1 relies on definitional UIP.
+propext : forall a b : SProp, Iff a b -> eq a b
+PrimInt63.lsr : PrimInt63.int -> PrimInt63.int -> PrimInt63.int
+PrimInt63.land : PrimInt63.int -> PrimInt63.int -> PrimInt63.int
+PrimInt63.int : Set
+PrimInt63.eqb : PrimInt63.int -> PrimInt63.int -> bool
+Prosa_Util_Sum_sum_majorant_constant :
+  forall I : Type,
+  DecidableEq I ->
+  forall (r : List I) (P : I -> Bool) (F : I -> Nat) (c : Nat),
+  (forall a : I,
+   Membership_mem I (List I) (List_instMembership I) r a ->
+   eq (P a) Bool_true -> LE_le_inst1 Nat instLENat (F a) c) ->
+  LE_le_inst1 Nat instLENat (Prosa_Util_Sum_sumFiltered I r P F)
+    (HMul_hMul_inst7 Nat Nat Nat (instHMul_inst1 Nat instMulNat) c
+       (List_length I (List_filter I P r)))
+Axioms:
+eq_inst1 relies on definitional UIP.
+eq relies on definitional UIP.
+True relies on definitional UIP.
+HEq_inst1 relies on definitional UIP.
+propext : forall a b : SProp, Iff a b -> eq a b
+PrimInt63.lsr : PrimInt63.int -> PrimInt63.int -> PrimInt63.int
+PrimInt63.land : PrimInt63.int -> PrimInt63.int -> PrimInt63.int
+PrimInt63.int : Set
+PrimInt63.eqb : PrimInt63.int -> PrimInt63.int -> bool
+Prosa_Util_Sum_bigmax_leq_sum :
+  forall I : Type,
+  DecidableEq I ->
+  forall (r : List I) (P : I -> Bool) (F : I -> Nat),
+  LE_le_inst1 Nat instLENat (Prosa_Util_Sum_maxFiltered I r P F)
+    (Prosa_Util_Sum_sumFiltered I r P F)
+Axioms:
+eq_inst1 relies on definitional UIP.
+eq relies on definitional UIP.
+True relies on definitional UIP.
+HEq_inst1 relies on definitional UIP.
+propext : forall a b : SProp, Iff a b -> eq a b
+PrimInt63.lsr : PrimInt63.int -> PrimInt63.int -> PrimInt63.int
+PrimInt63.land : PrimInt63.int -> PrimInt63.int -> PrimInt63.int
+PrimInt63.int : Set
+PrimInt63.eqb : PrimInt63.int -> PrimInt63.int -> bool
+Prosa_Util_Sum_sum_le_subseq :
+  forall (I : Type)
+    (inst____at___Prosa_Util_Sum1937026005__hygCtx__hyg3 : DecidableEq I)
+    (P : I -> Bool) (F : I -> Nat) (r1 r2 : List I),
+  eq
+    (Prosa_Util_Sum_subseqb I
+       inst____at___Prosa_Util_Sum1937026005__hygCtx__hyg3 r1 r2)
+    Bool_true ->
+  LE_le_inst1 Nat instLENat (Prosa_Util_Sum_sumFiltered I r1 P F)
+    (Prosa_Util_Sum_sumFiltered I r2 P F)
+Axioms:
+eq_inst1 relies on definitional UIP.
+eq relies on definitional UIP.
+True relies on definitional UIP.
+HEq_inst1 relies on definitional UIP.
+propext : forall a b : SProp, Iff a b -> eq a b
+PrimInt63.lsr : PrimInt63.int -> PrimInt63.int -> PrimInt63.int
+PrimInt63.land : PrimInt63.int -> PrimInt63.int -> PrimInt63.int
+PrimInt63.int : Set
+PrimInt63.eqb : PrimInt63.int -> PrimInt63.int -> bool
+Prosa_Util_Sum_leq_sum_subseq :
+  forall (I : Type)
+    (inst____at___Prosa_Util_Sum2654039778__hygCtx__hyg3 : DecidableEq I)
+    (r r' : List I) (P : I -> Bool) (F : I -> Nat),
+  eq
+    (Prosa_Util_Sum_subseqb I
+       inst____at___Prosa_Util_Sum2654039778__hygCtx__hyg3 r r')
+    Bool_true ->
+  LE_le_inst1 Nat instLENat (Prosa_Util_Sum_sumFiltered I r P F)
+    (Prosa_Util_Sum_sumFiltered I r' P F)
+Axioms:
+eq_inst1 relies on definitional UIP.
+eq relies on definitional UIP.
+True relies on definitional UIP.
+HEq_inst1 relies on definitional UIP.
+propext : forall a b : SProp, Iff a b -> eq a b
+PrimInt63.lsr : PrimInt63.int -> PrimInt63.int -> PrimInt63.int
+PrimInt63.land : PrimInt63.int -> PrimInt63.int -> PrimInt63.int
+PrimInt63.int : Set
+PrimInt63.eqb : PrimInt63.int -> PrimInt63.int -> bool
+Prosa_Util_Sum_leq_sum_seq :
+  forall I : Type,
+  DecidableEq I ->
+  forall (r : List I) (P : I -> Bool) (E1 E2 : I -> Nat),
+  (forall i : I,
+   Membership_mem I (List I) (List_instMembership I) r i ->
+   eq (P i) Bool_true -> LE_le_inst1 Nat instLENat (E1 i) (E2 i)) ->
+  LE_le_inst1 Nat instLENat (Prosa_Util_Sum_sumFiltered I r P E1)
+    (Prosa_Util_Sum_sumFiltered I r P E2)
+Axioms:
+eq_inst1 relies on definitional UIP.
+eq relies on definitional UIP.
+True relies on definitional UIP.
+HEq_inst1 relies on definitional UIP.
+propext : forall a b : SProp, Iff a b -> eq a b
+PrimInt63.lsr : PrimInt63.int -> PrimInt63.int -> PrimInt63.int
+PrimInt63.land : PrimInt63.int -> PrimInt63.int -> PrimInt63.int
+PrimInt63.int : Set
+PrimInt63.eqb : PrimInt63.int -> PrimInt63.int -> bool
+Prosa_Util_Sum_eq_sum_seq :
+  forall I : Type,
+  DecidableEq I ->
+  forall (r : List I) (P : I -> Bool) (E1 E2 : I -> Nat),
+  (forall i : I,
+   Membership_mem I (List I) (List_instMembership I) r i ->
+   eq (P i) Bool_true ->
+   eq
+     (Decidable_decide (eq (E1 i) (E2 i)) (instDecidableEqNat (E1 i) (E2 i)))
+     Bool_true) ->
+  eq (Prosa_Util_Sum_sumFiltered I r P E1)
+    (Prosa_Util_Sum_sumFiltered I r P E2)
+Axioms:
+eq_inst1 relies on definitional UIP.
+eq relies on definitional UIP.
+True relies on definitional UIP.
+HEq_inst1 relies on definitional UIP.
+propext : forall a b : SProp, Iff a b -> eq a b
+PrimInt63.lsr : PrimInt63.int -> PrimInt63.int -> PrimInt63.int
+PrimInt63.land : PrimInt63.int -> PrimInt63.int -> PrimInt63.int
+PrimInt63.int : Set
+PrimInt63.eqb : PrimInt63.int -> PrimInt63.int -> bool
+Prosa_Util_Sum_leq_sum_seq_pred :
+  forall I : Type,
+  DecidableEq I ->
+  forall (r : List I) (E : I -> Nat) (P1 P2 : I -> Bool),
+  (forall i : I,
+   Membership_mem I (List I) (List_instMembership I) r i ->
+   eq (P1 i) Bool_true -> eq (P2 i) Bool_true) ->
+  LE_le_inst1 Nat instLENat (Prosa_Util_Sum_sumFiltered I r P1 E)
+    (Prosa_Util_Sum_sumFiltered I r P2 E)
+Axioms:
+eq_inst1 relies on definitional UIP.
+eq relies on definitional UIP.
+True relies on definitional UIP.
+HEq_inst1 relies on definitional UIP.
+propext : forall a b : SProp, Iff a b -> eq a b
+PrimInt63.lsr : PrimInt63.int -> PrimInt63.int -> PrimInt63.int
+PrimInt63.land : PrimInt63.int -> PrimInt63.int -> PrimInt63.int
+PrimInt63.int : Set
+PrimInt63.eqb : PrimInt63.int -> PrimInt63.int -> bool
+Prosa_Util_Sum_ltn_sum_leq_seq :
+  forall I : Type,
+  DecidableEq I ->
+  forall (r : List I) (P : I -> Bool) (E1 E2 : I -> Nat) (j : I),
+  Membership_mem I (List I) (List_instMembership I) r j ->
+  eq (P j) Bool_true ->
+  LT_lt_inst1 Nat instLTNat (E1 j) (E2 j) ->
+  (forall i : I,
+   Membership_mem I (List I) (List_instMembership I) r i ->
+   eq (P i) Bool_true -> LE_le_inst1 Nat instLENat (E1 i) (E2 i)) ->
+  LT_lt_inst1 Nat instLTNat (Prosa_Util_Sum_sumFiltered I r P E1)
+    (Prosa_Util_Sum_sumFiltered I r P E2)
+Axioms:
+eq_inst1 relies on definitional UIP.
+eq relies on definitional UIP.
+True relies on definitional UIP.
+HEq_inst1 relies on definitional UIP.
+propext : forall a b : SProp, Iff a b -> eq a b
+PrimInt63.lsr : PrimInt63.int -> PrimInt63.int -> PrimInt63.int
+PrimInt63.land : PrimInt63.int -> PrimInt63.int -> PrimInt63.int
+PrimInt63.int : Set
+PrimInt63.eqb : PrimInt63.int -> PrimInt63.int -> bool
+Prosa_Util_Sum_eq_sum_leq_seq :
+  forall I : Type,
+  DecidableEq I ->
+  forall (r : List I) (P : I -> Bool) (E1 E2 : I -> Nat),
+  (forall i : I,
+   Membership_mem I (List I) (List_instMembership I) r i ->
+   eq (P i) Bool_true -> LE_le_inst1 Nat instLENat (E1 i) (E2 i)) ->
+  eq
+    (Decidable_decide
+       (eq (Prosa_Util_Sum_sumFiltered I r P E1)
+          (Prosa_Util_Sum_sumFiltered I r P E2))
+       (instDecidableEqNat (Prosa_Util_Sum_sumFiltered I r P E1)
+          (Prosa_Util_Sum_sumFiltered I r P E2)))
+    (List_all I r
+       (fun x : I =>
+        Bool_or (Bool_not (P x))
+          (Decidable_decide (eq (E1 x) (E2 x))
+             (instDecidableEqNat (E1 x) (E2 x)))))
+Axioms:
+eq_inst1 relies on definitional UIP.
+eq relies on definitional UIP.
+True relies on definitional UIP.
+HEq_inst1 relies on definitional UIP.
+propext : forall a b : SProp, Iff a b -> eq a b
+PrimInt63.lsr : PrimInt63.int -> PrimInt63.int -> PrimInt63.int
+PrimInt63.land : PrimInt63.int -> PrimInt63.int -> PrimInt63.int
+PrimInt63.int : Set
+PrimInt63.eqb : PrimInt63.int -> PrimInt63.int -> bool
+Prosa_Util_Sum_leq_sum_sub_uniq :
+  forall I : Type,
+  DecidableEq I ->
+  forall (r : List I) (F : I -> Nat) (rs : List I),
+  List_Nodup I r ->
+  (forall x : I,
+   Membership_mem I (List I) (List_instMembership I) r x ->
+   Membership_mem I (List I) (List_instMembership I) rs x) ->
+  LE_le_inst1 Nat instLENat (Prosa_Util_Sum_sumSeq I r F)
+    (Prosa_Util_Sum_sumSeq I rs F)
+Axioms:
+eq_inst1 relies on definitional UIP.
+eq relies on definitional UIP.
+True relies on definitional UIP.
+HEq_inst1 relies on definitional UIP.
+propext : forall a b : SProp, Iff a b -> eq a b
+PrimInt63.lsr : PrimInt63.int -> PrimInt63.int -> PrimInt63.int
+PrimInt63.land : PrimInt63.int -> PrimInt63.int -> PrimInt63.int
+PrimInt63.int : Set
+PrimInt63.eqb : PrimInt63.int -> PrimInt63.int -> bool
+Prosa_Util_Sum_sum_split_exhaustive_mutually_exclusive_preds :
+  forall I : Type,
+  DecidableEq I ->
+  forall (r : List I) (P : I -> Bool) (F : I -> Nat) (Q R : I -> Bool),
+  (forall x : I, eq (P x) (Bool_or (Q x) (R x))) ->
+  (forall x : I,
+   eq
+     (Bool_not
+        (Decidable_decide (eq (Bool_and (Q x) (R x)) Bool_true)
+           (instDecidableEqBool (Bool_and (Q x) (R x)) Bool_true)))
+     Bool_true) ->
+  eq (Prosa_Util_Sum_sumFiltered I r P F)
+    (HAdd_hAdd_inst7 Nat Nat Nat (instHAdd_inst1 Nat instAddNat)
+       (Prosa_Util_Sum_sumFiltered I r Q F)
+       (Prosa_Util_Sum_sumFiltered I r R F))
+Axioms:
+eq_inst1 relies on definitional UIP.
+eq relies on definitional UIP.
+True relies on definitional UIP.
+HEq_inst1 relies on definitional UIP.
+propext : forall a b : SProp, Iff a b -> eq a b
+PrimInt63.lsr : PrimInt63.int -> PrimInt63.int -> PrimInt63.int
+PrimInt63.land : PrimInt63.int -> PrimInt63.int -> PrimInt63.int
+PrimInt63.int : Set
+PrimInt63.eqb : PrimInt63.int -> PrimInt63.int -> bool
+Prosa_Util_Sum_sum_over_partitions_le :
+  forall X Y : Type,
+  DecidableEq X ->
+  forall (inst____at___Prosa_Util_Sum8486576__hygCtx__hyg7 : DecidableEq Y)
+    (xToY : X -> Y) (f : X -> Nat) (P : X -> Bool) 
+    (xs : List X) (ys : List Y),
+  (forall x : X,
+   Membership_mem X (List X) (List_instMembership X) xs x ->
+   eq (P x) Bool_true ->
+   Membership_mem Y (List Y) (List_instMembership Y) ys (xToY x)) ->
+  LE_le_inst1 Nat instLENat (Prosa_Util_Sum_sumFiltered X xs P f)
+    (Prosa_Util_Sum_sumOverPartitions X Y
+       inst____at___Prosa_Util_Sum8486576__hygCtx__hyg7 xToY f P xs ys)
+Axioms:
+eq_inst1 relies on definitional UIP.
+eq relies on definitional UIP.
+True relies on definitional UIP.
+HEq_inst1 relies on definitional UIP.
+propext : forall a b : SProp, Iff a b -> eq a b
+PrimInt63.lsr : PrimInt63.int -> PrimInt63.int -> PrimInt63.int
+PrimInt63.land : PrimInt63.int -> PrimInt63.int -> PrimInt63.int
+PrimInt63.int : Set
+PrimInt63.eqb : PrimInt63.int -> PrimInt63.int -> bool
+Prosa_Util_Sum_reorder_summation :
+  forall X Y : Type,
+  DecidableEq X ->
+  forall
+    (inst____at___Prosa_Util_Sum4079874284__hygCtx__hyg7 : DecidableEq Y)
+    (xToY : X -> Y) (f : X -> Nat) (P : X -> Bool) 
+    (xs : List X) (ys : List Y),
+  (forall x : X,
+   Membership_mem X (List X) (List_instMembership X) xs x ->
+   eq (P x) Bool_true ->
+   Membership_mem Y (List Y) (List_instMembership Y) ys (xToY x)) ->
+  forall y' : Y,
+  LE_le_inst1 Nat instLENat
+    (Prosa_Util_Sum_sumFiltered X xs
+       (fun x : X =>
+        Bool_and (P x)
+          (Decidable_decide (Ne Y (xToY x) y')
+             (instDecidableNot (eq (xToY x) y')
+                (inst____at___Prosa_Util_Sum4079874284__hygCtx__hyg7 
+                   (xToY x) y'))))
+       f)
+    (Prosa_Util_Sum_sumOverPartitions X Y
+       inst____at___Prosa_Util_Sum4079874284__hygCtx__hyg7 xToY f P xs
+       (List_filter Y
+          (fun y : Y =>
+           Decidable_decide (Ne Y y y')
+             (instDecidableNot (eq y y')
+                (inst____at___Prosa_Util_Sum4079874284__hygCtx__hyg7 y y')))
+          ys))
+Axioms:
+eq_inst1 relies on definitional UIP.
+eq relies on definitional UIP.
+True relies on definitional UIP.
+HEq_inst1 relies on definitional UIP.
+propext : forall a b : SProp, Iff a b -> eq a b
+PrimInt63.lsr : PrimInt63.int -> PrimInt63.int -> PrimInt63.int
+PrimInt63.land : PrimInt63.int -> PrimInt63.int -> PrimInt63.int
+PrimInt63.int : Set
+PrimInt63.eqb : PrimInt63.int -> PrimInt63.int -> bool
+Prosa_Util_Sum_sum_over_partitions_eq :
+  forall X Y : Type,
+  DecidableEq X ->
+  forall
+    (inst____at___Prosa_Util_Sum3993306578__hygCtx__hyg7 : DecidableEq Y)
+    (xToY : X -> Y) (f : X -> Nat) (P : X -> Bool) 
+    (xs : List X) (ys : List Y),
+  (forall x : X,
+   Membership_mem X (List X) (List_instMembership X) xs x ->
+   eq (P x) Bool_true ->
+   Membership_mem Y (List Y) (List_instMembership Y) ys (xToY x)) ->
+  List_Nodup X xs ->
+  List_Nodup Y ys ->
+  eq (Prosa_Util_Sum_sumFiltered X xs P f)
+    (Prosa_Util_Sum_sumOverPartitions X Y
+       inst____at___Prosa_Util_Sum3993306578__hygCtx__hyg7 xToY f P xs ys)
+Axioms:
+eq_inst1 relies on definitional UIP.
+eq relies on definitional UIP.
+True relies on definitional UIP.
+HEq_inst1 relies on definitional UIP.
+propext : forall a b : SProp, Iff a b -> eq a b
+PrimInt63.lsr : PrimInt63.int -> PrimInt63.int -> PrimInt63.int
+PrimInt63.land : PrimInt63.int -> PrimInt63.int -> PrimInt63.int
+PrimInt63.int : Set
+PrimInt63.eqb : PrimInt63.int -> PrimInt63.int -> bool
+Prosa_Util_Sum_sum_leq_mono :
+  forall I : Type,
+  DecidableEq I ->
+  forall (P : I -> Bool) (F : I -> Nat -> Nat) (r : List I),
+  (forall i : I,
+   Membership_mem I (List I) (List_instMembership I) r i ->
+   Prosa_Util_Rel_monotone_inst1 Nat
+     (fun x y : Nat =>
+      Decidable_decide (LE_le_inst1 Nat instLENat x y) (Nat_decLe x y))
+     (F i)) ->
+  Prosa_Util_Rel_monotone_inst1 Nat
+    (fun x y : Nat =>
+     Decidable_decide (LE_le_inst1 Nat instLENat x y) (Nat_decLe x y))
+    (fun x : Nat => Prosa_Util_Sum_sumFiltered I r P (fun i : I => F i x))
+Axioms:
+eq_inst1 relies on definitional UIP.
+eq relies on definitional UIP.
+True relies on definitional UIP.
+HEq_inst1 relies on definitional UIP.
+HEq relies on definitional UIP.
+propext : forall a b : SProp, Iff a b -> eq a b
+PrimInt63.lsr : PrimInt63.int -> PrimInt63.int -> PrimInt63.int
+PrimInt63.land : PrimInt63.int -> PrimInt63.int -> PrimInt63.int
+PrimInt63.int : Set
+PrimInt63.eqb : PrimInt63.int -> PrimInt63.int -> bool
+Quot_sound :
+  forall (_UU03b1_ : Type) (r : _UU03b1_ -> _UU03b1_ -> SProp)
+    (a b : _UU03b1_),
+  r a b -> eq (Quot.mk r a) (Quot.mk r b)
+Prosa_Util_Sum_sum_unit1 :
+  forall F : Unit -> Nat,
+  eq
+    (Finset_sum_inst3 Unit Nat Nat_instAddCommMonoid
+       (Finset_univ_inst1 Unit PUnit_fintype_inst1) 
+       (fun r : Unit => F r))
+    (F Unit_unit)
+Classical_choice : forall _UU03b1_ : Type, Nonempty _UU03b1_ -> _UU03b1_
+Axioms:
+eq_inst1 relies on definitional UIP.
+eq relies on definitional UIP.
+True relies on definitional UIP.
+HEq_inst1 relies on definitional UIP.
+propext : forall a b : SProp, Iff a b -> eq a b
+PrimInt63.lsr : PrimInt63.int -> PrimInt63.int -> PrimInt63.int
+PrimInt63.land : PrimInt63.int -> PrimInt63.int -> PrimInt63.int
+PrimInt63.int : Set
+PrimInt63.eqb : PrimInt63.int -> PrimInt63.int -> bool
+Prosa_Util_Sum_sum_ge_2_seq :
+  forall (X : Type)
+    (inst____at___Prosa_Util_Sum4234277867__hygCtx__hyg3 : DecidableEq X)
+    (xs : List X) (p : X -> Nat),
+  List_Nodup X xs ->
+  (forall x : X,
+   Membership_mem X (List X) (List_instMembership X) xs x ->
+   LE_le_inst1 Nat instLENat (p x) (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1))) ->
+  LE_le_inst1 Nat instLENat (OfNat_ofNat_inst1 Nat 2 (instOfNatNat 2))
+    (Prosa_Util_Sum_sumSeq X xs p) ->
+  Exists X
+    (fun x1 : X =>
+     Exists X
+       (fun x2 : X =>
+        And
+          (eq
+             (Decidable_decide (Ne X x1 x2)
+                (instDecidableNot (eq x1 x2)
+                   (inst____at___Prosa_Util_Sum4234277867__hygCtx__hyg3 x1 x2)))
+             Bool_true)
+          (And (Membership_mem X (List X) (List_instMembership X) xs x1)
+             (And (Membership_mem X (List X) (List_instMembership X) xs x2)
+                (And
+                   (eq
+                      (Decidable_decide
+                         (eq (p x1)
+                            (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1)))
+                         (instDecidableEqNat (p x1)
+                            (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1))))
+                      Bool_true)
+                   (eq
+                      (Decidable_decide
+                         (eq (p x2)
+                            (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1)))
+                         (instDecidableEqNat (p x2)
+                            (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1))))
+                      Bool_true))))))

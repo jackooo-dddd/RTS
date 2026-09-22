@@ -1,0 +1,159 @@
+Prosa_Util_Sum_big_sum_eq_in_eq_sized_intervals
+     : forall (t1 t2 d : Nat) (F1 F2 : Nat -> Nat),
+       (forall g : Nat,
+        LT_lt_inst1 Nat instLTNat g d ->
+        eq
+          (F1
+             (HAdd_hAdd_inst7 Nat Nat Nat (instHAdd_inst1 Nat instAddNat) t1
+                g))
+          (F2
+             (HAdd_hAdd_inst7 Nat Nat Nat (instHAdd_inst1 Nat instAddNat) t2
+                g))) ->
+       eq
+         (List_foldr_inst3 Nat Nat Nat_add 0
+            (List_map_inst3 Nat Nat (fun x : Nat => F1 x)
+               (List_range' t1
+                  (Nat_sub
+                     (HAdd_hAdd_inst7 Nat Nat Nat
+                        (instHAdd_inst1 Nat instAddNat) t1 d)
+                     t1)
+                  1)))
+         (List_foldr_inst3 Nat Nat Nat_add 0
+            (List_map_inst3 Nat Nat (fun t : Nat => F2 t)
+               (List_range' t2
+                  (Nat_sub
+                     (HAdd_hAdd_inst7 Nat Nat Nat
+                        (instHAdd_inst1 Nat instAddNat) t2 d)
+                     t2)
+                  1)))
+Prosa_Util_Sum_pigeonhole_on_interval
+     : forall (P1 P2 : Nat -> Bool) (t1 t2 n1 n2 : Nat),
+       LE_le_inst1 Nat instLENat n1
+         (List_foldr_inst3 Nat Nat Nat_add 0
+            (List_map_inst3 Nat Nat (fun t : Nat => Bool_toNat (P1 t))
+               (List_range' t1 (Nat_sub t2 t1) 1))) ->
+       LE_le_inst1 Nat instLENat n2
+         (List_foldr_inst3 Nat Nat Nat_add 0
+            (List_map_inst3 Nat Nat (fun t : Nat => Bool_toNat (P2 t))
+               (List_range' t1 (Nat_sub t2 t1) 1))) ->
+       LE_le_inst1 Nat instLENat
+         (HSub_hSub_inst7 Nat Nat Nat (instHSub_inst1 Nat instSubNat)
+            (HAdd_hAdd_inst7 Nat Nat Nat (instHAdd_inst1 Nat instAddNat) n1
+               n2)
+            (HSub_hSub_inst7 Nat Nat Nat (instHSub_inst1 Nat instSubNat) t2
+               t1))
+         (List_foldr_inst3 Nat Nat Nat_add 0
+            (List_map_inst3 Nat Nat
+               (fun t : Nat => Bool_toNat (Bool_and (P1 t) (P2 t)))
+               (List_range' t1 (Nat_sub t2 t1) 1)))
+Prosa_Util_Sum_sum_ge_2_nat
+     : forall (t1 t2 : Nat) (p : Nat -> Nat),
+       (forall t : Nat,
+        LE_le_inst1 Nat instLENat (p t)
+          (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1))) ->
+       LE_le_inst1 Nat instLENat (OfNat_ofNat_inst1 Nat 2 (instOfNatNat 2))
+         (List_foldr_inst3 Nat Nat Nat_add 0
+            (List_map_inst3 Nat Nat (fun t : Nat => p t)
+               (List_range' t1 (Nat_sub t2 t1) 1))) ->
+       Exists Nat
+         (fun to1 : Nat =>
+          Exists Nat
+            (fun to2 : Nat =>
+             And (LE_le_inst1 Nat instLENat t1 to1)
+               (And (LT_lt_inst1 Nat instLTNat to1 to2)
+                  (And (LT_lt_inst1 Nat instLTNat to2 t2)
+                     (And
+                        (eq
+                           (Decidable_decide
+                              (eq (p to1)
+                                 (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1)))
+                              (instDecidableEqNat 
+                                 (p to1)
+                                 (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1))))
+                           Bool_true)
+                        (eq
+                           (Decidable_decide
+                              (eq (p to2)
+                                 (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1)))
+                              (instDecidableEqNat 
+                                 (p to2)
+                                 (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1))))
+                           Bool_true))))))
+*** [ Prosa_Util_Sum_big_sum_eq_in_eq_sized_intervals@{} :
+forall (t1 t2 d : Nat) (F1 F2 : Nat -> Nat),
+(forall g : Nat,
+ LT_lt_inst1 Nat instLTNat g d ->
+ eq (F1 (HAdd_hAdd_inst7 Nat Nat Nat (instHAdd_inst1 Nat instAddNat) t1 g))
+   (F2 (HAdd_hAdd_inst7 Nat Nat Nat (instHAdd_inst1 Nat instAddNat) t2 g))) ->
+eq
+  (List_foldr_inst3 Nat Nat Nat_add 0
+     (List_map_inst3 Nat Nat (fun x : Nat => F1 x)
+        (List_range' t1
+           (Nat_sub
+              (HAdd_hAdd_inst7 Nat Nat Nat (instHAdd_inst1 Nat instAddNat) t1
+                 d)
+              t1)
+           1)))
+  (List_foldr_inst3 Nat Nat Nat_add 0
+     (List_map_inst3 Nat Nat (fun t : Nat => F2 t)
+        (List_range' t2
+           (Nat_sub
+              (HAdd_hAdd_inst7 Nat Nat Nat (instHAdd_inst1 Nat instAddNat) t2
+                 d)
+              t2)
+           1))) ]
+
+Arguments Prosa_Util_Sum_big_sum_eq_in_eq_sized_intervals
+  (t1 t2 d)%_Nat_scope (F1 F2 heq)%_function_scope
+*** [ Prosa_Util_Sum_pigeonhole_on_interval@{} :
+forall (P1 P2 : Nat -> Bool) (t1 t2 n1 n2 : Nat),
+LE_le_inst1 Nat instLENat n1
+  (List_foldr_inst3 Nat Nat Nat_add 0
+     (List_map_inst3 Nat Nat (fun t : Nat => Bool_toNat (P1 t))
+        (List_range' t1 (Nat_sub t2 t1) 1))) ->
+LE_le_inst1 Nat instLENat n2
+  (List_foldr_inst3 Nat Nat Nat_add 0
+     (List_map_inst3 Nat Nat (fun t : Nat => Bool_toNat (P2 t))
+        (List_range' t1 (Nat_sub t2 t1) 1))) ->
+LE_le_inst1 Nat instLENat
+  (HSub_hSub_inst7 Nat Nat Nat (instHSub_inst1 Nat instSubNat)
+     (HAdd_hAdd_inst7 Nat Nat Nat (instHAdd_inst1 Nat instAddNat) n1 n2)
+     (HSub_hSub_inst7 Nat Nat Nat (instHSub_inst1 Nat instSubNat) t2 t1))
+  (List_foldr_inst3 Nat Nat Nat_add 0
+     (List_map_inst3 Nat Nat
+        (fun t : Nat => Bool_toNat (Bool_and (P1 t) (P2 t)))
+        (List_range' t1 (Nat_sub t2 t1) 1))) ]
+
+Arguments Prosa_Util_Sum_pigeonhole_on_interval (P1 P2)%_function_scope
+  (t1 t2 n1 n2)%_Nat_scope h1 h2
+*** [ Prosa_Util_Sum_sum_ge_2_nat@{} :
+forall (t1 t2 : Nat) (p : Nat -> Nat),
+(forall t : Nat,
+ LE_le_inst1 Nat instLENat (p t) (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1))) ->
+LE_le_inst1 Nat instLENat (OfNat_ofNat_inst1 Nat 2 (instOfNatNat 2))
+  (List_foldr_inst3 Nat Nat Nat_add 0
+     (List_map_inst3 Nat Nat (fun t : Nat => p t)
+        (List_range' t1 (Nat_sub t2 t1) 1))) ->
+Exists Nat
+  (fun to1 : Nat =>
+   Exists Nat
+     (fun to2 : Nat =>
+      And (LE_le_inst1 Nat instLENat t1 to1)
+        (And (LT_lt_inst1 Nat instLTNat to1 to2)
+           (And (LT_lt_inst1 Nat instLTNat to2 t2)
+              (And
+                 (eq
+                    (Decidable_decide
+                       (eq (p to1) (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1)))
+                       (instDecidableEqNat (p to1)
+                          (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1))))
+                    Bool_true)
+                 (eq
+                    (Decidable_decide
+                       (eq (p to2) (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1)))
+                       (instDecidableEqNat (p to2)
+                          (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1))))
+                    Bool_true)))))) ]
+
+Arguments Prosa_Util_Sum_sum_ge_2_nat (t1 t2)%_Nat_scope
+  (p hle)%_function_scope htwo

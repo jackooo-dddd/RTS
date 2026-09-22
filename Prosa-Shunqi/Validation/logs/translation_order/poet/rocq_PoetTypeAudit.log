@@ -1,0 +1,51 @@
+File "./PoetTypeAudit.v", line 1, characters 0-72:
+Warning: Notation "_ + _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./PoetTypeAudit.v", line 1, characters 0-72:
+Warning: Notation "_ - _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./PoetTypeAudit.v", line 1, characters 0-72:
+Warning: Notation "_ <= _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./PoetTypeAudit.v", line 1, characters 0-72:
+Warning: Notation "_ < _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./PoetTypeAudit.v", line 1, characters 0-72:
+Warning: Notation "_ >= _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./PoetTypeAudit.v", line 1, characters 0-72:
+Warning: Notation "_ > _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./PoetTypeAudit.v", line 1, characters 0-72:
+Warning: Notation "_ <= _ <= _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./PoetTypeAudit.v", line 1, characters 0-72:
+Warning: Notation "_ < _ <= _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./PoetTypeAudit.v", line 1, characters 0-72:
+Warning: Notation "_ <= _ < _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./PoetTypeAudit.v", line 1, characters 0-72:
+Warning: Notation "_ < _ < _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./PoetTypeAudit.v", line 1, characters 0-72:
+Warning: Notation "_ * _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+GeneratedPoetSource.statement_forall_exists_implied_by_forall_in_zip
+     : Prop
+Axioms:
+Lean.eq relies on definitional UIP.
+Prosa_Util_Poet_forall_exists_implied_by_forall_in_zip :
+  forall X Y : Type,
+  DecidableEq X ->
+  DecidableEq Y ->
+  forall (PBool : Prod X Y -> Bool) (PProp : X -> Y -> SProp) (xs : List X),
+  (forall (x : X) (y : Y),
+   Iff (Lean.eq (PBool (Prod_mk X Y x y)) Bool_true) (PProp x y)) ->
+  Exists (List Y)
+    (fun ys : List Y =>
+     Lean.And (Lean.eq (List_length X xs) (List_length Y ys))
+       (Lean.eq (List_all (Prod X Y) (List_zip X Y xs ys) PBool) Bool_true)) ->
+  forall x : X,
+  Membership_mem X (List X) (List_instMembership X) xs x ->
+  Exists Y [eta PProp x]

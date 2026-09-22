@@ -1,0 +1,51 @@
+File "./BigopTypeAudit.v", line 1, characters 0-86:
+Warning: Notation "_ + _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./BigopTypeAudit.v", line 1, characters 0-86:
+Warning: Notation "_ - _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./BigopTypeAudit.v", line 1, characters 0-86:
+Warning: Notation "_ <= _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./BigopTypeAudit.v", line 1, characters 0-86:
+Warning: Notation "_ < _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./BigopTypeAudit.v", line 1, characters 0-86:
+Warning: Notation "_ >= _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./BigopTypeAudit.v", line 1, characters 0-86:
+Warning: Notation "_ > _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./BigopTypeAudit.v", line 1, characters 0-86:
+Warning: Notation "_ <= _ <= _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./BigopTypeAudit.v", line 1, characters 0-86:
+Warning: Notation "_ < _ <= _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./BigopTypeAudit.v", line 1, characters 0-86:
+Warning: Notation "_ <= _ < _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./BigopTypeAudit.v", line 1, characters 0-86:
+Warning: Notation "_ < _ < _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./BigopTypeAudit.v", line 1, characters 0-86:
+Warning: Notation "_ * _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+Closed under the global context
+Axioms:
+eq relies on definitional UIP.
+Prosa_Util_Bigop_big_pred1_seq :
+  forall (R : Type) (idx : R) (op : R -> R -> R),
+  (forall x y z : R, eq (op x (op y z)) (op (op x y) z)) ->
+  (forall x : R, eq (op idx x) x) ->
+  (forall x : R, eq (op x idx) x) ->
+  forall (X : Type)
+    (inst____at___Prosa_Util_Bigop1854683818__hygCtx__hyg52 : DecidableEq X)
+    (P : X -> Bool) (F : X -> R) (xs : List X) (i : X),
+  Membership_mem X (List X) (List_instMembership X) xs i ->
+  List_Nodup X xs ->
+  (forall x : X,
+   eq (P x)
+     (Decidable_decide (eq x i)
+        (inst____at___Prosa_Util_Bigop1854683818__hygCtx__hyg52 x i))) ->
+  eq (Prosa_Util_Bigop_bigSeq R X idx op P F xs) (F i)

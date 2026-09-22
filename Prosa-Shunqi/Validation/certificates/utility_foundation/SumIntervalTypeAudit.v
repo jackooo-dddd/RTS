@@ -28,10 +28,27 @@ Definition target_sum_le_range_exact_type_guard
     (sum_target_function f)
     (sub_nat_to_imported t) (sub_nat_to_imported delta).
 
+Definition target_big_sum_eq_exact_type_guard :
+  si_target_big_sum_eq_statement :=
+  ImportedSumInterval.Prosa_Util_Sum_big_sum_eq_in_eq_sized_intervals.
+
+Definition target_pigeonhole_exact_type_guard :
+  si_target_pigeonhole_statement :=
+  ImportedSumInterval.Prosa_Util_Sum_pigeonhole_on_interval.
+
+Definition target_sum_ge_2_nat_exact_type_guard :
+  si_target_sum_ge_2_nat_statement :=
+  ImportedSumInterval.Prosa_Util_Sum_sum_ge_2_nat.
+
 Check source_sum_of_ones_type_guard.
 Check source_big_nat_eq0_type_guard.
 Check source_sum_le_range_type_guard.
 Check target_sum_of_ones_exact_type_guard.
 Check target_big_nat_eq0_exact_type_guard.
 Check target_sum_le_range_exact_type_guard.
-
+Check source_big_sum_eq_type_guard.
+Check source_pigeonhole_type_guard.
+Check source_sum_ge_2_nat_type_guard.
+Check target_big_sum_eq_exact_type_guard.
+Check target_pigeonhole_exact_type_guard.
+Check target_sum_ge_2_nat_exact_type_guard.

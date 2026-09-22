@@ -1,0 +1,15 @@
+FREEZE_BEGIN Prosa.Util.Bigop.bigSeq
+@Prosa.Util.Bigop.bigSeq : {R : Type u_1} → {X : Type u_2} → R → (R → R → R) → (X → Bool) → (X → R) → List X → R
+def Prosa.Util.Bigop.bigSeq.{u, v} : {R : Type u} →
+  {X : Type v} → R → (R → R → R) → (X → Bool) → (X → R) → List X → R :=
+fun {R} {X} idx op P F x => List.brecOn x (Prosa.Util.Bigop.bigSeq._f idx op P F)
+FREEZE_END Prosa.Util.Bigop.bigSeq
+FREEZE_BEGIN Prosa.Util.Bigop.big_pred1_seq
+@Prosa.Util.Bigop.big_pred1_seq : ∀ {R : Type u_1} {idx : R} {op : R → R → R},
+  (∀ (x y z : R), op x (op y z) = op (op x y) z) →
+    (∀ (x : R), op idx x = x) →
+      (∀ (x : R), op x idx = x) →
+        ∀ {X : Type u_2} [inst : DecidableEq X] {P : X → Bool} {F : X → R} (xs : List X) (i : X),
+          i ∈ xs → xs.Nodup → (∀ (x : X), P x = decide (x = i)) → Prosa.Util.Bigop.bigSeq idx op P F xs = F i
+FREEZE_END Prosa.Util.Bigop.big_pred1_seq
+'Prosa.Util.Bigop.big_pred1_seq' depends on axioms: [propext]

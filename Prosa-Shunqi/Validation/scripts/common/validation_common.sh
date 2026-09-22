@@ -104,7 +104,7 @@ validation_rocq_compile() {
 
 validation_verify_tool_hashes() {
   if [[ $(validation_sha256 "$EXPORTER_ROOT/.lake/build/bin/lean4export") != \
-      83b3b72e910b521347d0d9b9f457f097ae99d5cfc0570337721f7434295b98de ]]; then
+      c20dbe1f14951dbcb2b806395f171d3e91e9bb5ccc22fa5cb63bd592a767e49b ]]; then
     echo "lean4export binary hash mismatch" >&2; return 1
   fi
   if [[ $(validation_sha256 "$IMPORTER_ROOT/src/lean_import.cmxs") != \

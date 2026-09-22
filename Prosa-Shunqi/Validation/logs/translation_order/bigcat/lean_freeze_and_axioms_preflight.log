@@ -1,0 +1,79 @@
+FREEZE_BEGIN Prosa.Util.Bigcat.mem_bigcat_nat
+@Prosa.Util.Bigcat.mem_bigcat_nat : ∀ {T : Type u_1} [DecidableEq T] (f : ℕ → List T) (x : T) (m n j : ℕ),
+  m ≤ j ∧ j < n → x ∈ f j → x ∈ Prosa.Util.Notation.bigCat m n f
+FREEZE_END Prosa.Util.Bigcat.mem_bigcat_nat
+'Prosa.Util.Bigcat.mem_bigcat_nat' depends on axioms: [propext, Quot.sound]
+FREEZE_BEGIN Prosa.Util.Bigcat.mem_bigcat_nat_exists
+@Prosa.Util.Bigcat.mem_bigcat_nat_exists : ∀ {T : Type u_1} [DecidableEq T] (f : ℕ → List T) (x : T) (m n : ℕ),
+  x ∈ Prosa.Util.Notation.bigCat m n f → ∃ i, x ∈ f i ∧ m ≤ i ∧ i < n
+FREEZE_END Prosa.Util.Bigcat.mem_bigcat_nat_exists
+'Prosa.Util.Bigcat.mem_bigcat_nat_exists' depends on axioms: [propext, Quot.sound]
+FREEZE_BEGIN Prosa.Util.Bigcat.mem_bigcat_ord
+@Prosa.Util.Bigcat.mem_bigcat_ord : ∀ {T : Type u_1} [DecidableEq T] (x : T) (n : ℕ) (j : Fin n) (g : Fin n → List T),
+  ↑j < n → x ∈ g j → x ∈ Prosa.Util.Bigcat.bigCatFin g
+FREEZE_END Prosa.Util.Bigcat.mem_bigcat_ord
+'Prosa.Util.Bigcat.mem_bigcat_ord' depends on axioms: [propext, Quot.sound]
+FREEZE_BEGIN Prosa.Util.Bigcat.bigcat_nat_uniq
+@Prosa.Util.Bigcat.bigcat_nat_uniq : ∀ {T : Type u_1} [DecidableEq T] (f : ℕ → List T),
+  (∀ (i : ℕ), (f i).Nodup) →
+    (∀ (x : T) (i₁ i₂ : ℕ), x ∈ f i₁ → x ∈ f i₂ → i₁ = i₂) → ∀ (n₁ n₂ : ℕ), (Prosa.Util.Notation.bigCat n₁ n₂ f).Nodup
+FREEZE_END Prosa.Util.Bigcat.bigcat_nat_uniq
+'Prosa.Util.Bigcat.bigcat_nat_uniq' depends on axioms: [propext, Classical.choice, Quot.sound]
+FREEZE_BEGIN Prosa.Util.Bigcat.bigcat_nat_filter_eq_filter_bigcat_nat
+@Prosa.Util.Bigcat.bigcat_nat_filter_eq_filter_bigcat_nat : ∀ {X : Type u_1} (F : ℕ → List X) (P : X → Bool)
+  (t₁ t₂ : ℕ),
+  List.filter P (Prosa.Util.Notation.bigCat t₁ t₂ F) = Prosa.Util.Notation.bigCat t₁ t₂ fun t => List.filter P (F t)
+FREEZE_END Prosa.Util.Bigcat.bigcat_nat_filter_eq_filter_bigcat_nat
+'Prosa.Util.Bigcat.bigcat_nat_filter_eq_filter_bigcat_nat' depends on axioms: [propext]
+FREEZE_BEGIN Prosa.Util.Bigcat.size_big_nat
+@Prosa.Util.Bigcat.size_big_nat : ∀ {X : Type u_1} (F : ℕ → List X) (t₁ t₂ : ℕ),
+  ∑ t ∈ Finset.Ico t₁ t₂, (F t).length = (Prosa.Util.Notation.bigCat t₁ t₂ F).length
+FREEZE_END Prosa.Util.Bigcat.size_big_nat
+'Prosa.Util.Bigcat.size_big_nat' depends on axioms: [propext, Classical.choice, Quot.sound]
+FREEZE_BEGIN Prosa.Util.Bigcat.mem_bigcat
+@Prosa.Util.Bigcat.mem_bigcat : ∀ {X : Type u_1} {Y : Type u_2} [DecidableEq X] [DecidableEq Y] (f : X → List Y) (x : X)
+  (y : Y) (s : List X), x ∈ s → y ∈ f x → y ∈ Prosa.Util.Bigcat.bigCatSeqAll s f
+FREEZE_END Prosa.Util.Bigcat.mem_bigcat
+'Prosa.Util.Bigcat.mem_bigcat' depends on axioms: [propext, Quot.sound]
+FREEZE_BEGIN Prosa.Util.Bigcat.mem_bigcat_exists
+@Prosa.Util.Bigcat.mem_bigcat_exists : ∀ {X : Type u_1} {Y : Type u_2} [DecidableEq X] [DecidableEq Y] (f : X → List Y)
+  (P : X → Bool) (s : List X), ∀ y ∈ Prosa.Util.Bigcat.bigCatSeq s P f, ∃ x ∈ s, y ∈ f x
+FREEZE_END Prosa.Util.Bigcat.mem_bigcat_exists
+'Prosa.Util.Bigcat.mem_bigcat_exists' depends on axioms: [propext, Quot.sound]
+FREEZE_BEGIN Prosa.Util.Bigcat.bigcat_filter_eq_filter_bigcat
+@Prosa.Util.Bigcat.bigcat_filter_eq_filter_bigcat : ∀ {X : Type u_1} {Y : Type u_2} [DecidableEq X] [DecidableEq Y]
+  (f : X → List Y) (xss : List X) (P : Y → Bool),
+  List.filter P (Prosa.Util.Bigcat.bigCatSeqAll xss f) = Prosa.Util.Bigcat.bigCatSeqAll xss fun x => List.filter P (f x)
+FREEZE_END Prosa.Util.Bigcat.bigcat_filter_eq_filter_bigcat
+'Prosa.Util.Bigcat.bigcat_filter_eq_filter_bigcat' depends on axioms: [propext]
+FREEZE_BEGIN Prosa.Util.Bigcat.bigcat_uniq
+@Prosa.Util.Bigcat.bigcat_uniq : ∀ {X : Type u_1} {Y : Type u_2} [DecidableEq X] [DecidableEq Y] (f : X → List Y)
+  {xs : List X} {P : X → Bool},
+  (∀ (x : X), P x = true → (f x).Nodup) →
+    (∀ (x : Y) (y z : X), x ∈ f y → x ∈ f z → y = z) → xs.Nodup → (Prosa.Util.Bigcat.bigCatSeq xs P f).Nodup
+FREEZE_END Prosa.Util.Bigcat.bigcat_uniq
+'Prosa.Util.Bigcat.bigcat_uniq' depends on axioms: [propext, Classical.choice, Quot.sound]
+FREEZE_BEGIN Prosa.Util.Bigcat.seq_different_elements_nil
+@Prosa.Util.Bigcat.seq_different_elements_nil : ∀ {X : Type u_1} {Y : Type u_2} [inst : DecidableEq X] [DecidableEq Y]
+  (f : X → List Y) (g : Y → X),
+  (∀ (x : X), ∀ y ∈ f x, g y = x) → ∀ (x₁ x₂ : X), x₁ ≠ x₂ → List.filter (fun x => decide (g x = x₂)) (f x₁) = []
+FREEZE_END Prosa.Util.Bigcat.seq_different_elements_nil
+'Prosa.Util.Bigcat.seq_different_elements_nil' depends on axioms: [propext, Classical.choice, Quot.sound]
+FREEZE_BEGIN Prosa.Util.Bigcat.bigcat_seq_uniqK
+@Prosa.Util.Bigcat.bigcat_seq_uniqK : ∀ {X : Type u_1} {Y : Type u_2} [inst : DecidableEq X] [DecidableEq Y]
+  (f : X → List Y) (g : Y → X),
+  (∀ (x : X), ∀ y ∈ f x, g y = x) →
+    ∀ (y : X) (xs : List X),
+      y ∈ xs →
+        xs.Nodup → (Prosa.Util.Bigcat.bigCatSeqAll xs fun x => List.filter (fun x' => decide (g x' = y)) (f x)) = f y
+FREEZE_END Prosa.Util.Bigcat.bigcat_seq_uniqK
+'Prosa.Util.Bigcat.bigcat_seq_uniqK' depends on axioms: [propext, Classical.choice, Quot.sound]
+FREEZE_BEGIN Prosa.Util.Bigcat.bigcat_partitions
+@Prosa.Util.Bigcat.bigcat_partitions : ∀ {X : Type u_1} {Y : Type u_2} [inst : DecidableEq X] [inst_1 : DecidableEq Y]
+  (xs : List X) (ys : List Y) (P : X → Bool) (xToY : X → Y),
+  (∀ x ∈ xs, P x = true → xToY x ∈ ys) →
+    ∀ (j : X),
+      decide (j ∈ List.filter P xs) =
+        decide (j ∈ Prosa.Util.Bigcat.bigCatSeqAll ys fun y => List.filter (fun x => P x && decide (xToY x = y)) xs)
+FREEZE_END Prosa.Util.Bigcat.bigcat_partitions
+'Prosa.Util.Bigcat.bigcat_partitions' depends on axioms: [propext, Quot.sound]

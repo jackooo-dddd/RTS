@@ -1,8 +1,14 @@
 # Reproducible validation tooling
 
 The semantic validator uses pinned, workspace-local builds of `lean4export`
-and `rocq-lean-import`.  Their checked-in patches reproduce the exact tracked
-changes used by FOUNDATION_SLICE_1; no semantic change is introduced here.
+and `rocq-lean-import`. Their checked-in patches reproduce the audited base
+tool state and the generic validation features used by the current pipeline.
+The exporter includes an opt-in
+`LEAN4EXPORT_PRESERVE_REDUCIBLE_THEOREM_TYPES=1` mode: after a selected
+subexpression projection has passed `Meta.isDefEq`, it preserves that projected
+expression instead of globally unfolding unrelated reducible terms. This is
+needed for theorem types containing Boolean recursors and does not bypass the
+kernel normalization guard.
 
 The Slice 1 importer worktree was based on local commit `c9f43ad…`, which is
 not fetchable from the official GitHub remote.  Its checked-in reproduction

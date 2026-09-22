@@ -1,5 +1,5 @@
 diff --git a/Export.lean b/Export.lean
-index 2e59aec..10c0fc7 100644
+index 2e59aec..b2a9df4 100644
 --- a/Export.lean
 +++ b/Export.lean
 @@ -79,6 +79,154 @@ partial def dumpExpr (e : Expr) : M Nat := do
@@ -88,7 +88,7 @@ index 2e59aec..10c0fc7 100644
 +      (← IO.getEnv "LEAN4EXPORT_NORMALIZE_SUBEXPRESSION_HEADS").getD ""
 +        |>.splitOn "\n" |>.filter (· != "")
 +    let projected ← normalizeSelectedSubexpressions subexpressionHeads type
-+    let reduced ← Meta.reduceAll projected
++    let reduced ← if (← IO.getEnv "LEAN4EXPORT_PRESERVE_REDUCIBLE_THEOREM_TYPES").getD "" == "1" then pure projected else Meta.reduceAll projected
 +    let equivalent ← Meta.isDefEq type reduced
 +    return (reduced, equivalent)
 +  let ((reduced, equivalent), _, _) ← Meta.MetaM.toIO action coreCtx coreState

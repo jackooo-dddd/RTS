@@ -1,0 +1,12 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedBigop.
+
+Check ImportedBigop.Prosa_Util_Bigop_bigSeq.
+Check ImportedBigop.Prosa_Util_Bigop_big_pred1_seq.
+Check ImportedBigop.Prosa_Validation_BigopInterface_production_bigSeq_nil.
+Check ImportedBigop.Prosa_Validation_BigopInterface_production_bigSeq_cons.
+Check ImportedBigop.List.
+Check ImportedBigop.List_Nodup.
+Check ImportedBigop.List_instMembership.
+Check ImportedBigop.Bool.
+Check ImportedBigop.DecidableEq.
