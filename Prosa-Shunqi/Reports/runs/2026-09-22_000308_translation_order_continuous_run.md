@@ -579,3 +579,22 @@ subtraction; no DivMod coverage is claimed yet.
 - This remains intermediate evidence. Formal coverage stays 19/357 files and
   171/2439 declarations until the remaining 15 statements and whole-file
   publication close.
+
+## 2026-09-22 21:04:15 — `util/all.v` aggregation boundary accepted
+
+- The authoritative file has no named declaration, so it was not passed as an
+  empty 0/0 declaration set. The validator compared all 18 official internal
+  `Require Export` entries with the translated Lean imports, audited all seven
+  external MathComp boundaries, and hash-verified all 18 accepted dependencies.
+- An actual compiled fixture importing only `Prosa.Util.All` resolved a
+  representative interface from every direct module and checked the exported
+  `ε` notation by kernel `rfl`; its fail-closed axiom audit is empty.
+- Export/Rocq-import/certificate stages are explicitly N/A because there is no
+  named source object. Module acceptance is compositional over the 18 already
+  semantically accepted dependencies, not a fabricated declaration certificate.
+- The formal isolated Lean build took 274.560 s; all other source, dependency,
+  audit, and publication stages together took less than 0.5 s. An attempted
+  broad Lake build exposed the cost of `import Mathlib` in `Nondecreasing` and
+  was replaced by the isolated relevant-closure build.
+- Cumulative acceptance is now 21/357 files and 204/2439 declarations, with
+  zero translated-but-not-certified debt. Rank 22 `behavior/job.v` is next.

@@ -32,4 +32,7 @@ This compiled probe observes that `ε` elaborates to the natural numeral one
 when only `Prosa.Util.All` is imported. -/
 def Prosa.Validation.UtilAllInterface.epsilonValue : Nat := ε
 
-example : Prosa.Validation.UtilAllInterface.epsilonValue = 1 := rfl
+theorem Prosa.Validation.UtilAllInterface.epsilonValue_eq_one :
+    Prosa.Validation.UtilAllInterface.epsilonValue = 1 := rfl
+
+#print axioms Prosa.Validation.UtilAllInterface.epsilonValue_eq_one
