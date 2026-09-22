@@ -38,23 +38,22 @@ Current canonical reports, in the approved execution order:
 | 16 | `util/poet.v` | [poet](files/util/2026-09-22_044913_poet.md) | `ACCEPTED_V06_FILE` |
 | 17 | `util/bigcat.v` | [bigcat](files/util/2026-09-22_053020_bigcat.md) | `ACCEPTED_V06_FILE` |
 | 18 | `util/minmax.v` | [minmax](files/util/2026-09-22_082537_minmax.md) | `ACCEPTED_V06_FILE` |
-| 19 | `util/div_mod.v` | [div_mod](files/util/2026-09-22_103919_div_mod.md) | `TRANSLATION_IN_PROGRESS` |
+| 19 | `util/div_mod.v` | [div_mod](files/util/2026-09-22_103919_div_mod.md) | `ACCEPTED_V06_FILE` |
+| 20 | `util/nondecreasing.v` | [nondecreasing](files/util/2026-09-22_133028_nondecreasing.md) | `TRANSLATION_IN_PROGRESS` |
 
 ## Current proof progress
 
-Machine-published acceptance is now **18 / 357 source files** and
-**156 / 2439 public declarations**, with **0 translated-but-not-certified**.
-The latest completed file is `util/minmax.v`: all 10 declarations are
+Machine-published acceptance is now **19 / 357 source files** and
+**171 / 2439 public declarations**, with **0 translated-but-not-certified**.
+The latest completed file is `util/div_mod.v`: all 15 declarations are
 translated, Lean proof-clean, semantically certified against a fresh actual
 artifact, assumption-audited, and content-addressed in the published manifest.
-All 10 theorem certificates are
+Its reusable bridge relates MathComp quotient, remainder, and Boolean
+divisibility to imported Lean `Nat.div`, `Nat.mod`, and `Dvd`, including the
+zero-divisor cases and truncated subtraction. All 15 certificates are
 `CERTIFIED_WITH_PROP_SPROP_FOUNDATION`; none has a semantic premise or a
-source/target theorem self-dependency. The informative MathComp `reflect`
-statement was retained as Type-valued source evidence and related
-structurally rather than being flattened into a source proposition. The next
-dependency-ready unfinished file in the approved order is `util/div_mod.v`;
-its source-contract and division/modulo representation preflight has started,
-but its declarations do not yet count toward accepted coverage.
+source/target theorem self-dependency. The next dependency-ready unfinished
+file in the approved order is rank 20, `util/nondecreasing.v`.
 
 The formal scheduling document is
 [`../v06_file_translation_order.md`](../v06_file_translation_order.md).

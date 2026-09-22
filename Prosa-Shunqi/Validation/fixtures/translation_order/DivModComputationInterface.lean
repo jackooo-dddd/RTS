@@ -13,7 +13,7 @@ theorem production_div_ceil_eq (x y : Nat) :
 
 /-- Euclidean computation facts for the exact target `Nat.div`/`Nat.mod`. -/
 theorem production_div_add_mod (x y : Nat) :
-    x / y * y + x % y = x := Nat.div_add_mod x y
+    y * (x / y) + x % y = x := Nat.div_add_mod x y
 
 theorem production_mod_lt (x y : Nat) (hy : 0 < y) :
     x % y < y := Nat.mod_lt x hy

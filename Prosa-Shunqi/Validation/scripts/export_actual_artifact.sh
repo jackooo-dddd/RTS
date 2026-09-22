@@ -41,6 +41,12 @@ if len(targets) != len(set(targets)) or not targets:
     raise SystemExit("export targets must be a nonempty unique list")
 for key in ("statement_only", "body_theorems", "definition_targets"):
     unknown = set(c[key]) - set(targets)
+    if key == "statement_only":
+        # The audited exporter supports `*` as a generic request to omit all
+        # theorem proof bodies in the transitive export closure.  This keeps
+        # Lean's proof dependency graph out of an independent semantic
+        # certificate while retaining each theorem's exact compiled type.
+        unknown.discard("*")
     if unknown:
         raise SystemExit(f"{key} contains non-targets: {sorted(unknown)}")
 n = c["normalization"]

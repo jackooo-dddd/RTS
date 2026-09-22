@@ -467,3 +467,34 @@ subtraction; no DivMod coverage is claimed yet.
   gates were unchanged. A first failed finalize was retained as evidence: it
   found an ambiguous `True` marker and a shell hook error-propagation flaw,
   and no result was published until both were corrected.
+
+## 2026-09-22 13:14:02 — DivMod semantic DAG closes in Rocq
+
+- Added a reusable quotient/remainder/divisibility correspondence layer that
+  works from the imported computation interface rather than unfolding the
+  large `Nat.brecOn` implementation.
+- All 15 declaration certificates and all exact imported-type guards compile
+  in Rocq 9.3. The fail-closed classifier reports no semantic premise, no
+  source or target theorem self-dependency, and no unexpected assumption.
+- A publication preflight correctly rejected an incomplete Lean axiom-audit
+  configuration for the two computation definitions. Both definitions were
+  added to the audit; `div_floor` is axiom-free and `div_ceil` transparently
+  records its standard `propext` dependency.
+- Coverage remained 156/2439 until a new content-addressed prepare/finalize
+  run could bind these proofs to current artifacts.
+
+## 2026-09-22 13:26:13 — `util/div_mod.v` accepted
+
+- Fresh snapshot
+  `f525d2797714840b193125320d10766d3165655c9bfdf996e2bb42cd31593c8c`
+  passed Lean build, official-source acquisition, actual Lean export, and Rocq
+  import. Stage times were 46.648 s, 3.701 s, 9.991 s, and 2.718 s.
+- The check and finalize runs hash-verified and reused all four prepared
+  stages. Final certificate compilation, audit, and publication passed in
+  5.864 s, 0.125 s, and 0.372 s respectively.
+- All 15 declarations are `ACCEPTED_V06_TRANSLATION` and
+  `CERTIFIED_WITH_PROP_SPROP_FOUNDATION`; semantic premises and unexpected
+  assumptions are empty and source/target self-dependencies are false.
+- Cumulative state is now 19/357 files and 171/2439 declarations, with zero
+  translated-but-not-certified debt. Rank 20 `util/nondecreasing.v` is the
+  next READY unfinished file.

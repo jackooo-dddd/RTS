@@ -177,6 +177,7 @@ export VALIDATION_PREPARED="$prepared"
 export VALIDATION_PHASE_WORK="$work"
 export VALIDATION_RUN_LOG="$run_log"
 export VALIDATION_SNAPSHOT_ID="$snapshot_id"
+export VALIDATION_PREPARE_EVIDENCE="$prepare_evidence"
 validation_prepare_lean_path "$work"
 validation_check_setup
 

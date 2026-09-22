@@ -8,9 +8,78 @@ import json
 import re
 from pathlib import Path
 
-LINE = re.compile(
-    r"^'(.+)' (?:does not depend on any axioms|depends on axioms: \[([^]]*)\])$"
-)
+NO_AXIOMS_LINE = re.compile(r"^'(.+)' does not depend on any axioms$")
+AXIOMS_START = re.compile(r"^'(.+)' depends on axioms: \[(.*)$")
+
+
+def parse_axiom_results(text: str) -> dict[str, list[str]]:
+    """Parse Lean's pretty-printed ``#print axioms`` results.
+
+    Lean line-wraps a long axiom list according to the pretty-printer width.  A
+    wrapped result is still one machine result, so collect continuation lines
+    through the closing bracket.  Truncated or malformed records fail closed
+    instead of being silently treated as missing output.
+    """
+
+    found: dict[str, list[str]] = {}
+    pending_name: str | None = None
+    pending_parts: list[str] = []
+
+    def record(name: str, body: str) -> None:
+        if name in found:
+            raise SystemExit(f"duplicate #print axioms result: {name}")
+        found[name] = [item.strip() for item in body.split(",") if item.strip()]
+
+    for line_number, raw_line in enumerate(text.splitlines(), start=1):
+        line = raw_line.strip()
+        if pending_name is not None:
+            if AXIOMS_START.match(line) or NO_AXIOMS_LINE.match(line):
+                raise SystemExit(
+                    "AUDIT_TRUNCATED: new #print axioms result before closing "
+                    f"result for {pending_name} at line {line_number}"
+                )
+            if "]" in line:
+                before, after = line.split("]", 1)
+                if after.strip():
+                    raise SystemExit(
+                        "AUDIT_MALFORMED: trailing text after axiom list for "
+                        f"{pending_name} at line {line_number}: {after.strip()}"
+                    )
+                pending_parts.append(before)
+                record(pending_name, " ".join(pending_parts))
+                pending_name = None
+                pending_parts = []
+            else:
+                pending_parts.append(line)
+            continue
+
+        no_axioms = NO_AXIOMS_LINE.match(line)
+        if no_axioms:
+            record(no_axioms.group(1), "")
+            continue
+
+        axioms = AXIOMS_START.match(line)
+        if not axioms:
+            continue
+        name, remainder = axioms.groups()
+        if "]" in remainder:
+            before, after = remainder.split("]", 1)
+            if after.strip():
+                raise SystemExit(
+                    "AUDIT_MALFORMED: trailing text after axiom list for "
+                    f"{name} at line {line_number}: {after.strip()}"
+                )
+            record(name, before)
+        else:
+            pending_name = name
+            pending_parts = [remainder]
+
+    if pending_name is not None:
+        raise SystemExit(
+            "AUDIT_TRUNCATED: missing closing bracket for #print axioms result "
+            f"for {pending_name}"
+        )
+    return found
 
 
 def main() -> int:
@@ -24,17 +93,7 @@ def main() -> int:
 
     config = json.loads(args.config.read_text())
     expected = config["declarations"]
-    found: dict[str, list[str]] = {}
-    for line in args.log.read_text(errors="replace").splitlines():
-        match = LINE.match(line.strip())
-        if not match:
-            continue
-        name = match.group(1)
-        if name in found:
-            raise SystemExit(f"duplicate #print axioms result: {name}")
-        found[name] = [] if match.group(2) is None else [
-            item.strip() for item in match.group(2).split(",") if item.strip()
-        ]
+    found = parse_axiom_results(args.log.read_text(errors="replace"))
 
     missing = sorted(set(expected) - set(found))
     extra = sorted(set(found) - set(expected))

@@ -28,10 +28,12 @@ import Prosa.Util.Div_mod
 #eval IO.println "FREEZE_BEGIN Prosa.Util.Div_mod.div_floor"
 #check @Prosa.Util.Div_mod.div_floor
 #eval IO.println "FREEZE_END Prosa.Util.Div_mod.div_floor"
+#print axioms Prosa.Util.Div_mod.div_floor
 
 #eval IO.println "FREEZE_BEGIN Prosa.Util.Div_mod.div_ceil"
 #check @Prosa.Util.Div_mod.div_ceil
 #eval IO.println "FREEZE_END Prosa.Util.Div_mod.div_ceil"
+#print axioms Prosa.Util.Div_mod.div_ceil
 
 #eval IO.println "FREEZE_BEGIN Prosa.Util.Div_mod.div_ceil0"
 #check @Prosa.Util.Div_mod.div_ceil0
