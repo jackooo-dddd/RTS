@@ -1,0 +1,76 @@
+{
+  "slice": "TRANSLATION_ORDER_UTIL_NONDECREASING",
+  "selected_at": "2026-09-22T13:30:28+08:00",
+  "source_file": "util/nondecreasing.v",
+  "source_commit": "414e66760333eaa4ef78c685bcf53291c527a548",
+  "source_file_sha256": "34c20d63e8e9bf22691466a247704518093ea66e8e89ed3c913891ba425b93a3",
+  "execution_rank": 20,
+  "file_layer": 2,
+  "loc": 824,
+  "direct_internal_dependencies": [
+    {"file": "util/epsilon.v", "status": "ACCEPTED_V06_FILE"},
+    {"file": "util/list.v", "status": "ACCEPTED_V06_FILE"},
+    {"file": "util/nat.v", "status": "ACCEPTED_V06_FILE"}
+  ],
+  "file_dag_ready": true,
+  "public_declaration_count": 33,
+  "migration_actions": {
+    "REUSE_AFTER_REVALIDATION": 3,
+    "ADAPT_OLD_LEAN": 29,
+    "NEW_TRANSLATION": 1
+  },
+  "representation_boundaries": [
+    "Rocq seq Nat <-> Lean List Nat preserving order and multiplicity",
+    "MathComp defaulted nth <-> Lean List.getD with default zero",
+    "MathComp undup <-> Lean List.dedup",
+    "MathComp Bool filter/membership <-> Lean Bool-backed List operations",
+    "Nat truncated subtraction/order/max",
+    "Prop/SProp theorem-statement boundary"
+  ],
+  "semantic_batches": [
+    {
+      "name": "definitions_and_order",
+      "declarations": [
+        "nondecreasing_sequence", "increasing_sequence", "distances",
+        "iota_is_increasing_sequence", "increasing_implies_nondecreasing",
+        "nondec_seq_zero_first", "nondecreasing_sequence_2cons_leVeq",
+        "nondecreasing_sequence_cons", "nondecreasing_sequence_add_min",
+        "nondecreasing_sequence_cons_double",
+        "nondecreasing_sequence_cons_min",
+        "nondecreasing_sequence_cons_smin",
+        "antidensity_of_nondecreasing_seq",
+        "belonging_to_segment_of_seq_is_total",
+        "last_is_max_in_nondecreasing_seq"
+      ]
+    },
+    {
+      "name": "dedup",
+      "declarations": [
+        "nodup_sort_2cons_eq", "nodup_sort_2cons_lt", "last0_undup",
+        "nondecreasing_sequence_undup", "undup_nth_le"
+      ]
+    },
+    {
+      "name": "distance_computation",
+      "declarations": [
+        "distances_unfold_2cons", "distances_unfold_2app_last",
+        "distances_unfold_1app_last",
+        "distance_between_neighboring_elements_le_max_distance_in_seq",
+        "function_of_distances_is_correct", "size_of_seq_of_distances",
+        "distances_of_iota_ε"
+      ]
+    },
+    {
+      "name": "distance_properties",
+      "declarations": [
+        "max_distance_in_nontrivial_seq_is_positive",
+        "last_seq_minus_last_distance_seq",
+        "max_distance_in_seq_le_last_element_of_seq",
+        "distances_iota_filtered", "distances_positive_undup",
+        "domination_of_distances_implies_domination_of_seq"
+      ]
+    }
+  ],
+  "expected_validation_class": "COMPOSE_EXISTING_BRIDGES_PLUS_DISTANCE_OPERATION_CERTIFICATE",
+  "status": "SELECTED_TRANSLATION_IN_PROGRESS"
+}

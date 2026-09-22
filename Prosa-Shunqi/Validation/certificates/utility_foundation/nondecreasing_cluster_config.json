@@ -1,0 +1,507 @@
+{
+  "source_file": "util/nondecreasing.v",
+  "validation_source_file": "GeneratedNondecreasingSource.v",
+  "source_validation_vo": "GeneratedNondecreasingSource.vo",
+  "source_acquisition_metadata": "nondecreasing_source_extraction.json",
+  "lean_file": "Prosa/Util/Nondecreasing.lean",
+  "lean_prefix": "Prosa.Util.Nondecreasing.",
+  "artifact_stem": "Nondecreasing",
+  "additional_evidence": {
+    "exact_type_audit_source": {
+      "base": "validation",
+      "path": "certificates/utility_foundation/NondecreasingTypeAudit.v"
+    },
+    "exact_type_audit_vo": {
+      "base": "work",
+      "path": "certificates/NondecreasingTypeAudit.vo"
+    },
+    "computation_interface_source": {
+      "base": "validation",
+      "path": "fixtures/translation_order/NondecreasingComputationInterface.lean"
+    },
+    "computation_interface_olean": {
+      "base": "work",
+      "path": "olean/Validation/fixtures/translation_order/NondecreasingComputationInterface.olean"
+    },
+    "normalization_guards_source": {
+      "base": "validation",
+      "path": "fixtures/translation_order/NondecreasingNormalizationGuards.lean"
+    },
+    "normalization_guards_log": {
+      "base": "work",
+      "path": "normalization_guards.log"
+    },
+    "artifact_adapter_source": {
+      "base": "validation",
+      "path": "certificates/common/NondecreasingBaseAdapter.v"
+    },
+    "artifact_adapter_vo": {
+      "base": "work",
+      "path": "certificates/NondecreasingBaseAdapter.vo"
+    }
+  },
+  "declarations": {
+    "nondecreasing_sequence": {
+      "audit_key": "nondecreasing_sequence",
+      "certificate": "nondecreasing_sequence_definition_certificate",
+      "certificate_file": "NondecreasingCorrespondence.v",
+      "semantic_relation": "pointwise Nat order correspondence over related ordered sequences and actual defaulted lookup/length operations",
+      "bridge_files": [
+        "PropSPropFoundation.v",
+        "LogicalRelation.v",
+        "SubadditivityNatCorrespondence.v",
+        "NatSubCorrespondence.v",
+        "NondecreasingBaseAdapter.v",
+        "NondecreasingCorrespondence.v"
+      ]
+    },
+    "increasing_sequence": {
+      "audit_key": "increasing_sequence",
+      "certificate": "increasing_sequence_definition_certificate",
+      "certificate_file": "NondecreasingCorrespondence.v",
+      "semantic_relation": "pointwise strict Nat order correspondence over related ordered sequences and actual defaulted lookup/length operations",
+      "bridge_files": [
+        "PropSPropFoundation.v",
+        "LogicalRelation.v",
+        "SubadditivityNatCorrespondence.v",
+        "NatSubCorrespondence.v",
+        "NondecreasingBaseAdapter.v",
+        "NondecreasingCorrespondence.v"
+      ]
+    },
+    "distances": {
+      "audit_key": "distances",
+      "certificate": "distances_definition_certificate",
+      "certificate_file": "NondecreasingCorrespondence.v",
+      "semantic_relation": "operational correspondence for actual zip/drop/map/truncated-subtraction distance computation on related ordered sequences",
+      "bridge_files": [
+        "PropSPropFoundation.v",
+        "LogicalRelation.v",
+        "SubadditivityNatCorrespondence.v",
+        "NatSubCorrespondence.v",
+        "NondecreasingBaseAdapter.v",
+        "NondecreasingCorrespondence.v"
+      ]
+    },
+    "iota_is_increasing_sequence": {
+      "audit_key": "iota_is_increasing_sequence",
+      "certificate": "iota_is_increasing_sequence_correspondence_certificate",
+      "certificate_file": "NondecreasingSimpleCertificate.v",
+      "semantic_relation": "composition of certified half-open index_iota/range, filter, order, and logical correspondence",
+      "bridge_files": [
+        "PropSPropFoundation.v",
+        "LogicalRelation.v",
+        "SubadditivityNatCorrespondence.v",
+        "NatSubCorrespondence.v",
+        "NondecreasingBaseAdapter.v",
+        "NondecreasingCorrespondence.v"
+      ]
+    },
+    "increasing_implies_nondecreasing": {
+      "audit_key": "increasing_implies_nondecreasing",
+      "certificate": "increasing_implies_nondecreasing_correspondence_certificate",
+      "certificate_file": "NondecreasingSimpleCertificate.v",
+      "semantic_relation": "composition of certified ordered seq/List, Nat arithmetic/order, membership, and logical correspondence",
+      "bridge_files": [
+        "PropSPropFoundation.v",
+        "LogicalRelation.v",
+        "SubadditivityNatCorrespondence.v",
+        "NatSubCorrespondence.v",
+        "NondecreasingBaseAdapter.v",
+        "NondecreasingCorrespondence.v"
+      ]
+    },
+    "nondec_seq_zero_first": {
+      "audit_key": "nondec_seq_zero_first",
+      "certificate": "nondec_seq_zero_first_correspondence_certificate",
+      "certificate_file": "NondecreasingSimpleCertificate.v",
+      "semantic_relation": "composition of certified ordered seq/List, Nat arithmetic/order, membership, and logical correspondence",
+      "bridge_files": [
+        "PropSPropFoundation.v",
+        "LogicalRelation.v",
+        "SubadditivityNatCorrespondence.v",
+        "NatSubCorrespondence.v",
+        "NondecreasingBaseAdapter.v",
+        "NondecreasingCorrespondence.v"
+      ]
+    },
+    "nondecreasing_sequence_2cons_leVeq": {
+      "audit_key": "nondecreasing_sequence_2cons_leVeq",
+      "certificate": "nondecreasing_sequence_2cons_leVeq_correspondence_certificate",
+      "certificate_file": "NondecreasingSimpleCertificate.v",
+      "semantic_relation": "composition of certified ordered seq/List, Nat arithmetic/order, membership, and logical correspondence",
+      "bridge_files": [
+        "PropSPropFoundation.v",
+        "LogicalRelation.v",
+        "SubadditivityNatCorrespondence.v",
+        "NatSubCorrespondence.v",
+        "NondecreasingBaseAdapter.v",
+        "NondecreasingCorrespondence.v"
+      ]
+    },
+    "nondecreasing_sequence_cons": {
+      "audit_key": "nondecreasing_sequence_cons",
+      "certificate": "nondecreasing_sequence_cons_correspondence_certificate",
+      "certificate_file": "NondecreasingSimpleCertificate.v",
+      "semantic_relation": "composition of certified ordered seq/List, Nat arithmetic/order, membership, and logical correspondence",
+      "bridge_files": [
+        "PropSPropFoundation.v",
+        "LogicalRelation.v",
+        "SubadditivityNatCorrespondence.v",
+        "NatSubCorrespondence.v",
+        "NondecreasingBaseAdapter.v",
+        "NondecreasingCorrespondence.v"
+      ]
+    },
+    "nondecreasing_sequence_add_min": {
+      "audit_key": "nondecreasing_sequence_add_min",
+      "certificate": "nondecreasing_sequence_add_min_correspondence_certificate",
+      "certificate_file": "NondecreasingSimpleCertificate.v",
+      "semantic_relation": "composition of certified ordered seq/List, Nat arithmetic/order, membership, and logical correspondence",
+      "bridge_files": [
+        "PropSPropFoundation.v",
+        "LogicalRelation.v",
+        "SubadditivityNatCorrespondence.v",
+        "NatSubCorrespondence.v",
+        "NondecreasingBaseAdapter.v",
+        "NondecreasingCorrespondence.v"
+      ]
+    },
+    "nondecreasing_sequence_cons_double": {
+      "audit_key": "nondecreasing_sequence_cons_double",
+      "certificate": "nondecreasing_sequence_cons_double_correspondence_certificate",
+      "certificate_file": "NondecreasingSimpleCertificate.v",
+      "semantic_relation": "composition of certified ordered seq/List, Nat arithmetic/order, membership, and logical correspondence",
+      "bridge_files": [
+        "PropSPropFoundation.v",
+        "LogicalRelation.v",
+        "SubadditivityNatCorrespondence.v",
+        "NatSubCorrespondence.v",
+        "NondecreasingBaseAdapter.v",
+        "NondecreasingCorrespondence.v"
+      ]
+    },
+    "nondecreasing_sequence_cons_min": {
+      "audit_key": "nondecreasing_sequence_cons_min",
+      "certificate": "nondecreasing_sequence_cons_min_correspondence_certificate",
+      "certificate_file": "NondecreasingSimpleCertificate.v",
+      "semantic_relation": "composition of certified ordered seq/List, Nat arithmetic/order, membership, and logical correspondence",
+      "bridge_files": [
+        "PropSPropFoundation.v",
+        "LogicalRelation.v",
+        "SubadditivityNatCorrespondence.v",
+        "NatSubCorrespondence.v",
+        "NondecreasingBaseAdapter.v",
+        "NondecreasingCorrespondence.v"
+      ]
+    },
+    "nondecreasing_sequence_cons_smin": {
+      "audit_key": "nondecreasing_sequence_cons_smin",
+      "certificate": "nondecreasing_sequence_cons_smin_correspondence_certificate",
+      "certificate_file": "NondecreasingSimpleCertificate.v",
+      "semantic_relation": "composition of certified ordered seq/List, Nat arithmetic/order, membership, and logical correspondence",
+      "bridge_files": [
+        "PropSPropFoundation.v",
+        "LogicalRelation.v",
+        "SubadditivityNatCorrespondence.v",
+        "NatSubCorrespondence.v",
+        "NondecreasingBaseAdapter.v",
+        "NondecreasingCorrespondence.v"
+      ]
+    },
+    "antidensity_of_nondecreasing_seq": {
+      "audit_key": "antidensity_of_nondecreasing_seq",
+      "certificate": "antidensity_of_nondecreasing_seq_correspondence_certificate",
+      "certificate_file": "NondecreasingSimpleCertificate.v",
+      "semantic_relation": "composition of certified ordered seq/List, Nat arithmetic/order, membership, and logical correspondence",
+      "bridge_files": [
+        "PropSPropFoundation.v",
+        "LogicalRelation.v",
+        "SubadditivityNatCorrespondence.v",
+        "NatSubCorrespondence.v",
+        "NondecreasingBaseAdapter.v",
+        "NondecreasingCorrespondence.v"
+      ]
+    },
+    "belonging_to_segment_of_seq_is_total": {
+      "audit_key": "belonging_to_segment_of_seq_is_total",
+      "certificate": "belonging_to_segment_of_seq_is_total_correspondence_certificate",
+      "certificate_file": "NondecreasingSimpleCertificate.v",
+      "semantic_relation": "composition of certified ordered seq/List, Nat arithmetic/order, membership, and logical correspondence",
+      "bridge_files": [
+        "PropSPropFoundation.v",
+        "LogicalRelation.v",
+        "SubadditivityNatCorrespondence.v",
+        "NatSubCorrespondence.v",
+        "NondecreasingBaseAdapter.v",
+        "NondecreasingCorrespondence.v"
+      ]
+    },
+    "last_is_max_in_nondecreasing_seq": {
+      "audit_key": "last_is_max_in_nondecreasing_seq",
+      "certificate": "last_is_max_in_nondecreasing_seq_correspondence_certificate",
+      "certificate_file": "NondecreasingSimpleCertificate.v",
+      "semantic_relation": "composition of certified ordered seq/List, Nat arithmetic/order, membership, and logical correspondence",
+      "bridge_files": [
+        "PropSPropFoundation.v",
+        "LogicalRelation.v",
+        "SubadditivityNatCorrespondence.v",
+        "NatSubCorrespondence.v",
+        "NondecreasingBaseAdapter.v",
+        "NondecreasingCorrespondence.v"
+      ]
+    },
+    "nodup_sort_2cons_eq": {
+      "audit_key": "nodup_sort_2cons_eq",
+      "certificate": "nodup_sort_2cons_eq_correspondence_certificate",
+      "certificate_file": "NondecreasingSimpleCertificate.v",
+      "semantic_relation": "composition of certified ordered undup/dedup, membership/equality, Nat/List operations, and logical correspondence",
+      "bridge_files": [
+        "PropSPropFoundation.v",
+        "LogicalRelation.v",
+        "SubadditivityNatCorrespondence.v",
+        "NatSubCorrespondence.v",
+        "NondecreasingBaseAdapter.v",
+        "NondecreasingCorrespondence.v"
+      ]
+    },
+    "nodup_sort_2cons_lt": {
+      "audit_key": "nodup_sort_2cons_lt",
+      "certificate": "nodup_sort_2cons_lt_correspondence_certificate",
+      "certificate_file": "NondecreasingSimpleCertificate.v",
+      "semantic_relation": "composition of certified ordered undup/dedup, membership/equality, Nat/List operations, and logical correspondence",
+      "bridge_files": [
+        "PropSPropFoundation.v",
+        "LogicalRelation.v",
+        "SubadditivityNatCorrespondence.v",
+        "NatSubCorrespondence.v",
+        "NondecreasingBaseAdapter.v",
+        "NondecreasingCorrespondence.v"
+      ]
+    },
+    "last0_undup": {
+      "audit_key": "last0_undup",
+      "certificate": "last0_undup_correspondence_certificate",
+      "certificate_file": "NondecreasingSimpleCertificate.v",
+      "semantic_relation": "composition of certified ordered undup/dedup, membership/equality, Nat/List operations, and logical correspondence",
+      "bridge_files": [
+        "PropSPropFoundation.v",
+        "LogicalRelation.v",
+        "SubadditivityNatCorrespondence.v",
+        "NatSubCorrespondence.v",
+        "NondecreasingBaseAdapter.v",
+        "NondecreasingCorrespondence.v"
+      ]
+    },
+    "nondecreasing_sequence_undup": {
+      "audit_key": "nondecreasing_sequence_undup",
+      "certificate": "nondecreasing_sequence_undup_correspondence_certificate",
+      "certificate_file": "NondecreasingSimpleCertificate.v",
+      "semantic_relation": "composition of certified ordered undup/dedup, membership/equality, Nat/List operations, and logical correspondence",
+      "bridge_files": [
+        "PropSPropFoundation.v",
+        "LogicalRelation.v",
+        "SubadditivityNatCorrespondence.v",
+        "NatSubCorrespondence.v",
+        "NondecreasingBaseAdapter.v",
+        "NondecreasingCorrespondence.v"
+      ]
+    },
+    "undup_nth_le": {
+      "audit_key": "undup_nth_le",
+      "certificate": "undup_nth_le_correspondence_certificate",
+      "certificate_file": "NondecreasingSimpleCertificate.v",
+      "semantic_relation": "composition of certified ordered undup/dedup, membership/equality, Nat/List operations, and logical correspondence",
+      "bridge_files": [
+        "PropSPropFoundation.v",
+        "LogicalRelation.v",
+        "SubadditivityNatCorrespondence.v",
+        "NatSubCorrespondence.v",
+        "NondecreasingBaseAdapter.v",
+        "NondecreasingCorrespondence.v"
+      ]
+    },
+    "distances_unfold_2cons": {
+      "audit_key": "distances_unfold_2cons",
+      "certificate": "distances_unfold_2cons_correspondence_certificate",
+      "certificate_file": "NondecreasingSimpleCertificate.v",
+      "semantic_relation": "composition of certified distances operation, ordered List/Nat operations, arithmetic, and logical correspondence",
+      "bridge_files": [
+        "PropSPropFoundation.v",
+        "LogicalRelation.v",
+        "SubadditivityNatCorrespondence.v",
+        "NatSubCorrespondence.v",
+        "NondecreasingBaseAdapter.v",
+        "NondecreasingCorrespondence.v"
+      ]
+    },
+    "distances_unfold_2app_last": {
+      "audit_key": "distances_unfold_2app_last",
+      "certificate": "distances_unfold_2app_last_correspondence_certificate",
+      "certificate_file": "NondecreasingSimpleCertificate.v",
+      "semantic_relation": "composition of certified distances operation, ordered List/Nat operations, arithmetic, and logical correspondence",
+      "bridge_files": [
+        "PropSPropFoundation.v",
+        "LogicalRelation.v",
+        "SubadditivityNatCorrespondence.v",
+        "NatSubCorrespondence.v",
+        "NondecreasingBaseAdapter.v",
+        "NondecreasingCorrespondence.v"
+      ]
+    },
+    "distances_unfold_1app_last": {
+      "audit_key": "distances_unfold_1app_last",
+      "certificate": "distances_unfold_1app_last_correspondence_certificate",
+      "certificate_file": "NondecreasingSimpleCertificate.v",
+      "semantic_relation": "composition of certified distances operation, ordered List/Nat operations, arithmetic, and logical correspondence",
+      "bridge_files": [
+        "PropSPropFoundation.v",
+        "LogicalRelation.v",
+        "SubadditivityNatCorrespondence.v",
+        "NatSubCorrespondence.v",
+        "NondecreasingBaseAdapter.v",
+        "NondecreasingCorrespondence.v"
+      ]
+    },
+    "distance_between_neighboring_elements_le_max_distance_in_seq": {
+      "audit_key": "distance_between_neighboring_elements_le_max_distance_in_seq",
+      "certificate": "distance_between_neighboring_elements_le_max_distance_in_seq_correspondence_certificate",
+      "certificate_file": "NondecreasingSimpleCertificate.v",
+      "semantic_relation": "composition of certified distances operation, ordered List/Nat operations, arithmetic, and logical correspondence",
+      "bridge_files": [
+        "PropSPropFoundation.v",
+        "LogicalRelation.v",
+        "SubadditivityNatCorrespondence.v",
+        "NatSubCorrespondence.v",
+        "NondecreasingBaseAdapter.v",
+        "NondecreasingCorrespondence.v"
+      ]
+    },
+    "function_of_distances_is_correct": {
+      "audit_key": "function_of_distances_is_correct",
+      "certificate": "function_of_distances_is_correct_correspondence_certificate",
+      "certificate_file": "NondecreasingSimpleCertificate.v",
+      "semantic_relation": "composition of certified distances operation, ordered List/Nat operations, arithmetic, and logical correspondence",
+      "bridge_files": [
+        "PropSPropFoundation.v",
+        "LogicalRelation.v",
+        "SubadditivityNatCorrespondence.v",
+        "NatSubCorrespondence.v",
+        "NondecreasingBaseAdapter.v",
+        "NondecreasingCorrespondence.v"
+      ]
+    },
+    "size_of_seq_of_distances": {
+      "audit_key": "size_of_seq_of_distances",
+      "certificate": "size_of_seq_of_distances_correspondence_certificate",
+      "certificate_file": "NondecreasingSimpleCertificate.v",
+      "semantic_relation": "composition of certified distances operation, ordered List/Nat operations, arithmetic, and logical correspondence",
+      "bridge_files": [
+        "PropSPropFoundation.v",
+        "LogicalRelation.v",
+        "SubadditivityNatCorrespondence.v",
+        "NatSubCorrespondence.v",
+        "NondecreasingBaseAdapter.v",
+        "NondecreasingCorrespondence.v"
+      ]
+    },
+    "distances_of_iota_ε": {
+      "audit_key": "distances_of_iota_epsilon",
+      "certificate": "distances_of_iota_epsilon_correspondence_certificate",
+      "certificate_file": "NondecreasingSimpleCertificate.v",
+      "semantic_relation": "composition of certified distances operation, ordered List/Nat operations, arithmetic, and logical correspondence",
+      "bridge_files": [
+        "PropSPropFoundation.v",
+        "LogicalRelation.v",
+        "SubadditivityNatCorrespondence.v",
+        "NatSubCorrespondence.v",
+        "NondecreasingBaseAdapter.v",
+        "NondecreasingCorrespondence.v"
+      ]
+    },
+    "max_distance_in_nontrivial_seq_is_positive": {
+      "audit_key": "max_distance_in_nontrivial_seq_is_positive",
+      "certificate": "max_distance_in_nontrivial_seq_is_positive_correspondence_certificate",
+      "certificate_file": "NondecreasingSimpleCertificate.v",
+      "semantic_relation": "composition of certified distances operation, ordered List/Nat operations, arithmetic, and logical correspondence",
+      "bridge_files": [
+        "PropSPropFoundation.v",
+        "LogicalRelation.v",
+        "SubadditivityNatCorrespondence.v",
+        "NatSubCorrespondence.v",
+        "NondecreasingBaseAdapter.v",
+        "NondecreasingCorrespondence.v"
+      ]
+    },
+    "last_seq_minus_last_distance_seq": {
+      "audit_key": "last_seq_minus_last_distance_seq",
+      "certificate": "last_seq_minus_last_distance_seq_correspondence_certificate",
+      "certificate_file": "NondecreasingSimpleCertificate.v",
+      "semantic_relation": "composition of certified distances operation, ordered List/Nat operations, arithmetic, and logical correspondence",
+      "bridge_files": [
+        "PropSPropFoundation.v",
+        "LogicalRelation.v",
+        "SubadditivityNatCorrespondence.v",
+        "NatSubCorrespondence.v",
+        "NondecreasingBaseAdapter.v",
+        "NondecreasingCorrespondence.v"
+      ]
+    },
+    "max_distance_in_seq_le_last_element_of_seq": {
+      "audit_key": "max_distance_in_seq_le_last_element_of_seq",
+      "certificate": "max_distance_in_seq_le_last_element_of_seq_correspondence_certificate",
+      "certificate_file": "NondecreasingSimpleCertificate.v",
+      "semantic_relation": "composition of certified distances operation, ordered List/Nat operations, arithmetic, and logical correspondence",
+      "bridge_files": [
+        "PropSPropFoundation.v",
+        "LogicalRelation.v",
+        "SubadditivityNatCorrespondence.v",
+        "NatSubCorrespondence.v",
+        "NondecreasingBaseAdapter.v",
+        "NondecreasingCorrespondence.v"
+      ]
+    },
+    "distances_iota_filtered": {
+      "audit_key": "distances_iota_filtered",
+      "certificate": "distances_iota_filtered_correspondence_certificate",
+      "certificate_file": "NondecreasingSimpleCertificate.v",
+      "semantic_relation": "composition of certified distances operation, ordered List/Nat operations, arithmetic, and logical correspondence",
+      "bridge_files": [
+        "PropSPropFoundation.v",
+        "LogicalRelation.v",
+        "SubadditivityNatCorrespondence.v",
+        "NatSubCorrespondence.v",
+        "NondecreasingBaseAdapter.v",
+        "NondecreasingCorrespondence.v"
+      ]
+    },
+    "distances_positive_undup": {
+      "audit_key": "distances_positive_undup",
+      "certificate": "distances_positive_undup_correspondence_certificate",
+      "certificate_file": "NondecreasingSimpleCertificate.v",
+      "semantic_relation": "composition of certified ordered undup/dedup, membership/equality, Nat/List operations, and logical correspondence",
+      "bridge_files": [
+        "PropSPropFoundation.v",
+        "LogicalRelation.v",
+        "SubadditivityNatCorrespondence.v",
+        "NatSubCorrespondence.v",
+        "NondecreasingBaseAdapter.v",
+        "NondecreasingCorrespondence.v"
+      ]
+    },
+    "domination_of_distances_implies_domination_of_seq": {
+      "audit_key": "domination_of_distances_implies_domination_of_seq",
+      "certificate": "domination_of_distances_implies_domination_of_seq_correspondence_certificate",
+      "certificate_file": "NondecreasingSimpleCertificate.v",
+      "semantic_relation": "composition of certified distances operation, ordered List/Nat operations, arithmetic, and logical correspondence",
+      "bridge_files": [
+        "PropSPropFoundation.v",
+        "LogicalRelation.v",
+        "SubadditivityNatCorrespondence.v",
+        "NatSubCorrespondence.v",
+        "NondecreasingBaseAdapter.v",
+        "NondecreasingCorrespondence.v"
+      ]
+    }
+  }
+}

@@ -18,13 +18,16 @@ import subprocess
 from pathlib import Path
 
 
+IDENTIFIER_RE = r"(?:[^\W\d]|_)[\w']*"
+IDENTIFIER_BOUNDARY_RE = r"(?![\w'])"
+
 DECL_RE = re.compile(
     r"(?ms)^[ \t]*(?:Lemma|Theorem|Fact|Corollary|Remark|Proposition)\s+"
-    r"([A-Za-z0-9_']+)(?![A-Za-z0-9_']).*?^[^\n]*(?:Qed|Defined)\.[ \t]*$"
+    rf"({IDENTIFIER_RE}){IDENTIFIER_BOUNDARY_RE}.*?^[^\n]*(?:Qed|Defined)\.[ \t]*$"
 )
 BODY_RE = re.compile(
     r"(?ms)^[ \t]*(?:Fixpoint|CoFixpoint|Definition)\s+"
-    r"([A-Za-z0-9_']+)(?![A-Za-z0-9_']).*?\.[ \t]*$"
+    rf"({IDENTIFIER_RE}){IDENTIFIER_BOUNDARY_RE}.*?\.[ \t]*$"
     r"(?:\n(?:[ \t]*\n)*[ \t]*Proof\.[ \t]*$.*?^[^\n]*Defined\.[ \t]*$)?"
 )
 
@@ -51,13 +54,14 @@ def active_context(text: str, stop: int) -> list[str]:
     i = 0
     while i < len(lines):
         stripped = lines[i].strip()
-        if re.match(r"^Section\s+[A-Za-z0-9_']+\.$", stripped):
+        if re.match(rf"^Section\s+{IDENTIFIER_RE}\.$", stripped):
             frames.append([])
-        elif re.match(r"^End(?:\s+[A-Za-z0-9_']+)?\.$", stripped):
+        elif re.match(rf"^End(?:\s+{IDENTIFIER_RE})?\.$", stripped):
             if len(frames) > 1:
                 frames.pop()
         elif re.match(
-            r"^(?:Variable|Variables|Hypothesis|Hypotheses|Context|Local\s+Context)\b",
+            r"^(?:Variable|Variables|Hypothesis|Hypotheses|Context|"
+            r"Local\s+Context|Notation|Local\s+Notation)\b",
             stripped,
         ):
             command = [lines[i]]
@@ -73,7 +77,7 @@ def theorem_statement(name: str, block: str) -> str:
     header = re.split(r"(?m)^[ \t]*Proof\.", block, maxsplit=1)[0].strip()
     match = re.match(
         rf"(?s)^(?:Lemma|Theorem|Fact|Corollary|Remark|Proposition)\s+"
-        rf"{re.escape(name)}(?![A-Za-z0-9_'])(.*)\.\s*$",
+        rf"{re.escape(name)}{IDENTIFIER_BOUNDARY_RE}(.*)\.\s*$",
         header,
     )
     if not match:

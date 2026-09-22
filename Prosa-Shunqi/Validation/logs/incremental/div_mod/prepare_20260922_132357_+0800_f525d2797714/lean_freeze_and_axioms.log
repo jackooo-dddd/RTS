@@ -1,0 +1,64 @@
+FREEZE_BEGIN Prosa.Util.Div_mod.eqdivn_leqmodn
+Prosa.Util.Div_mod.eqdivn_leqmodn : ∀ (t₁ t₂ h : ℕ), t₁ ≤ t₂ → t₁ / h = t₂ / h → t₁ % h ≤ t₂ % h
+FREEZE_END Prosa.Util.Div_mod.eqdivn_leqmodn
+'Prosa.Util.Div_mod.eqdivn_leqmodn' depends on axioms: [propext, Quot.sound]
+FREEZE_BEGIN Prosa.Util.Div_mod.ltdivn_dvdn
+Prosa.Util.Div_mod.ltdivn_dvdn : ∀ (x y : ℕ), x / y < (x + 1) / y → y ∣ x + 1
+FREEZE_END Prosa.Util.Div_mod.ltdivn_dvdn
+'Prosa.Util.Div_mod.ltdivn_dvdn' depends on axioms: [propext, Quot.sound]
+FREEZE_BEGIN Prosa.Util.Div_mod.addn1_modn_commute
+Prosa.Util.Div_mod.addn1_modn_commute : ∀ (x h : ℕ), 0 < h → x / h = (x + 1) / h → (x + 1) % h = x % h + 1
+FREEZE_END Prosa.Util.Div_mod.addn1_modn_commute
+'Prosa.Util.Div_mod.addn1_modn_commute' depends on axioms: [propext, Quot.sound]
+FREEZE_BEGIN Prosa.Util.Div_mod.addmod_le_mod
+Prosa.Util.Div_mod.addmod_le_mod : ∀ (x y h : ℕ), 0 < h → x / h = (x + y) / h → x % h + y % h < h
+FREEZE_END Prosa.Util.Div_mod.addmod_le_mod
+'Prosa.Util.Div_mod.addmod_le_mod' depends on axioms: [propext, Quot.sound]
+FREEZE_BEGIN Prosa.Util.Div_mod.divn_leq
+Prosa.Util.Div_mod.divn_leq : ∀ (k T x : ℕ), k * T ≤ x ∧ x < (k + 1) * T → x / T = k
+FREEZE_END Prosa.Util.Div_mod.divn_leq
+'Prosa.Util.Div_mod.divn_leq' depends on axioms: [propext]
+FREEZE_BEGIN Prosa.Util.Div_mod.div_floor
+Prosa.Util.Div_mod.div_floor : ℕ → ℕ → ℕ
+FREEZE_END Prosa.Util.Div_mod.div_floor
+'Prosa.Util.Div_mod.div_floor' does not depend on any axioms
+FREEZE_BEGIN Prosa.Util.Div_mod.div_ceil
+Prosa.Util.Div_mod.div_ceil : ℕ → ℕ → ℕ
+FREEZE_END Prosa.Util.Div_mod.div_ceil
+'Prosa.Util.Div_mod.div_ceil' depends on axioms: [propext]
+FREEZE_BEGIN Prosa.Util.Div_mod.div_ceil0
+Prosa.Util.Div_mod.div_ceil0 : ∀ (b : ℕ), Prosa.Util.Div_mod.div_ceil 0 b = 0
+FREEZE_END Prosa.Util.Div_mod.div_ceil0
+'Prosa.Util.Div_mod.div_ceil0' depends on axioms: [propext]
+FREEZE_BEGIN Prosa.Util.Div_mod.div_ceil_gt0
+Prosa.Util.Div_mod.div_ceil_gt0 : ∀ (a b : ℕ), 0 < a → 0 < b → 0 < Prosa.Util.Div_mod.div_ceil a b
+FREEZE_END Prosa.Util.Div_mod.div_ceil_gt0
+'Prosa.Util.Div_mod.div_ceil_gt0' depends on axioms: [propext, Classical.choice, Quot.sound]
+FREEZE_BEGIN Prosa.Util.Div_mod.div_ceil_monotone1
+Prosa.Util.Div_mod.div_ceil_monotone1 : ∀ (d m n : ℕ),
+  m ≤ n → Prosa.Util.Div_mod.div_ceil m d ≤ Prosa.Util.Div_mod.div_ceil n d
+FREEZE_END Prosa.Util.Div_mod.div_ceil_monotone1
+'Prosa.Util.Div_mod.div_ceil_monotone1' depends on axioms: [propext, Classical.choice, Quot.sound]
+FREEZE_BEGIN Prosa.Util.Div_mod.leq_div_ceil_add1
+Prosa.Util.Div_mod.leq_div_ceil_add1 : ∀ (delta T : ℕ),
+  0 < T → T ≤ delta → Prosa.Util.Div_mod.div_ceil (delta - T) T < Prosa.Util.Div_mod.div_ceil delta T
+FREEZE_END Prosa.Util.Div_mod.leq_div_ceil_add1
+'Prosa.Util.Div_mod.leq_div_ceil_add1' depends on axioms: [propext, Quot.sound]
+FREEZE_BEGIN Prosa.Util.Div_mod.div_ceil_subadditive
+Prosa.Util.Div_mod.div_ceil_subadditive : ∀ (T : ℕ),
+  Prosa.Util.Subadditivity.subadditive fun x => Prosa.Util.Div_mod.div_ceil x T
+FREEZE_END Prosa.Util.Div_mod.div_ceil_subadditive
+'Prosa.Util.Div_mod.div_ceil_subadditive' depends on axioms: [propext, Classical.choice, Quot.sound]
+FREEZE_BEGIN Prosa.Util.Div_mod.div_ceil_multiple
+Prosa.Util.Div_mod.div_ceil_multiple : ∀ (delta T n : ℕ),
+  0 < T → T * n < delta → n < Prosa.Util.Div_mod.div_ceil delta T
+FREEZE_END Prosa.Util.Div_mod.div_ceil_multiple
+'Prosa.Util.Div_mod.div_ceil_multiple' depends on axioms: [propext, Classical.choice, Quot.sound]
+FREEZE_BEGIN Prosa.Util.Div_mod.div_floor_add_g
+Prosa.Util.Div_mod.div_floor_add_g : ∀ (a b : ℕ), 0 < b → a < Prosa.Util.Div_mod.div_floor a b * b + b
+FREEZE_END Prosa.Util.Div_mod.div_floor_add_g
+'Prosa.Util.Div_mod.div_floor_add_g' depends on axioms: [propext, Quot.sound]
+FREEZE_BEGIN Prosa.Util.Div_mod.mod_elim
+Prosa.Util.Div_mod.mod_elim : ∀ (a b c : ℕ), b < c → (a + c - b) % c = if b ≤ a % c then a % c - b else a % c + c - b
+FREEZE_END Prosa.Util.Div_mod.mod_elim
+'Prosa.Util.Div_mod.mod_elim' depends on axioms: [propext, Quot.sound]

@@ -108,11 +108,11 @@ validation_verify_tool_hashes() {
     echo "lean4export binary hash mismatch" >&2; return 1
   fi
   if [[ $(validation_sha256 "$IMPORTER_ROOT/src/lean_import.cmxs") != \
-      2ab657f4f558a95ecebd55b22583c02008cdef832ab41d6f63c6059e224648cf ]]; then
+      c3a10b84f88ff66a3fcff8e15e3c0a6a307592b45726c612fa8a95b061d97982 ]]; then
     echo "rocq-lean-import plugin hash mismatch" >&2; return 1
   fi
   if [[ $(validation_sha256 "$IMPORTER_ROOT/src/Lean.vo") != \
-      05dd63bab81628b306e363edba53523e5f3e6f0ada73075db5fa220e245794b3 ]]; then
+      0ec01795b0a3d6646fb72824262eb7888677ac3ee4cbfc665f6a68309c54fd70 ]]; then
     echo "rocq-lean-import foundation hash mismatch" >&2; return 1
   fi
 }

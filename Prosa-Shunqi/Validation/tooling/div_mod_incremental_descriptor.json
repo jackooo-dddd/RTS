@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "scope": "translation_order_util_div_mod",
+  "inputs": [
+    {"name": "lean_toolchain", "root": "project", "path": "lean-toolchain"},
+    {"name": "lakefile", "root": "project", "path": "lakefile.lean"},
+    {"name": "lake_manifest", "root": "project", "path": "lake-manifest.json"},
+    {"name": "lean_tactics", "root": "project", "path": "Prosa/Util/Tactics.lean"},
+    {"name": "lean_nat", "root": "project", "path": "Prosa/Util/Nat.lean"},
+    {"name": "lean_subadditivity", "root": "project", "path": "Prosa/Util/Subadditivity.lean"},
+    {"name": "lean_div_mod", "root": "project", "path": "Prosa/Util/Div_mod.lean"},
+    {"name": "lean_interface", "root": "validation", "path": "fixtures/translation_order/DivModComputationInterface.lean"},
+    {"name": "lean_audit", "root": "validation", "path": "fixtures/translation_order/LeanDivModAudit.lean"},
+    {"name": "lean_audit_config", "root": "validation", "path": "fixtures/translation_order/div_mod_lean_axiom_config.json"},
+    {"name": "source_tactics", "root": "source", "path": "util/tactics.v"},
+    {"name": "source_nat", "root": "source", "path": "util/nat.v"},
+    {"name": "source_subadditivity", "root": "source", "path": "util/subadditivity.v"},
+    {"name": "source_div_mod", "root": "source", "path": "util/div_mod.v"},
+    {"name": "source_tactics_patch", "root": "validation", "path": "patches/prosa-v06-rocq93-util-tactics.patch"},
+    {"name": "source_type_evidence", "root": "validation", "path": "planning/v06_dependency/declaration_type_evidence.json"},
+    {"name": "source_extractor", "root": "validation", "path": "scripts/extract_v06_semantic_source.py"},
+    {"name": "export_config", "root": "validation", "path": "tooling/div_mod_export_config.json"},
+    {"name": "import_fixture", "root": "validation", "path": "fixtures/translation_order/ImportedDivMod.v"},
+    {"name": "nat_status", "root": "validation", "path": "planning/v06_pipeline/utility_foundation_expansion_status.json"},
+    {"name": "subadditivity_status", "root": "validation", "path": "planning/v06_pipeline/foundation_slice_2_closure_status.json"},
+    {"name": "previous_translation_status", "root": "validation", "path": "planning/v06_pipeline/minmax_module_status.json"},
+    {"name": "lean4export", "root": "exporter", "path": ".lake/build/bin/lean4export"},
+    {"name": "rocq_import", "root": "importer", "path": "src/lean_import.cmxs"},
+    {"name": "rocq_foundation", "root": "importer", "path": "src/Lean.vo"}
+  ],
+  "git_repositories": [
+    {"name": "authoritative_source", "root": "source", "path": "", "require_clean": true},
+    {"name": "mathlib", "root": "project", "path": ".lake/packages/mathlib", "require_clean": true}
+  ],
+  "command_inputs": [
+    {"name": "lean_version", "argv": ["lean", "--version"]},
+    {"name": "rocq_version", "argv": ["opam", "exec", "--switch=rocq93rc1", "--", "rocq", "--version"]}
+  ],
+  "module_loading": {
+    "lean_root": "project",
+    "rocq_source_prefix": "prosa",
+    "imported_prefix": "FoundationImported",
+    "certificate_prefix": "FoundationCertificates",
+    "autoImplicit": false
+  },
+  "prepared_outputs": {
+    "lean_build": [
+      "olean/Prosa/Util/Tactics.olean",
+      "olean/Prosa/Util/Nat.olean",
+      "olean/Prosa/Util/Subadditivity.olean",
+      "olean/Prosa/Util/Div_mod.olean",
+      "olean/Validation/fixtures/translation_order/DivModComputationInterface.olean",
+      "lean_freeze_and_axioms.log",
+      "lean_axiom_summary.json"
+    ],
+    "source_acquisition": [
+      "source/util/tactics.vo",
+      "source/util/nat.vo",
+      "source/util/subadditivity.vo",
+      "source/GeneratedDivModSource.v",
+      "source/GeneratedDivModSource.vo",
+      "source/div_mod_source_extraction.json"
+    ],
+    "export": [
+      "imported/DivMod.out",
+      "imported/div_mod_export_metadata.json"
+    ],
+    "rocq_import": [
+      "imported/ImportedDivMod.v",
+      "imported/ImportedDivMod.vo"
+    ]
+  }
+}

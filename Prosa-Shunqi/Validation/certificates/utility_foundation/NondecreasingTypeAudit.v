@@ -1,0 +1,108 @@
+From mathcomp Require Import eqtype seq.
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedNondecreasing.
+From FoundationCertificates Require Import
+  NondecreasingCorrespondence NondecreasingSimpleCertificate.
+From prosa Require Import GeneratedNondecreasingSource.
+
+(** Exact imported-type guards.  This module may mention the imported target
+    theorem constants; the semantic certificate modules do not. *)
+Check ImportedNondecreasing.Prosa_Util_Nondecreasing_iota_is_increasing_sequence
+  : nd_target_iota_is_increasing_sequence.
+
+Check ImportedNondecreasing.Prosa_Util_Nondecreasing_distances_of_iota__UU03b5_
+  : nd_target_distances_of_iota_epsilon.
+
+Check ImportedNondecreasing.Prosa_Util_Nondecreasing_distances_iota_filtered
+  : nd_target_distances_iota_filtered.
+
+Check ImportedNondecreasing.Prosa_Util_Nondecreasing_increasing_implies_nondecreasing
+  : nd_target_increasing_implies_nondecreasing.
+
+Check ImportedNondecreasing.Prosa_Util_Nondecreasing_nondecreasing_sequence_cons
+  : nd_target_nondecreasing_sequence_cons.
+
+Check ImportedNondecreasing.Prosa_Util_Nondecreasing_nondec_seq_zero_first
+  : nd_target_nondec_seq_zero_first.
+
+Check ImportedNondecreasing.Prosa_Util_Nondecreasing_nondecreasing_sequence_2cons_leVeq
+  : nd_target_nondecreasing_sequence_2cons_leVeq.
+
+Check ImportedNondecreasing.Prosa_Util_Nondecreasing_nondecreasing_sequence_cons_double
+  : nd_target_nondecreasing_sequence_cons_double.
+
+Check ImportedNondecreasing.Prosa_Util_Nondecreasing_nondecreasing_sequence_add_min
+  : nd_target_nondecreasing_sequence_add_min.
+
+Check ImportedNondecreasing.Prosa_Util_Nondecreasing_nondecreasing_sequence_cons_min
+  : nd_target_nondecreasing_sequence_cons_min.
+
+Check ImportedNondecreasing.Prosa_Util_Nondecreasing_nondecreasing_sequence_cons_smin
+  : nd_target_nondecreasing_sequence_cons_smin.
+
+Check ImportedNondecreasing.Prosa_Util_Nondecreasing_last_is_max_in_nondecreasing_seq
+  : nd_target_last_is_max_in_nondecreasing_seq.
+
+Check ImportedNondecreasing.Prosa_Util_Nondecreasing_antidensity_of_nondecreasing_seq
+  : nd_target_antidensity_of_nondecreasing_seq.
+
+Check ImportedNondecreasing.Prosa_Util_Nondecreasing_belonging_to_segment_of_seq_is_total
+  : nd_target_belonging_to_segment_of_seq_is_total.
+
+Check ImportedNondecreasing.Prosa_Util_Nondecreasing_distances_unfold_2cons
+  : nd_target_distances_unfold_2cons.
+
+Check ImportedNondecreasing.Prosa_Util_Nondecreasing_distances_unfold_2app_last
+  : nd_target_distances_unfold_2app_last.
+
+Check ImportedNondecreasing.Prosa_Util_Nondecreasing_distances_unfold_1app_last
+  : nd_target_distances_unfold_1app_last.
+
+Check ImportedNondecreasing.Prosa_Util_Nondecreasing_distance_between_neighboring_elements_le_max_distance_in_seq
+  : nd_target_distance_between_neighboring_elements_le_max_distance_in_seq.
+
+Check ImportedNondecreasing.Prosa_Util_Nondecreasing_max_distance_in_seq_le_last_element_of_seq
+  : nd_target_max_distance_in_seq_le_last_element_of_seq.
+
+Check ImportedNondecreasing.Prosa_Util_Nondecreasing_last_seq_minus_last_distance_seq
+  : nd_target_last_seq_minus_last_distance_seq.
+
+Check ImportedNondecreasing.Prosa_Util_Nondecreasing_max_distance_in_nontrivial_seq_is_positive
+  : nd_target_max_distance_in_nontrivial_seq_is_positive.
+
+Check ImportedNondecreasing.Prosa_Util_Nondecreasing_domination_of_distances_implies_domination_of_seq
+  : nd_target_domination_of_distances_implies_domination_of_seq.
+
+Check ImportedNondecreasing.Prosa_Util_Nondecreasing_function_of_distances_is_correct
+  : nd_target_function_of_distances_is_correct.
+
+Check ImportedNondecreasing.Prosa_Util_Nondecreasing_size_of_seq_of_distances
+  : nd_target_size_of_seq_of_distances.
+
+Check ImportedNondecreasing.Prosa_Util_Nondecreasing_nodup_sort_2cons_eq_inst1
+  : nd_target_nodup_sort_2cons_eq_exact.
+
+Check ImportedNondecreasing.Prosa_Util_Nondecreasing_nodup_sort_2cons_lt
+  : nd_target_nodup_sort_2cons_lt.
+
+Check ImportedNondecreasing.Prosa_Util_Nondecreasing_last0_undup
+  : nd_target_last0_undup.
+
+Check ImportedNondecreasing.Prosa_Util_Nondecreasing_nondecreasing_sequence_undup
+  : nd_target_nondecreasing_sequence_undup.
+
+Check ImportedNondecreasing.Prosa_Util_Nondecreasing_undup_nth_le
+  : nd_target_undup_nth_le.
+
+Check ImportedNondecreasing.Prosa_Util_Nondecreasing_distances_positive_undup
+  : nd_target_distances_positive_undup.
+
+Definition nd_source_nodup_sort_2cons_eq_exact_guard :
+  Logic.eq GeneratedNondecreasingSource.statement_nodup_sort_2cons_eq
+    (forall (T : eqType) (x : T) (xs : seq T),
+      Logic.eq (undup (x :: x :: xs)) (undup (x :: xs))) :=
+  Logic.eq_refl _.
+
+Check nondecreasing_sequence_definition_certificate.
+Check increasing_sequence_definition_certificate.
+Check distances_definition_certificate.

@@ -39,21 +39,19 @@ Current canonical reports, in the approved execution order:
 | 17 | `util/bigcat.v` | [bigcat](files/util/2026-09-22_053020_bigcat.md) | `ACCEPTED_V06_FILE` |
 | 18 | `util/minmax.v` | [minmax](files/util/2026-09-22_082537_minmax.md) | `ACCEPTED_V06_FILE` |
 | 19 | `util/div_mod.v` | [div_mod](files/util/2026-09-22_103919_div_mod.md) | `ACCEPTED_V06_FILE` |
-| 20 | `util/nondecreasing.v` | [nondecreasing](files/util/2026-09-22_133028_nondecreasing.md) | `TRANSLATION_IN_PROGRESS` |
+| 20 | `util/nondecreasing.v` | [nondecreasing](files/util/2026-09-22_133028_nondecreasing.md) | `ACCEPTED_V06_FILE` |
 
 ## Current proof progress
 
-Machine-published acceptance is now **19 / 357 source files** and
-**171 / 2439 public declarations**, with **0 translated-but-not-certified**.
-The latest completed file is `util/div_mod.v`: all 15 declarations are
+Machine-published acceptance is now **20 / 357 source files** and
+**204 / 2439 public declarations**, with **0 translated-but-not-certified**.
+The latest completed file is `util/nondecreasing.v`: all 33 declarations are
 translated, Lean proof-clean, semantically certified against a fresh actual
 artifact, assumption-audited, and content-addressed in the published manifest.
-Its reusable bridge relates MathComp quotient, remainder, and Boolean
-divisibility to imported Lean `Nat.div`, `Nat.mod`, and `Dvd`, including the
-zero-divisor cases and truncated subtraction. All 15 certificates are
-`CERTIFIED_WITH_PROP_SPROP_FOUNDATION`; none has a semantic premise or a
+One certificate is plain `CERTIFIED`; 32 accurately expose the approved
+Prop/SProp foundation. None has a semantic premise, unexpected assumption, or
 source/target theorem self-dependency. The next dependency-ready unfinished
-file in the approved order is rank 20, `util/nondecreasing.v`.
+file in the approved order is rank 21, `util/all.v`.
 
 The formal scheduling document is
 [`../v06_file_translation_order.md`](../v06_file_translation_order.md).

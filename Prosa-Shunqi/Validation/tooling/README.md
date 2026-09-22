@@ -14,8 +14,12 @@ The Slice 1 importer worktree was based on local commit `c9f43ad…`, which is
 not fetchable from the official GitHub remote.  Its checked-in reproduction
 therefore starts from reachable upstream commit `546979b…`; the importer patch
 contains both the complete `546979b… -> c9f43ad…` UInt32 change and the later
-Rocq 9.3 compatibility edits.  This yields the same tracked source state as the
-tool used in Slice 1.
+Rocq 9.3 compatibility edits. It additionally fixes recursor generation for
+an inductive such as `Option` whose sort is squashable only at some universe
+instances: the importer now decides Type-versus-SProp elimination from the
+current instantiated result sort, rather than from the global inductive
+classification. This is needed for the actual `List.getD` computation exported
+by `util/nondecreasing.v`; it adds no axiom or semantic assumption.
 
 Run:
 

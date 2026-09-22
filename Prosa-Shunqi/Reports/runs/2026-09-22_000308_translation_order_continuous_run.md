@@ -498,3 +498,84 @@ subtraction; no DivMod coverage is claimed yet.
 - Cumulative state is now 19/357 files and 171/2439 declarations, with zero
   translated-but-not-certified debt. Rank 20 `util/nondecreasing.v` is the
   next READY unfinished file.
+
+## 2026-09-22 15:09:20 — Nondecreasing artifact import unblocked
+
+- The 33/33 compiled, proof-clean Lean candidates remain unpublished while
+  semantic certificates are built.
+- Root isolation showed that `List.getD`, not `distances` or theorem proof
+  bodies, triggered the large import closure. Guarded normalization reduced it
+  to `Option.rec` over `List.get?Internal`.
+- A per-universe-instance importer fix now generates the Type recursor for
+  concrete `Option Nat`; the isolated lookup and the complete normalized
+  33-target artifact both import successfully.
+- The complete import also confirmed that Rocq needs the existing 65,520 KiB
+  stack setting; the earlier exit 139 at `Char.ofNat` disappears with that
+  setting. Four normalized production/interface bodies have kernel-checked
+  Lean guards. Coverage is intentionally unchanged at 171/2439 until the Rocq
+  correspondence and assumption gates close.
+
+## 2026-09-22 17:14:18 — Nondecreasing source and base operation layer closed
+
+- The pinned v0.6 source extractor was hardened for Unicode declaration names
+  and active Section notation. It now acquires and Rocq-compiles all 33 exact
+  declarations: three computational bodies and 30 proof-omitted exact
+  statements with elaborated-type evidence.
+- A stale validation-interface `.olean` was detected and explicitly rebuilt.
+  The corrected 499,500-byte export retains real proof bodies for five
+  computation equations while making only the 30 business theorems
+  statement-only. Its Rocq import succeeds under the approved importer patch.
+- The imported `nthD` equations no longer pull the original Lean/Mathlib proof
+  dependency graph into the semantic assumptions. The generated artifact
+  adapter plus Nat/List operation certificate now kernel-check roundtrip,
+  order, length, and zero-defaulted lookup correspondence with no semantic
+  premise. Formal coverage deliberately remains 19/357 files and 171/2439
+  declarations pending definition and theorem-statement closure.
+
+## 2026-09-22 17:38:41 — Nondecreasing definitions semantically closed
+
+- `nondecreasing_sequence` and `increasing_sequence` now have compositional
+  Rocq correspondence proofs over the actual imported Lean bodies, reusing
+  Nat order, length, and zero-defaulted lookup bridges.
+- `distances` now has a constructor-recursive correspondence proof. Three
+  kernel-`rfl` equations expose the actual production computation without
+  unfolding the full Lean List implementation, and the proof reuses the
+  certified truncated-Nat-subtraction correspondence.
+- This is 3/33 semantic proofs compiled, not yet 3 accepted declarations.
+  The 30 theorem statements and the whole-file exact-type/assumption/publication
+  gates remain. Cumulative accepted coverage therefore stays 171/2439.
+
+## 2026-09-22 20:32:21 — `util/nondecreasing.v` accepted
+
+- All 33 actual-artifact correspondence certificates and exact imported-type
+  guards compile in Rocq 9.3. The assumption audit classifies one result as
+  `CERTIFIED` and 32 as `CERTIFIED_WITH_PROP_SPROP_FOUNDATION`, with no
+  semantic premise, unexpected assumption, or source/target self-dependency.
+- Fresh snapshot
+  `a5138d1bff3fba1096912e16393f42b082851bd0d174c3da3215ef1e41dc7cea`
+  passed all seven measured stages. Lean build/source/export/import/certificate
+  compile/audit/publication took 263.922/3.581/48.483/37.042/7.718/0.137/0.519
+  seconds respectively.
+- The clean reproduction caught and fixed two infrastructure mistakes before
+  publication: an audit-summary `jq` precedence bug, and accidental direct
+  compilation of legacy `util/list.v` under Rocq 9.3. It also rejected stale
+  Nat/Subadditivity imports and regenerated them against the current importer.
+- Cumulative acceptance is now 20/357 files and 204/2439 declarations, with
+  zero translated-but-not-certified debt. Rank 21 `util/all.v` is next.
+
+## 2026-09-22 18:15:58 — Nondecreasing reaches 18/33 kernel-compiled correspondences
+
+- Fifteen theorem-statement certificates now compose the three certified
+  definitions with reusable Nat/List/order/lookup bridges. Each target has an
+  exact type guard against the actual imported Lean constant.
+- New reusable operation proofs cover MathComp Boolean membership versus the
+  imported Nat-specialized Lean `List.Mem`, Boolean nonmembership, `first0`,
+  `last0`, and append. They have already been reused across minimum,
+  endpoint, antidensity, and appended-distance statements.
+- The new certificates have no semantic premises and no source/target theorem
+  self-dependency. Their visible non-kernel boundary remains only the approved
+  `interpret_strict` Prop/SProp foundation, alongside importer equality/UIP
+  primitives.
+- This remains intermediate evidence. Formal coverage stays 19/357 files and
+  171/2439 declarations until the remaining 15 statements and whole-file
+  publication close.

@@ -1,0 +1,258 @@
+{
+  "schema_version": 1,
+  "scope": "translation_order_util_nondecreasing",
+  "inputs": [
+    {
+      "name": "lean_toolchain",
+      "root": "project",
+      "path": "lean-toolchain"
+    },
+    {
+      "name": "lakefile",
+      "root": "project",
+      "path": "lakefile.lean"
+    },
+    {
+      "name": "lake_manifest",
+      "root": "project",
+      "path": "lake-manifest.json"
+    },
+    {
+      "name": "lean_tactics",
+      "root": "project",
+      "path": "Prosa/Util/Tactics.lean"
+    },
+    {
+      "name": "lean_supremum",
+      "root": "project",
+      "path": "Prosa/Util/Supremum.lean"
+    },
+    {
+      "name": "lean_list",
+      "root": "project",
+      "path": "Prosa/Util/List.lean"
+    },
+    {
+      "name": "lean_epsilon",
+      "root": "project",
+      "path": "Prosa/Util/Epsilon.lean"
+    },
+    {
+      "name": "lean_nat",
+      "root": "project",
+      "path": "Prosa/Util/Nat.lean"
+    },
+    {
+      "name": "lean_nondecreasing",
+      "root": "project",
+      "path": "Prosa/Util/Nondecreasing.lean"
+    },
+    {
+      "name": "lean_interface",
+      "root": "validation",
+      "path": "fixtures/translation_order/NondecreasingComputationInterface.lean"
+    },
+    {
+      "name": "lean_normalization_guards",
+      "root": "validation",
+      "path": "fixtures/translation_order/NondecreasingNormalizationGuards.lean"
+    },
+    {
+      "name": "lean_audit",
+      "root": "validation",
+      "path": "fixtures/translation_order/LeanNondecreasingAudit.lean"
+    },
+    {
+      "name": "lean_audit_config",
+      "root": "validation",
+      "path": "fixtures/translation_order/nondecreasing_lean_axiom_config.json"
+    },
+    {
+      "name": "source_tactics",
+      "root": "source",
+      "path": "util/tactics.v"
+    },
+    {
+      "name": "source_supremum",
+      "root": "source",
+      "path": "util/supremum.v"
+    },
+    {
+      "name": "source_list",
+      "root": "source",
+      "path": "util/list.v"
+    },
+    {
+      "name": "source_epsilon",
+      "root": "source",
+      "path": "util/epsilon.v"
+    },
+    {
+      "name": "source_nat",
+      "root": "source",
+      "path": "util/nat.v"
+    },
+    {
+      "name": "source_nondecreasing",
+      "root": "source",
+      "path": "util/nondecreasing.v"
+    },
+    {
+      "name": "source_tactics_patch",
+      "root": "validation",
+      "path": "patches/prosa-v06-rocq93-util-tactics.patch"
+    },
+    {
+      "name": "source_type_evidence",
+      "root": "validation",
+      "path": "planning/v06_dependency/declaration_type_evidence.json"
+    },
+    {
+      "name": "source_extractor",
+      "root": "validation",
+      "path": "scripts/extract_v06_semantic_source.py"
+    },
+    {
+      "name": "export_config",
+      "root": "validation",
+      "path": "tooling/nondecreasing_export_config.json"
+    },
+    {
+      "name": "import_fixture",
+      "root": "validation",
+      "path": "fixtures/translation_order/ImportedNondecreasing.v"
+    },
+    {
+      "name": "nat_import_fixture",
+      "root": "validation",
+      "path": "imported/utility_foundation/ImportedNat.v"
+    },
+    {
+      "name": "nat_export_artifact",
+      "root": "validation",
+      "path": "imported/utility_foundation/Nat.out"
+    },
+    {
+      "name": "subadditivity_import_fixture",
+      "root": "validation",
+      "path": "imported/foundation_slice_2/ImportedSubadditivity.v"
+    },
+    {
+      "name": "subadditivity_export_artifact",
+      "root": "validation",
+      "path": "imported/foundation_slice_2_closure/Subadditivity.out"
+    },
+    {
+      "name": "nat_status",
+      "root": "validation",
+      "path": "planning/v06_pipeline/utility_foundation_expansion_status.json"
+    },
+    {
+      "name": "list_status",
+      "root": "validation",
+      "path": "planning/v06_pipeline/utility_foundation_expansion_status.json"
+    },
+    {
+      "name": "epsilon_status",
+      "root": "validation",
+      "path": "planning/v06_pipeline/epsilon_module_status.json"
+    },
+    {
+      "name": "previous_translation_status",
+      "root": "validation",
+      "path": "planning/v06_pipeline/div_mod_module_status.json"
+    },
+    {
+      "name": "lean4export",
+      "root": "exporter",
+      "path": ".lake/build/bin/lean4export"
+    },
+    {
+      "name": "rocq_import",
+      "root": "importer",
+      "path": "src/lean_import.cmxs"
+    },
+    {
+      "name": "rocq_foundation",
+      "root": "importer",
+      "path": "src/Lean.vo"
+    }
+  ],
+  "git_repositories": [
+    {
+      "name": "authoritative_source",
+      "root": "source",
+      "path": "",
+      "require_clean": true
+    },
+    {
+      "name": "mathlib",
+      "root": "project",
+      "path": ".lake/packages/mathlib",
+      "require_clean": true
+    }
+  ],
+  "command_inputs": [
+    {
+      "name": "lean_version",
+      "argv": [
+        "lean",
+        "--version"
+      ]
+    },
+    {
+      "name": "rocq_version",
+      "argv": [
+        "opam",
+        "exec",
+        "--switch=rocq93rc1",
+        "--",
+        "rocq",
+        "--version"
+      ]
+    }
+  ],
+  "module_loading": {
+    "lean_root": "project",
+    "rocq_source_prefix": "prosa",
+    "imported_prefix": "FoundationImported",
+    "certificate_prefix": "FoundationCertificates",
+    "autoImplicit": false
+  },
+  "prepared_outputs": {
+    "lean_build": [
+      "olean/Prosa/Util/Tactics.olean",
+      "olean/Prosa/Util/Supremum.olean",
+      "olean/Prosa/Util/List.olean",
+      "olean/Prosa/Util/Epsilon.olean",
+      "olean/Prosa/Util/Nat.olean",
+      "olean/Prosa/Util/Nondecreasing.olean",
+      "olean/Validation/fixtures/translation_order/NondecreasingComputationInterface.olean",
+      "lean_freeze_and_axioms.log",
+      "lean_axiom_summary.json",
+      "normalization_guards.log"
+    ],
+    "source_acquisition": [
+      "source/util/tactics.vo",
+      "source/util/epsilon.vo",
+      "source/util/nat.vo",
+      "source/GeneratedNondecreasingSource.v",
+      "source/GeneratedNondecreasingSource.vo",
+      "source/nondecreasing_source_extraction.json"
+    ],
+    "export": [
+      "imported/Nondecreasing.out",
+      "imported/nondecreasing_export_metadata.json"
+    ],
+    "rocq_import": [
+      "imported/Nat.out",
+      "imported/ImportedNat.v",
+      "imported/ImportedNat.vo",
+      "imported/Subadditivity.out",
+      "imported/ImportedSubadditivity.v",
+      "imported/ImportedSubadditivity.vo",
+      "imported/ImportedNondecreasing.v",
+      "imported/ImportedNondecreasing.vo"
+    ]
+  }
+}

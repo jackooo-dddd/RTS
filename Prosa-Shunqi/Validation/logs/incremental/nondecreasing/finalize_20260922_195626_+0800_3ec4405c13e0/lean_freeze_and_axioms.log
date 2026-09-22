@@ -1,0 +1,202 @@
+FREEZE_BEGIN Prosa.Util.Nondecreasing.nondecreasing_sequence
+Prosa.Util.Nondecreasing.nondecreasing_sequence : List ℕ → Prop
+FREEZE_END Prosa.Util.Nondecreasing.nondecreasing_sequence
+'Prosa.Util.Nondecreasing.nondecreasing_sequence' depends on axioms: [propext]
+FREEZE_BEGIN Prosa.Util.Nondecreasing.increasing_sequence
+Prosa.Util.Nondecreasing.increasing_sequence : List ℕ → Prop
+FREEZE_END Prosa.Util.Nondecreasing.increasing_sequence
+'Prosa.Util.Nondecreasing.increasing_sequence' depends on axioms: [propext]
+FREEZE_BEGIN Prosa.Util.Nondecreasing.distances
+Prosa.Util.Nondecreasing.distances : List ℕ → List ℕ
+FREEZE_END Prosa.Util.Nondecreasing.distances
+'Prosa.Util.Nondecreasing.distances' does not depend on any axioms
+FREEZE_BEGIN Prosa.Util.Nondecreasing.iota_is_increasing_sequence
+Prosa.Util.Nondecreasing.iota_is_increasing_sequence : ∀ (a b : ℕ) (P : ℕ → Bool),
+  Prosa.Util.Nondecreasing.increasing_sequence (List.filter (fun x => P x) (Prosa.Util.List.index_iota a b))
+FREEZE_END Prosa.Util.Nondecreasing.iota_is_increasing_sequence
+'Prosa.Util.Nondecreasing.iota_is_increasing_sequence' depends on axioms: [propext, Classical.choice, Quot.sound]
+FREEZE_BEGIN Prosa.Util.Nondecreasing.increasing_implies_nondecreasing
+Prosa.Util.Nondecreasing.increasing_implies_nondecreasing : ∀ (xs : List ℕ),
+  Prosa.Util.Nondecreasing.increasing_sequence xs → Prosa.Util.Nondecreasing.nondecreasing_sequence xs
+FREEZE_END Prosa.Util.Nondecreasing.increasing_implies_nondecreasing
+'Prosa.Util.Nondecreasing.increasing_implies_nondecreasing' depends on axioms: [propext]
+FREEZE_BEGIN Prosa.Util.Nondecreasing.nondec_seq_zero_first
+Prosa.Util.Nondecreasing.nondec_seq_zero_first : ∀ (xs : List ℕ),
+  0 ∈ xs → Prosa.Util.Nondecreasing.nondecreasing_sequence xs → Prosa.Util.List.first0 xs = 0
+FREEZE_END Prosa.Util.Nondecreasing.nondec_seq_zero_first
+'Prosa.Util.Nondecreasing.nondec_seq_zero_first' depends on axioms: [propext, Classical.choice, Quot.sound]
+FREEZE_BEGIN Prosa.Util.Nondecreasing.nondecreasing_sequence_2cons_leVeq
+Prosa.Util.Nondecreasing.nondecreasing_sequence_2cons_leVeq : ∀ (x1 x2 : ℕ) (xs : List ℕ),
+  Prosa.Util.Nondecreasing.nondecreasing_sequence (x1 :: x2 :: xs) → x1 = x2 ∨ x1 < x2
+FREEZE_END Prosa.Util.Nondecreasing.nondecreasing_sequence_2cons_leVeq
+'Prosa.Util.Nondecreasing.nondecreasing_sequence_2cons_leVeq' depends on axioms: [propext, Classical.choice, Quot.sound]
+FREEZE_BEGIN Prosa.Util.Nondecreasing.nondecreasing_sequence_cons
+Prosa.Util.Nondecreasing.nondecreasing_sequence_cons : ∀ (x : ℕ) (xs : List ℕ),
+  Prosa.Util.Nondecreasing.nondecreasing_sequence (x :: xs) → Prosa.Util.Nondecreasing.nondecreasing_sequence xs
+FREEZE_END Prosa.Util.Nondecreasing.nondecreasing_sequence_cons
+'Prosa.Util.Nondecreasing.nondecreasing_sequence_cons' depends on axioms: [propext, Classical.choice, Quot.sound]
+FREEZE_BEGIN Prosa.Util.Nondecreasing.nondecreasing_sequence_add_min
+Prosa.Util.Nondecreasing.nondecreasing_sequence_add_min : ∀ (x : ℕ) (xs : List ℕ),
+  (∀ y ∈ xs, x ≤ y) →
+    Prosa.Util.Nondecreasing.nondecreasing_sequence xs → Prosa.Util.Nondecreasing.nondecreasing_sequence (x :: xs)
+FREEZE_END Prosa.Util.Nondecreasing.nondecreasing_sequence_add_min
+'Prosa.Util.Nondecreasing.nondecreasing_sequence_add_min' depends on axioms: [propext, Classical.choice, Quot.sound]
+FREEZE_BEGIN Prosa.Util.Nondecreasing.nondecreasing_sequence_cons_double
+Prosa.Util.Nondecreasing.nondecreasing_sequence_cons_double : ∀ (x : ℕ) (xs : List ℕ),
+  Prosa.Util.Nondecreasing.nondecreasing_sequence (x :: xs) →
+    Prosa.Util.Nondecreasing.nondecreasing_sequence (x :: x :: xs)
+FREEZE_END Prosa.Util.Nondecreasing.nondecreasing_sequence_cons_double
+'Prosa.Util.Nondecreasing.nondecreasing_sequence_cons_double' depends on axioms: [propext, Classical.choice, Quot.sound]
+FREEZE_BEGIN Prosa.Util.Nondecreasing.nondecreasing_sequence_cons_min
+Prosa.Util.Nondecreasing.nondecreasing_sequence_cons_min : ∀ (x : ℕ) (xs : List ℕ),
+  Prosa.Util.Nondecreasing.nondecreasing_sequence (x :: xs) → ∀ y ∈ xs, x ≤ y
+FREEZE_END Prosa.Util.Nondecreasing.nondecreasing_sequence_cons_min
+'Prosa.Util.Nondecreasing.nondecreasing_sequence_cons_min' depends on axioms: [propext, Classical.choice, Quot.sound]
+FREEZE_BEGIN Prosa.Util.Nondecreasing.nondecreasing_sequence_cons_smin
+Prosa.Util.Nondecreasing.nondecreasing_sequence_cons_smin : ∀ (x1 x2 : ℕ) (xs : List ℕ),
+  x1 < x2 → Prosa.Util.Nondecreasing.nondecreasing_sequence (x1 :: x2 :: xs) → ∀ y ∈ x2 :: xs, x1 < y
+FREEZE_END Prosa.Util.Nondecreasing.nondecreasing_sequence_cons_smin
+'Prosa.Util.Nondecreasing.nondecreasing_sequence_cons_smin' depends on axioms: [propext, Classical.choice, Quot.sound]
+FREEZE_BEGIN Prosa.Util.Nondecreasing.antidensity_of_nondecreasing_seq
+Prosa.Util.Nondecreasing.antidensity_of_nondecreasing_seq : ∀ (xs : List ℕ) (x n : ℕ),
+  Prosa.Util.Nondecreasing.nondecreasing_sequence xs →
+    Prosa.Util.Nondecreasing.nthD✝ xs n < x ∧ x < Prosa.Util.Nondecreasing.nthD✝ xs (n + 1) → x ∉ xs
+FREEZE_END Prosa.Util.Nondecreasing.antidensity_of_nondecreasing_seq
+'Prosa.Util.Nondecreasing.antidensity_of_nondecreasing_seq' depends on axioms: [propext, Quot.sound]
+FREEZE_BEGIN Prosa.Util.Nondecreasing.belonging_to_segment_of_seq_is_total
+Prosa.Util.Nondecreasing.belonging_to_segment_of_seq_is_total : ∀ (xs : List ℕ) (x : ℕ),
+  2 ≤ xs.length →
+    Prosa.Util.List.first0 xs ≤ x ∧ x < Prosa.Util.List.last0 xs →
+      ∃ n, n + 1 < xs.length ∧ Prosa.Util.Nondecreasing.nthD✝ xs n ≤ x ∧ x < Prosa.Util.Nondecreasing.nthD✝ xs (n + 1)
+FREEZE_END Prosa.Util.Nondecreasing.belonging_to_segment_of_seq_is_total
+'Prosa.Util.Nondecreasing.belonging_to_segment_of_seq_is_total' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+FREEZE_BEGIN Prosa.Util.Nondecreasing.last_is_max_in_nondecreasing_seq
+Prosa.Util.Nondecreasing.last_is_max_in_nondecreasing_seq : ∀ (xs : List ℕ) (x : ℕ),
+  Prosa.Util.Nondecreasing.nondecreasing_sequence xs → x ∈ xs → x ≤ Prosa.Util.List.last0 xs
+FREEZE_END Prosa.Util.Nondecreasing.last_is_max_in_nondecreasing_seq
+'Prosa.Util.Nondecreasing.last_is_max_in_nondecreasing_seq' depends on axioms: [propext, Quot.sound]
+FREEZE_BEGIN Prosa.Util.Nondecreasing.nodup_sort_2cons_eq
+@Prosa.Util.Nondecreasing.nodup_sort_2cons_eq : ∀ {X : Type u_1} [inst : DecidableEq X] (x : X) (xs : List X),
+  (x :: x :: xs).dedup = (x :: xs).dedup
+FREEZE_END Prosa.Util.Nondecreasing.nodup_sort_2cons_eq
+'Prosa.Util.Nondecreasing.nodup_sort_2cons_eq' depends on axioms: [propext, Classical.choice, Quot.sound]
+FREEZE_BEGIN Prosa.Util.Nondecreasing.nodup_sort_2cons_lt
+Prosa.Util.Nondecreasing.nodup_sort_2cons_lt : ∀ (x1 x2 : ℕ) (xs : List ℕ),
+  x1 < x2 →
+    Prosa.Util.Nondecreasing.nondecreasing_sequence (x1 :: x2 :: xs) → (x1 :: x2 :: xs).dedup = x1 :: (x2 :: xs).dedup
+FREEZE_END Prosa.Util.Nondecreasing.nodup_sort_2cons_lt
+'Prosa.Util.Nondecreasing.nodup_sort_2cons_lt' depends on axioms: [propext, Classical.choice, Quot.sound]
+FREEZE_BEGIN Prosa.Util.Nondecreasing.last0_undup
+Prosa.Util.Nondecreasing.last0_undup : ∀ (xs : List ℕ),
+  Prosa.Util.Nondecreasing.nondecreasing_sequence xs → Prosa.Util.List.last0 xs.dedup = Prosa.Util.List.last0 xs
+FREEZE_END Prosa.Util.Nondecreasing.last0_undup
+'Prosa.Util.Nondecreasing.last0_undup' depends on axioms: [propext, Classical.choice, Quot.sound]
+FREEZE_BEGIN Prosa.Util.Nondecreasing.nondecreasing_sequence_undup
+Prosa.Util.Nondecreasing.nondecreasing_sequence_undup : ∀ (xs : List ℕ),
+  Prosa.Util.Nondecreasing.nondecreasing_sequence xs → Prosa.Util.Nondecreasing.nondecreasing_sequence xs.dedup
+FREEZE_END Prosa.Util.Nondecreasing.nondecreasing_sequence_undup
+'Prosa.Util.Nondecreasing.nondecreasing_sequence_undup' depends on axioms: [propext, Classical.choice, Quot.sound]
+FREEZE_BEGIN Prosa.Util.Nondecreasing.undup_nth_le
+Prosa.Util.Nondecreasing.undup_nth_le : ∀ (xs : List ℕ),
+  Prosa.Util.Nondecreasing.nondecreasing_sequence xs →
+    Prosa.Util.Nondecreasing.nthD✝ xs.dedup (xs.dedup.length - 2) ≤ Prosa.Util.Nondecreasing.nthD✝ xs (xs.length - 2)
+FREEZE_END Prosa.Util.Nondecreasing.undup_nth_le
+'Prosa.Util.Nondecreasing.undup_nth_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+FREEZE_BEGIN Prosa.Util.Nondecreasing.distances_unfold_2cons
+Prosa.Util.Nondecreasing.distances_unfold_2cons : ∀ (x0 x1 : ℕ) (xs : List ℕ),
+  Prosa.Util.Nondecreasing.distances (x0 :: x1 :: xs) = (x1 - x0) :: Prosa.Util.Nondecreasing.distances (x1 :: xs)
+FREEZE_END Prosa.Util.Nondecreasing.distances_unfold_2cons
+'Prosa.Util.Nondecreasing.distances_unfold_2cons' depends on axioms: [propext]
+FREEZE_BEGIN Prosa.Util.Nondecreasing.distances_unfold_2app_last
+Prosa.Util.Nondecreasing.distances_unfold_2app_last : ∀ (a b : ℕ) (xs : List ℕ),
+  Prosa.Util.Nondecreasing.distances (xs ++ [a, b]) = Prosa.Util.Nondecreasing.distances (xs ++ [a]) ++ [b - a]
+FREEZE_END Prosa.Util.Nondecreasing.distances_unfold_2app_last
+'Prosa.Util.Nondecreasing.distances_unfold_2app_last' depends on axioms: [propext]
+FREEZE_BEGIN Prosa.Util.Nondecreasing.distances_unfold_1app_last
+Prosa.Util.Nondecreasing.distances_unfold_1app_last : ∀ (x : ℕ) (xs : List ℕ),
+  xs.length ≥ 1 →
+    Prosa.Util.Nondecreasing.distances (xs ++ [x]) =
+      Prosa.Util.Nondecreasing.distances xs ++ [x - Prosa.Util.List.last0 xs]
+FREEZE_END Prosa.Util.Nondecreasing.distances_unfold_1app_last
+'Prosa.Util.Nondecreasing.distances_unfold_1app_last' depends on axioms: [propext, Classical.choice, Quot.sound]
+FREEZE_BEGIN Prosa.Util.Nondecreasing.distance_between_neighboring_elements_le_max_distance_in_seq
+Prosa.Util.Nondecreasing.distance_between_neighboring_elements_le_max_distance_in_seq : ∀ (xs : List ℕ) (n : ℕ),
+  Prosa.Util.Nondecreasing.nthD✝ xs (n + 1) - Prosa.Util.Nondecreasing.nthD✝ xs n ≤
+    Prosa.Util.List.max0 (Prosa.Util.Nondecreasing.distances xs)
+FREEZE_END Prosa.Util.Nondecreasing.distance_between_neighboring_elements_le_max_distance_in_seq
+'Prosa.Util.Nondecreasing.distance_between_neighboring_elements_le_max_distance_in_seq' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+FREEZE_BEGIN Prosa.Util.Nondecreasing.function_of_distances_is_correct
+Prosa.Util.Nondecreasing.function_of_distances_is_correct : ∀ (xs : List ℕ) (n : ℕ),
+  Prosa.Util.Nondecreasing.nthD✝ (Prosa.Util.Nondecreasing.distances xs) n =
+    Prosa.Util.Nondecreasing.nthD✝ xs (n + 1) - Prosa.Util.Nondecreasing.nthD✝ xs n
+FREEZE_END Prosa.Util.Nondecreasing.function_of_distances_is_correct
+'Prosa.Util.Nondecreasing.function_of_distances_is_correct' depends on axioms: [propext, Classical.choice, Quot.sound]
+FREEZE_BEGIN Prosa.Util.Nondecreasing.size_of_seq_of_distances
+Prosa.Util.Nondecreasing.size_of_seq_of_distances : ∀ (xs : List ℕ),
+  2 ≤ xs.length → xs.length = (Prosa.Util.Nondecreasing.distances xs).length + 1
+FREEZE_END Prosa.Util.Nondecreasing.size_of_seq_of_distances
+'Prosa.Util.Nondecreasing.size_of_seq_of_distances' depends on axioms: [propext, Classical.choice, Quot.sound]
+FREEZE_BEGIN Prosa.Util.Nondecreasing.distances_of_iota_ε
+Prosa.Util.Nondecreasing.distances_of_iota_ε : ∀ (n x : ℕ),
+  x ∈ Prosa.Util.Nondecreasing.distances (Prosa.Util.List.index_iota 0 n) → x = 1
+FREEZE_END Prosa.Util.Nondecreasing.distances_of_iota_ε
+'Prosa.Util.Nondecreasing.distances_of_iota_ε' depends on axioms: [propext, Classical.choice, Quot.sound]
+FREEZE_BEGIN Prosa.Util.Nondecreasing.max_distance_in_nontrivial_seq_is_positive
+Prosa.Util.Nondecreasing.max_distance_in_nontrivial_seq_is_positive : ∀ (xs : List ℕ),
+  Prosa.Util.Nondecreasing.nondecreasing_sequence xs →
+    (∃ x y, x ∈ xs ∧ y ∈ xs ∧ x ≠ y) → 0 < Prosa.Util.List.max0 (Prosa.Util.Nondecreasing.distances xs)
+FREEZE_END Prosa.Util.Nondecreasing.max_distance_in_nontrivial_seq_is_positive
+'Prosa.Util.Nondecreasing.max_distance_in_nontrivial_seq_is_positive' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+FREEZE_BEGIN Prosa.Util.Nondecreasing.last_seq_minus_last_distance_seq
+Prosa.Util.Nondecreasing.last_seq_minus_last_distance_seq : ∀ (xs : List ℕ),
+  Prosa.Util.Nondecreasing.nondecreasing_sequence xs →
+    Prosa.Util.List.last0 xs - Prosa.Util.List.last0 (Prosa.Util.Nondecreasing.distances xs) =
+      Prosa.Util.Nondecreasing.nthD✝ xs (xs.length - 2)
+FREEZE_END Prosa.Util.Nondecreasing.last_seq_minus_last_distance_seq
+'Prosa.Util.Nondecreasing.last_seq_minus_last_distance_seq' depends on axioms: [propext, Classical.choice, Quot.sound]
+FREEZE_BEGIN Prosa.Util.Nondecreasing.max_distance_in_seq_le_last_element_of_seq
+Prosa.Util.Nondecreasing.max_distance_in_seq_le_last_element_of_seq : ∀ (xs : List ℕ),
+  Prosa.Util.Nondecreasing.nondecreasing_sequence xs →
+    Prosa.Util.List.max0 (Prosa.Util.Nondecreasing.distances xs) ≤ Prosa.Util.List.last0 xs
+FREEZE_END Prosa.Util.Nondecreasing.max_distance_in_seq_le_last_element_of_seq
+'Prosa.Util.Nondecreasing.max_distance_in_seq_le_last_element_of_seq' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+FREEZE_BEGIN Prosa.Util.Nondecreasing.distances_iota_filtered
+Prosa.Util.Nondecreasing.distances_iota_filtered : ∀ (xs : List ℕ) (k : ℕ),
+  (∀ x ∈ xs, x ≤ k) →
+    Prosa.Util.Nondecreasing.nondecreasing_sequence xs →
+      Prosa.Util.Nondecreasing.distances
+          (List.filter (fun x => decide (x ∈ xs)) (Prosa.Util.List.index_iota 0 (k + 1))) =
+        List.filter (fun x => decide (x > 0)) (Prosa.Util.Nondecreasing.distances xs)
+FREEZE_END Prosa.Util.Nondecreasing.distances_iota_filtered
+'Prosa.Util.Nondecreasing.distances_iota_filtered' depends on axioms: [propext, Classical.choice, Quot.sound]
+FREEZE_BEGIN Prosa.Util.Nondecreasing.distances_positive_undup
+Prosa.Util.Nondecreasing.distances_positive_undup : ∀ (xs : List ℕ),
+  Prosa.Util.Nondecreasing.nondecreasing_sequence xs →
+    List.filter (fun x => decide (x > 0)) (Prosa.Util.Nondecreasing.distances xs) =
+      Prosa.Util.Nondecreasing.distances xs.dedup
+FREEZE_END Prosa.Util.Nondecreasing.distances_positive_undup
+'Prosa.Util.Nondecreasing.distances_positive_undup' depends on axioms: [propext, Classical.choice, Quot.sound]
+FREEZE_BEGIN Prosa.Util.Nondecreasing.domination_of_distances_implies_domination_of_seq
+Prosa.Util.Nondecreasing.domination_of_distances_implies_domination_of_seq : ∀ (xs ys : List ℕ),
+  Prosa.Util.List.first0 xs ≤ Prosa.Util.List.first0 ys →
+    2 ≤ xs.length →
+      2 ≤ ys.length →
+        xs.length = ys.length →
+          Prosa.Util.Nondecreasing.nondecreasing_sequence xs →
+            Prosa.Util.Nondecreasing.nondecreasing_sequence ys →
+              (∀ (n : ℕ),
+                  Prosa.Util.Nondecreasing.nthD✝ (Prosa.Util.Nondecreasing.distances xs) n ≤
+                    Prosa.Util.Nondecreasing.nthD✝ (Prosa.Util.Nondecreasing.distances ys) n) →
+                ∀ (n : ℕ), Prosa.Util.Nondecreasing.nthD✝ xs n ≤ Prosa.Util.Nondecreasing.nthD✝ ys n
+FREEZE_END Prosa.Util.Nondecreasing.domination_of_distances_implies_domination_of_seq
+'Prosa.Util.Nondecreasing.domination_of_distances_implies_domination_of_seq' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
