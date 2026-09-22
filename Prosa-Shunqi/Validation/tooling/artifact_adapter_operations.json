@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "purpose": "Route common operations to an audited generated adapter or an existing reusable correspondence before writing file-specific proofs.",
+  "generated_base_adapter": {
+    "generator": "Validation/scripts/generate_artifact_bool_list_adapter.py",
+    "template": "Validation/templates/ArtifactBoolListAdapter.v.tpl",
+    "operations": [
+      "bool.roundtrip",
+      "bool.truth",
+      "eqtype.decidable_eq",
+      "list.roundtrip",
+      "list.membership"
+    ]
+  },
+  "existing_reusable_patterns": {
+    "list.length": [
+      "Validation/certificates/common/PoetCorrespondence.v:po_length_related",
+      "Validation/certificates/common/BigcatCorrespondence.v:bc_length_related",
+      "Validation/certificates/common/SumSequenceCorrespondence.v:ss_length_related"
+    ],
+    "list.append": [
+      "Validation/certificates/common/BigcatCorrespondence.v:bc_append_related",
+      "Validation/certificates/utility_foundation/ListRemCertificate.v:lr_append_related"
+    ],
+    "list.filter": [
+      "Validation/certificates/common/BigcatCorrespondence.v:bc_filter_related",
+      "Validation/certificates/common/SumSequenceCorrespondence.v:ss_filter_related"
+    ],
+    "list.getD/head/last": [
+      "Validation/certificates/utility_foundation/ListLastCertificate.v"
+    ],
+    "list.dedup": [
+      "Validation/certificates/utility_foundation/ListRemCertificate.v"
+    ],
+    "list.index/idxOf": [
+      "Validation/certificates/utility_foundation/ListBatch3Operations.v"
+    ],
+    "nat.le/lt": [
+      "Validation/certificates/common/SubadditivityNatCorrespondence.v:sub_nat_le_correspondence",
+      "Validation/certificates/common/SubadditivityNatCorrespondence.v:sub_nat_lt_correspondence"
+    ],
+    "nat.sub": [
+      "Validation/certificates/common/NatSubCorrespondence.v",
+      "Validation/certificates/common/NondecreasingCorrespondence.v:nd_target_sub_correspondence"
+    ],
+    "nat.max": [
+      "Validation/certificates/common/MinmaxCorrespondence.v"
+    ]
+  },
+  "rule": "A pattern is only a discovery route. Reuse requires an artifact-local instantiation whose actual imported artifact, certificate bytes, and assumption audit are content-addressed; otherwise report missing operation bridge: X."
+}

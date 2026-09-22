@@ -1,0 +1,155 @@
+{
+  "schema_version": 1,
+  "scope": "accepted_sum_poet_bigcat_operation_inventory_regression",
+  "snapshot_inputs": [
+    {
+      "name": "sum_status",
+      "path": "Validation/planning/v06_pipeline/utility_foundation_expansion_status.json",
+      "sha256": "0d8f8b4dfc4c650b86e4be4cb860d4f24f0149300f973add3406be42706582f9"
+    },
+    {
+      "name": "poet_manifest",
+      "path": "Validation/planning/v06_pipeline/poet_module_manifest.json",
+      "sha256": "96ac9cd2a55994105bdf201395cab5d54c448f52af2ce71cf3242d29cbb9995c"
+    },
+    {
+      "name": "bigcat_manifest",
+      "path": "Validation/planning/v06_pipeline/bigcat_module_manifest.json",
+      "sha256": "57035f221c52b0bd55e1bab29f5842320d1f8ae6fe433ad3fcef55d65e63b0b0"
+    }
+  ],
+  "certified_bridges": {
+    "list.append/filter/length/membership@ImportedBigcat": {
+      "status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "binding": "ACTUAL_ARTIFACT",
+      "certificate_names": [
+        "bc_append_related",
+        "bc_filter_related",
+        "bc_length_related",
+        "bc_membership_correspondence"
+      ],
+      "evidence": [
+        {
+          "path": "Validation/certificates/common/BigcatCorrespondence.v",
+          "sha256": "9fe33d6131f15066bf7d9064d001c86c5fbce40cb95800a99846a3fb38e34c58"
+        },
+        {
+          "path": "Validation/imported/translation_order/bigcat/BigcatCorrespondence.vo",
+          "sha256": "738b5933c2abb4d4fa77a66fa8bfedea6fdb5e7d4ed9a564269bbd1d73a4d49c"
+        }
+      ],
+      "actual_artifact_evidence": [
+        {
+          "path": "Validation/imported/translation_order/bigcat/ImportedBigcat.vo",
+          "sha256": "5bcca359e3cafb8074a6607c910621c71944108126154a47d66b2781b8718bd8"
+        }
+      ]
+    },
+    "list.length/zip/all/membership@ImportedPoet": {
+      "status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "binding": "ACTUAL_ARTIFACT",
+      "certificate_names": [
+        "po_length_related",
+        "po_zip_related",
+        "po_all_related",
+        "po_membership_correspondence"
+      ],
+      "evidence": [
+        {
+          "path": "Validation/certificates/common/PoetCorrespondence.v",
+          "sha256": "62295b796ecdd3e3c324958023c754f95e3e1f0e64905b23b05d290d6857d570"
+        },
+        {
+          "path": "Validation/imported/translation_order/poet/PoetCorrespondence.vo",
+          "sha256": "aefd7249e147d409c3438780b184483d54b2b1b9d982655ff0d4dd3ec2a8e47f"
+        }
+      ],
+      "actual_artifact_evidence": [
+        {
+          "path": "Validation/imported/translation_order/poet/ImportedPoet.vo",
+          "sha256": "3ec9799f4e3e2988a33f728263ce165961a1827cec1e8b18abb5d4854a551771"
+        }
+      ]
+    },
+    "sum.interval@ImportedSumInterval": {
+      "status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "binding": "ACTUAL_ARTIFACT",
+      "certificate_names": [
+        "finite_nat_sum_value_correspondence",
+        "si_interval_sum_related"
+      ],
+      "evidence": [
+        {
+          "path": "Validation/certificates/common/SumIntervalCorrespondence.v",
+          "sha256": "04c89c3090d89760625578a53a8db5e32db0f39a30c729aef72e255fca08d1b3"
+        },
+        {
+          "path": "Validation/imported/utility_foundation/SumIntervalCorrespondence.vo",
+          "sha256": "de36e94e3f79feb545ada171707908ef460ae13a0a7319793a96053f7d6036fa"
+        }
+      ],
+      "actual_artifact_evidence": [
+        {
+          "path": "Validation/imported/utility_foundation/ImportedSumInterval.vo",
+          "sha256": "896098c0eecff17d2db632ec232d56003458a5fb66404aff26ccc8e3072cb320"
+        }
+      ]
+    },
+    "sum.sequence/filter/length/membership@ImportedSumSequence": {
+      "status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "binding": "ACTUAL_ARTIFACT",
+      "certificate_names": [
+        "ss_sumSeq_related",
+        "ss_filter_related",
+        "ss_length_related",
+        "ss_membership_correspondence"
+      ],
+      "evidence": [
+        {
+          "path": "Validation/certificates/common/SumSequenceCorrespondence.v",
+          "sha256": "98efd3d59139179409f5187b05c268533fe7514ccfa70679d05d9c550752ea50"
+        },
+        {
+          "path": "Validation/imported/utility_foundation/SumSequenceCorrespondence.vo",
+          "sha256": "24ffd582fcb79a66c33110e4901e49c3ad6c0578db075c894671efd93f98810c"
+        }
+      ],
+      "actual_artifact_evidence": [
+        {
+          "path": "Validation/imported/utility_foundation/ImportedSumSequence.vo",
+          "sha256": "3050dc00d1f7dc06cf95c7b60db8b44ec7297f99a39cd8b5a7a9c3701ad01e45"
+        }
+      ]
+    }
+  },
+  "declarations": [
+    {
+      "name": "util/sum.v accepted interval cluster",
+      "cluster": "sum_interval",
+      "operations": [
+        "sum.interval@ImportedSumInterval"
+      ]
+    },
+    {
+      "name": "util/sum.v accepted sequence cluster",
+      "cluster": "sum_sequence",
+      "operations": [
+        "sum.sequence/filter/length/membership@ImportedSumSequence"
+      ]
+    },
+    {
+      "name": "util/poet.v accepted theorem",
+      "cluster": "poet",
+      "operations": [
+        "list.length/zip/all/membership@ImportedPoet"
+      ]
+    },
+    {
+      "name": "util/bigcat.v accepted file",
+      "cluster": "bigcat",
+      "operations": [
+        "list.append/filter/length/membership@ImportedBigcat"
+      ]
+    }
+  ]
+}

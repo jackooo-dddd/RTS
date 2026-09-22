@@ -13,6 +13,8 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
+import shutil
 import subprocess
 import time
 from pathlib import Path
@@ -242,6 +244,33 @@ def prepared_outputs(descriptor_data: dict[str, Any]) -> dict[str, list[str]]:
     return groups
 
 
+def checked_relative(root: Path, relative: str) -> Path:
+    if not relative or Path(relative).is_absolute():
+        raise SystemExit(f"invalid prepared artifact path: {relative}")
+    root = root.resolve()
+    path = (root / relative).resolve()
+    try:
+        path.relative_to(root)
+    except ValueError as exc:
+        raise SystemExit(f"prepared artifact escapes root: {relative}") from exc
+    return path
+
+
+def verified_manifest(
+    descriptor_path: Path, prepared: Path
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    require_file(descriptor_path)
+    desc = json.loads(descriptor_path.read_text())
+    manifest_path = prepared / "prepare_manifest.json"
+    require_file(manifest_path)
+    manifest = json.loads(manifest_path.read_text())
+    if manifest.get("snapshot_id") != desc.get("snapshot_id"):
+        raise SystemExit("PREPARED_SNAPSHOT_INPUT_MISMATCH")
+    if manifest.get("input_descriptor") != desc:
+        raise SystemExit("PREPARED_SNAPSHOT_DESCRIPTOR_MISMATCH")
+    return desc, manifest
+
+
 def seal(args: argparse.Namespace) -> None:
     desc = json.loads(args.descriptor.read_text())
     outputs: dict[str, dict[str, Any]] = {}
@@ -267,14 +296,7 @@ def seal(args: argparse.Namespace) -> None:
 
 
 def verify(args: argparse.Namespace) -> None:
-    desc = json.loads(args.descriptor.read_text())
-    manifest_path = args.prepared / "prepare_manifest.json"
-    require_file(manifest_path)
-    manifest = json.loads(manifest_path.read_text())
-    if manifest.get("snapshot_id") != desc.get("snapshot_id"):
-        raise SystemExit("PREPARED_SNAPSHOT_INPUT_MISMATCH")
-    if manifest.get("input_descriptor") != desc:
-        raise SystemExit("PREPARED_SNAPSHOT_DESCRIPTOR_MISMATCH")
+    desc, manifest = verified_manifest(args.descriptor, args.prepared)
     events: list[dict[str, Any]] = []
     for stage, group in manifest.get("outputs", {}).items():
         started = time.time_ns()
@@ -282,7 +304,7 @@ def verify(args: argparse.Namespace) -> None:
         if not entries or group.get("output_set_sha256") != digest(entries):
             raise SystemExit(f"PREPARED_ARTIFACT_MANIFEST_CORRUPT:{stage}")
         for rel, expected in entries.items():
-            path = args.prepared / rel
+            path = checked_relative(args.prepared, rel)
             require_file(path)
             if sha(path) != expected:
                 raise SystemExit(f"PREPARED_ARTIFACT_HASH_MISMATCH:{stage}:{rel}")
@@ -324,6 +346,69 @@ def verify(args: argparse.Namespace) -> None:
     args.run_evidence.parent.mkdir(parents=True, exist_ok=True)
     args.run_evidence.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n")
     print(args.prepared)
+
+
+def materialize(args: argparse.Namespace) -> None:
+    """Copy hash-verified prepared groups into an isolated consumer root.
+
+    This is deliberately stricter than a plain ``cp``: the producer input
+    descriptor must still match byte-for-byte, every source artifact must
+    match the sealed manifest, and every copied destination is re-hashed.
+    Consumers must include the emitted evidence file (or its hash) in their
+    own input descriptor so dependency reuse participates in invalidation.
+    """
+
+    desc, manifest = verified_manifest(args.descriptor, args.prepared)
+    available = manifest.get("outputs", {})
+    stages = args.stage or sorted(available)
+    unknown = sorted(set(stages) - set(available))
+    if unknown:
+        raise SystemExit(f"UNKNOWN_PREPARED_STAGE:{','.join(unknown)}")
+
+    destination = args.destination.resolve()
+    destination.mkdir(parents=True, exist_ok=True)
+    copied: dict[str, dict[str, str]] = {}
+    started = time.time_ns()
+    for stage in stages:
+        group = available[stage]
+        entries = group.get("files", {})
+        if not entries or group.get("output_set_sha256") != digest(entries):
+            raise SystemExit(f"PREPARED_ARTIFACT_MANIFEST_CORRUPT:{stage}")
+        copied_entries: dict[str, str] = {}
+        for rel, expected in entries.items():
+            source = checked_relative(args.prepared, rel)
+            require_file(source)
+            if sha(source) != expected:
+                raise SystemExit(f"PREPARED_ARTIFACT_HASH_MISMATCH:{stage}:{rel}")
+            target = checked_relative(destination, rel)
+            target.parent.mkdir(parents=True, exist_ok=True)
+            temporary = target.with_name(f".{target.name}.tmp.{os.getpid()}")
+            shutil.copy2(source, temporary)
+            if sha(temporary) != expected:
+                temporary.unlink(missing_ok=True)
+                raise SystemExit(f"MATERIALIZED_ARTIFACT_HASH_MISMATCH:{stage}:{rel}")
+            os.replace(temporary, target)
+            if sha(target) != expected:
+                raise SystemExit(f"MATERIALIZED_ARTIFACT_HASH_MISMATCH:{stage}:{rel}")
+            copied_entries[rel] = expected
+        copied[stage] = copied_entries
+    ended = time.time_ns()
+    result = {
+        "schema_version": SCHEMA_VERSION,
+        "mode": "VERIFIED_CACHE",
+        "snapshot_id": desc["snapshot_id"],
+        "producer_descriptor_sha256": sha(args.descriptor),
+        "producer_prepare_manifest_sha256": sha(args.prepared / "prepare_manifest.json"),
+        "destination": str(destination),
+        "stages": stages,
+        "files": copied,
+        "duration_seconds": round((ended - started) / 1_000_000_000, 6),
+        "semantic_acceptance_inferred": False,
+        "consumer_must_bind_this_evidence": True,
+    }
+    args.evidence.parent.mkdir(parents=True, exist_ok=True)
+    args.evidence.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n")
+    print(args.evidence)
 
 
 def attach_publication(args: argparse.Namespace) -> None:
@@ -387,6 +472,14 @@ def parser() -> argparse.ArgumentParser:
     v.add_argument("--prepared", required=True, type=Path)
     v.add_argument("--run-evidence", required=True, type=Path)
     v.set_defaults(func=verify)
+
+    m = sub.add_parser("materialize")
+    m.add_argument("--descriptor", required=True, type=Path)
+    m.add_argument("--prepared", required=True, type=Path)
+    m.add_argument("--destination", required=True, type=Path)
+    m.add_argument("--stage", action="append", choices=STAGES, default=[])
+    m.add_argument("--evidence", required=True, type=Path)
+    m.set_defaults(func=materialize)
 
     a = sub.add_parser("attach-publication")
     a.add_argument("--result", required=True, type=Path)

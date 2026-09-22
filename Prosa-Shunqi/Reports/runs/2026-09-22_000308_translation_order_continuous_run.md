@@ -598,3 +598,48 @@ subtraction; no DivMod coverage is claimed yet.
   was replaced by the isolated relevant-closure build.
 - Cumulative acceptance is now 21/357 files and 204/2439 declarations, with
   zero translated-but-not-certified debt. Rank 22 `behavior/job.v` is next.
+
+## 2026-09-22 22:23:48 — `behavior/job.v` accepted
+
+- All five declarations compile and are proof-clean: `JobType`, `work`,
+  `JobCost`, `JobArrival`, and `JobDeadline`.
+- The source `eqType` boundary is represented by the same carrier plus an
+  explicitly constructed imported Lean `DecidableEq`; its equality-decision
+  observation is kernel-checked rather than silently discarded.
+- The three source classes elaborate to function fields, whereas Lean uses
+  one-field structures. The validator proves source→target and target→source
+  maps, projection preservation, and observational roundtrips on both sides.
+- Sixteen component certificates are all `CERTIFIED`; there are no semantic
+  premises, no Prop/SProp foundation dependencies, no unexpected assumptions,
+  and no source/target theorem self-dependencies.
+- Official `behavior/job.v` and `behavior/time.v` were compiled byte-identical
+  against a declaration-free Rocq 9.3 compatibility import surface. The clean
+  run used the actual Lean `.olean`, export SHA-256
+  `ffd34ec6221d920ffe1c89e697d1211038feb44509717f2a86836cf9019b06ca`,
+  and imported `.vo` SHA-256
+  `ea0857db8f5f576027d41424b490a05053f98622661e3a4645a60b322b14589b`.
+- The clean run measured 363.198 s Lean build, 3.615 s source acquisition,
+  75.898 s export, 0.691 s Rocq import, 4.918 s certificate compile, 0.156 s
+  audit, and 0.124 s publication. An identical snapshot rerun verified four
+  prepare-cache groups and completed certificate/audit/publication in 5.251 s.
+- Cumulative acceptance is now 22/357 files and 209/2439 declarations, with
+  zero translated-but-not-certified debt. Rank 23
+  `behavior/arrival_sequence.v` is next.
+
+## 2026-09-22 22:36:51 — `behavior/arrival_sequence.v` Lean candidate complete
+
+- All 14 authoritative declarations have now been translated into
+  `Prosa/Behavior/Arrival_sequence.lean` in source order, and the whole file
+  passes an isolated Lean 4.33.1 compile.
+- The preflight `.olean` SHA-256 is
+  `49a0cd72dd999b09adee6f0eaadddde549565c65da522c2f8a688a7ef98baeab`;
+  the production source SHA-256 is
+  `0fdb7632034b9b5fd3cd88ce739dffad38be4e8c4a3cafd8df718cb762092355`.
+- The source audit corrected a historical representation drift: four v0.6
+  predicates (`arrives_at`, `has_arrived`, `arrived_before`, and
+  `arrived_between`) are Boolean computations and remain `Bool` in the new
+  translation. The v0.6-only `arrivals_between_P` is also present.
+- This is intermediate compile evidence, not acceptance. Actual-artifact
+  export/import, 14 Rocq correspondence certificates, assumption audit, and
+  publication remain, so formal coverage stays 22/357 files and 209/2439
+  declarations.

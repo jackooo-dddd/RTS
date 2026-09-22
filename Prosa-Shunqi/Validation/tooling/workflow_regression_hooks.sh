@@ -64,17 +64,29 @@ validation_prepare_export() {
 }
 
 validation_prepare_rocq_import() {
-  cp "$VALIDATION_ROOT/imported/foundation_slice_2_closure/ImportedSubadditivity.vo" \
-    "$VALIDATION_PREPARED/imported/ImportedSubadditivity.vo"
-  cp "$VALIDATION_ROOT/imported/utility_foundation/ImportedSumSequence.vo" \
-    "$VALIDATION_PREPARED/imported/ImportedSumSequence.vo"
-  cp "$VALIDATION_ROOT/imported/translation_order/poet/ImportedPoet.vo" \
-    "$VALIDATION_PREPARED/imported/ImportedPoet.vo"
-  cp "$VALIDATION_ROOT/imported/translation_order/bigcat/ImportedBigcat.vo" \
-    "$VALIDATION_PREPARED/imported/ImportedBigcat.vo"
-  VALIDATION_STAGE_MODE=VERIFIED_CACHE
-  VALIDATION_STAGE_EXECUTED=false
+  # Recompile the stable exported bytes against the current pinned importer
+  # foundation.  Copying an old .vo is unsound when LeanImport.Lean changed;
+  # the resulting fresh .vo files become content-addressed prepared outputs
+  # and are reused by subsequent checks of this exact snapshot.
+  cp "$VALIDATION_ROOT/imported/foundation_slice_2_closure/Subadditivity.out" \
+    "$VALIDATION_PREPARED/imported/Subadditivity.out"
+  cp "$VALIDATION_ROOT/imported/foundation_slice_2/ImportedSubadditivity.v" \
+    "$VALIDATION_PREPARED/imported/ImportedSubadditivity.v"
+  cp "$VALIDATION_ROOT/imported/utility_foundation/ImportedSumSequence.v" \
+    "$VALIDATION_PREPARED/imported/ImportedSumSequence.v"
+  cp "$VALIDATION_ROOT/imported/translation_order/poet/ImportedPoet.v" \
+    "$VALIDATION_PREPARED/imported/ImportedPoet.v"
+  cp "$VALIDATION_ROOT/imported/translation_order/bigcat/ImportedBigcat.v" \
+    "$VALIDATION_PREPARED/imported/ImportedBigcat.v"
+  ulimit -s 65520
+  local module
+  for module in ImportedSubadditivity ImportedSumSequence ImportedPoet ImportedBigcat; do
+    (cd "$VALIDATION_PREPARED/imported" && \
+      validation_rocq_compile "$VALIDATION_PREPARED" "${module}.v") \
+      > "$VALIDATION_RUN_LOG/import_${module}.log" 2>&1
+  done
   VALIDATION_STAGE_OUTPUTS=(
+    "subadd_export=$VALIDATION_PREPARED/imported/Subadditivity.out"
     "subadd_import=$VALIDATION_PREPARED/imported/ImportedSubadditivity.vo"
     "sum_import=$VALIDATION_PREPARED/imported/ImportedSumSequence.vo"
     "poet_import=$VALIDATION_PREPARED/imported/ImportedPoet.vo"

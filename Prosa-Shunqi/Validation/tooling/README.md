@@ -73,6 +73,31 @@ interfaces. A normalized export without a declared kernel guard is rejected.
 Bool truth, `eqType`/`DecidableEq`, ordered `seq`/`List` roundtrips, and
 membership against the exact imported datatype; they are ordinary Rocq source
 and must pass kernel compilation and the normal assumption classifier.
+The generator now declares its provided operations and rejects an unsupported
+`--require-operation` with `missing operation bridge: X`. The discovery routes
+for already proved length/getD/append/filter/head/last/membership/dedup/index
+and Nat order/sub/max adapters are catalogued in
+[`artifact_adapter_operations.json`](artifact_adapter_operations.json); a
+catalog entry is not acceptance evidence until instantiated against, compiled
+with, and audited for the actual imported artifact.
+
+For files with many declarations,
+`audit_operation_inventory.py` checks a pre-freeze operation inventory against
+content-addressed certificate `.vo` files and actual-artifact evidence. It
+fails closed on absent, stale, or uncertified operations and emits the exact
+`missing operation bridge: X` obligations before a costly snapshot is frozen.
+
+`incremental_validation_state.py materialize` copies selected groups from a
+sealed prepare cache into an isolated consumer root. It verifies the complete
+producer descriptor and every source/destination hash. Its evidence explicitly
+does not infer semantic acceptance; the consumer must bind that evidence in
+its own descriptor. This supports reuse of accepted dependency `.olean` and
+imported `.vo` bytes without silently resolving same-named files elsewhere.
+
+Imported `.vo` files are foundation-sensitive. If `LeanImport.Lean` changes,
+stable `.out` bytes are re-imported with their checked wrapper source and only
+the resulting sealed `.vo` is reused. The workflow regression now exercises
+this pattern instead of copying the legacy `ImportedSubadditivity.vo`.
 
 The 2026-09-22 regression sample covers accepted Sum (25 declarations), Poet
 (1), and Bigcat (13). Its cold prepare measured 100.29 s for the isolated Lean
@@ -82,3 +107,11 @@ checks had no semantic premise or unexpected assumption; only Bool-truth and
 membership used the existing `PropSPropFoundation.interpret_strict` boundary.
 The existing 39 semantic results were unchanged. Evidence is under
 `Validation/logs/incremental/workflow_regression/`.
+
+The 21:32 extension regression added the operation-inventory and dependency
+materialization checks. Deleting the interval-sum bridge and corrupting an
+imported `.vo` were both rejected. A current-foundation fresh regression of
+Sum/Poet/Bigcat passed in 106.71 s (29.41 s Lean build, 75.56 s Rocq re-import,
+1.62 s certificate compile); an identical rerun used four verified prepare
+cache hits and completed its checks/publication in 1.86 s. Semantic results and
+the acceptance gate remained unchanged.

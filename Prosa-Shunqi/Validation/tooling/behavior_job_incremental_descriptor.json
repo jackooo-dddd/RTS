@@ -1,0 +1,92 @@
+{
+  "schema_version": 1,
+  "scope": "translation_order_behavior_job",
+  "inputs": [
+    {"name": "lean_toolchain", "root": "project", "path": "lean-toolchain"},
+    {"name": "lakefile", "root": "project", "path": "lakefile.lean"},
+    {"name": "lake_manifest", "root": "project", "path": "lake-manifest.json"},
+    {"name": "lean_time", "root": "project", "path": "Prosa/Behavior/Time.lean"},
+    {"name": "lean_job", "root": "project", "path": "Prosa/Behavior/Job.lean"},
+    {"name": "lean_util_all", "root": "project", "path": "Prosa/Util/All.lean"},
+    {"name": "lean_util_tactics", "root": "project", "path": "Prosa/Util/Tactics.lean"},
+    {"name": "lean_util_notation", "root": "project", "path": "Prosa/Util/Notation.lean"},
+    {"name": "lean_util_rel", "root": "project", "path": "Prosa/Util/Rel.lean"},
+    {"name": "lean_util_seqset", "root": "project", "path": "Prosa/Util/Seqset.lean"},
+    {"name": "lean_util_subadditivity", "root": "project", "path": "Prosa/Util/Subadditivity.lean"},
+    {"name": "lean_util_supremum", "root": "project", "path": "Prosa/Util/Supremum.lean"},
+    {"name": "lean_util_nat", "root": "project", "path": "Prosa/Util/Nat.lean"},
+    {"name": "lean_util_unit_growth", "root": "project", "path": "Prosa/Util/UnitGrowth.lean"},
+    {"name": "lean_util_search_arg", "root": "project", "path": "Prosa/Util/SearchArg.lean"},
+    {"name": "lean_util_list", "root": "project", "path": "Prosa/Util/List.lean"},
+    {"name": "lean_util_sum", "root": "project", "path": "Prosa/Util/Sum.lean"},
+    {"name": "lean_util_epsilon", "root": "project", "path": "Prosa/Util/Epsilon.lean"},
+    {"name": "lean_util_bigop", "root": "project", "path": "Prosa/Util/Bigop.lean"},
+    {"name": "lean_util_setoid", "root": "project", "path": "Prosa/Util/Setoid.lean"},
+    {"name": "lean_util_poet", "root": "project", "path": "Prosa/Util/Poet.lean"},
+    {"name": "lean_util_bigcat", "root": "project", "path": "Prosa/Util/Bigcat.lean"},
+    {"name": "lean_util_minmax", "root": "project", "path": "Prosa/Util/Minmax.lean"},
+    {"name": "lean_util_div_mod", "root": "project", "path": "Prosa/Util/Div_mod.lean"},
+    {"name": "lean_util_nondecreasing", "root": "project", "path": "Prosa/Util/Nondecreasing.lean"},
+    {"name": "lean_job_audit", "root": "validation", "path": "fixtures/translation_order/LeanJobAudit.lean"},
+    {"name": "lean_job_audit_config", "root": "validation", "path": "fixtures/translation_order/job_lean_axiom_config.json"},
+    {"name": "source_job", "root": "source", "path": "behavior/job.v"},
+    {"name": "source_time", "root": "source", "path": "behavior/time.v"},
+    {"name": "source_compat_all", "root": "validation", "path": "fixtures/translation_order/source_compat/util/all.v"},
+    {"name": "declaration_inventory", "root": "validation", "path": "planning/v06_dependency/declaration_inventory.csv"},
+    {"name": "source_type_evidence", "root": "validation", "path": "planning/v06_dependency/declaration_type_evidence.json"},
+    {"name": "selection", "root": "validation", "path": "planning/v06_pipeline/behavior_job_selection.json"},
+    {"name": "previous_status", "root": "validation", "path": "planning/v06_pipeline/util_all_module_status.json"},
+    {"name": "previous_manifest", "root": "validation", "path": "planning/v06_pipeline/util_all_module_manifest.json"},
+    {"name": "previous_dependency_audit", "root": "validation", "path": "imported/translation_order/all/dependency_closure_audit.json"},
+    {"name": "time_status", "root": "validation", "path": "planning/v06_pipeline/foundation_slice_1_status.json"},
+    {"name": "time_manifest", "root": "validation", "path": "planning/v06_pipeline/foundation_slice_1_manifest.json"},
+    {"name": "time_export", "root": "validation", "path": "imported/foundation_slice_1/Time.out"},
+    {"name": "time_import_fixture", "root": "validation", "path": "imported/foundation_slice_1/ImportedTime.v"},
+    {"name": "job_export_config", "root": "validation", "path": "tooling/behavior_job_export_config.json"},
+    {"name": "job_import_fixture", "root": "validation", "path": "fixtures/translation_order/ImportedJob.v"},
+    {"name": "lean4export", "root": "exporter", "path": ".lake/build/bin/lean4export"},
+    {"name": "rocq_import", "root": "importer", "path": "src/lean_import.cmxs"},
+    {"name": "rocq_foundation", "root": "importer", "path": "src/Lean.vo"}
+  ],
+  "git_repositories": [
+    {"name": "authoritative_source", "root": "source", "path": "", "require_clean": true},
+    {"name": "mathlib", "root": "project", "path": ".lake/packages/mathlib", "require_clean": true}
+  ],
+  "command_inputs": [
+    {"name": "lean_version", "argv": ["lean", "--version"]},
+    {"name": "rocq_version", "argv": ["opam", "exec", "--switch=rocq93rc1", "--", "rocq", "--version"]}
+  ],
+  "module_loading": {
+    "lean_root": "project",
+    "rocq_source_prefix": "prosa",
+    "imported_prefix": "FoundationImported",
+    "certificate_prefix": "FoundationCertificates",
+    "autoImplicit": false
+  },
+  "prepared_outputs": {
+    "lean_build": [
+      "olean/Prosa/Util/All.olean",
+      "olean/Prosa/Behavior/Time.olean",
+      "olean/Prosa/Behavior/Job.olean",
+      "lean_freeze_and_axioms.log",
+      "lean_axiom_summary.json",
+      "dependency_build_manifest.json"
+    ],
+    "source_acquisition": [
+      "source/util/all.vo",
+      "source/behavior/time.vo",
+      "source/behavior/job.vo",
+      "source/job_source_acquisition.json"
+    ],
+    "export": [
+      "imported/Job.out",
+      "imported/job_export_metadata.json"
+    ],
+    "rocq_import": [
+      "imported/ImportedTime.v",
+      "imported/ImportedTime.vo",
+      "imported/ImportedJob.v",
+      "imported/ImportedJob.vo"
+    ]
+  }
+}

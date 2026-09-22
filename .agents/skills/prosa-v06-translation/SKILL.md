@@ -143,6 +143,14 @@ description: 在 Prosa-Shunqi 中将固定 Prosa v0.6 的 Rocq/MathComp/SSReflec
 4. 在验证器可用时，试导出/导入最小切片，查看引入的定义与 assumptions。
 5. 确定验证路径后再扩展该定义的下游证明。
 
+对 public declaration 超过 20 个的较大文件，在冻结 snapshot 前把预检提升为
+**whole-file operation inventory**：先让整文件 Lean 候选编译，再扫描所有声明的
+semantic operation dependencies，逐项关联已有 certified bridge，补齐缺失的最小
+operation interface，并一次性确定 computation/export interface。完成 inventory
+后才 freeze、prepare 和开发 theorem certificates。目标是减少 snapshot 变化次数，
+而不只是缩短单条命令；缺失项必须明确记录为
+`missing operation bridge: X`，不能做到中途才静默扩大接口。
+
 预检还要先查找已经审核过的 exporter/importer pattern，而不是为每个文件
 重新探索同一个问题。至少复用：statement-only theorem type export、
 definition-body projection、实际 computation equations、`Finset.sum`/半开区间
@@ -219,8 +227,7 @@ certificate，再供当前与后续目标使用。只有技术上无法抽取时
 说明的局部证明。
 
 高频 primitive/operation（尤其 `Bool`、`nat`、`seq`/`List`、
-`eqType`/`DecidableEq`、membership、length、append、filter、roundtrip 和逻辑
-连接词）的默认顺序是：
+`eqType`/`DecidableEq`、roundtrip 和逻辑连接词）的默认顺序是：
 
 ```text
 certified common bridge
@@ -235,10 +242,18 @@ imported constructors/equations，作为普通 Rocq 源码进入 kernel 编译�
 或未证明 premise。common bridge 的复用也必须检查其输入 relation、universe、
 datatype identity 和 artifact hash，不能只因名称相同就套用。
 
+artifact-local adapter 的复用目录逐步覆盖：List 的 `length`、`getD`、`append`、
+`filter`、`head`、`last`、membership、dedup、index/`idxOf`，以及 Nat 的 `≤`、`<`、
+截断 subtraction、`max`。模板不支持某个 operation 时只生成该缺失 operation 的
+显式 obligation；不得生成 axiom、把 theorem statement 当 operation proof，或
+重新内联整套 Bool/List/Nat 基础对应。所有生成结果仍绑定 actual imported
+artifact，并逐一经过 Rocq kernel 和 assumption audit。
+
 对已经具备 operation bridges 的普通 theorem statement，优先用可审计的
 combinator/tactic/template 自动组合 `forall`、`exists`、`And`、`Or`、蕴含、
 等式、membership、Bool truth 以及 List/Nat 运算。自动化遇到缺失 operation
-relation 时应留下明确 subgoal；先补一个最小可复用 bridge，再继续组合，而不
+relation 时必须停止并输出 `missing operation bridge: X`；先补一个最小可复用
+bridge，再继续组合，而不
 在每个 theorem 内复制基础语义证明。
 
 目标是证明 official Rocq statement 与 actual imported Lean statement 在
@@ -276,6 +291,18 @@ prepare cache 失效。缺失、hash 不符或损坏的 cache 一律重建或 fa
 不得从其它 workspace 静默加载同名 `.olean`/`.vo`。保留 `CLEAN_FULL`（或等价）
 路径，在 batch publication 和独立复现时比较增量路径的结论与 trust boundary。
 
+已 accepted dependency 的 `.olean` 和 imported `.vo` 可以按 content-addressed
+方式复用，但 cache key 必须覆盖 dependency/source bytes、完整相关依赖、工具链、
+importer/exporter binary 与配置、options 和模块加载顺序。只有 regression 已证明
+复用路径与 fresh 路径产生相同 acceptance 结论及 trust boundary 后，才可作为默认；
+否则保持 fresh，并周期性运行 `CLEAN_FULL`。复制同名 artifact 或只核对文件存在
+不构成复用证据。
+
+operation interface 冻结后，互不依赖的 semantic clusters 可以并行开发，共享同一
+prepared snapshot；最后必须统一执行 exact-type audit、assumption audit 和一次
+whole-file publication。并行不改变 file-order/file-DAG gate，也不产生多个互相
+竞争的 file acceptance。
+
 新 validator 优先使用配置驱动的通用 prepare/check/finalize helper；per-file
 代码只描述目标、source acquisition、export interface、certificate DAG 和
 publication schema。不要复制一整套大型 shell pipeline。抽取复用逻辑时保持
@@ -286,6 +313,11 @@ publication schema。不要复制一整套大型 shell pipeline。抽取复用�
 至少含 execution count、`FRESH`/`VERIFIED_CACHE`/失败模式、elapsed time、
 input fingerprint 和输出 hashes；失败尝试记录 stage 和原因。报告瓶颈必须
 来自这些 evidence，而不是从 report 时间戳间隔推测。
+
+运行昂贵的 `CLEAN_FULL` 前先执行 lightweight sanity/preflight，至少检查 shell/jq
+语法、source acquisition、配置完整性、工具 binary 与目标名。已确认的 source
+compatibility、export/import 或 normalization workaround 必须沉淀到已审计的
+pattern/config/helper；后续命中同一模式时参数化复用，不重新发现。
 
 优先收尾接近验收的 cluster。单个未闭合边界默认最多三种实质方法：已有桥接/局部归约、已证 equations 加强归纳、经过审查的表示调整。三者不是必做清单，也不限制必要的普通 tactic 调试。
 

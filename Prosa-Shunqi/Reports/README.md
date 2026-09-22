@@ -41,17 +41,21 @@ Current canonical reports, in the approved execution order:
 | 19 | `util/div_mod.v` | [div_mod](files/util/2026-09-22_103919_div_mod.md) | `ACCEPTED_V06_FILE` |
 | 20 | `util/nondecreasing.v` | [nondecreasing](files/util/2026-09-22_133028_nondecreasing.md) | `ACCEPTED_V06_FILE` |
 | 21 | `util/all.v` | [all](files/util/2026-09-22_203705_all.md) | `ACCEPTED_V06_FILE` |
+| 22 | `behavior/job.v` | [job](files/behavior/2026-09-22_210645_job.md) | `ACCEPTED_V06_FILE` |
+| 23 | `behavior/arrival_sequence.v` | [arrival_sequence](files/behavior/2026-09-22_222929_arrival_sequence.md) | `IN_PROGRESS` — 14/14 Lean candidates compile; 0/14 semantically accepted |
 
 ## Current proof progress
 
-Machine-published acceptance is now **21 / 357 source files** and
-**204 / 2439 public declarations**, with **0 translated-but-not-certified**.
-The latest completed file is the zero-declaration aggregator `util/all.v`.
-Its exact 18-module import/re-export mapping, accepted-dependency hash closure,
-actual compiled Lean interface, notation visibility, and axiom audit passed.
-No declaration-level export/import was fabricated for a source module with no
-named declaration. The next dependency-ready unfinished file in the approved
-order is rank 22, `behavior/job.v`.
+Machine-published acceptance is now **22 / 357 source files** and
+**209 / 2439 public declarations**, with **0 translated-but-not-certified**.
+The latest completed file is `behavior/job.v`: all five declarations have
+actual-artifact bidirectional/observational semantic certificates, and all 16
+component assumption checks are `CERTIFIED` without Prop/SProp foundation or
+semantic premises. Work is now active on rank 23,
+`behavior/arrival_sequence.v`: all 14 production Lean candidates have been
+written and pass an isolated Lean 4.33.1 compile, but actual-artifact
+export/import, Rocq correspondence certificates, and publication are still
+pending. Therefore none of those 14 declarations is counted as accepted yet.
 
 The formal scheduling document is
 [`../v06_file_translation_order.md`](../v06_file_translation_order.md).
@@ -86,10 +90,38 @@ compile/audit/publication check took 4.24 s. One intentionally retained failed
 attempt records an initially ambiguous audit-marker sort and exposed a hook
 error-propagation bug; publication remained blocked until both were fixed.
 
-This optimization changes workflow only. Accepted coverage remains **18 / 357
-files** and **156 / 2439 declarations**. `util/div_mod.v` remains an
-unaccepted 15-declaration Lean candidate while its actual-artifact semantic
-validation is paused at the user's requested optimization boundary.
+At that original 11:27 workflow-only run, accepted coverage remained **18 / 357
+files** and **156 / 2439 declarations**; `util/div_mod.v` was still an
+unaccepted 15-declaration Lean candidate. Those numbers are historical context,
+not the current dashboard.
+
+### Workflow optimization extension (2026-09-22 21:32:12 +08:00)
+
+The translation skill now requires a whole-file semantic-operation inventory
+before freezing a file with more than 20 public declarations. The inventory
+must connect every operation to content-addressed certified bridge evidence;
+missing support is reported as `missing operation bridge: X`. The adapter
+catalog now routes recurring List operations (length/getD/append/filter/head/
+last/membership/dedup/index) and Nat operations (order/sub/max) to existing
+reusable proof families before any file-specific proof is written.
+
+The incremental state engine can also materialize accepted dependency
+`.olean`/imported `.vo` groups from a sealed prepare manifest. It verifies the
+producer descriptor and every source/destination hash, and requires the
+consumer to bind the reuse evidence; it never infers semantic acceptance from
+a copied artifact. A deleted interval-sum bridge and a corrupted imported
+`.vo` were both rejected in negative tests.
+
+The Sum/Poet/Bigcat regression was rerun against the current importer
+foundation. A stale-foundation `ImportedSubadditivity.vo` was correctly
+rejected, so the known workaround was generalized: stable `.out` bytes are
+re-imported whenever `LeanImport.Lean` changes. The corrected fresh regression
+passed without changing any of the 39 semantic results or gates (106.71 s),
+and an identical rerun used four verified prepare-cache hits (1.86 s total).
+This extension did not alter production declarations or accepted coverage;
+the current project truth remains **21 / 357 files**, **204 / 2439 public
+declarations**, and zero translated-but-not-certified declarations before
+`behavior/job.v` is published.
 
 ## Legacy and raw evidence
 
