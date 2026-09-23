@@ -1,0 +1,996 @@
+{
+  "slice": "TRANSLATION_ORDER_UTIL_SUPERADDITIVITY",
+  "generated_at": "2026-09-23T21:08:46.056660+08:00",
+  "source_file": "util/superadditivity.v",
+  "source_commit": "414e66760333eaa4ef78c685bcf53291c527a548",
+  "source_file_sha256": "4dbb97165d4d3eaa6e6b103bd13024263fc72dcaf83035c03dc76f497bed863d",
+  "production_file": "Prosa/Util/Superadditivity.lean",
+  "production_source_sha256": "4cf7da20a251f63a9edb98e293824709c7df4650e66990b01b7a4f0f3dff84a7",
+  "production_olean_sha256": "a061891b51c9c07d6b1ec5c220585311030048b481401c656a56e8041153cb28",
+  "export_sha256": "7448ff2f3a0abd9ff0013c950679234f3636c7955540420f5f7c20817826827a",
+  "import_sha256": "157772b258a97544872ad731b386406708be95f7426f5da11660dafe9d43685b",
+  "source_acquisition_metadata_sha256": "081a2efd47f9013a5ad9b325b04b38ec147bcbf7ab5226f6e7d6bc23be40666f",
+  "cluster_evidence_sha256": "200cca5405176805ee28be412cfb55fba2a8ac9ef96856de6db1bec81af31752",
+  "lean_source_build_manifest_sha256": "408a96dcefe01510c03f905726db91ddc1a8b966b93869b705c214f7eb648184",
+  "prepare_manifest_sha256": "7f35c3c2a265048d165331f6442f9b5aaa6c33396bc6f4a7b0d8171b5ce9af88",
+  "prepare_evidence_sha256": "0d02482027895a699993858b261cdf3242c318b93fa79b0c8115fe46d904a8b4",
+  "assumption_summary_sha256": "1048526aa0a2b84d088fc39ecc0db7d333e77fa56be104b0dd479bcd81e2dbfc",
+  "lean_axiom_summary_sha256": "5be3cc642ec55807eb0242212712912b080bd194fdd1ea3a959acbdbbf942c11",
+  "baseline_audit_sha256": "be8d93b96d28468a6a8c4bb4b501a50d937ad869f008644cb143a8cf09f1eef7",
+  "published_artifact_hashes": {
+    "Superadditivity.out": "7448ff2f3a0abd9ff0013c950679234f3636c7955540420f5f7c20817826827a",
+    "ImportedSuperadditivity.v": "ae611b4a431a3430525100c6084b06b405a6c6bf0a2e16850350f694658aa2ed",
+    "ImportedSuperadditivity.vo": "157772b258a97544872ad731b386406708be95f7426f5da11660dafe9d43685b",
+    "Superadditivity.olean": "a061891b51c9c07d6b1ec5c220585311030048b481401c656a56e8041153cb28",
+    "SuperadditivityComputationInterface.olean": "578c5d45e31fb803e315b6a7c9d5851fe2f3f0926754599f1618e1ed2b1fd6c0",
+    "OfficialSuperadditivityAll_extraction.json": "081a2efd47f9013a5ad9b325b04b38ec147bcbf7ab5226f6e7d6bc23be40666f",
+    "prepare_manifest.json": "7f35c3c2a265048d165331f6442f9b5aaa6c33396bc6f4a7b0d8171b5ce9af88",
+    "prepare_run_evidence.json": "0d02482027895a699993858b261cdf3242c318b93fa79b0c8115fe46d904a8b4",
+    "assumption_summary.json": "1048526aa0a2b84d088fc39ecc0db7d333e77fa56be104b0dd479bcd81e2dbfc",
+    "lean_axiom_summary.json": "5be3cc642ec55807eb0242212712912b080bd194fdd1ea3a959acbdbbf942c11",
+    "SuperadditivityBaseCorrespondence.vo": "0d357a27f5afa2e1318bc4f9fa729c7d08dac761c47e4bd51603e425d05c3efa",
+    "SuperadditivityEquivalenceCertificate.vo": "f12e46da2500cf3638527909331f8576b2d96086aba683cc913a200ffe77f05e",
+    "SuperadditivityArithmeticCertificate.vo": "9176c3baacbfe841424c2a8470b51dc9311775503671b6da47293d77d740bed4",
+    "SuperadditivityMonotoneCertificate.vo": "617593e1f200b2c822a8df28fdc5597c146394a9b6e9f92fdb9ce584425ccc57",
+    "SuperadditivityExtensionOperations.vo": "9fab85618b2ea2f46eafe34a5feaa8333774b983d25a95d3056ee5b8914daacb",
+    "SuperadditivityHorizonCertificate.vo": "45fbe1a6ed8cc80279d710df730166d0648bbdd676192f26591d69adf4186bc3",
+    "SuperadditivityEquivalenceTypeAudit.vo": "58cf9d55ee49363bf016e2f25e45807fefb12b229c982e467a5fc693b52281c2",
+    "SuperadditivitySourceBindingAudit.vo": "ad9448d01cfbac5d2a2ac5b56f0f6768fc63bbcffc7772f0a381237277367543",
+    "SuperadditivityBaseAssumptionAudit.vo": "cce3806904903a40addfbc92ae1376ab44ec30b921a6e23214902289f47ee448"
+  },
+  "snapshot_id": "e7d00e4ffbc337b6071c64fc92742355bf9ae806346982a375df7913f9a14e8c",
+  "fresh_build": true,
+  "declarations": [
+    {
+      "source_file": "util/superadditivity.v",
+      "rocq_declaration": "prosa.util.superadditivity.superadditive_at",
+      "kind": "Definition",
+      "source_command_sha256": "c30675994b61354410a11ba169a93f2a6c9c85a7d3ac81b0478b70f624536ca4",
+      "source_elaborated_type_fingerprint": "rocq-check-sha256:067c719449923c8b7699423baa939e8239d56144970959101b2e8f54aae950fb",
+      "lean_file": "Prosa/Util/Superadditivity.lean",
+      "lean_declaration": "Prosa.Util.Superadditivity.superadditive_at",
+      "migration_action": "NEW_TRANSLATION",
+      "lean_elaborated_type": "Prosa.Util.Superadditivity.superadditive_at : (\u2115 \u2192 \u2115) \u2192 \u2115 \u2192 Prop",
+      "lean_type_sha256": "051a3442edc4c7bcd20e6b2785b34ac40160b83172670bd32309fb43e6ee153d",
+      "lean_source_sha256": "4cf7da20a251f63a9edb98e293824709c7df4650e66990b01b7a4f0f3dff84a7",
+      "fresh_olean_sha256": "a061891b51c9c07d6b1ec5c220585311030048b481401c656a56e8041153cb28",
+      "export_sha256": "7448ff2f3a0abd9ff0013c950679234f3636c7955540420f5f7c20817826827a",
+      "imported_vo_sha256": "157772b258a97544872ad731b386406708be95f7426f5da11660dafe9d43685b",
+      "source_validation_vo_sha256": "29ee4cfe9bc51e08465e488450de8d8181562e7fe1044c6e335dd279d25775b9",
+      "official_source_vo_sha256": null,
+      "lean_proof_audit": {
+        "actual_axioms": [],
+        "allowed_axioms": [],
+        "allowed_but_unused": [],
+        "status": "PASS",
+        "unexpected_axioms": []
+      },
+      "certificate": "superadditive_at_correspondence",
+      "certificate_module": "SuperadditivityBaseCorrespondence.v",
+      "certificate_source_sha256": "c459e7b00a207fae97671ff214e7d9eb86a5b92631ac99cc0c65a97154520bb2",
+      "certificate_vo_sha256": "0d357a27f5afa2e1318bc4f9fa729c7d08dac761c47e4bd51603e425d05c3efa",
+      "semantic_relation": "Nat function relation and pointwise arithmetic predicate equivalence",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "assumption_audit": {
+        "certificate": "superadditive_at_correspondence",
+        "closed": false,
+        "importer_foundation": [
+          "Lean.eq"
+        ],
+        "prop_sprop_foundation": [
+          "PropSPropFoundation.interpret_strict"
+        ],
+        "raw_section_sha256": "545d39d4857f7ece50cc87fc81546b204597680a3c0a3facd5cd54302a12f179",
+        "rocq_sprop_definitional_uip": [
+          "SubadditivityNatCorrespondence.SubNatTrue"
+        ],
+        "semantic_premises": [],
+        "source_theorem_dependency": false,
+        "statement_only_dependencies": [],
+        "status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+        "target_theorem_dependency": false,
+        "unexpected": []
+      },
+      "semantic_premises": [],
+      "foundation_dependencies": {
+        "prop_sprop": [
+          "PropSPropFoundation.interpret_strict"
+        ],
+        "importer": [
+          "Lean.eq"
+        ],
+        "rocq_sprop_definitional_uip": [
+          "SubadditivityNatCorrespondence.SubNatTrue"
+        ],
+        "bridge_source_sha256": {
+          "PropSPropFoundation.v": "ba5c016b0fc2818bab8d9cff63405d58174f6ae5d635f515e76ce8d303327099",
+          "LogicalRelation.v": "08fb13bbc862f346523a056f22687580c5b05f3231d3d94083328deaddcabc04",
+          "SubadditivityNatCorrespondence.v": "99924c979b324df090c2f27fd71d373558ac6a6a3ea0349edf8930276489eba4",
+          "SuperadditivityBaseCorrespondence.v": "c459e7b00a207fae97671ff214e7d9eb86a5b92631ac99cc0c65a97154520bb2"
+        }
+      },
+      "acceptance": "ACCEPTED_V06_TRANSLATION",
+      "snapshot_id": "e7d00e4ffbc337b6071c64fc92742355bf9ae806346982a375df7913f9a14e8c",
+      "evidence_scope": "CURRENT_SNAPSHOT",
+      "content_invalidation_key_sha256": "ed82b5265864b167132084b448538444fcdbbee37c1b8a7d4dc020d44bb3dfac"
+    },
+    {
+      "source_file": "util/superadditivity.v",
+      "rocq_declaration": "prosa.util.superadditivity.superadditive_until",
+      "kind": "Definition",
+      "source_command_sha256": "08905697f1e8d7866441bea6c5fe0c72c6fef14001b10870c2dcc3ff7cd24e48",
+      "source_elaborated_type_fingerprint": "rocq-check-sha256:ac18ee732c9217036f41c9aeec71399f37ce71f3dde40e7aa5b83f7cf8ec7be8",
+      "lean_file": "Prosa/Util/Superadditivity.lean",
+      "lean_declaration": "Prosa.Util.Superadditivity.superadditive_until",
+      "migration_action": "NEW_TRANSLATION",
+      "lean_elaborated_type": "Prosa.Util.Superadditivity.superadditive_until : (\u2115 \u2192 \u2115) \u2192 \u2115 \u2192 Prop",
+      "lean_type_sha256": "bdb5407c621ce04b321c5db6c93c648429c9ddf33206d8e3967d95b8156f3b1c",
+      "lean_source_sha256": "4cf7da20a251f63a9edb98e293824709c7df4650e66990b01b7a4f0f3dff84a7",
+      "fresh_olean_sha256": "a061891b51c9c07d6b1ec5c220585311030048b481401c656a56e8041153cb28",
+      "export_sha256": "7448ff2f3a0abd9ff0013c950679234f3636c7955540420f5f7c20817826827a",
+      "imported_vo_sha256": "157772b258a97544872ad731b386406708be95f7426f5da11660dafe9d43685b",
+      "source_validation_vo_sha256": "29ee4cfe9bc51e08465e488450de8d8181562e7fe1044c6e335dd279d25775b9",
+      "official_source_vo_sha256": null,
+      "lean_proof_audit": {
+        "actual_axioms": [],
+        "allowed_axioms": [],
+        "allowed_but_unused": [],
+        "status": "PASS",
+        "unexpected_axioms": []
+      },
+      "certificate": "superadditive_until_correspondence",
+      "certificate_module": "SuperadditivityBaseCorrespondence.v",
+      "certificate_source_sha256": "c459e7b00a207fae97671ff214e7d9eb86a5b92631ac99cc0c65a97154520bb2",
+      "certificate_vo_sha256": "0d357a27f5afa2e1318bc4f9fa729c7d08dac761c47e4bd51603e425d05c3efa",
+      "semantic_relation": "bounded Nat quantifier and at-predicate correspondence",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "assumption_audit": {
+        "certificate": "superadditive_until_correspondence",
+        "closed": false,
+        "importer_foundation": [
+          "Lean.eq"
+        ],
+        "prop_sprop_foundation": [
+          "PropSPropFoundation.interpret_strict"
+        ],
+        "raw_section_sha256": "b75295079028bc067d020d4ea87aa0a867d1a66fe12bf628bb7ca5875724d88f",
+        "rocq_sprop_definitional_uip": [
+          "SubadditivityNatCorrespondence.SubNatTrue"
+        ],
+        "semantic_premises": [],
+        "source_theorem_dependency": false,
+        "statement_only_dependencies": [],
+        "status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+        "target_theorem_dependency": false,
+        "unexpected": []
+      },
+      "semantic_premises": [],
+      "foundation_dependencies": {
+        "prop_sprop": [
+          "PropSPropFoundation.interpret_strict"
+        ],
+        "importer": [
+          "Lean.eq"
+        ],
+        "rocq_sprop_definitional_uip": [
+          "SubadditivityNatCorrespondence.SubNatTrue"
+        ],
+        "bridge_source_sha256": {
+          "PropSPropFoundation.v": "ba5c016b0fc2818bab8d9cff63405d58174f6ae5d635f515e76ce8d303327099",
+          "LogicalRelation.v": "08fb13bbc862f346523a056f22687580c5b05f3231d3d94083328deaddcabc04",
+          "SubadditivityNatCorrespondence.v": "99924c979b324df090c2f27fd71d373558ac6a6a3ea0349edf8930276489eba4",
+          "SuperadditivityBaseCorrespondence.v": "c459e7b00a207fae97671ff214e7d9eb86a5b92631ac99cc0c65a97154520bb2"
+        }
+      },
+      "acceptance": "ACCEPTED_V06_TRANSLATION",
+      "snapshot_id": "e7d00e4ffbc337b6071c64fc92742355bf9ae806346982a375df7913f9a14e8c",
+      "evidence_scope": "CURRENT_SNAPSHOT",
+      "content_invalidation_key_sha256": "fbfa0237701c7cc82d0a7df8a605c053d9c42778300294c228800c74bfd7a256"
+    },
+    {
+      "source_file": "util/superadditivity.v",
+      "rocq_declaration": "prosa.util.superadditivity.superadditive",
+      "kind": "Definition",
+      "source_command_sha256": "fb467af40c57dd20b15777087af85a4c1ea060e61f589bfb4ec9005ce18940df",
+      "source_elaborated_type_fingerprint": "rocq-check-sha256:9ca6c1699c764873e207c1c735d3e20651379a9e7b2e60ce39d5ad0061994e4c",
+      "lean_file": "Prosa/Util/Superadditivity.lean",
+      "lean_declaration": "Prosa.Util.Superadditivity.superadditive",
+      "migration_action": "NEW_TRANSLATION",
+      "lean_elaborated_type": "Prosa.Util.Superadditivity.superadditive : (\u2115 \u2192 \u2115) \u2192 Prop",
+      "lean_type_sha256": "7ed3081dd1c294a5ba5cdf2f092a88ea8911e8c5829403d32b61403bfffe729a",
+      "lean_source_sha256": "4cf7da20a251f63a9edb98e293824709c7df4650e66990b01b7a4f0f3dff84a7",
+      "fresh_olean_sha256": "a061891b51c9c07d6b1ec5c220585311030048b481401c656a56e8041153cb28",
+      "export_sha256": "7448ff2f3a0abd9ff0013c950679234f3636c7955540420f5f7c20817826827a",
+      "imported_vo_sha256": "157772b258a97544872ad731b386406708be95f7426f5da11660dafe9d43685b",
+      "source_validation_vo_sha256": "29ee4cfe9bc51e08465e488450de8d8181562e7fe1044c6e335dd279d25775b9",
+      "official_source_vo_sha256": null,
+      "lean_proof_audit": {
+        "actual_axioms": [],
+        "allowed_axioms": [],
+        "allowed_but_unused": [],
+        "status": "PASS",
+        "unexpected_axioms": []
+      },
+      "certificate": "superadditive_correspondence",
+      "certificate_module": "SuperadditivityBaseCorrespondence.v",
+      "certificate_source_sha256": "c459e7b00a207fae97671ff214e7d9eb86a5b92631ac99cc0c65a97154520bb2",
+      "certificate_vo_sha256": "0d357a27f5afa2e1318bc4f9fa729c7d08dac761c47e4bd51603e425d05c3efa",
+      "semantic_relation": "all-horizons Nat quantifier and at-predicate correspondence",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "assumption_audit": {
+        "certificate": "superadditive_correspondence",
+        "closed": false,
+        "importer_foundation": [
+          "Lean.eq"
+        ],
+        "prop_sprop_foundation": [
+          "PropSPropFoundation.interpret_strict"
+        ],
+        "raw_section_sha256": "1333e859fcaf1c65ac1403dc3f7f39ce86f1f79962f84f09eb0bdfa5efbb3083",
+        "rocq_sprop_definitional_uip": [
+          "SubadditivityNatCorrespondence.SubNatTrue"
+        ],
+        "semantic_premises": [],
+        "source_theorem_dependency": false,
+        "statement_only_dependencies": [],
+        "status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+        "target_theorem_dependency": false,
+        "unexpected": []
+      },
+      "semantic_premises": [],
+      "foundation_dependencies": {
+        "prop_sprop": [
+          "PropSPropFoundation.interpret_strict"
+        ],
+        "importer": [
+          "Lean.eq"
+        ],
+        "rocq_sprop_definitional_uip": [
+          "SubadditivityNatCorrespondence.SubNatTrue"
+        ],
+        "bridge_source_sha256": {
+          "PropSPropFoundation.v": "ba5c016b0fc2818bab8d9cff63405d58174f6ae5d635f515e76ce8d303327099",
+          "LogicalRelation.v": "08fb13bbc862f346523a056f22687580c5b05f3231d3d94083328deaddcabc04",
+          "SubadditivityNatCorrespondence.v": "99924c979b324df090c2f27fd71d373558ac6a6a3ea0349edf8930276489eba4",
+          "SuperadditivityBaseCorrespondence.v": "c459e7b00a207fae97671ff214e7d9eb86a5b92631ac99cc0c65a97154520bb2"
+        }
+      },
+      "acceptance": "ACCEPTED_V06_TRANSLATION",
+      "snapshot_id": "e7d00e4ffbc337b6071c64fc92742355bf9ae806346982a375df7913f9a14e8c",
+      "evidence_scope": "CURRENT_SNAPSHOT",
+      "content_invalidation_key_sha256": "e2a5e55b076253667f8d24dc21859343b096358168cf299c37ab021955957ea7"
+    },
+    {
+      "source_file": "util/superadditivity.v",
+      "rocq_declaration": "prosa.util.superadditivity.superadditive_standard",
+      "kind": "Definition",
+      "source_command_sha256": "2e1e815c210ebbb9a4ac0cbd21fc72041f2b637110d3c23a52d4d7e36422c3fd",
+      "source_elaborated_type_fingerprint": "rocq-check-sha256:1cb487ea62bfe99b032cb4a065374c83758d27f305047fa38a9252f210bcc222",
+      "lean_file": "Prosa/Util/Superadditivity.lean",
+      "lean_declaration": "Prosa.Util.Superadditivity.superadditive_standard",
+      "migration_action": "NEW_TRANSLATION",
+      "lean_elaborated_type": "Prosa.Util.Superadditivity.superadditive_standard : (\u2115 \u2192 \u2115) \u2192 Prop",
+      "lean_type_sha256": "4ef19bd80ab00e4641198c6621c1ff6b9ac64ab4c3611f17919243a604f37665",
+      "lean_source_sha256": "4cf7da20a251f63a9edb98e293824709c7df4650e66990b01b7a4f0f3dff84a7",
+      "fresh_olean_sha256": "a061891b51c9c07d6b1ec5c220585311030048b481401c656a56e8041153cb28",
+      "export_sha256": "7448ff2f3a0abd9ff0013c950679234f3636c7955540420f5f7c20817826827a",
+      "imported_vo_sha256": "157772b258a97544872ad731b386406708be95f7426f5da11660dafe9d43685b",
+      "source_validation_vo_sha256": "29ee4cfe9bc51e08465e488450de8d8181562e7fe1044c6e335dd279d25775b9",
+      "official_source_vo_sha256": null,
+      "lean_proof_audit": {
+        "actual_axioms": [],
+        "allowed_axioms": [],
+        "allowed_but_unused": [],
+        "status": "PASS",
+        "unexpected_axioms": []
+      },
+      "certificate": "superadditive_standard_correspondence",
+      "certificate_module": "SuperadditivityBaseCorrespondence.v",
+      "certificate_source_sha256": "c459e7b00a207fae97671ff214e7d9eb86a5b92631ac99cc0c65a97154520bb2",
+      "certificate_vo_sha256": "0d357a27f5afa2e1318bc4f9fa729c7d08dac761c47e4bd51603e425d05c3efa",
+      "semantic_relation": "Nat addition/order and function-value correspondence",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "assumption_audit": {
+        "certificate": "superadditive_standard_correspondence",
+        "closed": false,
+        "importer_foundation": [
+          "Lean.eq"
+        ],
+        "prop_sprop_foundation": [
+          "PropSPropFoundation.interpret_strict"
+        ],
+        "raw_section_sha256": "af6a70edd5696eaa71596a8f0b94521d45a6b174301a17d5b04a81160e6d347e",
+        "rocq_sprop_definitional_uip": [
+          "SubadditivityNatCorrespondence.SubNatTrue"
+        ],
+        "semantic_premises": [],
+        "source_theorem_dependency": false,
+        "statement_only_dependencies": [],
+        "status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+        "target_theorem_dependency": false,
+        "unexpected": []
+      },
+      "semantic_premises": [],
+      "foundation_dependencies": {
+        "prop_sprop": [
+          "PropSPropFoundation.interpret_strict"
+        ],
+        "importer": [
+          "Lean.eq"
+        ],
+        "rocq_sprop_definitional_uip": [
+          "SubadditivityNatCorrespondence.SubNatTrue"
+        ],
+        "bridge_source_sha256": {
+          "PropSPropFoundation.v": "ba5c016b0fc2818bab8d9cff63405d58174f6ae5d635f515e76ce8d303327099",
+          "LogicalRelation.v": "08fb13bbc862f346523a056f22687580c5b05f3231d3d94083328deaddcabc04",
+          "SubadditivityNatCorrespondence.v": "99924c979b324df090c2f27fd71d373558ac6a6a3ea0349edf8930276489eba4",
+          "SuperadditivityBaseCorrespondence.v": "c459e7b00a207fae97671ff214e7d9eb86a5b92631ac99cc0c65a97154520bb2"
+        }
+      },
+      "acceptance": "ACCEPTED_V06_TRANSLATION",
+      "snapshot_id": "e7d00e4ffbc337b6071c64fc92742355bf9ae806346982a375df7913f9a14e8c",
+      "evidence_scope": "CURRENT_SNAPSHOT",
+      "content_invalidation_key_sha256": "9ade7740aaca8176f78874eef52b8d5d2fd85ad87084393128bf33dfb39f9bc2"
+    },
+    {
+      "source_file": "util/superadditivity.v",
+      "rocq_declaration": "prosa.util.superadditivity.superadditive_standard_equivalence",
+      "kind": "Lemma",
+      "source_command_sha256": "2f2fd067794ecf2e59ded878a45616c4db9249a8b6a69468d1e82bb83f83f440",
+      "source_elaborated_type_fingerprint": "rocq-check-sha256:46f7c08458c63833a94d8732aa88b36c3d7a0e817c67ac92b9c0ce30b3315767",
+      "lean_file": "Prosa/Util/Superadditivity.lean",
+      "lean_declaration": "Prosa.Util.Superadditivity.superadditive_standard_equivalence",
+      "migration_action": "NEW_TRANSLATION",
+      "lean_elaborated_type": "Prosa.Util.Superadditivity.superadditive_standard_equivalence : \u2200 (f : \u2115 \u2192 \u2115),\n  Prosa.Util.Superadditivity.superadditive f \u2194 Prosa.Util.Superadditivity.superadditive_standard f",
+      "lean_type_sha256": "117a0ae864f6ec2e7ab83592a0023edb4d1fdb1516dded22b25ea5ad031edd81",
+      "lean_source_sha256": "4cf7da20a251f63a9edb98e293824709c7df4650e66990b01b7a4f0f3dff84a7",
+      "fresh_olean_sha256": "a061891b51c9c07d6b1ec5c220585311030048b481401c656a56e8041153cb28",
+      "export_sha256": "7448ff2f3a0abd9ff0013c950679234f3636c7955540420f5f7c20817826827a",
+      "imported_vo_sha256": "157772b258a97544872ad731b386406708be95f7426f5da11660dafe9d43685b",
+      "source_validation_vo_sha256": "29ee4cfe9bc51e08465e488450de8d8181562e7fe1044c6e335dd279d25775b9",
+      "official_source_vo_sha256": null,
+      "lean_proof_audit": {
+        "actual_axioms": [],
+        "allowed_axioms": [],
+        "allowed_but_unused": [],
+        "status": "PASS",
+        "unexpected_axioms": []
+      },
+      "certificate": "superadditivity_equivalence_statement_certificate",
+      "certificate_module": "SuperadditivityEquivalenceCertificate.v",
+      "certificate_source_sha256": "2bcdeff7960990ca7421b239ca1b3e8ee5f15bbff6ea3dccf38f0d2c6126c07b",
+      "certificate_vo_sha256": "f12e46da2500cf3638527909331f8576b2d96086aba683cc913a200ffe77f05e",
+      "semantic_relation": "structural iff of two certified predicates",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "assumption_audit": {
+        "certificate": "superadditivity_equivalence_statement_certificate",
+        "closed": false,
+        "importer_foundation": [
+          "Lean.eq"
+        ],
+        "prop_sprop_foundation": [
+          "PropSPropFoundation.interpret_strict"
+        ],
+        "raw_section_sha256": "04dd0f7142a6ae74c8e91ec26bad74893f0fdf9d6544751390a9314e07424bb8",
+        "rocq_sprop_definitional_uip": [
+          "SubadditivityNatCorrespondence.SubNatTrue"
+        ],
+        "semantic_premises": [],
+        "source_theorem_dependency": false,
+        "statement_only_dependencies": [],
+        "status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+        "target_theorem_dependency": false,
+        "unexpected": []
+      },
+      "semantic_premises": [],
+      "foundation_dependencies": {
+        "prop_sprop": [
+          "PropSPropFoundation.interpret_strict"
+        ],
+        "importer": [
+          "Lean.eq"
+        ],
+        "rocq_sprop_definitional_uip": [
+          "SubadditivityNatCorrespondence.SubNatTrue"
+        ],
+        "bridge_source_sha256": {
+          "PropSPropFoundation.v": "ba5c016b0fc2818bab8d9cff63405d58174f6ae5d635f515e76ce8d303327099",
+          "LogicalRelation.v": "08fb13bbc862f346523a056f22687580c5b05f3231d3d94083328deaddcabc04",
+          "SubadditivityNatCorrespondence.v": "99924c979b324df090c2f27fd71d373558ac6a6a3ea0349edf8930276489eba4",
+          "SuperadditivityBaseCorrespondence.v": "c459e7b00a207fae97671ff214e7d9eb86a5b92631ac99cc0c65a97154520bb2",
+          "SuperadditivityEquivalenceCertificate.v": "2bcdeff7960990ca7421b239ca1b3e8ee5f15bbff6ea3dccf38f0d2c6126c07b"
+        }
+      },
+      "acceptance": "ACCEPTED_V06_TRANSLATION",
+      "snapshot_id": "e7d00e4ffbc337b6071c64fc92742355bf9ae806346982a375df7913f9a14e8c",
+      "evidence_scope": "CURRENT_SNAPSHOT",
+      "content_invalidation_key_sha256": "27295a633f9748f7d18e0e9fd9c8395565e71f83d35959a1b560f1fffc2c6668"
+    },
+    {
+      "source_file": "util/superadditivity.v",
+      "rocq_declaration": "prosa.util.superadditivity.superadditive_first_zero",
+      "kind": "Lemma",
+      "source_command_sha256": "913e7aa63afa519cf977c5c5322199e2a27fed803b670018fcf630a2ee7ae035",
+      "source_elaborated_type_fingerprint": "rocq-check-sha256:aa5195208b1614ae24191515216c93f17483929c90eddba76508b8b99d8017f6",
+      "lean_file": "Prosa/Util/Superadditivity.lean",
+      "lean_declaration": "Prosa.Util.Superadditivity.superadditive_first_zero",
+      "migration_action": "NEW_TRANSLATION",
+      "lean_elaborated_type": "Prosa.Util.Superadditivity.superadditive_first_zero : \u2200 (f : \u2115 \u2192 \u2115),\n  Prosa.Util.Superadditivity.superadditive_at f 0 \u2192 f 0 = 0",
+      "lean_type_sha256": "f83839d6c2078f8f57f4432074ad014963ed202bdea6ac678010a2233d34b60f",
+      "lean_source_sha256": "4cf7da20a251f63a9edb98e293824709c7df4650e66990b01b7a4f0f3dff84a7",
+      "fresh_olean_sha256": "a061891b51c9c07d6b1ec5c220585311030048b481401c656a56e8041153cb28",
+      "export_sha256": "7448ff2f3a0abd9ff0013c950679234f3636c7955540420f5f7c20817826827a",
+      "imported_vo_sha256": "157772b258a97544872ad731b386406708be95f7426f5da11660dafe9d43685b",
+      "source_validation_vo_sha256": "29ee4cfe9bc51e08465e488450de8d8181562e7fe1044c6e335dd279d25775b9",
+      "official_source_vo_sha256": null,
+      "lean_proof_audit": {
+        "actual_axioms": [
+          "propext",
+          "Quot.sound"
+        ],
+        "allowed_axioms": [
+          "Quot.sound",
+          "propext"
+        ],
+        "allowed_but_unused": [],
+        "status": "PASS",
+        "unexpected_axioms": []
+      },
+      "certificate": "superadditivity_first_zero_statement_certificate",
+      "certificate_module": "SuperadditivityArithmeticCertificate.v",
+      "certificate_source_sha256": "cc3d1f57d9401f0a0904b6ad6f511cade9cbf86ed47cb961cab54a7d7083ee51",
+      "certificate_vo_sha256": "9176c3baacbfe841424c2a8470b51dc9311775503671b6da47293d77d740bed4",
+      "semantic_relation": "certified at-predicate and Nat-zero equality",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "assumption_audit": {
+        "certificate": "superadditivity_first_zero_statement_certificate",
+        "closed": false,
+        "importer_foundation": [
+          "Lean.eq"
+        ],
+        "prop_sprop_foundation": [
+          "PropSPropFoundation.interpret_strict"
+        ],
+        "raw_section_sha256": "9fadce952305c18865e2d8907e9de4d1202f66f49b080178f6657ebe216ed2b2",
+        "rocq_sprop_definitional_uip": [
+          "SubadditivityNatCorrespondence.SubNatTrue"
+        ],
+        "semantic_premises": [],
+        "source_theorem_dependency": false,
+        "statement_only_dependencies": [],
+        "status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+        "target_theorem_dependency": false,
+        "unexpected": []
+      },
+      "semantic_premises": [],
+      "foundation_dependencies": {
+        "prop_sprop": [
+          "PropSPropFoundation.interpret_strict"
+        ],
+        "importer": [
+          "Lean.eq"
+        ],
+        "rocq_sprop_definitional_uip": [
+          "SubadditivityNatCorrespondence.SubNatTrue"
+        ],
+        "bridge_source_sha256": {
+          "PropSPropFoundation.v": "ba5c016b0fc2818bab8d9cff63405d58174f6ae5d635f515e76ce8d303327099",
+          "LogicalRelation.v": "08fb13bbc862f346523a056f22687580c5b05f3231d3d94083328deaddcabc04",
+          "SubadditivityNatCorrespondence.v": "99924c979b324df090c2f27fd71d373558ac6a6a3ea0349edf8930276489eba4",
+          "SuperadditivityBaseCorrespondence.v": "c459e7b00a207fae97671ff214e7d9eb86a5b92631ac99cc0c65a97154520bb2",
+          "SuperadditivityArithmeticCertificate.v": "cc3d1f57d9401f0a0904b6ad6f511cade9cbf86ed47cb961cab54a7d7083ee51"
+        }
+      },
+      "acceptance": "ACCEPTED_V06_TRANSLATION",
+      "snapshot_id": "e7d00e4ffbc337b6071c64fc92742355bf9ae806346982a375df7913f9a14e8c",
+      "evidence_scope": "CURRENT_SNAPSHOT",
+      "content_invalidation_key_sha256": "090aaddb282105854e3f3fb5af713af24bcfa9133145b4cc1a6a873b85a658b1"
+    },
+    {
+      "source_file": "util/superadditivity.v",
+      "rocq_declaration": "prosa.util.superadditivity.superadditive_monotone",
+      "kind": "Lemma",
+      "source_command_sha256": "c1266f5d1b0f315b3a976e5edd9f3e315e8d3980d3637a2259bd8c504f431cd0",
+      "source_elaborated_type_fingerprint": "rocq-check-sha256:121a5e5acbb412e032b2c89d040ec9b22bddc61201701329a6596c10ad136374",
+      "lean_file": "Prosa/Util/Superadditivity.lean",
+      "lean_declaration": "Prosa.Util.Superadditivity.superadditive_monotone",
+      "migration_action": "NEW_TRANSLATION",
+      "lean_elaborated_type": "Prosa.Util.Superadditivity.superadditive_monotone : \u2200 (f : \u2115 \u2192 \u2115),\n  Prosa.Util.Superadditivity.superadditive f \u2192 Prosa.Util.Rel.monotone (fun a b => decide (a \u2264 b)) f",
+      "lean_type_sha256": "3d2c69927cefccad79aad310063b36bde1f76be98c2da56541de8c4674ab9175",
+      "lean_source_sha256": "4cf7da20a251f63a9edb98e293824709c7df4650e66990b01b7a4f0f3dff84a7",
+      "fresh_olean_sha256": "a061891b51c9c07d6b1ec5c220585311030048b481401c656a56e8041153cb28",
+      "export_sha256": "7448ff2f3a0abd9ff0013c950679234f3636c7955540420f5f7c20817826827a",
+      "imported_vo_sha256": "157772b258a97544872ad731b386406708be95f7426f5da11660dafe9d43685b",
+      "source_validation_vo_sha256": "29ee4cfe9bc51e08465e488450de8d8181562e7fe1044c6e335dd279d25775b9",
+      "official_source_vo_sha256": null,
+      "lean_proof_audit": {
+        "actual_axioms": [
+          "propext",
+          "Quot.sound"
+        ],
+        "allowed_axioms": [
+          "Quot.sound",
+          "propext"
+        ],
+        "allowed_but_unused": [],
+        "status": "PASS",
+        "unexpected_axioms": []
+      },
+      "certificate": "superadditivity_monotone_statement_certificate",
+      "certificate_module": "SuperadditivityMonotoneCertificate.v",
+      "certificate_source_sha256": "d7673abe9b4437a817e5e547a29216911861731ca74b7e9d7e5f9593b94b9f9b",
+      "certificate_vo_sha256": "617593e1f200b2c822a8df28fdc5597c146394a9b6e9f92fdb9ce584425ccc57",
+      "semantic_relation": "certified superadditive predicate and Bool-decided Nat monotonicity",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "assumption_audit": {
+        "certificate": "superadditivity_monotone_statement_certificate",
+        "closed": false,
+        "importer_foundation": [
+          "ImportedSuperadditivity.HEq_inst1",
+          "ImportedSuperadditivity.True",
+          "Lean.eq",
+          "Lean.eq_inst1"
+        ],
+        "prop_sprop_foundation": [
+          "PropSPropFoundation.interpret_strict"
+        ],
+        "raw_section_sha256": "8a40f8620049802d3037c52f8ababe3743e171585a45737b4e91c4977adae90d",
+        "rocq_sprop_definitional_uip": [
+          "SubadditivityNatCorrespondence.SubNatTrue",
+          "SuperadditivityTrue"
+        ],
+        "semantic_premises": [],
+        "source_theorem_dependency": false,
+        "statement_only_dependencies": [],
+        "status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+        "target_theorem_dependency": false,
+        "unexpected": []
+      },
+      "semantic_premises": [],
+      "foundation_dependencies": {
+        "prop_sprop": [
+          "PropSPropFoundation.interpret_strict"
+        ],
+        "importer": [
+          "ImportedSuperadditivity.HEq_inst1",
+          "ImportedSuperadditivity.True",
+          "Lean.eq",
+          "Lean.eq_inst1"
+        ],
+        "rocq_sprop_definitional_uip": [
+          "SubadditivityNatCorrespondence.SubNatTrue",
+          "SuperadditivityTrue"
+        ],
+        "bridge_source_sha256": {
+          "PropSPropFoundation.v": "ba5c016b0fc2818bab8d9cff63405d58174f6ae5d635f515e76ce8d303327099",
+          "LogicalRelation.v": "08fb13bbc862f346523a056f22687580c5b05f3231d3d94083328deaddcabc04",
+          "SubadditivityNatCorrespondence.v": "99924c979b324df090c2f27fd71d373558ac6a6a3ea0349edf8930276489eba4",
+          "SuperadditivityBaseCorrespondence.v": "c459e7b00a207fae97671ff214e7d9eb86a5b92631ac99cc0c65a97154520bb2",
+          "SuperadditivityEquivalenceCertificate.v": "2bcdeff7960990ca7421b239ca1b3e8ee5f15bbff6ea3dccf38f0d2c6126c07b",
+          "SuperadditivityMonotoneCertificate.v": "d7673abe9b4437a817e5e547a29216911861731ca74b7e9d7e5f9593b94b9f9b"
+        }
+      },
+      "acceptance": "ACCEPTED_V06_TRANSLATION",
+      "snapshot_id": "e7d00e4ffbc337b6071c64fc92742355bf9ae806346982a375df7913f9a14e8c",
+      "evidence_scope": "CURRENT_SNAPSHOT",
+      "content_invalidation_key_sha256": "121d081c5dbe69366900868098f71975607628e47d96ed46242cb257891f92bf"
+    },
+    {
+      "source_file": "util/superadditivity.v",
+      "rocq_declaration": "prosa.util.superadditivity.superadditive_leq_mul",
+      "kind": "Lemma",
+      "source_command_sha256": "886ab4be2d398a9fa29ba878ef07f6c6a08bbc9a9559258e258b2b40fe671b24",
+      "source_elaborated_type_fingerprint": "rocq-check-sha256:0c702e16da9c3c0e1cac4f7c5dd6608ead0a64d8db01839ca380786764049bc1",
+      "lean_file": "Prosa/Util/Superadditivity.lean",
+      "lean_declaration": "Prosa.Util.Superadditivity.superadditive_leq_mul",
+      "migration_action": "NEW_TRANSLATION",
+      "lean_elaborated_type": "Prosa.Util.Superadditivity.superadditive_leq_mul : \u2200 (f : \u2115 \u2192 \u2115),\n  Prosa.Util.Superadditivity.superadditive f \u2192 \u2200 (n m : \u2115), m * f n \u2264 f (m * n)",
+      "lean_type_sha256": "bbee5b605a749e81c54b81bbc3ddbb934209887e4babb3ce258a25be230a30d6",
+      "lean_source_sha256": "4cf7da20a251f63a9edb98e293824709c7df4650e66990b01b7a4f0f3dff84a7",
+      "fresh_olean_sha256": "a061891b51c9c07d6b1ec5c220585311030048b481401c656a56e8041153cb28",
+      "export_sha256": "7448ff2f3a0abd9ff0013c950679234f3636c7955540420f5f7c20817826827a",
+      "imported_vo_sha256": "157772b258a97544872ad731b386406708be95f7426f5da11660dafe9d43685b",
+      "source_validation_vo_sha256": "29ee4cfe9bc51e08465e488450de8d8181562e7fe1044c6e335dd279d25775b9",
+      "official_source_vo_sha256": null,
+      "lean_proof_audit": {
+        "actual_axioms": [
+          "propext"
+        ],
+        "allowed_axioms": [
+          "propext"
+        ],
+        "allowed_but_unused": [],
+        "status": "PASS",
+        "unexpected_axioms": []
+      },
+      "certificate": "superadditivity_leq_mul_statement_certificate",
+      "certificate_module": "SuperadditivityArithmeticCertificate.v",
+      "certificate_source_sha256": "cc3d1f57d9401f0a0904b6ad6f511cade9cbf86ed47cb961cab54a7d7083ee51",
+      "certificate_vo_sha256": "9176c3baacbfe841424c2a8470b51dc9311775503671b6da47293d77d740bed4",
+      "semantic_relation": "certified predicate and Nat multiplication/order statement",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "assumption_audit": {
+        "certificate": "superadditivity_leq_mul_statement_certificate",
+        "closed": false,
+        "importer_foundation": [
+          "Lean.eq"
+        ],
+        "prop_sprop_foundation": [
+          "PropSPropFoundation.interpret_strict"
+        ],
+        "raw_section_sha256": "0feace8726cb46f6ccdaa4e3122b37f0d95839a10390649f8c1e7145b3e616d9",
+        "rocq_sprop_definitional_uip": [
+          "SubadditivityNatCorrespondence.SubNatTrue"
+        ],
+        "semantic_premises": [],
+        "source_theorem_dependency": false,
+        "statement_only_dependencies": [],
+        "status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+        "target_theorem_dependency": false,
+        "unexpected": []
+      },
+      "semantic_premises": [],
+      "foundation_dependencies": {
+        "prop_sprop": [
+          "PropSPropFoundation.interpret_strict"
+        ],
+        "importer": [
+          "Lean.eq"
+        ],
+        "rocq_sprop_definitional_uip": [
+          "SubadditivityNatCorrespondence.SubNatTrue"
+        ],
+        "bridge_source_sha256": {
+          "PropSPropFoundation.v": "ba5c016b0fc2818bab8d9cff63405d58174f6ae5d635f515e76ce8d303327099",
+          "LogicalRelation.v": "08fb13bbc862f346523a056f22687580c5b05f3231d3d94083328deaddcabc04",
+          "SubadditivityNatCorrespondence.v": "99924c979b324df090c2f27fd71d373558ac6a6a3ea0349edf8930276489eba4",
+          "SuperadditivityBaseCorrespondence.v": "c459e7b00a207fae97671ff214e7d9eb86a5b92631ac99cc0c65a97154520bb2",
+          "SuperadditivityArithmeticCertificate.v": "cc3d1f57d9401f0a0904b6ad6f511cade9cbf86ed47cb961cab54a7d7083ee51"
+        }
+      },
+      "acceptance": "ACCEPTED_V06_TRANSLATION",
+      "snapshot_id": "e7d00e4ffbc337b6071c64fc92742355bf9ae806346982a375df7913f9a14e8c",
+      "evidence_scope": "CURRENT_SNAPSHOT",
+      "content_invalidation_key_sha256": "b8aae5ad2855eb64b2974df6ecfddaa78c3cdf630dff8e00ad0858efbd5f8f0e"
+    },
+    {
+      "source_file": "util/superadditivity.v",
+      "rocq_declaration": "prosa.util.superadditivity.superadditive_unbounded",
+      "kind": "Lemma",
+      "source_command_sha256": "425c1abf9a910c8866f9063575e2c4d37c2035cc338b972cd74c0c1b6c72663e",
+      "source_elaborated_type_fingerprint": "rocq-check-sha256:b99c2de03e90961731c1d2d0ce96519bdd2cfdd4964aeabf8162870d789eca23",
+      "lean_file": "Prosa/Util/Superadditivity.lean",
+      "lean_declaration": "Prosa.Util.Superadditivity.superadditive_unbounded",
+      "migration_action": "NEW_TRANSLATION",
+      "lean_elaborated_type": "Prosa.Util.Superadditivity.superadditive_unbounded : \u2200 (f : \u2115 \u2192 \u2115),\n  Prosa.Util.Superadditivity.superadditive f \u2192 (\u2203 n, 0 < f n) \u2192 \u2200 (t : \u2115), \u2203 n', t \u2264 f n'",
+      "lean_type_sha256": "e3cc0d6fad39c5b258e010d9364ad1010909ced65759b97486982ce90a939328",
+      "lean_source_sha256": "4cf7da20a251f63a9edb98e293824709c7df4650e66990b01b7a4f0f3dff84a7",
+      "fresh_olean_sha256": "a061891b51c9c07d6b1ec5c220585311030048b481401c656a56e8041153cb28",
+      "export_sha256": "7448ff2f3a0abd9ff0013c950679234f3636c7955540420f5f7c20817826827a",
+      "imported_vo_sha256": "157772b258a97544872ad731b386406708be95f7426f5da11660dafe9d43685b",
+      "source_validation_vo_sha256": "29ee4cfe9bc51e08465e488450de8d8181562e7fe1044c6e335dd279d25775b9",
+      "official_source_vo_sha256": null,
+      "lean_proof_audit": {
+        "actual_axioms": [
+          "propext"
+        ],
+        "allowed_axioms": [
+          "propext"
+        ],
+        "allowed_but_unused": [],
+        "status": "PASS",
+        "unexpected_axioms": []
+      },
+      "certificate": "superadditivity_unbounded_statement_certificate",
+      "certificate_module": "SuperadditivityArithmeticCertificate.v",
+      "certificate_source_sha256": "cc3d1f57d9401f0a0904b6ad6f511cade9cbf86ed47cb961cab54a7d7083ee51",
+      "certificate_vo_sha256": "9176c3baacbfe841424c2a8470b51dc9311775503671b6da47293d77d740bed4",
+      "semantic_relation": "certified predicate and Nat existential/order statement",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "assumption_audit": {
+        "certificate": "superadditivity_unbounded_statement_certificate",
+        "closed": false,
+        "importer_foundation": [
+          "Lean.eq"
+        ],
+        "prop_sprop_foundation": [
+          "PropSPropFoundation.interpret_strict"
+        ],
+        "raw_section_sha256": "e10e49d60fa26fd337828dc07cb420f785298fc98e536575c5331a41f6dbd3b0",
+        "rocq_sprop_definitional_uip": [
+          "SubadditivityNatCorrespondence.SubNatTrue"
+        ],
+        "semantic_premises": [],
+        "source_theorem_dependency": false,
+        "statement_only_dependencies": [],
+        "status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+        "target_theorem_dependency": false,
+        "unexpected": []
+      },
+      "semantic_premises": [],
+      "foundation_dependencies": {
+        "prop_sprop": [
+          "PropSPropFoundation.interpret_strict"
+        ],
+        "importer": [
+          "Lean.eq"
+        ],
+        "rocq_sprop_definitional_uip": [
+          "SubadditivityNatCorrespondence.SubNatTrue"
+        ],
+        "bridge_source_sha256": {
+          "PropSPropFoundation.v": "ba5c016b0fc2818bab8d9cff63405d58174f6ae5d635f515e76ce8d303327099",
+          "LogicalRelation.v": "08fb13bbc862f346523a056f22687580c5b05f3231d3d94083328deaddcabc04",
+          "SubadditivityNatCorrespondence.v": "99924c979b324df090c2f27fd71d373558ac6a6a3ea0349edf8930276489eba4",
+          "SuperadditivityBaseCorrespondence.v": "c459e7b00a207fae97671ff214e7d9eb86a5b92631ac99cc0c65a97154520bb2",
+          "SuperadditivityArithmeticCertificate.v": "cc3d1f57d9401f0a0904b6ad6f511cade9cbf86ed47cb961cab54a7d7083ee51"
+        }
+      },
+      "acceptance": "ACCEPTED_V06_TRANSLATION",
+      "snapshot_id": "e7d00e4ffbc337b6071c64fc92742355bf9ae806346982a375df7913f9a14e8c",
+      "evidence_scope": "CURRENT_SNAPSHOT",
+      "content_invalidation_key_sha256": "657b2ec90cb41e5595a2d6f40f200b33240bf7c37ad02b73afce3373ef5d3dfa"
+    },
+    {
+      "source_file": "util/superadditivity.v",
+      "rocq_declaration": "prosa.util.superadditivity.minimal_superadditive_extension",
+      "kind": "Definition",
+      "source_command_sha256": "e9f5f26adcddff211c27f815a0c84123d791553dccd1b50cdd6cccf6c8d0e8b9",
+      "source_elaborated_type_fingerprint": "rocq-check-sha256:cd342a292dd4ffdd4381ad35ca69aae64adae6e88fa3b4d89f9139bb3d4172b8",
+      "lean_file": "Prosa/Util/Superadditivity.lean",
+      "lean_declaration": "Prosa.Util.Superadditivity.minimal_superadditive_extension",
+      "migration_action": "NEW_TRANSLATION",
+      "lean_elaborated_type": "Prosa.Util.Superadditivity.minimal_superadditive_extension : (\u2115 \u2192 \u2115) \u2192 \u2115 \u2192 \u2115",
+      "lean_type_sha256": "81aa35594e91a73a6f0b0ea739d896c3fa2a6fdb84ebca7a92033bc746d7eae1",
+      "lean_source_sha256": "4cf7da20a251f63a9edb98e293824709c7df4650e66990b01b7a4f0f3dff84a7",
+      "fresh_olean_sha256": "a061891b51c9c07d6b1ec5c220585311030048b481401c656a56e8041153cb28",
+      "export_sha256": "7448ff2f3a0abd9ff0013c950679234f3636c7955540420f5f7c20817826827a",
+      "imported_vo_sha256": "157772b258a97544872ad731b386406708be95f7426f5da11660dafe9d43685b",
+      "source_validation_vo_sha256": "29ee4cfe9bc51e08465e488450de8d8181562e7fe1044c6e335dd279d25775b9",
+      "official_source_vo_sha256": null,
+      "lean_proof_audit": {
+        "actual_axioms": [],
+        "allowed_axioms": [],
+        "allowed_but_unused": [],
+        "status": "PASS",
+        "unexpected_axioms": []
+      },
+      "certificate": "sa_minimal_extension_related",
+      "certificate_module": "SuperadditivityExtensionOperations.v",
+      "certificate_source_sha256": "63fc7a639ff5c84fe7ec75a570717f40a3797e14190e5ce2b33cb0a4163dfaf7",
+      "certificate_vo_sha256": "9fab85618b2ea2f46eafe34a5feaa8333774b983d25a95d3056ee5b8914daacb",
+      "semantic_relation": "ordered index_iota/map/max0 computation and truncated Nat subtraction",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "assumption_audit": {
+        "certificate": "sa_minimal_extension_related",
+        "closed": false,
+        "importer_foundation": [
+          "ImportedSuperadditivity.HEq_inst1",
+          "ImportedSuperadditivity.True",
+          "Lean.eq",
+          "Lean.eq_inst1"
+        ],
+        "prop_sprop_foundation": [
+          "PropSPropFoundation.interpret_strict"
+        ],
+        "raw_section_sha256": "dd0cf632258b0e6da6e814bd0af1f6e9592e3f884b97ea22a9bbf79051c926cf",
+        "rocq_sprop_definitional_uip": [
+          "SubadditivityNatCorrespondence.SubNatTrue"
+        ],
+        "semantic_premises": [],
+        "source_theorem_dependency": false,
+        "statement_only_dependencies": [],
+        "status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+        "target_theorem_dependency": false,
+        "unexpected": []
+      },
+      "semantic_premises": [],
+      "foundation_dependencies": {
+        "prop_sprop": [
+          "PropSPropFoundation.interpret_strict"
+        ],
+        "importer": [
+          "ImportedSuperadditivity.HEq_inst1",
+          "ImportedSuperadditivity.True",
+          "Lean.eq",
+          "Lean.eq_inst1"
+        ],
+        "rocq_sprop_definitional_uip": [
+          "SubadditivityNatCorrespondence.SubNatTrue"
+        ],
+        "bridge_source_sha256": {
+          "PropSPropFoundation.v": "ba5c016b0fc2818bab8d9cff63405d58174f6ae5d635f515e76ce8d303327099",
+          "LogicalRelation.v": "08fb13bbc862f346523a056f22687580c5b05f3231d3d94083328deaddcabc04",
+          "SubadditivityNatCorrespondence.v": "99924c979b324df090c2f27fd71d373558ac6a6a3ea0349edf8930276489eba4",
+          "NatSubCorrespondence.v": "7d8700c52d59ff709996d96f2e9d3bd88e76d4c3914808fbeaf4866a68f22d57",
+          "SuperadditivityBaseCorrespondence.v": "c459e7b00a207fae97671ff214e7d9eb86a5b92631ac99cc0c65a97154520bb2",
+          "SuperadditivityExtensionOperations.v": "63fc7a639ff5c84fe7ec75a570717f40a3797e14190e5ce2b33cb0a4163dfaf7"
+        }
+      },
+      "acceptance": "ACCEPTED_V06_TRANSLATION",
+      "snapshot_id": "e7d00e4ffbc337b6071c64fc92742355bf9ae806346982a375df7913f9a14e8c",
+      "evidence_scope": "CURRENT_SNAPSHOT",
+      "content_invalidation_key_sha256": "2275fb6c9b46ed72aa3690491fca1a739e7bcb6f755dfca541da414dc198e740"
+    },
+    {
+      "source_file": "util/superadditivity.v",
+      "rocq_declaration": "prosa.util.superadditivity.minimal_extension_superadditive_at_horizon",
+      "kind": "Theorem",
+      "source_command_sha256": "30c23573b8f65a6336497fd350d4bbe866d40b5037ea9a150d0e3d1e1d948182",
+      "source_elaborated_type_fingerprint": "rocq-check-sha256:b1db80859d52b8941a39e725e8ebd6c70e68c836bf7d2df2066e86510202b594",
+      "lean_file": "Prosa/Util/Superadditivity.lean",
+      "lean_declaration": "Prosa.Util.Superadditivity.minimal_extension_superadditive_at_horizon",
+      "migration_action": "NEW_TRANSLATION",
+      "lean_elaborated_type": "Prosa.Util.Superadditivity.minimal_extension_superadditive_at_horizon : \u2200 (f : \u2115 \u2192 \u2115) (h : \u2115),\n  Prosa.Util.Superadditivity.superadditive_until f h \u2192\n    \u2200 (f' : \u2115 \u2192 \u2115),\n      (\u2200 (t : \u2115),\n          f' t =\n            if decide (t = h) = true then Prosa.Util.Superadditivity.minimal_superadditive_extension f h else f t) \u2192\n        Prosa.Util.Superadditivity.superadditive_at f' h",
+      "lean_type_sha256": "896d41dcadfad8a381d2158506c002bb89f43e855f0ae4fc7f4054368bcb8fdc",
+      "lean_source_sha256": "4cf7da20a251f63a9edb98e293824709c7df4650e66990b01b7a4f0f3dff84a7",
+      "fresh_olean_sha256": "a061891b51c9c07d6b1ec5c220585311030048b481401c656a56e8041153cb28",
+      "export_sha256": "7448ff2f3a0abd9ff0013c950679234f3636c7955540420f5f7c20817826827a",
+      "imported_vo_sha256": "157772b258a97544872ad731b386406708be95f7426f5da11660dafe9d43685b",
+      "source_validation_vo_sha256": "29ee4cfe9bc51e08465e488450de8d8181562e7fe1044c6e335dd279d25775b9",
+      "official_source_vo_sha256": null,
+      "lean_proof_audit": {
+        "actual_axioms": [
+          "propext",
+          "Quot.sound"
+        ],
+        "allowed_axioms": [
+          "Quot.sound",
+          "propext"
+        ],
+        "allowed_but_unused": [],
+        "status": "PASS",
+        "unexpected_axioms": []
+      },
+      "certificate": "sa_horizon_at_statement_certificate",
+      "certificate_module": "SuperadditivityHorizonCertificate.v",
+      "certificate_source_sha256": "9402cc21841443c408557c5bbe27ee6a09f25cd4b56c3588da672072016004a5",
+      "certificate_vo_sha256": "45fbe1a6ed8cc80279d710df730166d0648bbdd676192f26591d69adf4186bc3",
+      "semantic_relation": "updated function, certified until/at predicates, Nat equality and quantifier correspondence",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "assumption_audit": {
+        "certificate": "sa_horizon_at_statement_certificate",
+        "closed": false,
+        "importer_foundation": [
+          "ImportedSuperadditivity.HEq_inst1",
+          "ImportedSuperadditivity.True",
+          "Lean.eq",
+          "Lean.eq_inst1"
+        ],
+        "prop_sprop_foundation": [
+          "PropSPropFoundation.interpret_strict"
+        ],
+        "raw_section_sha256": "698e5cb48b89301f335905cd4f62b428f61448aa43927d3459934bfce6c40c9f",
+        "rocq_sprop_definitional_uip": [
+          "SubadditivityNatCorrespondence.SubNatTrue"
+        ],
+        "semantic_premises": [],
+        "source_theorem_dependency": false,
+        "statement_only_dependencies": [],
+        "status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+        "target_theorem_dependency": false,
+        "unexpected": []
+      },
+      "semantic_premises": [],
+      "foundation_dependencies": {
+        "prop_sprop": [
+          "PropSPropFoundation.interpret_strict"
+        ],
+        "importer": [
+          "ImportedSuperadditivity.HEq_inst1",
+          "ImportedSuperadditivity.True",
+          "Lean.eq",
+          "Lean.eq_inst1"
+        ],
+        "rocq_sprop_definitional_uip": [
+          "SubadditivityNatCorrespondence.SubNatTrue"
+        ],
+        "bridge_source_sha256": {
+          "PropSPropFoundation.v": "ba5c016b0fc2818bab8d9cff63405d58174f6ae5d635f515e76ce8d303327099",
+          "LogicalRelation.v": "08fb13bbc862f346523a056f22687580c5b05f3231d3d94083328deaddcabc04",
+          "SubadditivityNatCorrespondence.v": "99924c979b324df090c2f27fd71d373558ac6a6a3ea0349edf8930276489eba4",
+          "NatSubCorrespondence.v": "7d8700c52d59ff709996d96f2e9d3bd88e76d4c3914808fbeaf4866a68f22d57",
+          "SuperadditivityBaseCorrespondence.v": "c459e7b00a207fae97671ff214e7d9eb86a5b92631ac99cc0c65a97154520bb2",
+          "SuperadditivityEquivalenceCertificate.v": "2bcdeff7960990ca7421b239ca1b3e8ee5f15bbff6ea3dccf38f0d2c6126c07b",
+          "SuperadditivityExtensionOperations.v": "63fc7a639ff5c84fe7ec75a570717f40a3797e14190e5ce2b33cb0a4163dfaf7",
+          "SuperadditivityHorizonCertificate.v": "9402cc21841443c408557c5bbe27ee6a09f25cd4b56c3588da672072016004a5"
+        }
+      },
+      "acceptance": "ACCEPTED_V06_TRANSLATION",
+      "snapshot_id": "e7d00e4ffbc337b6071c64fc92742355bf9ae806346982a375df7913f9a14e8c",
+      "evidence_scope": "CURRENT_SNAPSHOT",
+      "content_invalidation_key_sha256": "a2cb8093287059cf4a6b6709bc6600514fd3a511f847b0b8d37d9569ab658114"
+    },
+    {
+      "source_file": "util/superadditivity.v",
+      "rocq_declaration": "prosa.util.superadditivity.minimal_extension_superadditive_until",
+      "kind": "Lemma",
+      "source_command_sha256": "2e498fbfd7684c913fd0e4cd64dcfd313cfeaeee877cc53770c3e8bcd7a86969",
+      "source_elaborated_type_fingerprint": "rocq-check-sha256:adfc04adc7c420811d776905b51258bbe2d615d3302f72de357375815717905d",
+      "lean_file": "Prosa/Util/Superadditivity.lean",
+      "lean_declaration": "Prosa.Util.Superadditivity.minimal_extension_superadditive_until",
+      "migration_action": "NEW_TRANSLATION",
+      "lean_elaborated_type": "Prosa.Util.Superadditivity.minimal_extension_superadditive_until : \u2200 (f : \u2115 \u2192 \u2115) (h : \u2115),\n  Prosa.Util.Superadditivity.superadditive_until f h \u2192\n    \u2200 (f' : \u2115 \u2192 \u2115),\n      (\u2200 (t : \u2115),\n          f' t =\n            if decide (t = h) = true then Prosa.Util.Superadditivity.minimal_superadditive_extension f h else f t) \u2192\n        Prosa.Util.Superadditivity.superadditive_until f' (h + 1)",
+      "lean_type_sha256": "9da941b96878d71266889935cf3803018baa7316f383d417680ea0350784e43d",
+      "lean_source_sha256": "4cf7da20a251f63a9edb98e293824709c7df4650e66990b01b7a4f0f3dff84a7",
+      "fresh_olean_sha256": "a061891b51c9c07d6b1ec5c220585311030048b481401c656a56e8041153cb28",
+      "export_sha256": "7448ff2f3a0abd9ff0013c950679234f3636c7955540420f5f7c20817826827a",
+      "imported_vo_sha256": "157772b258a97544872ad731b386406708be95f7426f5da11660dafe9d43685b",
+      "source_validation_vo_sha256": "29ee4cfe9bc51e08465e488450de8d8181562e7fe1044c6e335dd279d25775b9",
+      "official_source_vo_sha256": null,
+      "lean_proof_audit": {
+        "actual_axioms": [
+          "propext",
+          "Quot.sound"
+        ],
+        "allowed_axioms": [
+          "Quot.sound",
+          "propext"
+        ],
+        "allowed_but_unused": [],
+        "status": "PASS",
+        "unexpected_axioms": []
+      },
+      "certificate": "sa_horizon_until_statement_certificate",
+      "certificate_module": "SuperadditivityHorizonCertificate.v",
+      "certificate_source_sha256": "9402cc21841443c408557c5bbe27ee6a09f25cd4b56c3588da672072016004a5",
+      "certificate_vo_sha256": "45fbe1a6ed8cc80279d710df730166d0648bbdd676192f26591d69adf4186bc3",
+      "semantic_relation": "updated function, certified until predicate, Nat successor and quantifier correspondence",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "assumption_audit": {
+        "certificate": "sa_horizon_until_statement_certificate",
+        "closed": false,
+        "importer_foundation": [
+          "ImportedSuperadditivity.HEq_inst1",
+          "ImportedSuperadditivity.True",
+          "Lean.eq",
+          "Lean.eq_inst1"
+        ],
+        "prop_sprop_foundation": [
+          "PropSPropFoundation.interpret_strict"
+        ],
+        "raw_section_sha256": "5c3b00e4ddaacf6cefd726878d0fe53e033114d7278debf6abe9fee3fae00f33",
+        "rocq_sprop_definitional_uip": [
+          "SubadditivityNatCorrespondence.SubNatTrue"
+        ],
+        "semantic_premises": [],
+        "source_theorem_dependency": false,
+        "statement_only_dependencies": [],
+        "status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+        "target_theorem_dependency": false,
+        "unexpected": []
+      },
+      "semantic_premises": [],
+      "foundation_dependencies": {
+        "prop_sprop": [
+          "PropSPropFoundation.interpret_strict"
+        ],
+        "importer": [
+          "ImportedSuperadditivity.HEq_inst1",
+          "ImportedSuperadditivity.True",
+          "Lean.eq",
+          "Lean.eq_inst1"
+        ],
+        "rocq_sprop_definitional_uip": [
+          "SubadditivityNatCorrespondence.SubNatTrue"
+        ],
+        "bridge_source_sha256": {
+          "PropSPropFoundation.v": "ba5c016b0fc2818bab8d9cff63405d58174f6ae5d635f515e76ce8d303327099",
+          "LogicalRelation.v": "08fb13bbc862f346523a056f22687580c5b05f3231d3d94083328deaddcabc04",
+          "SubadditivityNatCorrespondence.v": "99924c979b324df090c2f27fd71d373558ac6a6a3ea0349edf8930276489eba4",
+          "NatSubCorrespondence.v": "7d8700c52d59ff709996d96f2e9d3bd88e76d4c3914808fbeaf4866a68f22d57",
+          "SuperadditivityBaseCorrespondence.v": "c459e7b00a207fae97671ff214e7d9eb86a5b92631ac99cc0c65a97154520bb2",
+          "SuperadditivityEquivalenceCertificate.v": "2bcdeff7960990ca7421b239ca1b3e8ee5f15bbff6ea3dccf38f0d2c6126c07b",
+          "SuperadditivityExtensionOperations.v": "63fc7a639ff5c84fe7ec75a570717f40a3797e14190e5ce2b33cb0a4163dfaf7",
+          "SuperadditivityHorizonCertificate.v": "9402cc21841443c408557c5bbe27ee6a09f25cd4b56c3588da672072016004a5"
+        }
+      },
+      "acceptance": "ACCEPTED_V06_TRANSLATION",
+      "snapshot_id": "e7d00e4ffbc337b6071c64fc92742355bf9ae806346982a375df7913f9a14e8c",
+      "evidence_scope": "CURRENT_SNAPSHOT",
+      "content_invalidation_key_sha256": "fd321a839b33c12f6dac4edec1ebceafc6e47cef3ece123a9ae4f4281af379f6"
+    }
+  ],
+  "acceptance": "ACCEPTED_V06_FILE"
+}

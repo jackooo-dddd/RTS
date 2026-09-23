@@ -1,0 +1,20 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedSuperadditivity.
+
+Check @ImportedSuperadditivity.Prosa_Util_Superadditivity_minimal_superadditive_extension.
+Check @ImportedSuperadditivity.Prosa_Util_List_index_iota.
+Check @ImportedSuperadditivity.Prosa_Util_List_max0.
+Check @ImportedSuperadditivity.List_map.
+Check @ImportedSuperadditivity.List_range'.
+Check @ImportedSuperadditivity.List_foldl.
+Check @ImportedSuperadditivity.List_inst1.
+Check @ImportedSuperadditivity.List_cons_inst1.
+Check @ImportedSuperadditivity.List_nil_inst1.
+Check @ImportedSuperadditivity.Nat_max.
+Check @ImportedSuperadditivity.List_foldl_inst3.
+Check @ImportedSuperadditivity.List_map_inst3.
+Check @ImportedSuperadditivity.Prosa_Validation_SuperadditivityInterface_productionMinimal.
+Check @ImportedSuperadditivity.Prosa_Validation_SuperadditivityInterface_rangeZero.
+Check @ImportedSuperadditivity.Prosa_Validation_SuperadditivityInterface_updateValue.
+Check @ImportedSuperadditivity.Prosa_Validation_SuperadditivityInterface_updateValueEq.
+Check @ImportedSuperadditivity.Prosa_Validation_SuperadditivityInterface_updateValueNe.

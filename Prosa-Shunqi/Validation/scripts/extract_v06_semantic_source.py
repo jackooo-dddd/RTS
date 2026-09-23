@@ -61,7 +61,7 @@ def active_context(text: str, stop: int) -> list[str]:
                 frames.pop()
         elif re.match(
             r"^(?:Variable|Variables|Hypothesis|Hypotheses|Context|"
-            r"Local\s+Context|Notation|Local\s+Notation)\b",
+            r"Local\s+Context|Let|Local\s+Definition|Notation|Local\s+Notation)\b",
             stripped,
         ):
             command = [lines[i]]
@@ -134,6 +134,15 @@ def main() -> None:
         help=("exact import command to omit when it is irrelevant to every "
               "extracted declaration; the omission is recorded in metadata"),
     )
+    parser.add_argument(
+        "--add-import", action="append", default=[],
+        help="validation-only replacement import; recorded in source metadata",
+    )
+    parser.add_argument(
+        "--omit-theorem-context-when-elaborated", action="store_true",
+        help=("omit now-unnecessary open Section context around a theorem "
+              "whose exact post-Section type comes from elaborated evidence"),
+    )
     parser.add_argument("--output", required=True, type=Path)
     parser.add_argument("--metadata", required=True, type=Path)
     args = parser.parse_args()
@@ -181,7 +190,7 @@ def main() -> None:
         raise SystemExit(
             f"--drop-import commands absent from source: {sorted(unknown_drop_imports)}"
         )
-    output = [*imports, "", f"Module {args.module}.", ""]
+    output = [*imports, *args.add_import, "", f"Module {args.module}.", ""]
     metadata: dict[str, object] = {
         "mode": "proof_independent_semantic_source_signature",
         "source_file": args.source_file,
@@ -202,12 +211,19 @@ def main() -> None:
             ),
             "local_bindings": bindings,
             "dropped_irrelevant_imports": sorted(requested_drop_imports),
+            "added_validation_imports": args.add_import,
         },
         "declarations": {},
     }
     for index, name in enumerate(requested):
         position, kind, block = declarations[name]
         context = active_context(text, position)
+        omitted_context = bool(
+            args.omit_theorem_context_when_elaborated
+            and elaborated_evidence is not None and kind == "theorem"
+        )
+        if omitted_context:
+            context = []
         output.extend([f"Section SourceContext_{index}.", *context, ""] if context else [])
         active_bindings = {
             binding_name: term for binding_name, term in bindings.items()
@@ -269,6 +285,7 @@ def main() -> None:
                 else ("Type" if name in type_valued else "Prop")
             ),
             "context": context,
+            "omitted_context_for_elaborated_theorem": omitted_context,
             "local_bindings": active_bindings,
         }
     output.extend([f"End {args.module}.", ""])

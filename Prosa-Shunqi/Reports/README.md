@@ -2,26 +2,34 @@
 
 ## Latest published validation
 
-The latest formally published file is `util/int.v`:
+The latest formally published file is `util/superadditivity.v`:
 
-- [canonical integer-interface report](files/util/2026-09-23_072030_int.md)
-- [current continuous-run summary](runs/2026-09-22_000308_translation_order_continuous_run.md)
+- [canonical Superadditivity report](files/util/2026-09-23_160337_superadditivity.md)
+- [canonical Fixpoint report](files/util/2026-09-23_150425_fixpoint.md)
+- [latest Fixpoint closure run](runs/2026-09-23_1848_fixpoint_closure_run.md)
+- [earlier continuous-run summary](runs/2026-09-22_000308_translation_order_continuous_run.md)
 - machine authority:
-  `../Validation/planning/v06_pipeline/util_int_module_status.json`
+  `../Validation/planning/v06_pipeline/util_superadditivity_module_status.json`
 
-The zero-public-declaration integer/order re-export passed its source and
-Lean interface audit. Current machine-published coverage is **29 /
-357 files** and **252 / 2439 declarations**, with **0** translated but
-uncertified declarations. Reports are organized below `files/` and `runs/`;
+All 12 Superadditivity declarations passed fresh actual-artifact semantic
+validation and publication with the explicit Prop/SProp foundation. Earlier,
+all 17 Fixpoint declarations were accepted (4 `CERTIFIED`, 13 with that
+foundation). Current machine-published coverage is **31 / 357 files** and **281 / 2439
+declarations**, with **0** translated but uncertified declarations in the
+published coverage. Reports are organized below `files/` and `runs/`;
 this README is the visible entry point rather than a duplicate status
 authority.
 
 ## Latest work in progress
 
-The next ordered candidate is `util/lcmseq.v` (execution rank 30).
-Its five Lean declarations are proof-clean, and operation/theorem-statement
-correspondence work is in progress. Its statement-only dependency boundary
-prevents formal whole-file publication so far; it is **not accepted**.
+The earlier ordered candidate `util/lcmseq.v` (rank 30) remains unaccepted.
+Its five Lean declarations are proof-clean, but imported arithmetic proof-field
+statement-only dependencies still block whole-file publication. After closing
+the independent rank-32 Superadditivity file, the next READY rank-33 file is
+[`implementation/definitions/extrapolated_arrival_curve.v`](files/implementation/definitions/2026-09-23_211129_extrapolated_arrival_curve.md).
+Its 21/21 Lean candidates compile, and the first four actual-artifact
+correspondence certificates have passed Rocq compilation and assumption
+audit. The file is **not yet published or counted as accepted**.
 
 Work-in-progress reports appear here even though they do not change the
 formally published coverage above. Their presence never implies
@@ -77,14 +85,18 @@ Current canonical reports, in the approved execution order:
 | 28 | `model/processor/supply.v` | [supply](files/model/processor/2026-09-23_055700_supply.md) | `ACCEPTED_V06_FILE` |
 | 29 | `util/int.v` | [int](files/util/2026-09-23_072030_int.md) | `ACCEPTED_V06_FILE` |
 | 30 | `util/lcmseq.v` | [lcmseq](files/util/2026-09-23_073256_lcmseq.md) | `NOT_ACCEPTED` |
+| 31 | `util/fixpoint.v` | [fixpoint](files/util/2026-09-23_150425_fixpoint.md) | `ACCEPTED_V06_FILE` |
+| 32 | `util/superadditivity.v` | [superadditivity](files/util/2026-09-23_160337_superadditivity.md) | `ACCEPTED_V06_FILE` |
+| 33 | `implementation/definitions/extrapolated_arrival_curve.v` | [extrapolated_arrival_curve](files/implementation/definitions/2026-09-23_211129_extrapolated_arrival_curve.md) | `IN_PROGRESS_NOT_ACCEPTED` |
 
 ## Current proof progress
 
-Machine-published acceptance is now **29 / 357 source files** and **252 / 2439
-public declarations**, with **0 translated-but-not-certified**. The latest
-completed file is `util/int.v`, a zero-public-declaration re-export/interface
-audit. `util/lcmseq.v` is the current unfinished file. Its partial certificate
-progress does not change accepted coverage.
+Machine-published acceptance is now **31 / 357 source files** and **281 / 2439
+public declarations**, with **0 translated-but-not-certified in the published
+coverage**. The latest completed file is `util/superadditivity.v`; it was
+completed while `util/lcmseq.v` (rank 30) remained blocked. `util/lcmseq.v`
+is still unfinished and its partial
+certificate progress does not change accepted coverage.
 Machine-readable status/manifest remain the acceptance source; this dashboard
 is a human-readable reflection of them.
 
