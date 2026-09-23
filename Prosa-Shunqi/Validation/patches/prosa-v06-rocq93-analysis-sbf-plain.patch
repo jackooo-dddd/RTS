@@ -1,0 +1,12 @@
+--- a/analysis/definitions/sbf/plain.v
++++ b/analysis/definitions/sbf/plain.v
+@@ -44,7 +44,8 @@
+       SBF (t2 - t1) <= supply_during sched t1 t2.
+   Proof.
+     move => SUP j t1 t2 ARR LE.
+-    by apply: (SUP _ _ t2) => //; lia.
++    apply: (SUP j t1 t2 ARR I t2).
++    by rewrite leqnn andbT.
+   Qed.
+ 
+ End SupplyBoundFunctions.

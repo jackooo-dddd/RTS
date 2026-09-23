@@ -26,7 +26,7 @@ DECL_RE = re.compile(
     rf"({IDENTIFIER_RE}){IDENTIFIER_BOUNDARY_RE}.*?^[^\n]*(?:Qed|Defined)\.[ \t]*$"
 )
 BODY_RE = re.compile(
-    r"(?ms)^[ \t]*(?:Fixpoint|CoFixpoint|Definition)\s+"
+    r"(?ms)^[ \t]*(?:Fixpoint|CoFixpoint|Definition|Class|Inductive|Variant)\s+"
     rf"({IDENTIFIER_RE}){IDENTIFIER_BOUNDARY_RE}.*?\.[ \t]*$"
     r"(?:\n(?:[ \t]*\n)*[ \t]*Proof\.[ \t]*$.*?^[^\n]*Defined\.[ \t]*$)?"
 )

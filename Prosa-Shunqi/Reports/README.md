@@ -2,19 +2,66 @@
 
 ## Latest published validation
 
-The latest formally published file is `util/superadditivity.v`:
+The latest formally published file is `analysis/definitions/sbf/plain.v` (42/357 files, 336/2439 declarations accepted):
 
+- [canonical plain-SBF report](files/analysis/definitions/sbf/2026-09-24_062700_plain.md)
+- [canonical analysis service report](files/analysis/definitions/2026-09-24_060952_service.md)
+- [canonical predicate-SBF report](files/analysis/definitions/sbf/2026-09-24_053710_pred.md)
+- [canonical periodic-resource report](files/analysis/definitions/sbf/2026-09-24_051850_periodic.md)
+- [canonical average-resource report](files/analysis/definitions/sbf/2026-09-24_043858_average.md)
+- [canonical finish-time report](files/analysis/definitions/2026-09-24_035607_finish_time.md)
+- [canonical completion-sequence report](files/analysis/definitions/2026-09-24_031052_completion_sequence.md)
+- [canonical extrapolated-arrival-curve facts report](files/implementation/facts/2026-09-24_014411_extrapolated_arrival_curve.md)
+- [canonical arrival-bound report](files/implementation/definitions/2026-09-24_010800_arrival_bound.md)
+- [canonical SBF report](files/analysis/definitions/sbf/2026-09-24_005022_sbf.md)
+- [canonical extrapolated-arrival-curve report](files/implementation/definitions/2026-09-23_211129_extrapolated_arrival_curve.md)
 - [canonical Superadditivity report](files/util/2026-09-23_160337_superadditivity.md)
 - [canonical Fixpoint report](files/util/2026-09-23_150425_fixpoint.md)
 - [latest Fixpoint closure run](runs/2026-09-23_1848_fixpoint_closure_run.md)
 - [earlier continuous-run summary](runs/2026-09-22_000308_translation_order_continuous_run.md)
 - machine authority:
-  `../Validation/planning/v06_pipeline/util_superadditivity_module_status.json`
+  `../Validation/planning/v06_pipeline/analysis_sbf_plain_module_status.json`
 
-All 12 Superadditivity declarations passed fresh actual-artifact semantic
-validation and publication with the explicit Prop/SProp foundation. Earlier,
-all 17 Fixpoint declarations were accepted (4 `CERTIFIED`, 13 with that
-foundation). Current machine-published coverage is **31 / 357 files** and **281 / 2439
+The three plain-SBF declarations compose certified predicate-SBF and supply
+relations. The theorem statement is checked with a separate official/imported
+exact-type guard; the semantic certificate is proof-independent. The approved
+Prop/SProp boundary remains visible; no semantic premise or unexpected
+assumption is accepted.
+
+The two `analysis/definitions/service.v` definitions have actual-artifact
+Rocq correspondences composed from accepted Service/ArrivalSequence bridges,
+ordered filtering, and a kernel-proved optional-head bridge. Both assumption
+audits expose the approved Prop/SProp foundation with no semantic premise or
+theorem self-dependency.
+
+The five predicate-SBF declarations have actual-artifact Rocq correspondence,
+including the full quantified theorem statement; the theorem proof constants
+are absent from its semantic certificate. All five expose the approved
+Prop/SProp foundation and no semantic premises. The two periodic-resource
+definitions have actual-artifact Rocq correspondence,
+including the full quantified supply bound and the truncated-Nat SBF formula;
+both expose the approved Prop/SProp foundation and no semantic premises.
+The two average-resource definitions have actual-artifact Rocq
+correspondence, reusing accepted Supply and DivMod operation relations on
+the same imported artifact. Their assumption audits expose only the approved
+Prop/SProp foundation alongside importer primitives. The five `finish_time.v`
+declarations have actual-artifact Rocq
+correspondence. The reusable MathComp `ex_minn` ↔ imported Lean `Nat.find`
+least-witness bridge is kernel-checked and the three theorem statements have
+separate exact-type guards. Their assumption audit exposes the Prop/SProp
+foundation and reports no semantic premise or theorem self-dependency.
+The `completion_sequence` definition has an actual-artifact Rocq
+correspondence composed from certified `arrivals_up_to`, `completes_at`, and
+ordered `filter` relations, with the Prop/SProp foundation visible in the
+assumption audit. All ten extrapolated-arrival-curve facts have actual-artifact theorem
+statement correspondence with the explicit Prop/SProp foundation. Before
+that, the official arrival-bound inductive, Boolean equality, and informative
+reflection view passed actual-artifact semantic validation and publication.
+The equality/view correspondence explicitly uses the Prop/SProp foundation;
+the constructor relation does not. The SBF class was also accepted without
+that foundation. Earlier, all 21
+ExtrapolatedArrivalCurve declarations passed (5 `CERTIFIED`, 16 with the
+explicit foundation). Current machine-published coverage is **40 / 357 files** and **331 / 2439
 declarations**, with **0** translated but uncertified declarations in the
 published coverage. Reports are organized below `files/` and `runs/`;
 this README is the visible entry point rather than a duplicate status
@@ -24,12 +71,10 @@ authority.
 
 The earlier ordered candidate `util/lcmseq.v` (rank 30) remains unaccepted.
 Its five Lean declarations are proof-clean, but imported arithmetic proof-field
-statement-only dependencies still block whole-file publication. After closing
-the independent rank-32 Superadditivity file, the next READY rank-33 file is
-[`implementation/definitions/extrapolated_arrival_curve.v`](files/implementation/definitions/2026-09-23_211129_extrapolated_arrival_curve.md).
-Its 21/21 Lean candidates compile, and the first four actual-artifact
-correspondence certificates have passed Rocq compilation and assumption
-audit. The file is **not yet published or counted as accepted**.
+statement-only dependencies still block whole-file publication. Rank 33
+`implementation/definitions/extrapolated_arrival_curve.v` is now fully
+published. The next unfinished file must be selected from the current machine
+status and file DAG; this README does not assert its readiness.
 
 Work-in-progress reports appear here even though they do not change the
 formally published coverage above. Their presence never implies
@@ -87,14 +132,23 @@ Current canonical reports, in the approved execution order:
 | 30 | `util/lcmseq.v` | [lcmseq](files/util/2026-09-23_073256_lcmseq.md) | `NOT_ACCEPTED` |
 | 31 | `util/fixpoint.v` | [fixpoint](files/util/2026-09-23_150425_fixpoint.md) | `ACCEPTED_V06_FILE` |
 | 32 | `util/superadditivity.v` | [superadditivity](files/util/2026-09-23_160337_superadditivity.md) | `ACCEPTED_V06_FILE` |
-| 33 | `implementation/definitions/extrapolated_arrival_curve.v` | [extrapolated_arrival_curve](files/implementation/definitions/2026-09-23_211129_extrapolated_arrival_curve.md) | `IN_PROGRESS_NOT_ACCEPTED` |
+| 33 | `implementation/definitions/extrapolated_arrival_curve.v` | [extrapolated_arrival_curve](files/implementation/definitions/2026-09-23_211129_extrapolated_arrival_curve.md) | `ACCEPTED_V06_FILE` |
+| 34 | `analysis/definitions/sbf/sbf.v` | [sbf](files/analysis/definitions/sbf/2026-09-24_005022_sbf.md) | `ACCEPTED_V06_FILE` |
+| 35 | `implementation/definitions/arrival_bound.v` | [arrival_bound](files/implementation/definitions/2026-09-24_010800_arrival_bound.md) | `ACCEPTED_V06_FILE` |
+| 36 | `implementation/facts/extrapolated_arrival_curve.v` | [extrapolated_arrival_curve facts](files/implementation/facts/2026-09-24_014411_extrapolated_arrival_curve.md) | `ACCEPTED_V06_FILE` |
+| 37 | `analysis/definitions/completion_sequence.v` | [completion_sequence](files/analysis/definitions/2026-09-24_031052_completion_sequence.md) | `ACCEPTED_V06_FILE` |
+| 38 | `analysis/definitions/finish_time.v` | [finish_time](files/analysis/definitions/2026-09-24_035607_finish_time.md) | `ACCEPTED_V06_FILE` |
+| 39 | `analysis/definitions/sbf/average.v` | [average](files/analysis/definitions/sbf/2026-09-24_043858_average.md) | `ACCEPTED_V06_FILE` |
+| 40 | `analysis/definitions/sbf/periodic.v` | [periodic](files/analysis/definitions/sbf/2026-09-24_051850_periodic.md) | `ACCEPTED_V06_FILE` |
+| 41 | `analysis/definitions/sbf/pred.v` | [pred](files/analysis/definitions/sbf/2026-09-24_053710_pred.md) | `ACCEPTED_V06_FILE` |
 
 ## Current proof progress
 
-Machine-published acceptance is now **31 / 357 source files** and **281 / 2439
+Machine-published acceptance is now **40 / 357 source files** and **331 / 2439
 public declarations**, with **0 translated-but-not-certified in the published
-coverage**. The latest completed file is `util/superadditivity.v`; it was
-completed while `util/lcmseq.v` (rank 30) remained blocked. `util/lcmseq.v`
+coverage**. The latest completed file is `analysis/definitions/sbf/pred.v`;
+it was completed
+while `util/lcmseq.v` (rank 30) remained blocked. `util/lcmseq.v`
 is still unfinished and its partial
 certificate progress does not change accepted coverage.
 Machine-readable status/manifest remain the acceptance source; this dashboard

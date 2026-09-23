@@ -1,0 +1,15 @@
+diff --git a/analysis/definitions/schedule_prefix.v b/analysis/definitions/schedule_prefix.v
+--- a/analysis/definitions/schedule_prefix.v
++++ b/analysis/definitions/schedule_prefix.v
+@@ -37,6 +37,10 @@ Section PrefixDefinition.
+     forall sched sched' h h',
+       h' <= h ->
+       identical_prefix sched sched' h -> identical_prefix sched sched' h'.
+-  Proof. by move=> sched sched' h h' h'_le_h + t t_lt_h'; apply; apply: leq_trans h'_le_h. Qed.
++  Proof.
++    move=> sched sched' h h' h'_le_h PREFIX t t_lt_h'.
++    apply: PREFIX.
++    exact: (ltn_leq_trans t_lt_h' h'_le_h).
++  Qed.
+
+ End PrefixDefinition.
