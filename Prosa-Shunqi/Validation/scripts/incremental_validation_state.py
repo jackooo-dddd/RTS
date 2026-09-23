@@ -233,6 +233,10 @@ def finish_run(args: argparse.Namespace) -> None:
             sum(float(e["duration_seconds"]) for e in events), 6
         ),
     }
+    if args.wall_start_ns is not None:
+        result["wall_clock_seconds"] = round(
+            (time.time_ns() - args.wall_start_ns) / 1_000_000_000, 6
+        )
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n")
 
@@ -431,6 +435,102 @@ def attach_publication(args: argparse.Namespace) -> None:
     args.result.write_text(json.dumps(result, indent=2) + "\n")
 
 
+def stage_files(prepared: Path, stage: str) -> dict[str, str]:
+    if stage == "lean_build":
+        paths = list((prepared / "olean").rglob("*.olean"))
+        paths += [p for p in prepared.glob("*manifest.json") if p.is_file()]
+        paths += [p for p in prepared.glob("lean*summary.json") if p.is_file()]
+        paths += [p for p in prepared.glob("lean*axioms.log") if p.is_file()]
+    elif stage == "source_acquisition":
+        paths = [p for p in (prepared / "source").rglob("*") if p.is_file()]
+    elif stage == "export":
+        paths = list((prepared / "imported").glob("*.out"))
+        paths += list((prepared / "imported").glob("*export_metadata.json"))
+    elif stage == "rocq_import":
+        paths = [p for p in (prepared / "imported").rglob("*") if p.is_file()]
+    elif stage in ("certificate_compile", "assumption_audit"):
+        paths = [p for p in (prepared / "certificates").rglob("*") if p.is_file()]
+    else:
+        raise SystemExit(f"unsupported prepare checkpoint stage: {stage}")
+    result = {p.relative_to(prepared).as_posix(): sha(p) for p in paths}
+    if not result:
+        raise SystemExit(f"no successful stage artifacts to checkpoint: {stage}")
+    return result
+
+
+def seal_stage(args: argparse.Namespace) -> None:
+    if args.cache.exists():
+        raise SystemExit(f"stage checkpoint already exists: {args.cache}")
+    files = stage_files(args.prepared, args.stage)
+    temporary = args.cache.with_name(args.cache.name + f".tmp.{os.getpid()}")
+    temporary.mkdir(parents=True)
+    for relative, expected in files.items():
+        destination = temporary / relative
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(args.prepared / relative, destination)
+        if sha(destination) != expected:
+            raise SystemExit(f"stage checkpoint copy mismatch: {relative}")
+    data = {
+        "schema_version": SCHEMA_VERSION,
+        "snapshot_id": args.snapshot_id,
+        "stage": args.stage,
+        "input_fingerprint": args.input_fingerprint,
+        "files": files,
+        "file_set_sha256": digest(files),
+    }
+    (temporary / "stage_checkpoint.json").write_text(
+        json.dumps(data, indent=2, sort_keys=True) + "\n"
+    )
+    os.rename(temporary, args.cache)
+
+
+def restore_stage(args: argparse.Namespace) -> None:
+    start = time.time_ns()
+    try:
+        data = json.loads((args.cache / "stage_checkpoint.json").read_text())
+    except (OSError, ValueError) as exc:
+        raise SystemExit(f"STAGE_CHECKPOINT_CORRUPT:{exc}") from exc
+    if ((not args.allow_cross_snapshot
+             and data.get("snapshot_id") != args.snapshot_id)
+            or data.get("stage") != args.stage
+            or data.get("input_fingerprint") != args.input_fingerprint):
+        raise SystemExit("STAGE_CHECKPOINT_INPUT_MISMATCH")
+    files = data.get("files", {})
+    if not files or digest(files) != data.get("file_set_sha256"):
+        raise SystemExit("STAGE_CHECKPOINT_MANIFEST_CORRUPT")
+    # Verify every source before modifying the consumer. Missing, modified or
+    # truncated files are corruption, never an ordinary cache miss.
+    for relative, expected in files.items():
+        source = checked_relative(args.cache, relative)
+        require_file(source)
+        if sha(source) != expected:
+            raise SystemExit(f"STAGE_CHECKPOINT_HASH_MISMATCH:{relative}")
+    for relative, expected in files.items():
+        destination = checked_relative(args.prepared, relative)
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        temporary = destination.with_name(f".{destination.name}.tmp.{os.getpid()}")
+        shutil.copy2(args.cache / relative, temporary)
+        if sha(temporary) != expected:
+            raise SystemExit(f"STAGE_CHECKPOINT_COPY_MISMATCH:{relative}")
+        os.replace(temporary, destination)
+    end = time.time_ns()
+    event = {
+        "stage": args.stage,
+        "mode": "VERIFIED_CACHE",
+        "executed": False,
+        "status": "PASS",
+        "duration_seconds": round((end - start) / 1_000_000_000, 6),
+        "start_ns": start,
+        "end_ns": end,
+        "input_fingerprint": args.input_fingerprint,
+        "producer_snapshot_id": data.get("snapshot_id"),
+        "output_hashes": files,
+    }
+    args.events.parent.mkdir(parents=True, exist_ok=True)
+    with args.events.open("a") as stream:
+        stream.write(json.dumps(event, sort_keys=True) + "\n")
+
+
 def parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser()
     sub = parser.add_subparsers(dest="command", required=True)
@@ -459,6 +559,7 @@ def parser() -> argparse.ArgumentParser:
     f.add_argument("--snapshot-id", required=True)
     f.add_argument("--run-mode", required=True)
     f.add_argument("--output", required=True, type=Path)
+    f.add_argument("--wall-start-ns", type=int)
     f.set_defaults(func=finish_run)
 
     s = sub.add_parser("seal")
@@ -486,6 +587,22 @@ def parser() -> argparse.ArgumentParser:
     a.add_argument("--evidence", required=True, type=Path)
     a.add_argument("--snapshot-id", required=True)
     a.set_defaults(func=attach_publication)
+    checkpoint = sub.add_parser("seal-stage")
+    checkpoint.add_argument("--prepared", required=True, type=Path)
+    checkpoint.add_argument("--cache", required=True, type=Path)
+    checkpoint.add_argument("--snapshot-id", required=True)
+    checkpoint.add_argument("--stage", required=True, choices=STAGES[:6])
+    checkpoint.add_argument("--input-fingerprint", required=True)
+    checkpoint.set_defaults(func=seal_stage)
+    restore = sub.add_parser("restore-stage")
+    restore.add_argument("--prepared", required=True, type=Path)
+    restore.add_argument("--cache", required=True, type=Path)
+    restore.add_argument("--snapshot-id", required=True)
+    restore.add_argument("--stage", required=True, choices=STAGES[:6])
+    restore.add_argument("--input-fingerprint", required=True)
+    restore.add_argument("--events", required=True, type=Path)
+    restore.add_argument("--allow-cross-snapshot", action="store_true")
+    restore.set_defaults(func=restore_stage)
     return parser
 
 

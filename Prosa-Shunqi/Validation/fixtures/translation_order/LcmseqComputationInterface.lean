@@ -42,4 +42,3 @@ theorem production_dvd_iff_mod_eq_zero (x y : Nat) :
     y ∣ x ↔ x % y = 0 := Nat.dvd_iff_mod_eq_zero
 
 end Prosa.Validation.DivModInterface
-

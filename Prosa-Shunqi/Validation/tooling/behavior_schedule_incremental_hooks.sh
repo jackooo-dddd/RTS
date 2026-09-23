@@ -1,9 +1,15 @@
 #!/usr/bin/env bash
 
+source "$VALIDATION_ROOT/scripts/common/file_validate.sh"
+VALIDATION_SPLIT_CHECK_INPUTS=1
+VALIDATION_SPLIT_PREPARE_INPUTS=1
+
 VALIDATION_PREPARE_INPUTS=(
   "$VALIDATION_ROOT/tooling/behavior_schedule_incremental_descriptor.json"
   "$VALIDATION_ROOT/tooling/behavior_schedule_export_config.json"
-  "$VALIDATION_ROOT/tooling/behavior_schedule_incremental_hooks.sh"
+  "$VALIDATION_ROOT/scripts/common/file_validate.sh"
+  "$VALIDATION_ROOT/scripts/file_validate_lean_dependencies.py"
+  "$VALIDATION_ROOT/scripts/prepare_stage_fingerprint.py"
   "$VALIDATION_ROOT/scripts/run_incremental_validation.sh"
   "$VALIDATION_ROOT/scripts/common/incremental_validation.sh"
   "$VALIDATION_ROOT/scripts/common/validation_common.sh"
@@ -106,6 +112,9 @@ result = {
 }
 output.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n")
 PY
+  local build_mode=FULL_FALLBACK
+  [[ ${CLEAN_FULL:-0} != 1 ]] || build_mode=CLEAN_FULL
+  validation_seal_lean_modules "$build_mode"
   VALIDATION_STAGE_OUTPUTS=(
     "util_all_olean=$VALIDATION_PREPARED/olean/Prosa/Util/All.olean"
     "arrival_olean=$VALIDATION_PREPARED/olean/Prosa/Behavior/Arrival_sequence.olean"
@@ -114,6 +123,7 @@ PY
     "lean_freeze=$VALIDATION_PREPARED/lean_freeze_and_axioms.log"
     "lean_axiom_summary=$VALIDATION_PREPARED/lean_axiom_summary.json"
     "dependency_build_manifest=$VALIDATION_PREPARED/dependency_build_manifest.json"
+    "lean_source_build_manifest=$VALIDATION_PREPARED/lean_source_build_manifest.json"
   )
 }
 

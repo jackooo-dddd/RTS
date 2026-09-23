@@ -22,6 +22,8 @@ while [[ $# -gt 0 ]]; do
 done
 [[ -n "$name" && -n "$config" && -n "$hooks" ]] || usage
 [[ "$name" =~ ^[a-z0-9_]+$ ]]
+export VALIDATION_RUN_START_NS
+VALIDATION_RUN_START_NS=$(python3 -c 'import time; print(time.time_ns())')
 
 script_dir=$(cd "$(dirname "$0")" && pwd)
 source "$script_dir/common/validation_common.sh"
@@ -29,6 +31,19 @@ validation_common_init "$script_dir"
 validation_verify_tool_hashes
 source "$script_dir/common/incremental_validation.sh"
 source "$hooks"
+
+if [[ ${CLEAN_FULL:-0} == 1 && ${RECOVER_PREPARE:-0} == 1 ]]; then
+  echo "CLEAN_FULL and RECOVER_PREPARE are mutually exclusive" >&2
+  exit 2
+fi
+
+# Cheap failures must be caught before rebuilding the accepted Lean closure.
+bash -n "$hooks" "$script_dir/run_incremental_validation.sh"
+jq -e . "$config" >/dev/null
+[[ -s "$IMPORTER_ROOT/src/Lean.vo" ]] || {
+  echo "importer foundation missing" >&2; exit 1;
+}
+ulimit -s 65520
 
 declare -p VALIDATION_PREPARE_INPUTS >/dev/null 2>&1 || VALIDATION_PREPARE_INPUTS=()
 declare -p VALIDATION_CHECK_INPUTS >/dev/null 2>&1 || VALIDATION_CHECK_INPUTS=()
@@ -52,6 +67,21 @@ for input in "${VALIDATION_PREPARE_INPUTS[@]}"; do
   [[ -s "$input" ]] || { echo "prepare input missing: $input" >&2; exit 1; }
   descriptor_args+=(--binding "prepare_input_$(basename "$input")=$(validation_sha256 "$input")")
 done
+for function_name in validation_prepare_lean_build \
+    validation_prepare_source_acquisition validation_prepare_export \
+    validation_prepare_rocq_import; do
+  function_body=$(declare -f "$function_name") || {
+    echo "missing prepare hook: $function_name" >&2; exit 1;
+  }
+  descriptor_args+=(--binding "prepare_function_${function_name}=$(printf '%s' "$function_body" | shasum -a 256 | awk '{print $1}')")
+done
+execution_mode=INCREMENTAL
+if [[ ${CLEAN_FULL:-0} == 1 || ${RECOVER_PREPARE:-0} == 1 ]]; then
+  execution_mode=CLEAN_FULL
+elif [[ ${FILE_VALIDATE:-0} == 1 ]]; then
+  execution_mode=FILE_VALIDATE
+fi
+descriptor_args+=(--binding "execution_mode=$execution_mode")
 descriptor_args+=(--output "$descriptor_tmp")
 snapshot_id=$(python3 "$script_dir/incremental_validation_state.py" "${descriptor_args[@]}")
 descriptor="$cache_root/descriptors/$snapshot_id.json"
@@ -120,6 +150,73 @@ run_hook_stage() {
     "${VALIDATION_STAGE_OUTPUTS[@]}"
 }
 
+run_or_restore_stage() {
+  local events=$1 stage=$2 fingerprint=$3 function_name=$4 work=$5
+  local checkpoint="$cache_root/stage_checkpoints/$snapshot_id/$stage/$fingerprint"
+  local cross_snapshot=0
+  if [[ ${VALIDATION_SPLIT_PREPARE_INPUTS:-0} == 1 && \
+        "$stage" != certificate_compile && "$stage" != assumption_audit ]]; then
+    checkpoint="$cache_root/stage_checkpoints/by_input/$stage/$fingerprint"
+    cross_snapshot=1
+  fi
+  if [[ ${CLEAN_FULL:-0} != 1 && -d "$checkpoint" ]]; then
+    if [[ $cross_snapshot == 1 ]]; then
+      python3 "$script_dir/incremental_validation_state.py" restore-stage \
+        --prepared "$work" --cache "$checkpoint" --snapshot-id "$snapshot_id" \
+        --stage "$stage" --input-fingerprint "$fingerprint" --events "$events" \
+        --allow-cross-snapshot
+    else
+      python3 "$script_dir/incremental_validation_state.py" restore-stage \
+        --prepared "$work" --cache "$checkpoint" --snapshot-id "$snapshot_id" \
+        --stage "$stage" --input-fingerprint "$fingerprint" --events "$events"
+    fi
+  else
+    run_hook_stage "$events" "$stage" "$fingerprint" "$function_name"
+    # A clean run never restores a checkpoint, but each successful stage is
+    # sealed so a later explicitly labelled recovery can avoid rebuilding it.
+    if [[ ! -e "$checkpoint" ]]; then
+      mkdir -p "$(dirname "$checkpoint")"
+      python3 "$script_dir/incremental_validation_state.py" seal-stage \
+        --prepared "$work" --cache "$checkpoint" --snapshot-id "$snapshot_id" \
+        --stage "$stage" --input-fingerprint "$fingerprint"
+    fi
+  fi
+}
+
+prepare_stage_fingerprint() {
+  local stage=$1 function_name=$2
+  if [[ ${VALIDATION_SPLIT_PREPARE_INPUTS:-0} != 1 ]]; then
+    printf '%s\n' "$snapshot_id"
+    return
+  fi
+  local function_hash
+  function_hash=$(declare -f "$function_name" | shasum -a 256 | awk '{print $1}')
+  python3 "$script_dir/prepare_stage_fingerprint.py" \
+    --stage "$stage" --config "$config" --project "$PROJECT_ROOT" \
+    --validation "$VALIDATION_ROOT" --source "$SOURCE_ROOT" \
+    --exporter "$EXPORTER_ROOT" --importer "$IMPORTER_ROOT" \
+    --prepared "$VALIDATION_PREPARED" --function-hash "$function_hash"
+}
+
+stage_input_fingerprint() {
+  local prior=$1 function_name=$2
+  shift 2
+  local function_hash
+  function_hash=$(declare -f "$function_name" | shasum -a 256 | awk '{print $1}')
+  python3 - "$prior" "$function_hash" "$@" <<'PY'
+import hashlib, json, sys
+from pathlib import Path
+prior, function_hash, *names = sys.argv[1:]
+items = {"prior": prior, "function_body": function_hash}
+for name in names:
+    path = Path(name)
+    if not path.is_file() or path.stat().st_size == 0:
+        raise SystemExit("stage input missing: " + name)
+    items[str(path.resolve())] = hashlib.sha256(path.read_bytes()).hexdigest()
+print(hashlib.sha256(json.dumps(items, sort_keys=True).encode()).hexdigest())
+PY
+}
+
 prepare_snapshot() {
   local evidence="$run_log/prepare_stage_evidence.json"
   if [[ ${CLEAN_FULL:-0} != 1 && -d "$canonical" ]]; then
@@ -138,25 +235,56 @@ prepare_snapshot() {
   : > "$events"
   export VALIDATION_PREPARED="$work"
   export VALIDATION_RUN_LOG="$run_log"
+  export VALIDATION_MODULE_TIMING_FILE="$run_log/module_build_timings.jsonl"
   export VALIDATION_SNAPSHOT_ID="$snapshot_id"
   validation_prepare_lean_path "$work"
-  run_hook_stage "$events" lean_build "$snapshot_id" validation_prepare_lean_build
-  run_hook_stage "$events" source_acquisition "$snapshot_id" validation_prepare_source_acquisition
-  run_hook_stage "$events" export "$snapshot_id" validation_prepare_export
-  run_hook_stage "$events" rocq_import "$snapshot_id" validation_prepare_rocq_import
+  local stage_fp
+  stage_fp=$(prepare_stage_fingerprint lean_build validation_prepare_lean_build)
+  run_or_restore_stage "$events" lean_build "$stage_fp" \
+    validation_prepare_lean_build "$work"
+  stage_fp=$(prepare_stage_fingerprint source_acquisition validation_prepare_source_acquisition)
+  run_or_restore_stage "$events" source_acquisition "$stage_fp" \
+    validation_prepare_source_acquisition "$work"
+  stage_fp=$(prepare_stage_fingerprint export validation_prepare_export)
+  run_or_restore_stage "$events" export "$stage_fp" \
+    validation_prepare_export "$work"
+  stage_fp=$(prepare_stage_fingerprint rocq_import validation_prepare_rocq_import)
+  run_or_restore_stage "$events" rocq_import "$stage_fp" \
+    validation_prepare_rocq_import "$work"
   python3 "$script_dir/incremental_validation_state.py" seal \
     --descriptor "$descriptor" --prepared "$work" --events "$events" \
     > "$run_log/prepare_seal.log"
   if [[ ${CLEAN_FULL:-0} == 1 ]]; then
     prepared="$work"
-    mode=CLEAN_FULL
+    local clean_fresh_count
+    clean_fresh_count=$(jq -s '[.[] | select(.mode == "FRESH" and .executed == true)] | length' "$events")
+    if [[ $clean_fresh_count -eq 4 ]]; then
+      mode=CLEAN_FULL
+    else
+      mode=CLEAN_BUILD_WITH_DECLARED_REUSE
+    fi
+    if [[ ! -e "$canonical" ]]; then
+      cp -R "$work" "$canonical"
+      python3 "$script_dir/incremental_validation_state.py" verify \
+        --descriptor "$descriptor" --prepared "$canonical" \
+        --run-evidence "$run_log/clean_cache_publication_evidence.json" \
+        > "$run_log/clean_cache_publication.log"
+    fi
   else
     [[ ! -e "$canonical" ]] || {
       echo "prepared cache appeared concurrently: $canonical" >&2; exit 1;
     }
     mv "$work" "$canonical"
     prepared="$canonical"
-    mode=FRESH
+    local cache_count
+    cache_count=$(jq -s '[.[] | select(.mode == "VERIFIED_CACHE")] | length' "$events")
+    if [[ $cache_count -eq 0 ]]; then
+      mode=FRESH
+    elif [[ $cache_count -eq 4 ]]; then
+      mode=VERIFIED_CACHE
+    else
+      mode=MIXED_FRESH_AND_VERIFIED_CACHE
+    fi
   fi
   validation_finish_incremental_run "$events" "$snapshot_id" "$mode" "$evidence"
   write_pointer "$prepared" "$evidence" "$mode"
@@ -181,20 +309,33 @@ export VALIDATION_PREPARE_EVIDENCE="$prepare_evidence"
 validation_prepare_lean_path "$work"
 validation_check_setup
 
-check_fingerprint=$(python3 - "$snapshot_id" "$config" "$hooks" \
-  "${VALIDATION_CHECK_INPUTS[@]}" <<'PY'
-import hashlib, json, sys
-from pathlib import Path
-sid, *names = sys.argv[1:]
-items = {"snapshot_id": sid}
-for name in names:
-    path = Path(name)
-    if not path.is_file() or path.stat().st_size == 0:
-        raise SystemExit("check input missing: " + name)
-    items[str(path.resolve())] = hashlib.sha256(path.read_bytes()).hexdigest()
-print(hashlib.sha256(json.dumps(items, sort_keys=True).encode()).hexdigest())
-PY
-)
+certificate_inputs=("${VALIDATION_CHECK_INPUTS[@]}")
+audit_inputs=("${VALIDATION_CHECK_INPUTS[@]}")
+publication_inputs=("${VALIDATION_CHECK_INPUTS[@]}")
+if [[ ${VALIDATION_SPLIT_CHECK_INPUTS:-0} == 1 ]]; then
+  certificate_inputs=()
+  audit_inputs=()
+  publication_inputs=()
+  for input in "${VALIDATION_CHECK_INPUTS[@]}"; do
+    case "$(basename "$input")" in
+      audit_assumptions.py|*assumption_config.json)
+        audit_inputs+=("$input") ;;
+      publish_*.py)
+        publication_inputs+=("$input") ;;
+      *) certificate_inputs+=("$input") ;;
+    esac
+  done
+  [[ ${#certificate_inputs[@]} -gt 0 && ${#audit_inputs[@]} -gt 0 && \
+     ${#publication_inputs[@]} -gt 0 ]] || {
+    echo "incomplete split check-stage input declaration" >&2; exit 1;
+  }
+fi
+certificate_fingerprint=$(stage_input_fingerprint "$snapshot_id" \
+  validation_check_certificate_compile "$config" "${certificate_inputs[@]}")
+audit_fingerprint=$(stage_input_fingerprint "$certificate_fingerprint" \
+  validation_check_assumption_audit "${audit_inputs[@]}")
+publication_fingerprint=$(stage_input_fingerprint "$audit_fingerprint" \
+  validation_finalize_publication "${publication_inputs[@]}")
 events="$run_log/stage_events.jsonl"
 python3 - "$prepare_evidence" "$events" <<'PY'
 import json, sys
@@ -205,13 +346,13 @@ Path(sys.argv[2]).write_text("".join(
 ))
 PY
 
-run_hook_stage "$events" certificate_compile "$check_fingerprint" \
-  validation_check_certificate_compile
-run_hook_stage "$events" assumption_audit "$check_fingerprint" \
-  validation_check_assumption_audit
+run_or_restore_stage "$events" certificate_compile "$certificate_fingerprint" \
+  validation_check_certificate_compile "$work"
+run_or_restore_stage "$events" assumption_audit "$audit_fingerprint" \
+  validation_check_assumption_audit "$work"
 
 if [[ "$phase" == finalize ]]; then
-  run_hook_stage "$events" publication "$check_fingerprint" \
+  run_hook_stage "$events" publication "$publication_fingerprint" \
     validation_finalize_publication
 fi
 evidence="$run_log/${phase}_stage_evidence.json"

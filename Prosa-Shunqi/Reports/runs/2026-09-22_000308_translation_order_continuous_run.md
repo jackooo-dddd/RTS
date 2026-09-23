@@ -920,3 +920,93 @@ subtraction; no DivMod coverage is claimed yet.
 - The source contains zero named declarations; exact source re-exports and the actual compiled Lean Int interface passed.
 - No declaration-level certificate was invented; future integer users retain operation-level correspondence obligations.
 - Coverage is now **29 / 357 files** and **252 / 2439 declarations**, with zero validation debt.
+
+
+## 2026-09-23T09:56:01.871727+08:00 — Schedule formally accepted
+
+- The clean content-addressed prepare/check/finalize run passed for snapshot
+  `5ca2a3362b46e8e1fa893896e1b19e6958d14309532c861b7078e180dc1fd823`.
+- All five v0.6 declarations are accepted: four `CERTIFIED`, and
+  `ProcessorState` explicitly
+  `CERTIFIED_WITH_PROP_SPROP_FOUNDATION` for its two class laws.
+- Semantic premises, unexpected assumptions, and source/target
+  self-dependencies are all empty/false.  Coverage is now **24 / 357 files**
+  and **228 / 2439 declarations**, with zero validation debt.
+
+
+## 2026-09-23T10:06:01.303803+08:00 — Service formally accepted
+
+- The clean content-addressed prepare/check/finalize run passed for snapshot
+  `f72991e9da00c2ef06352ef5c1ebe09742f33d53211676afdf393b725f7d0f05`.
+- All twelve v0.6 definitions are accepted: five `CERTIFIED` and seven
+  explicitly `CERTIFIED_WITH_PROP_SPROP_FOUNDATION`.
+- Semantic premises, unexpected assumptions, and source/target
+  self-dependencies are empty/false.  Coverage is now **25 / 357 files** and
+  **240 / 2439 declarations**, with zero validation debt.
+
+
+## 2026-09-23T10:16:28.813907+08:00 — processor Supply formally accepted
+
+- All five v0.6 definitions passed actual-artifact correspondence and
+  fail-closed assumption audits: two `CERTIFIED`, three explicitly
+  `CERTIFIED_WITH_PROP_SPROP_FOUNDATION`.
+- The new Bool-to-Nat bridge is independently kernel-certified. Semantic
+  premises and unexpected assumptions are empty; source/target self-dependency
+  flags are false.
+- Coverage is now **28 / 357 files** and **252 / 2439 declarations**, with
+  zero validation debt.
+
+
+## 2026-09-23T14:22:14.007552+08:00 — processor Supply formally accepted
+
+- All five v0.6 definitions passed actual-artifact correspondence and
+  fail-closed assumption audits: two `CERTIFIED`, three explicitly
+  `CERTIFIED_WITH_PROP_SPROP_FOUNDATION`.
+- The new Bool-to-Nat bridge is independently kernel-certified. Semantic
+  premises and unexpected assumptions are empty; source/target self-dependency
+  flags are false.
+- Coverage is now **28 / 357 files** and **252 / 2439 declarations**, with
+  zero validation debt.
+
+
+## 2026-09-23T14:23:10.230999+08:00 — processor Supply formally accepted
+
+- All five v0.6 definitions passed actual-artifact correspondence and
+  fail-closed assumption audits: two `CERTIFIED`, three explicitly
+  `CERTIFIED_WITH_PROP_SPROP_FOUNDATION`.
+- The new Bool-to-Nat bridge is independently kernel-certified. Semantic
+  premises and unexpected assumptions are empty; source/target self-dependency
+  flags are false.
+- Coverage is now **28 / 357 files** and **252 / 2439 declarations**, with
+  zero validation debt.
+
+
+## 2026-09-23T14:23:59.521738+08:00 — processor Supply formally accepted
+
+- All five v0.6 definitions passed actual-artifact correspondence and
+  fail-closed assumption audits: two `CERTIFIED`, three explicitly
+  `CERTIFIED_WITH_PROP_SPROP_FOUNDATION`.
+- The new Bool-to-Nat bridge is independently kernel-certified. Semantic
+  premises and unexpected assumptions are empty; source/target self-dependency
+  flags are false.
+- Coverage is now **28 / 357 files** and **252 / 2439 declarations**, with
+  zero validation debt.
+
+
+## 2026-09-23T14:32:47.926631+08:00 — processor Supply formally accepted
+
+- All five v0.6 definitions passed actual-artifact correspondence and
+  fail-closed assumption audits: two `CERTIFIED`, three explicitly
+  `CERTIFIED_WITH_PROP_SPROP_FOUNDATION`.
+- The new Bool-to-Nat bridge is independently kernel-certified. Semantic
+  premises and unexpected assumptions are empty; source/target self-dependency
+  flags are false.
+- Coverage is now **28 / 357 files** and **252 / 2439 declarations**, with
+  zero validation debt.
+
+
+## 2026-09-23T14:35:32.799972+08:00 — util/int module boundary accepted
+
+- The source contains zero named declarations; exact source re-exports and the actual compiled Lean Int interface passed.
+- No declaration-level certificate was invented; future integer users retain operation-level correspondence obligations.
+- Coverage is now **29 / 357 files** and **252 / 2439 declarations**, with zero validation debt.

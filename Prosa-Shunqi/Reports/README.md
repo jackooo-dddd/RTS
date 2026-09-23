@@ -2,15 +2,15 @@
 
 ## Latest published validation
 
-The latest formally published file is `model/processor/supply.v`:
+The latest formally published file is `util/int.v`:
 
-- [canonical processor Supply report](files/model/processor/2026-09-23_055700_supply.md)
+- [canonical integer-interface report](files/util/2026-09-23_072030_int.md)
 - [current continuous-run summary](runs/2026-09-22_000308_translation_order_continuous_run.md)
 - machine authority:
-  `../Validation/planning/v06_pipeline/model_processor_supply_module_status.json`
+  `../Validation/planning/v06_pipeline/util_int_module_status.json`
 
-All five Supply definitions passed actual-artifact correspondence and
-fail-closed assumption audits. Current machine-published coverage is **28 /
+The zero-public-declaration integer/order re-export passed its source and
+Lean interface audit. Current machine-published coverage is **29 /
 357 files** and **252 / 2439 declarations**, with **0** translated but
 uncertified declarations. Reports are organized below `files/` and `runs/`;
 this README is the visible entry point rather than a duplicate status
@@ -18,10 +18,10 @@ authority.
 
 ## Latest work in progress
 
-The next ordered candidate is `util/int.v` (execution rank 29). Work has not
-yet been published for it; its source contains zero named public declarations,
-so it requires an imports/notation/instance interface audit rather than a
-vacuous declaration certificate.
+The next ordered candidate is `util/lcmseq.v` (execution rank 30).
+Its five Lean declarations are proof-clean, and operation/theorem-statement
+correspondence work is in progress. Its statement-only dependency boundary
+prevents formal whole-file publication so far; it is **not accepted**.
 
 Work-in-progress reports appear here even though they do not change the
 formally published coverage above. Their presence never implies
@@ -75,16 +75,16 @@ Current canonical reports, in the approved execution order:
 | 26 | `behavior/ready.v` | [ready](files/behavior/2026-09-23_042533_ready.md) | `ACCEPTED_V06_FILE` |
 | 27 | `behavior/all.v` | [all](files/behavior/2026-09-23_054506_all.md) | `ACCEPTED_V06_FILE` |
 | 28 | `model/processor/supply.v` | [supply](files/model/processor/2026-09-23_055700_supply.md) | `ACCEPTED_V06_FILE` |
+| 29 | `util/int.v` | [int](files/util/2026-09-23_072030_int.md) | `ACCEPTED_V06_FILE` |
+| 30 | `util/lcmseq.v` | [lcmseq](files/util/2026-09-23_073256_lcmseq.md) | `NOT_ACCEPTED` |
 
 ## Current proof progress
 
-Machine-published acceptance is now **28 / 357 source files** and **252 / 2439
+Machine-published acceptance is now **29 / 357 source files** and **252 / 2439
 public declarations**, with **0 translated-but-not-certified**. The latest
-completed file is `model/processor/supply.v`: two definitions are `CERTIFIED`
-and three are explicitly `CERTIFIED_WITH_PROP_SPROP_FOUNDATION`. The clean run
-also independently certified the Bool-to-Nat bridge and found no semantic
-premise, unexpected assumption, or source/target self-dependency. The
-preceding zero-declaration `behavior/all.v` interface audit remains accepted.
+completed file is `util/int.v`, a zero-public-declaration re-export/interface
+audit. `util/lcmseq.v` is the current unfinished file. Its partial certificate
+progress does not change accepted coverage.
 Machine-readable status/manifest remain the acceptance source; this dashboard
 is a human-readable reflection of them.
 
@@ -153,6 +153,22 @@ This extension did not alter production declarations or accepted coverage;
 the current project truth remains **21 / 357 files**, **204 / 2439 public
 declarations**, and zero translated-but-not-certified declarations before
 `behavior/job.v` is published.
+
+### FILE_VALIDATE and stage-recovery extension (2026-09-23)
+
+[The measured workflow report](2026-09-23_091806_validation_file_build_optimization.md)
+records a clean Schedule regression, then Service and Supply runs that reused
+hash-verified accepted upstream `.olean` modules while fresh-building their
+target modules. The observed Lean-build stages fell from 557.660 to 359.290 s
+for Service and from 582.154 to 322.633 s for Supply; these are real run
+measurements, not controlled speedup guarantees. Exact semantic status and
+assumption rows were unchanged. Stage-specific input keys now permit
+certificate-only, audit-only, and publication-only retries without rebuilding
+Lean or re-exporting; actual Supply probes passed, including cache corruption
+rejection. `RECOVER_PREPARE=1` restores sealed successful stages without
+mislabeling them `CLEAN_FULL`. Cross-file imported `.vo` reuse and a global
+default switch remain **unimplemented**, so the older broad workflow wording
+above should not be read as claiming those capabilities.
 
 ## Legacy and raw evidence
 

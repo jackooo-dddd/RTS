@@ -1,9 +1,15 @@
 #!/usr/bin/env bash
 
+source "$VALIDATION_ROOT/scripts/common/file_validate.sh"
+VALIDATION_SPLIT_CHECK_INPUTS=1
+VALIDATION_SPLIT_PREPARE_INPUTS=1
+
 VALIDATION_PREPARE_INPUTS=(
   "$VALIDATION_ROOT/tooling/behavior_service_incremental_descriptor.json"
   "$VALIDATION_ROOT/tooling/behavior_service_export_config.json"
-  "$VALIDATION_ROOT/tooling/behavior_service_incremental_hooks.sh"
+  "$VALIDATION_ROOT/scripts/common/file_validate.sh"
+  "$VALIDATION_ROOT/scripts/file_validate_lean_dependencies.py"
+  "$VALIDATION_ROOT/scripts/prepare_stage_fingerprint.py"
   "$VALIDATION_ROOT/scripts/run_incremental_validation.sh"
   "$VALIDATION_ROOT/scripts/common/incremental_validation.sh"
   "$VALIDATION_ROOT/scripts/common/validation_common.sh"
@@ -51,15 +57,30 @@ validation_prepare_lean_build() {
     SearchArg List Sum Epsilon Bigop Setoid Poet Bigcat Minmax Div_mod
     Nondecreasing All
   )
-  local module
-  for module in "${modules[@]}"; do
-    validation_compile_lean_module "$VALIDATION_PREPARED" "Prosa/Util/$module" \
-      > "$VALIDATION_RUN_LOG/fresh_${module}.log" 2>&1
-  done
-  for module in Time Job Arrival_sequence Schedule Service; do
-    validation_compile_lean_module "$VALIDATION_PREPARED" "Prosa/Behavior/$module" \
-      > "$VALIDATION_RUN_LOG/fresh_${module}.log" 2>&1
-  done
+  local module reuse=0 reuse_result=0
+  if [[ ${FILE_VALIDATE:-0} == 1 && ${CLEAN_FULL:-0} != 1 ]]; then
+    if validation_file_dependencies behavior_schedule \
+      "$VALIDATION_ROOT/planning/v06_pipeline/behavior_schedule_module_manifest.json" \
+      "$VALIDATION_ROOT/planning/v06_pipeline/behavior_schedule_module_status.json" \
+      Prosa.Behavior.Schedule; then
+      reuse=1
+    else
+      reuse_result=$?
+      [[ $reuse_result == 2 ]] || return "$reuse_result"
+    fi
+  fi
+  if [[ $reuse == 0 ]]; then
+    for module in "${modules[@]}"; do
+      validation_compile_lean_module "$VALIDATION_PREPARED" "Prosa/Util/$module" \
+        > "$VALIDATION_RUN_LOG/fresh_${module}.log" 2>&1
+    done
+    for module in Time Job Arrival_sequence Schedule; do
+      validation_compile_lean_module "$VALIDATION_PREPARED" "Prosa/Behavior/$module" \
+        > "$VALIDATION_RUN_LOG/fresh_${module}.log" 2>&1
+    done
+  fi
+  validation_compile_lean_module "$VALIDATION_PREPARED" "Prosa/Behavior/Service" \
+    > "$VALIDATION_RUN_LOG/fresh_Service.log" 2>&1
 
   mkdir -p "$VALIDATION_PREPARED/olean/Validation/fixtures/translation_order"
   lean -DautoImplicit=false -R "$PROJECT_ROOT" \
@@ -99,12 +120,16 @@ if len(files) != expected:
     raise SystemExit(f"expected {expected} freshly compiled modules, found {len(files)}")
 output.write_text(json.dumps({
     "status": "PASS",
-    "mode": "FRESH_ACCEPTED_DEPENDENCY_CLOSURE_PLUS_SERVICE_AND_INTERFACES",
+    "mode": "FRESH_OR_VERIFIED_DEPENDENCY_CLOSURE_PLUS_SERVICE_AND_INTERFACES",
     "module_count": len(files),
     "modules": {str(p.relative_to(root)): {
         "sha256": sha(p), "bytes": p.stat().st_size} for p in files},
 }, indent=2, sort_keys=True) + "\n")
 PY
+  local build_mode=FULL_FALLBACK
+  [[ ${CLEAN_FULL:-0} != 1 ]] || build_mode=CLEAN_FULL
+  [[ $reuse != 1 ]] || build_mode=FILE_VALIDATE
+  validation_seal_lean_modules "$build_mode"
   VALIDATION_STAGE_OUTPUTS=(
     "util_all_olean=$VALIDATION_PREPARED/olean/Prosa/Util/All.olean"
     "schedule_olean=$VALIDATION_PREPARED/olean/Prosa/Behavior/Schedule.olean"
@@ -114,6 +139,7 @@ PY
     "lean_freeze=$VALIDATION_PREPARED/lean_freeze_and_axioms.log"
     "lean_axiom_summary=$VALIDATION_PREPARED/lean_axiom_summary.json"
     "dependency_build_manifest=$VALIDATION_PREPARED/dependency_build_manifest.json"
+    "lean_source_build_manifest=$VALIDATION_PREPARED/lean_source_build_manifest.json"
   )
 }
 

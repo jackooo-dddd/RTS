@@ -60,7 +60,10 @@ validation_record_failed_stage() {
 
 validation_finish_incremental_run() {
   local events=$1 snapshot_id=$2 run_mode=$3 output=$4
-  python3 "$(validation_incremental_state_tool)" finish-run \
-    --events "$events" --snapshot-id "$snapshot_id" \
-    --run-mode "$run_mode" --output "$output"
+  local args=(finish-run --events "$events" --snapshot-id "$snapshot_id"
+    --run-mode "$run_mode" --output "$output")
+  if [[ -n ${VALIDATION_RUN_START_NS:-} ]]; then
+    args+=(--wall-start-ns "$VALIDATION_RUN_START_NS")
+  fi
+  python3 "$(validation_incremental_state_tool)" "${args[@]}"
 }

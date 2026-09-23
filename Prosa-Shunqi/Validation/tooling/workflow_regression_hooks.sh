@@ -125,6 +125,10 @@ ImportedPoet rp Rp
 ImportedBigcat rb Rb
 ImportedSumSequence rs Rs
 EOF
+  for cap in Rp Rb Rs; do
+    cp "$VALIDATION_RUN_LOG/rocq_Generated${cap}Adapter.log" \
+      "$VALIDATION_PHASE_WORK/certificates/rocq_Generated${cap}Adapter.log"
+  done
   VALIDATION_STAGE_OUTPUTS=(
     "poet_adapter=$VALIDATION_PHASE_WORK/certificates/GeneratedRpAdapter.vo"
     "bigcat_adapter=$VALIDATION_PHASE_WORK/certificates/GeneratedRbAdapter.vo"
@@ -133,9 +137,9 @@ EOF
 }
 
 validation_check_assumption_audit() {
-  cat "$VALIDATION_RUN_LOG/rocq_GeneratedRpAdapter.log" \
-      "$VALIDATION_RUN_LOG/rocq_GeneratedRbAdapter.log" \
-      "$VALIDATION_RUN_LOG/rocq_GeneratedRsAdapter.log" \
+  cat "$VALIDATION_PHASE_WORK/certificates/rocq_GeneratedRpAdapter.log" \
+      "$VALIDATION_PHASE_WORK/certificates/rocq_GeneratedRbAdapter.log" \
+      "$VALIDATION_PHASE_WORK/certificates/rocq_GeneratedRsAdapter.log" \
       > "$VALIDATION_RUN_LOG/adapter_assumptions.log"
   python3 "$VALIDATION_ROOT/scripts/audit_assumptions.py" \
     --config "$VALIDATION_ROOT/tooling/workflow_adapter_assumption_config.json" \

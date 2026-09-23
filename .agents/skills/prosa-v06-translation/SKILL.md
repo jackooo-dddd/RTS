@@ -298,6 +298,15 @@ importer/exporter binary 与配置、options 和模块加载顺序。只有 regr
 否则保持 fresh，并周期性运行 `CLEAN_FULL`。复制同名 artifact 或只核对文件存在
 不构成复用证据。
 
+当前已验证的局部实现（2026-09-23）：Schedule 的全量回归以及 Service、Supply 的
+`FILE_VALIDATE=1` 回归保持了原有 semantic/assumption 结果。此路径从已接受
+producer 的封存 manifest 核对源码、导入闭包、工具链、实际 `.olean`、封存清单与
+accepted artifact hash，复用上游模块，只 fresh build 当前文件和必要接口；损坏
+证据必须拒绝。已成功的 prepare/check 阶段可按输入指纹恢复；`RECOVER_PREPARE=1`
+与 `CLEAN_FULL=1` 互斥，缓存恢复不能记作真正 clean rebuild。此资格目前只覆盖
+已有对应 hooks 的文件；跨文件 imported `.vo` 复用与全库默认切换仍待验证，不能
+从这个局部回归推断已实现。
+
 operation interface 冻结后，互不依赖的 semantic clusters 可以并行开发，共享同一
 prepared snapshot；最后必须统一执行 exact-type audit、assumption audit 和一次
 whole-file publication。并行不改变 file-order/file-DAG gate，也不产生多个互相

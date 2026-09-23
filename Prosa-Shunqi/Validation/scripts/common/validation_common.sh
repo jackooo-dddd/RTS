@@ -75,9 +75,32 @@ validation_prepare_lean_path() {
 validation_compile_lean_module() {
   local work=$1 module_path=$2
   mkdir -p "$work/olean/$(dirname "$module_path")"
-  lean -DautoImplicit=false -R "$PROJECT_ROOT" \
+  local begin_ns end_ns exit_code=0
+  begin_ns=$(python3 -c 'import time; print(time.time_ns())')
+  if lean -DautoImplicit=false -R "$PROJECT_ROOT" \
     -o "$work/olean/${module_path}.olean" \
-    "$PROJECT_ROOT/${module_path}.lean"
+    "$PROJECT_ROOT/${module_path}.lean"; then
+    :
+  else
+    exit_code=$?
+  fi
+  end_ns=$(python3 -c 'import time; print(time.time_ns())')
+  if [[ -n ${VALIDATION_MODULE_TIMING_FILE:-} ]]; then
+    python3 - "$VALIDATION_MODULE_TIMING_FILE" "$module_path" \
+      "$begin_ns" "$end_ns" "$exit_code" <<'PY'
+import hashlib, json, sys
+from pathlib import Path
+path, module, start, end, code = sys.argv[1:]
+with Path(path).open("a") as stream:
+    stream.write(json.dumps({
+        "module": module.replace("/", "."),
+        "mode": "FRESH", "execution_count": 1,
+        "status": "PASS" if code == "0" else "FAIL",
+        "elapsed_seconds": round((int(end) - int(start)) / 1e9, 6),
+    }, sort_keys=True) + "\n")
+PY
+  fi
+  return "$exit_code"
 }
 
 validation_compile_official_source() {
