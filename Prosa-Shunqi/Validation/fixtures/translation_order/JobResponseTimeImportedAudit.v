@@ -1,0 +1,6 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedJobResponseTime.
+
+Set Printing All.
+Check ImportedJobResponseTime.Prosa_Analysis_Definitions_JobResponseTime_job_response_time_exceeds.
+Print ImportedJobResponseTime.Prosa_Analysis_Definitions_JobResponseTime_job_response_time_exceeds.

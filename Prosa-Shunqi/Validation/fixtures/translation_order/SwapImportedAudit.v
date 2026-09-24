@@ -1,0 +1,8 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedSwap.
+
+Set Printing All.
+Check ImportedSwap.Prosa_Analysis_Transform_Swap_replace_at.
+Print ImportedSwap.Prosa_Analysis_Transform_Swap_replace_at.
+Check ImportedSwap.Prosa_Analysis_Transform_Swap_swapped.
+Print ImportedSwap.Prosa_Analysis_Transform_Swap_swapped.

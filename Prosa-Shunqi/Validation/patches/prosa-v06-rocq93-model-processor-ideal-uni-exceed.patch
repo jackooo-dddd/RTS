@@ -1,0 +1,14 @@
+diff --git a/model/processor/ideal_uni_exceed.v b/model/processor/ideal_uni_exceed.v
+--- a/model/processor/ideal_uni_exceed.v
++++ b/model/processor/ideal_uni_exceed.v
+@@ -99,10 +99,10 @@ Section State.
+       service_on := exceedance_service_on
+     |}.
+   Next Obligation.
+-    by move => j [] // s [] /=; case: eqP; lia.
++    by case: s => [x|x|] //=; case: eqP; lia.
+   Qed.
+   Next Obligation.
+-    by move => j [] // s [] /=; case: eqP; lia.
++    by move: H; case: s => [x|x|] //=; case: eqP; lia.
+   Qed.

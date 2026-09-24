@@ -1,0 +1,15 @@
+diff --git a/model/processor/overheads.v b/model/processor/overheads.v
+--- a/model/processor/overheads.v
++++ b/model/processor/overheads.v
+@@ -78,7 +78,10 @@ Section State.
+       service_on   := overheads_service_on
+     |}.
+-  Next Obligation. by move => j [] // s [] /=; case: eqP. Qed.
+-  Next Obligation. by move => j [] // s [] //=; rewrite [s == j]eq_sym; case (j == s). Qed.
++  Next Obligation. by case: s => [|a b|a|a|a] //=; case: eqP. Qed.
++  Next Obligation.
++    move: H; case: s => [|a b|a|a|a] //=.
++    by rewrite [a == j]eq_sym; case: (j == a).
++  Qed.
+ 
+ End State.

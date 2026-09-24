@@ -1,0 +1,8 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedJobProperties.
+
+Set Printing All.
+Check ImportedJobProperties.Prosa_Model_Job_Properties_job_cost_positive.
+Print ImportedJobProperties.Prosa_Model_Job_Properties_job_cost_positive.
+Check ImportedJobProperties.Prosa_Model_Job_Properties_arrivals_have_positive_job_costs.
+Print ImportedJobProperties.Prosa_Model_Job_Properties_arrivals_have_positive_job_costs.

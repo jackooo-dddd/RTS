@@ -1,0 +1,16 @@
+diff --git a/model/processor/ideal.v b/model/processor/ideal.v
+--- a/model/processor/ideal.v
++++ b/model/processor/ideal.v
+@@ -39,10 +39,10 @@ Section State.
+       service_on j s (_ : unit) := if s == Some j then 1 else 0;
+     |}.
+   Next Obligation.
+-    by move=> j s ?; rewrite /nat_of_bool; case: ifP => // ? /negP[].
++    by case: ifP.
+   Qed.
+   Next Obligation.
+-    by move=> j s ?; rewrite /nat_of_bool; case: ifP => // ? /negP[].
++    by rewrite (negbTE H).
+   Qed.
+ 
+ End State.

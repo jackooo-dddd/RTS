@@ -1,0 +1,8 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedIdeal.
+
+Set Printing All.
+Check ImportedIdeal.Prosa_Model_Processor_Ideal_processor_state.
+Print ImportedIdeal.Prosa_Model_Processor_Ideal_processor_state.
+Check ImportedIdeal.Prosa_Model_Processor_Ideal_ideal_is_idle.
+Print ImportedIdeal.Prosa_Model_Processor_Ideal_ideal_is_idle.
