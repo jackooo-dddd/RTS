@@ -359,9 +359,13 @@ hash 用真实字节/实际 expression 生成；不要对硬编码的 `"Type"`/`
 **整文件验收后的报告同步是 publication 的一部分。**先发布有效的
 `ACCEPTED_V06_FILE` manifest/status 并更新该文件唯一的 canonical report，再在
 `Prosa-Shunqi/` 运行 `python3 Validation/scripts/update_reports_readme.py`，随后运行
-同命令的 `--check` 模式，确认 `Reports/README.md` 的逐文件声明数、完成状态和累计
-覆盖与 pinned inventory／最新 machine state 一致。若已验收证据失效，也要重生成
-表格；局部证书编译通过、Lean 文件存在或历史 PASS 都不能把某行写成“验证完成”。
+同命令的 `--check` 模式。确认 `Reports/README.md` 将该文件列为 **Finished**，
+按“月:日:时:分”显示有依据的验收时间，并更新顶部当前文件／声明覆盖、最新完成
+文件及逐文件状态；链接也须通过脚本检查。时间优先取正式 manifest 的
+`published_at` 或 canonical report 明确的整文件验收事件；旧记录若只剩 accepted
+status 文件时间，须标明它只是机器记录时间，不能拿报告文件名或当前时间冒充
+完成时刻。若证据失效，同样刷新 README 的状态，不能保留旧的 Finished 标记。
+局部证书编译通过、Lean 文件存在或历史 PASS 都不能把某行写成“验证完成”。
 
 交付包括：目标对应表、各维度进度、表示偏离、复用/新增 bridge、卡点、已运行检查、有效性证据，以及沿用时间格式的新/更新报告。分开报告本次与累计数字，不硬编码总量或零积压。
 
