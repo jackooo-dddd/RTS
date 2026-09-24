@@ -115,6 +115,7 @@ description: 在 Prosa-Shunqi 中将固定 Prosa v0.6 的 Rocq/MathComp/SSReflec
 采用已批准的 owned/nested `State` 与 `Core`，携带 Core 的有限性/判等、`scheduled_on`、`supply_on`、`service_on` 及两条 laws。
 `scheduled_in`、`supply_in`、`service_in` 留作派生定义，不能换成无约束 primitive fields。
 `scheduled_in` 沿用有限 Bool-or fold 及 existential reflection；后两者沿用有限求和。
+新 concrete instance 在扩展下游证书前，先检查完整的 State/Core、Core 枚举、三个操作字段和两个 law proof fields，并复用已认证的 concrete-processor 对应模式。proof-field 导入闭包过大时，先用 validation-only 探针对比最小显式 Core 实例与直接 law proofs 的实际 assumptions；不得删除 laws、扩大 allowlist，或把未经核验的新结构投影当作验收结果。
 
 外置 State 在数学上不必错误，但不是本项目当前默认；不能一边迁移一边另选接口。prototype 编译通过不等于整个结构已跨 ITP 认证。
 
@@ -164,6 +165,8 @@ kernel `Eq.refl` 或 `Meta.isDefEq` 检查的 normalization guard。命中已有
 `Meta.isDefEq` 是有用的预检，但不能单独冒充 kernel certificate。预检同时记录
 export 大小、依赖爆炸、universe 和 imported datatype identity，尽早选择最小但
 完整的 actual-artifact interface。
+
+**Dependency 软预算：**新文件的 operation/interface inventory 同时记录 export roots、实际序列化声明数（区分显式 roots 与其余声明）、`.out` 行数/字节、阶段耗时及逐目标 statement-only assumptions。`>50k` 行提示，`>100k` 行或超过可比已验收接口的两倍时，诊断主要膨胀 root/依赖路径并先试已审核的小接口。大小既不是拒绝门槛，也不是通过证据；不要用无界 proof closure 或 blanket statement-only 仅换取小文件。只有实际减少语义证书依赖且 guards、assumption audit 仍通过，才能称为优化。缺失的时间数据标为未记录，不从报告时间戳估算。
 
 **允许使用目标定义的已证递归 equations**：它们是计算规律，不是把目标业务定理当成自身 correctness 的证明。
 但 equations 必须绑定实际定义，proof body 在 Rocq 中导入并检查，或在 Rocq 对真实导入体重证。只有 statement 的 equation 仍是 assumption，不能伪装成闭合桥接。
@@ -306,6 +309,7 @@ accepted artifact hash，复用上游模块，只 fresh build 当前文件和必
 与 `CLEAN_FULL=1` 互斥，缓存恢复不能记作真正 clean rebuild。此资格目前只覆盖
 已有对应 hooks 的文件；跨文件 imported `.vo` 复用与全库默认切换仍待验证，不能
 从这个局部回归推断已实现。
+新入口仅在最小接入回归通过后启用该复用路径；不要修改正在运行的 driver/hooks 或正在使用的缓存。复用时分别计时依赖装载、target、计算接口和 guards/audit，输入改变只失效相关阶段及下游；始终保留独立 `CLEAN_FULL`。上述计时/复用并非所有历史文件都已实现，缺证据时按 fresh 路径执行并明确记录。
 
 operation interface 冻结后，互不依赖的 semantic clusters 可以并行开发，共享同一
 prepared snapshot；最后必须统一执行 exact-type audit、assumption audit 和一次
@@ -351,6 +355,13 @@ Lean/source/interface 变化则使 prepare 及全部下游失效。
 hash 用真实字节/实际 expression 生成；不要对硬编码的 `"Type"`/`"Nat"` 字符串冒充提取结果。记录 hash 不等于实现失效检查；复用前必须比对。
 
 接受必须经过现有 validator 的完整 gate；不得通过手写 PASS 更新 accepted 数。任务记录不能冒充 validator schema。各依赖变更按类型/body、proof、certificate 边传播失效；证书和 allowlist 的变化同样记录。
+
+**整文件验收后的报告同步是 publication 的一部分。**先发布有效的
+`ACCEPTED_V06_FILE` manifest/status 并更新该文件唯一的 canonical report，再在
+`Prosa-Shunqi/` 运行 `python3 Validation/scripts/update_reports_readme.py`，随后运行
+同命令的 `--check` 模式，确认 `Reports/README.md` 的逐文件声明数、完成状态和累计
+覆盖与 pinned inventory／最新 machine state 一致。若已验收证据失效，也要重生成
+表格；局部证书编译通过、Lean 文件存在或历史 PASS 都不能把某行写成“验证完成”。
 
 交付包括：目标对应表、各维度进度、表示偏离、复用/新增 bridge、卡点、已运行检查、有效性证据，以及沿用时间格式的新/更新报告。分开报告本次与累计数字，不硬编码总量或零积压。
 

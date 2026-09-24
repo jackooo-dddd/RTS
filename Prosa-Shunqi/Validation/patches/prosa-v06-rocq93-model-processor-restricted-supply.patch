@@ -1,0 +1,12 @@
+diff --git a/model/processor/restricted_supply.v b/model/processor/restricted_supply.v
+--- a/model/processor/restricted_supply.v
++++ b/model/processor/restricted_supply.v
+@@ -70,6 +70,6 @@ Section State.
+       service_on j s (_ : unit)   := rs_service_on j s
+     |}.
+-  Next Obligation. by move=> j s r; case s, r => //=; case: (_ == _). Qed.
+-  Next Obligation. by move=> j s r; case s, r => //=; case: (_ == _). Qed.
++  Next Obligation. by case: s => [|j'|j'|] //=; case: (_ == _). Qed.
++  Next Obligation. by move: H; case: s => [|j'|j'|] //=; case: (_ == _). Qed.
+
+ End State.
