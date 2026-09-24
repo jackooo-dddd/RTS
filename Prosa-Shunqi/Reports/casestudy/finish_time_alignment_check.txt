@@ -1,0 +1,332 @@
+Warning:
+/Users/shunqiwang/CityuHK/Research/Lean/TranslationProof/Prosa-Shunqi/Validation/.work/experiments/analysis_finish_time/source/analysis/definitions
+was previously bound to FoundationImported.source.analysis.definitions; it is
+remapped to prosa.analysis.definitions
+[overriding-logical-loadpath,filesystem,default]
+Warning:
+/Users/shunqiwang/CityuHK/Research/Lean/TranslationProof/Prosa-Shunqi/Validation/.work/experiments/analysis_finish_time/source/analysis
+was previously bound to FoundationImported.source.analysis; it is remapped to
+prosa.analysis [overriding-logical-loadpath,filesystem,default]
+Warning:
+/Users/shunqiwang/CityuHK/Research/Lean/TranslationProof/Prosa-Shunqi/Validation/.work/experiments/analysis_finish_time/source
+was previously bound to FoundationImported.source; it is remapped to prosa
+[overriding-logical-loadpath,filesystem,default]
+Warning:
+/Users/shunqiwang/CityuHK/Research/Lean/TranslationProof/Prosa-Shunqi/Validation/.work/experiments/analysis_finish_time/certificates
+was previously bound to FoundationImported.certificates; it is remapped to
+FoundationCertificates [overriding-logical-loadpath,filesystem,default]
+@finish_time
+     : forall (Job : JobType) (H : JobArrival Job) (H0 : JobCost Job) (PState : ProcessorState Job)
+         (sched : @schedule Job PState) (j : Equality.sort Job) (R : nat)
+         (_ : is_true (@job_response_time_bound Job PState sched H0 H j R)),
+       instant
+Prosa_Analysis_Definitions_FinishTime_finish_time
+     : forall (Job : Prosa_Behavior_Job_JobType)
+         (inst____at___Prosa_Analysis_Definitions_FinishTime402553661__hygCtx__hyg3 : DecidableEq Job)
+         (inst____at___Prosa_Analysis_Definitions_FinishTime402553661__hygCtx__hyg6 : 
+          Prosa_Behavior_Job_JobArrival Job
+            inst____at___Prosa_Analysis_Definitions_FinishTime402553661__hygCtx__hyg3)
+         (inst____at___Prosa_Analysis_Definitions_FinishTime402553661__hygCtx__hyg9 : 
+          Prosa_Behavior_Job_JobCost Job
+            inst____at___Prosa_Analysis_Definitions_FinishTime402553661__hygCtx__hyg3)
+         (PState : Prosa_Behavior_Schedule_ProcessorState Job
+                     inst____at___Prosa_Analysis_Definitions_FinishTime402553661__hygCtx__hyg3)
+         (sched : Prosa_Behavior_Schedule_schedule Job
+                    inst____at___Prosa_Analysis_Definitions_FinishTime402553661__hygCtx__hyg3 PState)
+         (j : Job) (R : Nat)
+         (_ : @eq Bool
+                (Prosa_Behavior_Service_job_response_time_bound Job
+                   inst____at___Prosa_Analysis_Definitions_FinishTime402553661__hygCtx__hyg3 PState sched
+                   inst____at___Prosa_Analysis_Definitions_FinishTime402553661__hygCtx__hyg9
+                   inst____at___Prosa_Analysis_Definitions_FinishTime402553661__hygCtx__hyg6 j R)
+                Bool_true),
+       Prosa_Behavior_Time_instant
+finish_time_correspondence
+     : forall (Job : Equality.type) (PStateR : ProcessorState Job)
+         (PStateL : Prosa_Behavior_Schedule_ProcessorState (Equality.sort Job)
+                      (ServiceBaseAdapter.svc_decidable_eq Job))
+         (Rstate : ServiceScheduleOperations.SvcProcessorStateRel Job PStateR PStateL)
+         (schedR : @schedule Job PStateR)
+         (schedL : Prosa_Behavior_Schedule_schedule (Equality.sort Job)
+                     (ServiceBaseAdapter.svc_decidable_eq Job) PStateL)
+         (_ : ServiceScheduleOperations.SvcScheduleRel Job PStateR PStateL Rstate schedR schedL)
+         (costR : JobCost Job)
+         (costL : Prosa_Behavior_Job_JobCost (Equality.sort Job) (ServiceBaseAdapter.svc_decidable_eq Job))
+         (_ : ServiceJobOperations.SvcJobCostRel Job costR costL) (arrivalR : JobArrival Job)
+         (arrivalL : Prosa_Behavior_Job_JobArrival (Equality.sort Job)
+                       (ServiceBaseAdapter.svc_decidable_eq Job))
+         (j : Equality.sort Job) (RR : nat) (RL : Nat)
+         (HR : is_true (@job_response_time_bound Job PStateR schedR costR arrivalR j RR))
+         (HL : @eq Bool
+                 (Prosa_Behavior_Service_job_response_time_bound (Equality.sort Job)
+                    (ServiceBaseAdapter.svc_decidable_eq Job) PStateL schedL costL arrivalL j RL)
+                 Bool_true)
+         (_ : SubadditivityNatCorrespondence.SubNatRel RR RL),
+       SubadditivityNatCorrespondence.SubNatRel (@finish_time Job arrivalR costR PStateR schedR j RR HR)
+         (Prosa_Analysis_Definitions_FinishTime_finish_time (Equality.sort Job)
+            (ServiceBaseAdapter.svc_decidable_eq Job) arrivalL costL PStateL schedL j RL HL)
+@finished_at_finish_time
+     : forall (Job : JobType) (H : JobArrival Job) (H0 : JobCost Job) (PState : ProcessorState Job)
+         (sched : @schedule Job PState) (j : Equality.sort Job) (R : nat)
+         (H_response_time_bounded : is_true (@job_response_time_bound Job PState sched H0 H j R)),
+       is_true
+         (@completed_by Job PState sched H0 j
+            (@finish_time Job H H0 PState sched j R H_response_time_bounded))
+Prosa_Analysis_Definitions_FinishTime_finished_at_finish_time
+     : forall (Job : Prosa_Behavior_Job_JobType)
+         (inst____at___Prosa_Analysis_Definitions_FinishTime2734146244__hygCtx__hyg3 : DecidableEq Job)
+         (inst____at___Prosa_Analysis_Definitions_FinishTime2734146244__hygCtx__hyg6 : 
+          Prosa_Behavior_Job_JobArrival Job
+            inst____at___Prosa_Analysis_Definitions_FinishTime2734146244__hygCtx__hyg3)
+         (inst____at___Prosa_Analysis_Definitions_FinishTime2734146244__hygCtx__hyg9 : 
+          Prosa_Behavior_Job_JobCost Job
+            inst____at___Prosa_Analysis_Definitions_FinishTime2734146244__hygCtx__hyg3)
+         (PState : Prosa_Behavior_Schedule_ProcessorState Job
+                     inst____at___Prosa_Analysis_Definitions_FinishTime2734146244__hygCtx__hyg3)
+         (sched : Prosa_Behavior_Schedule_schedule Job
+                    inst____at___Prosa_Analysis_Definitions_FinishTime2734146244__hygCtx__hyg3 PState)
+         (j : Job) (R : Nat)
+         (H_response_time_bounded : @eq Bool
+                                      (Prosa_Behavior_Service_job_response_time_bound Job
+                                         inst____at___Prosa_Analysis_Definitions_FinishTime2734146244__hygCtx__hyg3
+                                         PState sched
+                                         inst____at___Prosa_Analysis_Definitions_FinishTime2734146244__hygCtx__hyg9
+                                         inst____at___Prosa_Analysis_Definitions_FinishTime2734146244__hygCtx__hyg6
+                                         j R)
+                                      Bool_true),
+       @eq Bool
+         (Prosa_Behavior_Service_completed_by Job
+            inst____at___Prosa_Analysis_Definitions_FinishTime2734146244__hygCtx__hyg3 PState sched
+            inst____at___Prosa_Analysis_Definitions_FinishTime2734146244__hygCtx__hyg9 j
+            (Prosa_Analysis_Definitions_FinishTime_finish_time Job
+               inst____at___Prosa_Analysis_Definitions_FinishTime2734146244__hygCtx__hyg3
+               inst____at___Prosa_Analysis_Definitions_FinishTime2734146244__hygCtx__hyg6
+               inst____at___Prosa_Analysis_Definitions_FinishTime2734146244__hygCtx__hyg9 PState sched j R
+               H_response_time_bounded))
+         Bool_true
+finished_at_finish_time_statement_correspondence
+     : forall (Job : Equality.type) (PStateR : ProcessorState Job)
+         (PStateL : Prosa_Behavior_Schedule_ProcessorState (Equality.sort Job)
+                      (ServiceBaseAdapter.svc_decidable_eq Job))
+         (Rstate : ServiceScheduleOperations.SvcProcessorStateRel Job PStateR PStateL)
+         (schedR : @schedule Job PStateR)
+         (schedL : Prosa_Behavior_Schedule_schedule (Equality.sort Job)
+                     (ServiceBaseAdapter.svc_decidable_eq Job) PStateL)
+         (_ : ServiceScheduleOperations.SvcScheduleRel Job PStateR PStateL Rstate schedR schedL)
+         (costR : JobCost Job)
+         (costL : Prosa_Behavior_Job_JobCost (Equality.sort Job) (ServiceBaseAdapter.svc_decidable_eq Job))
+         (_ : ServiceJobOperations.SvcJobCostRel Job costR costL) (arrivalR : JobArrival Job)
+         (arrivalL : Prosa_Behavior_Job_JobArrival (Equality.sort Job)
+                       (ServiceBaseAdapter.svc_decidable_eq Job))
+         (j : Equality.sort Job) (RR : nat) (RL : Nat)
+         (HR : is_true (@job_response_time_bound Job PStateR schedR costR arrivalR j RR))
+         (HL : @eq Bool
+                 (Prosa_Behavior_Service_job_response_time_bound (Equality.sort Job)
+                    (ServiceBaseAdapter.svc_decidable_eq Job) PStateL schedL costL arrivalL j RL)
+                 Bool_true)
+         (_ : SubadditivityNatCorrespondence.SubNatRel RR RL),
+       PropSPropFoundation.PropSPropRel
+         (is_true
+            (@completed_by Job PStateR schedR costR j
+               (@finish_time Job arrivalR costR PStateR schedR j RR HR)))
+         (@eq Bool
+            (Prosa_Behavior_Service_completed_by (Equality.sort Job)
+               (ServiceBaseAdapter.svc_decidable_eq Job) PStateL schedL costL j
+               (Prosa_Analysis_Definitions_FinishTime_finish_time (Equality.sort Job)
+                  (ServiceBaseAdapter.svc_decidable_eq Job) arrivalL costL PStateL schedL j RL HL))
+            Bool_true)
+@earliest_finish_time
+     : forall (Job : JobType) (H : JobArrival Job) (H0 : JobCost Job) (PState : ProcessorState Job)
+         (sched : @schedule Job PState) (j : Equality.sort Job) (R : nat)
+         (H_response_time_bounded : is_true (@job_response_time_bound Job PState sched H0 H j R))
+         (t : instant) (_ : is_true (@completed_by Job PState sched H0 j t)),
+       is_true (leq (@finish_time Job H H0 PState sched j R H_response_time_bounded) t)
+Prosa_Analysis_Definitions_FinishTime_earliest_finish_time
+     : forall (Job : Prosa_Behavior_Job_JobType)
+         (inst____at___Prosa_Analysis_Definitions_FinishTime2864341395__hygCtx__hyg3 : DecidableEq Job)
+         (inst____at___Prosa_Analysis_Definitions_FinishTime2864341395__hygCtx__hyg6 : 
+          Prosa_Behavior_Job_JobArrival Job
+            inst____at___Prosa_Analysis_Definitions_FinishTime2864341395__hygCtx__hyg3)
+         (inst____at___Prosa_Analysis_Definitions_FinishTime2864341395__hygCtx__hyg9 : 
+          Prosa_Behavior_Job_JobCost Job
+            inst____at___Prosa_Analysis_Definitions_FinishTime2864341395__hygCtx__hyg3)
+         (PState : Prosa_Behavior_Schedule_ProcessorState Job
+                     inst____at___Prosa_Analysis_Definitions_FinishTime2864341395__hygCtx__hyg3)
+         (sched : Prosa_Behavior_Schedule_schedule Job
+                    inst____at___Prosa_Analysis_Definitions_FinishTime2864341395__hygCtx__hyg3 PState)
+         (j : Job) (R : Nat)
+         (H_response_time_bounded : @eq Bool
+                                      (Prosa_Behavior_Service_job_response_time_bound Job
+                                         inst____at___Prosa_Analysis_Definitions_FinishTime2864341395__hygCtx__hyg3
+                                         PState sched
+                                         inst____at___Prosa_Analysis_Definitions_FinishTime2864341395__hygCtx__hyg9
+                                         inst____at___Prosa_Analysis_Definitions_FinishTime2864341395__hygCtx__hyg6
+                                         j R)
+                                      Bool_true)
+         (t : Prosa_Behavior_Time_instant)
+         (_ : @eq Bool
+                (Prosa_Behavior_Service_completed_by Job
+                   inst____at___Prosa_Analysis_Definitions_FinishTime2864341395__hygCtx__hyg3 PState sched
+                   inst____at___Prosa_Analysis_Definitions_FinishTime2864341395__hygCtx__hyg9 j t)
+                Bool_true),
+       LE_le_inst1 Prosa_Behavior_Time_instant instLENat
+         (Prosa_Analysis_Definitions_FinishTime_finish_time Job
+            inst____at___Prosa_Analysis_Definitions_FinishTime2864341395__hygCtx__hyg3
+            inst____at___Prosa_Analysis_Definitions_FinishTime2864341395__hygCtx__hyg6
+            inst____at___Prosa_Analysis_Definitions_FinishTime2864341395__hygCtx__hyg9 PState sched j R
+            H_response_time_bounded)
+         t
+earliest_finish_time_statement_correspondence
+     : forall (Job : Equality.type) (PStateR : ProcessorState Job)
+         (PStateL : Prosa_Behavior_Schedule_ProcessorState (Equality.sort Job)
+                      (ServiceBaseAdapter.svc_decidable_eq Job))
+         (Rstate : ServiceScheduleOperations.SvcProcessorStateRel Job PStateR PStateL)
+         (schedR : @schedule Job PStateR)
+         (schedL : Prosa_Behavior_Schedule_schedule (Equality.sort Job)
+                     (ServiceBaseAdapter.svc_decidable_eq Job) PStateL)
+         (_ : ServiceScheduleOperations.SvcScheduleRel Job PStateR PStateL Rstate schedR schedL)
+         (costR : JobCost Job)
+         (costL : Prosa_Behavior_Job_JobCost (Equality.sort Job) (ServiceBaseAdapter.svc_decidable_eq Job))
+         (_ : ServiceJobOperations.SvcJobCostRel Job costR costL) (arrivalR : JobArrival Job)
+         (arrivalL : Prosa_Behavior_Job_JobArrival (Equality.sort Job)
+                       (ServiceBaseAdapter.svc_decidable_eq Job))
+         (j : Equality.sort Job) (RR : nat) (RL : Nat)
+         (HR : is_true (@job_response_time_bound Job PStateR schedR costR arrivalR j RR))
+         (HL : @eq Bool
+                 (Prosa_Behavior_Service_job_response_time_bound (Equality.sort Job)
+                    (ServiceBaseAdapter.svc_decidable_eq Job) PStateL schedL costL arrivalL j RL)
+                 Bool_true)
+         (_ : SubadditivityNatCorrespondence.SubNatRel RR RL),
+       PropSPropFoundation.PropSPropRel
+         (forall (tR : nat) (_ : is_true (@completed_by Job PStateR schedR costR j tR)),
+          is_true (leq (@finish_time Job arrivalR costR PStateR schedR j RR HR) tR))
+         (forall (tL : Nat)
+            (_ : @eq Bool
+                   (Prosa_Behavior_Service_completed_by (Equality.sort Job)
+                      (ServiceBaseAdapter.svc_decidable_eq Job) PStateL schedL costL j tL)
+                   Bool_true),
+          LE_le_inst1 Nat instLENat
+            (Prosa_Analysis_Definitions_FinishTime_finish_time (Equality.sort Job)
+               (ServiceBaseAdapter.svc_decidable_eq Job) arrivalL costL PStateL schedL j RL HL)
+            tL)
+@completes_at_finish_time
+     : forall (Job : JobType) (H : JobArrival Job) (H0 : JobCost Job) (PState : ProcessorState Job)
+         (sched : @schedule Job PState) (j : Equality.sort Job) (R : nat)
+         (H_response_time_bounded : is_true (@job_response_time_bound Job PState sched H0 H j R)),
+       is_true
+         (@completes_at Job PState sched H0 j
+            (@finish_time Job H H0 PState sched j R H_response_time_bounded))
+Prosa_Analysis_Definitions_FinishTime_completes_at_finish_time
+     : forall (Job : Prosa_Behavior_Job_JobType)
+         (inst____at___Prosa_Analysis_Definitions_FinishTime886979405__hygCtx__hyg3 : DecidableEq Job)
+         (inst____at___Prosa_Analysis_Definitions_FinishTime886979405__hygCtx__hyg6 : 
+          Prosa_Behavior_Job_JobArrival Job
+            inst____at___Prosa_Analysis_Definitions_FinishTime886979405__hygCtx__hyg3)
+         (inst____at___Prosa_Analysis_Definitions_FinishTime886979405__hygCtx__hyg9 : 
+          Prosa_Behavior_Job_JobCost Job
+            inst____at___Prosa_Analysis_Definitions_FinishTime886979405__hygCtx__hyg3)
+         (PState : Prosa_Behavior_Schedule_ProcessorState Job
+                     inst____at___Prosa_Analysis_Definitions_FinishTime886979405__hygCtx__hyg3)
+         (sched : Prosa_Behavior_Schedule_schedule Job
+                    inst____at___Prosa_Analysis_Definitions_FinishTime886979405__hygCtx__hyg3 PState)
+         (j : Job) (R : Nat)
+         (H_response_time_bounded : @eq Bool
+                                      (Prosa_Behavior_Service_job_response_time_bound Job
+                                         inst____at___Prosa_Analysis_Definitions_FinishTime886979405__hygCtx__hyg3
+                                         PState sched
+                                         inst____at___Prosa_Analysis_Definitions_FinishTime886979405__hygCtx__hyg9
+                                         inst____at___Prosa_Analysis_Definitions_FinishTime886979405__hygCtx__hyg6
+                                         j R)
+                                      Bool_true),
+       @eq Bool
+         (Prosa_Behavior_Service_completes_at Job
+            inst____at___Prosa_Analysis_Definitions_FinishTime886979405__hygCtx__hyg3 PState sched
+            inst____at___Prosa_Analysis_Definitions_FinishTime886979405__hygCtx__hyg9 j
+            (Prosa_Analysis_Definitions_FinishTime_finish_time Job
+               inst____at___Prosa_Analysis_Definitions_FinishTime886979405__hygCtx__hyg3
+               inst____at___Prosa_Analysis_Definitions_FinishTime886979405__hygCtx__hyg6
+               inst____at___Prosa_Analysis_Definitions_FinishTime886979405__hygCtx__hyg9 PState sched j R
+               H_response_time_bounded))
+         Bool_true
+completes_at_finish_time_statement_correspondence
+     : forall (Job : Equality.type) (PStateR : ProcessorState Job)
+         (PStateL : Prosa_Behavior_Schedule_ProcessorState (Equality.sort Job)
+                      (ServiceBaseAdapter.svc_decidable_eq Job))
+         (Rstate : ServiceScheduleOperations.SvcProcessorStateRel Job PStateR PStateL)
+         (schedR : @schedule Job PStateR)
+         (schedL : Prosa_Behavior_Schedule_schedule (Equality.sort Job)
+                     (ServiceBaseAdapter.svc_decidable_eq Job) PStateL)
+         (_ : ServiceScheduleOperations.SvcScheduleRel Job PStateR PStateL Rstate schedR schedL)
+         (costR : JobCost Job)
+         (costL : Prosa_Behavior_Job_JobCost (Equality.sort Job) (ServiceBaseAdapter.svc_decidable_eq Job))
+         (_ : ServiceJobOperations.SvcJobCostRel Job costR costL) (arrivalR : JobArrival Job)
+         (arrivalL : Prosa_Behavior_Job_JobArrival (Equality.sort Job)
+                       (ServiceBaseAdapter.svc_decidable_eq Job))
+         (j : Equality.sort Job) (RR : nat) (RL : Nat)
+         (HR : is_true (@job_response_time_bound Job PStateR schedR costR arrivalR j RR))
+         (HL : @eq Bool
+                 (Prosa_Behavior_Service_job_response_time_bound (Equality.sort Job)
+                    (ServiceBaseAdapter.svc_decidable_eq Job) PStateL schedL costL arrivalL j RL)
+                 Bool_true)
+         (_ : SubadditivityNatCorrespondence.SubNatRel RR RL),
+       PropSPropFoundation.PropSPropRel
+         (is_true
+            (@completes_at Job PStateR schedR costR j
+               (@finish_time Job arrivalR costR PStateR schedR j RR HR)))
+         (@eq Bool
+            (Prosa_Behavior_Service_completes_at (Equality.sort Job)
+               (ServiceBaseAdapter.svc_decidable_eq Job) PStateL schedL costL j
+               (Prosa_Analysis_Definitions_FinishTime_finish_time (Equality.sort Job)
+                  (ServiceBaseAdapter.svc_decidable_eq Job) arrivalL costL PStateL schedL j RL HL))
+            Bool_true)
+@response_time
+     : forall (Job : JobType) (H : JobArrival Job) (H0 : JobCost Job) (PState : ProcessorState Job)
+         (sched : @schedule Job PState) (j : Equality.sort Job) (R : nat)
+         (_ : is_true (@job_response_time_bound Job PState sched H0 H j R)),
+       duration
+Prosa_Analysis_Definitions_FinishTime_response_time
+     : forall (Job : Prosa_Behavior_Job_JobType)
+         (inst____at___Prosa_Analysis_Definitions_FinishTime2760055149__hygCtx__hyg3 : DecidableEq Job)
+         (inst____at___Prosa_Analysis_Definitions_FinishTime2760055149__hygCtx__hyg6 : 
+          Prosa_Behavior_Job_JobArrival Job
+            inst____at___Prosa_Analysis_Definitions_FinishTime2760055149__hygCtx__hyg3)
+         (inst____at___Prosa_Analysis_Definitions_FinishTime2760055149__hygCtx__hyg9 : 
+          Prosa_Behavior_Job_JobCost Job
+            inst____at___Prosa_Analysis_Definitions_FinishTime2760055149__hygCtx__hyg3)
+         (PState : Prosa_Behavior_Schedule_ProcessorState Job
+                     inst____at___Prosa_Analysis_Definitions_FinishTime2760055149__hygCtx__hyg3)
+         (sched : Prosa_Behavior_Schedule_schedule Job
+                    inst____at___Prosa_Analysis_Definitions_FinishTime2760055149__hygCtx__hyg3 PState)
+         (j : Job) (R : Nat)
+         (_ : @eq Bool
+                (Prosa_Behavior_Service_job_response_time_bound Job
+                   inst____at___Prosa_Analysis_Definitions_FinishTime2760055149__hygCtx__hyg3 PState sched
+                   inst____at___Prosa_Analysis_Definitions_FinishTime2760055149__hygCtx__hyg9
+                   inst____at___Prosa_Analysis_Definitions_FinishTime2760055149__hygCtx__hyg6 j R)
+                Bool_true),
+       Prosa_Behavior_Time_duration
+response_time_correspondence
+     : forall (Job : Equality.type) (PStateR : ProcessorState Job)
+         (PStateL : Prosa_Behavior_Schedule_ProcessorState (Equality.sort Job)
+                      (ServiceBaseAdapter.svc_decidable_eq Job))
+         (Rstate : ServiceScheduleOperations.SvcProcessorStateRel Job PStateR PStateL)
+         (schedR : @schedule Job PStateR)
+         (schedL : Prosa_Behavior_Schedule_schedule (Equality.sort Job)
+                     (ServiceBaseAdapter.svc_decidable_eq Job) PStateL)
+         (_ : ServiceScheduleOperations.SvcScheduleRel Job PStateR PStateL Rstate schedR schedL)
+         (costR : JobCost Job)
+         (costL : Prosa_Behavior_Job_JobCost (Equality.sort Job) (ServiceBaseAdapter.svc_decidable_eq Job))
+         (_ : ServiceJobOperations.SvcJobCostRel Job costR costL) (arrivalR : JobArrival Job)
+         (arrivalL : Prosa_Behavior_Job_JobArrival (Equality.sort Job)
+                       (ServiceBaseAdapter.svc_decidable_eq Job))
+         (_ : ServiceJobOperations.SvcJobArrivalRel Job arrivalR arrivalL) (j : Equality.sort Job) 
+         (RR : nat) (RL : Nat)
+         (HR : is_true (@job_response_time_bound Job PStateR schedR costR arrivalR j RR))
+         (HL : @eq Bool
+                 (Prosa_Behavior_Service_job_response_time_bound (Equality.sort Job)
+                    (ServiceBaseAdapter.svc_decidable_eq Job) PStateL schedL costL arrivalL j RL)
+                 Bool_true)
+         (_ : SubadditivityNatCorrespondence.SubNatRel RR RL),
+       SubadditivityNatCorrespondence.SubNatRel (@response_time Job arrivalR costR PStateR schedR j RR HR)
+         (Prosa_Analysis_Definitions_FinishTime_response_time (Equality.sort Job)
+            (ServiceBaseAdapter.svc_decidable_eq Job) arrivalL costL PStateL schedL j RL HL)

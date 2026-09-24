@@ -1,0 +1,28 @@
+From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat.
+From prosa Require Import analysis.definitions.finish_time.
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedFinishTime.
+From FoundationCertificates Require Import FinishTimeMinBridge FinishTimeCorrespondence.
+
+Set Printing All.
+Set Printing Width 110.
+
+Check @prosa.analysis.definitions.finish_time.finish_time.
+Check ImportedFinishTime.Prosa_Analysis_Definitions_FinishTime_finish_time.
+Check @finish_time_correspondence.
+
+Check @prosa.analysis.definitions.finish_time.finished_at_finish_time.
+Check ImportedFinishTime.Prosa_Analysis_Definitions_FinishTime_finished_at_finish_time.
+Check @finished_at_finish_time_statement_correspondence.
+
+Check @prosa.analysis.definitions.finish_time.earliest_finish_time.
+Check ImportedFinishTime.Prosa_Analysis_Definitions_FinishTime_earliest_finish_time.
+Check @earliest_finish_time_statement_correspondence.
+
+Check @prosa.analysis.definitions.finish_time.completes_at_finish_time.
+Check ImportedFinishTime.Prosa_Analysis_Definitions_FinishTime_completes_at_finish_time.
+Check @completes_at_finish_time_statement_correspondence.
+
+Check @prosa.analysis.definitions.finish_time.response_time.
+Check ImportedFinishTime.Prosa_Analysis_Definitions_FinishTime_response_time.
+Check @response_time_correspondence.

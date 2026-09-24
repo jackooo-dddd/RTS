@@ -1,0 +1,352 @@
+Warning:
+/Users/shunqiwang/CityuHK/Research/Lean/TranslationProof/Prosa-Shunqi/Validation/.work/experiments/analysis_finish_time/certificates
+was previously bound to FoundationImported.certificates; it is remapped to
+FoundationCertificates [overriding-logical-loadpath,filesystem,default]
+Warning:
+/Users/shunqiwang/CityuHK/Research/Lean/TranslationProof/Prosa-Shunqi/Validation/.work/experiments/analysis_finish_time/source/analysis/definitions
+was previously bound to FoundationImported.source.analysis.definitions; it is
+remapped to prosa.analysis.definitions
+[overriding-logical-loadpath,filesystem,default]
+Warning:
+/Users/shunqiwang/CityuHK/Research/Lean/TranslationProof/Prosa-Shunqi/Validation/.work/experiments/analysis_finish_time/source/analysis
+was previously bound to FoundationImported.source.analysis; it is remapped to
+prosa.analysis [overriding-logical-loadpath,filesystem,default]
+Warning:
+/Users/shunqiwang/CityuHK/Research/Lean/TranslationProof/Prosa-Shunqi/Validation/.work/experiments/analysis_finish_time/source
+was previously bound to FoundationImported.source; it is remapped to prosa
+[overriding-logical-loadpath,filesystem,default]
+File "./Validation/certificates/analysis/FinishTimeAssumptionAudit.v", line 1, characters 0-68:
+Warning: Notation "_ + _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./Validation/certificates/analysis/FinishTimeAssumptionAudit.v", line 1, characters 0-68:
+Warning: Notation "_ - _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./Validation/certificates/analysis/FinishTimeAssumptionAudit.v", line 1, characters 0-68:
+Warning: Notation "_ <= _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./Validation/certificates/analysis/FinishTimeAssumptionAudit.v", line 1, characters 0-68:
+Warning: Notation "_ < _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./Validation/certificates/analysis/FinishTimeAssumptionAudit.v", line 1, characters 0-68:
+Warning: Notation "_ >= _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./Validation/certificates/analysis/FinishTimeAssumptionAudit.v", line 1, characters 0-68:
+Warning: Notation "_ > _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./Validation/certificates/analysis/FinishTimeAssumptionAudit.v", line 1, characters 0-68:
+Warning: Notation "_ <= _ <= _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./Validation/certificates/analysis/FinishTimeAssumptionAudit.v", line 1, characters 0-68:
+Warning: Notation "_ < _ <= _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./Validation/certificates/analysis/FinishTimeAssumptionAudit.v", line 1, characters 0-68:
+Warning: Notation "_ <= _ < _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./Validation/certificates/analysis/FinishTimeAssumptionAudit.v", line 1, characters 0-68:
+Warning: Notation "_ < _ < _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+File "./Validation/certificates/analysis/FinishTimeAssumptionAudit.v", line 1, characters 0-68:
+Warning: Notation "_ * _" was already used in scope nat_scope.
+[notation-overridden,parsing,default]
+minimum_value_correspondence
+     : forall (pR : pred nat) (pL : Nat -> SProp) 
+         (dp : DecidablePred Nat pL) (exR : exists n : nat, pR n)
+         (exL : Exists Nat pL),
+       (forall (nR : nat) (nL : Nat),
+        SubadditivityNatCorrespondence.SubNatRel nR nL ->
+        PropSPropFoundation.PropSPropRel (pR nR) (pL nL)) ->
+       SubadditivityNatCorrespondence.SubNatRel (ex_minn (P:=pR) exR)
+         (Nat_find pL dp exL)
+finish_time_correspondence
+     : forall (Job : eqType) (PStateR : ProcessorState Job)
+         (PStateL : Prosa_Behavior_Schedule_ProcessorState Job
+                      (ServiceBaseAdapter.svc_decidable_eq Job))
+         (Rstate : ServiceScheduleOperations.SvcProcessorStateRel Job PStateR
+                     PStateL)
+         (schedR : schedule PStateR)
+         (schedL : Prosa_Behavior_Schedule_schedule Job
+                     (ServiceBaseAdapter.svc_decidable_eq Job) PStateL),
+       ServiceScheduleOperations.SvcScheduleRel Job PStateR PStateL Rstate
+         schedR schedL ->
+       forall (costR : JobCost Job)
+         (costL : Prosa_Behavior_Job_JobCost Job
+                    (ServiceBaseAdapter.svc_decidable_eq Job)),
+       ServiceJobOperations.SvcJobCostRel Job costR costL ->
+       forall (arrivalR : JobArrival Job)
+         (arrivalL : Prosa_Behavior_Job_JobArrival Job
+                       (ServiceBaseAdapter.svc_decidable_eq Job))
+         (j : Job) (RR : nat) (RL : Nat)
+         (HR : job_response_time_bound schedR j RR)
+         (HL : eq
+                 (Prosa_Behavior_Service_job_response_time_bound Job
+                    (ServiceBaseAdapter.svc_decidable_eq Job) PStateL schedL
+                    costL arrivalL j RL)
+                 Bool_true),
+       SubadditivityNatCorrespondence.SubNatRel RR RL ->
+       SubadditivityNatCorrespondence.SubNatRel (finish_time schedR j RR HR)
+         (Prosa_Analysis_Definitions_FinishTime_finish_time Job
+            (ServiceBaseAdapter.svc_decidable_eq Job) arrivalL costL PStateL
+            schedL j RL HL)
+finished_at_finish_time_statement_correspondence
+     : forall (Job : eqType) (PStateR : ProcessorState Job)
+         (PStateL : Prosa_Behavior_Schedule_ProcessorState Job
+                      (ServiceBaseAdapter.svc_decidable_eq Job))
+         (Rstate : ServiceScheduleOperations.SvcProcessorStateRel Job PStateR
+                     PStateL)
+         (schedR : schedule PStateR)
+         (schedL : Prosa_Behavior_Schedule_schedule Job
+                     (ServiceBaseAdapter.svc_decidable_eq Job) PStateL),
+       ServiceScheduleOperations.SvcScheduleRel Job PStateR PStateL Rstate
+         schedR schedL ->
+       forall (costR : JobCost Job)
+         (costL : Prosa_Behavior_Job_JobCost Job
+                    (ServiceBaseAdapter.svc_decidable_eq Job)),
+       ServiceJobOperations.SvcJobCostRel Job costR costL ->
+       forall (arrivalR : JobArrival Job)
+         (arrivalL : Prosa_Behavior_Job_JobArrival Job
+                       (ServiceBaseAdapter.svc_decidable_eq Job))
+         (j : Job) (RR : nat) (RL : Nat)
+         (HR : job_response_time_bound schedR j RR)
+         (HL : eq
+                 (Prosa_Behavior_Service_job_response_time_bound Job
+                    (ServiceBaseAdapter.svc_decidable_eq Job) PStateL schedL
+                    costL arrivalL j RL)
+                 Bool_true),
+       SubadditivityNatCorrespondence.SubNatRel RR RL ->
+       PropSPropFoundation.PropSPropRel
+         (completed_by schedR j (finish_time schedR j RR HR))
+         (eq
+            (Prosa_Behavior_Service_completed_by Job
+               (ServiceBaseAdapter.svc_decidable_eq Job) PStateL schedL costL
+               j
+               (Prosa_Analysis_Definitions_FinishTime_finish_time Job
+                  (ServiceBaseAdapter.svc_decidable_eq Job) arrivalL costL
+                  PStateL schedL j RL HL))
+            Bool_true)
+earliest_finish_time_statement_correspondence
+     : forall (Job : eqType) (PStateR : ProcessorState Job)
+         (PStateL : Prosa_Behavior_Schedule_ProcessorState Job
+                      (ServiceBaseAdapter.svc_decidable_eq Job))
+         (Rstate : ServiceScheduleOperations.SvcProcessorStateRel Job PStateR
+                     PStateL)
+         (schedR : schedule PStateR)
+         (schedL : Prosa_Behavior_Schedule_schedule Job
+                     (ServiceBaseAdapter.svc_decidable_eq Job) PStateL),
+       ServiceScheduleOperations.SvcScheduleRel Job PStateR PStateL Rstate
+         schedR schedL ->
+       forall (costR : JobCost Job)
+         (costL : Prosa_Behavior_Job_JobCost Job
+                    (ServiceBaseAdapter.svc_decidable_eq Job)),
+       ServiceJobOperations.SvcJobCostRel Job costR costL ->
+       forall (arrivalR : JobArrival Job)
+         (arrivalL : Prosa_Behavior_Job_JobArrival Job
+                       (ServiceBaseAdapter.svc_decidable_eq Job))
+         (j : Job) (RR : nat) (RL : Nat)
+         (HR : job_response_time_bound schedR j RR)
+         (HL : eq
+                 (Prosa_Behavior_Service_job_response_time_bound Job
+                    (ServiceBaseAdapter.svc_decidable_eq Job) PStateL schedL
+                    costL arrivalL j RL)
+                 Bool_true),
+       SubadditivityNatCorrespondence.SubNatRel RR RL ->
+       PropSPropFoundation.PropSPropRel
+         (forall tR : nat,
+          completed_by schedR j tR -> (finish_time schedR j RR HR <= tR)%N)
+         (forall tL : Nat,
+          eq
+            (Prosa_Behavior_Service_completed_by Job
+               (ServiceBaseAdapter.svc_decidable_eq Job) PStateL schedL costL
+               j tL)
+            Bool_true ->
+          LE_le_inst1 Nat instLENat
+            (Prosa_Analysis_Definitions_FinishTime_finish_time Job
+               (ServiceBaseAdapter.svc_decidable_eq Job) arrivalL costL
+               PStateL schedL j RL HL)
+            tL)
+completes_at_finish_time_statement_correspondence
+     : forall (Job : eqType) (PStateR : ProcessorState Job)
+         (PStateL : Prosa_Behavior_Schedule_ProcessorState Job
+                      (ServiceBaseAdapter.svc_decidable_eq Job))
+         (Rstate : ServiceScheduleOperations.SvcProcessorStateRel Job PStateR
+                     PStateL)
+         (schedR : schedule PStateR)
+         (schedL : Prosa_Behavior_Schedule_schedule Job
+                     (ServiceBaseAdapter.svc_decidable_eq Job) PStateL),
+       ServiceScheduleOperations.SvcScheduleRel Job PStateR PStateL Rstate
+         schedR schedL ->
+       forall (costR : JobCost Job)
+         (costL : Prosa_Behavior_Job_JobCost Job
+                    (ServiceBaseAdapter.svc_decidable_eq Job)),
+       ServiceJobOperations.SvcJobCostRel Job costR costL ->
+       forall (arrivalR : JobArrival Job)
+         (arrivalL : Prosa_Behavior_Job_JobArrival Job
+                       (ServiceBaseAdapter.svc_decidable_eq Job))
+         (j : Job) (RR : nat) (RL : Nat)
+         (HR : job_response_time_bound schedR j RR)
+         (HL : eq
+                 (Prosa_Behavior_Service_job_response_time_bound Job
+                    (ServiceBaseAdapter.svc_decidable_eq Job) PStateL schedL
+                    costL arrivalL j RL)
+                 Bool_true),
+       SubadditivityNatCorrespondence.SubNatRel RR RL ->
+       PropSPropFoundation.PropSPropRel
+         (completes_at schedR j (finish_time schedR j RR HR))
+         (eq
+            (Prosa_Behavior_Service_completes_at Job
+               (ServiceBaseAdapter.svc_decidable_eq Job) PStateL schedL costL
+               j
+               (Prosa_Analysis_Definitions_FinishTime_finish_time Job
+                  (ServiceBaseAdapter.svc_decidable_eq Job) arrivalL costL
+                  PStateL schedL j RL HL))
+            Bool_true)
+response_time_correspondence
+     : forall (Job : eqType) (PStateR : ProcessorState Job)
+         (PStateL : Prosa_Behavior_Schedule_ProcessorState Job
+                      (ServiceBaseAdapter.svc_decidable_eq Job))
+         (Rstate : ServiceScheduleOperations.SvcProcessorStateRel Job PStateR
+                     PStateL)
+         (schedR : schedule PStateR)
+         (schedL : Prosa_Behavior_Schedule_schedule Job
+                     (ServiceBaseAdapter.svc_decidable_eq Job) PStateL),
+       ServiceScheduleOperations.SvcScheduleRel Job PStateR PStateL Rstate
+         schedR schedL ->
+       forall (costR : JobCost Job)
+         (costL : Prosa_Behavior_Job_JobCost Job
+                    (ServiceBaseAdapter.svc_decidable_eq Job)),
+       ServiceJobOperations.SvcJobCostRel Job costR costL ->
+       forall (arrivalR : JobArrival Job)
+         (arrivalL : Prosa_Behavior_Job_JobArrival Job
+                       (ServiceBaseAdapter.svc_decidable_eq Job)),
+       ServiceJobOperations.SvcJobArrivalRel Job arrivalR arrivalL ->
+       forall (j : Job) (RR : nat) (RL : Nat)
+         (HR : job_response_time_bound schedR j RR)
+         (HL : eq
+                 (Prosa_Behavior_Service_job_response_time_bound Job
+                    (ServiceBaseAdapter.svc_decidable_eq Job) PStateL schedL
+                    costL arrivalL j RL)
+                 Bool_true),
+       SubadditivityNatCorrespondence.SubNatRel RR RL ->
+       SubadditivityNatCorrespondence.SubNatRel
+         (response_time schedR j RR HR)
+         (Prosa_Analysis_Definitions_FinishTime_response_time Job
+            (ServiceBaseAdapter.svc_decidable_eq Job) arrivalL costL PStateL
+            schedL j RL HL)
+AUDIT_BEGIN minimum_value
+Axioms:
+eq_inst1 relies on definitional UIP.
+eq relies on definitional UIP.
+SubadditivityNatCorrespondence.SubNatTrue relies on definitional UIP.
+HEq_inst1 relies on definitional UIP.
+PropSPropFoundation.interpret_strict :
+  forall P : Prop, PropSPropFoundation.StrictlyInhabited P -> P
+AUDIT_END minimum_value
+AUDIT_BEGIN finish_time
+Axioms:
+eq_inst1 relies on definitional UIP.
+eq relies on definitional UIP.
+True relies on definitional UIP.
+ServiceBaseAdapter.SvcTrue relies on definitional UIP.
+SubadditivityNatCorrespondence.SubNatTrue relies on definitional UIP.
+HEq_inst1 relies on definitional UIP.
+HEq relies on definitional UIP.
+propext : forall a b : SProp, Iff a b -> eq a b
+PrimInt63.lsr : PrimInt63.int -> PrimInt63.int -> PrimInt63.int
+PrimInt63.land : PrimInt63.int -> PrimInt63.int -> PrimInt63.int
+PropSPropFoundation.interpret_strict :
+  forall P : Prop, PropSPropFoundation.StrictlyInhabited P -> P
+PrimInt63.int : Set
+PrimInt63.eqb : PrimInt63.int -> PrimInt63.int -> bool
+Quot_sound :
+  forall (_UU03b1_ : Type) (r : _UU03b1_ -> _UU03b1_ -> SProp)
+    (a b : _UU03b1_),
+  r a b -> eq (Quot.mk r a) (Quot.mk r b)
+Classical_choice : forall _UU03b1_ : Type, Nonempty _UU03b1_ -> _UU03b1_
+AUDIT_END finish_time
+AUDIT_BEGIN finished_at_finish_time
+Axioms:
+eq_inst1 relies on definitional UIP.
+eq relies on definitional UIP.
+True relies on definitional UIP.
+ServiceBaseAdapter.SvcTrue relies on definitional UIP.
+SubadditivityNatCorrespondence.SubNatTrue relies on definitional UIP.
+HEq_inst1 relies on definitional UIP.
+HEq relies on definitional UIP.
+propext : forall a b : SProp, Iff a b -> eq a b
+PrimInt63.lsr : PrimInt63.int -> PrimInt63.int -> PrimInt63.int
+PrimInt63.land : PrimInt63.int -> PrimInt63.int -> PrimInt63.int
+PropSPropFoundation.interpret_strict :
+  forall P : Prop, PropSPropFoundation.StrictlyInhabited P -> P
+PrimInt63.int : Set
+PrimInt63.eqb : PrimInt63.int -> PrimInt63.int -> bool
+Quot_sound :
+  forall (_UU03b1_ : Type) (r : _UU03b1_ -> _UU03b1_ -> SProp)
+    (a b : _UU03b1_),
+  r a b -> eq (Quot.mk r a) (Quot.mk r b)
+Classical_choice : forall _UU03b1_ : Type, Nonempty _UU03b1_ -> _UU03b1_
+AUDIT_END finished_at_finish_time
+AUDIT_BEGIN earliest_finish_time
+Axioms:
+eq_inst1 relies on definitional UIP.
+eq relies on definitional UIP.
+True relies on definitional UIP.
+ServiceBaseAdapter.SvcTrue relies on definitional UIP.
+SubadditivityNatCorrespondence.SubNatTrue relies on definitional UIP.
+HEq_inst1 relies on definitional UIP.
+HEq relies on definitional UIP.
+propext : forall a b : SProp, Iff a b -> eq a b
+PrimInt63.lsr : PrimInt63.int -> PrimInt63.int -> PrimInt63.int
+PrimInt63.land : PrimInt63.int -> PrimInt63.int -> PrimInt63.int
+PropSPropFoundation.interpret_strict :
+  forall P : Prop, PropSPropFoundation.StrictlyInhabited P -> P
+PrimInt63.int : Set
+PrimInt63.eqb : PrimInt63.int -> PrimInt63.int -> bool
+Quot_sound :
+  forall (_UU03b1_ : Type) (r : _UU03b1_ -> _UU03b1_ -> SProp)
+    (a b : _UU03b1_),
+  r a b -> eq (Quot.mk r a) (Quot.mk r b)
+Classical_choice : forall _UU03b1_ : Type, Nonempty _UU03b1_ -> _UU03b1_
+AUDIT_END earliest_finish_time
+AUDIT_BEGIN completes_at_finish_time
+Axioms:
+eq_inst1 relies on definitional UIP.
+eq relies on definitional UIP.
+True relies on definitional UIP.
+ServiceBaseAdapter.SvcTrue relies on definitional UIP.
+SubadditivityNatCorrespondence.SubNatTrue relies on definitional UIP.
+HEq_inst1 relies on definitional UIP.
+HEq relies on definitional UIP.
+propext : forall a b : SProp, Iff a b -> eq a b
+PrimInt63.lsr : PrimInt63.int -> PrimInt63.int -> PrimInt63.int
+PrimInt63.land : PrimInt63.int -> PrimInt63.int -> PrimInt63.int
+PropSPropFoundation.interpret_strict :
+  forall P : Prop, PropSPropFoundation.StrictlyInhabited P -> P
+PrimInt63.int : Set
+PrimInt63.eqb : PrimInt63.int -> PrimInt63.int -> bool
+Quot_sound :
+  forall (_UU03b1_ : Type) (r : _UU03b1_ -> _UU03b1_ -> SProp)
+    (a b : _UU03b1_),
+  r a b -> eq (Quot.mk r a) (Quot.mk r b)
+Classical_choice : forall _UU03b1_ : Type, Nonempty _UU03b1_ -> _UU03b1_
+AUDIT_END completes_at_finish_time
+AUDIT_BEGIN response_time
+Axioms:
+eq_inst1 relies on definitional UIP.
+eq relies on definitional UIP.
+True relies on definitional UIP.
+ServiceBaseAdapter.SvcTrue relies on definitional UIP.
+SubadditivityNatCorrespondence.SubNatTrue relies on definitional UIP.
+HEq_inst1 relies on definitional UIP.
+HEq relies on definitional UIP.
+propext : forall a b : SProp, Iff a b -> eq a b
+PrimInt63.lsr : PrimInt63.int -> PrimInt63.int -> PrimInt63.int
+PrimInt63.land : PrimInt63.int -> PrimInt63.int -> PrimInt63.int
+PropSPropFoundation.interpret_strict :
+  forall P : Prop, PropSPropFoundation.StrictlyInhabited P -> P
+PrimInt63.int : Set
+PrimInt63.eqb : PrimInt63.int -> PrimInt63.int -> bool
+Quot_sound :
+  forall (_UU03b1_ : Type) (r : _UU03b1_ -> _UU03b1_ -> SProp)
+    (a b : _UU03b1_),
+  r a b -> eq (Quot.mk r a) (Quot.mk r b)
+Classical_choice : forall _UU03b1_ : Type, Nonempty _UU03b1_ -> _UU03b1_
+AUDIT_END response_time

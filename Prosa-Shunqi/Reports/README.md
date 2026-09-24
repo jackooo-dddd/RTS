@@ -22,6 +22,7 @@
 - [Rank 52 `model/processor/restricted_supply.v` 报告](files/model/processor/2026-09-24_144500_restricted_supply.md)：记录 concrete processor state 的整文件验证。
 - [较早的阻塞项：`util/lcmseq.v`](files/util/2026-09-23_073256_lcmseq.md)：尚未验收，不计入上述数字。
 - [本次连续执行汇总](runs/2026-09-24_035607_translation_order_continuous_run.md)：跨文件进展与运行背景；不替代正式状态。
+- [Finish Time 语义验证案例](casestudy/finish_time_case_study.md)：官方 Rocq、production Lean、导入后的完整 `Print`、correspondence 与 assumption gate。
 
 下一个执行文件须依据[文件顺序](../v06_file_translation_order.md)、最新 status/manifest 和文件依赖图重新判定；本页不固定其 READY 状态。
 

@@ -1,0 +1,46 @@
+@Prosa.Analysis.Definitions.FinishTime.finish_time : {Job : Prosa.Behavior.Job.JobType} →
+  [inst : DecidableEq Job] →
+    [inst_1 : Prosa.Behavior.Job.JobArrival Job] →
+      [inst_2 : Prosa.Behavior.Job.JobCost Job] →
+        {PState : Prosa.Behavior.Schedule.ProcessorState Job} →
+          (sched : Prosa.Behavior.Schedule.schedule PState) →
+            (j : Job) →
+              (R : ℕ) → Prosa.Behavior.Service.job_response_time_bound sched j R = true → Prosa.Behavior.Time.instant
+@Prosa.Analysis.Definitions.FinishTime.finished_at_finish_time : ∀ {Job : Prosa.Behavior.Job.JobType}
+  [inst : DecidableEq Job] [inst_1 : Prosa.Behavior.Job.JobArrival Job] [inst_2 : Prosa.Behavior.Job.JobCost Job]
+  {PState : Prosa.Behavior.Schedule.ProcessorState Job} (sched : Prosa.Behavior.Schedule.schedule PState) (j : Job)
+  (R : ℕ) (H_response_time_bounded : Prosa.Behavior.Service.job_response_time_bound sched j R = true),
+  Prosa.Behavior.Service.completed_by sched j
+      (Prosa.Analysis.Definitions.FinishTime.finish_time sched j R H_response_time_bounded) =
+    true
+@Prosa.Analysis.Definitions.FinishTime.earliest_finish_time : ∀ {Job : Prosa.Behavior.Job.JobType}
+  [inst : DecidableEq Job] [inst_1 : Prosa.Behavior.Job.JobArrival Job] [inst_2 : Prosa.Behavior.Job.JobCost Job]
+  {PState : Prosa.Behavior.Schedule.ProcessorState Job} (sched : Prosa.Behavior.Schedule.schedule PState) (j : Job)
+  (R : ℕ) (H_response_time_bounded : Prosa.Behavior.Service.job_response_time_bound sched j R = true)
+  (t : Prosa.Behavior.Time.instant),
+  Prosa.Behavior.Service.completed_by sched j t = true →
+    Prosa.Analysis.Definitions.FinishTime.finish_time sched j R H_response_time_bounded ≤ t
+@Prosa.Analysis.Definitions.FinishTime.completes_at_finish_time : ∀ {Job : Prosa.Behavior.Job.JobType}
+  [inst : DecidableEq Job] [inst_1 : Prosa.Behavior.Job.JobArrival Job] [inst_2 : Prosa.Behavior.Job.JobCost Job]
+  {PState : Prosa.Behavior.Schedule.ProcessorState Job} (sched : Prosa.Behavior.Schedule.schedule PState) (j : Job)
+  (R : ℕ) (H_response_time_bounded : Prosa.Behavior.Service.job_response_time_bound sched j R = true),
+  Prosa.Behavior.Service.completes_at sched j
+      (Prosa.Analysis.Definitions.FinishTime.finish_time sched j R H_response_time_bounded) =
+    true
+@Prosa.Analysis.Definitions.FinishTime.response_time : {Job : Prosa.Behavior.Job.JobType} →
+  [inst : DecidableEq Job] →
+    [inst_1 : Prosa.Behavior.Job.JobArrival Job] →
+      [inst_2 : Prosa.Behavior.Job.JobCost Job] →
+        {PState : Prosa.Behavior.Schedule.ProcessorState Job} →
+          (sched : Prosa.Behavior.Schedule.schedule PState) →
+            (j : Job) →
+              (R : ℕ) → Prosa.Behavior.Service.job_response_time_bound sched j R = true → Prosa.Behavior.Time.duration
+'Prosa.Analysis.Definitions.FinishTime.finish_time' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Prosa.Analysis.Definitions.FinishTime.finished_at_finish_time' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Prosa.Analysis.Definitions.FinishTime.earliest_finish_time' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Prosa.Analysis.Definitions.FinishTime.completes_at_finish_time' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Prosa.Analysis.Definitions.FinishTime.response_time' depends on axioms: [propext, Classical.choice, Quot.sound]
