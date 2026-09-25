@@ -3,7 +3,7 @@
 ## 当前状态
 
 <!-- V06_STATUS_BEGIN -->
-截至 2026-09-24，正式 machine state 记录 **51/357 个文件、377/2439 个 public declarations 已验收**。依据：[最新累计 status](../Validation/planning/v06_pipeline/model_processor_overheads_module_status.json)。表中的“是”仅表示已有 `ACCEPTED_V06_FILE`；“否”可能是未开始、进行中或受阻，不能据此推断尚未翻译。零声明文件也只有通过模块接口验收才写“是”。
+截至 2026-09-25，正式 machine state 记录 **68/357 个文件、479/2439 个 public declarations 已验收**。依据：[最新累计 status](../Validation/planning/v06_pipeline/model_task_absolute_deadline_module_status.json)。表中的“是”仅表示已有 `ACCEPTED_V06_FILE`；“否”可能是未开始、进行中或受阻，不能据此推断尚未翻译。零声明文件也只有通过模块接口验收才写“是”。
 <!-- V06_STATUS_END -->
 
 <!-- V06_NAV_BEGIN -->
@@ -12,7 +12,7 @@
 
 | Progress | Latest completed | Quick navigation |
 |---|---|---|
-| **51/357 files** · **377/2439 declarations** | **Rank 50** · `model/processor/overheads.v` | [🎯 Jump to latest completed](#latest-completed) · [✅ Finished](#finished-files) · [⏳ Unfinished](#unfinished-files) |
+| **68/357 files** · **479/2439 declarations** | **Rank 74** · `model/task/absolute_deadline.v` | [🎯 Jump to latest completed](#latest-completed) · [✅ Finished](#finished-files) · [⏳ Unfinished](#unfinished-files) |
 
 </details>
 <!-- V06_NAV_END -->
@@ -36,7 +36,7 @@
 
 <!-- V06_FILE_TABLE_BEGIN -->
 <details open>
-<summary><b>✅ Finished — 51 files</b></summary>
+<summary><b>✅ Finished — 68 files</b></summary>
 
 <a id="finished-files"></a>
 
@@ -90,42 +90,42 @@
 | 47 | 10 | [`model/job/properties.v`](files/model/job/2026-09-24_090700_properties.md) | 2 | ✅ 是 | 09:24:09:29 |
 | 48 | 10 | [`model/processor/ideal.v`](files/model/processor/2026-09-24_093100_ideal.md) | 2 | ✅ 是 | 09:24:10:19 |
 | 49 | 10 | [`model/processor/ideal_uni_exceed.v`](files/model/processor/2026-09-24_102300_ideal_uni_exceed.md) | 7 | ✅ 是 | 09:24:11:11 |
-| 50 | 10 | <a id="latest-completed"></a>[`model/processor/overheads.v`](files/model/processor/2026-09-24_111300_overheads.md) | 13 | ✅ 是 | 09:24:17:04 |
+| 50 | 10 | [`model/processor/overheads.v`](files/model/processor/2026-09-24_111300_overheads.md) | 13 | ✅ 是 | 09:24:17:04 |
 | 51 | 10 | [`model/processor/platform_properties.v`](files/model/processor/2026-09-24_134231_platform_properties.md) | 6 | ✅ 是 | 09:24:14:40 |
 | 52 | 10 | [`model/processor/restricted_supply.v`](files/model/processor/2026-09-24_144500_restricted_supply.md) | 5 | ✅ 是 | 09:24:15:24 |
+| 53 | 10 | [`model/processor/spin.v`](files/model/processor/2026-09-24_233051_spin.md) | 5 | ✅ 是 | 09:25:00:10 |
+| 54 | 10 | [`model/processor/varspeed.v`](files/model/processor/2026-09-24_233051_varspeed.md) | 5 | ✅ 是 | 09:25:00:26 |
+| 57 | 10 | [`model/schedule/edf.v`](files/model/schedule/2026-09-25_003300_edf.md) | 2 | ✅ 是 | 09:25:01:27 |
+| 58 | 10 | [`model/schedule/nonpreemptive.v`](files/model/schedule/2026-09-25_010632_nonpreemptive.md) | 1 | ✅ 是 | 09:25:01:46 |
+| 59 | 10 | [`model/schedule/scheduled.v`](files/model/schedule/2026-09-25_020323_scheduled.md) | 3 | ✅ 是 | 09:25:02:03 |
+| 60 | 10 | [`model/schedule/work_conserving.v`](files/model/schedule/2026-09-25_020627_work_conserving.md) | 2 | ✅ 是 | 09:25:02:06 |
+| 61 | 10 | [`model/task/concept.v`](files/model/task/2026-09-25_024332_concept.md) | 19 | ✅ 是 | 09:25:02:43 |
+| 62 | 11 | [`analysis/abstract/definitions.v`](files/analysis/abstract/2026-09-25_025723_definitions.md) | 15 | ✅ 是 | 09:25:07:30 |
+| 63 | 11 | [`analysis/abstract/search_space.v`](files/analysis/abstract/2026-09-25_035747_search_space.md) | 6 | ✅ 是 | 09:25:05:33 |
+| 64 | 11 | [`analysis/definitions/overheads/schedule_change.v`](files/analysis/definitions/overheads/2026-09-25_025541_schedule_change.md) | 4 | ✅ 是 | 09:25:02:55 |
+| 65 | 11 | [`analysis/definitions/task_schedule.v`](files/analysis/definitions/2026-09-25_040200_task_schedule.md) | 7 | ✅ 是 | 09:25:05:14 |
+| 66 | 11 | [`analysis/facts/behavior/supply.v`](files/analysis/facts/behavior/2026-09-25_030754_supply.md) | 16 | ✅ 是 | 09:25:04:44 |
+| 67 | 11 | [`analysis/facts/model/ideal_uni_exceed.v`](files/analysis/facts/model/2026-09-25_030249_ideal_uni_exceed.md) | 7 | ✅ 是 | 09:25:04:17 |
+| 68 | 11 | [`analysis/facts/model/restricted_supply/schedule.v`](files/analysis/facts/model/restricted_supply/2026-09-25_045915_schedule.md) | 3 | ✅ 是 | 09:25:05:48 |
+| 69 | 11 | [`analysis/facts/model/task_cost.v`](files/analysis/facts/model/2026-09-25_061700_task_cost.md) | 2 | ✅ 是 | 09:25:06:17 |
+| 71 | 11 | [`implementation/definitions/generic_scheduler.v`](files/implementation/definitions/2026-09-25_060400_generic_scheduler.md) | 4 | ✅ 是 | 09:25:06:53 |
+| 74 | 11 | <a id="latest-completed"></a>[`model/task/absolute_deadline.v`](files/model/task/2026-09-25_075700_absolute_deadline.md) | 1 | ✅ 是 | 09:25:08:00 |
 
 </details>
 
 <details open>
-<summary><b>⏳ Unfinished — 306 files</b></summary>
+<summary><b>⏳ Unfinished — 289 files</b></summary>
 
 <a id="unfinished-files"></a>
 
 | Rank | Layer | v0.6 source file | Public declarations | 验证完成 |
 | ---: | ---: | --- | ---: | :---: |
 | 30 | 1 | [`util/lcmseq.v`](files/util/2026-09-23_073256_lcmseq.md) | 5 | ○ 否 |
-| 53 | 10 | `model/processor/spin.v` | 5 | ○ 否 |
-| 54 | 10 | `model/processor/varspeed.v` | 5 | ○ 否 |
-| 55 | 10 | `model/readiness/basic.v` | 0 | ○ 否 |
-| 56 | 10 | `model/readiness/jitter.v` | 2 | ○ 否 |
-| 57 | 10 | `model/schedule/edf.v` | 2 | ○ 否 |
-| 58 | 10 | `model/schedule/nonpreemptive.v` | 1 | ○ 否 |
-| 59 | 10 | `model/schedule/scheduled.v` | 3 | ○ 否 |
-| 60 | 10 | `model/schedule/work_conserving.v` | 2 | ○ 否 |
-| 61 | 10 | `model/task/concept.v` | 19 | ○ 否 |
-| 62 | 11 | `analysis/abstract/definitions.v` | 15 | ○ 否 |
-| 63 | 11 | `analysis/abstract/search_space.v` | 6 | ○ 否 |
-| 64 | 11 | `analysis/definitions/overheads/schedule_change.v` | 4 | ○ 否 |
-| 65 | 11 | `analysis/definitions/task_schedule.v` | 7 | ○ 否 |
-| 66 | 11 | `analysis/facts/behavior/supply.v` | 16 | ○ 否 |
-| 67 | 11 | `analysis/facts/model/ideal_uni_exceed.v` | 7 | ○ 否 |
-| 68 | 11 | `analysis/facts/model/restricted_supply/schedule.v` | 3 | ○ 否 |
-| 69 | 11 | `analysis/facts/model/task_cost.v` | 2 | ○ 否 |
-| 70 | 11 | `analysis/facts/model/uniprocessor.v` | 1 | ○ 否 |
-| 71 | 11 | `implementation/definitions/generic_scheduler.v` | 4 | ○ 否 |
-| 72 | 11 | `model/priority/definitions.v` | 20 | ○ 否 |
+| 55 | 10 | [`model/readiness/basic.v`](files/model/readiness/2026-09-25_003818_basic.md) | 0 | ○ 否 |
+| 56 | 10 | [`model/readiness/jitter.v`](files/model/readiness/2026-09-25_005643_jitter.md) | 2 | ○ 否 |
+| 70 | 11 | [`analysis/facts/model/uniprocessor.v`](files/analysis/facts/model/2026-09-25_062000_uniprocessor.md) | 1 | ○ 否 |
+| 72 | 11 | [`model/priority/definitions.v`](files/model/priority/2026-09-25_072012_definitions.md) | 20 | ○ 否 |
 | 73 | 11 | `model/schedule/tdma.v` | 15 | ○ 否 |
-| 74 | 11 | `model/task/absolute_deadline.v` | 1 | ○ 否 |
 | 75 | 11 | `model/task/arrival/sporadic.v` | 5 | ○ 否 |
 | 76 | 11 | `model/task/arrivals.v` | 13 | ○ 否 |
 | 77 | 11 | `model/task/jitter.v` | 3 | ○ 否 |

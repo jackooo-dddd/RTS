@@ -1,0 +1,15 @@
+diff --git a/model/readiness/jitter.v b/model/readiness/jitter.v
+--- a/model/readiness/jitter.v
++++ b/model/readiness/jitter.v
+@@ -39,7 +39,8 @@
+   }.
+   Next Obligation.
+     move=> sched j t /andP[REL UNFINISHED].
+-    rewrite /pending. apply /andP. split => //.
+-    move: REL. rewrite /is_released /has_arrived.
+-    by apply: leq_trans; rewrite leq_addr.
++    rewrite /pending. apply /andP. split.
++    - rewrite /is_released in REL. rewrite /has_arrived.
++      exact: (leq_trans (leq_addr (job_arrival j) (job_jitter j)) REL).
++    - exact: UNFINISHED.
+   Qed.

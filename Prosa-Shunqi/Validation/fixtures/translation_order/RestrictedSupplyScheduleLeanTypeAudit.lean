@@ -1,0 +1,17 @@
+import Prosa.Analysis.Facts.Model.RestrictedSupply.Schedule
+import Validation.fixtures.translation_order.RestrictedSupplyScheduleComputationInterface
+
+#check @Prosa.Analysis.Facts.Model.RestrictedSupply.Schedule.rs_proc_model_is_a_uniprocessor_model
+#check @Prosa.Analysis.Facts.Model.RestrictedSupply.Schedule.rs_proc_is_unit_supply
+#check @Prosa.Analysis.Facts.Model.RestrictedSupply.Schedule.rs_proc_model_fully_consuming
+
+#print Prosa.Analysis.Facts.Model.RestrictedSupply.Schedule.rs_proc_model_is_a_uniprocessor_model
+#print Prosa.Analysis.Facts.Model.RestrictedSupply.Schedule.rs_proc_is_unit_supply
+#print Prosa.Analysis.Facts.Model.RestrictedSupply.Schedule.rs_proc_model_fully_consuming
+
+#print axioms Prosa.Analysis.Facts.Model.RestrictedSupply.Schedule.rs_proc_model_is_a_uniprocessor_model
+#print axioms Prosa.Analysis.Facts.Model.RestrictedSupply.Schedule.rs_proc_is_unit_supply
+#print axioms Prosa.Analysis.Facts.Model.RestrictedSupply.Schedule.rs_proc_model_fully_consuming
+#print axioms Prosa.Validation.RestrictedSupplyScheduleInterface.production_scheduled_in_concrete
+#print axioms Prosa.Validation.RestrictedSupplyScheduleInterface.production_supply_in_concrete
+#print axioms Prosa.Validation.RestrictedSupplyScheduleInterface.production_service_in_concrete

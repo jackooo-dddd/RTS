@@ -1,6 +1,6 @@
 ---
 name: prosa-v06-translation
-description: 在 Prosa-Shunqi 中将固定 Prosa v0.6 的 Rocq/MathComp/SSReflect 声明翻译或迁移到 Lean 4；用于选择表示、复用 v0.4 Lean、重建证明、检查编译后计算接口及交接语义验证。不用于把旧报告当作认证、不用于擅自升级源码或工具链、不用于无关 Lean 项目。
+description: 在 Prosa-Shunqi 中将固定 Prosa v0.6 的 Rocq/MathComp/SSReflect 声明翻译到 Lean 4；用于选择表示、重建证明、检查编译后计算接口及交接语义验证。不用于把历史报告当作认证、不用于擅自升级源码或工具链、不用于无关 Lean 项目。
 ---
 
 # Prosa v0.6 → Lean 4 Translation
@@ -26,16 +26,15 @@ description: 在 Prosa-Shunqi 中将固定 Prosa v0.6 的 Rocq/MathComp/SSReflec
 | Prosa v0.6 | `414e66760333eaa4ef78c685bcf53291c527a548` |
 | Lean | `leanprover/lean4:v4.33.1` |
 | Mathlib | `0df444a360eaa60ab8c11dca51a86af692955474` |
-| v0.4 历史参考 | `ee05f255e29676ad79e07b5d6cc59dc66cd7fcb7` |
 
 实际执行前核验源码 commit/tree、工作树、`lean-toolchain`、Lake manifest、实际工具版本及工具补丁。pins 与仓库后来明确批准的迁移发生冲突时，报告 `CONFIGURATION_CONFLICT`，核实批准记录；不要静默升级或回退。
 
 按以下角色使用材料：
 
 - **语义目标**：固定 v0.6 源码和与其绑定的最终 elaborated declaration。
-- **表示决策**：`Validation/planning/v06_mapping/v06_coq_lean_mapping_policy.md` 和 `foundational_representation_decisions.md`。
-- **调度与对应**：`v06_dependency/` 的文件图、声明 inventory，以及 `v06_mapping/v06_migration_table.*`。
-- **实现参考**：同版本且证据仍有效的新版 Lean，随后才是旧 Lean/v0.4。
+- **表示决策**：`Validation/planning/v06_current_policy/representation_policy.md` 和 `foundational_decisions.md`。`v06_mapping/` 中的旧比较材料仅是哈希绑定的历史证据，不指导新翻译。
+- **调度与对应**：`v06_dependency/` 的文件图和声明 inventory。
+- **实现参考**：本工作区中同版本、证据仍有效的 Lean 声明和已认证 bridge。
 - **接受依据**：本次实际 artifact 对应的证书、审计和有效性检查；不是 mapping 表或历史 dashboard。
 
 表示 policy 不能覆盖源语义；本 skill 不偷偷更改已批准 policy。发现实质冲突时，只阻塞受影响声明，记录待审查事项并继续独立任务。
@@ -44,7 +43,7 @@ description: 在 Prosa-Shunqi 中将固定 Prosa v0.6 的 Rocq/MathComp/SSReflec
 
 `Prosa/` 是正式 v0.6 **翻译候选树**，不保证每个声明都已 accepted。
 `Validation/` 放候选实验、桥接、证书、工具和证据；`Reports/` 放可追溯汇总。
-`../Prosa-fei/` 默认为只读历史参考。不得把整棵旧 `Prosa/` 复制成新版。
+其他工作区默认只读，不作为当前翻译的 specification 或 translation memory；不得整树复制到本工作区。
 
 优先运行已存在、已审核的 workspace-local source/tooling 入口；不要默认依赖旧工作区的 `.work` 或手工 `/private/tmp` 工具。旧 planning snapshot 保留原证据，不改写成新运行记录。
 
@@ -52,7 +51,7 @@ description: 在 Prosa-Shunqi 中将固定 Prosa v0.6 的 Rocq/MathComp/SSReflec
 
 区分类型/定义依赖、证明依赖、证书依赖。不要把“所有证明先完成”当成数学必需，也不得擅自绕过本批明确的文件验收门槛。若聚合导入过度阻塞，另提有证据的调度改进，不删除原图边来制造 READY。
 
-检索只先取：目标完整声明、直接依赖的真实接口、相关 policy、相符旧候选、少量有用 lemma。真实依赖优先于名称/向量相似度。
+检索只先取：目标完整声明、直接依赖的真实接口、相关 policy、已验收的本工作区对应证书和少量有用 lemma。真实依赖优先于名称/向量相似度。
 
 ## 4. 翻译前的声明契约
 
@@ -62,24 +61,17 @@ description: 在 Prosa-Shunqi 中将固定 Prosa v0.6 的 Rocq/MathComp/SSReflec
 2. Section 关闭后的完整类型：universes、显式/隐式参数、typeclass、假设和结论。
 3. 对定义读取真实 body；对结构读取 carriers、字段、构造器及 laws；对递归定义读取所有分支。
 4. 源码中的 notation、coercion、默认值、实例选择和 proof-dependent computation。
-5. Lean 对应名或对应声明组、旧候选证据、复用决策、预计验证方法。
+5. 本工作区 Lean 对应名或对应声明组、已有 v0.6 证据、预计验证方法。
 
 **不根据 Section 文本猜最终参数。**只保留源最终契约要求的假设；既不能把整个 Section 的假设全加进去，也不能遗漏 proof 使用后被泛化进最终类型的假设。
 
 `Check @source_decl` 与 `#check @target_decl` 是检查入口；严谨比较使用实际 elaborated expressions/可靠提取器。打印文本和 binder 数只是诊断，不能证明对应。
 
-源旧 proof 在新 Rocq 中失败时，先使用已批准的兼容层或源码提取工具。提取必须绑定原完整类型、Section context 和计算 body。提取模块能编译，不自动证明提取忠实；缺少源绑定证据时保留 `SOURCE_BINDING_UNVERIFIED`。
+官方 v0.6 源 proof 在当前 Rocq 中失败时，先使用已批准的兼容层或源码提取工具。提取必须绑定原完整类型、Section context 和计算 body。提取模块能编译，不自动证明提取忠实；缺少源绑定证据时保留 `SOURCE_BINDING_UNVERIFIED`。
 
-## 5. 旧 v0.4 translation memory
+## 5. v0.6 声明覆盖
 
-阅读 [v0.4 复用规则](references/v04-translation-memory.md)。继承文件/namespace 对照、直接类型映射、已成功的归纳组织、Mathlib lemma 提示，以及“statement 与 proof 分阶段”的工作方式。
-
-先比较 v0.6，再决定沿用现有 migration label：
-`REUSE_AFTER_REVALIDATION`、`ADAPT_OLD_LEAN`、`REFERENCE_ONLY`、`NEW_TRANSLATION` 或 `REVIEW_REQUIRED`。
-
-同名、相同源码 command、旧编译成功，都不是语义证据；依赖变了，即使声明文本没变也须复核。
-
-**不要把历史漂移误写成翻译错误。**旧 `ProcessorState` 的 aggregate service 和旧 `completes_at` 的零时刻行为，已有 provenance 证据支持其来自 v0.4；新版仍必须采用 v0.6 语义。
+只从固定 v0.6 源码确定目标、完整类型、计算体和依赖；不要把其他版本或旧 Lean 声明用作候选实现的默认入口。同名、相似源码或已有 Lean 编译成功，都不是本次语义对应的证据。
 
 默认给每个源 public declaration 一个稳定主对应，允许已记录的一对多/多对一表示。任何 helper 标记 `LEAN_HELPER`；源声明被 inline 不能无记录消失。构造器、projection、recursor 不重复计入 public 数，但其语义仍要覆盖。
 
@@ -179,9 +171,9 @@ export 大小、依赖爆炸、universe 和 imported datatype identity，尽早�
 
 保留源 statement，不逐句翻译 SSReflect tactic。优先复用已有 Lean/Mathlib lemma，随后尝试 `rfl`、受控 `simp`、`rw`、`constructor`、`cases`、`induction`、`omega` 等适用方法。
 
-旧 proof 提示中的 API 必须在固定版本查证。自动搜索成功后整理实际 proof；`native_decide` 等路径不能绕过公理/信任审计。
+任何证明提示中的 API 都必须在固定版本查证。自动搜索成功后整理实际 proof；`native_decide` 等路径不能绕过公理/信任审计。
 
-本项目默认不向 `Prosa/` 提交 `sorry`/`admit`/`sorryAx`、伪造 axiom、`unsafe` 绕过或隐蔽 oracle。不要沿用旧 agent 为便于统计而强制填 `sorry` 的规则。未完成 theorem 可先记录完整类型，或在 validation-only 文件中定义 statement 对象；不得假称已证明 theorem。
+本项目默认不向 `Prosa/` 提交 `sorry`/`admit`/`sorryAx`、伪造 axiom、`unsafe` 绕过或隐蔽 oracle。未完成 theorem 可先记录完整类型，或在 validation-only 文件中定义 statement 对象；不得假称已证明 theorem。
 
 冻结 statement 后进入 proof-only 阶段：不得静默改类型、参数、实例、相关计算 body 或结构 fields。单改 proof 也会改变 artifact；是否可复用旧证书由 hash/依赖检查决定，不由模型猜测。
 
@@ -379,6 +371,5 @@ status 文件时间，须标明它只是机器记录时间，不能拿报告文�
 附加材料按需读取：
 - [详细表示规则](references/representation-rules.md)
 - [验证友好实现与证书边界](references/validation-friendly-patterns.md)
-- [v0.4 翻译复用与纠错](references/v04-translation-memory.md)
 - [证据索引](references/evidence-index.md)
 - [安装后 smoke cases](references/skill-smoke-tests.md)

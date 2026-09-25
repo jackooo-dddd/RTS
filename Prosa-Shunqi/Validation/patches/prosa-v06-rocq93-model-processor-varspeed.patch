@@ -1,0 +1,12 @@
+diff --git a/model/processor/varspeed.v b/model/processor/varspeed.v
+--- a/model/processor/varspeed.v
++++ b/model/processor/varspeed.v
+@@ -65,6 +65,6 @@ Section State.
+       service_on   := varspeed_service_on
+     |}.
+-  Next Obligation. by move=> j [] //= s ; case: eqP. Qed.
+-  Next Obligation. by move=> j [] //= j' v _; case: ifP. Qed.
++  Next Obligation. by case: s => [speed|j' speed] //=; case: (_ == _). Qed.
++  Next Obligation. by move: H; case: s => [speed|j' speed] //=; case: (_ == _). Qed.
+
+ End State.

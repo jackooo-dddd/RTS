@@ -1,0 +1,22 @@
+diff --git a/analysis/facts/model/restricted_supply/schedule.v b/analysis/facts/model/restricted_supply/schedule.v
+--- a/analysis/facts/model/restricted_supply/schedule.v
++++ b/analysis/facts/model/restricted_supply/schedule.v
+@@ -1,5 +1,17 @@
+ Require Export prosa.model.processor.platform_properties.
+ Require Export prosa.model.processor.restricted_supply.
+-
++
++(** Rocq 9.3 compatibility: the historical transitive import no longer exposes
++    [prosa.util.sum.sum_unit1]. This is its original proof, kept local. *)
++Local Lemma sum_unit1 :
++  forall {F : unit -> nat}, \sum_r F r = F tt.
++Proof.
++  move=> F.
++  rewrite /index_enum unlock_with -enumT /=.
++  have -> : enum (unit : finType) = [:: tt]
++    by rewrite /(enum _) unlock //=.
++  by rewrite big_seq1.
++Qed.
++
+ (** In this section we establish the classes to which a
+     restricted-supply schedule belongs. *)

@@ -1,0 +1,22 @@
+--- a/analysis/facts/behavior/supply.v
++++ b/analysis/facts/behavior/supply.v
+@@ -43,5 +43,8 @@
+     forall t,
+       is_blackout sched t \/ has_supply sched t.
+   Proof.
+-    by rewrite /is_blackout; move=> t; case: (has_supply).
++    move=> t; rewrite /is_blackout.
++    case H : (has_supply sched t).
++    - by right.
++    - by left.
+   Qed.
+@@ -167,7 +170,6 @@
+       t1 <= t <= t2 ->
+       blackout_during sched t1 t + blackout_during sched t t2 = blackout_during sched t1 t2.
+   Proof.
+-    move=> t1 t2 t NEQ; rewrite /blackout_during.
+-    rewrite (index_iota_cat t t1 t2) => //.
+-    by rewrite big_cat //=.
++    move=> t1 t2 t /andP [H1 H2]; rewrite /blackout_during.
++    by rewrite (big_cat_nat H1 H2).
+   Qed.

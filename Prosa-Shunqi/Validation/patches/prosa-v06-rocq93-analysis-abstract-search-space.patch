@@ -1,0 +1,13 @@
+diff --git a/analysis/abstract/search_space.v b/analysis/abstract/search_space.v
+--- a/analysis/abstract/search_space.v
++++ b/analysis/abstract/search_space.v
+@@ -102,7 +102,8 @@ Section AbstractRTAReduction.
+         feed IHn; first by apply ltn_trans with n.+1.
+         move: IHn => [ASP [NEQ [EQ SP]]].
+         move: ALT => [/allP ALT| /hasP ALT].
+-        { exists ASP; repeat split=> //.
++        { exists ASP; split; first by lia.
++          split; last exact SP.
+           intros x LT.
+           move: (ALT x) => T.
+           feed T; first by rewrite mem_iota; apply/andP; split.

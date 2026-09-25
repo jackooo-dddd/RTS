@@ -1,0 +1,13 @@
+diff --git a/model/processor/spin.v b/model/processor/spin.v
+--- a/model/processor/spin.v
++++ b/model/processor/spin.v
+@@ -67,7 +67,7 @@ Section State.
+       supply_on    := spin_supply_on;
+       service_on   := spin_service_on
+     |}.
+-  Next Obligation. by move => j [] // s [] /=; case: eqP. Qed.
+-  Next Obligation. by move => j [] // s [] /=; case: eqP. Qed.
++  Next Obligation. by case: s => [|j'|j'] //=; case: (_ == _). Qed.
++  Next Obligation. by move: H; case: s => [|j'|j'] //=; case: (_ == _). Qed.
+
+ End State.

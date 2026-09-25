@@ -4,7 +4,7 @@
 
 本文件是**正式 file execution order，但不是 acceptance 证据**。正式路径固定为
 `Prosa-Shunqi/v06_file_translation_order.md`；正式 workspace 为
-`Prosa-Shunqi/`，历史 `Prosa-fei/` 只读。Agent 开始新文件前必须重读本文件、
+`Prosa-Shunqi/`。Agent 开始新文件前必须重读本文件、
 `.agents/skills/prosa-v06-translation/SKILL.md`、最新 pipeline manifest/status
 以及 authoritative file DAG。file DAG 决定 READY；本文件只在多个 READY 文件间
 决定先后。
@@ -97,7 +97,7 @@ JSON 内锁定了四个 planning input 的 Git blob SHA。正常的新翻译 com
 
 ## 全部文件顺序：MAIN
 
-列表中的路径全是官方 v0.6 source identity；对应 Lean 路径/声明从现有 mapping 解析，不能用旧 v0.4 名称或机械改后缀替代。
+列表中的路径全是官方 v0.6 source identity；对应 Lean 路径/声明依据当前 v0.6 源码和已批准的表示政策确定，不能仅机械改后缀。
 
 ```text
 Rank Layer Source file Public declarations
@@ -488,8 +488,8 @@ authoritative CSV/JSON，并核对 357 个文件精确覆盖、rank 1–357 唯�
 - `Validation/planning/v06_dependency/declaration_inventory.csv`
 - `Validation/planning/v06_dependency/file_dag_summary.md`
 - `Validation/planning/v06_dependency/scope_manifest.json`
-- `Validation/planning/v06_mapping/v06_coq_lean_mapping_policy.md`
-- `Validation/planning/v06_mapping/foundational_representation_decisions.md`
+- `Validation/planning/v06_current_policy/representation_policy.md`
+- `Validation/planning/v06_current_policy/foundational_decisions.md`
 - `Validation/planning/v06_pipeline/foundation_slice_2_closure_status.json`
 - `Validation/planning/v06_pipeline/utility_foundation_expansion_status.json`
 - `Validation/scripts/check_utility_list_batch.sh`

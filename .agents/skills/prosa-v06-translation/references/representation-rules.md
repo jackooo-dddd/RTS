@@ -59,7 +59,7 @@ filter 的 Bool predicate 和 theorem 中的 Prop membership 分别处理。`uni
 
 `reflect P b` 是带构造信息的 view。翻成 `(b = true ↔ P)` 仅在已审查的 view relation/消费方式允许时使用。若下游要在 Type/Set 中消去 view 构造数据，单纯 Prop 的 iff 可能不足；使用合适的 Decidable/view encoding 或提交表示审查。
 
-旧 mapping 中类似“从 Boolean 证明直接写 `have h : x = y := by decide`”的片段不能机械使用；`decide` 不能替代对输入证明的反射转换。
+不能把“从 Boolean 证明直接写 `have h : x = y := by decide`”当作通用步骤；`decide` 不能替代对输入证明的反射转换。
 
 ## 4. 算术与聚合
 
@@ -102,9 +102,9 @@ ProcessorState
 
 Class/Record 到 Lean structure/class 的选择保留实例使用语义。不得用 `Classical.choice` 自动制造本来应作为输入的结构，也不得新增“总能 service”等源未要求的 laws。
 
-## 6. 旧 skill 的其他映射只作候选
+## 6. 尚未批准的其他表示
 
-`ordinal → Fin`、有限函数、dependent sum、HB mixin、setoid/morphism、CoFixpoint 等，在本任务触及时读取真实源/下游和现有 policy。没有批准方案就局部审查，不从旧 cheat sheet 自动提升为新默认。
+`ordinal → Fin`、有限函数、dependent sum、HB mixin、setoid/morphism、CoFixpoint 等，在本任务触及时读取真实 v0.6 源、下游和现行 policy。没有批准方案就局部审查，不自动提升为新默认。
 
 特别注意：
 

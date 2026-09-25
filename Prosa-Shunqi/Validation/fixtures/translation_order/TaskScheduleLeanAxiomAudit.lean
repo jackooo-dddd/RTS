@@ -1,0 +1,13 @@
+import Validation.fixtures.translation_order.TaskScheduleComputationInterface
+
+#print axioms Prosa.Analysis.Definitions.TaskSchedule.scheduled_jobs_of_task_at
+#print axioms Prosa.Analysis.Definitions.TaskSchedule.task_scheduled_at
+#print axioms Prosa.Analysis.Definitions.TaskSchedule.task_service_at
+#print axioms Prosa.Analysis.Definitions.TaskSchedule.task_service_during
+#print axioms Prosa.Analysis.Definitions.TaskSchedule.task_service
+#print axioms Prosa.Analysis.Definitions.TaskSchedule.served_jobs_of_task_at
+#print axioms Prosa.Analysis.Definitions.TaskSchedule.task_served_at
+#print axioms Prosa.Validation.TaskScheduleInterface.taskServiceDuringProjection_guard
+#print axioms Prosa.Validation.TaskScheduleInterface.taskServiceProjection_guard
+#print axioms Prosa.Validation.TaskScheduleInterface.production_isEmpty_nil
+#print axioms Prosa.Validation.TaskScheduleInterface.production_isEmpty_cons

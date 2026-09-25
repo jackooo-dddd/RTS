@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "source_commit": "414e66760333eaa4ef78c685bcf53291c527a548",
+  "source_file": "model/priority/definitions.v",
+  "source_sha256": "82806d056b6dbe8c88945d05d7c7e75b6bb51c4882ea15fb992599730b1b89ef",
+  "public_declaration_count": 20,
+  "source_type_guard": "Validation/fixtures/translation_order/PriorityDefinitionsSourceTypeAudit.v",
+  "lean_type_guard": "Validation/fixtures/translation_order/PriorityDefinitionsLeanTypeAudit.lean",
+  "interfaces": [
+    {
+      "source": "FP_policy, JLFP_policy, JLDP_policy",
+      "target": "FP_policy, JLFP_policy, JLDP_policy",
+      "operations": ["single-field class construction", "field projection", "field-wise roundtrip"],
+      "semantic_boundary": "For each class, imported mk/projection must be related directly to the Rocq source projection at every carrier element. DecidableEq is an explicit Lean-side representation parameter."
+    },
+    {
+      "source": "reflexive_priorities, transitive_priorities, total_priorities, reflexive_job_priorities, transitive_job_priorities, total_job_priorities, reflexive_task_priorities, transitive_task_priorities, total_task_priorities",
+      "target": "same nine declarations in Prosa.Model.Priority.Definitions",
+      "operations": ["forall", "Bool truth", "Bool or", "implication", "time-indexed field projection"],
+      "semantic_boundary": "Compose an actual source-to-imported field relation with Bool truth and quantified Prop/SProp relations; independent proofs that both sides hold do not certify these definitions."
+    },
+    {
+      "source": "policy_respects_sequential_tasks, policy_is_FIFO",
+      "target": "same two declarations in Prosa.Model.Priority.Definitions",
+      "operations": ["JobTask.job_task", "JobArrival.job_arrival", "MathComp ==", "MathComp <=", "Lean decide equality/order", "Bool equality", "implication"],
+      "semantic_boundary": "Requires artifact-local certified JobTask, JobArrival, equality and natural-order adapters before closing both property relations."
+    },
+    {
+      "source": "antisymmetric_over_taskset",
+      "target": "Prosa.Model.Priority.Definitions.antisymmetric_over_taskset",
+      "operations": ["util/rel.antisymmetric_over_list", "seq/List membership", "field projection"],
+      "semantic_boundary": "The accepted Rel closure certificate is for ImportedRel; an artifact-local identity/transport guard is required for this new import."
+    },
+    {
+      "source": "another_hep_job, another_task_hep_job, another_hep_job_of_same_task, hp_task, ep_task",
+      "target": "same five declarations in Prosa.Model.Priority.Definitions",
+      "operations": ["field projection", "Bool and", "Bool not", "MathComp ==/!=", "Lean decide equality/inequality", "JobTask.job_task"],
+      "semantic_boundary": "Directly relate each imported compiled body to the source Boolean computation using structural Bool and equality adapters."
+    }
+  ],
+  "precheck": {
+    "new_semantic_boundary_targets": ["antisymmetric_over_taskset", "policy_respects_sequential_tasks", "policy_is_FIFO", "another_task_hep_job", "another_hep_job_of_same_task"],
+    "status": "ACTUAL_ARTIFACT_IMPORTED_AND_20_OF_20_STRUCTURAL_CERTIFICATES_COMPILED;_FULL_SOURCE_INTERFACE_REPLAY_AND_FAIL_CLOSED_AUDIT_PASSED"
+  },
+  "source_acquisition_note": "The accepted util/list.vo is not present in the current producer snapshot. Official util/list.v reaches Rocq 9.3 stack overflow at line 23. Validation/patches/model_priority_definitions_list_rocq93_proof_compat.py makes a private exact-interface copy by replacing only 48 opaque Proof..Qed intervals with Admitted. The official model/priority/definitions.v bytes remain identical; all 20 source type checks and source Print Assumptions compile against this copy. Each source target is Closed under the global context. The temporary util/list axioms are source-type acquisition aids only and must not appear in final certificate assumptions."
+}

@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "source_commit": "414e66760333eaa4ef78c685bcf53291c527a548",
+  "source_path": "analysis/facts/model/restricted_supply/schedule.v",
+  "source_sha256": "0e7bbb5656f05d8886d62b76a2fdc168a03404dbfc798fe18d8d1777b91cbb75",
+  "file_dag_direct_dependencies": [
+    "model/processor/platform_properties.v",
+    "model/processor/restricted_supply.v"
+  ],
+  "public_declarations": [
+    "rs_proc_model_is_a_uniprocessor_model",
+    "rs_proc_is_unit_supply",
+    "rs_proc_model_fully_consuming"
+  ],
+  "elaborated_context": "All three source Check @ types quantify only Job : JobType; unused JobArrival and JobCost section contexts are discharged.",
+  "source_operations": [
+    "rs_processor_state four-constructor state carrier and Unit core",
+    "scheduled_on, supply_on, service_on concrete processor fields",
+    "scheduled_in Boolean-existential fold over the core",
+    "supply_in and service_in core sums",
+    "scheduled_at, supply_at, service_at schedule observations",
+    "uniprocessor_model, unit_supply_proc_model, fully_consuming_proc_model",
+    "job equality, Boolean truth, Nat equality and Nat order"
+  ],
+  "representation_relations": [
+    "Job: source eqType with an exported Lean DecidableEq bridge",
+    "state: constructor-preserving roundtrip between source and imported Lean four-way inductives",
+    "core: source unit to imported Unit roundtrip",
+    "schedule: pointwise state relation at related Nat instants",
+    "Boolean: source bool to imported Bool with truth reflection",
+    "work and instant: source nat to imported Nat with numeric relation"
+  ],
+  "source_automation_side_effect": "Global Hint Resolve registers all three lemmas in basic_rt_facts; it has no additional statement or computation."
+}

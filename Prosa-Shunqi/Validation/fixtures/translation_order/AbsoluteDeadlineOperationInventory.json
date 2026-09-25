@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "source_commit": "414e66760333eaa4ef78c685bcf53291c527a548",
+  "source_file": "model/task/absolute_deadline.v",
+  "source_sha256": "c8693bd33255ab6ee6a02620113c32f5ca4feccb04966ac0d4c81ec1eb1c527e",
+  "public_declaration_count": 1,
+  "source_type_guard": "Validation/fixtures/translation_order/AbsoluteDeadlineSourceTypeAudit.v",
+  "lean_type_guard": "Validation/fixtures/translation_order/AbsoluteDeadlineLeanTypeAudit.lean",
+  "source_interface": {
+    "declaration": "prosa.model.task.absolute_deadline.job_deadline_from_task_deadline",
+    "kind": "global Instance",
+    "parameters": ["Job : JobType", "Task : TaskType", "TaskDeadline Task", "JobArrival Job", "JobTask Job Task"],
+    "result": "JobDeadline Job",
+    "body": "fun j => job_arrival j + task_deadline (job_task j)"
+  },
+  "operations": [
+    "JobTask.job_task field projection",
+    "JobArrival.job_arrival field projection",
+    "TaskDeadline.task_deadline field projection",
+    "MathComp natural-number addition",
+    "JobDeadline class construction and field projection",
+    "global instance selection"
+  ],
+  "semantic_boundary": "Relate the three source classes to the actual imported Lean class fields, compose certified Nat-add correspondence, then prove the constructed JobDeadline field relation directly. Lean's synthesis-order precheck rejects an undetermined Task even though #synth JobDeadline Job succeeds under the source's TaskDeadline, JobArrival and JobTask inputs; a declaration-local synthInstance.checkSynthOrder=false preserves this global instance and the explicit selection guard checks it.",
+  "input_relations": [
+    "AdTaskDeadlineRel Task deadlineR deadlineL (constructible by import/export certificates)",
+    "AdJobArrivalRel Job arrivalR arrivalL (constructible by import/export certificates)",
+    "AdJobTaskRel Job Task jobTaskR jobTaskL (constructible by import/export certificates)"
+  ],
+  "reused_certified_dependencies": ["SubNatRel and sub_add_correspondence", "LogicalRelation/PropSPropFoundation equality bridge"],
+  "new_correspondence_certificates": ["four artifact-local class field relations with import/export certificates", "artifact-local target-add definitional guard", "instance body correspondence", "canonical related-input instance correspondence"],
+  "unresolved_or_assumed_dependencies": [],
+  "export_budget": {
+    "explicit_roots": 13,
+    "serialized_declarations": 35,
+    "dependency_declarations": 22,
+    "output_lines": 684,
+    "output_bytes": 11728,
+    "statement_only_dependencies": [],
+    "elapsed_seconds": "UNRECORDED"
+  },
+  "precheck_status": "SOURCE_AND_LEAN_TYPE_GUARDS_COMPILED;_ACTUAL_ARTIFACT_IMPORTED;_STRUCTURAL_CERTIFICATE_AND_FAIL_CLOSED_AUDIT_PASSED"
+}
