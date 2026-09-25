@@ -3,7 +3,7 @@
 ## 当前状态
 
 <!-- V06_STATUS_BEGIN -->
-截至 2026-09-25，正式 machine state 记录 **68/357 个文件、479/2439 个 public declarations 已验收**。依据：[最新累计 status](../Validation/planning/v06_pipeline/model_task_absolute_deadline_module_status.json)。表中的“是”仅表示已有 `ACCEPTED_V06_FILE`；“否”可能是未开始、进行中或受阻，不能据此推断尚未翻译。零声明文件也只有通过模块接口验收才写“是”。
+截至 2026-09-25，正式 machine state 记录 **70/357 个文件、484/2439 个 public declarations 已验收**。依据：[最新累计 status](../Validation/planning/v06_pipeline/model_task_arrival_sporadic_module_status.json)。表中的“是”仅表示已有 `ACCEPTED_V06_FILE`；“否”可能是未开始、进行中或受阻，不能据此推断尚未翻译。零声明文件也只有通过模块接口验收才写“是”。
 <!-- V06_STATUS_END -->
 
 <!-- V06_NAV_BEGIN -->
@@ -12,7 +12,7 @@
 
 | Progress | Latest completed | Quick navigation |
 |---|---|---|
-| **68/357 files** · **479/2439 declarations** | **Rank 74** · `model/task/absolute_deadline.v` | [🎯 Jump to latest completed](#latest-completed) · [✅ Finished](#finished-files) · [⏳ Unfinished](#unfinished-files) |
+| **70/357 files** · **484/2439 declarations** | **Rank 75** · `model/task/arrival/sporadic.v` | [🎯 Jump to latest completed](#latest-completed) · [✅ Finished](#finished-files) · [⏳ Unfinished](#unfinished-files) |
 
 </details>
 <!-- V06_NAV_END -->
@@ -36,7 +36,7 @@
 
 <!-- V06_FILE_TABLE_BEGIN -->
 <details open>
-<summary><b>✅ Finished — 68 files</b></summary>
+<summary><b>✅ Finished — 70 files</b></summary>
 
 <a id="finished-files"></a>
 
@@ -95,6 +95,7 @@
 | 52 | 10 | [`model/processor/restricted_supply.v`](files/model/processor/2026-09-24_144500_restricted_supply.md) | 5 | ✅ 是 | 09:24:15:24 |
 | 53 | 10 | [`model/processor/spin.v`](files/model/processor/2026-09-24_233051_spin.md) | 5 | ✅ 是 | 09:25:00:10 |
 | 54 | 10 | [`model/processor/varspeed.v`](files/model/processor/2026-09-24_233051_varspeed.md) | 5 | ✅ 是 | 09:25:00:26 |
+| 55 | 10 | [`model/readiness/basic.v`](files/model/readiness/2026-09-25_003818_basic.md) | 0 | ✅ 是 | 09:25:12:43 |
 | 57 | 10 | [`model/schedule/edf.v`](files/model/schedule/2026-09-25_003300_edf.md) | 2 | ✅ 是 | 09:25:01:27 |
 | 58 | 10 | [`model/schedule/nonpreemptive.v`](files/model/schedule/2026-09-25_010632_nonpreemptive.md) | 1 | ✅ 是 | 09:25:01:46 |
 | 59 | 10 | [`model/schedule/scheduled.v`](files/model/schedule/2026-09-25_020323_scheduled.md) | 3 | ✅ 是 | 09:25:02:03 |
@@ -109,24 +110,23 @@
 | 68 | 11 | [`analysis/facts/model/restricted_supply/schedule.v`](files/analysis/facts/model/restricted_supply/2026-09-25_045915_schedule.md) | 3 | ✅ 是 | 09:25:05:48 |
 | 69 | 11 | [`analysis/facts/model/task_cost.v`](files/analysis/facts/model/2026-09-25_061700_task_cost.md) | 2 | ✅ 是 | 09:25:06:17 |
 | 71 | 11 | [`implementation/definitions/generic_scheduler.v`](files/implementation/definitions/2026-09-25_060400_generic_scheduler.md) | 4 | ✅ 是 | 09:25:06:53 |
-| 74 | 11 | <a id="latest-completed"></a>[`model/task/absolute_deadline.v`](files/model/task/2026-09-25_075700_absolute_deadline.md) | 1 | ✅ 是 | 09:25:08:00 |
+| 74 | 11 | [`model/task/absolute_deadline.v`](files/model/task/2026-09-25_075700_absolute_deadline.md) | 1 | ✅ 是 | 09:25:08:00 |
+| 75 | 11 | <a id="latest-completed"></a>[`model/task/arrival/sporadic.v`](files/model/task/arrival/2026-09-25_155702_sporadic.md) | 5 | ✅ 是 | 09:25:15:57 |
 
 </details>
 
 <details open>
-<summary><b>⏳ Unfinished — 289 files</b></summary>
+<summary><b>⏳ Unfinished — 287 files</b></summary>
 
 <a id="unfinished-files"></a>
 
 | Rank | Layer | v0.6 source file | Public declarations | 验证完成 |
 | ---: | ---: | --- | ---: | :---: |
 | 30 | 1 | [`util/lcmseq.v`](files/util/2026-09-23_073256_lcmseq.md) | 5 | ○ 否 |
-| 55 | 10 | [`model/readiness/basic.v`](files/model/readiness/2026-09-25_003818_basic.md) | 0 | ○ 否 |
 | 56 | 10 | [`model/readiness/jitter.v`](files/model/readiness/2026-09-25_005643_jitter.md) | 2 | ○ 否 |
 | 70 | 11 | [`analysis/facts/model/uniprocessor.v`](files/analysis/facts/model/2026-09-25_062000_uniprocessor.md) | 1 | ○ 否 |
 | 72 | 11 | [`model/priority/definitions.v`](files/model/priority/2026-09-25_072012_definitions.md) | 20 | ○ 否 |
-| 73 | 11 | `model/schedule/tdma.v` | 15 | ○ 否 |
-| 75 | 11 | `model/task/arrival/sporadic.v` | 5 | ○ 否 |
+| 73 | 11 | [`model/schedule/tdma.v`](files/model/schedule/2026-09-25_131026_tdma.md) | 15 | ○ 否 |
 | 76 | 11 | `model/task/arrivals.v` | 13 | ○ 否 |
 | 77 | 11 | `model/task/jitter.v` | 3 | ○ 否 |
 | 78 | 12 | `analysis/abstract/restricted_supply/busy_sbf.v` | 2 | ○ 否 |

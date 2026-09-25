@@ -82,7 +82,8 @@ def expected_replay(name: str, imported_sha: str) -> str:
         text = text.replace(line, "")
     if name == "BasicJobOperations":
         text = remove_block(text, "Definition SvcJobDeadlineRel", "Lemma svc_has_arrived_related")
-        text = remove_block(text, "Lemma svc_arrived_before_related", "Goal Logic.True.")
+        text = remove_block(text, "Lemma svc_arrived_before_related",
+                            'Goal Logic.True.\nProof. idtac "AUDIT_BEGIN svc_job_operations"')
         for line in ("Print Assumptions svc_job_deadline_import.\n",
                      "Print Assumptions svc_job_deadline_export.\n",
                      "Print Assumptions svc_arrived_before_related.\n"):
@@ -92,6 +93,90 @@ def expected_replay(name: str, imported_sha: str) -> str:
             f"    source: {source_rel}\n"
             f"    source-sha256: {sha(source)}\n"
             f"    imported-artifact-sha256: {imported_sha} *)\n" + text)
+
+
+def accepted_dependency(source_name: Path) -> list[dict]:
+    matches = []
+    for path in PIPE.glob("*_module_manifest.json"):
+        producer = data(path)
+        source = (producer.get("production_file") or producer.get("translation_file")
+                  or producer.get("artifact_paths", {}).get("production_source"))
+        if source != str(source_name):
+            continue
+        source_hash = (producer.get("production_source_sha256")
+                       or producer.get("artifact_hashes", {}).get("production_source"))
+        olean_hash = (producer.get("production_olean_sha256")
+                      or producer.get("artifact_hashes", {}).get("production_olean"))
+        need(source_hash and olean_hash,
+             f"accepted producer lacks artifact hashes: {source_name}")
+        matches.append({"acceptance": producer.get("acceptance"),
+                        "production_source_sha256": source_hash,
+                        "production_olean_sha256": olean_hash})
+    if matches:
+        return matches
+    if source_name == Path("Prosa/Behavior/Time.lean"):
+        legacy = data(PIPE / "foundation_slice_1_manifest.json")
+        status = data(PIPE / "foundation_slice_1_status.json")
+        need(legacy["production_file"] == str(source_name)
+             and status["FOUNDATION_SLICE_1_STATUS"] == "PASS"
+             and status["file_gate"]["behavior/time.v"]["accepted"],
+             "accepted Time producer evidence missing")
+        return [{"acceptance": "ACCEPTED_V06_FILE",
+                 "production_source_sha256": legacy["artifacts"]["lean_source_sha256"],
+                 "production_olean_sha256": legacy["artifacts"]["fresh_olean_sha256"]}]
+    closure_manifest = data(PIPE / "foundation_slice_2_closure_manifest.json")
+    closure_status = data(PIPE / "foundation_slice_2_closure_status.json")
+    source_file = "util/" + source_name.stem.lower() + ".v"
+    if source_file in closure_manifest["files"]:
+        need(closure_manifest["source_commit"] == PIN
+             and closure_status["FOUNDATION_SLICE_2_CLOSURE_STATUS"] == "PASS"
+             and closure_status["per_file"][source_file]["status"] ==
+                 "ACCEPTED_V06_FILE",
+             f"foundation producer not accepted: {source_name}")
+        record = closure_manifest["files"][source_file]
+        return [{"acceptance": "ACCEPTED_V06_FILE",
+                 "production_source_sha256": record["lean_source_sha256"],
+                 "production_olean_sha256": record["fresh_olean_sha256"]}]
+    all_manifest = data(PIPE / "util_all_module_manifest.json")
+    closure = all_manifest["dependency_closure"]
+    need(all_manifest["acceptance"] == "ACCEPTED_V06_FILE"
+         and closure["status"] == "PASS"
+         and closure["all_dependencies_accepted"],
+         "accepted Util.All dependency closure missing")
+    entries = [entry for entry in closure["dependencies"]
+               if entry["production_file"] == str(source_name)]
+    if not entries:
+        return []
+    need(len(entries) == 1 and entries[0]["acceptance_status"] == "ACCEPTED_V06_FILE"
+         and entries[0]["hash_match"],
+         f"Util.All dependency not accepted: {source_name}")
+    entry = entries[0]
+    manifest_path = PROJECT / entry["manifest_evidence"]
+    status_path = PROJECT / entry["status_evidence"]
+    need(sha(manifest_path) == entry["manifest_evidence_sha256"]
+         and sha(status_path) == entry["status_evidence_sha256"],
+         f"Util.All producer evidence changed: {source_name}")
+    producer = data(manifest_path)
+    status = data(status_path)
+    source_file = entry["source_file"]
+    need(entry["production_source_sha256"] in entry["accepted_bound_hashes"]
+         and status["per_file"][source_file]["status"] == "ACCEPTED_V06_FILE",
+         f"Util.All producer status changed: {source_name}")
+    if "files" in producer:
+        records = [producer["files"][source_file]]
+    elif "clusters" in producer:
+        records = [record for record in producer["clusters"]
+                   if record["source_file"] == source_file]
+    else:
+        return []
+    hashes = {(record["lean_source_sha256"], record["fresh_olean_sha256"])
+              for record in records
+              if record["lean_source_sha256"] == entry["production_source_sha256"]}
+    need(len(hashes) == 1, f"ambiguous Util.All producer artifact: {source_name}")
+    source_hash, olean_hash = hashes.pop()
+    return [{"acceptance": "ACCEPTED_V06_FILE",
+             "production_source_sha256": source_hash,
+             "production_olean_sha256": olean_hash}]
 
 
 def main() -> None:
@@ -162,8 +247,7 @@ def main() -> None:
             continue
         relative = staged.relative_to(WORK / "olean")
         source_name = relative.with_suffix(".lean")
-        matches = [data(path) for path in PIPE.glob("*_module_manifest.json")
-                   if data(path).get("production_file") == str(source_name)]
+        matches = accepted_dependency(source_name)
         need(len(matches) == 1 and matches[0]["acceptance"] == "ACCEPTED_V06_FILE"
              and sha(PROJECT / source_name) == matches[0]["production_source_sha256"]
              and sha(staged) == matches[0]["production_olean_sha256"],
@@ -294,7 +378,7 @@ def main() -> None:
                         else CERT if name in FORMAL else WORK / "certificates")
         for suffix in (".v", ".vo"):
             original = original_dir / (name + suffix)
-            if name == FORMAL[0] and suffix == ".vo":
+            if (name in COMMON or name == FORMAL[0]) and suffix == ".vo":
                 original = WORK / "certificates" / (name + suffix)
             target = stage / "certificates" / original.name
             shutil.copy2(original, target)

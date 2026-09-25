@@ -1,0 +1,31 @@
+From prosa Require Import model.task.arrivals.
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedArrivals.
+
+Check @prosa.model.task.arrivals.task_arrivals_between.
+Check @prosa.model.task.arrivals.task_arrivals_up_to.
+Check @prosa.model.task.arrivals.task_arrivals_before.
+Check @prosa.model.task.arrivals.task_arrivals_at.
+Check @prosa.model.task.arrivals.number_of_task_arrivals.
+Check @prosa.model.task.arrivals.cost_of_task_arrivals.
+Check @prosa.model.task.arrivals.task_arrivals_with_deadline_within.
+Check @prosa.model.task.arrivals.number_of_task_arrivals_with_deadline_within.
+Check @prosa.model.task.arrivals.task_arrivals_up_to_job_arrival.
+Check @prosa.model.task.arrivals.task_arrivals_before_job_arrival.
+Check @prosa.model.task.arrivals.task_arrivals_at_job_arrival.
+Check @prosa.model.task.arrivals.job_index.
+Check @prosa.model.task.arrivals.prev_job.
+
+Check ImportedArrivals.Prosa_Model_Task_Arrivals_task_arrivals_between.
+Check ImportedArrivals.Prosa_Model_Task_Arrivals_task_arrivals_up_to.
+Check ImportedArrivals.Prosa_Model_Task_Arrivals_task_arrivals_before.
+Check ImportedArrivals.Prosa_Model_Task_Arrivals_task_arrivals_at.
+Check ImportedArrivals.Prosa_Model_Task_Arrivals_number_of_task_arrivals.
+Check ImportedArrivals.Prosa_Model_Task_Arrivals_cost_of_task_arrivals.
+Check ImportedArrivals.Prosa_Model_Task_Arrivals_task_arrivals_with_deadline_within.
+Check ImportedArrivals.Prosa_Model_Task_Arrivals_number_of_task_arrivals_with_deadline_within.
+Check ImportedArrivals.Prosa_Model_Task_Arrivals_task_arrivals_up_to_job_arrival.
+Check ImportedArrivals.Prosa_Model_Task_Arrivals_task_arrivals_before_job_arrival.
+Check ImportedArrivals.Prosa_Model_Task_Arrivals_task_arrivals_at_job_arrival.
+Check ImportedArrivals.Prosa_Model_Task_Arrivals_job_index.
+Check ImportedArrivals.Prosa_Model_Task_Arrivals_prev_job.
