@@ -1,0 +1,101 @@
+{
+  "rank": 141,
+  "layer": 16,
+  "tag": "BBFP",
+  "slug": "analysis_definitions_blocking_bound_fp",
+  "source": "analysis/definitions/blocking_bound/fp.v",
+  "dependencies": [
+    "model/task/preemption/parameters.v"
+  ],
+  "declaration_count": 1,
+  "base_run": "analysis_definitions_blocking_bound_edf_final",
+  "base_checks": [
+    {
+      "manifest": "model_task_preemption_parameters",
+      "olean": "Prosa/Model/Task/Preemption/Parameters.olean",
+      "vo": "TaskPreemptionParametersSemanticSource.vo"
+    },
+    {
+      "manifest": "model_preemption_parameter",
+      "olean": "Prosa/Model/Preemption/Parameter.olean",
+      "vo": "PreemptionParameterSemanticSource.vo"
+    },
+    {
+      "manifest": "analysis_definitions_blocking_bound_edf",
+      "olean": "Prosa/Analysis/Definitions/BlockingBound/Edf.olean",
+      "vo": "BlockingBoundEdfSemanticSource.vo"
+    }
+  ],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "BlockingBoundFpSemanticSource",
+    "drop_imports": [
+      "Require Export prosa.model.task.preemption.parameters."
+    ],
+    "add_imports": [
+      "Require Export prosa.TaskPreemptionParametersSemanticSource.",
+      "Export TaskPreemptionParametersSemanticSource.",
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq bigop.",
+      "Require Import prosa.util.epsilon."
+    ],
+    "note": "the definition is a byte-identical computational block; the model/task/preemption/parameters import is bound to the accepted extracted source (TaskPreemptionParametersSemanticSource, .vo hash-checked against its manifest)"
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/BlockingBoundFpStatementProbe.v",
+  "production": "Prosa/Analysis/Definitions/BlockingBound/Fp.lean",
+  "production_olean": "Prosa/Analysis/Definitions/BlockingBound/Fp.olean",
+  "lean_namespace": "Prosa.Analysis.Definitions.BlockingBound.Fp",
+  "fixtures": [
+    "NondecreasingComputationInterface",
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "PreemptionParameterComputationInterface",
+    "TaskPreemptionParametersComputationInterface",
+    "BlockingBoundEdfComputationInterface",
+    "BlockingBoundFpComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/BlockingBoundFpLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/analysis_definitions_blocking_bound_fp_export_config.json",
+  "export_name": "BlockingBoundFp",
+  "cert_dir": "certificates/analysis_definitions_blocking_bound_fp",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "JitterSvcBaseAdapter",
+    "JitterSvcNatBoolOperations",
+    "JitterSvcIntervalOperations",
+    "JitterSvcScheduleOperations",
+    "JitterSvcJobOperations",
+    "PreemptionParameterCorrespondence",
+    "TaskPreemptionParametersCorrespondence",
+    "BlockingBoundFpCorrespondence"
+  ],
+  "audit_module": "BlockingBoundFpAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/BlockingBoundFpImportedTypeAudit.v",
+  "assumption_config": "certificates/analysis_definitions_blocking_bound_fp/blocking_bound_fp_assumption_config.json",
+  "lean_axiom_config": "certificates/analysis_definitions_blocking_bound_fp/blocking_bound_fp_lean_axiom_config.json",
+  "computational": [
+    "blocking_bound"
+  ],
+  "principal": {},
+  "helpers": [
+    "bbf_bigmax_canonical",
+    "bbf_bigmax_related"
+  ],
+  "previous_status": "analysis_definitions_blocking_bound_edf_module_status.json",
+  "previous_files": 136,
+  "previous_decls": 1048,
+  "input_relations": [
+    "FP policy pointwise on Booleans",
+    "TaskMaxNonpreemptiveSegment (accepted TppMaxSegmentRel)",
+    "task sets by ArListRel"
+  ],
+  "coverage_for_inner_binders": [
+    "tasks (identity carrier)",
+    "Nats (both directions)"
+  ],
+  "lean_representation_note": "`\\max_(x <- xs | P x) F x` is the accepted `bigMaxListCond xs P F`; `~~ b` is `!b`; `\u03b5` is `1`",
+  "export_diagnosis": "the accepted EDF blocking-bound export root (task-preemption-parameters closure, ~135k lines, with the bigMaxListCond equations) reused so that the accepted certificate chain applies, plus one definition and the FP_policy class"
+}

@@ -1,0 +1,5 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedDemandBoundFunction.
+
+Check ImportedDemandBoundFunction.Prosa_Analysis_Definitions_DemandBoundFunction_task_demand_bound_function.
+Check ImportedDemandBoundFunction.Prosa_Analysis_Definitions_DemandBoundFunction_total_demand_bound_function.

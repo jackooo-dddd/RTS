@@ -1,0 +1,178 @@
+{
+  "rank": 187,
+  "layer": 19,
+  "tag": "FINT",
+  "slug": "analysis_facts_interference",
+  "source": "analysis/facts/interference.v",
+  "dependencies": [
+    "analysis/definitions/interference.v",
+    "analysis/definitions/priority/classes.v",
+    "analysis/facts/model/service_of_jobs.v",
+    "analysis/facts/priority/classes.v"
+  ],
+  "declaration_count": 17,
+  "base_run": "analysis_facts_model_service_of_jobs_final",
+  "base_checks": [
+    {
+      "manifest": "analysis_facts_model_service_of_jobs",
+      "olean": "Prosa/Analysis/Facts/Model/ServiceOfJobs.olean",
+      "vo": "FactsServiceOfJobsSemanticSource.vo"
+    },
+    {
+      "manifest": "analysis_definitions_busy_interval_classical",
+      "olean": "Prosa/Analysis/Definitions/BusyInterval/Classical.olean",
+      "vo": "BusyIntervalClassicalSemanticSource.vo"
+    }
+  ],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "FactsInterferenceSemanticSource",
+    "drop_imports": [
+      "Require Export prosa.analysis.facts.priority.classes.",
+      "Require Export prosa.analysis.definitions.interference.",
+      "Require Export prosa.analysis.definitions.priority.classes.",
+      "Require Export prosa.analysis.facts.model.service_of_jobs."
+    ],
+    "add_imports": [
+      "Require Export prosa.BusyIntervalClassicalSemanticSource.",
+      "Export BusyIntervalClassicalSemanticSource.",
+      "Require Export prosa.InterferenceSemanticSource.",
+      "Export InterferenceSemanticSource.",
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq fintype bigop.",
+      "Require Import prosa.behavior.all prosa.model.processor.platform_properties prosa.model.processor.supply prosa.model.schedule.scheduled.",
+      "Require Import prosa.model.priority.classes prosa.analysis.definitions.priority.classes prosa.model.aggregate.service_of_jobs prosa.analysis.definitions.service."
+    ],
+    "note": "theorem statements from the authoritative elaborated types (proofs omitted); the interference import is bound to the accepted extracted interference source (InterferenceSemanticSource, .vo copied from its accepted run and hash-checked against its manifest), quiet_time to the accepted extracted busy-interval source (.vo hash-checked as base); analysis/definitions/priority/classes, model/schedule/scheduled and the base's pinned service-of-jobs / supply / platform models are compiled from the pinned tree; the proof-only facts/priority/classes and facts/model/service_of_jobs imports are dropped"
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/FactsInterferenceStatementProbe.v",
+  "production": "Prosa/Analysis/Facts/Interference.lean",
+  "production_olean": "Prosa/Analysis/Facts/Interference.olean",
+  "lean_namespace": "Prosa.Analysis.Facts.Interference",
+  "fixtures": [
+    "NondecreasingComputationInterface",
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "PreemptionParameterComputationInterface",
+    "BusyIntervalClassicalComputationInterface",
+    "ArrivalsComputationInterface",
+    "WorkloadComputationInterface",
+    "ServiceOfJobsComputationInterface",
+    "InterferenceComputationInterface",
+    "SupplyComputationInterface",
+    "ScheduledComputationInterface",
+    "FactsInterferenceComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/FactsInterferenceLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/analysis_facts_interference_export_config.json",
+  "export_name": "FactsInterference",
+  "cert_dir": "certificates/analysis_facts_interference",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "ArrivalsCorrespondence",
+    "JitterSvcBaseAdapter",
+    "JitterSvcNatBoolOperations",
+    "JitterSvcIntervalOperations",
+    "JitterSvcScheduleOperations",
+    "JitterSvcJobOperations",
+    "PreemptionParameterCorrespondence",
+    "ServiceOfJobsCorrespondence",
+    "InterferenceCorrespondence",
+    "FactsInterferenceCorrespondence"
+  ],
+  "audit_module": "FactsInterferenceAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/FactsInterferenceImportedTypeAudit.v",
+  "assumption_config": "certificates/analysis_facts_interference/facts_interference_assumption_config.json",
+  "lean_axiom_config": "certificates/analysis_facts_interference/facts_interference_lean_axiom_config.json",
+  "computational": [],
+  "principal": {},
+  "helpers": [
+    "fint_forall_cover_sprop",
+    "fint_lean_transport",
+    "fint_nat_input",
+    "fint_eq_correspondence",
+    "fint_bool_eq_correspondence",
+    "fint_decide_eq_related",
+    "fint_schedule_to_target_rel",
+    "fint_schedule_to_source_rel",
+    "fint_arrival_sequence_to_source_rel",
+    "fint_jlfp_to_target_rel",
+    "fint_jlfp_to_source_rel",
+    "fint_fp_to_target_rel",
+    "fint_fp_to_source_rel",
+    "fint_job_of_task_related",
+    "fint_hep_task_jobs",
+    "fint_compatible_related",
+    "fint_unit_service_related",
+    "fint_uniprocessor_related",
+    "fint_jobs_must_arrive_related",
+    "fint_completed_jobs_dont_execute_related",
+    "fint_receives_service_at_related",
+    "fint_jobs_come_from_related",
+    "fint_scheduled_jobs_at_related",
+    "fint_is_idle_related",
+    "fint_quiet_time_related",
+    "fint_supply_in_related",
+    "fint_supply_at_related",
+    "fint_has_supply_related",
+    "fint_fully_consuming_related"
+  ],
+  "previous_status": "model_task_arrival_periodic_as_sporadic_module_status.json",
+  "previous_files": 176,
+  "previous_decls": 1223,
+  "input_relations": [
+    "job_arrival by ArJobArrivalRel",
+    "job_cost by SvcJobCostRel",
+    "JobTask by Lean.eq",
+    "SvcProcessorStateRel (two-sided) with the supply_on field for the supply statements",
+    "FP policy pointwise on Booleans (leading)"
+  ],
+  "coverage_for_inner_binders": [
+    "schedules (state conversion with roundtrips)",
+    "arrival sequences (both directions)",
+    "JLFP policies (pointwise on Booleans)",
+    "tasks and jobs (identity carriers)",
+    "Nats (both directions)"
+  ],
+  "lean_representation_note": "Booleans in Prop position are `= true`; `~~ b` is `!b`; the FP and JLFP policies are explicit binders acting as local instances; the unused `reflexive_task_priorities` hypothesis is absent, as in the elaborated types",
+  "export_diagnosis": "the accepted service-of-jobs facts export root without its statements (busy-interval + workload + service-of-jobs over the Service closure, ~138k lines) merged with the accepted interference root and the accepted supply / scheduled-job interfaces, reused so that the accepted certificate chains apply, plus the 17 statements and the priority/platform predicates they mention",
+  "extra_pinned_sources": [
+    "model/job/properties.v",
+    "model/aggregate/workload.v",
+    "model/aggregate/service_of_jobs.v",
+    "analysis/definitions/service.v",
+    "analysis/definitions/priority/classes.v",
+    "model/schedule/scheduled.v"
+  ],
+  "extra_olean_artifacts": [
+    {
+      "from": "analysis_definitions_interference_final/olean/Prosa/Analysis/Definitions/Interference.olean",
+      "to": "Prosa/Analysis/Definitions/Interference.olean",
+      "manifest": "analysis_definitions_interference",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_definitions_priority_classes_final/olean/Prosa/Analysis/Definitions/Priority/Classes.olean",
+      "to": "Prosa/Analysis/Definitions/Priority/Classes.olean",
+      "manifest": "analysis_definitions_priority_classes",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_priority_classes_final/olean/Prosa/Analysis/Facts/Priority/Classes.olean",
+      "to": "Prosa/Analysis/Facts/Priority/Classes.olean",
+      "manifest": "analysis_facts_priority_classes",
+      "key": "production_olean_sha256"
+    }
+  ],
+  "extra_artifacts": [
+    {
+      "from": "analysis_definitions_interference_final/source/InterferenceSemanticSource.vo",
+      "to": "source/InterferenceSemanticSource.vo",
+      "manifest": "analysis_definitions_interference",
+      "key": "source_vo_sha256"
+    }
+  ]
+}

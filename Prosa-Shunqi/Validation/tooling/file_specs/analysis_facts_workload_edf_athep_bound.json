@@ -1,0 +1,174 @@
+{
+  "rank": 190,
+  "layer": 19,
+  "tag": "FEAB",
+  "slug": "analysis_facts_workload_edf_athep_bound",
+  "source": "analysis/facts/workload/edf_athep_bound.v",
+  "dependencies": [
+    "analysis/definitions/workload/bounded.v",
+    "analysis/definitions/workload/edf_athep_bound.v",
+    "analysis/facts/model/rbf.v",
+    "model/priority/edf.v",
+    "model/task/absolute_deadline.v"
+  ],
+  "declaration_count": 4,
+  "base_run": "analysis_facts_model_rbf_final",
+  "base_checks": [
+    {
+      "manifest": "analysis_facts_model_rbf",
+      "olean": "Prosa/Analysis/Facts/Model/Rbf.olean"
+    },
+    {
+      "manifest": "analysis_definitions_workload_bounded",
+      "olean": "Prosa/Analysis/Definitions/Workload/Bounded.olean",
+      "vo": "WorkloadBoundedSemanticSource.vo"
+    }
+  ],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "FactsEdfAthepBoundSemanticSource",
+    "drop_imports": [
+      "Require Export prosa.model.priority.edf.",
+      "Require Export prosa.model.task.absolute_deadline.",
+      "Require Export prosa.analysis.definitions.workload.bounded.",
+      "Require Export prosa.analysis.facts.model.rbf.",
+      "Require Export prosa.analysis.definitions.workload.edf_athep_bound."
+    ],
+    "add_imports": [
+      "Require Export prosa.WorkloadBoundedSemanticSource.",
+      "Export WorkloadBoundedSemanticSource.",
+      "Require Export prosa.RequestBoundFunctionSemanticSource.",
+      "Export RequestBoundFunctionSemanticSource.",
+      "Require Export prosa.EdfAthepBoundSemanticSource.",
+      "Export EdfAthepBoundSemanticSource.",
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq bigop.",
+      "Require Import prosa.util.epsilon prosa.util.rel prosa.behavior.all prosa.model.task.concept prosa.model.task.arrival.curves.",
+      "Require Import prosa.model.priority.classes prosa.model.priority.edf prosa.model.task.absolute_deadline prosa.model.job.properties prosa.model.aggregate.workload.",
+      "Module edf_athep_bound := prosa.EdfAthepBoundSemanticSource.EdfAthepBoundSemanticSource."
+    ],
+    "note": "theorem statements from the authoritative elaborated types (proofs omitted); the workload/bounded and definitions/workload/edf_athep_bound imports are bound to their accepted extracted sources (WorkloadBoundedSemanticSource hash-checked as base; RequestBoundFunctionSemanticSource and EdfAthepBoundSemanticSource .vo copied from their accepted runs and hash-checked against their manifests); model/priority/edf, model/task/absolute_deadline, model/job/properties, model/task/arrival/curves and model/aggregate/workload are pinned sources compiled from the pinned tree; the proof-only facts/model/rbf import is dropped; the elaborated types name the athep bound by its module-qualified name `edf_athep_bound.bound_on_athep_workload`, which is reconnected to the accepted extracted definition by a recorded validation-only module alias (the statement text is unchanged)"
+  },
+  "extra_artifacts": [
+    {
+      "from": "analysis_definitions_request_bound_function_final/source/RequestBoundFunctionSemanticSource.vo",
+      "to": "source/RequestBoundFunctionSemanticSource.vo",
+      "manifest": "analysis_definitions_request_bound_function",
+      "key": "source_vo_sha256"
+    },
+    {
+      "from": "analysis_definitions_workload_edf_athep_bound_final/source/EdfAthepBoundSemanticSource.vo",
+      "to": "source/EdfAthepBoundSemanticSource.vo",
+      "manifest": "analysis_definitions_workload_edf_athep_bound",
+      "key": "source_vo_sha256"
+    }
+  ],
+  "extra_pinned_sources": [
+    "model/job/properties.v",
+    "model/aggregate/workload.v",
+    "model/task/absolute_deadline.v",
+    "model/priority/edf.v"
+  ],
+  "extra_olean_artifacts": [
+    {
+      "from": "analysis_definitions_workload_edf_athep_bound_final/olean/Prosa/Analysis/Definitions/Workload/EdfAthepBound.olean",
+      "to": "Prosa/Analysis/Definitions/Workload/EdfAthepBound.olean",
+      "manifest": "analysis_definitions_workload_edf_athep_bound",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "model_priority_edf_final/olean/Prosa/Model/Priority/Edf.olean",
+      "to": "Prosa/Model/Priority/Edf.olean",
+      "manifest": "model_priority_edf",
+      "key": "production_olean_sha256"
+    }
+  ],
+  "fingerprint_probe": "Validation/fixtures/translation_order/FactsEdfAthepBoundStatementProbe.v",
+  "production": "Prosa/Analysis/Facts/Workload/EdfAthepBound.lean",
+  "production_olean": "Prosa/Analysis/Facts/Workload/EdfAthepBound.olean",
+  "lean_namespace": "Prosa.Analysis.Facts.Workload.EdfAthepBound",
+  "fixtures": [
+    "NondecreasingComputationInterface",
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "PreemptionParameterComputationInterface",
+    "BusyIntervalClassicalComputationInterface",
+    "ArrivalsComputationInterface",
+    "WorkloadComputationInterface",
+    "WorkloadBoundedComputationInterface",
+    "RequestBoundFunctionComputationInterface",
+    "CurvesComputationInterface",
+    "ProcessorStateCoverInterface",
+    "EdfAthepBoundComputationInterface",
+    "FactsEdfAthepBoundComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/FactsEdfAthepBoundLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/analysis_facts_workload_edf_athep_bound_export_config.json",
+  "export_name": "FactsEdfAthepBound",
+  "cert_dir": "certificates/analysis_facts_workload_edf_athep_bound",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "ArrivalsCorrespondence",
+    "JitterSvcBaseAdapter",
+    "JitterSvcNatBoolOperations",
+    "JitterSvcIntervalOperations",
+    "JitterSvcScheduleOperations",
+    "JitterSvcJobOperations",
+    "PreemptionParameterCorrespondence",
+    "WorkloadCorrespondence",
+    "CurvesCorrespondence",
+    "RequestBoundFunctionCorrespondence",
+    "WorkloadBoundedCorrespondence",
+    "EdfAthepBoundCorrespondence",
+    "FactsEdfAthepBoundCorrespondence"
+  ],
+  "audit_module": "FactsEdfAthepBoundAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/FactsEdfAthepBoundImportedTypeAudit.v",
+  "assumption_config": "certificates/analysis_facts_workload_edf_athep_bound/facts_edf_athep_bound_assumption_config.json",
+  "lean_axiom_config": "certificates/analysis_facts_workload_edf_athep_bound/facts_edf_athep_bound_lean_axiom_config.json",
+  "computational": [],
+  "principal": {},
+  "helpers": [
+    "feab_forall_cover_sprop",
+    "feab_lean_transport",
+    "feab_nat_input",
+    "feab_decide_eq_related",
+    "feab_monotone_related",
+    "feab_task_deadline_of_job_related",
+    "feab_job_deadline_related",
+    "feab_edf_related",
+    "feab_job_task_eq_related",
+    "feab_edf_from_related",
+    "feab_job_of_task_related",
+    "feab_job_cost_positive_related",
+    "feab_task_cost_of_job_related",
+    "feab_valid_job_costs_related",
+    "feab_all_jobs_from_taskset_related",
+    "feab_list_to_target_rel",
+    "feab_list_to_source_rel",
+    "feab_sched_to_target_rel",
+    "feab_sched_to_source_rel"
+  ],
+  "previous_status": "analysis_facts_transform_swaps_module_status.json",
+  "previous_files": 179,
+  "previous_decls": 1289,
+  "input_relations": [
+    "TaskCost pointwise by SubNatRel",
+    "TaskDeadline pointwise by SubNatRel",
+    "MaxArrivals by the accepted CvMaxArrivalsRel",
+    "JobTask by Lean.eq",
+    "job_arrival by ArJobArrivalRel",
+    "job_cost by SvcJobCostRel",
+    "SvcProcessorStateRel (two-sided) + SvcScheduleRel for the schedule of bound_on_athep_workload_is_valid"
+  ],
+  "coverage_for_inner_binders": [
+    "arrival sequences and task sets (both directions)",
+    "tasks and jobs (identity carriers)",
+    "Nats (both directions)"
+  ],
+  "lean_representation_note": "the EDF policy is the accepted `EDF` instance over the accepted `job_deadline_from_task_deadline` instance, named explicitly; the section-local `EDF_from tsk_o` is inlined; `A` is `job_arrival j - t1`; `\u03b5` is `1`; `\\sum_(x <- xs | P x) F x` is `sumFiltered xs P F`; `monotone leq f` is `Prosa.Util.Rel.monotone (fun x y => decide (x \u2264 y)) f`",
+  "export_diagnosis": "the accepted request-bound-function facts export root without its statements (workload-bound + request-bound-function + arrival-curve roots over the preemption-parameter / Service closure, ~140k lines), reused so that the accepted certificate chains apply, merged with the accepted EDF athep-bound definition root (its kernel-checked min case equations), plus the 4 statements, the EDF policy and the absolute-deadline instance"
+}

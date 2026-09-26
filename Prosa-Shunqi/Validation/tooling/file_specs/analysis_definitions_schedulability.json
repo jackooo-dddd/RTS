@@ -1,0 +1,120 @@
+{
+  "rank": 144,
+  "layer": 16,
+  "tag": "SCHED",
+  "slug": "analysis_definitions_schedulability",
+  "source": "analysis/definitions/schedulability.v",
+  "dependencies": [
+    "analysis/facts/behavior/completion.v",
+    "model/task/absolute_deadline.v"
+  ],
+  "declaration_count": 6,
+  "base_run": "analysis_facts_behavior_completion_final",
+  "base_checks": [
+    {
+      "manifest": "analysis_facts_behavior_completion",
+      "olean": "Prosa/Analysis/Facts/Behavior/Completion.olean",
+      "vo": "FactsCompletionSemanticSource.vo"
+    }
+  ],
+  "extra_pinned_sources": [
+    "model/task/absolute_deadline.v"
+  ],
+  "extra_lean": [
+    [
+      "Prosa/Model/Task/AbsoluteDeadline.lean",
+      "Prosa/Model/Task/AbsoluteDeadline.olean",
+      "model_task_absolute_deadline",
+      "production_olean_sha256"
+    ]
+  ],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "SchedulabilitySemanticSource",
+    "drop_imports": [
+      "Require Export prosa.analysis.facts.behavior.completion."
+    ],
+    "add_imports": [
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq.",
+      "Require Import prosa.behavior.all."
+    ],
+    "note": "the four definitions are byte-identical computational blocks and the two lemma statements are the authoritative elaborated types (proofs omitted); the proof-heavy analysis/facts/behavior/completion import is dropped (the declarations mention only behavior/all and model/task/absolute_deadline, whose global JobDeadline instance is used by schedulability_from_response_time_bound); model/task/absolute_deadline is compiled from the pinned tree"
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/SchedulabilityStatementProbe.v",
+  "production": "Prosa/Analysis/Definitions/Schedulability.lean",
+  "production_olean": "Prosa/Analysis/Definitions/Schedulability.olean",
+  "lean_namespace": "Prosa.Analysis.Definitions.Schedulability",
+  "fixtures": [
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "FactsCompletionComputationInterface",
+    "SchedulabilityComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/SchedulabilityLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/analysis_definitions_schedulability_export_config.json",
+  "export_name": "Schedulability",
+  "cert_dir": "certificates/analysis_definitions_schedulability",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "JitterSvcBaseAdapter",
+    "JitterSvcNatBoolOperations",
+    "JitterSvcIntervalOperations",
+    "JitterSvcScheduleOperations",
+    "JitterSvcJobOperations",
+    "SchedulabilityCorrespondence"
+  ],
+  "audit_module": "SchedulabilityAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/SchedulabilityImportedTypeAudit.v",
+  "assumption_config": "certificates/analysis_definitions_schedulability/schedulability_assumption_config.json",
+  "lean_axiom_config": "certificates/analysis_definitions_schedulability/schedulability_lean_axiom_config.json",
+  "computational": [
+    "task_response_time_bound",
+    "schedulable_task",
+    "all_deadlines_met",
+    "all_deadlines_of_arrivals_met"
+  ],
+  "principal": {},
+  "helpers": [
+    "sch_lean_transport",
+    "sch_nat_input",
+    "sch_logic_eq_to_lean_eq",
+    "sch_decide_eq_related",
+    "sch_arrival_sequence_to_source_rel",
+    "sch_forall_arrival_sequence",
+    "sch_scheduled_at_related",
+    "sch_service_at_related",
+    "sch_service_related",
+    "sch_completed_by_related",
+    "sch_job_meets_deadline_related",
+    "sch_jobs_come_from_arrival_sequence_related",
+    "sch_schedule_to_target_rel",
+    "sch_schedule_to_source_rel",
+    "sch_forall_schedule",
+    "sch_job_of_task_related",
+    "sch_task_deadline_instance_related"
+  ],
+  "previous_status": "analysis_definitions_request_bound_function_module_status.json",
+  "previous_files": 139,
+  "previous_decls": 1060,
+  "input_relations": [
+    "job_arrival by ArJobArrivalRel",
+    "job_cost by SvcJobCostRel",
+    "JobDeadline pointwise by SubNatRel (and the task-derived instance related from TaskDeadline, job_arrival and job_task)",
+    "TaskDeadline pointwise by SubNatRel",
+    "JobTask by Lean.eq",
+    "SvcProcessorStateRel (two-sided) + SvcScheduleRel (covered in both directions)",
+    "ArArrivalSequenceRel (covered in both directions)"
+  ],
+  "coverage_for_inner_binders": [
+    "jobs (identity carrier)",
+    "Nats (both directions)",
+    "schedules (both directions)",
+    "arrival sequences (both directions)"
+  ],
+  "lean_representation_note": "Booleans in Prop position are `= true`; the lemma uses the accepted `job_deadline_from_task_deadline` instance explicitly, as the elaborated source does",
+  "export_diagnosis": "the accepted completion-facts export root (Service/Schedule interface closure, ~127k lines) without its theorem targets, reused so that the accepted certificate chain applies, plus the six declarations, the task-derived deadline and the task/job classes"
+}

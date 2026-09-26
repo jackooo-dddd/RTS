@@ -1,0 +1,4 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedPreemptionTime.
+
+Check ImportedPreemptionTime.Prosa_Model_Schedule_PreemptionTime_preemption_time.

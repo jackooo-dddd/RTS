@@ -92,14 +92,31 @@ def main() -> None:
     source_text = strip_comments(official.read_text())
     lines = [l.strip() for l in source_text.splitlines() if l.strip()]
     exports = [m.group(1) for l in lines for m in [re.fullmatch(r"Require Export (prosa\.[\w.]+)\.", l)] if m]
-    require(len(exports) == len(lines), "source contains more than its Require Export list")
+    local_instances = spec.get("local_instances", [])
+    if not local_instances:
+        require(len(exports) == len(lines), "source contains more than its Require Export list")
+    else:
+        # Besides its Require Export list, the source may only contain one Section with
+        # Context lines and exactly the listed #[local] Instance items (section-local
+        # instance registrations, hence no public declaration in the inventory).
+        rest = "\n".join(l for l in lines if not re.fullmatch(r"Require Export (prosa\.[\w.]+)\.", l))
+        commands = re.findall(r"(?m)^\s*(#\[[^\]]*\]\s*)?([A-Z][A-Za-z]*)\b", rest)
+        kinds = [(attr.strip(), kw) for attr, kw in commands]
+        allowed = {("", "Section"), ("", "End"), ("", "Context"), ("#[local]", "Instance")}
+        require(all(k in allowed for k in kinds), f"unexpected source commands: {kinds}")
+        names = re.findall(r"#\[local\]\s*Instance\s+(\w+)", rest)
+        require(names == [li["source"] for li in local_instances],
+                f"local instances differ: {names}")
     require(exports == list(spec["export_map"]), f"source export list changed: {exports}")
     production = PROJECT / spec["production"]
     lean_text = production.read_text()
     imports = re.findall(r"^import (\S+)$", lean_text, re.M)
     require(imports == list(spec["export_map"].values()), f"Lean imports differ: {imports}")
-    require(not re.search(r"^\s*(def|theorem|lemma|instance|abbrev|structure|class|inductive|axiom)\b",
-                          lean_text, re.M), "Lean aggregator declares something")
+    lean_code = re.sub(r"--[^\n]*", "", re.sub(r"/-.*?-/", "", lean_text, flags=re.S))
+    decls = re.findall(r"^\s*(?:@\[[^\]]*\]\s*)?(def|theorem|lemma|instance|abbrev|structure|class|inductive|axiom)\s+(\S+)",
+                       lean_code, re.M)
+    require(decls == [("def", li["lean"].rsplit(".", 1)[-1]) for li in spec.get("local_instances", [])],
+            f"Lean aggregator declarations differ from the listed local instances: {decls}")
     require(not re.search(r"\b(sorry|admit|axiom|unsafe)\b", lean_text), "forbidden Lean escape")
 
     work.mkdir(parents=True)
@@ -111,6 +128,43 @@ def main() -> None:
         man = read(PIPE / f"{stem}_module_manifest.json")
         want = man.get("source_vo_sha256") or man.get("artifact_hashes", {}).get("source_vo")
         require(sha(work / "source" / rel_vo) == want, f"dependency source .vo changed: {dep}")
+    # Accepted pinned .vo files missing from the chosen closure (needed by a shimmed
+    # semantic module taken from another run) are copied from an accepted run and
+    # hash-checked against their own manifests.
+    extra_closure = []
+    for item in spec.get("extra_closure", []):
+        dest = work / "source" / item["vo"]
+        require(not dest.exists(), f"extra closure file already present: {item['vo']}")
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(V / ".work/experiments" / item["run"] / "source" / item["vo"], dest)
+        man = read(PIPE / f"{item['manifest']}_module_manifest.json")
+        require(sha(dest) == man.get("source_vo_sha256"), f"extra closure .vo changed: {item['vo']}")
+        extra_closure.append({**item, "sha256": sha(dest)})
+    # A dependency accepted through its extracted semantic source (no pinned .vo in
+    # any accepted closure) is bound by a one-line shim at its logical path that
+    # re-exports the hash-verified accepted semantic module.
+    shim_evidence = {}
+    for dep_rel, sh in spec.get("dependency_shims", {}).items():
+        man = read(PIPE / f"{sh['manifest']}_module_manifest.json")
+        # A semantic module absent from the chosen closure may be taken from another
+        # accepted run; it is hash-checked against its manifest below, and Rocq's
+        # library-consistency check rejects it if its dependencies differ.
+        if sh.get("from_run") and not (work / "source" / sh["vo"]).exists():
+            shutil.copy2(V / ".work/experiments" / sh["from_run"] / "source" / sh["vo"],
+                         work / "source" / sh["vo"])
+        require(sha(work / "source" / sh["vo"]) == man.get("source_vo_sha256"),
+                f"shimmed dependency semantic .vo changed: {dep_rel}")
+        shim = work / "source" / dep_rel
+        require(not shim.exists(), f"shim target already exists: {dep_rel}")
+        shim.parent.mkdir(parents=True, exist_ok=True)
+        shim.write_text(f"Require Export prosa.{sh['module']}.\nExport {sh['module']}.\n")
+        res = subprocess.run(["opam", "exec", "--switch=rocq93rc1", "--", "rocq", "c", "-R",
+                              str(work / "source"), "prosa", dep_rel],
+                             cwd=work / "source", capture_output=True, text=True)
+        require(res.returncode == 0 and "Error" not in res.stdout + res.stderr, f"shim compile failed: {dep_rel}")
+        shim_evidence[dep_rel] = {"semantic_module": sh["module"], "semantic_vo_sha256": man["source_vo_sha256"],
+                                  "shim_text_sha256": sha(shim),
+                                  **({"from_run": sh["from_run"]} if sh.get("from_run") else {})}
     target = work / "source" / source_file
     target.parent.mkdir(parents=True, exist_ok=True)
     shutil.copy2(official, target)
@@ -149,7 +203,8 @@ def main() -> None:
     require(res.returncode == 0 and "error" not in log.lower(), "interface probe build failed")
     require(f"'{spec['probe_decl']}' does not depend on any axioms" in log
             or all(a in spec.get("probe_allowed_axioms", []) for a in
-                   re.findall(r"depends on axioms: \[(.*?)\]", log)[0].split(", ")),
+                   (a.strip() for a in
+                    (re.findall(r"depends on axioms: \[(.*?)\]", log, re.S) or ["<none>"])[0].split(","))),
             "interface probe axiom audit failed")
     elapsed = int((datetime.now() - t0).total_seconds())
 
@@ -169,6 +224,9 @@ def main() -> None:
         "source_commit": PIN, "source_file_sha256": sha(official),
         "public_declaration_count": 0,
         "export_mapping": spec["export_map"],
+        **({"local_instances": spec["local_instances"]} if spec.get("local_instances") else {}),
+        **({"dependency_shims": shim_evidence} if shim_evidence else {}),
+        **({"extra_closure": extra_closure} if extra_closure else {}),
         "production_file": spec["production"], "production_source_sha256": sha(production),
         "production_olean_sha256": sha(prod_olean),
         "interface_fixture": spec["fixture"], "interface_fixture_source_sha256": sha(PROJECT / spec["fixture"]),

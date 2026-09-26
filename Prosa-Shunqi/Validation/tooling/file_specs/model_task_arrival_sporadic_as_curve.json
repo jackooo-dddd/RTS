@@ -1,0 +1,98 @@
+{
+  "rank": 137,
+  "layer": 16,
+  "tag": "SAC",
+  "slug": "model_task_arrival_sporadic_as_curve",
+  "source": "model/task/arrival/sporadic_as_curve.v",
+  "dependencies": [
+    "analysis/facts/sporadic/arrival_bound.v",
+    "model/task/arrival/curves.v",
+    "util/all.v"
+  ],
+  "declaration_count": 5,
+  "base_run": "analysis_facts_sporadic_arrival_bound_final",
+  "base_checks": [
+    {
+      "manifest": "analysis_facts_sporadic_arrival_bound",
+      "olean": "Prosa/Analysis/Facts/Sporadic/ArrivalBound.olean",
+      "vo": "FactsSporadicArrivalBoundSemanticSource.vo"
+    },
+    {
+      "manifest": "analysis_facts_model_arrival_curves",
+      "olean": "Prosa/Analysis/Facts/Model/ArrivalCurves.olean",
+      "vo": "FactsArrivalCurvesSemanticSource.vo"
+    }
+  ],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "SporadicAsCurveSemanticSource",
+    "drop_imports": [
+      "Require Export prosa.analysis.facts.sporadic.arrival_bound."
+    ],
+    "add_imports": [
+      "Require Export prosa.FactsSporadicArrivalBoundSemanticSource.",
+      "Export FactsSporadicArrivalBoundSemanticSource.",
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq."
+    ],
+    "note": "the Global Program Instance MaxArrivalsSporadic is a byte-identical computational block; theorem statements from the authoritative elaborated types (proofs omitted); the proof-heavy facts/sporadic/arrival_bound import is bound to its accepted extracted semantic source (FactsSporadicArrivalBoundSemanticSource, .vo hash-checked against the arrival-bound manifest), which provides max_sporadic_arrivals; util/all and model/task/arrival/curves are the compiled pinned sources of the base run"
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/SporadicAsCurveStatementProbe.v",
+  "production": "Prosa/Model/Task/Arrival/SporadicAsCurve.lean",
+  "production_olean": "Prosa/Model/Task/Arrival/SporadicAsCurve.olean",
+  "lean_namespace": "Prosa.Model.Task.Arrival.SporadicAsCurve",
+  "fixtures": [
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ArrivalsComputationInterface",
+    "DivModComputationInterface",
+    "FactsSporadicArrivalBoundComputationInterface",
+    "FactsArrivalCurvesComputationInterface",
+    "SporadicAsCurveComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/SporadicAsCurveLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/model_task_arrival_sporadic_as_curve_export_config.json",
+  "export_name": "SporadicAsCurve",
+  "cert_dir": "certificates/model_task_arrival_sporadic_as_curve",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "ArrivalsCorrespondence",
+    "NatSubCorrespondence",
+    "DivModCorrespondence",
+    "CurvesCorrespondence",
+    "SporadicAsCurveCorrespondence"
+  ],
+  "audit_module": "SporadicAsCurveAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/SporadicAsCurveImportedTypeAudit.v",
+  "assumption_config": "certificates/model_task_arrival_sporadic_as_curve/sporadic_as_curve_assumption_config.json",
+  "lean_axiom_config": "certificates/model_task_arrival_sporadic_as_curve/sporadic_as_curve_lean_axiom_config.json",
+  "computational": [
+    "MaxArrivalsSporadic"
+  ],
+  "principal": {},
+  "helpers": [
+    "sac_forall_list",
+    "sac_eq_correspondence",
+    "sac_false_correspondence",
+    "sac_neq_correspondence",
+    "sac_max_sporadic_arrivals_related",
+    "sac_valid_min_inter_arrival_related",
+    "sac_respects_sporadic_related"
+  ],
+  "previous_status": "model_schedule_preemption_time_module_status.json",
+  "previous_files": 133,
+  "previous_decls": 1028,
+  "input_relations": [
+    "SporadicModel pointwise by SubNatRel on task_min_inter_arrival_time",
+    "JobTask by Lean.eq on job_task",
+    "ArJobArrivalRel",
+    "ArArrivalSequenceRel",
+    "task sets by ArListRel"
+  ],
+  "coverage_for_inner_binders": [
+    "tasks (identity carrier)",
+    "Nats (both directions)"
+  ],
+  "lean_representation_note": "the source Global Program Instance is a Lean global instance; the Boolean `valid_task_min_inter_arrival_time` hypothesis is `= true`; `tsk \\in ts` is `decide (tsk \u2208 ts) = true`"
+}

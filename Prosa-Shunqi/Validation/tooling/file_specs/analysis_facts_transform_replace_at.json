@@ -1,0 +1,105 @@
+{
+  "rank": 153,
+  "layer": 16,
+  "tag": "FRA",
+  "slug": "analysis_facts_transform_replace_at",
+  "source": "analysis/facts/transform/replace_at.v",
+  "dependencies": [
+    "analysis/facts/behavior/completion.v",
+    "analysis/transform/swap.v"
+  ],
+  "declaration_count": 7,
+  "base_run": "analysis_facts_behavior_completion_final",
+  "base_checks": [
+    {
+      "manifest": "analysis_facts_behavior_completion",
+      "olean": "Prosa/Analysis/Facts/Behavior/Completion.olean",
+      "vo": "FactsCompletionSemanticSource.vo"
+    }
+  ],
+  "extra_pinned_sources": [
+    "analysis/transform/swap.v"
+  ],
+  "extra_lean": [
+    [
+      "Prosa/Analysis/Transform/Swap.lean",
+      "Prosa/Analysis/Transform/Swap.olean",
+      "analysis_transform_swap",
+      "production_olean_sha256"
+    ]
+  ],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "FactsReplaceAtSemanticSource",
+    "drop_imports": [
+      "Require Export prosa.analysis.facts.behavior.completion."
+    ],
+    "add_imports": [
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq."
+    ],
+    "note": "theorem statements from the authoritative elaborated types (proofs omitted); the proof-heavy analysis/facts/behavior/completion import is dropped (the statements mention only behavior and analysis/transform/swap, compiled from the pinned tree)"
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/FactsReplaceAtStatementProbe.v",
+  "production": "Prosa/Analysis/Facts/Transform/ReplaceAt.lean",
+  "production_olean": "Prosa/Analysis/Facts/Transform/ReplaceAt.olean",
+  "lean_namespace": "Prosa.Analysis.Facts.Transform.ReplaceAt",
+  "fixtures": [
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "FactsCompletionComputationInterface",
+    "FactsReplaceAtComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/FactsReplaceAtLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/analysis_facts_transform_replace_at_export_config.json",
+  "export_name": "FactsReplaceAt",
+  "cert_dir": "certificates/analysis_facts_transform_replace_at",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "JitterSvcBaseAdapter",
+    "JitterSvcNatBoolOperations",
+    "JitterSvcIntervalOperations",
+    "JitterSvcScheduleOperations",
+    "JitterSvcJobOperations",
+    "FactsReplaceAtCorrespondence"
+  ],
+  "audit_module": "FactsReplaceAtAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/FactsReplaceAtImportedTypeAudit.v",
+  "assumption_config": "certificates/analysis_facts_transform_replace_at/facts_replace_at_assumption_config.json",
+  "lean_axiom_config": "certificates/analysis_facts_transform_replace_at/facts_replace_at_lean_axiom_config.json",
+  "computational": [],
+  "principal": {},
+  "helpers": [
+    "fra_nat_input",
+    "fra_false_correspondence",
+    "fra_nat_neq_correspondence",
+    "fra_or_correspondence",
+    "fra_lean_transport",
+    "fra_state_rel",
+    "fra_state_eq_correspondence",
+    "fra_nat_not_eq",
+    "fra_src_same",
+    "fra_src_other",
+    "fra_replace_at_fun",
+    "fra_service_at_related",
+    "fra_service_during_related",
+    "fra_not_scheduled_related",
+    "fra_window_related"
+  ],
+  "previous_status": "analysis_facts_sporadic_arrival_sequence_module_status.json",
+  "previous_files": 153,
+  "previous_decls": 1119,
+  "input_relations": [
+    "SvcProcessorStateRel (two-sided; states by svc_ps_state_rel)",
+    "SvcScheduleRel"
+  ],
+  "coverage_for_inner_binders": [
+    "jobs (identity carrier)",
+    "Nats (both directions)"
+  ],
+  "lean_representation_note": "single comparisons are Lean propositions; chained comparisons are `(decide _ && decide _) = true`; `~~ b` is `!b`; the section-local `Let sched'` is inlined",
+  "export_diagnosis": "the accepted completion-facts export root without its theorem targets, plus the seven statements and replace_at"
+}

@@ -1,0 +1,185 @@
+{
+  "slice": "TRANSLATION_ORDER_ANALYSIS_FACTS_READINESS_BASIC",
+  "generated_at": "2026-09-26T19:14:43.253370+08:00",
+  "published_at": "2026-09-26T19:14:43.253370+08:00",
+  "rank": 150,
+  "layer": 16,
+  "source_file": "analysis/facts/readiness/basic.v",
+  "source_commit": "414e66760333eaa4ef78c685bcf53291c527a548",
+  "source_tree": "7d7e94c731f7eefde4ca738310d4cafdd7bebdf0",
+  "source_file_sha256": "e2f9d813c2131c9b41de2f717b462ba283b905a58cf00fdc4a87bfadaa7e4353",
+  "pipeline": "Validation/scripts/translation_file_pipeline.py",
+  "spec": "Validation/tooling/file_specs/analysis_facts_readiness_basic.json",
+  "spec_sha256": "99547d5418b3af40e8a2dc7faca81ba0aec81c78030a489db002ff90144d1b09",
+  "source_compatibility": {
+    "mode": "extract",
+    "note": "theorem statements from the authoritative elaborated types (proofs omitted); the proof-heavy analysis/facts/behavior/completion import is dropped and the analysis/definitions/readiness import is bound to its accepted extracted source (ReadinessSemanticSource, .vo hash-checked against its manifest); model/readiness/basic is the compiled pinned source of the base run and analysis/definitions/work_bearing_readiness is compiled from the pinned tree; the source's `#[local] Existing Instance basic_ready_instance` is replayed after the imports",
+    "extracted_sha256": "b3fc7b6040b3fbc707a41798d2c4f8a60b9320a7a60876d9aa9fd5744c1759da",
+    "extraction_metadata_sha256": "8c0fe61e76f963dcf16f18d417733843d8811de1c1e14ac2b6edd6c505f0dbf3"
+  },
+  "source_type_evidence": {
+    "prosa.analysis.facts.readiness.basic.basic_readiness_nonclairvoyance": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.readiness.basic.basic_readiness_compliance": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.readiness.basic.basic_readiness_is_work_bearing_readiness": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE"
+  },
+  "statement_only_export_boundary": [
+    "Prosa.Analysis.Facts.Readiness.Basic.basic_readiness_nonclairvoyance",
+    "Prosa.Analysis.Facts.Readiness.Basic.basic_readiness_compliance",
+    "Prosa.Analysis.Facts.Readiness.Basic.basic_readiness_is_work_bearing_readiness"
+  ],
+  "input_relations": [
+    "job_arrival by ArJobArrivalRel",
+    "job_cost by SvcJobCostRel",
+    "SvcProcessorStateRel + SvcScheduleRel",
+    "ArArrivalSequenceRel",
+    "JLFP policy pointwise on Booleans",
+    "the basic readiness model (source local instance) related to the accepted Lean definition"
+  ],
+  "coverage_for_inner_binders": [
+    "jobs (identity carrier)",
+    "Nats (both directions)"
+  ],
+  "lean_representation_note": "the section-local `#[local] Existing Instance basic_ready_instance` is passed explicitly to the accepted Lean definition; Booleans in Prop position are `= true`",
+  "export_size": {
+    "lines": 126355,
+    "soft_budget_flag": "OVER_100K_DIAGNOSED",
+    "diagnosis": "the accepted readiness export root reused so that the accepted certificate chain applies, plus the three statements, the basic readiness model and the work-bearing readiness definition"
+  },
+  "file_dependencies": {
+    "analysis/definitions/readiness.v": "analysis_definitions_readiness_module_status.json",
+    "analysis/definitions/work_bearing_readiness.v": "analysis_definitions_work_bearing_readiness_module_status.json",
+    "analysis/facts/behavior/completion.v": "analysis_facts_behavior_completion_module_status.json",
+    "model/readiness/basic.v": "model_readiness_basic_module_status.json"
+  },
+  "production_file": "Prosa/Analysis/Facts/Readiness/Basic.lean",
+  "production_source_sha256": "7c51479b88d322ce9e3d6b395d810eb31d24d7b9e37df98cd28fd1ec0ec4c496",
+  "production_olean_sha256": "c1343ce16e7b33c0480a00fa45412c1628a2b0c574485bb98b191a99d8796fcc",
+  "export_config_sha256": "41ee4ebee2d36330f24729cb11d9573a93e3b793d837240d42997712b8c8eba6",
+  "export_sha256": "0544af25d1b57076099ba7327a0c3b504343b74c6ac69f0fd8fa24e49271710b",
+  "export_lines": 126355,
+  "export_bytes": 2813883,
+  "import_sha256": "6437304a0ad0168f21b578f617775118ecf4423281d245278a89fd262f97cac6",
+  "source_vo_sha256": "e5ae3367b5b56f329048b4b4121683610939b90367b96539535503dd135704ae",
+  "lean_axiom_summary_sha256": "2ff756453a716e60c6b0698c3513d9dcbd0737a89f444b92196dfa1e42795f87",
+  "rocq_assumption_summary_sha256": "3db30155cf1a2d4da3c58fe7c1b89efb6afe58257cdde21a548323a79d2caae1",
+  "assumption_config_sha256": "615c75faa6985a69ffb71084eca0fd7ab554a84ccdd03eb3dcc59822ed7fd815",
+  "stage_timing_seconds": {
+    "source_acquisition": {
+      "mode": "FRESH",
+      "seconds": 4
+    },
+    "lean_build": {
+      "mode": "FRESH",
+      "seconds": 548
+    },
+    "export": {
+      "mode": "FRESH",
+      "seconds": 39
+    },
+    "rocq_import": {
+      "mode": "FRESH",
+      "seconds": 41
+    },
+    "certificate_compile": {
+      "mode": "FRESH",
+      "seconds": 22
+    },
+    "assumption_audit": {
+      "mode": "FRESH",
+      "seconds": 0
+    }
+  },
+  "certificates": {
+    "ArrivalsSeqBaseAdapter": {
+      "source_sha256": "d20304e4a46e4513b215b32ab45ee774aa2ad6a538ba5d3eb3b56459f40bde77",
+      "vo_sha256": "d77bc747b84b4a5653f2355b61c044d3c259ffd51bcae92b9176fd1795bd28c0"
+    },
+    "ArrivalsSeqOperations": {
+      "source_sha256": "b10904cbc9da9b0cc65e54eb6481e45f863e8eb61e3ef26faa3b8a42ab044a24",
+      "vo_sha256": "3dff52c4bbd078c46df3084eb3f80d7e20894208c9c35265c1b6de5360d4a8f5"
+    },
+    "ArrivalsSeqCorrespondence": {
+      "source_sha256": "d98a20cb39b564fe28dc1afdb890155e8251c508fc516ba5f30428ba9260eabf",
+      "vo_sha256": "b29370045f87ca7af368073d841c6a58bf4304554d22104130e108434e1f2957"
+    },
+    "ArrivalsCorrespondence": {
+      "source_sha256": "b957499b1e3e8d9c48770ccfbe92174574f8ff042edbb11d71840cf7ce2b3944",
+      "vo_sha256": "422b381e5afdf29ecc1dc323022dcd1d0082a760fd4ae9ed5e7594a3a9912e05"
+    },
+    "JitterSvcBaseAdapter": {
+      "source_sha256": "87f4399d401b9ad21ff44067ec209fe9ee6052067267d603fdecad0b4b99fddf",
+      "vo_sha256": "e61373dd5193cc8c9b115193755a2c7563981a5a06028d4800d88065f9014bc8"
+    },
+    "JitterSvcNatBoolOperations": {
+      "source_sha256": "148ce0ebae50b7d685cbf8bab38ba37af7c963ea113bf4e8a5e360ce37d0fb46",
+      "vo_sha256": "382bc8d72991aabdb41dab6456d3768a479b834ccd72c679c424685ddb38f777"
+    },
+    "JitterSvcIntervalOperations": {
+      "source_sha256": "42349a08bb20c26ad5ead70c279890ccd57011e50d2e33d007c340500ef740fa",
+      "vo_sha256": "17bdb3399386bb4e396b29831b79ce78220b0b2de73b00df19fa33713a3a7080"
+    },
+    "JitterSvcScheduleOperations": {
+      "source_sha256": "b5575e548f1f5aedfa9258e5996bb83f313583011c01eb7c200f41e6be714908",
+      "vo_sha256": "958d06962a0b77e8bd8d822ba26efb2dbbcd92046cdbf03945a8f49c245da45f"
+    },
+    "JitterSvcJobOperations": {
+      "source_sha256": "e3d3ecca185c8fefcc94033043101d1ff2b1e75fa110f91ba2c67bf6389e38c2",
+      "vo_sha256": "ab3ebea3045cb5bbd85abdabd1d0a5297e44d5c338473f9061371c92057c7692"
+    },
+    "SequentialityCorrespondence": {
+      "source_sha256": "1921ab529ec659f60ab00a273d3fbe14a2b520593ea03f5d07bfa952dade321d",
+      "vo_sha256": "e564e13f8cc6c80260e21b2b11f268df0eeba3f5b2df748ba859ca5ff1f30200"
+    },
+    "ReadinessCorrespondence": {
+      "source_sha256": "d4ea4dad810cba4ca0440866f70556955d32d14f3bd3565b4ec413266676f824",
+      "vo_sha256": "feb0988a658ff91b4611929a75816ee8c51918ca343f572d8e98f71d174845eb"
+    },
+    "FactsReadinessBasicCorrespondence": {
+      "source_sha256": "c351b0fcbb0a197e9a9fff64daf9f87ead43722fd4875b340c1c4a588b64b452",
+      "vo_sha256": "aa1d15445a02fffc0981be9134df421316152dc56c099851152fb33fadee5a0a"
+    },
+    "FactsReadinessBasicAssumptionAudit": {
+      "source_sha256": "1dc775d6cbf89800290ebc26d6c788d32d5fd2027e9e6188cd0a4c129ed56ae3",
+      "vo_sha256": "13918609c10e12cb175d5b6947431bd1d1f2da660b7d357fe96b8851b28ee96e"
+    }
+  },
+  "declarations": [
+    {
+      "source_declaration": "prosa.analysis.facts.readiness.basic.basic_readiness_nonclairvoyance",
+      "lean_declaration": "Prosa.Analysis.Facts.Readiness.Basic.basic_readiness_nonclairvoyance",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "basic_readiness_nonclairvoyance_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.readiness.basic.basic_readiness_compliance",
+      "lean_declaration": "Prosa.Analysis.Facts.Readiness.Basic.basic_readiness_compliance",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "basic_readiness_compliance_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.readiness.basic.basic_readiness_is_work_bearing_readiness",
+      "lean_declaration": "Prosa.Analysis.Facts.Readiness.Basic.basic_readiness_is_work_bearing_readiness",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "basic_readiness_is_work_bearing_readiness_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    }
+  ],
+  "acceptance": "ACCEPTED_V06_FILE"
+}

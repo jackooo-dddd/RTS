@@ -1,0 +1,8 @@
+import Prosa.Analysis.Definitions.DemandBoundFunction
+set_option pp.fieldNotation false
+
+#check @Prosa.Analysis.Definitions.DemandBoundFunction.task_demand_bound_function
+#check @Prosa.Analysis.Definitions.DemandBoundFunction.total_demand_bound_function
+
+#print axioms Prosa.Analysis.Definitions.DemandBoundFunction.task_demand_bound_function
+#print axioms Prosa.Analysis.Definitions.DemandBoundFunction.total_demand_bound_function

@@ -1,0 +1,20 @@
+import Prosa.Analysis.Definitions.PriorityInversion
+set_option pp.fieldNotation false
+
+#check @Prosa.Analysis.Definitions.PriorityInversion.priority_inversion
+#check @Prosa.Analysis.Definitions.PriorityInversion.priority_inversion_cond
+#check @Prosa.Analysis.Definitions.PriorityInversion.cumulative_priority_inversion
+#check @Prosa.Analysis.Definitions.PriorityInversion.cumulative_priority_inversion_cond
+#check @Prosa.Analysis.Definitions.PriorityInversion.priority_inversion_of_job_is_bounded_by
+#check @Prosa.Analysis.Definitions.PriorityInversion.priority_inversion_of_job_cond_is_bounded_by
+#check @Prosa.Analysis.Definitions.PriorityInversion.priority_inversion_is_bounded_by
+#check @Prosa.Analysis.Definitions.PriorityInversion.priority_inversion_cond_is_bounded_by
+
+#print axioms Prosa.Analysis.Definitions.PriorityInversion.priority_inversion
+#print axioms Prosa.Analysis.Definitions.PriorityInversion.priority_inversion_cond
+#print axioms Prosa.Analysis.Definitions.PriorityInversion.cumulative_priority_inversion
+#print axioms Prosa.Analysis.Definitions.PriorityInversion.cumulative_priority_inversion_cond
+#print axioms Prosa.Analysis.Definitions.PriorityInversion.priority_inversion_of_job_is_bounded_by
+#print axioms Prosa.Analysis.Definitions.PriorityInversion.priority_inversion_of_job_cond_is_bounded_by
+#print axioms Prosa.Analysis.Definitions.PriorityInversion.priority_inversion_is_bounded_by
+#print axioms Prosa.Analysis.Definitions.PriorityInversion.priority_inversion_cond_is_bounded_by

@@ -1,0 +1,127 @@
+{
+  "rank": 132,
+  "layer": 15,
+  "tag": "LPM",
+  "slug": "model_preemption_limited_preemptive",
+  "source": "model/preemption/limited_preemptive.v",
+  "dependencies": [
+    "model/preemption/parameter.v"
+  ],
+  "declaration_count": 5,
+  "base_run": "model_preemption_parameter_final",
+  "base_checks": [
+    {
+      "manifest": "model_preemption_parameter",
+      "olean": "Prosa/Model/Preemption/Parameter.olean",
+      "vo": "PreemptionParameterSemanticSource.vo"
+    },
+    {
+      "manifest": "nondecreasing",
+      "olean": "Prosa/Util/Nondecreasing.olean"
+    }
+  ],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "LimitedPreemptiveSemanticSource",
+    "helper_blocks": [
+      "limited_preemptive_job_model"
+    ],
+    "drop_imports": [
+      "Require Export prosa.model.preemption.parameter."
+    ],
+    "add_imports": [
+      "Require Export prosa.PreemptionParameterSemanticSource.",
+      "Export PreemptionParameterSemanticSource.",
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq.",
+      "Require Import prosa.util.list.",
+      "Import ListSemanticSource.",
+      "Require Import prosa.GeneratedNondecreasingSource.",
+      "Import GeneratedNondecreasingSource."
+    ],
+    "note": "the class, the source-local instance limited_preemptive_job_model (helper block) and the four definitions are byte-identical computational blocks; the model/preemption/parameter import is bound to the accepted extracted parameter source (PreemptionParameterSemanticSource, .vo hash-checked against the parameter manifest), and the accepted utility sources are imported explicitly: util/list (last0; ListSemanticSource) and the accepted generated source of util/nondecreasing.v (nondecreasing_sequence); blocks are emitted in source order (source_order) because the helper instance mentions the class declared before it; the source Section variable arr_seq, implicit in the uses of the three component definitions inside valid_limited_preemptions_job_model, is reconnected by recorded local notations",
+    "source_order": true,
+    "local_bindings": [
+      "beginning_of_execution_in_preemption_points=beginning_of_execution_in_preemption_points arr_seq",
+      "end_of_execution_in_preemption_points=end_of_execution_in_preemption_points arr_seq",
+      "preemption_points_is_nondecreasing_sequence=preemption_points_is_nondecreasing_sequence arr_seq"
+    ]
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/LimitedPreemptiveStatementProbe.v",
+  "production": "Prosa/Model/Preemption/LimitedPreemptive.lean",
+  "production_olean": "Prosa/Model/Preemption/LimitedPreemptive.olean",
+  "lean_namespace": "Prosa.Model.Preemption.LimitedPreemptive",
+  "fixtures": [
+    "NondecreasingComputationInterface",
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "PreemptionParameterComputationInterface",
+    "LimitedPreemptiveComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/LimitedPreemptiveLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/model_preemption_limited_preemptive_export_config.json",
+  "export_name": "LimitedPreemptive",
+  "cert_dir": "certificates/model_preemption_limited_preemptive",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "JitterSvcBaseAdapter",
+    "JitterSvcNatBoolOperations",
+    "JitterSvcIntervalOperations",
+    "JitterSvcScheduleOperations",
+    "JitterSvcJobOperations",
+    "LimitedPreemptiveCorrespondence"
+  ],
+  "audit_module": "LimitedPreemptiveAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/LimitedPreemptiveImportedTypeAudit.v",
+  "assumption_config": "certificates/model_preemption_limited_preemptive/limited_preemptive_assumption_config.json",
+  "lean_axiom_config": "certificates/model_preemption_limited_preemptive/limited_preemptive_lean_axiom_config.json",
+  "computational": [
+    "JobPreemptionPoints",
+    "beginning_of_execution_in_preemption_points",
+    "end_of_execution_in_preemption_points",
+    "preemption_points_is_nondecreasing_sequence",
+    "valid_limited_preemptions_job_model"
+  ],
+  "principal": {
+    "JobPreemptionPoints": [
+      "JobPreemptionPoints_source_total",
+      "JobPreemptionPoints_target_total"
+    ]
+  },
+  "helpers": [
+    "lp_nat_input",
+    "lp_nat_eq_transport",
+    "lp_nat_eqb_related",
+    "lp_bool_or_canonical",
+    "lp_bool_or_related",
+    "lp_mem_canonical",
+    "lp_mem_bool_related",
+    "lp_last0_canonical",
+    "lp_last0_related",
+    "lp_length_canonical",
+    "lp_length_related",
+    "lp_nthD_canonical",
+    "lp_nthD_related",
+    "lp_nondecreasing_sequence_related",
+    "lp_nat_list_to_rocq",
+    "lp_nat_list_target_roundtrip",
+    "lp_limited_preemptive_job_model_related"
+  ],
+  "previous_status": "model_preemption_fully_preemptive_module_status.json",
+  "previous_files": 129,
+  "previous_decls": 1020,
+  "input_relations": [
+    "JobPreemptionPoints pointwise by SvcNatListRel with two-way totals",
+    "job_cost by SvcJobCostRel",
+    "ArArrivalSequenceRel"
+  ],
+  "coverage_for_inner_binders": [
+    "jobs (identity carrier)",
+    "Nats (both directions)"
+  ],
+  "lean_representation_note": "`seq work` is `List work`; `\u03c1 \\in s` is `decide (\u03c1 \u2208 s) = true`; `last0` and `nondecreasing_sequence` are the accepted utilities; the source-local instance is a plain `@[reducible] def`; unused section context (JobArrival) is absent",
+  "export_diagnosis": "the accepted preemption-parameter export root (Service/Schedule interface closure, ~127k lines) reused verbatim so that the accepted JitterSvc/Arrivals certificate chain applies, plus the five declarations, the source-local instance and nondecreasing_sequence"
+}

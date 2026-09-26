@@ -1,0 +1,9 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedEdfTrans.
+
+Check ImportedEdfTrans.Prosa_Analysis_Transform_EdfTrans_earlier_deadline.
+Check ImportedEdfTrans.Prosa_Analysis_Transform_EdfTrans_relevant_pstate.
+Check ImportedEdfTrans.Prosa_Analysis_Transform_EdfTrans_find_swap_candidate.
+Check ImportedEdfTrans.Prosa_Analysis_Transform_EdfTrans_make_edf_at.
+Check ImportedEdfTrans.Prosa_Analysis_Transform_EdfTrans_edf_transform_prefix.
+Check ImportedEdfTrans.Prosa_Analysis_Transform_EdfTrans_edf_transform.

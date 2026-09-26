@@ -1,0 +1,133 @@
+{
+  "rank": 173,
+  "layer": 17,
+  "tag": "FPTP",
+  "slug": "analysis_facts_preemption_task_preemptive",
+  "source": "analysis/facts/preemption/task/preemptive.v",
+  "dependencies": [
+    "analysis/facts/preemption/job/preemptive.v",
+    "model/task/preemption/fully_preemptive.v"
+  ],
+  "declaration_count": 2,
+  "base_run": "model_task_preemption_fully_preemptive_final",
+  "base_checks": [
+    {
+      "manifest": "model_task_preemption_fully_preemptive",
+      "olean": "Prosa/Model/Task/Preemption/FullyPreemptive.olean",
+      "vo": "TaskPreemptionFullyPreemptiveSemanticSource.vo"
+    },
+    {
+      "manifest": "model_task_preemption_parameters",
+      "olean": "Prosa/Model/Task/Preemption/Parameters.olean",
+      "vo": "TaskPreemptionParametersSemanticSource.vo"
+    },
+    {
+      "manifest": "model_preemption_parameter",
+      "olean": "Prosa/Model/Preemption/Parameter.olean",
+      "vo": "PreemptionParameterSemanticSource.vo"
+    }
+  ],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "FactsPreemptiveTaskSemanticSource",
+    "drop_imports": [
+      "Require Export prosa.analysis.facts.preemption.job.preemptive.",
+      "Require Export prosa.model.task.preemption.fully_preemptive."
+    ],
+    "add_imports": [
+      "Require Export prosa.TaskPreemptionFullyPreemptiveSemanticSource.",
+      "Export TaskPreemptionFullyPreemptiveSemanticSource.",
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq.",
+      "Require Import prosa.util.epsilon.",
+      "Require Import prosa.model.preemption.fully_preemptive.",
+      "#[local] Existing Instance fully_preemptive_job_model.",
+      "#[local] Existing Instance fully_preemptive_task_model.",
+      "#[local] Existing Instance fully_preemptive_rtc_threshold."
+    ],
+    "note": "theorem statements from the authoritative elaborated types (proofs omitted); the model/task/preemption/fully_preemptive import is bound to the accepted extracted source (TaskPreemptionFullyPreemptiveSemanticSource, .vo hash-checked against its manifest); the proof-only analysis/facts/preemption/job/preemptive import is dropped; model/preemption/fully_preemptive.v is compiled from the pinned tree against its dependency model/preemption/parameter.v, bound to the accepted extracted parameter source by the same one-line re-export shim as in its accepted zero-declaration validation (the recompiled .vo is hash-checked against that manifest); the source's three `#[local] Existing Instance` commands are replayed after the imports"
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/FactsPreemptiveTaskStatementProbe.v",
+  "production": "Prosa/Analysis/Facts/Preemption/Task/Preemptive.lean",
+  "production_olean": "Prosa/Analysis/Facts/Preemption/Task/Preemptive.olean",
+  "lean_namespace": "Prosa.Analysis.Facts.Preemption.Task.Preemptive",
+  "fixtures": [
+    "NondecreasingComputationInterface",
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "PreemptionParameterComputationInterface",
+    "TaskPreemptionParametersComputationInterface",
+    "TaskPreemptionFullyPreemptiveComputationInterface",
+    "FactsPreemptiveTaskComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/FactsPreemptiveTaskLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/analysis_facts_preemption_task_preemptive_export_config.json",
+  "export_name": "FactsPreemptiveTask",
+  "cert_dir": "certificates/analysis_facts_preemption_task_preemptive",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "JitterSvcBaseAdapter",
+    "JitterSvcNatBoolOperations",
+    "JitterSvcIntervalOperations",
+    "JitterSvcScheduleOperations",
+    "JitterSvcJobOperations",
+    "PreemptionParameterCorrespondence",
+    "TaskPreemptionParametersCorrespondence",
+    "TaskPreemptionFullyPreemptiveCorrespondence",
+    "FactsPreemptiveTaskCorrespondence"
+  ],
+  "audit_module": "FactsPreemptiveTaskAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/FactsPreemptiveTaskImportedTypeAudit.v",
+  "assumption_config": "certificates/analysis_facts_preemption_task_preemptive/facts_preemptive_task_assumption_config.json",
+  "lean_axiom_config": "certificates/analysis_facts_preemption_task_preemptive/facts_preemptive_task_lean_axiom_config.json",
+  "computational": [],
+  "principal": {},
+  "helpers": [
+    "fptp_fully_preemptive_job_related"
+  ],
+  "previous_status": "analysis_definitions_busy_interval_edf_pi_bound_module_status.json",
+  "previous_files": 162,
+  "previous_decls": 1142,
+  "input_relations": [
+    "job_cost by SvcJobCostRel",
+    "JobTask by Lean.eq",
+    "SvcProcessorStateRel (two-sided) + SvcScheduleRel",
+    "ArArrivalSequenceRel",
+    "the source-local fully preemptive job/task models related to the accepted Lean definitions"
+  ],
+  "coverage_for_inner_binders": [
+    "jobs (identity carrier)",
+    "Nats (both directions)"
+  ],
+  "lean_representation_note": "the source's section-local fully preemptive job and task instances are passed explicitly as the accepted Lean definitions of the same names, as the elaborated source types do",
+  "export_diagnosis": "the accepted fully-preemptive task-model export root (task preemption parameters over the preemption-parameter closure, ~127k lines) reused so that the accepted certificate chain applies, plus the two statements and the fully preemptive job model",
+  "extra_pinned_sources": [
+    "model/preemption/fully_preemptive.v"
+  ],
+  "dependency_shims": {
+    "model/preemption/parameter.v": "PreemptionParameterSemanticSource"
+  },
+  "extra_source_vo_checks": {
+    "model/preemption/fully_preemptive.vo": [
+      "model_preemption_fully_preemptive",
+      "official_source_vo_sha256"
+    ]
+  },
+  "extra_olean_artifacts": [
+    {
+      "from": "analysis_facts_preemption_job_preemptive_final/olean/Prosa/Model/Preemption/FullyPreemptive.olean",
+      "to": "Prosa/Model/Preemption/FullyPreemptive.olean",
+      "manifest": "model_preemption_fully_preemptive",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_preemption_job_preemptive_final/olean/Prosa/Analysis/Facts/Preemption/Job/Preemptive.olean",
+      "to": "Prosa/Analysis/Facts/Preemption/Job/Preemptive.olean",
+      "manifest": "analysis_facts_preemption_job_preemptive",
+      "key": "production_olean_sha256"
+    }
+  ]
+}

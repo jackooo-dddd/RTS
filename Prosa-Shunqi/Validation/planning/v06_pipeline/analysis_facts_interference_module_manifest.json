@@ -1,0 +1,387 @@
+{
+  "slice": "TRANSLATION_ORDER_ANALYSIS_FACTS_INTERFERENCE",
+  "generated_at": "2026-09-27T01:30:56.602048+08:00",
+  "published_at": "2026-09-27T01:30:56.602048+08:00",
+  "rank": 187,
+  "layer": 19,
+  "source_file": "analysis/facts/interference.v",
+  "source_commit": "414e66760333eaa4ef78c685bcf53291c527a548",
+  "source_tree": "7d7e94c731f7eefde4ca738310d4cafdd7bebdf0",
+  "source_file_sha256": "a808b3bbf04a0b16d7ed3a3b2954069e43dded275dfcb5d7b99b8ab4ebfb975d",
+  "pipeline": "Validation/scripts/translation_file_pipeline.py",
+  "spec": "Validation/tooling/file_specs/analysis_facts_interference.json",
+  "spec_sha256": "ba1f3fff9e8d4c71014b0a12148fea67433b036269334f829ce7028cf6ff6019",
+  "source_compatibility": {
+    "mode": "extract",
+    "note": "theorem statements from the authoritative elaborated types (proofs omitted); the interference import is bound to the accepted extracted interference source (InterferenceSemanticSource, .vo copied from its accepted run and hash-checked against its manifest), quiet_time to the accepted extracted busy-interval source (.vo hash-checked as base); analysis/definitions/priority/classes, model/schedule/scheduled and the base's pinned service-of-jobs / supply / platform models are compiled from the pinned tree; the proof-only facts/priority/classes and facts/model/service_of_jobs imports are dropped",
+    "extracted_sha256": "f954673753f437ffd9523831f0040ae27972c9e155ddc293aa0637020feb4c85",
+    "extraction_metadata_sha256": "b64dd025f0778a6f8149bdcd5757417fda1bd4e4ef4de8c5ed0bdf066d76083e"
+  },
+  "source_type_evidence": {
+    "prosa.analysis.facts.interference.another_task_hep_job_split_hp_ep": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.interference.hep_interference_another_task_split": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.interference.cumulative_hep_interference_split_tasks_new": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.interference.no_hep_job_interference_without_supply": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.interference.no_hep_task_interference_without_supply": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.interference.no_hep_job_interference_when_idle": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.interference.no_hep_task_interference_when_idle": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.interference.interference_ahep_def": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.interference.interference_athep_def": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.interference.no_ahep_interference_when_scheduled": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.interference.no_ahep_interference_when_served": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.interference.no_athep_interference_when_scheduled": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.interference.athep_interference_iff": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.interference.athep_interference_if": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.interference.no_ahep_interference_when_scheduled_lp": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.interference.cumulative_i_ohep_eq_service_of_ohep": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.interference.cumulative_i_thep_eq_service_of_othep": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE"
+  },
+  "statement_only_export_boundary": [
+    "Prosa.Analysis.Facts.Interference.another_task_hep_job_split_hp_ep",
+    "Prosa.Analysis.Facts.Interference.hep_interference_another_task_split",
+    "Prosa.Analysis.Facts.Interference.cumulative_hep_interference_split_tasks_new",
+    "Prosa.Analysis.Facts.Interference.no_hep_job_interference_without_supply",
+    "Prosa.Analysis.Facts.Interference.no_hep_task_interference_without_supply",
+    "Prosa.Analysis.Facts.Interference.no_hep_job_interference_when_idle",
+    "Prosa.Analysis.Facts.Interference.no_hep_task_interference_when_idle",
+    "Prosa.Analysis.Facts.Interference.interference_ahep_def",
+    "Prosa.Analysis.Facts.Interference.interference_athep_def",
+    "Prosa.Analysis.Facts.Interference.no_ahep_interference_when_scheduled",
+    "Prosa.Analysis.Facts.Interference.no_ahep_interference_when_served",
+    "Prosa.Analysis.Facts.Interference.no_athep_interference_when_scheduled",
+    "Prosa.Analysis.Facts.Interference.athep_interference_iff",
+    "Prosa.Analysis.Facts.Interference.athep_interference_if",
+    "Prosa.Analysis.Facts.Interference.no_ahep_interference_when_scheduled_lp",
+    "Prosa.Analysis.Facts.Interference.cumulative_i_ohep_eq_service_of_ohep",
+    "Prosa.Analysis.Facts.Interference.cumulative_i_thep_eq_service_of_othep"
+  ],
+  "input_relations": [
+    "job_arrival by ArJobArrivalRel",
+    "job_cost by SvcJobCostRel",
+    "JobTask by Lean.eq",
+    "SvcProcessorStateRel (two-sided) with the supply_on field for the supply statements",
+    "FP policy pointwise on Booleans (leading)"
+  ],
+  "coverage_for_inner_binders": [
+    "schedules (state conversion with roundtrips)",
+    "arrival sequences (both directions)",
+    "JLFP policies (pointwise on Booleans)",
+    "tasks and jobs (identity carriers)",
+    "Nats (both directions)"
+  ],
+  "lean_representation_note": "Booleans in Prop position are `= true`; `~~ b` is `!b`; the FP and JLFP policies are explicit binders acting as local instances; the unused `reflexive_task_priorities` hypothesis is absent, as in the elaborated types",
+  "export_size": {
+    "lines": 139209,
+    "soft_budget_flag": "OVER_100K_DIAGNOSED",
+    "diagnosis": "the accepted service-of-jobs facts export root without its statements (busy-interval + workload + service-of-jobs over the Service closure, ~138k lines) merged with the accepted interference root and the accepted supply / scheduled-job interfaces, reused so that the accepted certificate chains apply, plus the 17 statements and the priority/platform predicates they mention"
+  },
+  "file_dependencies": {
+    "analysis/definitions/interference.v": "analysis_definitions_interference_module_status.json",
+    "analysis/definitions/priority/classes.v": "analysis_definitions_priority_classes_module_status.json",
+    "analysis/facts/model/service_of_jobs.v": "analysis_facts_model_service_of_jobs_module_status.json",
+    "analysis/facts/priority/classes.v": "analysis_facts_priority_classes_module_status.json"
+  },
+  "production_file": "Prosa/Analysis/Facts/Interference.lean",
+  "production_source_sha256": "f4ef6196748ec9a4ad37c9b2be0b31b84fd7d19b17b2cc31f7b0f5d4aa409e1c",
+  "production_olean_sha256": "27cbc248f8f2e5c8270b780ae17cff5160ba139f658564d16d7d2b1124711e4b",
+  "export_config_sha256": "6e8cfa49be31854ea00abebf2ee1293018e49be6e0ad7fbc376d7ca8bec1f4e1",
+  "export_sha256": "e26afe32dfbcaf82c69a797f4023cc7adfbb8fdb8fcd0f8e6281ece4d0bcae66",
+  "export_lines": 139209,
+  "export_bytes": 3136146,
+  "import_sha256": "174919656bfb2fe9077c0b49c645459ce4d98c35910c92cdcc0a3f77db15cdb1",
+  "source_vo_sha256": "db0b44b6e9b0d865a34a0fef531187da30b36bc4d5696ad3e6634aeb628be8a6",
+  "lean_axiom_summary_sha256": "09fd65f2921c0a86714536f238f0fcd2fa6dd7a3d362df4a2d55f9f4acdcd0db",
+  "rocq_assumption_summary_sha256": "5992b8425d74f7434740c135088f68252d02bf89957d322fbd3b6be28af97f56",
+  "assumption_config_sha256": "3ae8903190f5b6555544979757805796e4cf0737501bcf581060b0617df1d293",
+  "stage_timing_seconds": {
+    "source_acquisition": {
+      "mode": "FRESH",
+      "seconds": 13
+    },
+    "lean_build": {
+      "mode": "FRESH",
+      "seconds": 925
+    },
+    "export": {
+      "mode": "FRESH",
+      "seconds": 31
+    },
+    "rocq_import": {
+      "mode": "FRESH",
+      "seconds": 43
+    },
+    "certificate_compile": {
+      "mode": "FRESH",
+      "seconds": 30
+    },
+    "assumption_audit": {
+      "mode": "FRESH",
+      "seconds": 0
+    }
+  },
+  "certificates": {
+    "ArrivalsSeqBaseAdapter": {
+      "source_sha256": "d42ee0c29d062d7bbee45f660cab7f9bc1b2c0675732a9a6a8dc76962edde26c",
+      "vo_sha256": "66b94c59f7321cbadf8eeb86ad1b6b8647f9570f3c5e241e2a27ea4742b68a16"
+    },
+    "ArrivalsSeqOperations": {
+      "source_sha256": "f69723a6d278272f2e818671dc95ccf24a452c2ce66b79fd8221db8e1c5dd6c5",
+      "vo_sha256": "b73f01be8508de59d2169287942c377ae965e87bd45fcd6dad998e41395a7303"
+    },
+    "ArrivalsSeqCorrespondence": {
+      "source_sha256": "df18a69baa85f7fceb1c16eb3a0e69bc7adb1ddc06bb443af74acc188fba8f7c",
+      "vo_sha256": "6e105b3e961348245dffa79d272258996e605c587eb20212458faa5cd99d4b69"
+    },
+    "ArrivalsCorrespondence": {
+      "source_sha256": "d6fbcaccd6c07f4a5ec581e2fe81026c48c8205bf2082998ae94898cd8cbdaad",
+      "vo_sha256": "6a9eb30773f1603c7715afc756731413376dcdf2d6fec5f3a92cced962a0d242"
+    },
+    "JitterSvcBaseAdapter": {
+      "source_sha256": "82e564c9804d0bf7cda5829edca1631d46a8168b96e4f9c3e75ecd6d9abe4604",
+      "vo_sha256": "d7995797d21ba06e3b338e923babb96804236af4b14c173ca1337c26df336282"
+    },
+    "JitterSvcNatBoolOperations": {
+      "source_sha256": "76fa42463d31c2464063193b6f515c557242cbe065e4cd4b3e8f0b1bd54b4bd0",
+      "vo_sha256": "581e1a38635be26e6a7cb80d554f3bd8fcfe974db78ab0cdaee26fad39876890"
+    },
+    "JitterSvcIntervalOperations": {
+      "source_sha256": "e008d3d5af7f2d497709755b952deedc7b42cd65dc36263205c4c9674b1b07e7",
+      "vo_sha256": "2ae9ecb0969f5de702b6780b5c851d36c4b67f571d30ad34597d1bed3ecdef34"
+    },
+    "JitterSvcScheduleOperations": {
+      "source_sha256": "f562bce3f0965d77473567111a4ce1b88d4abd2b3f98ef7c63acc7174a2abf5c",
+      "vo_sha256": "41232bd2d4e4751317f6a0017d5ada4b13280977041efee1b6022d59fcad4ad4"
+    },
+    "JitterSvcJobOperations": {
+      "source_sha256": "33db46534cd964e1732721c33070b9097a4687895812c33ef2382d3402236df6",
+      "vo_sha256": "8c3c2373e39a5d2b6d9f21c759ba83486fc0252675dce7f3b26bedd74e11fc57"
+    },
+    "PreemptionParameterCorrespondence": {
+      "source_sha256": "20f18350341b6c06a78158b1b2a963b3d706d5319b1f39747fa9df396e1fbd2e",
+      "vo_sha256": "eced7bf16d9277e9a78f8676c60dc3eab46cefeafe20a0bd8863600ddd705e97"
+    },
+    "ServiceOfJobsCorrespondence": {
+      "source_sha256": "b196986318a55a805872de02c68b22ecd5cede471f523aafb49aab6a40740636",
+      "vo_sha256": "922338914af65b18a1e3eafcc8e9d4c1639d5d6a0646eccffa775ebcf5341f35"
+    },
+    "InterferenceCorrespondence": {
+      "source_sha256": "2f4af65b564ec9c47ccc3226668ac4a3c8ea0cce986d5ec75ec58ac51c98f96e",
+      "vo_sha256": "f6e8332231c6ff411d64cb3e6f19016b860a071690ef38c63d5ed9fa0e4e6a26"
+    },
+    "FactsInterferenceCorrespondence": {
+      "source_sha256": "d6a6632982e4ec17d625d5b9135c6121e1be09740a6b9d0f4b46f18c3cda14d7",
+      "vo_sha256": "7ff5b4c3dd8c7f04acde511f003da57e08b673f2ee4e36a790a374b6249b6f39"
+    },
+    "FactsInterferenceAssumptionAudit": {
+      "source_sha256": "980b76537c27f30dd54dee4bc8e126ec0688e1dfcc0242c7838e27b0b55970c3",
+      "vo_sha256": "accb143757f4a8971bce2a356f527f489563aefe9a31321d806dd383ab5fae84"
+    }
+  },
+  "declarations": [
+    {
+      "source_declaration": "prosa.analysis.facts.interference.another_task_hep_job_split_hp_ep",
+      "lean_declaration": "Prosa.Analysis.Facts.Interference.another_task_hep_job_split_hp_ep",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "another_task_hep_job_split_hp_ep_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.interference.hep_interference_another_task_split",
+      "lean_declaration": "Prosa.Analysis.Facts.Interference.hep_interference_another_task_split",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "hep_interference_another_task_split_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.interference.cumulative_hep_interference_split_tasks_new",
+      "lean_declaration": "Prosa.Analysis.Facts.Interference.cumulative_hep_interference_split_tasks_new",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "cumulative_hep_interference_split_tasks_new_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.interference.no_hep_job_interference_without_supply",
+      "lean_declaration": "Prosa.Analysis.Facts.Interference.no_hep_job_interference_without_supply",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "no_hep_job_interference_without_supply_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.interference.no_hep_task_interference_without_supply",
+      "lean_declaration": "Prosa.Analysis.Facts.Interference.no_hep_task_interference_without_supply",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "no_hep_task_interference_without_supply_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.interference.no_hep_job_interference_when_idle",
+      "lean_declaration": "Prosa.Analysis.Facts.Interference.no_hep_job_interference_when_idle",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "no_hep_job_interference_when_idle_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.interference.no_hep_task_interference_when_idle",
+      "lean_declaration": "Prosa.Analysis.Facts.Interference.no_hep_task_interference_when_idle",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "no_hep_task_interference_when_idle_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.interference.interference_ahep_def",
+      "lean_declaration": "Prosa.Analysis.Facts.Interference.interference_ahep_def",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "interference_ahep_def_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.interference.interference_athep_def",
+      "lean_declaration": "Prosa.Analysis.Facts.Interference.interference_athep_def",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "interference_athep_def_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.interference.no_ahep_interference_when_scheduled",
+      "lean_declaration": "Prosa.Analysis.Facts.Interference.no_ahep_interference_when_scheduled",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "no_ahep_interference_when_scheduled_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.interference.no_ahep_interference_when_served",
+      "lean_declaration": "Prosa.Analysis.Facts.Interference.no_ahep_interference_when_served",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "no_ahep_interference_when_served_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.interference.no_athep_interference_when_scheduled",
+      "lean_declaration": "Prosa.Analysis.Facts.Interference.no_athep_interference_when_scheduled",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "no_athep_interference_when_scheduled_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.interference.athep_interference_iff",
+      "lean_declaration": "Prosa.Analysis.Facts.Interference.athep_interference_iff",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "athep_interference_iff_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.interference.athep_interference_if",
+      "lean_declaration": "Prosa.Analysis.Facts.Interference.athep_interference_if",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "athep_interference_if_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.interference.no_ahep_interference_when_scheduled_lp",
+      "lean_declaration": "Prosa.Analysis.Facts.Interference.no_ahep_interference_when_scheduled_lp",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "no_ahep_interference_when_scheduled_lp_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.interference.cumulative_i_ohep_eq_service_of_ohep",
+      "lean_declaration": "Prosa.Analysis.Facts.Interference.cumulative_i_ohep_eq_service_of_ohep",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "cumulative_i_ohep_eq_service_of_ohep_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.interference.cumulative_i_thep_eq_service_of_othep",
+      "lean_declaration": "Prosa.Analysis.Facts.Interference.cumulative_i_thep_eq_service_of_othep",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "cumulative_i_thep_eq_service_of_othep_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    }
+  ],
+  "acceptance": "ACCEPTED_V06_FILE"
+}

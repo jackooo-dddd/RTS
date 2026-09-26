@@ -3,7 +3,7 @@
 ## 当前状态
 
 <!-- V06_STATUS_BEGIN -->
-截至 2026-09-26，正式 machine state 记录 **122/357 个文件、966/2439 个 public declarations 已验收**。依据：[最新累计 status](../Validation/planning/v06_pipeline/analysis_facts_model_ideal_schedule_module_status.json)。表中的“是”仅表示已有 `ACCEPTED_V06_FILE`；“否”可能是未开始、进行中或受阻，不能据此推断尚未翻译。零声明文件也只有通过模块接口验收才写“是”。
+截至 2026-09-27，正式 machine state 记录 **197/357 个文件、1371/2439 个 public declarations 已验收**。依据：[最新累计 status](../Validation/planning/v06_pipeline/analysis_abstract_restricted_supply_busy_prefix_module_status.json)。表中的“是”仅表示已有 `ACCEPTED_V06_FILE`；“否”可能是未开始、进行中或受阻，不能据此推断尚未翻译。零声明文件也只有通过模块接口验收才写“是”。
 <!-- V06_STATUS_END -->
 
 <!-- V06_NAV_BEGIN -->
@@ -12,7 +12,7 @@
 
 | Progress | Latest completed | Quick navigation |
 |---|---|---|
-| **122/357 files** · **966/2439 declarations** | **Rank 123** · `analysis/facts/model/ideal/schedule.v` | [🎯 Jump to latest completed](#latest-completed) · [✅ Finished](#finished-files) · [⏳ Unfinished](#unfinished-files) |
+| **197/357 files** · **1371/2439 declarations** | **Rank 161** · `analysis/abstract/restricted_supply/busy_prefix.v` | [🎯 Jump to latest completed](#latest-completed) · [✅ Finished](#finished-files) · [⏳ Unfinished](#unfinished-files) |
 
 </details>
 <!-- V06_NAV_END -->
@@ -36,7 +36,7 @@
 
 <!-- V06_FILE_TABLE_BEGIN -->
 <details open>
-<summary><b>✅ Finished — 122 files</b></summary>
+<summary><b>✅ Finished — 197 files</b></summary>
 
 <a id="finished-files"></a>
 
@@ -163,113 +163,118 @@
 | 120 | 15 | [`analysis/definitions/progress.v`](files/analysis/definitions/2026-09-27_150000_progress.md) | 4 | ✅ 是 | 09:26:09:28 |
 | 121 | 15 | [`analysis/definitions/readiness.v`](files/analysis/definitions/2026-09-27_170000_readiness.md) | 3 | ✅ 是 | 09:26:09:48 |
 | 122 | 15 | [`analysis/facts/behavior/completion.v`](files/analysis/facts/behavior/2026-09-27_180000_completion.md) | 30 | ✅ 是 | 09:26:10:09 |
-| 123 | 15 | <a id="latest-completed"></a>[`analysis/facts/model/ideal/schedule.v`](files/analysis/facts/model/ideal/2026-09-27_190000_schedule.md) | 19 | ✅ 是 | 09:26:11:39 |
+| 123 | 15 | [`analysis/facts/model/ideal/schedule.v`](files/analysis/facts/model/ideal/2026-09-27_190000_schedule.md) | 19 | ✅ 是 | 09:26:11:39 |
+| 124 | 15 | [`analysis/facts/model/ideal/service_of_jobs.v`](files/analysis/facts/model/ideal/2026-09-27_200000_service_of_jobs.md) | 2 | ✅ 是 | 09:26:12:55 |
+| 125 | 15 | [`analysis/facts/model/task_schedule.v`](files/analysis/facts/model/2026-09-27_210000_task_schedule.md) | 10 | ✅ 是 | 09:26:13:26 |
+| 126 | 15 | [`analysis/facts/model/workload.v`](files/analysis/facts/model/2026-09-27_220000_workload.md) | 17 | ✅ 是 | 09:26:13:51 |
+| 127 | 15 | [`analysis/facts/priority/classes.v`](files/analysis/facts/priority/2026-09-27_230000_classes.md) | 22 | ✅ 是 | 09:26:14:07 |
+| 128 | 15 | [`analysis/facts/sporadic/arrival_times.v`](files/analysis/facts/sporadic/2026-09-28_000000_arrival_times.md) | 3 | ✅ 是 | 09:26:14:21 |
+| 130 | 15 | [`model/preemption/fully_nonpreemptive.v`](files/model/preemption/2026-09-28_010000_fully_nonpreemptive.md) | 0 | ✅ 是 | 09:26:14:28 |
+| 131 | 15 | [`model/preemption/fully_preemptive.v`](files/model/preemption/2026-09-28_020000_fully_preemptive.md) | 0 | ✅ 是 | 09:26:14:30 |
+| 132 | 15 | [`model/preemption/limited_preemptive.v`](files/model/preemption/2026-09-28_030000_limited_preemptive.md) | 5 | ✅ 是 | 09:26:15:02 |
+| 133 | 15 | [`model/priority/elf.v`](files/model/priority/2026-09-28_040000_elf.md) | 1 | ✅ 是 | 09:26:15:03 |
+| 135 | 15 | [`model/schedule/limited_preemptive.v`](files/model/schedule/2026-09-28_050000_limited_preemptive.md) | 1 | ✅ 是 | 09:26:15:16 |
+| 136 | 15 | [`model/schedule/preemption_time.v`](files/model/schedule/2026-09-28_060000_preemption_time.md) | 1 | ✅ 是 | 09:26:15:29 |
+| 137 | 15 | [`model/task/arrival/sporadic_as_curve.v`](files/model/task/arrival/2026-09-28_070000_sporadic_as_curve.md) | 5 | ✅ 是 | 09:26:15:47 |
+| 138 | 15 | [`model/task/preemption/parameters.v`](files/model/task/preemption/2026-09-28_080000_parameters.md) | 13 | ✅ 是 | 09:26:15:47 |
+| 139 | 16 | [`analysis/definitions/blocking_bound/edf.v`](files/analysis/definitions/blocking_bound/2026-09-28_090000_edf.md) | 2 | ✅ 是 | 09:26:16:19 |
+| 141 | 16 | [`analysis/definitions/blocking_bound/fp.v`](files/analysis/definitions/blocking_bound/2026-09-28_100000_fp.md) | 1 | ✅ 是 | 09:26:16:34 |
+| 142 | 16 | [`analysis/definitions/busy_interval/classical.v`](files/analysis/definitions/busy_interval/2026-09-28_110000_classical.md) | 5 | ✅ 是 | 09:26:16:36 |
+| 143 | 16 | [`analysis/definitions/request_bound_function.v`](files/analysis/definitions/2026-09-28_120000_request_bound_function.md) | 6 | ✅ 是 | 09:26:16:51 |
+| 144 | 16 | [`analysis/definitions/schedulability.v`](files/analysis/definitions/2026-09-28_130000_schedulability.md) | 6 | ✅ 是 | 09:26:17:09 |
+| 145 | 16 | [`analysis/definitions/service_inversion/pred.v`](files/analysis/definitions/service_inversion/2026-09-28_140000_pred.md) | 4 | ✅ 是 | 09:26:17:27 |
+| 146 | 16 | [`analysis/facts/behavior/deadlines.v`](files/analysis/facts/behavior/2026-09-28_150000_deadlines.md) | 4 | ✅ 是 | 09:26:17:39 |
+| 147 | 16 | [`analysis/facts/preemption/job/preemptive.v`](files/analysis/facts/preemption/job/2026-09-28_160000_preemptive.md) | 3 | ✅ 是 | 09:26:17:56 |
+| 148 | 16 | [`analysis/facts/priority/jlfp_with_fp.v`](files/analysis/facts/priority/2026-09-28_170000_jlfp_with_fp.md) | 8 | ✅ 是 | 09:26:18:02 |
+| 149 | 16 | [`analysis/facts/readiness/backlogged.v`](files/analysis/facts/readiness/2026-09-28_230000_backlogged.md) | 5 | ✅ 是 | 09:26:19:05 |
+| 150 | 16 | [`analysis/facts/readiness/basic.v`](files/analysis/facts/readiness/2026-09-29_000000_basic.md) | 3 | ✅ 是 | 09:26:19:14 |
+| 151 | 16 | [`analysis/facts/readiness/sequential.v`](files/analysis/facts/readiness/2026-09-29_010000_sequential.md) | 4 | ✅ 是 | 09:26:19:39 |
+| 152 | 16 | [`analysis/facts/sporadic/arrival_sequence.v`](files/analysis/facts/sporadic/2026-09-29_020000_arrival_sequence.md) | 7 | ✅ 是 | 09:26:19:53 |
+| 153 | 16 | [`analysis/facts/transform/replace_at.v`](files/analysis/facts/transform/2026-09-29_030000_replace_at.md) | 7 | ✅ 是 | 09:26:20:18 |
+| 156 | 16 | [`model/schedule/priority_driven.v`](files/model/schedule/2026-09-28_220000_priority_driven.md) | 3 | ✅ 是 | 09:26:19:00 |
+| 157 | 16 | [`model/task/preemption/floating_nonpreemptive.v`](files/model/task/preemption/2026-09-28_210000_floating_nonpreemptive.md) | 2 | ✅ 是 | 09:26:18:46 |
+| 158 | 16 | [`model/task/preemption/fully_nonpreemptive.v`](files/model/task/preemption/2026-09-28_180000_fully_nonpreemptive.md) | 1 | ✅ 是 | 09:26:18:20 |
+| 159 | 16 | [`model/task/preemption/fully_preemptive.v`](files/model/task/preemption/2026-09-28_190000_fully_preemptive.md) | 1 | ✅ 是 | 09:26:18:21 |
+| 160 | 16 | [`model/task/preemption/limited_preemptive.v`](files/model/task/preemption/2026-09-28_200000_limited_preemptive.md) | 8 | ✅ 是 | 09:26:18:33 |
+| 161 | 17 | <a id="latest-completed"></a>[`analysis/abstract/restricted_supply/busy_prefix.v`](files/analysis/abstract/restricted_supply/2026-09-30_220000_busy_prefix.md) | 2 | ✅ 是 | 09:27:07:55 |
+| 162 | 17 | [`analysis/definitions/busy_interval/edf_pi_bound.v`](files/analysis/definitions/busy_interval/2026-09-29_110000_edf_pi_bound.md) | 1 | ✅ 是 | 09:26:22:03 |
+| 163 | 17 | [`analysis/definitions/demand_bound_function.v`](files/analysis/definitions/2026-09-29_040000_demand_bound_function.md) | 2 | ✅ 是 | 09:26:20:27 |
+| 164 | 17 | [`analysis/definitions/priority_inversion.v`](files/analysis/definitions/2026-09-29_060000_priority_inversion.md) | 8 | ✅ 是 | 09:26:20:58 |
+| 165 | 17 | [`analysis/definitions/sbf/busy.v`](files/analysis/definitions/sbf/2026-09-30_210000_busy.md) | 2 | ✅ 是 | 09:27:07:36 |
+| 166 | 17 | [`analysis/definitions/service_inversion/busy_prefix.v`](files/analysis/definitions/service_inversion/2026-09-29_100000_busy_prefix.md) | 2 | ✅ 是 | 09:26:21:40 |
+| 168 | 17 | [`analysis/definitions/tardiness.v`](files/analysis/definitions/2026-09-29_050000_tardiness.md) | 1 | ✅ 是 | 09:26:20:57 |
+| 169 | 17 | [`analysis/definitions/workload/bounded.v`](files/analysis/definitions/workload/2026-09-29_090000_bounded.md) | 1 | ✅ 是 | 09:26:21:24 |
+| 170 | 17 | [`analysis/definitions/workload/edf_athep_bound.v`](files/analysis/definitions/workload/2026-09-29_080000_edf_athep_bound.md) | 1 | ✅ 是 | 09:26:21:22 |
+| 172 | 17 | [`analysis/facts/behavior/all.v`](files/analysis/facts/behavior/2026-09-29_070000_all.md) | 0 | ✅ 是 | 09:26:21:14 |
+| 173 | 17 | [`analysis/facts/busy_interval/quiet_time.v`](files/analysis/facts/busy_interval/2026-09-29_130000_quiet_time.md) | 4 | ✅ 是 | 09:26:22:06 |
+| 174 | 17 | [`analysis/facts/edf_definitions.v`](files/analysis/facts/2026-09-30_200000_edf_definitions.md) | 3 | ✅ 是 | 09:27:07:07 |
+| 177 | 17 | [`analysis/facts/preemption/task/preemptive.v`](files/analysis/facts/preemption/task/2026-09-29_120000_preemptive.md) | 2 | ✅ 是 | 09:26:22:04 |
+| 179 | 17 | [`analysis/facts/transform/swaps.v`](files/analysis/facts/transform/2026-09-30_040000_swaps.md) | 22 | ✅ 是 | 09:27:01:35 |
+| 180 | 17 | [`implementation/definitions/ideal_uni_scheduler.v`](files/implementation/definitions/2026-09-30_160000_ideal_uni_scheduler.md) | 5 | ✅ 是 | 09:27:05:23 |
+| 181 | 17 | [`implementation/facts/generic_schedule.v`](files/implementation/facts/2026-09-30_150000_generic_schedule.md) | 6 | ✅ 是 | 09:27:04:56 |
+| 187 | 18 | [`analysis/facts/model/rbf.v`](files/analysis/facts/model/2026-09-30_030000_rbf.md) | 27 | ✅ 是 | 09:27:01:34 |
+| 189 | 18 | [`analysis/facts/model/service_of_jobs.v`](files/analysis/facts/model/2026-09-29_230000_service_of_jobs.md) | 22 | ✅ 是 | 09:27:00:28 |
+| 190 | 18 | [`analysis/facts/preemption/job/nonpreemptive.v`](files/analysis/facts/preemption/job/2026-09-29_140000_nonpreemptive.md) | 4 | ✅ 是 | 09:26:22:23 |
+| 191 | 18 | [`analysis/facts/preemption/rtc_threshold/job_preemptable.v`](files/analysis/facts/preemption/rtc_threshold/2026-09-29_180000_job_preemptable.md) | 14 | ✅ 是 | 09:26:23:41 |
+| 192 | 18 | [`analysis/facts/priority/inversion.v`](files/analysis/facts/priority/2026-09-29_170000_inversion.md) | 7 | ✅ 是 | 09:26:22:53 |
+| 194 | 18 | [`analysis/transform/prefix.v`](files/analysis/transform/2026-09-29_160000_prefix.md) | 3 | ✅ 是 | 09:26:22:38 |
+| 195 | 18 | [`implementation/facts/ideal_uni/preemption_aware.v`](files/implementation/facts/ideal_uni/2026-09-30_170000_preemption_aware.md) | 10 | ✅ 是 | 09:27:05:59 |
+| 196 | 18 | [`model/task/offset.v`](files/model/task/2026-09-29_150000_offset.md) | 7 | ✅ 是 | 09:26:22:36 |
+| 198 | 19 | [`analysis/abstract/restricted_supply/search_space/fp.v`](files/analysis/abstract/restricted_supply/search_space/2026-09-30_060000_fp.md) | 2 | ✅ 是 | 09:27:02:22 |
+| 200 | 19 | [`analysis/facts/interference.v`](files/analysis/facts/2026-09-30_020000_interference.md) | 17 | ✅ 是 | 09:27:01:30 |
+| 201 | 19 | [`analysis/facts/model/dbf.v`](files/analysis/facts/model/2026-09-30_120000_dbf.md) | 8 | ✅ 是 | 09:27:03:57 |
+| 202 | 19 | [`analysis/facts/model/ideal/priority_inversion.v`](files/analysis/facts/model/ideal/2026-09-30_190000_priority_inversion.md) | 4 | ✅ 是 | 09:27:06:34 |
+| 203 | 19 | [`analysis/facts/model/offset.v`](files/analysis/facts/model/2026-09-29_210000_offset.md) | 2 | ✅ 是 | 09:27:00:18 |
+| 205 | 19 | [`analysis/facts/preemption/rtc_threshold/nonpreemptive.v`](files/analysis/facts/preemption/rtc_threshold/2026-09-29_200000_nonpreemptive.md) | 3 | ✅ 是 | 09:27:00:17 |
+| 206 | 19 | [`analysis/facts/preemption/rtc_threshold/preemptive.v`](files/analysis/facts/preemption/rtc_threshold/2026-09-30_000000_preemptive.md) | 1 | ✅ 是 | 09:27:00:30 |
+| 207 | 19 | [`analysis/facts/preemption/task/nonpreemptive.v`](files/analysis/facts/preemption/task/2026-09-29_190000_nonpreemptive.md) | 2 | ✅ 是 | 09:26:23:43 |
+| 210 | 19 | [`analysis/facts/workload/edf_athep_bound.v`](files/analysis/facts/workload/2026-09-30_050000_edf_athep_bound.md) | 4 | ✅ 是 | 09:27:02:02 |
+| 212 | 19 | [`analysis/transform/edf_trans.v`](files/analysis/transform/2026-09-30_130000_edf_trans.md) | 6 | ✅ 是 | 09:27:04:21 |
+| 213 | 19 | [`analysis/transform/wc_trans.v`](files/analysis/transform/2026-09-30_140000_wc_trans.md) | 6 | ✅ 是 | 09:27:04:40 |
+| 214 | 19 | [`implementation/facts/ideal_uni/prio_aware.v`](files/implementation/facts/ideal_uni/2026-09-30_180000_prio_aware.md) | 5 | ✅ 是 | 09:27:06:18 |
+| 215 | 19 | [`model/task/arrival/periodic.v`](files/model/task/arrival/2026-09-29_220000_periodic.md) | 5 | ✅ 是 | 09:27:00:19 |
+| 218 | 20 | [`analysis/abstract/restricted_supply/search_space/edf.v`](files/analysis/abstract/restricted_supply/search_space/2026-09-30_080000_edf.md) | 2 | ✅ 是 | 09:27:02:53 |
+| 229 | 20 | [`model/task/arrival/periodic_as_sporadic.v`](files/model/task/arrival/2026-09-30_010000_periodic_as_sporadic.md) | 5 | ✅ 是 | 09:27:00:56 |
+| 234 | 21 | [`analysis/facts/periodic/arrival_separation.v`](files/analysis/facts/periodic/2026-09-30_070000_arrival_separation.md) | 3 | ✅ 是 | 09:27:02:30 |
+| 248 | 22 | [`analysis/facts/periodic/max_inter_arrival.v`](files/analysis/facts/periodic/2026-09-30_090000_max_inter_arrival.md) | 3 | ✅ 是 | 09:27:03:05 |
+| 256 | 23 | [`analysis/facts/periodic/arrival_times.v`](files/analysis/facts/periodic/2026-09-30_100000_arrival_times.md) | 3 | ✅ 是 | 09:27:03:19 |
+| 262 | 24 | [`analysis/facts/periodic/task_arrivals_size.v`](files/analysis/facts/periodic/2026-09-30_110000_task_arrivals_size.md) | 8 | ✅ 是 | 09:27:03:36 |
 
 </details>
 
 <details open>
-<summary><b>⏳ Unfinished — 235 files</b></summary>
+<summary><b>⏳ Unfinished — 160 files</b></summary>
 
 <a id="unfinished-files"></a>
 
 | Rank | Layer | v0.6 source file | Public declarations | 验证完成 |
 | ---: | ---: | --- | ---: | :---: |
 | 30 | 1 | [`util/lcmseq.v`](files/util/2026-09-23_073256_lcmseq.md) | 5 | ○ 否 |
-| 124 | 15 | `analysis/facts/model/ideal/service_of_jobs.v` | 2 | ○ 否 |
-| 125 | 15 | `analysis/facts/model/task_schedule.v` | 10 | ○ 否 |
-| 126 | 15 | `analysis/facts/model/workload.v` | 17 | ○ 否 |
-| 127 | 15 | `analysis/facts/priority/classes.v` | 22 | ○ 否 |
-| 128 | 15 | `analysis/facts/sporadic/arrival_times.v` | 3 | ○ 否 |
 | 129 | 15 | `implementation/definitions/task.v` | 15 | ○ 否 |
-| 130 | 15 | `model/preemption/fully_nonpreemptive.v` | 0 | ○ 否 |
-| 131 | 15 | `model/preemption/fully_preemptive.v` | 0 | ○ 否 |
-| 132 | 15 | `model/preemption/limited_preemptive.v` | 5 | ○ 否 |
-| 133 | 15 | `model/priority/elf.v` | 1 | ○ 否 |
 | 134 | 15 | `model/processor/multiprocessor.v` | 6 | ○ 否 |
-| 135 | 15 | `model/schedule/limited_preemptive.v` | 1 | ○ 否 |
-| 136 | 15 | `model/schedule/preemption_time.v` | 1 | ○ 否 |
-| 137 | 15 | `model/task/arrival/sporadic_as_curve.v` | 5 | ○ 否 |
-| 138 | 15 | `model/task/preemption/parameters.v` | 13 | ○ 否 |
-| 139 | 16 | `analysis/definitions/blocking_bound/edf.v` | 2 | ○ 否 |
 | 140 | 16 | `analysis/definitions/blocking_bound/elf.v` | 1 | ○ 否 |
-| 141 | 16 | `analysis/definitions/blocking_bound/fp.v` | 1 | ○ 否 |
-| 142 | 16 | `analysis/definitions/busy_interval/classical.v` | 5 | ○ 否 |
-| 143 | 16 | `analysis/definitions/request_bound_function.v` | 6 | ○ 否 |
-| 144 | 16 | `analysis/definitions/schedulability.v` | 6 | ○ 否 |
-| 145 | 16 | `analysis/definitions/service_inversion/pred.v` | 4 | ○ 否 |
-| 146 | 16 | `analysis/facts/behavior/deadlines.v` | 4 | ○ 否 |
-| 147 | 16 | `analysis/facts/preemption/job/preemptive.v` | 3 | ○ 否 |
-| 148 | 16 | `analysis/facts/priority/jlfp_with_fp.v` | 8 | ○ 否 |
-| 149 | 16 | `analysis/facts/readiness/backlogged.v` | 5 | ○ 否 |
-| 150 | 16 | `analysis/facts/readiness/basic.v` | 3 | ○ 否 |
-| 151 | 16 | `analysis/facts/readiness/sequential.v` | 4 | ○ 否 |
-| 152 | 16 | `analysis/facts/sporadic/arrival_sequence.v` | 7 | ○ 否 |
-| 153 | 16 | `analysis/facts/transform/replace_at.v` | 7 | ○ 否 |
 | 154 | 16 | `implementation/definitions/job_constructor.v` | 4 | ○ 否 |
 | 155 | 16 | `model/readiness/suspension.v` | 4 | ○ 否 |
-| 156 | 16 | `model/schedule/priority_driven.v` | 3 | ○ 否 |
-| 157 | 16 | `model/task/preemption/floating_nonpreemptive.v` | 2 | ○ 否 |
-| 158 | 16 | `model/task/preemption/fully_nonpreemptive.v` | 1 | ○ 否 |
-| 159 | 16 | `model/task/preemption/fully_preemptive.v` | 1 | ○ 否 |
-| 160 | 16 | `model/task/preemption/limited_preemptive.v` | 8 | ○ 否 |
-| 161 | 17 | `analysis/abstract/restricted_supply/busy_prefix.v` | 2 | ○ 否 |
-| 162 | 17 | `analysis/definitions/busy_interval/edf_pi_bound.v` | 1 | ○ 否 |
-| 163 | 17 | `analysis/definitions/demand_bound_function.v` | 2 | ○ 否 |
-| 164 | 17 | `analysis/definitions/priority_inversion.v` | 8 | ○ 否 |
-| 165 | 17 | `analysis/definitions/sbf/busy.v` | 2 | ○ 否 |
-| 166 | 17 | `analysis/definitions/service_inversion/busy_prefix.v` | 2 | ○ 否 |
 | 167 | 17 | `analysis/definitions/service_inversion/readiness_aware.v` | 3 | ○ 否 |
-| 168 | 17 | `analysis/definitions/tardiness.v` | 1 | ○ 否 |
-| 169 | 17 | `analysis/definitions/workload/bounded.v` | 1 | ○ 否 |
-| 170 | 17 | `analysis/definitions/workload/edf_athep_bound.v` | 1 | ○ 否 |
 | 171 | 17 | `analysis/definitions/workload/elf_athep_bound.v` | 4 | ○ 否 |
-| 172 | 17 | `analysis/facts/behavior/all.v` | 0 | ○ 否 |
-| 173 | 17 | `analysis/facts/busy_interval/quiet_time.v` | 4 | ○ 否 |
-| 174 | 17 | `analysis/facts/edf_definitions.v` | 3 | ○ 否 |
 | 175 | 17 | `analysis/facts/jitter.v` | 14 | ○ 否 |
 | 176 | 17 | `analysis/facts/model/preemption.v` | 14 | ○ 否 |
-| 177 | 17 | `analysis/facts/preemption/task/preemptive.v` | 2 | ○ 否 |
 | 178 | 17 | `analysis/facts/suspension.v` | 11 | ○ 否 |
-| 179 | 17 | `analysis/facts/transform/swaps.v` | 22 | ○ 否 |
-| 180 | 17 | `implementation/definitions/ideal_uni_scheduler.v` | 5 | ○ 否 |
-| 181 | 17 | `implementation/facts/generic_schedule.v` | 6 | ○ 否 |
 | 182 | 17 | `implementation/facts/job_constructor.v` | 6 | ○ 否 |
 | 183 | 17 | `model/task/suspension/dynamic.v` | 2 | ○ 否 |
 | 184 | 18 | `analysis/facts/completes_at.v` | 5 | ○ 否 |
 | 185 | 18 | `analysis/facts/model/dynamic_suspension.v` | 2 | ○ 否 |
 | 186 | 18 | `analysis/facts/model/exceedance/SBF.v` | 4 | ○ 否 |
-| 187 | 18 | `analysis/facts/model/rbf.v` | 27 | ○ 否 |
 | 188 | 18 | `analysis/facts/model/sequential.v` | 3 | ○ 否 |
-| 189 | 18 | `analysis/facts/model/service_of_jobs.v` | 22 | ○ 否 |
-| 190 | 18 | `analysis/facts/preemption/job/nonpreemptive.v` | 4 | ○ 否 |
-| 191 | 18 | `analysis/facts/preemption/rtc_threshold/job_preemptable.v` | 14 | ○ 否 |
-| 192 | 18 | `analysis/facts/priority/inversion.v` | 7 | ○ 否 |
 | 193 | 18 | `analysis/facts/priority/sequential.v` | 1 | ○ 否 |
-| 194 | 18 | `analysis/transform/prefix.v` | 3 | ○ 否 |
-| 195 | 18 | `implementation/facts/ideal_uni/preemption_aware.v` | 10 | ○ 否 |
-| 196 | 18 | `model/task/offset.v` | 7 | ○ 否 |
 | 197 | 19 | `analysis/abstract/iw_auxiliary.v` | 6 | ○ 否 |
-| 198 | 19 | `analysis/abstract/restricted_supply/search_space/fp.v` | 2 | ○ 否 |
 | 199 | 19 | `analysis/facts/busy_interval/existence.v` | 14 | ○ 否 |
-| 200 | 19 | `analysis/facts/interference.v` | 17 | ○ 否 |
-| 201 | 19 | `analysis/facts/model/dbf.v` | 8 | ○ 否 |
-| 202 | 19 | `analysis/facts/model/ideal/priority_inversion.v` | 4 | ○ 否 |
-| 203 | 19 | `analysis/facts/model/offset.v` | 2 | ○ 否 |
 | 204 | 19 | `analysis/facts/preemption/job/limited.v` | 10 | ○ 否 |
-| 205 | 19 | `analysis/facts/preemption/rtc_threshold/nonpreemptive.v` | 3 | ○ 否 |
-| 206 | 19 | `analysis/facts/preemption/rtc_threshold/preemptive.v` | 1 | ○ 否 |
-| 207 | 19 | `analysis/facts/preemption/task/nonpreemptive.v` | 2 | ○ 否 |
 | 208 | 19 | `analysis/facts/priority/edf.v` | 5 | ○ 否 |
 | 209 | 19 | `analysis/facts/priority/gel.v` | 6 | ○ 否 |
-| 210 | 19 | `analysis/facts/workload/edf_athep_bound.v` | 4 | ○ 否 |
 | 211 | 19 | `analysis/facts/workload/elf_athep_bound.v` | 6 | ○ 否 |
-| 212 | 19 | `analysis/transform/edf_trans.v` | 6 | ○ 否 |
-| 213 | 19 | `analysis/transform/wc_trans.v` | 6 | ○ 否 |
-| 214 | 19 | `implementation/facts/ideal_uni/prio_aware.v` | 5 | ○ 否 |
-| 215 | 19 | `model/task/arrival/periodic.v` | 5 | ○ 否 |
 | 216 | 19 | `results/transfer_schedulability/criterion.v` | 40 | ○ 否 |
 | 217 | 20 | `analysis/abstract/busy_interval.v` | 15 | ○ 否 |
-| 218 | 20 | `analysis/abstract/restricted_supply/search_space/edf.v` | 2 | ○ 否 |
 | 219 | 20 | `analysis/abstract/restricted_supply/search_space/elf.v` | 2 | ○ 否 |
 | 220 | 20 | `analysis/definitions/hyperperiod.v` | 7 | ○ 否 |
 | 221 | 20 | `analysis/facts/busy_interval/carry_in.v` | 9 | ○ 否 |
@@ -280,12 +285,10 @@
 | 226 | 20 | `analysis/facts/readiness_interference.v` | 2 | ○ 否 |
 | 227 | 20 | `analysis/facts/transform/edf_opt.v` | 43 | ○ 否 |
 | 228 | 20 | `analysis/facts/transform/wc_correctness.v` | 33 | ○ 否 |
-| 229 | 20 | `model/task/arrival/periodic_as_sporadic.v` | 5 | ○ 否 |
 | 230 | 20 | `results/transfer_schedulability/paper_model.v` | 19 | ○ 否 |
 | 231 | 21 | `analysis/abstract/lower_bound_on_service.v` | 3 | ○ 否 |
 | 232 | 21 | `analysis/facts/busy_interval/arrival.v` | 3 | ○ 否 |
 | 233 | 21 | `analysis/facts/busy_interval/pi.v` | 24 | ○ 否 |
-| 234 | 21 | `analysis/facts/periodic/arrival_separation.v` | 3 | ○ 否 |
 | 235 | 21 | `analysis/facts/preemption/rtc_threshold/floating.v` | 1 | ○ 否 |
 | 236 | 21 | `analysis/facts/preemption/rtc_threshold/limited.v` | 3 | ○ 否 |
 | 237 | 21 | `analysis/facts/transform/edf_wc.v` | 11 | ○ 否 |
@@ -299,7 +302,6 @@
 | 245 | 22 | `analysis/facts/busy_interval/pi_cond.v` | 1 | ○ 否 |
 | 246 | 22 | `analysis/facts/busy_interval/service_inversion.v` | 12 | ○ 否 |
 | 247 | 22 | `analysis/facts/model/overheads/schedule.v` | 6 | ○ 否 |
-| 248 | 22 | `analysis/facts/periodic/max_inter_arrival.v` | 3 | ○ 否 |
 | 249 | 22 | `results/optimality/edf.v` | 4 | ○ 否 |
 | 250 | 23 | `analysis/abstract/IBF/supply.v` | 3 | ○ 否 |
 | 251 | 23 | `analysis/abstract/IBF/task.v` | 18 | ○ 否 |
@@ -307,13 +309,11 @@
 | 253 | 23 | `analysis/facts/busy_interval/all.v` | 0 | ○ 否 |
 | 254 | 23 | `analysis/facts/model/overheads/priority_bump.v` | 3 | ○ 否 |
 | 255 | 23 | `analysis/facts/model/overheads/schedule_change.v` | 6 | ○ 否 |
-| 256 | 23 | `analysis/facts/periodic/arrival_times.v` | 3 | ○ 否 |
 | 257 | 24 | `analysis/abstract/IBF/supply_task.v` | 3 | ○ 否 |
 | 258 | 24 | `analysis/abstract/ideal/abstract_seq_rta.v` | 2 | ○ 否 |
 | 259 | 24 | `analysis/abstract/ideal/iw_instantiation.v` | 20 | ○ 否 |
 | 260 | 24 | `analysis/abstract/restricted_supply/abstract_rta.v` | 10 | ○ 否 |
 | 261 | 24 | `analysis/facts/model/overheads/schedule_change_bound.v` | 3 | ○ 否 |
-| 262 | 24 | `analysis/facts/periodic/task_arrivals_size.v` | 8 | ○ 否 |
 | 263 | 24 | `analysis/facts/priority/fifo.v` | 12 | ○ 否 |
 | 264 | 24 | `model/processor/overhead_resource_model.v` | 10 | ○ 否 |
 | 265 | 25 | `analysis/abstract/ideal/cumulative_bounds.v` | 2 | ○ 否 |

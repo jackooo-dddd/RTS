@@ -1,0 +1,91 @@
+{
+  "rank": 158,
+  "layer": 16,
+  "tag": "TPFULLYN",
+  "slug": "model_task_preemption_fully_nonpreemptive",
+  "source": "model/task/preemption/fully_nonpreemptive.v",
+  "dependencies": [
+    "model/task/preemption/parameters.v"
+  ],
+  "declaration_count": 1,
+  "base_run": "model_task_preemption_parameters_final",
+  "base_checks": [
+    {
+      "manifest": "model_task_preemption_parameters",
+      "olean": "Prosa/Model/Task/Preemption/Parameters.olean",
+      "vo": "TaskPreemptionParametersSemanticSource.vo"
+    }
+  ],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "TaskPreemptionFullyNonpreemptiveSemanticSource",
+    "helper_blocks": [
+      "fully_nonpreemptive_rtc_threshold"
+    ],
+    "source_order": true,
+    "drop_imports": [
+      "Require Export prosa.model.task.preemption.parameters."
+    ],
+    "add_imports": [
+      "Require Export prosa.TaskPreemptionParametersSemanticSource.",
+      "Export TaskPreemptionParametersSemanticSource.",
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq.",
+      "Require Import prosa.util.epsilon.",
+      "Require Import prosa.util.notation."
+    ],
+    "note": "the definition and the source-local instance fully_nonpreemptive_rtc_threshold (helper block) are byte-identical computational blocks, emitted in source order; the model/task/preemption/parameters import is bound to the accepted extracted source (TaskPreemptionParametersSemanticSource, .vo hash-checked against its manifest); prosa.util.notation is re-imported after the MathComp modules so that `constant` resolves to Prosa's definition (as in the source, where util/notation is imported after MathComp's seq)"
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/TaskPreemptionFullyNonpreemptiveStatementProbe.v",
+  "production": "Prosa/Model/Task/Preemption/FullyNonpreemptive.lean",
+  "production_olean": "Prosa/Model/Task/Preemption/FullyNonpreemptive.olean",
+  "lean_namespace": "Prosa.Model.Task.Preemption.FullyNonpreemptive",
+  "fixtures": [
+    "NondecreasingComputationInterface",
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "PreemptionParameterComputationInterface",
+    "TaskPreemptionParametersComputationInterface",
+    "TaskPreemptionFullyNonpreemptiveComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/TaskPreemptionFullyNonpreemptiveLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/model_task_preemption_fully_nonpreemptive_export_config.json",
+  "export_name": "TaskPreemptionFullyNonpreemptive",
+  "cert_dir": "certificates/model_task_preemption_fully_nonpreemptive",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "JitterSvcBaseAdapter",
+    "JitterSvcNatBoolOperations",
+    "JitterSvcIntervalOperations",
+    "JitterSvcScheduleOperations",
+    "JitterSvcJobOperations",
+    "PreemptionParameterCorrespondence",
+    "TaskPreemptionParametersCorrespondence",
+    "TaskPreemptionFullyNonpreemptiveCorrespondence"
+  ],
+  "audit_module": "TaskPreemptionFullyNonpreemptiveAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/TaskPreemptionFullyNonpreemptiveImportedTypeAudit.v",
+  "assumption_config": "certificates/model_task_preemption_fully_nonpreemptive/model_task_preemption_fully_nonpreemptive_assumption_config.json",
+  "lean_axiom_config": "certificates/model_task_preemption_fully_nonpreemptive/model_task_preemption_fully_nonpreemptive_lean_axiom_config.json",
+  "computational": [
+    "fully_nonpreemptive_task_model"
+  ],
+  "principal": {},
+  "helpers": [
+    "tpfn_fully_nonpreemptive_rtc_threshold_related"
+  ],
+  "previous_status": "analysis_facts_priority_jlfp_with_fp_module_status.json",
+  "previous_files": 144,
+  "previous_decls": 1085,
+  "input_relations": [
+    "TaskCost pointwise by SubNatRel"
+  ],
+  "coverage_for_inner_binders": [
+    "tasks (identity carrier)"
+  ],
+  "lean_representation_note": "`constant \u03b5` is `fun _ => 1`; the source-local run-to-completion threshold instance is a plain `@[reducible] def`",
+  "export_diagnosis": "the accepted task-preemption-parameters export root (~135k lines) reused verbatim so that the accepted certificate chain applies, plus the definition and the local instance"
+}

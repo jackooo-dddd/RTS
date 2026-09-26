@@ -1,0 +1,16 @@
+import Prosa.Analysis.Definitions.RequestBoundFunction
+set_option pp.fieldNotation false
+
+#check @Prosa.Analysis.Definitions.RequestBoundFunction.task_request_bound_function
+#check @Prosa.Analysis.Definitions.RequestBoundFunction.total_request_bound_function
+#check @Prosa.Analysis.Definitions.RequestBoundFunction.total_hep_request_bound_function_FP
+#check @Prosa.Analysis.Definitions.RequestBoundFunction.total_ohep_request_bound_function_FP
+#check @Prosa.Analysis.Definitions.RequestBoundFunction.total_ep_request_bound_function_FP
+#check @Prosa.Analysis.Definitions.RequestBoundFunction.total_hp_request_bound_function_FP
+
+#print axioms Prosa.Analysis.Definitions.RequestBoundFunction.task_request_bound_function
+#print axioms Prosa.Analysis.Definitions.RequestBoundFunction.total_request_bound_function
+#print axioms Prosa.Analysis.Definitions.RequestBoundFunction.total_hep_request_bound_function_FP
+#print axioms Prosa.Analysis.Definitions.RequestBoundFunction.total_ohep_request_bound_function_FP
+#print axioms Prosa.Analysis.Definitions.RequestBoundFunction.total_ep_request_bound_function_FP
+#print axioms Prosa.Analysis.Definitions.RequestBoundFunction.total_hp_request_bound_function_FP

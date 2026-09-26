@@ -1,0 +1,212 @@
+{
+  "slice": "TRANSLATION_ORDER_ANALYSIS_FACTS_READINESS_BACKLOGGED",
+  "generated_at": "2026-09-26T19:05:06.796215+08:00",
+  "published_at": "2026-09-26T19:05:06.796215+08:00",
+  "rank": 149,
+  "layer": 16,
+  "source_file": "analysis/facts/readiness/backlogged.v",
+  "source_commit": "414e66760333eaa4ef78c685bcf53291c527a548",
+  "source_tree": "7d7e94c731f7eefde4ca738310d4cafdd7bebdf0",
+  "source_file_sha256": "d775592037e4408a2730ff99b3fa731a724308c75b12eb4d69ed3f0b7a43dd32",
+  "pipeline": "Validation/scripts/translation_file_pipeline.py",
+  "spec": "Validation/tooling/file_specs/analysis_facts_readiness_backlogged.json",
+  "spec_sha256": "c6ef76bc50732342d5cac9ec44320beed5014b5dc08976e39bbd4dfef5fa27bf",
+  "source_compatibility": {
+    "mode": "extract",
+    "note": "theorem statements from the authoritative elaborated types (proofs omitted); the proof-heavy analysis/facts/behavior/arrivals import is dropped and the analysis/definitions/readiness import is bound to its accepted extracted source (ReadinessSemanticSource, .vo hash-checked against its manifest); model/schedule/work_conserving is compiled from the pinned tree; analysis/definitions/schedule_prefix is the compiled pinned source of the base run",
+    "extracted_sha256": "34978d5873ad22a965b9316f5974444aa525e39eb7692f5e0cf0da9f03119ba7",
+    "extraction_metadata_sha256": "f4473bd91ccecf1b02e609a1393b36ff8a8cb52e2b66af6e80f533337736988d"
+  },
+  "source_type_evidence": {
+    "prosa.analysis.facts.readiness.backlogged.mem_backlogged_jobs": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.readiness.backlogged.backlogged_job_arrives_in": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.readiness.backlogged.backlogged_prefix_invariance": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.readiness.backlogged.backlogged_prefix_invariance'": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.readiness.backlogged.backlogged_jobs_prefix_invariance": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE"
+  },
+  "statement_only_export_boundary": [
+    "Prosa.Analysis.Facts.Readiness.Backlogged.mem_backlogged_jobs",
+    "Prosa.Analysis.Facts.Readiness.Backlogged.backlogged_job_arrives_in",
+    "Prosa.Analysis.Facts.Readiness.Backlogged.backlogged_prefix_invariance",
+    "Prosa.Analysis.Facts.Readiness.Backlogged.backlogged_prefix_invariance'",
+    "Prosa.Analysis.Facts.Readiness.Backlogged.backlogged_jobs_prefix_invariance"
+  ],
+  "input_relations": [
+    "job_arrival by ArJobArrivalRel",
+    "job_cost by SvcJobCostRel",
+    "SvcProcessorStateRel + schedules (covered in both directions)",
+    "the readiness model by the accepted RdJobReadyRel",
+    "ArArrivalSequenceRel (covered in both directions)"
+  ],
+  "coverage_for_inner_binders": [
+    "jobs (identity carrier)",
+    "Nats (both directions)",
+    "schedules and arrival sequences (both directions)"
+  ],
+  "lean_representation_note": "`x \\in s` is `decide (x \u2208 s) = true`; `~~ b` is `!b`; Booleans in Prop position are `= true`; single comparisons are Lean propositions",
+  "export_size": {
+    "lines": 126260,
+    "soft_budget_flag": "OVER_100K_DIAGNOSED",
+    "diagnosis": "the accepted readiness export root (preemption-parameter closure) reused so that the accepted certificate chain applies, plus the five statements and the work-conserving backlog definition"
+  },
+  "file_dependencies": {
+    "analysis/definitions/readiness.v": "analysis_definitions_readiness_module_status.json",
+    "analysis/facts/behavior/arrivals.v": "analysis_facts_behavior_arrivals_module_status.json",
+    "model/schedule/work_conserving.v": "model_schedule_work_conserving_module_status.json"
+  },
+  "production_file": "Prosa/Analysis/Facts/Readiness/Backlogged.lean",
+  "production_source_sha256": "455e662b7a6b3075dc53a9f56308f1e28cc15b3910f3740ac6782829112cd524",
+  "production_olean_sha256": "7b8e5a7ca615905acaf2f5f346ac613c7b7be4493ca7c4ea73d6f273dfba6e6d",
+  "export_config_sha256": "60fcdb0344a758168e080398218309aceb17d963c574c94c2a2bfa12687490d7",
+  "export_sha256": "9b2476be0545642f1535528f3a10680311d21299d47ccfa4c938bcef8286b7c8",
+  "export_lines": 126260,
+  "export_bytes": 2803896,
+  "import_sha256": "3ecd28b9fe1275133c6ec1a885ed0cb6efefb3f7dde7507a6eb47f9d3e78fa19",
+  "source_vo_sha256": "ffb7287e09e3946713169ed48b7fdaafd72c8cd7d293a0e874bb9faff74a8991",
+  "lean_axiom_summary_sha256": "509cb9d8da7b484f470e804ae68fda8ed7212e19541bff5529025a6b6ff34ae5",
+  "rocq_assumption_summary_sha256": "3eb848aa516ede6474d6b22d71d7d8bb4726b9fca2de32fe206dcd35327d7046",
+  "assumption_config_sha256": "97fefb1662ec2bc24c508205a3ced9d31a03d91c1a5ebe2faa3074028198bc25",
+  "stage_timing_seconds": {
+    "source_acquisition": {
+      "mode": "FRESH",
+      "seconds": 5
+    },
+    "lean_build": {
+      "mode": "FRESH",
+      "seconds": 549
+    },
+    "export": {
+      "mode": "FRESH",
+      "seconds": 39
+    },
+    "rocq_import": {
+      "mode": "FRESH",
+      "seconds": 43
+    },
+    "certificate_compile": {
+      "mode": "FRESH",
+      "seconds": 25
+    },
+    "assumption_audit": {
+      "mode": "FRESH",
+      "seconds": 0
+    }
+  },
+  "certificates": {
+    "ArrivalsSeqBaseAdapter": {
+      "source_sha256": "684d63334d5e689e9b493a6fae0a57331e5965c9f1af7d51b30392061c3e1e7c",
+      "vo_sha256": "9bbb213c1700ec8afa009d0b577105b6446b6850bef7bb70d2746fcd09655fe9"
+    },
+    "ArrivalsSeqOperations": {
+      "source_sha256": "c258ff0613a908d450200266cbcbaced844e5b2a05af73d19261e56c448ec02f",
+      "vo_sha256": "b67efe4a5a0b6841da03bca5b202ac27ea53cff60f5fcbaf84881f77d66f23da"
+    },
+    "ArrivalsSeqCorrespondence": {
+      "source_sha256": "c7e4aa6dea0738652e50e83091ba33223cc20f446fee911cdbd2171a537a1090",
+      "vo_sha256": "83f615a7ad25b1e5245bc1fc848fed538f80851f97a266cd424f70d0156fcc8a"
+    },
+    "ArrivalsCorrespondence": {
+      "source_sha256": "562a8ddf48553a9adab424ab3b46cd52206ef0886498cb015f33f5222676dd79",
+      "vo_sha256": "2b0cd211243d338f761ca4780024390471ad0edee4926e59e44972488ddd1ea9"
+    },
+    "JitterSvcBaseAdapter": {
+      "source_sha256": "0f91ad57242cf61d5b1b8c9c05fe57bfbbcf2119b22ed922c06691c4fb7149d6",
+      "vo_sha256": "150194ebadcffe51d2eea69d35b9598cae7c12f4bb2a95084097e0ddd028c1ce"
+    },
+    "JitterSvcNatBoolOperations": {
+      "source_sha256": "f99ee09ebd091da0eba91ceae3e74813421eaebc9a5cd5440ab8e802c4ed79b0",
+      "vo_sha256": "f98bb30a148d4725bed8c2e252ca54351f7fb4da0f55aa687ffd580c5407f538"
+    },
+    "JitterSvcIntervalOperations": {
+      "source_sha256": "ed39902ef50caaec1561bfcd2ac964d3f1b40611d79a4af9138ce02aff6ae1e4",
+      "vo_sha256": "75abb6d0ca961e35ce39607cca2ab59a583e729bcb814a721c715ad2f03ce7e5"
+    },
+    "JitterSvcScheduleOperations": {
+      "source_sha256": "b7124e7b0f621f09c15f6f2b7bc067c91fb961f357761a18f2b70bc0f4873cdc",
+      "vo_sha256": "b473e8057ded3d8394ed62ace11b7aca0750e3bb6ec8150cf843cfca8c7cceae"
+    },
+    "JitterSvcJobOperations": {
+      "source_sha256": "2ce39f8bf53e47d9f9f04bf62e23a6c1eda881985c493e0340033342e7e6854d",
+      "vo_sha256": "afe8509188543b2a7a4cc91335556436fbc84195f12d5cf2db17fd29d56bbac2"
+    },
+    "SequentialityCorrespondence": {
+      "source_sha256": "1765d74311fbeb7bcb9510104597c2596b8eee897c7339ceac6d458ca5eb371c",
+      "vo_sha256": "85e1e512220980186e5b8f649d63d739d3a6e33fc56170122bbe1d7e40078bc6"
+    },
+    "ReadinessCorrespondence": {
+      "source_sha256": "0211925cea6320ef084664a454584664a8f864d3cde8561891d54fe50f58d619",
+      "vo_sha256": "12ea6e649f7c22f3fb66daccb381c2dd8e618c53f56d0c3873df3aa447cd8449"
+    },
+    "FactsBackloggedCorrespondence": {
+      "source_sha256": "5e0adc7ef5e70dcca13e874ff1de2c4525fb849e09269ff100f4dcef91e4ad9c",
+      "vo_sha256": "c7a0360adcfd6784129093910b728e101d9cfd08b176648f4e64af872a1e4f9e"
+    },
+    "FactsBackloggedAssumptionAudit": {
+      "source_sha256": "472b75baa7e151a9514a0bbaa3313202f3c8db43c6e9f4789126f12e6053b304",
+      "vo_sha256": "b3859c535bf1ebcc0c4674b684dc8a64b5417a352e92ecea5f8ebb2e59f5566c"
+    }
+  },
+  "declarations": [
+    {
+      "source_declaration": "prosa.analysis.facts.readiness.backlogged.mem_backlogged_jobs",
+      "lean_declaration": "Prosa.Analysis.Facts.Readiness.Backlogged.mem_backlogged_jobs",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "mem_backlogged_jobs_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.readiness.backlogged.backlogged_job_arrives_in",
+      "lean_declaration": "Prosa.Analysis.Facts.Readiness.Backlogged.backlogged_job_arrives_in",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "backlogged_job_arrives_in_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.readiness.backlogged.backlogged_prefix_invariance",
+      "lean_declaration": "Prosa.Analysis.Facts.Readiness.Backlogged.backlogged_prefix_invariance",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "backlogged_prefix_invariance_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.readiness.backlogged.backlogged_prefix_invariance'",
+      "lean_declaration": "Prosa.Analysis.Facts.Readiness.Backlogged.backlogged_prefix_invariance'",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "backlogged_prefix_invariance'_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.readiness.backlogged.backlogged_jobs_prefix_invariance",
+      "lean_declaration": "Prosa.Analysis.Facts.Readiness.Backlogged.backlogged_jobs_prefix_invariance",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "backlogged_jobs_prefix_invariance_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    }
+  ],
+  "acceptance": "ACCEPTED_V06_FILE"
+}

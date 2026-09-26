@@ -1,0 +1,109 @@
+{
+  "rank": 174,
+  "layer": 17,
+  "tag": "FQT",
+  "slug": "analysis_facts_busy_interval_quiet_time",
+  "source": "analysis/facts/busy_interval/quiet_time.v",
+  "dependencies": [
+    "analysis/definitions/busy_interval/classical.v",
+    "analysis/definitions/carry_in.v"
+  ],
+  "declaration_count": 4,
+  "base_run": "analysis_definitions_busy_interval_classical_final",
+  "base_checks": [
+    {
+      "manifest": "analysis_definitions_busy_interval_classical",
+      "olean": "Prosa/Analysis/Definitions/BusyInterval/Classical.olean",
+      "vo": "BusyIntervalClassicalSemanticSource.vo"
+    }
+  ],
+  "extra_pinned_sources": [
+    "analysis/definitions/carry_in.v"
+  ],
+  "extra_olean_artifacts": [
+    {
+      "from": "analysis_definitions_carry_in_final/olean/Prosa/Analysis/Definitions/CarryIn.olean",
+      "to": "Prosa/Analysis/Definitions/CarryIn.olean",
+      "manifest": "analysis_definitions_carry_in",
+      "key": "production_olean_sha256"
+    }
+  ],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "FactsQuietTimeSemanticSource",
+    "drop_imports": [
+      "Require Export prosa.analysis.definitions.busy_interval.classical.",
+      "Require Export prosa.analysis.definitions.carry_in."
+    ],
+    "add_imports": [
+      "Require Export prosa.BusyIntervalClassicalSemanticSource.",
+      "Export BusyIntervalClassicalSemanticSource.",
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq.",
+      "Require Import prosa.behavior.all.",
+      "Require Import prosa.analysis.definitions.carry_in."
+    ],
+    "note": "theorem statements from the authoritative elaborated types (proofs omitted); the busy_interval/classical import is bound to the accepted extracted busy-interval source (BusyIntervalClassicalSemanticSource, .vo hash-checked as base); analysis/definitions/carry_in is the pinned source compiled from the pinned tree, as in its accepted pinned-mode run"
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/FactsQuietTimeStatementProbe.v",
+  "production": "Prosa/Analysis/Facts/BusyInterval/QuietTime.lean",
+  "production_olean": "Prosa/Analysis/Facts/BusyInterval/QuietTime.olean",
+  "lean_namespace": "Prosa.Analysis.Facts.BusyInterval.QuietTime",
+  "fixtures": [
+    "NondecreasingComputationInterface",
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "PreemptionParameterComputationInterface",
+    "BusyIntervalClassicalComputationInterface",
+    "CarryInComputationInterface",
+    "FactsQuietTimeComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/FactsQuietTimeLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/analysis_facts_busy_interval_quiet_time_export_config.json",
+  "export_name": "FactsQuietTime",
+  "cert_dir": "certificates/analysis_facts_busy_interval_quiet_time",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "JitterSvcBaseAdapter",
+    "JitterSvcNatBoolOperations",
+    "JitterSvcIntervalOperations",
+    "JitterSvcScheduleOperations",
+    "JitterSvcJobOperations",
+    "PreemptionParameterCorrespondence",
+    "CarryInCorrespondence",
+    "FactsQuietTimeCorrespondence"
+  ],
+  "audit_module": "FactsQuietTimeAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/FactsQuietTimeImportedTypeAudit.v",
+  "assumption_config": "certificates/analysis_facts_busy_interval_quiet_time/facts_quiet_time_assumption_config.json",
+  "lean_axiom_config": "certificates/analysis_facts_busy_interval_quiet_time/facts_quiet_time_lean_axiom_config.json",
+  "computational": [],
+  "principal": {},
+  "helpers": [
+    "fqt_false_correspondence",
+    "fqt_not_correspondence",
+    "fqt_quiet_time_related",
+    "fqt_window_related",
+    "fqt_busy_interval_prefix_related",
+    "fqt_busy_interval_related"
+  ],
+  "previous_status": "analysis_facts_preemption_task_preemptive_module_status.json",
+  "previous_files": 163,
+  "previous_decls": 1144,
+  "input_relations": [
+    "job_arrival by ArJobArrivalRel",
+    "job_cost by SvcJobCostRel",
+    "JLFP policy pointwise on Booleans",
+    "SvcProcessorStateRel (two-sided) + SvcScheduleRel",
+    "ArArrivalSequenceRel"
+  ],
+  "coverage_for_inner_binders": [
+    "jobs (identity carrier)",
+    "Nats (both directions)"
+  ],
+  "lean_representation_note": "a chained `a < b < c` is `(decide (a < b) && decide (b < c)) = true`; `~ P` is `\u00ac P`; `sched` precedes `arr_seq` as in the source section",
+  "export_diagnosis": "the accepted busy-interval export root (without its theorem targets) merged with the accepted carry-in export root (both over the Service closure, ~127k lines), reused so that both accepted certificate chains apply, plus the four statements"
+}

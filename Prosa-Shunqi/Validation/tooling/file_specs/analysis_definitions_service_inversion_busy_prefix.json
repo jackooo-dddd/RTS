@@ -1,0 +1,134 @@
+{
+  "rank": 166,
+  "layer": 17,
+  "tag": "SIBP",
+  "slug": "analysis_definitions_service_inversion_busy_prefix",
+  "source": "analysis/definitions/service_inversion/busy_prefix.v",
+  "dependencies": [
+    "analysis/definitions/busy_interval/classical.v",
+    "analysis/definitions/service.v",
+    "analysis/definitions/service_inversion/pred.v",
+    "analysis/facts/behavior/completion.v",
+    "model/priority/classes.v"
+  ],
+  "declaration_count": 2,
+  "base_run": "analysis_definitions_busy_interval_classical_final",
+  "base_checks": [
+    {
+      "manifest": "analysis_definitions_busy_interval_classical",
+      "olean": "Prosa/Analysis/Definitions/BusyInterval/Classical.olean",
+      "vo": "BusyIntervalClassicalSemanticSource.vo"
+    }
+  ],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "ServiceInversionBusyPrefixSemanticSource",
+    "drop_imports": [
+      "Require Export prosa.model.priority.classes.",
+      "Require Export prosa.analysis.facts.behavior.completion.",
+      "Require Export prosa.analysis.definitions.service.",
+      "Require Export prosa.analysis.definitions.service_inversion.pred.",
+      "Require Export prosa.analysis.definitions.busy_interval.classical."
+    ],
+    "add_imports": [
+      "Require Export prosa.BusyIntervalClassicalSemanticSource.",
+      "Export BusyIntervalClassicalSemanticSource.",
+      "Require Export prosa.ServiceInversionPredSemanticSource.",
+      "Export ServiceInversionPredSemanticSource.",
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq bigop.",
+      "Require Import prosa.model.task.concept."
+    ],
+    "note": "the two definitions are byte-identical computational blocks; the busy_interval/classical and service_inversion/pred imports are bound to the accepted extracted sources (BusyIntervalClassicalSemanticSource hash-checked as base; ServiceInversionPredSemanticSource copied from its accepted run and hash-checked against its manifest), analysis/definitions/service is the pinned source compiled from the pinned tree as in the accepted pred run; the proof-heavy analysis/facts/behavior/completion import is dropped (model/priority/classes is re-exported by the busy-interval source)"
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/ServiceInversionBusyPrefixStatementProbe.v",
+  "production": "Prosa/Analysis/Definitions/ServiceInversion/BusyPrefix.lean",
+  "production_olean": "Prosa/Analysis/Definitions/ServiceInversion/BusyPrefix.olean",
+  "lean_namespace": "Prosa.Analysis.Definitions.ServiceInversion.BusyPrefix",
+  "fixtures": [
+    "NondecreasingComputationInterface",
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "PreemptionParameterComputationInterface",
+    "BusyIntervalClassicalComputationInterface",
+    "ServiceInversionPredComputationInterface",
+    "ServiceInversionBusyPrefixComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/ServiceInversionBusyPrefixLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/analysis_definitions_service_inversion_busy_prefix_export_config.json",
+  "export_name": "ServiceInversionBusyPrefix",
+  "cert_dir": "certificates/analysis_definitions_service_inversion_busy_prefix",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "JitterSvcBaseAdapter",
+    "JitterSvcNatBoolOperations",
+    "JitterSvcIntervalOperations",
+    "JitterSvcScheduleOperations",
+    "JitterSvcJobOperations",
+    "PreemptionParameterCorrespondence",
+    "ServiceInversionPredCorrespondence",
+    "ServiceInversionBusyPrefixCorrespondence"
+  ],
+  "audit_module": "ServiceInversionBusyPrefixAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/ServiceInversionBusyPrefixImportedTypeAudit.v",
+  "assumption_config": "certificates/analysis_definitions_service_inversion_busy_prefix/service_inversion_busy_prefix_assumption_config.json",
+  "lean_axiom_config": "certificates/analysis_definitions_service_inversion_busy_prefix/service_inversion_busy_prefix_lean_axiom_config.json",
+  "computational": [
+    "service_inversion_of_job_is_bounded_by",
+    "service_inversion_is_bounded_by"
+  ],
+  "principal": {},
+  "helpers": [
+    "sibp_false_correspondence",
+    "sibp_not_correspondence",
+    "sibp_quiet_time_related",
+    "sibp_busy_interval_prefix_related"
+  ],
+  "previous_status": "analysis_definitions_workload_bounded_module_status.json",
+  "previous_files": 160,
+  "previous_decls": 1139,
+  "input_relations": [
+    "job_arrival by ArJobArrivalRel",
+    "job_cost by SvcJobCostRel",
+    "JobTask by Lean.eq",
+    "SvcProcessorStateRel (two-sided) + SvcScheduleRel",
+    "ArArrivalSequenceRel",
+    "JLFP policy pointwise on Booleans (lifted to JLDP through the accepted coercion)",
+    "bound functions B on related Nats"
+  ],
+  "coverage_for_inner_binders": [
+    "jobs (identity carrier)",
+    "Nats (both directions)"
+  ],
+  "lean_representation_note": "the JLFP policy reaches the JLDP-based predicates through the accepted low-priority JLFP_to_JLDP instance, as the source coercion does",
+  "export_diagnosis": "the accepted busy-interval export root without its theorem targets merged with the accepted service-inversion predicate export root (both over the preemption-parameter closure, ~127k lines), reused so that both accepted certificate chains apply, plus the two definitions",
+  "extra_pinned_sources": [
+    "analysis/definitions/service.v"
+  ],
+  "extra_lean": [],
+  "extra_artifacts": [
+    {
+      "from": "analysis_definitions_service_inversion_pred_final/source/ServiceInversionPredSemanticSource.vo",
+      "to": "source/ServiceInversionPredSemanticSource.vo",
+      "manifest": "analysis_definitions_service_inversion_pred",
+      "key": "source_vo_sha256"
+    }
+  ],
+  "extra_olean_artifacts": [
+    {
+      "from": "analysis_definitions_service_inversion_pred_final/olean/Prosa/Analysis/Definitions/Service.olean",
+      "to": "Prosa/Analysis/Definitions/Service.olean",
+      "manifest": "analysis_service",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_definitions_service_inversion_pred_final/olean/Prosa/Analysis/Definitions/ServiceInversion/Pred.olean",
+      "to": "Prosa/Analysis/Definitions/ServiceInversion/Pred.olean",
+      "manifest": "analysis_definitions_service_inversion_pred",
+      "key": "production_olean_sha256"
+    }
+  ]
+}

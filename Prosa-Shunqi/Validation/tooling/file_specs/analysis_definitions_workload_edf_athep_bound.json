@@ -1,0 +1,89 @@
+{
+  "rank": 170,
+  "layer": 17,
+  "tag": "EDFATHEP",
+  "slug": "analysis_definitions_workload_edf_athep_bound",
+  "source": "analysis/definitions/workload/edf_athep_bound.v",
+  "dependencies": [
+    "analysis/definitions/request_bound_function.v"
+  ],
+  "declaration_count": 1,
+  "base_run": "analysis_definitions_request_bound_function_final",
+  "base_checks": [
+    {
+      "manifest": "analysis_definitions_request_bound_function",
+      "olean": "Prosa/Analysis/Definitions/RequestBoundFunction.olean",
+      "vo": "RequestBoundFunctionSemanticSource.vo"
+    }
+  ],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "EdfAthepBoundSemanticSource",
+    "drop_imports": [
+      "Require Export prosa.analysis.definitions.request_bound_function."
+    ],
+    "add_imports": [
+      "Require Export prosa.RequestBoundFunctionSemanticSource.",
+      "Export RequestBoundFunctionSemanticSource.",
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq bigop.",
+      "Require Import prosa.util.epsilon."
+    ],
+    "note": "the definition is a byte-identical computational block; the analysis/definitions/request_bound_function import is bound to the accepted extracted request-bound-function source (RequestBoundFunctionSemanticSource, .vo hash-checked against its manifest); the \u03b5 notation is imported from the compiled pinned util/epsilon"
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/EdfAthepBoundStatementProbe.v",
+  "production": "Prosa/Analysis/Definitions/Workload/EdfAthepBound.lean",
+  "production_olean": "Prosa/Analysis/Definitions/Workload/EdfAthepBound.olean",
+  "lean_namespace": "Prosa.Analysis.Definitions.Workload.EdfAthepBound",
+  "fixtures": [
+    "NondecreasingComputationInterface",
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "PreemptionParameterComputationInterface",
+    "RequestBoundFunctionComputationInterface",
+    "EdfAthepBoundComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/EdfAthepBoundLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/analysis_definitions_workload_edf_athep_bound_export_config.json",
+  "export_name": "EdfAthepBound",
+  "cert_dir": "certificates/analysis_definitions_workload_edf_athep_bound",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "JitterSvcBaseAdapter",
+    "JitterSvcNatBoolOperations",
+    "JitterSvcIntervalOperations",
+    "JitterSvcScheduleOperations",
+    "JitterSvcJobOperations",
+    "PreemptionParameterCorrespondence",
+    "RequestBoundFunctionCorrespondence",
+    "EdfAthepBoundCorrespondence"
+  ],
+  "audit_module": "EdfAthepBoundAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/EdfAthepBoundImportedTypeAudit.v",
+  "assumption_config": "certificates/analysis_definitions_workload_edf_athep_bound/edf_athep_bound_assumption_config.json",
+  "lean_axiom_config": "certificates/analysis_definitions_workload_edf_athep_bound/edf_athep_bound_lean_axiom_config.json",
+  "computational": [
+    "bound_on_athep_workload"
+  ],
+  "principal": {},
+  "helpers": [
+    "eab_min_related"
+  ],
+  "previous_status": "analysis_facts_behavior_all_module_status.json",
+  "previous_files": 158,
+  "previous_decls": 1137,
+  "input_relations": [
+    "TaskCost pointwise by SubNatRel",
+    "TaskDeadline pointwise by SubNatRel",
+    "MaxArrivals pointwise by SubNatRel on durations",
+    "task sets by ArListRel"
+  ],
+  "coverage_for_inner_binders": [
+    "tasks (identity carrier)"
+  ],
+  "lean_representation_note": "`\\sum_(x <- xs | P x) F x` is the accepted `sumFiltered xs P F`; `a != b` is `decide (a \u2260 b)`; `minn` is `min`; `\u03b5` is `1`; the section-local `Let D`/`Let rbf` are inlined",
+  "export_diagnosis": "the accepted request-bound-function export root (preemption-parameter closure, ~127k lines) reused verbatim so that the accepted certificate chain (including the RBF certificate) applies, plus the definition, the TaskDeadline class and two kernel-checked min case equations"
+}

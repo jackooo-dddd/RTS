@@ -1,0 +1,22 @@
+import Prosa.Model.Task.Preemption.LimitedPreemptive
+set_option pp.fieldNotation false
+
+#check @Prosa.Model.Task.Preemption.LimitedPreemptive.task_beginning_of_execution_in_preemption_points
+#check @Prosa.Model.Task.Preemption.LimitedPreemptive.task_end_of_execution_in_preemption_points
+#check @Prosa.Model.Task.Preemption.LimitedPreemptive.nondecreasing_task_preemption_points
+#check @Prosa.Model.Task.Preemption.LimitedPreemptive.consistent_job_segment_count
+#check @Prosa.Model.Task.Preemption.LimitedPreemptive.job_respects_segment_lengths
+#check @Prosa.Model.Task.Preemption.LimitedPreemptive.task_segments_are_nonempty
+#check @Prosa.Model.Task.Preemption.LimitedPreemptive.valid_fixed_preemption_points_task_model
+#check @Prosa.Model.Task.Preemption.LimitedPreemptive.valid_fixed_preemption_points_model
+#check @Prosa.Model.Task.Preemption.LimitedPreemptive.limited_preemptions_rtc_threshold
+
+#print axioms Prosa.Model.Task.Preemption.LimitedPreemptive.task_beginning_of_execution_in_preemption_points
+#print axioms Prosa.Model.Task.Preemption.LimitedPreemptive.task_end_of_execution_in_preemption_points
+#print axioms Prosa.Model.Task.Preemption.LimitedPreemptive.nondecreasing_task_preemption_points
+#print axioms Prosa.Model.Task.Preemption.LimitedPreemptive.consistent_job_segment_count
+#print axioms Prosa.Model.Task.Preemption.LimitedPreemptive.job_respects_segment_lengths
+#print axioms Prosa.Model.Task.Preemption.LimitedPreemptive.task_segments_are_nonempty
+#print axioms Prosa.Model.Task.Preemption.LimitedPreemptive.valid_fixed_preemption_points_task_model
+#print axioms Prosa.Model.Task.Preemption.LimitedPreemptive.valid_fixed_preemption_points_model
+#print axioms Prosa.Model.Task.Preemption.LimitedPreemptive.limited_preemptions_rtc_threshold

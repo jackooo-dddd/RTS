@@ -1,0 +1,9 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedWcTrans.
+
+Check ImportedWcTrans.Prosa_Analysis_Transform_WcTrans_relevant_pstate.
+Check ImportedWcTrans.Prosa_Analysis_Transform_WcTrans_max_deadline_for_jobs_arrived_before.
+Check ImportedWcTrans.Prosa_Analysis_Transform_WcTrans_find_swap_candidate.
+Check ImportedWcTrans.Prosa_Analysis_Transform_WcTrans_make_wc_at.
+Check ImportedWcTrans.Prosa_Analysis_Transform_WcTrans_wc_transform_prefix.
+Check ImportedWcTrans.Prosa_Analysis_Transform_WcTrans_wc_transform.

@@ -1,0 +1,204 @@
+{
+  "slice": "TRANSLATION_ORDER_ANALYSIS_DEFINITIONS_SBF_BUSY",
+  "generated_at": "2026-09-27T07:36:13.962434+08:00",
+  "published_at": "2026-09-27T07:36:13.962434+08:00",
+  "rank": 206,
+  "layer": 17,
+  "source_file": "analysis/definitions/sbf/busy.v",
+  "source_commit": "414e66760333eaa4ef78c685bcf53291c527a548",
+  "source_tree": "7d7e94c731f7eefde4ca738310d4cafdd7bebdf0",
+  "source_file_sha256": "cb081074072e53e54c35c8362e7e225c4ff0163409038e88cc905d7f0909b4f6",
+  "pipeline": "Validation/scripts/translation_file_pipeline.py",
+  "spec": "Validation/tooling/file_specs/analysis_definitions_sbf_busy.json",
+  "spec_sha256": "f1e1fbe68a7a43f29a02f98cc50d409c53829f7210e0f2bed91f828bfd1ae5fc",
+  "source_compatibility": {
+    "mode": "extract",
+    "note": "the two definitions are byte-identical blocks (with the section context, including the source-local `bi_prefix_of_tsk` Let); busy_interval_prefix is bound to its accepted extracted source (BusyIntervalClassicalSemanticSource of the base run); analysis/definitions/sbf/sbf and analysis/definitions/sbf/pred are compiled from the pinned tree (their compiled model/processor/supply dependency is the base closure's, byte-identical to the one of the accepted sbf/pred run); util/all is the compiled pinned source of the base closure; analysis/definitions/sbf/pred is compiled under its accepted Rocq 9.3 compatibility patch (explicit util/rel and util/setoid imports)",
+    "extracted_sha256": "5f0b5150134b95ae3d07b1582ea10806b1d856cd259cb4affe65c9ba692532d3",
+    "extraction_metadata_sha256": "6a14ea38a9dcff961c10f84dda133a31727fabf33c6d1c1cce84a0496aa3f9bf"
+  },
+  "source_type_evidence": {
+    "prosa.analysis.definitions.sbf.busy.sbf_respected_in_busy_interval": "EXACT_HASH",
+    "prosa.analysis.definitions.sbf.busy.valid_busy_sbf": "EXACT_HASH"
+  },
+  "statement_only_export_boundary": [],
+  "input_relations": [
+    "processor states by both accepted two-sided relations of the same state pair: SupplyProcessorStateRel (supply observations, sbf/pred family) and SvcProcessorStateRel (scheduled/service observations, busy-interval family); schedules related through both",
+    "arrival sequences by the accepted ArArrivalSequenceRel of each family (the same relation, re-stated per family)",
+    "job_arrival and job_cost pointwise by SubNatRel",
+    "JobTask by the accepted field relation (identity task carrier)",
+    "the JLFP policy pointwise on Booleans",
+    "SBF functions pointwise on Nat"
+  ],
+  "coverage_for_inner_binders": [],
+  "lean_representation_note": "the source-local `bi_prefix_of_tsk` (a `Let`) is inlined; a Boolean in `Prop` position is `= true`",
+  "export_size": {
+    "lines": 135955,
+    "soft_budget_flag": "OVER_100K_DIAGNOSED",
+    "diagnosis": "the accepted classical busy-interval export root (preemption-parameter closure with the Service / Schedule interfaces) merged with the accepted sbf/pred export root (Supply interface and the pred SBF definitions) plus the two definitions"
+  },
+  "file_dependencies": {
+    "analysis/definitions/busy_interval/classical.v": "analysis_definitions_busy_interval_classical_module_status.json",
+    "analysis/definitions/sbf/pred.v": "analysis_sbf_pred_module_status.json",
+    "util/all.v": "util_all_module_status.json"
+  },
+  "production_file": "Prosa/Analysis/Definitions/Sbf/Busy.lean",
+  "production_source_sha256": "bcb43f9cb71bde9b8764b6a0efca03524577d08838fbde55eb6ea80018b2012a",
+  "production_olean_sha256": "88d60a558bfacbade870315544b2dfd8c93d2214bd1b3101309e4e6cab7d1925",
+  "export_config_sha256": "b94068aa00e0a772a4b39546ccc0d584b972f9cd83eb53470291a7ba4009f3ed",
+  "export_sha256": "3aaa1c891b5accdcfec1a4bf4fc63643a5bfe835b25632e5dfeb38b56eeff67d",
+  "export_lines": 135955,
+  "export_bytes": 3039945,
+  "import_sha256": "1d6f1af1d7ee5b267f01043b32606334f4aa800a252d72ac96d1d933813291ab",
+  "source_vo_sha256": "c53f51257342b1def9f244ad49153d5ca1bc5c9f64318537ee44f32ccf973642",
+  "lean_axiom_summary_sha256": "a2213c136501e9f5e32bf9319f91035f45fb5e2319c753406c561904da04327f",
+  "rocq_assumption_summary_sha256": "494325ed1b1165624988ef11f3a6c074efbeb0a14b0753b8be8c5d615486c3da",
+  "assumption_config_sha256": "09948f8b56a0524060a7d1ad8e84359003aa4a2a0d121a6d44ca3e04e085595b",
+  "stage_timing_seconds": {
+    "source_acquisition": {
+      "mode": "FRESH",
+      "seconds": 5
+    },
+    "lean_build": {
+      "mode": "FRESH",
+      "seconds": 418
+    },
+    "export": {
+      "mode": "FRESH",
+      "seconds": 32
+    },
+    "rocq_import": {
+      "mode": "FRESH",
+      "seconds": 42
+    },
+    "certificate_compile": {
+      "mode": "FRESH",
+      "seconds": 33
+    },
+    "assumption_audit": {
+      "mode": "FRESH",
+      "seconds": 0
+    }
+  },
+  "certificates": {
+    "ArrivalsSeqBaseAdapter": {
+      "source_sha256": "ba2c035756f52156073e5a57bb62766126ef2f9e2d7ed747e574dbe0856e0b62",
+      "vo_sha256": "6b34615b173fae41090c48e8a1f88727fd33387e20ce5de3c02e7a17f0901c5b"
+    },
+    "ArrivalsSeqOperations": {
+      "source_sha256": "f0be1c477c1211db8cac563b688cf501abe25b62ec8d075b78e5ade7983f3025",
+      "vo_sha256": "ebe9805de79de0d670dea165081ce6071dc8957e20a19f4e59cac4fda563c494"
+    },
+    "ArrivalsSeqCorrespondence": {
+      "source_sha256": "35978da5b6e4215b3b3711da1b9805c481d180873f3693fe93e0da299fabda27",
+      "vo_sha256": "cc6f95e83df067cc65cde5ca07b7b8ca316ff0fc79705585bad4caec397bea75"
+    },
+    "JitterSvcBaseAdapter": {
+      "source_sha256": "9e8051ed0e02199c7360a0a65383b5c07fe626f917c14ef099dc9abf5917932a",
+      "vo_sha256": "31adadca77290c332a990dda93945e9c5d85f41e435bf676d528cf4b2bcf0114"
+    },
+    "JitterSvcNatBoolOperations": {
+      "source_sha256": "ea515286ed772cac4731b3b552721ee4bd2e89a5a1b199ae402b9d3690f22eff",
+      "vo_sha256": "b874a3698fb8cc09d6876f420cd3026a42977b00152c5467caa544724d320ff1"
+    },
+    "JitterSvcIntervalOperations": {
+      "source_sha256": "19e9b6ed99709fdcb929a1dff1a1c062bf91fe037987ba448740b95662788593",
+      "vo_sha256": "591610348a071c6143fef454816aa4eb70bc4bacc33996ee53983487204548e5"
+    },
+    "JitterSvcScheduleOperations": {
+      "source_sha256": "2f3c8cd9e35e1e1d213067ea5791ab9cc2da6da30ed50a0d6ec3a3c98371dbdb",
+      "vo_sha256": "51040277b3b9d20dd4d9697dec7104d8e41cdc47cc571e31c7277efb05001851"
+    },
+    "JitterSvcJobOperations": {
+      "source_sha256": "2c335b5ea29ca95f740c2fc40f8e1797669f7a141fe9cfad72c0ed780b2f0266",
+      "vo_sha256": "bf0947952f917f8cf17b6b81ec17d579d0fad07459db11f9df5e7d3ef25741e0"
+    },
+    "PreemptionParameterCorrespondence": {
+      "source_sha256": "77199b0c3afce71fff1299dad743144130e9f1564c2424baa14d45c34179786f",
+      "vo_sha256": "cb663206f44489be4c7ca36e64b01612ae91759dfc8b14985a43b36dccab8ca1"
+    },
+    "BusyIntervalClassicalHelpers": {
+      "source_sha256": "14697e9a1600c1cfbf4c7b7c73c5900de33f5c92bca38d74e8e619a794efe77b",
+      "vo_sha256": "977e382b99be5167ec76551fe872bfbb955a8ce67088078bf011392acd9d1779"
+    },
+    "ArrivalSequenceBaseAdapter": {
+      "source_sha256": "e0a3441af2086afa77eb8bc85cc6dd5bb55982bb036e7cde209f4aa406273f59",
+      "vo_sha256": "d50fb1df1ac22981f312a5c1de498ea4923e511f5196433ec4e6288514c10eaa"
+    },
+    "ArrivalSequenceOperations": {
+      "source_sha256": "133c0abbbdf9bc95d3a9953a7086c9db3534bd4b41fa4bde77890cf64ce88ebb",
+      "vo_sha256": "bf3233562fd7e59018d9e85b9fc513a8af663a80d1d94b8cdda5d08f962291e3"
+    },
+    "ArrivalSequenceCorrespondence": {
+      "source_sha256": "abe6d9d9ddbbb509d480963f3fd16fb2c92b3eb3bde98cecf2e3741b8c7804a0",
+      "vo_sha256": "f8b2863e32978880a7cba079e74951cab8598b160bfb8d7ded13a92ff7fcc623"
+    },
+    "SupplyScheduleBaseAdapter": {
+      "source_sha256": "d2082a4f4dcbe6681565cbec0d75bccec4cd71ab4b2fa664e9a325afdd4d1cde",
+      "vo_sha256": "5cfdd3b4aaa32f8b032d442b3a6e8d5c2ce668cb237d1e6f29f0a42a9e5cb7ae"
+    },
+    "SupplyScheduleFiniteOperations": {
+      "source_sha256": "a03f32ca491f66fc6144e96e8cb12c78d6ef18962a7a1016755270f566f4197b",
+      "vo_sha256": "2aaf5cd73e6c788e3537c84335c44e8483e8b3c6e85043ded5891d5c07d4e21e"
+    },
+    "SupplyScheduleOperations": {
+      "source_sha256": "b40b76e820a9cd5b0966a0ac68b163e02276abfb017879c7842c349fd6cc2a86",
+      "vo_sha256": "f8c69ed5a696908e5a7eeae21d204ef6e6b789abddd767861a9fd5093118e16a"
+    },
+    "SupplyBaseAdapter": {
+      "source_sha256": "aa3d61c3b82d3a420fdd1c3e9b9933300ad96d641b31ce7e425e7a8010030a76",
+      "vo_sha256": "13c848720dce9ee637ed191f637265c2aa9d34514396a0926aad0d1405e2b2f9"
+    },
+    "SupplyNatBoolOperations": {
+      "source_sha256": "f4e97cec2334f6c402eb1adc2a433425aec4324ddc4aed947fbb99665a063ab3",
+      "vo_sha256": "32ee3de8efe241deaea3ec811bb5d36d5d48e612a4b1e71f09c237da28561f52"
+    },
+    "SupplyIntervalOperations": {
+      "source_sha256": "b120e39f17dee895904fea270e26f7529349243104ccdf368c0cbabf8f6b882e",
+      "vo_sha256": "fb9ac2bf380cb0f4fbec3a3be5264d0b2e2d478f94101b5a2f2b967e2caed667"
+    },
+    "SupplyCorrespondence": {
+      "source_sha256": "f78daff1b8d812095296f7b7acc90ede873e55aa78b56e712b055a19bc4a7188",
+      "vo_sha256": "dfe77b00bf4eb28276520331a373a6a61f52d90d18331826835d604c0e53644a"
+    },
+    "PredHelpers": {
+      "source_sha256": "3e1194ae0013d60d948170801fe08b183a13404cfe684a5cd6d73a194beca239",
+      "vo_sha256": "764f42c0ed336d18976b74005f6dec5947bb8a4fef8c04ba66f02fa4aa938235"
+    },
+    "SbfBusyCorrespondence": {
+      "source_sha256": "434fe8d7b6fd78574beb384aa8fc634fe1aa25c6a4a5615b0d20d9a47764dca9",
+      "vo_sha256": "d5b48c54ebbd6dd6585c4fd5458c0358809196644ddc685d66f03476f9b34d3a"
+    },
+    "SbfBusyAssumptionAudit": {
+      "source_sha256": "179cb1cc0f2ee3bf5b3473b8f76a7e6be3902cede0eae0ec0d40720328098c5a",
+      "vo_sha256": "4ea50a16eab0103ce1e7dc348add139cdecab977141f925182112a56aa146da8"
+    }
+  },
+  "declarations": [
+    {
+      "source_declaration": "prosa.analysis.definitions.sbf.busy.sbf_respected_in_busy_interval",
+      "lean_declaration": "Prosa.Analysis.Definitions.Sbf.Busy.sbf_respected_in_busy_interval",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "sbf_respected_in_busy_interval_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.definitions.sbf.busy.valid_busy_sbf",
+      "lean_declaration": "Prosa.Analysis.Definitions.Sbf.Busy.valid_busy_sbf",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "valid_busy_sbf_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    }
+  ],
+  "acceptance": "ACCEPTED_V06_FILE"
+}

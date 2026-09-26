@@ -1,0 +1,83 @@
+{
+  "rank": 172,
+  "layer": 17,
+  "source": "analysis/facts/behavior/all.v",
+  "slug": "analysis_facts_behavior_all",
+  "dependencies": [
+    "analysis/facts/behavior/arrivals.v",
+    "analysis/facts/behavior/completion.v",
+    "analysis/facts/behavior/deadlines.v",
+    "analysis/facts/behavior/service.v"
+  ],
+  "export_map": {
+    "prosa.analysis.facts.behavior.service": "Prosa.Analysis.Facts.Behavior.Service",
+    "prosa.analysis.facts.behavior.completion": "Prosa.Analysis.Facts.Behavior.Completion",
+    "prosa.analysis.facts.behavior.arrivals": "Prosa.Analysis.Facts.Behavior.Arrivals",
+    "prosa.analysis.facts.behavior.deadlines": "Prosa.Analysis.Facts.Behavior.Deadlines"
+  },
+  "production": "Prosa/Analysis/Facts/Behavior/All.lean",
+  "production_olean": "Prosa/Analysis/Facts/Behavior/All.olean",
+  "fixture": "Validation/fixtures/translation_order/FactsBehaviorAllInterface.lean",
+  "fixture_module": "Validation.fixtures.translation_order.FactsBehaviorAllInterface",
+  "probe_decl": "Prosa.Validation.FactsBehaviorAllInterface.facts_behavior_all_exposes_modules",
+  "probe_allowed_axioms": [
+    "propext",
+    "Classical.choice",
+    "Quot.sound"
+  ],
+  "source_closure_run": "analysis_facts_behavior_deadlines_final",
+  "dependency_source_vo": {},
+  "dependency_shims": {
+    "analysis/facts/behavior/service.v": {
+      "module": "FactsServiceSemanticSource",
+      "manifest": "analysis_facts_behavior_service",
+      "vo": "FactsServiceSemanticSource.vo"
+    },
+    "analysis/facts/behavior/completion.v": {
+      "module": "FactsCompletionSemanticSource",
+      "manifest": "analysis_facts_behavior_completion",
+      "vo": "FactsCompletionSemanticSource.vo"
+    },
+    "analysis/facts/behavior/arrivals.v": {
+      "module": "FactsArrivalsSemanticSource",
+      "manifest": "analysis_facts_behavior_arrivals",
+      "vo": "FactsArrivalsSemanticSource.vo",
+      "from_run": "analysis_definitions_busy_interval_classical_final"
+    },
+    "analysis/facts/behavior/deadlines.v": {
+      "module": "FactsDeadlinesSemanticSource",
+      "manifest": "analysis_facts_behavior_deadlines",
+      "vo": "FactsDeadlinesSemanticSource.vo"
+    }
+  },
+  "olean_closure_run": "analysis_facts_behavior_deadlines_final",
+  "dependency_olean": {
+    "analysis/facts/behavior/service.v": [
+      "analysis_facts_behavior_service",
+      "Prosa/Analysis/Facts/Behavior/Service.olean"
+    ],
+    "analysis/facts/behavior/completion.v": [
+      "analysis_facts_behavior_completion",
+      "Prosa/Analysis/Facts/Behavior/Completion.olean"
+    ],
+    "analysis/facts/behavior/arrivals.v": [
+      "analysis_facts_behavior_arrivals",
+      "Prosa/Analysis/Facts/Behavior/Arrivals.olean"
+    ],
+    "analysis/facts/behavior/deadlines.v": [
+      "analysis_facts_behavior_deadlines",
+      "Prosa/Analysis/Facts/Behavior/Deadlines.olean"
+    ]
+  },
+  "previous_status": "analysis_definitions_priority_inversion_module_status.json",
+  "previous_files": 157,
+  "previous_decls": 1137,
+  "notes": "no public declaration; the four proof-bearing facts modules were accepted through their extracted semantic sources, so each is bound by a one-line re-export shim at its logical path (FactsArrivalsSemanticSource, absent from the deadlines closure, is taken from an accepted busy-interval run and hash-checked against its manifest; Rocq's library-consistency check guards its dependencies); the interface probe uses one theorem of each re-exported module and depends only on the standard Lean axioms; the pinned model/task/arrivals.vo it requires is copied from the same run and hash-checked against its own manifest",
+  "extra_closure": [
+    {
+      "run": "analysis_definitions_busy_interval_classical_final",
+      "vo": "model/task/arrivals.vo",
+      "manifest": "model_task_arrivals"
+    }
+  ]
+}

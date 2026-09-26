@@ -1,0 +1,104 @@
+{
+  "mode": "proof_independent_semantic_source_signature",
+  "source_file": "analysis/facts/readiness/sequential.v",
+  "source_file_sha256": "91d41698cd751a33e055f7508ff5651bbc3135632929840f9867d504e7d76ee8",
+  "source_commit": "414e66760333eaa4ef78c685bcf53291c527a548",
+  "generated_file": "/Users/shunqiwang/CityuHK/Research/Lean/TranslationProof/Prosa-Shunqi/Validation/.work/experiments/analysis_facts_readiness_sequential_final/source/FactsReadinessSequentialSemanticSource.v",
+  "transformations": {
+    "computational": "byte-identical declaration block",
+    "theorem": "verified post-Section Check type converted to a definition with its declared Prop/Type sort preserved; exact source header retained as provenance; opaque proof omitted",
+    "local_bindings": {},
+    "dropped_irrelevant_imports": [
+      "Require Export prosa.analysis.facts.behavior.completion.",
+      "Require Export prosa.analysis.facts.model.task_arrivals."
+    ],
+    "added_validation_imports": [
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq."
+    ],
+    "printer_repairs": [
+      "valid_schedule sched arr_seq=@valid_schedule Job H0 PState sched H1 (@sequential_readiness_instance Job Task H H0 H1 PState arr_seq) arr_seq",
+      "work_bearing_readiness arr_seq sched=@work_bearing_readiness Job H0 H1 PState (@sequential_readiness_instance Job Task H H0 H1 PState arr_seq) arr_seq sched (@FP_to_JLFP Job Task H FP)"
+    ]
+  },
+  "declarations": {
+    "sequential_readiness_instance": {
+      "source_kind": "computational",
+      "acquisition_mode": "BODY_EXACT",
+      "source_block_sha256": "90f9eaf7d0bd17352a36a67a595c2efd4341e3098cee6d1b28f627b5d73c4f64",
+      "generated_text_sha256": "90f9eaf7d0bd17352a36a67a595c2efd4341e3098cee6d1b28f627b5d73c4f64",
+      "source_statement_sha256": null,
+      "normalized_statement_sha256": null,
+      "elaborated_type_sha256": null,
+      "elaborated_type_evidence": null,
+      "statement_sort": null,
+      "context": [
+        "  Context {Job : JobType}.",
+        "  Context {Task : TaskType}.",
+        "  Context `{JobTask Job Task}.",
+        "  Context `{JobArrival Job}.",
+        "  Context `{JobCost Job}.",
+        "  Context {PState : ProcessorState Job}.",
+        "  Variable arr_seq : arrival_sequence Job.",
+        "  Hypothesis H_arrival_times_are_consistent : consistent_arrival_times arr_seq."
+      ],
+      "omitted_context_for_elaborated_theorem": false,
+      "local_bindings": {}
+    },
+    "sequential_readiness_is_sequential": {
+      "source_kind": "theorem",
+      "acquisition_mode": "STATEMENT_EXACT_PROOF_OMITTED",
+      "source_block_sha256": "674111d2e5285591743131f33a7353d1f9bb0daa8d459d156805985b2384e39c",
+      "generated_text_sha256": "b612d137cfda98a9f6d67e6a6f3d004866539fd81fc20cbfd4ac7f3cb46afb83",
+      "source_statement_sha256": "6d0ac51051623a30883f48512dfca2896f80413ba48291575801fb033d3eec24",
+      "normalized_statement_sha256": "6d0ac51051623a30883f48512dfca2896f80413ba48291575801fb033d3eec24",
+      "elaborated_type_sha256": "a80b73a4b616b90fdbf4b4d03a571b623b60b119ea8e441685db325a1e72faae",
+      "elaborated_type_evidence": "ELABORATED_ROCQ_CHECK",
+      "statement_sort": "Prop",
+      "context": [],
+      "omitted_context_for_elaborated_theorem": true,
+      "local_bindings": {}
+    },
+    "sequential_readiness_nonclairvoyance": {
+      "source_kind": "theorem",
+      "acquisition_mode": "STATEMENT_EXACT_PROOF_OMITTED",
+      "source_block_sha256": "a1a4bf3488d796b195a0735e91a93914df3b89ff421fc3bcf88e1a10769e3d6f",
+      "generated_text_sha256": "80089a41e6c2597d75f30d0dc797e990395d303c96eec20a8936cf631ee1ed63",
+      "source_statement_sha256": "f481bc7a9c159d36be8b6c681b115beb02caf1630b0885b53ff06f28dfeb9087",
+      "normalized_statement_sha256": "f481bc7a9c159d36be8b6c681b115beb02caf1630b0885b53ff06f28dfeb9087",
+      "elaborated_type_sha256": "15fe7f8438be13303a901719f82327e4ee8802b23addec8da20429de664925ab",
+      "elaborated_type_evidence": "ELABORATED_ROCQ_CHECK",
+      "statement_sort": "Prop",
+      "context": [],
+      "omitted_context_for_elaborated_theorem": true,
+      "local_bindings": {}
+    },
+    "sequential_readiness_implies_sequential_tasks": {
+      "source_kind": "theorem",
+      "acquisition_mode": "STATEMENT_EXACT_PROOF_OMITTED",
+      "source_block_sha256": "ee857ba0d72310b933e8497e8b9ce2e560960929614b21fa7491aebf5fcb5961",
+      "generated_text_sha256": "67fca568475e46d7b7291c693e363a3b69d1bcd0a1ca265788a1711ec1a7f85a",
+      "source_statement_sha256": "2316527535459f5f48773a49d65e78e739956c7bc8d2a223c42aade8298e14e7",
+      "normalized_statement_sha256": "2316527535459f5f48773a49d65e78e739956c7bc8d2a223c42aade8298e14e7",
+      "elaborated_type_sha256": "ff7bc18a5cedbb37314d6d237e1061da7e64578b00ff6a867ebd36f9ef67b9b9",
+      "elaborated_type_evidence": "ELABORATED_ROCQ_CHECK",
+      "statement_sort": "Prop",
+      "context": [],
+      "omitted_context_for_elaborated_theorem": true,
+      "local_bindings": {}
+    },
+    "sequential_readiness_implies_work_bearing_readiness": {
+      "source_kind": "theorem",
+      "acquisition_mode": "STATEMENT_EXACT_PROOF_OMITTED",
+      "source_block_sha256": "1296669637bf12bfa9d8ec9a21f8df370d7863dd882b3ed0d26d28630aa9db01",
+      "generated_text_sha256": "8b100845744585bb16856d34641244a32df01c8066eea189a0535af8aa0dd383",
+      "source_statement_sha256": "1c6c5cf9b91644e6a04f570c48a9fc196cdcee41c73f21c9b4fe932d1c0f1e3a",
+      "normalized_statement_sha256": "1c6c5cf9b91644e6a04f570c48a9fc196cdcee41c73f21c9b4fe932d1c0f1e3a",
+      "elaborated_type_sha256": "c8709a395fe83864b07bf00404ca5d817f7ecd7f994369e4259b19cb44431391",
+      "elaborated_type_evidence": "ELABORATED_ROCQ_CHECK",
+      "statement_sort": "Prop",
+      "context": [],
+      "omitted_context_for_elaborated_theorem": true,
+      "local_bindings": {}
+    }
+  }
+}

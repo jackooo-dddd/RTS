@@ -1,0 +1,8 @@
+import Prosa.Analysis.Abstract.RestrictedSupply.BusyPrefix
+set_option pp.fieldNotation false
+
+#check @Prosa.Analysis.Abstract.RestrictedSupply.BusyPrefix.service_inversion_of_job_is_bounded_by
+#check @Prosa.Analysis.Abstract.RestrictedSupply.BusyPrefix.service_inversion_is_bounded_by
+
+#print axioms Prosa.Analysis.Abstract.RestrictedSupply.BusyPrefix.service_inversion_of_job_is_bounded_by
+#print axioms Prosa.Analysis.Abstract.RestrictedSupply.BusyPrefix.service_inversion_is_bounded_by

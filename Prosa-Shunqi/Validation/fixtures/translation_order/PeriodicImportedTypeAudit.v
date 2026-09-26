@@ -1,0 +1,8 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedPeriodic.
+
+Check ImportedPeriodic.Prosa_Model_Task_Arrival_Periodic_PeriodicModel.
+Check ImportedPeriodic.Prosa_Model_Task_Arrival_Periodic_valid_period.
+Check ImportedPeriodic.Prosa_Model_Task_Arrival_Periodic_respects_periodic_task_model.
+Check ImportedPeriodic.Prosa_Model_Task_Arrival_Periodic_valid_periods.
+Check ImportedPeriodic.Prosa_Model_Task_Arrival_Periodic_taskset_respects_periodic_task_model.

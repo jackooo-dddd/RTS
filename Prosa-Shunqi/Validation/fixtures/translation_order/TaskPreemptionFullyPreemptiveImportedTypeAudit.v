@@ -1,0 +1,5 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedTaskPreemptionFullyPreemptive.
+
+Check ImportedTaskPreemptionFullyPreemptive.Prosa_Model_Task_Preemption_FullyPreemptive_fully_preemptive_task_model.
+Check ImportedTaskPreemptionFullyPreemptive.Prosa_Model_Task_Preemption_FullyPreemptive_fully_preemptive_rtc_threshold.

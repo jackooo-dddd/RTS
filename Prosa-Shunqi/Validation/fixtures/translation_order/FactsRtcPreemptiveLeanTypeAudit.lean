@@ -1,0 +1,6 @@
+import Prosa.Analysis.Facts.Preemption.RtcThreshold.Preemptive
+set_option pp.fieldNotation false
+
+#check @Prosa.Analysis.Facts.Preemption.RtcThreshold.Preemptive.fully_preemptive_valid_task_run_to_completion_threshold
+
+#print axioms Prosa.Analysis.Facts.Preemption.RtcThreshold.Preemptive.fully_preemptive_valid_task_run_to_completion_threshold

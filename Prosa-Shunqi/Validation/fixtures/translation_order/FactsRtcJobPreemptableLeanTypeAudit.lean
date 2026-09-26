@@ -1,0 +1,32 @@
+import Prosa.Analysis.Facts.Preemption.RtcThreshold.JobPreemptable
+set_option pp.fieldNotation false
+
+#check @Prosa.Analysis.Facts.Preemption.RtcThreshold.JobPreemptable.preemption_points_of_zero_cost_job
+#check @Prosa.Analysis.Facts.Preemption.RtcThreshold.JobPreemptable.zero_in_preemption_points
+#check @Prosa.Analysis.Facts.Preemption.RtcThreshold.JobPreemptable.job_cost_in_preemption_points
+#check @Prosa.Analysis.Facts.Preemption.RtcThreshold.JobPreemptable.size_of_preemption_points
+#check @Prosa.Analysis.Facts.Preemption.RtcThreshold.JobPreemptable.preemption_points_nondecreasing
+#check @Prosa.Analysis.Facts.Preemption.RtcThreshold.JobPreemptable.job_cost_is_last_element_of_preemption_points
+#check @Prosa.Analysis.Facts.Preemption.RtcThreshold.JobPreemptable.job_last_nonpreemptive_segment_positive
+#check @Prosa.Analysis.Facts.Preemption.RtcThreshold.JobPreemptable.job_max_nonpreemptive_segment_positive
+#check @Prosa.Analysis.Facts.Preemption.RtcThreshold.JobPreemptable.job_max_nonpreemptive_segment_le_job_cost
+#check @Prosa.Analysis.Facts.Preemption.RtcThreshold.JobPreemptable.job_last_nonpreemptive_segment_le_job_cost
+#check @Prosa.Analysis.Facts.Preemption.RtcThreshold.JobPreemptable.job_run_to_completion_threshold_positive
+#check @Prosa.Analysis.Facts.Preemption.RtcThreshold.JobPreemptable.job_run_to_completion_threshold_le_job_cost
+#check @Prosa.Analysis.Facts.Preemption.RtcThreshold.JobPreemptable.job_cannot_be_preempted_within_last_segment
+#check @Prosa.Analysis.Facts.Preemption.RtcThreshold.JobPreemptable.job_nonpreemptive_after_run_to_completion_threshold
+
+#print axioms Prosa.Analysis.Facts.Preemption.RtcThreshold.JobPreemptable.preemption_points_of_zero_cost_job
+#print axioms Prosa.Analysis.Facts.Preemption.RtcThreshold.JobPreemptable.zero_in_preemption_points
+#print axioms Prosa.Analysis.Facts.Preemption.RtcThreshold.JobPreemptable.job_cost_in_preemption_points
+#print axioms Prosa.Analysis.Facts.Preemption.RtcThreshold.JobPreemptable.size_of_preemption_points
+#print axioms Prosa.Analysis.Facts.Preemption.RtcThreshold.JobPreemptable.preemption_points_nondecreasing
+#print axioms Prosa.Analysis.Facts.Preemption.RtcThreshold.JobPreemptable.job_cost_is_last_element_of_preemption_points
+#print axioms Prosa.Analysis.Facts.Preemption.RtcThreshold.JobPreemptable.job_last_nonpreemptive_segment_positive
+#print axioms Prosa.Analysis.Facts.Preemption.RtcThreshold.JobPreemptable.job_max_nonpreemptive_segment_positive
+#print axioms Prosa.Analysis.Facts.Preemption.RtcThreshold.JobPreemptable.job_max_nonpreemptive_segment_le_job_cost
+#print axioms Prosa.Analysis.Facts.Preemption.RtcThreshold.JobPreemptable.job_last_nonpreemptive_segment_le_job_cost
+#print axioms Prosa.Analysis.Facts.Preemption.RtcThreshold.JobPreemptable.job_run_to_completion_threshold_positive
+#print axioms Prosa.Analysis.Facts.Preemption.RtcThreshold.JobPreemptable.job_run_to_completion_threshold_le_job_cost
+#print axioms Prosa.Analysis.Facts.Preemption.RtcThreshold.JobPreemptable.job_cannot_be_preempted_within_last_segment
+#print axioms Prosa.Analysis.Facts.Preemption.RtcThreshold.JobPreemptable.job_nonpreemptive_after_run_to_completion_threshold

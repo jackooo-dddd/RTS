@@ -1,0 +1,97 @@
+{
+  "rank": 183,
+  "layer": 19,
+  "tag": "PERIODIC",
+  "slug": "model_task_arrival_periodic",
+  "source": "model/task/arrival/periodic.v",
+  "dependencies": [
+    "analysis/facts/job_index.v",
+    "model/task/arrival/sporadic.v",
+    "model/task/arrival/task_max_inter_arrival.v",
+    "model/task/offset.v"
+  ],
+  "declaration_count": 5,
+  "base_run": "analysis_facts_job_index_final",
+  "base_checks": [
+    {
+      "manifest": "analysis_facts_job_index",
+      "olean": "Prosa/Analysis/Facts/JobIndex.olean",
+      "vo": "FactsJobIndexSemanticSource.vo"
+    }
+  ],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "PeriodicSemanticSource",
+    "drop_imports": [
+      "Require Export prosa.model.task.arrival.sporadic.",
+      "Require Export prosa.model.task.arrival.task_max_inter_arrival.",
+      "Require Export prosa.model.task.offset.",
+      "Require Export prosa.analysis.facts.job_index."
+    ],
+    "add_imports": [
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq.",
+      "Require Import prosa.behavior.all prosa.model.task.concept prosa.model.task.arrivals."
+    ],
+    "local_bindings": [
+      "respects_periodic_task_model=respects_periodic_task_model arr_seq"
+    ],
+    "note": "the class and the four definitions are byte-identical computational blocks; the sporadic, task_max_inter_arrival, offset and job_index imports contribute no name used by the definitions and are dropped (job_index is the pinned model/task/arrivals of the base closure, with behavior and model/task/concept); the source Section variable arr_seq, implicit in the uses of respects_periodic_task_model, is reconnected by a recorded local notation"
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/PeriodicStatementProbe.v",
+  "production": "Prosa/Model/Task/Arrival/Periodic.lean",
+  "production_olean": "Prosa/Model/Task/Arrival/Periodic.olean",
+  "lean_namespace": "Prosa.Model.Task.Arrival.Periodic",
+  "fixtures": [
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ArrivalsComputationInterface",
+    "PeriodicComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/PeriodicLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/model_task_arrival_periodic_export_config.json",
+  "export_name": "Periodic",
+  "cert_dir": "certificates/model_task_arrival_periodic",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "ArrivalsCorrespondence",
+    "PeriodicCorrespondence"
+  ],
+  "audit_module": "PeriodicAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/PeriodicImportedTypeAudit.v",
+  "assumption_config": "certificates/model_task_arrival_periodic/periodic_assumption_config.json",
+  "lean_axiom_config": "certificates/model_task_arrival_periodic/periodic_lean_axiom_config.json",
+  "computational": [
+    "PeriodicModel",
+    "valid_period",
+    "respects_periodic_task_model",
+    "valid_periods",
+    "taskset_respects_periodic_task_model"
+  ],
+  "principal": {
+    "PeriodicModel": [
+      "PeriodicModel_source_total",
+      "PeriodicModel_target_total"
+    ]
+  },
+  "helpers": [
+    "per_eq_correspondence",
+    "per_exists_identity"
+  ],
+  "previous_status": "analysis_facts_model_offset_module_status.json",
+  "previous_files": 172,
+  "previous_decls": 1190,
+  "input_relations": [
+    "PeriodicModel pointwise by SubNatRel (with two-way totals)",
+    "JobTask by Lean.eq",
+    "job_arrival by ArJobArrivalRel",
+    "ArArrivalSequenceRel",
+    "task sets by ArListRel"
+  ],
+  "coverage_for_inner_binders": [
+    "jobs and tasks (identity carriers)"
+  ],
+  "lean_representation_note": "`a > b` in a Boolean position is `decide (b < a)`; single comparisons in Prop position are Lean propositions; `x \\in s` is `decide (x \u2208 s) = true`",
+  "export_diagnosis": "the accepted job-index export root (task-arrival / arrival-sequence interfaces) without its theorem targets, reused so that the accepted certificate chain applies, plus the class and the four definitions"
+}

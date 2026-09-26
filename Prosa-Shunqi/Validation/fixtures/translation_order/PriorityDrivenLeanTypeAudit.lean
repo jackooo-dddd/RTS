@@ -1,0 +1,10 @@
+import Prosa.Model.Schedule.PriorityDriven
+set_option pp.fieldNotation false
+
+#check @Prosa.Model.Schedule.PriorityDriven.respects_JLDP_policy_at_preemption_point
+#check @Prosa.Model.Schedule.PriorityDriven.respects_JLFP_policy_at_preemption_point
+#check @Prosa.Model.Schedule.PriorityDriven.respects_FP_policy_at_preemption_point
+
+#print axioms Prosa.Model.Schedule.PriorityDriven.respects_JLDP_policy_at_preemption_point
+#print axioms Prosa.Model.Schedule.PriorityDriven.respects_JLFP_policy_at_preemption_point
+#print axioms Prosa.Model.Schedule.PriorityDriven.respects_FP_policy_at_preemption_point

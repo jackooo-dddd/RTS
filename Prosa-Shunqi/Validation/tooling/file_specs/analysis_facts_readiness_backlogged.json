@@ -1,0 +1,104 @@
+{
+  "rank": 149,
+  "layer": 16,
+  "tag": "FBL",
+  "slug": "analysis_facts_readiness_backlogged",
+  "source": "analysis/facts/readiness/backlogged.v",
+  "dependencies": [
+    "analysis/definitions/readiness.v",
+    "analysis/facts/behavior/arrivals.v",
+    "model/schedule/work_conserving.v"
+  ],
+  "declaration_count": 5,
+  "base_run": "analysis_definitions_readiness_final",
+  "base_checks": [
+    {
+      "manifest": "analysis_definitions_readiness",
+      "olean": "Prosa/Analysis/Definitions/Readiness.olean",
+      "vo": "ReadinessSemanticSource.vo"
+    },
+    {
+      "manifest": "model_schedule_work_conserving",
+      "olean": "Prosa/Model/Schedule/WorkConserving.olean"
+    }
+  ],
+  "extra_pinned_sources": [
+    "model/schedule/work_conserving.v"
+  ],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "FactsBackloggedSemanticSource",
+    "drop_imports": [
+      "Require Export prosa.analysis.facts.behavior.arrivals.",
+      "Require Export prosa.analysis.definitions.readiness."
+    ],
+    "add_imports": [
+      "Require Export prosa.ReadinessSemanticSource.",
+      "Export ReadinessSemanticSource.",
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq.",
+      "Require Import prosa.analysis.definitions.schedule_prefix."
+    ],
+    "note": "theorem statements from the authoritative elaborated types (proofs omitted); the proof-heavy analysis/facts/behavior/arrivals import is dropped and the analysis/definitions/readiness import is bound to its accepted extracted source (ReadinessSemanticSource, .vo hash-checked against its manifest); model/schedule/work_conserving is compiled from the pinned tree; analysis/definitions/schedule_prefix is the compiled pinned source of the base run"
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/FactsBackloggedStatementProbe.v",
+  "production": "Prosa/Analysis/Facts/Readiness/Backlogged.lean",
+  "production_olean": "Prosa/Analysis/Facts/Readiness/Backlogged.olean",
+  "lean_namespace": "Prosa.Analysis.Facts.Readiness.Backlogged",
+  "fixtures": [
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ArrivalsComputationInterface",
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "ReadinessComputationInterface",
+    "FactsBackloggedComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/FactsBackloggedLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/analysis_facts_readiness_backlogged_export_config.json",
+  "export_name": "FactsBacklogged",
+  "cert_dir": "certificates/analysis_facts_readiness_backlogged",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "ArrivalsCorrespondence",
+    "JitterSvcBaseAdapter",
+    "JitterSvcNatBoolOperations",
+    "JitterSvcIntervalOperations",
+    "JitterSvcScheduleOperations",
+    "JitterSvcJobOperations",
+    "SequentialityCorrespondence",
+    "ReadinessCorrespondence",
+    "FactsBackloggedCorrespondence"
+  ],
+  "audit_module": "FactsBackloggedAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/FactsBackloggedImportedTypeAudit.v",
+  "assumption_config": "certificates/analysis_facts_readiness_backlogged/facts_backlogged_assumption_config.json",
+  "lean_axiom_config": "certificates/analysis_facts_readiness_backlogged/facts_backlogged_lean_axiom_config.json",
+  "computational": [],
+  "principal": {},
+  "helpers": [
+    "fbl_arrival_sequence_to_source_rel",
+    "fbl_scheduled_at_related",
+    "fbl_backlogged_related",
+    "fbl_jobs_backlogged_at_related",
+    "fbl_forall_schedule"
+  ],
+  "previous_status": "model_schedule_priority_driven_module_status.json",
+  "previous_files": 149,
+  "previous_decls": 1100,
+  "input_relations": [
+    "job_arrival by ArJobArrivalRel",
+    "job_cost by SvcJobCostRel",
+    "SvcProcessorStateRel + schedules (covered in both directions)",
+    "the readiness model by the accepted RdJobReadyRel",
+    "ArArrivalSequenceRel (covered in both directions)"
+  ],
+  "coverage_for_inner_binders": [
+    "jobs (identity carrier)",
+    "Nats (both directions)",
+    "schedules and arrival sequences (both directions)"
+  ],
+  "lean_representation_note": "`x \\in s` is `decide (x \u2208 s) = true`; `~~ b` is `!b`; Booleans in Prop position are `= true`; single comparisons are Lean propositions",
+  "export_diagnosis": "the accepted readiness export root (preemption-parameter closure) reused so that the accepted certificate chain applies, plus the five statements and the work-conserving backlog definition"
+}

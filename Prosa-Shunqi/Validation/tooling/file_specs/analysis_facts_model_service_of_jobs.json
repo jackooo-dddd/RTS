@@ -1,0 +1,215 @@
+{
+  "rank": 184,
+  "layer": 18,
+  "tag": "FSOJ",
+  "slug": "analysis_facts_model_service_of_jobs",
+  "source": "analysis/facts/model/service_of_jobs.v",
+  "dependencies": [
+    "analysis/facts/behavior/completion.v",
+    "analysis/facts/busy_interval/quiet_time.v",
+    "analysis/facts/model/uniprocessor.v",
+    "model/aggregate/service_of_jobs.v",
+    "model/aggregate/workload.v"
+  ],
+  "declaration_count": 22,
+  "base_run": "analysis_definitions_workload_bounded_final",
+  "base_checks": [
+    {
+      "manifest": "analysis_definitions_busy_interval_classical",
+      "olean": "Prosa/Analysis/Definitions/BusyInterval/Classical.olean",
+      "vo": "BusyIntervalClassicalSemanticSource.vo"
+    }
+  ],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "FactsServiceOfJobsSemanticSource",
+    "drop_imports": [
+      "Require Export prosa.model.aggregate.workload.",
+      "Require Export prosa.model.aggregate.service_of_jobs.",
+      "Require Export prosa.analysis.facts.behavior.completion.",
+      "Require Export prosa.analysis.facts.busy_interval.quiet_time.",
+      "Require Export prosa.analysis.facts.model.uniprocessor."
+    ],
+    "add_imports": [
+      "Require Export prosa.BusyIntervalClassicalSemanticSource.",
+      "Export BusyIntervalClassicalSemanticSource.",
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq fintype bigop.",
+      "Require Import prosa.behavior.all prosa.model.processor.platform_properties prosa.model.priority.classes.",
+      "Require Import prosa.model.aggregate.workload prosa.model.aggregate.service_of_jobs prosa.analysis.definitions.service."
+    ],
+    "note": "theorem statements from the authoritative elaborated types (proofs omitted); quiet_time comes from the accepted extracted busy-interval source (BusyIntervalClassicalSemanticSource, .vo hash-checked as base); model/aggregate/workload, model/aggregate/service_of_jobs and analysis/definitions/service (served_jobs_at) are pinned sources compiled from the pinned tree; the proof-only facts/behavior/completion, facts/busy_interval/quiet_time and facts/model/uniprocessor imports are dropped (they contribute no name used by the statements)"
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/FactsServiceOfJobsStatementProbe.v",
+  "production": "Prosa/Analysis/Facts/Model/ServiceOfJobs.lean",
+  "production_olean": "Prosa/Analysis/Facts/Model/ServiceOfJobs.olean",
+  "lean_namespace": "Prosa.Analysis.Facts.Model.ServiceOfJobs",
+  "fixtures": [
+    "NondecreasingComputationInterface",
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "PreemptionParameterComputationInterface",
+    "BusyIntervalClassicalComputationInterface",
+    "ArrivalsComputationInterface",
+    "WorkloadComputationInterface",
+    "ServiceOfJobsComputationInterface",
+    "FactsServiceOfJobsComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/FactsServiceOfJobsLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/analysis_facts_model_service_of_jobs_export_config.json",
+  "export_name": "FactsServiceOfJobs",
+  "cert_dir": "certificates/analysis_facts_model_service_of_jobs",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "ArrivalsCorrespondence",
+    "JitterSvcBaseAdapter",
+    "JitterSvcNatBoolOperations",
+    "JitterSvcIntervalOperations",
+    "JitterSvcScheduleOperations",
+    "JitterSvcJobOperations",
+    "PreemptionParameterCorrespondence",
+    "WorkloadCorrespondence",
+    "ServiceOfJobsCorrespondence",
+    "FactsServiceOfJobsCorrespondence"
+  ],
+  "audit_module": "FactsServiceOfJobsAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/FactsServiceOfJobsImportedTypeAudit.v",
+  "assumption_config": "certificates/analysis_facts_model_service_of_jobs/facts_service_of_jobs_assumption_config.json",
+  "lean_axiom_config": "certificates/analysis_facts_model_service_of_jobs/facts_service_of_jobs_lean_axiom_config.json",
+  "computational": [],
+  "principal": {},
+  "helpers": [
+    "fsoj_forall_cover_sprop",
+    "fsoj_lean_transport",
+    "fsoj_nat_input",
+    "fsoj_eq_correspondence",
+    "fsoj_bool_eq_correspondence",
+    "fsoj_exists_identity",
+    "fsoj_bool_to_nat_related",
+    "fsoj_window_le_le",
+    "fsoj_window_le_lt",
+    "fsoj_has_canonical",
+    "fsoj_has_related",
+    "fsoj_schedule_to_target_rel",
+    "fsoj_schedule_to_source_rel",
+    "fsoj_arrival_sequence_to_source_rel",
+    "fsoj_pred_to_source_rel",
+    "fsoj_list_to_target_rel",
+    "fsoj_list_to_source_rel",
+    "fsoj_jlfp_to_target_rel",
+    "fsoj_jlfp_to_source_rel",
+    "fsoj_unit_service_related",
+    "fsoj_ideal_progress_related",
+    "fsoj_uniprocessor_related",
+    "fsoj_jobs_must_arrive_related",
+    "fsoj_completed_jobs_dont_execute_related",
+    "fsoj_soj_related",
+    "fsoj_soj_at_related",
+    "fsoj_receives_service_at_related",
+    "fsoj_served_jobs_at_related",
+    "fsoj_quiet_time_related",
+    "fsoj_reflexive_related",
+    "fsoj_all_completed_related",
+    "fsoj_workload_eq_service_related",
+    "fsoj_some_scheduled_related"
+  ],
+  "previous_status": "model_task_arrival_periodic_module_status.json",
+  "previous_files": 173,
+  "previous_decls": 1195,
+  "input_relations": [
+    "job_arrival by ArJobArrivalRel",
+    "job_cost by SvcJobCostRel",
+    "SvcProcessorStateRel (two-sided)"
+  ],
+  "coverage_for_inner_binders": [
+    "schedules (state conversion with roundtrips)",
+    "arrival sequences (both directions)",
+    "JLFP policies (pointwise on Booleans)",
+    "job predicates (pointwise on Booleans)",
+    "job lists (both directions)",
+    "jobs (identity carrier)",
+    "Nats (both directions)"
+  ],
+  "lean_representation_note": "`uniq xs` is `xs.Nodup`; `{in xs, P1 =1 P2}` is `\u2200 x, decide (x \u2208 xs) = true \u2192 P1 x = P2 x`; `has P xs` is `xs.any P`; `\\sum_(t1 <= t < t2) F t` is `\u2211 t \u2208 (Finset.Ico t1 t2 : Finset Nat), F t` with Boolean summands through `Bool.toNat`; `pred0` is `fun _ => false`",
+  "export_diagnosis": "the accepted busy-interval + workload export root of workload/bounded (preemption-parameter / Service closure, ~127k lines) without its definition target, merged with the accepted service-of-jobs export root, reused so that the accepted ArrivalsSeq/JitterSvc/PreemptionParameter/Workload/ServiceOfJobs certificate chains apply, plus the 22 statements, the platform/readiness predicates, served_jobs_at and the List.any constructor equations",
+  "export_env": {
+    "LEAN4EXPORT_PRESERVE_REDUCIBLE_THEOREM_TYPES": "1"
+  },
+  "extra_pinned_sources": [
+    "model/job/properties.v",
+    "model/aggregate/workload.v",
+    "model/aggregate/service_of_jobs.v",
+    "analysis/definitions/service.v"
+  ],
+  "extra_olean_artifacts": [
+    {
+      "from": "model_aggregate_service_of_jobs_final/olean/Prosa/Model/Aggregate/ServiceOfJobs.olean",
+      "to": "Prosa/Model/Aggregate/ServiceOfJobs.olean",
+      "manifest": "model_aggregate_service_of_jobs",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_behavior_all_final/olean/Prosa/Analysis/Definitions/SchedulePrefix.olean",
+      "to": "Prosa/Analysis/Definitions/SchedulePrefix.olean",
+      "manifest": "analysis_schedule_prefix",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_behavior_all_final/olean/Prosa/Analysis/Definitions/Service.olean",
+      "to": "Prosa/Analysis/Definitions/Service.olean",
+      "manifest": "analysis_service",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_behavior_all_final/olean/Prosa/Analysis/Facts/Behavior/Completion.olean",
+      "to": "Prosa/Analysis/Facts/Behavior/Completion.olean",
+      "manifest": "analysis_facts_behavior_completion",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_behavior_all_final/olean/Prosa/Analysis/Facts/Behavior/Service.olean",
+      "to": "Prosa/Analysis/Facts/Behavior/Service.olean",
+      "manifest": "analysis_facts_behavior_service",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_behavior_all_final/olean/Prosa/Analysis/Facts/Behavior/Supply.olean",
+      "to": "Prosa/Analysis/Facts/Behavior/Supply.olean",
+      "manifest": "analysis_facts_behavior_supply",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_behavior_all_final/olean/Prosa/Analysis/Facts/Model/Scheduled.olean",
+      "to": "Prosa/Analysis/Facts/Model/Scheduled.olean",
+      "manifest": "analysis_facts_model_scheduled",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_behavior_all_final/olean/Prosa/Model/Schedule/Scheduled.olean",
+      "to": "Prosa/Model/Schedule/Scheduled.olean",
+      "manifest": "model_schedule_scheduled",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_definitions_carry_in_final/olean/Prosa/Analysis/Definitions/CarryIn.olean",
+      "to": "Prosa/Analysis/Definitions/CarryIn.olean",
+      "manifest": "analysis_definitions_carry_in",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_busy_interval_quiet_time_final/olean/Prosa/Analysis/Facts/BusyInterval/QuietTime.olean",
+      "to": "Prosa/Analysis/Facts/BusyInterval/QuietTime.olean",
+      "manifest": "analysis_facts_busy_interval_quiet_time",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_model_uniprocessor_final/olean/Prosa/Analysis/Facts/Model/Uniprocessor.olean",
+      "to": "Prosa/Analysis/Facts/Model/Uniprocessor.olean",
+      "manifest": "analysis_facts_model_uniprocessor",
+      "key": "production_olean_sha256"
+    }
+  ]
+}

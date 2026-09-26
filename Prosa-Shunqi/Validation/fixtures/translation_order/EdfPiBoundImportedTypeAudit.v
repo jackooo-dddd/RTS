@@ -1,0 +1,4 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedEdfPiBound.
+
+Check ImportedEdfPiBound.Prosa_Analysis_Definitions_BusyInterval_EdfPiBound_longest_busy_interval_with_pi.

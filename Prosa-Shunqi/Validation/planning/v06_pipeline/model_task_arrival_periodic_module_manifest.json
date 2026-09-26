@@ -1,0 +1,177 @@
+{
+  "slice": "TRANSLATION_ORDER_MODEL_TASK_ARRIVAL_PERIODIC",
+  "generated_at": "2026-09-27T00:19:18.414905+08:00",
+  "published_at": "2026-09-27T00:19:18.414905+08:00",
+  "rank": 183,
+  "layer": 19,
+  "source_file": "model/task/arrival/periodic.v",
+  "source_commit": "414e66760333eaa4ef78c685bcf53291c527a548",
+  "source_tree": "7d7e94c731f7eefde4ca738310d4cafdd7bebdf0",
+  "source_file_sha256": "eae39927e6cdd95d2d32bde22ce64e005928d1654e0da215fe5cc7ead7b5e9b3",
+  "pipeline": "Validation/scripts/translation_file_pipeline.py",
+  "spec": "Validation/tooling/file_specs/model_task_arrival_periodic.json",
+  "spec_sha256": "415193e13d1e20bc4319ae95f59077778d84ef1281f1f08a3dafacb2172fe5ea",
+  "source_compatibility": {
+    "mode": "extract",
+    "note": "the class and the four definitions are byte-identical computational blocks; the sporadic, task_max_inter_arrival, offset and job_index imports contribute no name used by the definitions and are dropped (job_index is the pinned model/task/arrivals of the base closure, with behavior and model/task/concept); the source Section variable arr_seq, implicit in the uses of respects_periodic_task_model, is reconnected by a recorded local notation",
+    "extracted_sha256": "bbf7319282530f21b3c14bbae3238c0f3be87fa6c9b116c27ae0bd77461e2ad7",
+    "extraction_metadata_sha256": "68dfb41de1f7763facf0d8778d3c9ec9ad0c1a8bd69e1adac3891ec4647acdc0"
+  },
+  "source_type_evidence": {
+    "prosa.model.task.arrival.periodic.PeriodicModel": "EXACT_HASH",
+    "prosa.model.task.arrival.periodic.valid_period": "EXACT_HASH",
+    "prosa.model.task.arrival.periodic.respects_periodic_task_model": "EXACT_HASH",
+    "prosa.model.task.arrival.periodic.valid_periods": "EXACT_HASH",
+    "prosa.model.task.arrival.periodic.taskset_respects_periodic_task_model": "EXACT_HASH"
+  },
+  "statement_only_export_boundary": [],
+  "input_relations": [
+    "PeriodicModel pointwise by SubNatRel (with two-way totals)",
+    "JobTask by Lean.eq",
+    "job_arrival by ArJobArrivalRel",
+    "ArArrivalSequenceRel",
+    "task sets by ArListRel"
+  ],
+  "coverage_for_inner_binders": [
+    "jobs and tasks (identity carriers)"
+  ],
+  "lean_representation_note": "`a > b` in a Boolean position is `decide (b < a)`; single comparisons in Prop position are Lean propositions; `x \\in s` is `decide (x \u2208 s) = true`",
+  "export_size": {
+    "lines": 29750,
+    "soft_budget_flag": "WITHIN_50K"
+  },
+  "file_dependencies": {
+    "analysis/facts/job_index.v": "analysis_facts_job_index_module_status.json",
+    "model/task/arrival/sporadic.v": "model_task_arrival_sporadic_module_status.json",
+    "model/task/arrival/task_max_inter_arrival.v": "model_task_arrival_tmia_module_status.json",
+    "model/task/offset.v": "model_task_offset_module_status.json"
+  },
+  "production_file": "Prosa/Model/Task/Arrival/Periodic.lean",
+  "production_source_sha256": "e5f4497ac1d38641943b7cae84a1faf71f1b063242e81cbfd7bcfa1d56ec00f7",
+  "production_olean_sha256": "caaa6e910d5b82d881364614c13d73910f8eef77161743b7995dcee4a512938f",
+  "export_config_sha256": "77fab3dc371b10166baadb762a940c94c17ad3bad9209fd979e9df76741a8f04",
+  "export_sha256": "c1d5f34e7c5373827c812655fb5843bb4f7d3730fb03aec364d1522ac6d0816a",
+  "export_lines": 29750,
+  "export_bytes": 630832,
+  "import_sha256": "9abb3be18e0d6568a90bf4b3cecef313fe2d9fbb979552200c0cbbcff8e126d1",
+  "source_vo_sha256": "c2e6ca0b80de2a5b7dcb06ff1a4b733adf56867327e8bcdf70915251f0eebd3d",
+  "lean_axiom_summary_sha256": "126dc4f2adf5eb2a835b09e8100d3582388eb164c23ba922bb55d3e6aab73a3c",
+  "rocq_assumption_summary_sha256": "f1e6683ef43aff950edef0f1ebada03216d4ec9e5b44848706ea5595cde0ae6d",
+  "assumption_config_sha256": "7a39eb2bb39f1161d3c926f1b46bc3669795060711ab088c5e9e223c823fed9e",
+  "stage_timing_seconds": {
+    "source_acquisition": {
+      "mode": "FRESH",
+      "seconds": 16
+    },
+    "lean_build": {
+      "mode": "FRESH",
+      "seconds": 384
+    },
+    "export": {
+      "mode": "FRESH",
+      "seconds": 46
+    },
+    "rocq_import": {
+      "mode": "FRESH",
+      "seconds": 52
+    },
+    "certificate_compile": {
+      "mode": "FRESH",
+      "seconds": 13
+    },
+    "assumption_audit": {
+      "mode": "FRESH",
+      "seconds": 0
+    }
+  },
+  "certificates": {
+    "ArrivalsSeqBaseAdapter": {
+      "source_sha256": "b2955f0d305ff5ad49daf6374e285a331783460fb6aea0b46d4a051bf628ac91",
+      "vo_sha256": "b002387a53f70e59be2b199b3f6f7c25bb8d572f6ff384dbf2fb9c45c0f0fa05"
+    },
+    "ArrivalsSeqOperations": {
+      "source_sha256": "c68a2190c29a78dcb952cfe0ff1f449271b17cfbed4d1620491299f24f20e85d",
+      "vo_sha256": "59dd1ea1514e1bdaacf87345648b64023403fa385e6a3c330aa8c371f901711c"
+    },
+    "ArrivalsSeqCorrespondence": {
+      "source_sha256": "b83a66af74519aca247994b1e73adc098181de95f0071c103d7ef8d33c6acde9",
+      "vo_sha256": "fdcd165a2c43b5fa6334ca5f2bdea00454275469aeab821b7f75bb29b4ff6a69"
+    },
+    "ArrivalsCorrespondence": {
+      "source_sha256": "b908a71c65113ea823d72e00b3a0263b2abf45c5cb406d63a690a49515634209",
+      "vo_sha256": "9e738c14913182433f4b859b4eeff043d1b7aac1b7170e2296e1a8bc7e28f7ad"
+    },
+    "PeriodicCorrespondence": {
+      "source_sha256": "1323e3b7bda8f57f5681e7cca6845ad61c8ff391457397da88d0438102a7a2a0",
+      "vo_sha256": "31bc41b19714ad758ce8c29c385e38f61cbf3ea825eeeaa7a47648988b7bc22d"
+    },
+    "PeriodicAssumptionAudit": {
+      "source_sha256": "1a089c18ba3822b9b5a7ada6f9fb3bca8e4d131847bf13f7fca88b240907d339",
+      "vo_sha256": "2805d35fbca8c0d2a8e134aeb282aa622571448cd25f5c409b519ac6e9130f5d"
+    }
+  },
+  "declarations": [
+    {
+      "source_declaration": "prosa.model.task.arrival.periodic.PeriodicModel",
+      "lean_declaration": "Prosa.Model.Task.Arrival.Periodic.PeriodicModel",
+      "semantic_status": "CERTIFIED",
+      "certificates": [
+        "PeriodicModel_source_total",
+        "PeriodicModel_target_total"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.model.task.arrival.periodic.valid_period",
+      "lean_declaration": "Prosa.Model.Task.Arrival.Periodic.valid_period",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "valid_period_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.model.task.arrival.periodic.respects_periodic_task_model",
+      "lean_declaration": "Prosa.Model.Task.Arrival.Periodic.respects_periodic_task_model",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "respects_periodic_task_model_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.model.task.arrival.periodic.valid_periods",
+      "lean_declaration": "Prosa.Model.Task.Arrival.Periodic.valid_periods",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "valid_periods_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.model.task.arrival.periodic.taskset_respects_periodic_task_model",
+      "lean_declaration": "Prosa.Model.Task.Arrival.Periodic.taskset_respects_periodic_task_model",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "taskset_respects_periodic_task_model_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    }
+  ],
+  "acceptance": "ACCEPTED_V06_FILE"
+}

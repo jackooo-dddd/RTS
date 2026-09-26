@@ -1,0 +1,170 @@
+{
+  "rank": 201,
+  "layer": 17,
+  "tag": "IUS",
+  "slug": "implementation_definitions_ideal_uni_scheduler",
+  "source": "implementation/definitions/ideal_uni_scheduler.v",
+  "dependencies": [
+    "analysis/facts/readiness/backlogged.v",
+    "analysis/transform/swap.v",
+    "implementation/definitions/generic_scheduler.v",
+    "model/preemption/parameter.v",
+    "model/processor/ideal.v",
+    "model/schedule/priority_driven.v"
+  ],
+  "declaration_count": 5,
+  "base_run": "analysis_transform_prefix_final",
+  "base_checks": [
+    {
+      "manifest": "analysis_transform_prefix",
+      "olean": "Prosa/Analysis/Transform/Prefix.olean",
+      "vo": "TransformPrefixSemanticSource.vo"
+    }
+  ],
+  "extra_pinned_sources": [
+    "analysis/definitions/schedule_prefix.v",
+    "model/task/sequentiality.v",
+    "analysis/transform/swap.v",
+    "model/processor/ideal.v",
+    "implementation/definitions/generic_scheduler.v",
+    "model/schedule/work_conserving.v"
+  ],
+  "extra_lean": [
+    [
+      "Prosa/Model/Processor/Ideal.lean",
+      "Prosa/Model/Processor/Ideal.olean",
+      "model_processor_ideal",
+      "production_olean_sha256"
+    ]
+  ],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "IdealUniSchedulerSemanticSource",
+    "drop_imports": [
+      "Require Export prosa.implementation.definitions.generic_scheduler.",
+      "Require Export prosa.model.processor.ideal.",
+      "Require Export prosa.model.preemption.parameter.",
+      "Require Export prosa.model.schedule.priority_driven.",
+      "Require Export prosa.analysis.facts.readiness.backlogged.",
+      "Require Export prosa.analysis.transform.swap."
+    ],
+    "add_imports": [
+      "Require Export prosa.analysis.transform.swap.",
+      "Require Export prosa.implementation.definitions.generic_scheduler.",
+      "Require Export prosa.model.processor.ideal.",
+      "Require Export prosa.PreemptionParameterSemanticSource.",
+      "Export PreemptionParameterSemanticSource.",
+      "Require Export prosa.ReadinessSemanticSource.",
+      "Export ReadinessSemanticSource.",
+      "Require Export prosa.model.schedule.work_conserving.",
+      "Require Export prosa.model.priority.classes.",
+      "Require Export prosa.util.supremum.",
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq.",
+      "Require Import prosa.behavior.all."
+    ],
+    "local_bindings": [
+      "prev_job_nonpreemptive=prev_job_nonpreemptive sched_prefix t",
+      "allocation_at=allocation_at arr_seq choose_job",
+      "pmc_uni_schedule=pmc_uni_schedule arr_seq"
+    ],
+    "note": "the five definitions are byte-identical computational blocks; the readiness definitions used by the section's hypothesis are bound to their accepted extracted source (ReadinessSemanticSource .vo copied from its accepted run and hash-checked against its manifest); the preemption-parameter import is bound to its accepted extracted source (PreemptionParameterSemanticSource of the base closure); analysis/transform/swap, implementation/definitions/generic_scheduler, model/processor/ideal (with its accepted Rocq 9.3 compatibility patch) and model/schedule/work_conserving are pinned sources (with analysis/definitions/schedule_prefix, under its accepted proof-only Rocq 9.3 compatibility patch, and model/task/sequentiality needed by the readiness source; their pinned compiles are byte-identical to those in the readiness run) compiled from the pinned tree; model/priority/classes and util/supremum are the compiled pinned sources of the base closure; the proof-only facts/readiness/backlogged and model/schedule/priority_driven imports are dropped (the definitions mention jobs_backlogged_at from model/schedule/work_conserving, which priority_driven only re-exports); the source Section variables, implicit in the uses of prev_job_nonpreemptive, allocation_at and pmc_uni_schedule inside later definitions of the same Section, are reconnected by recorded local notations"
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/IdealUniSchedulerStatementProbe.v",
+  "production": "Prosa/Implementation/Definitions/IdealUniScheduler.lean",
+  "production_olean": "Prosa/Implementation/Definitions/IdealUniScheduler.olean",
+  "lean_namespace": "Prosa.Implementation.Definitions.IdealUniScheduler",
+  "fixtures": [
+    "NondecreasingComputationInterface",
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "PreemptionParameterComputationInterface",
+    "TransformPrefixComputationInterface",
+    "IdealUniSchedulerComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/IdealUniSchedulerLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/implementation_definitions_ideal_uni_scheduler_export_config.json",
+  "export_name": "IdealUniScheduler",
+  "cert_dir": "certificates/implementation_definitions_ideal_uni_scheduler",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "JitterSvcBaseAdapter",
+    "JitterSvcNatBoolOperations",
+    "JitterSvcIntervalOperations",
+    "JitterSvcScheduleOperations",
+    "JitterSvcJobOperations",
+    "PreemptionParameterCorrespondence",
+    "IdealUniSchedulerCorrespondence"
+  ],
+  "audit_module": "IdealUniSchedulerAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/IdealUniSchedulerImportedTypeAudit.v",
+  "assumption_config": "certificates/implementation_definitions_ideal_uni_scheduler/ideal_uni_scheduler_assumption_config.json",
+  "lean_axiom_config": "certificates/implementation_definitions_ideal_uni_scheduler/ideal_uni_scheduler_lean_axiom_config.json",
+  "computational": [
+    "prev_job_nonpreemptive",
+    "allocation_at",
+    "pmc_uni_schedule",
+    "choose_highest_prio_job",
+    "uni_schedule"
+  ],
+  "principal": {},
+  "helpers": [],
+  "previous_status": "implementation_facts_generic_schedule_module_status.json",
+  "previous_files": 190,
+  "previous_decls": 1340,
+  "input_relations": [
+    "the processor model is fixed to the ideal uniprocessor on both sides; states related by the constructor-preserving Option map, schedules pointwise",
+    "job_cost by SvcJobCostRel",
+    "job_arrival by ArJobArrivalRel",
+    "ArArrivalSequenceRel",
+    "the readiness model: job_ready related on related ideal schedules and instants",
+    "JobPreemptable pointwise",
+    "the JLDP policy pointwise on Booleans",
+    "choose_job related on related instants and job lists"
+  ],
+  "coverage_for_inner_binders": [],
+  "lean_representation_note": "the section-local PState is the accepted ideal processor (states `Option Job`) and the idle state is `none`; the Boolean `if` is `bif` (a match on the Boolean); `~~ b` is `!b`; `t.-1` is `t - 1`; the readiness and preemption models and the JLDP policy are instance binders",
+  "export_diagnosis": "the accepted transform-prefix export root without its statements (preemption-parameter closure with the Service / Schedule interfaces), plus the ideal processor, the generic scheduler, the work-conserving backlog, supremum, the five definitions and kernel-checked schedule_up_to/empty_schedule/replace_at equations at the ideal processor",
+  "extra_source_patches": [
+    "patches/prosa-v06-rocq93-analysis-schedule-prefix.patch",
+    "patches/prosa-v06-rocq93-model-processor-ideal.patch"
+  ],
+  "extra_artifacts": [
+    {
+      "from": "analysis_definitions_readiness_final/source/ReadinessSemanticSource.vo",
+      "to": "source/ReadinessSemanticSource.vo",
+      "manifest": "analysis_definitions_readiness",
+      "key": "source_vo_sha256"
+    }
+  ],
+  "extra_olean_artifacts": [
+    {
+      "from": "analysis_facts_model_ideal_schedule_final/olean/Prosa/Model/Processor/Ideal.olean",
+      "to": "Prosa/Model/Processor/Ideal.olean",
+      "manifest": "model_processor_ideal",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_transform_swap/olean/Prosa/Analysis/Transform/Swap.olean",
+      "to": "Prosa/Analysis/Transform/Swap.olean",
+      "manifest": "analysis_transform_swap",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "implementation_definitions_generic_scheduler/lean/Prosa/Implementation/Definitions/GenericScheduler.olean",
+      "to": "Prosa/Implementation/Definitions/GenericScheduler.olean",
+      "manifest": "implementation_definitions_generic_scheduler",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_model_ideal_schedule_final/olean/Prosa/Model/Schedule/WorkConserving.olean",
+      "to": "Prosa/Model/Schedule/WorkConserving.olean",
+      "manifest": "model_schedule_work_conserving",
+      "key": "production_olean_sha256"
+    }
+  ],
+  "extra_generated_sources": []
+}

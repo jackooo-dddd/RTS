@@ -1,0 +1,139 @@
+{
+  "rank": 151,
+  "layer": 16,
+  "tag": "FRS",
+  "slug": "analysis_facts_readiness_sequential",
+  "source": "analysis/facts/readiness/sequential.v",
+  "dependencies": [
+    "analysis/definitions/readiness.v",
+    "analysis/definitions/work_bearing_readiness.v",
+    "analysis/facts/behavior/completion.v",
+    "analysis/facts/model/task_arrivals.v",
+    "model/readiness/sequential.v"
+  ],
+  "declaration_count": 4,
+  "base_run": "analysis_definitions_readiness_final",
+  "base_checks": [
+    {
+      "manifest": "analysis_definitions_readiness",
+      "olean": "Prosa/Analysis/Definitions/Readiness.olean",
+      "vo": "ReadinessSemanticSource.vo"
+    }
+  ],
+  "extra_pinned_sources": [
+    "analysis/definitions/readiness.v",
+    "analysis/definitions/work_bearing_readiness.v",
+    "model/readiness/sequential.v"
+  ],
+  "extra_lean": [
+    [
+      "Prosa/Model/Readiness/Sequential.lean",
+      "Prosa/Model/Readiness/Sequential.olean",
+      "model_readiness_sequential",
+      "production_olean_sha256"
+    ],
+    [
+      "Prosa/Analysis/Definitions/WorkBearingReadiness.lean",
+      "Prosa/Analysis/Definitions/WorkBearingReadiness.olean",
+      "analysis_definitions_work_bearing_readiness",
+      "production_olean_sha256"
+    ]
+  ],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "FactsReadinessSequentialSemanticSource",
+    "helper_blocks": [
+      "sequential_readiness_instance"
+    ],
+    "source_order": true,
+    "drop_imports": [
+      "Require Export prosa.analysis.facts.behavior.completion.",
+      "Require Export prosa.analysis.facts.model.task_arrivals."
+    ],
+    "add_imports": [
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq."
+    ],
+    "note": "the source-local instance sequential_readiness_instance is a byte-identical helper block and the four statements are the authoritative elaborated types (proofs omitted); the proof-heavy analysis/facts imports are dropped; the elaborated evidence names `readiness.sequential_readiness`, so analysis/definitions/readiness.v itself is compiled from the pinned tree (its dependency model/preemption/parameter.v bound to the accepted extracted parameter source by the same one-line re-export shim as in the accepted zero-declaration validations), together with analysis/definitions/work_bearing_readiness.v and model/readiness/sequential.v (the latter with its accepted audited proof-only Rocq 9.3 obligation patch; its .vo is hash-checked against its manifest); the section-local readiness instance and the FP\u2192JLFP coercion, both implicit in the elaborated statements, are made explicit by recorded printer repairs (the statements print back to the evidence text)",
+    "printer_repairs": [
+      "valid_schedule sched arr_seq=@valid_schedule Job H0 PState sched H1 (@sequential_readiness_instance Job Task H H0 H1 PState arr_seq) arr_seq",
+      "work_bearing_readiness arr_seq sched=@work_bearing_readiness Job H0 H1 PState (@sequential_readiness_instance Job Task H H0 H1 PState arr_seq) arr_seq sched (@FP_to_JLFP Job Task H FP)"
+    ]
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/FactsReadinessSequentialStatementProbe.v",
+  "production": "Prosa/Analysis/Facts/Readiness/Sequential.lean",
+  "production_olean": "Prosa/Analysis/Facts/Readiness/Sequential.olean",
+  "lean_namespace": "Prosa.Analysis.Facts.Readiness.Sequential",
+  "fixtures": [
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ArrivalsComputationInterface",
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "ReadinessComputationInterface",
+    "FactsReadinessSequentialComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/FactsReadinessSequentialLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/analysis_facts_readiness_sequential_export_config.json",
+  "export_name": "FactsReadinessSequential",
+  "cert_dir": "certificates/analysis_facts_readiness_sequential",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "ArrivalsCorrespondence",
+    "JitterSvcBaseAdapter",
+    "JitterSvcNatBoolOperations",
+    "JitterSvcIntervalOperations",
+    "JitterSvcScheduleOperations",
+    "JitterSvcJobOperations",
+    "SequentialityCorrespondence",
+    "ReadinessCorrespondence",
+    "FactsReadinessSequentialCorrespondence"
+  ],
+  "audit_module": "FactsReadinessSequentialAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/FactsReadinessSequentialImportedTypeAudit.v",
+  "assumption_config": "certificates/analysis_facts_readiness_sequential/facts_readiness_sequential_assumption_config.json",
+  "lean_axiom_config": "certificates/analysis_facts_readiness_sequential/facts_readiness_sequential_lean_axiom_config.json",
+  "computational": [],
+  "principal": {},
+  "helpers": [
+    "frs_exists_identity",
+    "frs_scheduled_at_related",
+    "frs_pending_related",
+    "frs_sequential_instance_related",
+    "frs_forall_schedule",
+    "frs_fp_to_target_rel",
+    "frs_fp_to_source_rel"
+  ],
+  "previous_status": "analysis_facts_readiness_basic_module_status.json",
+  "previous_files": 151,
+  "previous_decls": 1108,
+  "input_relations": [
+    "job_arrival by ArJobArrivalRel",
+    "job_cost by SvcJobCostRel",
+    "JobTask by Lean.eq",
+    "SvcProcessorStateRel + schedules (covered in both directions)",
+    "ArArrivalSequenceRel",
+    "FP policy pointwise on Booleans (covered in both directions)",
+    "the sequential readiness model related to the accepted Lean definition"
+  ],
+  "coverage_for_inner_binders": [
+    "jobs (identity carrier)",
+    "Nats (both directions)",
+    "schedules and FP policies (both directions)"
+  ],
+  "lean_representation_note": "the source-local instance is a plain definition passed explicitly; the JLFP policy of work-bearing readiness is the accepted `FP_to_JLFP` of the FP policy, as elaborated",
+  "export_diagnosis": "the accepted readiness export root reused so that the accepted certificate chain applies, plus the four statements, the local instance, the sequential readiness model and the work-bearing readiness definition",
+  "extra_source_patches": [
+    "patches/prosa-v06-rocq93-model-readiness-sequential.patch"
+  ],
+  "extra_source_vo_checks": {
+    "model/readiness/sequential.vo": [
+      "model_readiness_sequential",
+      "source_vo_sha256"
+    ]
+  },
+  "dependency_shims": {
+    "model/preemption/parameter.v": "PreemptionParameterSemanticSource"
+  }
+}

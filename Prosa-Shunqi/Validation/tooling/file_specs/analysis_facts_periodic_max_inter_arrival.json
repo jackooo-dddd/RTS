@@ -1,0 +1,98 @@
+{
+  "rank": 194,
+  "layer": 22,
+  "tag": "FPMIA",
+  "slug": "analysis_facts_periodic_max_inter_arrival",
+  "source": "analysis/facts/periodic/max_inter_arrival.v",
+  "dependencies": [
+    "analysis/facts/periodic/arrival_separation.v"
+  ],
+  "declaration_count": 3,
+  "base_run": "analysis_facts_periodic_arrival_separation_final",
+  "base_checks": [
+    {
+      "manifest": "analysis_facts_periodic_arrival_separation",
+      "olean": "Prosa/Analysis/Facts/Periodic/ArrivalSeparation.olean"
+    },
+    {
+      "manifest": "model_task_arrival_periodic",
+      "olean": "Prosa/Model/Task/Arrival/Periodic.olean",
+      "vo": "PeriodicSemanticSource.vo"
+    }
+  ],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "FactsPeriodicMaxInterArrivalSemanticSource",
+    "drop_imports": [
+      "Require Export prosa.analysis.facts.periodic.arrival_separation."
+    ],
+    "add_imports": [
+      "Require Export prosa.PeriodicSemanticSource.",
+      "Export PeriodicSemanticSource.",
+      "Require Export prosa.model.task.arrival.task_max_inter_arrival.",
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq.",
+      "Require Import prosa.behavior.all prosa.model.task.concept prosa.model.task.arrivals."
+    ],
+    "note": "the instance is a byte-identical computational block and the remark statements are the authoritative elaborated types (proofs omitted); the periodic model is bound to its accepted extracted source (PeriodicSemanticSource, hash-checked in the base); model/task/arrival/task_max_inter_arrival is the pinned source compiled from the pinned tree, as in its accepted run; the proof-only facts/periodic/arrival_separation import is dropped"
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/FactsPeriodicMaxInterArrivalStatementProbe.v",
+  "production": "Prosa/Analysis/Facts/Periodic/MaxInterArrival.lean",
+  "production_olean": "Prosa/Analysis/Facts/Periodic/MaxInterArrival.olean",
+  "lean_namespace": "Prosa.Analysis.Facts.Periodic.MaxInterArrival",
+  "fixtures": [
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ArrivalsComputationInterface",
+    "PeriodicComputationInterface",
+    "PeriodicAsSporadicComputationInterface",
+    "TmiaComputationInterface",
+    "FactsPeriodicMaxInterArrivalComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/FactsPeriodicMaxInterArrivalLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/analysis_facts_periodic_max_inter_arrival_export_config.json",
+  "export_name": "FactsPeriodicMaxInterArrival",
+  "cert_dir": "certificates/analysis_facts_periodic_max_inter_arrival",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "ArrivalsCorrespondence",
+    "PeriodicCorrespondence",
+    "TmiaCorrespondence",
+    "FactsPeriodicMaxInterArrivalCorrespondence"
+  ],
+  "audit_module": "FactsPeriodicMaxInterArrivalAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/FactsPeriodicMaxInterArrivalImportedTypeAudit.v",
+  "assumption_config": "certificates/analysis_facts_periodic_max_inter_arrival/facts_periodic_max_inter_arrival_assumption_config.json",
+  "lean_axiom_config": "certificates/analysis_facts_periodic_max_inter_arrival/facts_periodic_max_inter_arrival_lean_axiom_config.json",
+  "computational": [
+    "max_inter_eq_period"
+  ],
+  "principal": {},
+  "helpers": [],
+  "previous_status": "analysis_abstract_restricted_supply_search_space_edf_module_status.json",
+  "previous_files": 183,
+  "previous_decls": 1300,
+  "input_relations": [
+    "PeriodicModel pointwise by SubNatRel (the accepted PerRel)",
+    "JobTask by Lean.eq",
+    "job_arrival by ArJobArrivalRel",
+    "ArArrivalSequenceRel"
+  ],
+  "coverage_for_inner_binders": [
+    "tasks (identity carriers)"
+  ],
+  "lean_representation_note": "the source Global Instance is a Lean global instance with the same name, found by instance resolution in the statements; a Boolean in `Prop` position is `= true`",
+  "export_diagnosis": "the accepted periodic arrival-separation export root without its statements (periodic-as-sporadic / task-arrival / arrival-sequence interfaces) merged with the accepted task-max-inter-arrival root, plus the instance and the two statements",
+  "extra_pinned_sources": [
+    "model/task/arrival/task_max_inter_arrival.v"
+  ],
+  "extra_olean_artifacts": [
+    {
+      "from": "model_task_arrival_tmia_final/olean/Prosa/Model/Task/Arrival/TaskMaxInterArrival.olean",
+      "to": "Prosa/Model/Task/Arrival/TaskMaxInterArrival.olean",
+      "manifest": "model_task_arrival_tmia",
+      "key": "production_olean_sha256"
+    }
+  ]
+}

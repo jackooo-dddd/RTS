@@ -1,0 +1,98 @@
+{
+  "rank": 186,
+  "layer": 20,
+  "tag": "PAS",
+  "slug": "model_task_arrival_periodic_as_sporadic",
+  "source": "model/task/arrival/periodic_as_sporadic.v",
+  "dependencies": [
+    "model/task/arrival/periodic.v"
+  ],
+  "declaration_count": 5,
+  "base_run": "model_task_arrival_periodic_final",
+  "base_checks": [
+    {
+      "manifest": "model_task_arrival_periodic",
+      "olean": "Prosa/Model/Task/Arrival/Periodic.olean",
+      "vo": "PeriodicSemanticSource.vo"
+    }
+  ],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "PeriodicAsSporadicSemanticSource",
+    "drop_imports": [
+      "Require Export prosa.model.task.arrival.periodic."
+    ],
+    "add_imports": [
+      "Require Export prosa.PeriodicSemanticSource.",
+      "Export PeriodicSemanticSource.",
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq.",
+      "Require Import prosa.behavior.all prosa.model.task.concept prosa.model.task.arrivals prosa.model.task.arrival.sporadic."
+    ],
+    "note": "the Global Instance periodic_as_sporadic is a byte-identical computational block; theorem statements from the authoritative elaborated types (proofs omitted); the periodic import is bound to the accepted extracted periodic source (PeriodicSemanticSource, .vo hash-checked as base), which re-exports the pinned model/task/arrivals of the base closure; model/task/arrival/sporadic.v is the pinned source compiled from the pinned tree"
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/PeriodicAsSporadicStatementProbe.v",
+  "production": "Prosa/Model/Task/Arrival/PeriodicAsSporadic.lean",
+  "production_olean": "Prosa/Model/Task/Arrival/PeriodicAsSporadic.olean",
+  "lean_namespace": "Prosa.Model.Task.Arrival.PeriodicAsSporadic",
+  "fixtures": [
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ArrivalsComputationInterface",
+    "PeriodicComputationInterface",
+    "PeriodicAsSporadicComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/PeriodicAsSporadicLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/model_task_arrival_periodic_as_sporadic_export_config.json",
+  "export_name": "PeriodicAsSporadic",
+  "cert_dir": "certificates/model_task_arrival_periodic_as_sporadic",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "ArrivalsCorrespondence",
+    "PeriodicCorrespondence",
+    "PeriodicAsSporadicCorrespondence"
+  ],
+  "audit_module": "PeriodicAsSporadicAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/PeriodicAsSporadicImportedTypeAudit.v",
+  "assumption_config": "certificates/model_task_arrival_periodic_as_sporadic/periodic_as_sporadic_assumption_config.json",
+  "lean_axiom_config": "certificates/model_task_arrival_periodic_as_sporadic/periodic_as_sporadic_lean_axiom_config.json",
+  "computational": [
+    "periodic_as_sporadic"
+  ],
+  "principal": {},
+  "helpers": [
+    "pas_forall_list",
+    "pas_false_correspondence",
+    "pas_neq_correspondence",
+    "pas_valid_min_inter_arrival_related",
+    "pas_valid_taskset_related",
+    "pas_respects_sporadic_related"
+  ],
+  "previous_status": "analysis_facts_preemption_rtc_threshold_preemptive_module_status.json",
+  "previous_files": 175,
+  "previous_decls": 1218,
+  "input_relations": [
+    "PeriodicModel pointwise by SubNatRel (the accepted PerRel)",
+    "JobTask by Lean.eq",
+    "job_arrival by ArJobArrivalRel",
+    "ArArrivalSequenceRel"
+  ],
+  "coverage_for_inner_binders": [
+    "task sets (both directions by ArListRel)",
+    "jobs and tasks (identity carriers)"
+  ],
+  "lean_representation_note": "the source Global Instance is a Lean global instance with the same name, found by instance resolution in the statements; `TaskSet Task` is the accepted `List Task`",
+  "export_diagnosis": "the accepted periodic export root (task-arrival / arrival-sequence interfaces, ~30k lines) reused so that the accepted certificate chain applies, plus the instance, the four statements and the sporadic-model definitions",
+  "extra_pinned_sources": [
+    "model/task/arrival/sporadic.v"
+  ],
+  "extra_olean_artifacts": [
+    {
+      "from": "model_task_arrival_sporadic_as_curve_final/olean/Prosa/Model/Task/Arrival/Sporadic.olean",
+      "to": "Prosa/Model/Task/Arrival/Sporadic.olean",
+      "manifest": "model_task_arrival_sporadic",
+      "key": "production_olean_sha256"
+    }
+  ]
+}

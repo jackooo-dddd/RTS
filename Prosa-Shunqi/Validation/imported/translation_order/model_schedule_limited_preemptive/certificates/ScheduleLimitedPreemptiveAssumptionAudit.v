@@ -1,0 +1,6 @@
+From FoundationCertificates Require Import
+  ArrivalsSeqBaseAdapter ArrivalsSeqOperations ArrivalsSeqCorrespondence JitterSvcBaseAdapter JitterSvcNatBoolOperations JitterSvcIntervalOperations JitterSvcScheduleOperations JitterSvcJobOperations PreemptionParameterCorrespondence ScheduleLimitedPreemptiveCorrespondence.
+
+Goal Logic.True. idtac "AUDIT_BEGIN schedule_respects_preemption_model_correspondence". exact Logic.I. Qed.
+Print Assumptions schedule_respects_preemption_model_correspondence.
+Goal Logic.True. idtac "AUDIT_END schedule_respects_preemption_model_correspondence". exact Logic.I. Qed.

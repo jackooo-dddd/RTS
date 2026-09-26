@@ -1,0 +1,181 @@
+{
+  "slice": "TRANSLATION_ORDER_ANALYSIS_FACTS_BEHAVIOR_DEADLINES",
+  "generated_at": "2026-09-26T17:39:33.701102+08:00",
+  "published_at": "2026-09-26T17:39:33.701102+08:00",
+  "rank": 146,
+  "layer": 16,
+  "source_file": "analysis/facts/behavior/deadlines.v",
+  "source_commit": "414e66760333eaa4ef78c685bcf53291c527a548",
+  "source_tree": "7d7e94c731f7eefde4ca738310d4cafdd7bebdf0",
+  "source_file_sha256": "6a0910c47f7753e765a7c23fbafcf78d674c677120b401c09c91df7f1cde9093",
+  "pipeline": "Validation/scripts/translation_file_pipeline.py",
+  "spec": "Validation/tooling/file_specs/analysis_facts_behavior_deadlines.json",
+  "spec_sha256": "b4a2d5aa9a3c5e2417e1a010feaee4e89c9886ec379877356bf1facb7d51d1f6",
+  "source_compatibility": {
+    "mode": "extract",
+    "note": "theorem statements from the authoritative elaborated types (proofs omitted); the proof-heavy analysis/facts/behavior/completion import is dropped (the statements mention only behavior/all)",
+    "extracted_sha256": "62718c7720d3d63262af71dfb89358cdfef33e1d93de1a4ecefec4fbd46e815b",
+    "extraction_metadata_sha256": "dcab8011b4cb6862ee719ab4fe009b3ffdd4a72aba396f4ac2a82c94ff46cf74"
+  },
+  "source_type_evidence": {
+    "prosa.analysis.facts.behavior.deadlines.incomplete_implies_later_deadline": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.behavior.deadlines.incomplete_implies_scheduled_later": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.behavior.deadlines.scheduled_at_implies_later_deadline": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.behavior.deadlines.service_invariant_implies_deadline_met": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE"
+  },
+  "statement_only_export_boundary": [
+    "Prosa.Analysis.Facts.Behavior.Deadlines.incomplete_implies_later_deadline",
+    "Prosa.Analysis.Facts.Behavior.Deadlines.incomplete_implies_scheduled_later",
+    "Prosa.Analysis.Facts.Behavior.Deadlines.scheduled_at_implies_later_deadline",
+    "Prosa.Analysis.Facts.Behavior.Deadlines.service_invariant_implies_deadline_met"
+  ],
+  "input_relations": [
+    "job_cost by SvcJobCostRel",
+    "JobDeadline pointwise by SubNatRel",
+    "SvcProcessorStateRel + SvcScheduleRel (two-sided)"
+  ],
+  "coverage_for_inner_binders": [
+    "jobs (identity carrier)",
+    "Nats (both directions)"
+  ],
+  "lean_representation_note": "Booleans in Prop position are `= true`; `~~ b` is `!b`; single comparisons are Lean propositions; chained comparisons are `(decide _ && decide _) = true`",
+  "export_size": {
+    "lines": 125316,
+    "soft_budget_flag": "OVER_100K_DIAGNOSED",
+    "diagnosis": "the accepted completion-facts export root (Service/Schedule interface closure, ~127k lines) without its theorem targets, reused so that the accepted certificate chain applies, plus the four statements"
+  },
+  "file_dependencies": {
+    "analysis/facts/behavior/completion.v": "analysis_facts_behavior_completion_module_status.json"
+  },
+  "production_file": "Prosa/Analysis/Facts/Behavior/Deadlines.lean",
+  "production_source_sha256": "6a2f9fcc8142992f51aded9e802bdfe972c295b4ca3e776750bffe12cd224ead",
+  "production_olean_sha256": "4b7578eca5e0fcf87653ad5e74ef869d16ec350a9a8cf5614407c020a427f2a9",
+  "export_config_sha256": "79806700a4853116664f2e480d90dc52f2055c9e4c928936d1524413324198ec",
+  "export_sha256": "194439dd87b555279331c34e7d1b7a61adb0e50231d067f760d7f8cf9dc5a567",
+  "export_lines": 125316,
+  "export_bytes": 2779413,
+  "import_sha256": "2ef3464d431286fdeb84330bcce147d557daf6020db3453942913060887fafed",
+  "source_vo_sha256": "7e7b88ced235ca04a02b2798ed6ae56f4349221b831ed6e44c5eb42cb4d0bac9",
+  "lean_axiom_summary_sha256": "935dd7c49cdc3903a842d319a42e86df3f20b900bdc1d3cba9366946cbe82c7b",
+  "rocq_assumption_summary_sha256": "959a39e63b877f9c3a438d697d81de9e17aa1501b54b4459a44fdbe00d00d2fe",
+  "assumption_config_sha256": "27fe2469d8f185f1aea5997b42f5e2530f114cdc46ac4906f6eca535ea8b76ad",
+  "stage_timing_seconds": {
+    "source_acquisition": {
+      "mode": "FRESH",
+      "seconds": 2
+    },
+    "lean_build": {
+      "mode": "FRESH",
+      "seconds": 409
+    },
+    "export": {
+      "mode": "FRESH",
+      "seconds": 48
+    },
+    "rocq_import": {
+      "mode": "FRESH",
+      "seconds": 45
+    },
+    "certificate_compile": {
+      "mode": "FRESH",
+      "seconds": 15
+    },
+    "assumption_audit": {
+      "mode": "FRESH",
+      "seconds": 0
+    }
+  },
+  "certificates": {
+    "ArrivalsSeqBaseAdapter": {
+      "source_sha256": "4ec4a9800f1edb020b4b72ee1b9382b9e1d1738314c24c29223134d7514c3d5f",
+      "vo_sha256": "6c71b6b7e783ed3b1cd00ac4cb4db816d22966f9fc984199e583cc5f11eedb84"
+    },
+    "ArrivalsSeqOperations": {
+      "source_sha256": "dc7ea4bb560e5116591315c013cc4054622e7febf58bc800e48b371042537d8b",
+      "vo_sha256": "1135f942ab372dc1b77f50f02b8f17bf1531dc268481811a0da280f0ea83c945"
+    },
+    "ArrivalsSeqCorrespondence": {
+      "source_sha256": "16c74ff1bac880fa0377710b6444ca6be845710d3bb1ab7f2d90e8b7d4dfd9e2",
+      "vo_sha256": "5ff833ff1bae933b578a779a3bb6db7a3f40b7ced8ea727550f7f34c6a9487ba"
+    },
+    "JitterSvcBaseAdapter": {
+      "source_sha256": "026fa2f58d589c76ce08ee0f5fe9bfe7ba1a51c412e21e404d91990ad3310e83",
+      "vo_sha256": "4557e3c7898a42f956780e9aa8ebc95d1d8e7438727e9bfe7a31f16188c00bb0"
+    },
+    "JitterSvcNatBoolOperations": {
+      "source_sha256": "ac36b4ee98df5b74c418b21bc06153e7f212692298fa5d2eae007d02b7f5b845",
+      "vo_sha256": "a6cb74a1b17cb98008d353f5a7f9597d5074bce107c71e818f8435a141745b29"
+    },
+    "JitterSvcIntervalOperations": {
+      "source_sha256": "831d2a79d39d5144bc52584828fa1004f63268515264c8b9226a44e362df3505",
+      "vo_sha256": "e5f7f304dea45bb5dbc1180695d126923784ae208fd4e23e4990f3fb616d02ac"
+    },
+    "JitterSvcScheduleOperations": {
+      "source_sha256": "43cad2c36bb9cec7d7957622ed0465862d4ece98cb2180c68bcc03f97e14f93a",
+      "vo_sha256": "cb2192dbe61618ba7c039dacd749dd2288cce222942facb74e7d1005cac754bc"
+    },
+    "JitterSvcJobOperations": {
+      "source_sha256": "1b97e8231a9d9c7b4cb59f7aa86be54a0a7c09a837cc2017fff38daf29dcb77f",
+      "vo_sha256": "8b52d338cbd6bdc33733cd77526b6e2ac6c673eda188adf02b9fc49b921cc65d"
+    },
+    "FactsDeadlinesCorrespondence": {
+      "source_sha256": "4ab642d97f2338dca9cba8d327065e74d6673fca15517261e80af5effc734eaa",
+      "vo_sha256": "731ad9a7970a5f93cbd4bb1a7d2ba384175b77bfcf2d0e47426b44b7987f0c7c"
+    },
+    "FactsDeadlinesAssumptionAudit": {
+      "source_sha256": "c8281b5e4e6d517f27a2de61236566898c37a48abc830693aaadcc388f783f34",
+      "vo_sha256": "f574ccf60061254405bf72f5a7eb935f4620bffcced85feaceac2e6c51f6c136"
+    }
+  },
+  "declarations": [
+    {
+      "source_declaration": "prosa.analysis.facts.behavior.deadlines.incomplete_implies_later_deadline",
+      "lean_declaration": "Prosa.Analysis.Facts.Behavior.Deadlines.incomplete_implies_later_deadline",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "incomplete_implies_later_deadline_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.behavior.deadlines.incomplete_implies_scheduled_later",
+      "lean_declaration": "Prosa.Analysis.Facts.Behavior.Deadlines.incomplete_implies_scheduled_later",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "incomplete_implies_scheduled_later_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.behavior.deadlines.scheduled_at_implies_later_deadline",
+      "lean_declaration": "Prosa.Analysis.Facts.Behavior.Deadlines.scheduled_at_implies_later_deadline",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "scheduled_at_implies_later_deadline_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.behavior.deadlines.service_invariant_implies_deadline_met",
+      "lean_declaration": "Prosa.Analysis.Facts.Behavior.Deadlines.service_invariant_implies_deadline_met",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "service_invariant_implies_deadline_met_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    }
+  ],
+  "acceptance": "ACCEPTED_V06_FILE"
+}

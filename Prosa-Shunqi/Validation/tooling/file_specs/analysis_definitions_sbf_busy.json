@@ -1,0 +1,133 @@
+{
+  "rank": 206,
+  "layer": 17,
+  "tag": "SBFB",
+  "slug": "analysis_definitions_sbf_busy",
+  "source": "analysis/definitions/sbf/busy.v",
+  "dependencies": [
+    "analysis/definitions/busy_interval/classical.v",
+    "analysis/definitions/sbf/pred.v",
+    "util/all.v"
+  ],
+  "declaration_count": 2,
+  "base_run": "analysis_definitions_busy_interval_classical_final",
+  "base_checks": [
+    {
+      "manifest": "analysis_definitions_busy_interval_classical",
+      "olean": "Prosa/Analysis/Definitions/BusyInterval/Classical.olean",
+      "vo": "BusyIntervalClassicalSemanticSource.vo"
+    }
+  ],
+  "extra_pinned_sources": [
+    "util/setoid.v",
+    "analysis/definitions/sbf/sbf.v",
+    "analysis/definitions/sbf/pred.v"
+  ],
+  "extra_lean": [],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "SbfBusySemanticSource",
+    "drop_imports": [
+      "Require Export prosa.analysis.definitions.busy_interval.classical."
+    ],
+    "add_imports": [
+      "Require Export prosa.BusyIntervalClassicalSemanticSource.",
+      "Export BusyIntervalClassicalSemanticSource.",
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq.",
+      "Require Import prosa.behavior.all prosa.model.task.concept."
+    ],
+    "note": "the two definitions are byte-identical blocks (with the section context, including the source-local `bi_prefix_of_tsk` Let); busy_interval_prefix is bound to its accepted extracted source (BusyIntervalClassicalSemanticSource of the base run); analysis/definitions/sbf/sbf and analysis/definitions/sbf/pred are compiled from the pinned tree (their compiled model/processor/supply dependency is the base closure's, byte-identical to the one of the accepted sbf/pred run); util/all is the compiled pinned source of the base closure; analysis/definitions/sbf/pred is compiled under its accepted Rocq 9.3 compatibility patch (explicit util/rel and util/setoid imports)"
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/SbfBusyStatementProbe.v",
+  "production": "Prosa/Analysis/Definitions/Sbf/Busy.lean",
+  "production_olean": "Prosa/Analysis/Definitions/Sbf/Busy.olean",
+  "lean_namespace": "Prosa.Analysis.Definitions.Sbf.Busy",
+  "fixtures": [
+    "NondecreasingComputationInterface",
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "PreemptionParameterComputationInterface",
+    "BusyIntervalClassicalComputationInterface",
+    "SupplyComputationInterface",
+    "PredExportInterface",
+    "SbfBusyComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/SbfBusyLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/analysis_definitions_sbf_busy_export_config.json",
+  "export_name": "SbfBusy",
+  "cert_dir": "certificates/analysis_definitions_sbf_busy",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "JitterSvcBaseAdapter",
+    "JitterSvcNatBoolOperations",
+    "JitterSvcIntervalOperations",
+    "JitterSvcScheduleOperations",
+    "JitterSvcJobOperations",
+    "PreemptionParameterCorrespondence",
+    "BusyIntervalClassicalHelpers",
+    "ArrivalSequenceBaseAdapter",
+    "ArrivalSequenceOperations",
+    "ArrivalSequenceCorrespondence",
+    "SupplyScheduleBaseAdapter",
+    "SupplyScheduleFiniteOperations",
+    "SupplyScheduleOperations",
+    "SupplyBaseAdapter",
+    "SupplyNatBoolOperations",
+    "SupplyIntervalOperations",
+    "SupplyCorrespondence",
+    "PredHelpers",
+    "SbfBusyCorrespondence"
+  ],
+  "audit_module": "SbfBusyAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/SbfBusyImportedTypeAudit.v",
+  "assumption_config": "certificates/analysis_definitions_sbf_busy/sbf_busy_assumption_config.json",
+  "lean_axiom_config": "certificates/analysis_definitions_sbf_busy/sbf_busy_lean_axiom_config.json",
+  "computational": [
+    "sbf_respected_in_busy_interval",
+    "valid_busy_sbf"
+  ],
+  "principal": {},
+  "helpers": [
+    "sbfb_task_eq_bool_related",
+    "sbfb_job_of_task_related",
+    "sbfb_pred_related",
+    "sbfb_arrival_sequence_rel"
+  ],
+  "previous_status": "analysis_facts_edf_definitions_module_status.json",
+  "previous_files": 195,
+  "previous_decls": 1367,
+  "input_relations": [
+    "processor states by both accepted two-sided relations of the same state pair: SupplyProcessorStateRel (supply observations, sbf/pred family) and SvcProcessorStateRel (scheduled/service observations, busy-interval family); schedules related through both",
+    "arrival sequences by the accepted ArArrivalSequenceRel of each family (the same relation, re-stated per family)",
+    "job_arrival and job_cost pointwise by SubNatRel",
+    "JobTask by the accepted field relation (identity task carrier)",
+    "the JLFP policy pointwise on Booleans",
+    "SBF functions pointwise on Nat"
+  ],
+  "coverage_for_inner_binders": [],
+  "lean_representation_note": "the source-local `bi_prefix_of_tsk` (a `Let`) is inlined; a Boolean in `Prop` position is `= true`",
+  "export_diagnosis": "the accepted classical busy-interval export root (preemption-parameter closure with the Service / Schedule interfaces) merged with the accepted sbf/pred export root (Supply interface and the pred SBF definitions) plus the two definitions",
+  "extra_source_patches": [
+    "patches/prosa-v06-rocq93-analysis-sbf-pred.patch"
+  ],
+  "extra_artifacts": [],
+  "extra_olean_artifacts": [
+    {
+      "from": "analysis_facts_sbf_final/olean/Prosa/Analysis/Definitions/Sbf/Pred.olean",
+      "to": "Prosa/Analysis/Definitions/Sbf/Pred.olean",
+      "manifest": "analysis_sbf_pred",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_sbf_final/olean/Prosa/Analysis/Definitions/Sbf/Sbf.olean",
+      "to": "Prosa/Analysis/Definitions/Sbf/Sbf.olean",
+      "manifest": "analysis_sbf_sbf",
+      "key": "artifact_hashes.production_olean_sha256"
+    }
+  ],
+  "extra_generated_sources": []
+}

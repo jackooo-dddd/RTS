@@ -1,0 +1,132 @@
+{
+  "rank": 164,
+  "layer": 17,
+  "tag": "PI",
+  "slug": "analysis_definitions_priority_inversion",
+  "source": "analysis/definitions/priority_inversion.v",
+  "dependencies": [
+    "analysis/definitions/busy_interval/classical.v",
+    "analysis/facts/model/scheduled.v"
+  ],
+  "declaration_count": 8,
+  "base_run": "analysis_definitions_busy_interval_classical_final",
+  "base_checks": [
+    {
+      "manifest": "analysis_definitions_busy_interval_classical",
+      "olean": "Prosa/Analysis/Definitions/BusyInterval/Classical.olean",
+      "vo": "BusyIntervalClassicalSemanticSource.vo"
+    }
+  ],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "PriorityInversionSemanticSource",
+    "drop_imports": [
+      "Require Export prosa.analysis.definitions.busy_interval.classical.",
+      "Require Export prosa.analysis.facts.model.scheduled."
+    ],
+    "add_imports": [
+      "Require Export prosa.BusyIntervalClassicalSemanticSource.",
+      "Export BusyIntervalClassicalSemanticSource.",
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq bigop.",
+      "Require Import prosa.model.schedule.scheduled.",
+      "Require Import prosa.model.task.concept."
+    ],
+    "note": "the eight definitions are byte-identical computational blocks; the analysis/definitions/busy_interval/classical import is bound to the accepted extracted busy-interval source (BusyIntervalClassicalSemanticSource, .vo hash-checked against its manifest); the proof-only analysis/facts/model/scheduled import is replaced by the pinned model/schedule/scheduled (scheduled_jobs_at, compiled from the pinned tree) and the pinned model/task/concept (job_of_task, TaskCost); the source Section variables arr_seq, sched and j, implicit in the uses of the section-local definitions inside the cumulative sums and bounds, are reconnected by recorded local notations",
+    "local_bindings": [
+      "priority_inversion=priority_inversion arr_seq sched j",
+      "priority_inversion_cond=priority_inversion_cond arr_seq sched j",
+      "cumulative_priority_inversion=cumulative_priority_inversion arr_seq sched j",
+      "cumulative_priority_inversion_cond=cumulative_priority_inversion_cond arr_seq sched j"
+    ]
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/PriorityInversionStatementProbe.v",
+  "production": "Prosa/Analysis/Definitions/PriorityInversion.lean",
+  "production_olean": "Prosa/Analysis/Definitions/PriorityInversion.olean",
+  "lean_namespace": "Prosa.Analysis.Definitions.PriorityInversion",
+  "fixtures": [
+    "NondecreasingComputationInterface",
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "PreemptionParameterComputationInterface",
+    "BusyIntervalClassicalComputationInterface",
+    "PriorityInversionComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/PriorityInversionLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/analysis_definitions_priority_inversion_export_config.json",
+  "export_name": "PriorityInversion",
+  "cert_dir": "certificates/analysis_definitions_priority_inversion",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "JitterSvcBaseAdapter",
+    "JitterSvcNatBoolOperations",
+    "JitterSvcIntervalOperations",
+    "JitterSvcScheduleOperations",
+    "JitterSvcJobOperations",
+    "PreemptionParameterCorrespondence",
+    "PriorityInversionCorrespondence"
+  ],
+  "audit_module": "PriorityInversionAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/PriorityInversionImportedTypeAudit.v",
+  "assumption_config": "certificates/analysis_definitions_priority_inversion/priority_inversion_assumption_config.json",
+  "lean_axiom_config": "certificates/analysis_definitions_priority_inversion/priority_inversion_lean_axiom_config.json",
+  "computational": [
+    "priority_inversion",
+    "priority_inversion_cond",
+    "cumulative_priority_inversion",
+    "cumulative_priority_inversion_cond",
+    "priority_inversion_of_job_is_bounded_by",
+    "priority_inversion_of_job_cond_is_bounded_by",
+    "priority_inversion_is_bounded_by",
+    "priority_inversion_cond_is_bounded_by"
+  ],
+  "principal": {},
+  "helpers": [
+    "pi_logic_eq_to_lean_eq",
+    "pi_lean_transport",
+    "pi_false_correspondence",
+    "pi_not_correspondence",
+    "pi_bool_or_related",
+    "pi_has_canonical",
+    "pi_has_related",
+    "pi_bool_to_nat_related",
+    "pi_scheduled_jobs_at_related",
+    "pi_quiet_time_related",
+    "pi_busy_interval_prefix_related",
+    "pi_decide_eq_related",
+    "pi_job_of_task_related"
+  ],
+  "previous_status": "analysis_definitions_tardiness_module_status.json",
+  "previous_files": 156,
+  "previous_decls": 1129,
+  "input_relations": [
+    "job_arrival by ArJobArrivalRel",
+    "job_cost by SvcJobCostRel",
+    "JobTask by Lean.eq",
+    "SvcProcessorStateRel (two-sided) + SvcScheduleRel",
+    "ArArrivalSequenceRel",
+    "JLFP policy pointwise on Booleans",
+    "predicates P pointwise on Booleans",
+    "bound functions B by SubNatRel on related Nats"
+  ],
+  "coverage_for_inner_binders": [
+    "jobs (identity carrier)",
+    "Nats (both directions)"
+  ],
+  "lean_representation_note": "`x \\notin s` is `!decide (x \u2208 s)`; `has p s` is `s.any p`; the half-open Boolean sum is `\u2211 t \u2208 Finset.Ico t1 t2, (b t).toNat` (kernel-guarded list-fold projection); unused section context is absent",
+  "export_diagnosis": "the accepted busy-interval export root (preemption-parameter closure, ~127k lines) without its theorem targets, reused so that the accepted certificate chain applies, plus the eight definitions, scheduled_jobs_at, the two guarded sum projections and the task classes",
+  "extra_pinned_sources": [
+    "model/schedule/scheduled.v"
+  ],
+  "extra_lean": [
+    [
+      "Prosa/Model/Schedule/Scheduled.lean",
+      "Prosa/Model/Schedule/Scheduled.olean",
+      "model_schedule_scheduled",
+      "production_olean_sha256"
+    ]
+  ]
+}

@@ -1,0 +1,4 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedTardiness.
+
+Check ImportedTardiness.Prosa_Analysis_Definitions_Tardiness_task_tardiness_is_bounded.

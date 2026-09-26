@@ -1,0 +1,84 @@
+{
+  "rank": 135,
+  "layer": 15,
+  "tag": "SLP",
+  "slug": "model_schedule_limited_preemptive",
+  "source": "model/schedule/limited_preemptive.v",
+  "dependencies": [
+    "model/preemption/parameter.v"
+  ],
+  "declaration_count": 1,
+  "base_run": "model_preemption_parameter_final",
+  "base_checks": [
+    {
+      "manifest": "model_preemption_parameter",
+      "olean": "Prosa/Model/Preemption/Parameter.olean",
+      "vo": "PreemptionParameterSemanticSource.vo"
+    }
+  ],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "ScheduleLimitedPreemptiveSemanticSource",
+    "drop_imports": [
+      "Require Export prosa.model.preemption.parameter."
+    ],
+    "add_imports": [
+      "Require Export prosa.PreemptionParameterSemanticSource.",
+      "Export PreemptionParameterSemanticSource.",
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq."
+    ],
+    "note": "the definition is a byte-identical computational block; the model/preemption/parameter import is bound to the accepted extracted parameter source (PreemptionParameterSemanticSource, .vo hash-checked against the parameter manifest), which re-exports behavior/all"
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/ScheduleLimitedPreemptiveStatementProbe.v",
+  "production": "Prosa/Model/Schedule/LimitedPreemptive.lean",
+  "production_olean": "Prosa/Model/Schedule/LimitedPreemptive.olean",
+  "lean_namespace": "Prosa.Model.Schedule.LimitedPreemptive",
+  "fixtures": [
+    "NondecreasingComputationInterface",
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "PreemptionParameterComputationInterface",
+    "ScheduleLimitedPreemptiveComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/ScheduleLimitedPreemptiveLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/model_schedule_limited_preemptive_export_config.json",
+  "export_name": "ScheduleLimitedPreemptive",
+  "cert_dir": "certificates/model_schedule_limited_preemptive",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "JitterSvcBaseAdapter",
+    "JitterSvcNatBoolOperations",
+    "JitterSvcIntervalOperations",
+    "JitterSvcScheduleOperations",
+    "JitterSvcJobOperations",
+    "PreemptionParameterCorrespondence",
+    "ScheduleLimitedPreemptiveCorrespondence"
+  ],
+  "audit_module": "ScheduleLimitedPreemptiveAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/ScheduleLimitedPreemptiveImportedTypeAudit.v",
+  "assumption_config": "certificates/model_schedule_limited_preemptive/schedule_limited_preemptive_assumption_config.json",
+  "lean_axiom_config": "certificates/model_schedule_limited_preemptive/schedule_limited_preemptive_lean_axiom_config.json",
+  "computational": [
+    "schedule_respects_preemption_model"
+  ],
+  "principal": {},
+  "helpers": [],
+  "previous_status": "model_priority_elf_module_status.json",
+  "previous_files": 131,
+  "previous_decls": 1026,
+  "input_relations": [
+    "JobPreemptable pointwise (accepted PpJobPreemptableRel)",
+    "SvcProcessorStateRel + SvcScheduleRel (two-sided)",
+    "ArArrivalSequenceRel"
+  ],
+  "coverage_for_inner_binders": [
+    "jobs (identity carrier)",
+    "Nats (both directions)"
+  ],
+  "lean_representation_note": "`~~ b` is `!b`; Booleans in Prop position are `= true`",
+  "export_diagnosis": "the accepted preemption-parameter export root (Service/Schedule interface closure, ~127k lines) reused verbatim so that the accepted certificate chain applies, plus one definition"
+}

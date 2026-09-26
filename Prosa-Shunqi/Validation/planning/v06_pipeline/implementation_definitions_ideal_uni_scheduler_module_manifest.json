@@ -1,0 +1,200 @@
+{
+  "slice": "TRANSLATION_ORDER_IMPLEMENTATION_DEFINITIONS_IDEAL_UNI_SCHEDULER",
+  "generated_at": "2026-09-27T05:23:31.212819+08:00",
+  "published_at": "2026-09-27T05:23:31.212819+08:00",
+  "rank": 201,
+  "layer": 17,
+  "source_file": "implementation/definitions/ideal_uni_scheduler.v",
+  "source_commit": "414e66760333eaa4ef78c685bcf53291c527a548",
+  "source_tree": "7d7e94c731f7eefde4ca738310d4cafdd7bebdf0",
+  "source_file_sha256": "16711ff02f29dc3934f09c2a714fd22ea89a0363ab7d03eda6734cbaa99fed17",
+  "pipeline": "Validation/scripts/translation_file_pipeline.py",
+  "spec": "Validation/tooling/file_specs/implementation_definitions_ideal_uni_scheduler.json",
+  "spec_sha256": "1327f1f27b7a1240a5c76f680e0a4e505418b15552d55846564172be7593f0ec",
+  "source_compatibility": {
+    "mode": "extract",
+    "note": "the five definitions are byte-identical computational blocks; the readiness definitions used by the section's hypothesis are bound to their accepted extracted source (ReadinessSemanticSource .vo copied from its accepted run and hash-checked against its manifest); the preemption-parameter import is bound to its accepted extracted source (PreemptionParameterSemanticSource of the base closure); analysis/transform/swap, implementation/definitions/generic_scheduler, model/processor/ideal (with its accepted Rocq 9.3 compatibility patch) and model/schedule/work_conserving are pinned sources (with analysis/definitions/schedule_prefix, under its accepted proof-only Rocq 9.3 compatibility patch, and model/task/sequentiality needed by the readiness source; their pinned compiles are byte-identical to those in the readiness run) compiled from the pinned tree; model/priority/classes and util/supremum are the compiled pinned sources of the base closure; the proof-only facts/readiness/backlogged and model/schedule/priority_driven imports are dropped (the definitions mention jobs_backlogged_at from model/schedule/work_conserving, which priority_driven only re-exports); the source Section variables, implicit in the uses of prev_job_nonpreemptive, allocation_at and pmc_uni_schedule inside later definitions of the same Section, are reconnected by recorded local notations",
+    "extracted_sha256": "d812f7dca6e4e6e85644bf616ddba4fa478da3358f75cc0e353144a83bb9e371",
+    "extraction_metadata_sha256": "d1323dbe6fd7f2c39b289cb3605e3b21685efddce45b1507180df939604ce89d"
+  },
+  "source_type_evidence": {
+    "prosa.implementation.definitions.ideal_uni_scheduler.prev_job_nonpreemptive": "EXACT_HASH",
+    "prosa.implementation.definitions.ideal_uni_scheduler.allocation_at": "EXACT_HASH",
+    "prosa.implementation.definitions.ideal_uni_scheduler.pmc_uni_schedule": "EXACT_HASH",
+    "prosa.implementation.definitions.ideal_uni_scheduler.choose_highest_prio_job": "EXACT_HASH",
+    "prosa.implementation.definitions.ideal_uni_scheduler.uni_schedule": "EXACT_HASH"
+  },
+  "statement_only_export_boundary": [],
+  "input_relations": [
+    "the processor model is fixed to the ideal uniprocessor on both sides; states related by the constructor-preserving Option map, schedules pointwise",
+    "job_cost by SvcJobCostRel",
+    "job_arrival by ArJobArrivalRel",
+    "ArArrivalSequenceRel",
+    "the readiness model: job_ready related on related ideal schedules and instants",
+    "JobPreemptable pointwise",
+    "the JLDP policy pointwise on Booleans",
+    "choose_job related on related instants and job lists"
+  ],
+  "coverage_for_inner_binders": [],
+  "lean_representation_note": "the section-local PState is the accepted ideal processor (states `Option Job`) and the idle state is `none`; the Boolean `if` is `bif` (a match on the Boolean); `~~ b` is `!b`; `t.-1` is `t - 1`; the readiness and preemption models and the JLDP policy are instance binders",
+  "export_size": {
+    "lines": 148524,
+    "soft_budget_flag": "OVER_100K_DIAGNOSED",
+    "diagnosis": "the accepted transform-prefix export root without its statements (preemption-parameter closure with the Service / Schedule interfaces), plus the ideal processor, the generic scheduler, the work-conserving backlog, supremum, the five definitions and kernel-checked schedule_up_to/empty_schedule/replace_at equations at the ideal processor"
+  },
+  "file_dependencies": {
+    "analysis/facts/readiness/backlogged.v": "analysis_facts_readiness_backlogged_module_status.json",
+    "analysis/transform/swap.v": "analysis_transform_swap_module_status.json",
+    "implementation/definitions/generic_scheduler.v": "implementation_definitions_generic_scheduler_module_status.json",
+    "model/preemption/parameter.v": "model_preemption_parameter_module_status.json",
+    "model/processor/ideal.v": "model_processor_ideal_module_status.json",
+    "model/schedule/priority_driven.v": "model_schedule_priority_driven_module_status.json"
+  },
+  "production_file": "Prosa/Implementation/Definitions/IdealUniScheduler.lean",
+  "production_source_sha256": "26137c5a9a8be69ba49f78c276a7a0735c3fba7b59c1f7ec15a7495b52cae3cb",
+  "production_olean_sha256": "336ff3fc3c797713e410c99785fbe242115694a443e66283c86145b8c6199f06",
+  "export_config_sha256": "bb6b3ab613f8dceed26965ebccf13f566902a12997e680e46c0f02d8b115aa9e",
+  "export_sha256": "5f59cdb8743633fa3e2106ca4a078b89a48a9328990e2913cc88c534335322f2",
+  "export_lines": 148524,
+  "export_bytes": 3355515,
+  "import_sha256": "b1313442a2256a884256620d0e756a5f373348e613def6a68b1cc939b618afb0",
+  "source_vo_sha256": "fe721cb7e5b04e17f4154e24e72d7c10ac606e879d7596c52e5f9a1659b38aa2",
+  "lean_axiom_summary_sha256": "a3c4ab66293bf9617d79b1e1d6a783eff982bffa7340104f42d942a076ed0102",
+  "rocq_assumption_summary_sha256": "b0fc3c1480ee1a658d0ad0919c33ff1161eaaf307898a82324b559d929985cfb",
+  "assumption_config_sha256": "67595cd22637f06ce694f6f80a74d122759b27b479118f587bc449b1ea54ad92",
+  "stage_timing_seconds": {
+    "source_acquisition": {
+      "mode": "FRESH",
+      "seconds": 11
+    },
+    "lean_build": {
+      "mode": "FRESH",
+      "seconds": 433
+    },
+    "export": {
+      "mode": "FRESH",
+      "seconds": 31
+    },
+    "rocq_import": {
+      "mode": "FRESH",
+      "seconds": 44
+    },
+    "certificate_compile": {
+      "mode": "FRESH",
+      "seconds": 16
+    },
+    "assumption_audit": {
+      "mode": "FRESH",
+      "seconds": 0
+    }
+  },
+  "certificates": {
+    "ArrivalsSeqBaseAdapter": {
+      "source_sha256": "7897662720676a1a9c8e6acf2cfb29df6e887ccba78eea3b48a95218a0a1ab7b",
+      "vo_sha256": "a67fe98025e2cb89cbfaec9929e6e9919911b211561a331f26a3eed1231736a4"
+    },
+    "ArrivalsSeqOperations": {
+      "source_sha256": "098cc076bad8e4801b18168556737ad27c71db51da5cbaf6df0b5e5da20968bd",
+      "vo_sha256": "2ffa367a2a6c5d2e3ee2d0f8fcef2eb0d432e7a185b4763d2fe2639e20b47ff2"
+    },
+    "ArrivalsSeqCorrespondence": {
+      "source_sha256": "b7b182286539d4d320becf98ec14c1047d5e9541b15ff81ad55eed22de515ac8",
+      "vo_sha256": "bfbde9ead7f51d42a5e3fefeb956931c75fd29c4ab0480a716ddf68e1138f020"
+    },
+    "JitterSvcBaseAdapter": {
+      "source_sha256": "85276486a00d7da7b733e1396a3e3a859385ff9ad1ff0f375aa70cd98fcd0ad8",
+      "vo_sha256": "d8ced7e7fa71976b8a6f67514b027be8c058d9287aa5f072e08b3da605aaa62e"
+    },
+    "JitterSvcNatBoolOperations": {
+      "source_sha256": "7d3ed16c68c5eb2a58c85f5d40331275ce1c5066cb46335c1c8abdc656680bc3",
+      "vo_sha256": "504c28068bd47fcd9e749397726321ac8a41ad9908d8d01d5f4a1c87c3a23816"
+    },
+    "JitterSvcIntervalOperations": {
+      "source_sha256": "4093a5c92d3e0ef7fb16b67d449d2789dd9cc217fbec2b4b3e12b259616d5035",
+      "vo_sha256": "d716379accf4af9f204cd2ee91a732783213ca1e139c79e7619000a0557aaf0f"
+    },
+    "JitterSvcScheduleOperations": {
+      "source_sha256": "cb00c486890ae15fe97f2f92aad70176cb09350c713e81164d9817f6c13f8d22",
+      "vo_sha256": "3d297b0731f79f984683871f535de9128806fa420a6997aa2aa68c79d5e3e4d0"
+    },
+    "JitterSvcJobOperations": {
+      "source_sha256": "3a0222ac8ca3c64d1f8ef29a5cc9ce3a97f1ca6e1681380e3fb6da4e4b0a3384",
+      "vo_sha256": "b7b3e69975946d48a5ccc223744a05c7748ef15e657cba36c8fd8c93c92136ce"
+    },
+    "PreemptionParameterCorrespondence": {
+      "source_sha256": "87e452af4456a5a3f6aac296fc6dda0c693762ee7e2d3d50a5005e41dc7c6724",
+      "vo_sha256": "e5981b0798ff328d6698e843abbaf0a18ed8bca3e9c9b91b381bce36bd09c934"
+    },
+    "IdealUniSchedulerCorrespondence": {
+      "source_sha256": "217280d824bcec0b1387af8f957cca4b69e2c52b5f19f6109a5ec1438387a51f",
+      "vo_sha256": "7b47eb14df0f8ec8abbd69e0c362cb510e46ab2db2e4730b126722eda421c321"
+    },
+    "IdealUniSchedulerAssumptionAudit": {
+      "source_sha256": "ab297f5562d3379e40ce9fe9722a65929a242727adc74313b33dc1dbcfc9ac1c",
+      "vo_sha256": "897c8f6c936c45f7c910739c13663e1f8d25dbe5c73ef15999f69217ffa3fc55"
+    }
+  },
+  "declarations": [
+    {
+      "source_declaration": "prosa.implementation.definitions.ideal_uni_scheduler.prev_job_nonpreemptive",
+      "lean_declaration": "Prosa.Implementation.Definitions.IdealUniScheduler.prev_job_nonpreemptive",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "prev_job_nonpreemptive_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.implementation.definitions.ideal_uni_scheduler.allocation_at",
+      "lean_declaration": "Prosa.Implementation.Definitions.IdealUniScheduler.allocation_at",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "allocation_at_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.implementation.definitions.ideal_uni_scheduler.pmc_uni_schedule",
+      "lean_declaration": "Prosa.Implementation.Definitions.IdealUniScheduler.pmc_uni_schedule",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "pmc_uni_schedule_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.implementation.definitions.ideal_uni_scheduler.choose_highest_prio_job",
+      "lean_declaration": "Prosa.Implementation.Definitions.IdealUniScheduler.choose_highest_prio_job",
+      "semantic_status": "CERTIFIED",
+      "certificates": [
+        "choose_highest_prio_job_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.implementation.definitions.ideal_uni_scheduler.uni_schedule",
+      "lean_declaration": "Prosa.Implementation.Definitions.IdealUniScheduler.uni_schedule",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "uni_schedule_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    }
+  ],
+  "acceptance": "ACCEPTED_V06_FILE"
+}

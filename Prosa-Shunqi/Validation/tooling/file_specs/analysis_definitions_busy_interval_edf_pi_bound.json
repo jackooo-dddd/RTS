@@ -1,0 +1,121 @@
+{
+  "rank": 162,
+  "layer": 17,
+  "tag": "EDFPI",
+  "slug": "analysis_definitions_busy_interval_edf_pi_bound",
+  "source": "analysis/definitions/busy_interval/edf_pi_bound.v",
+  "dependencies": [
+    "analysis/definitions/request_bound_function.v",
+    "analysis/definitions/sbf/sbf.v",
+    "model/task/preemption/parameters.v"
+  ],
+  "declaration_count": 1,
+  "base_run": "model_task_preemption_parameters_final",
+  "base_checks": [
+    {
+      "manifest": "model_task_preemption_parameters",
+      "olean": "Prosa/Model/Task/Preemption/Parameters.olean",
+      "vo": "TaskPreemptionParametersSemanticSource.vo"
+    },
+    {
+      "manifest": "model_preemption_parameter",
+      "olean": "Prosa/Model/Preemption/Parameter.olean",
+      "vo": "PreemptionParameterSemanticSource.vo"
+    }
+  ],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "EdfPiBoundSemanticSource",
+    "drop_imports": [
+      "Require Export prosa.model.task.preemption.parameters.",
+      "Require Export prosa.analysis.definitions.sbf.sbf.",
+      "Require Export prosa.analysis.definitions.request_bound_function."
+    ],
+    "add_imports": [
+      "Require Export prosa.TaskPreemptionParametersSemanticSource.",
+      "Export TaskPreemptionParametersSemanticSource.",
+      "Require Export prosa.RequestBoundFunctionSemanticSource.",
+      "Export RequestBoundFunctionSemanticSource.",
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq bigop.",
+      "Require Import prosa.util.epsilon."
+    ],
+    "local_bindings": [
+      "D=task_deadline"
+    ],
+    "note": "the definition is a byte-identical computational block; the model/task/preemption/parameters and analysis/definitions/request_bound_function imports are bound to the accepted extracted sources (TaskPreemptionParametersSemanticSource hash-checked as base; RequestBoundFunctionSemanticSource copied from its accepted run and hash-checked against its manifest); the analysis/definitions/sbf/sbf import contributes no name used by the definition and is dropped; the section-local Let D is reconnected by a recorded local notation, as in the accepted EDF blocking bound"
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/EdfPiBoundStatementProbe.v",
+  "production": "Prosa/Analysis/Definitions/BusyInterval/EdfPiBound.lean",
+  "production_olean": "Prosa/Analysis/Definitions/BusyInterval/EdfPiBound.olean",
+  "lean_namespace": "Prosa.Analysis.Definitions.BusyInterval.EdfPiBound",
+  "fixtures": [
+    "NondecreasingComputationInterface",
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "PreemptionParameterComputationInterface",
+    "TaskPreemptionParametersComputationInterface",
+    "RequestBoundFunctionComputationInterface",
+    "EdfPiBoundComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/EdfPiBoundLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/analysis_definitions_busy_interval_edf_pi_bound_export_config.json",
+  "export_name": "EdfPiBound",
+  "cert_dir": "certificates/analysis_definitions_busy_interval_edf_pi_bound",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "JitterSvcBaseAdapter",
+    "JitterSvcNatBoolOperations",
+    "JitterSvcIntervalOperations",
+    "JitterSvcScheduleOperations",
+    "JitterSvcJobOperations",
+    "PreemptionParameterCorrespondence",
+    "TaskPreemptionParametersCorrespondence",
+    "RequestBoundFunctionCorrespondence",
+    "EdfPiBoundCorrespondence"
+  ],
+  "audit_module": "EdfPiBoundAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/EdfPiBoundImportedTypeAudit.v",
+  "assumption_config": "certificates/analysis_definitions_busy_interval_edf_pi_bound/edf_pi_bound_assumption_config.json",
+  "lean_axiom_config": "certificates/analysis_definitions_busy_interval_edf_pi_bound/edf_pi_bound_lean_axiom_config.json",
+  "computational": [
+    "longest_busy_interval_with_pi"
+  ],
+  "principal": {},
+  "helpers": [
+    "epi_bigmax_canonical",
+    "epi_bigmax_related"
+  ],
+  "previous_status": "analysis_definitions_service_inversion_busy_prefix_module_status.json",
+  "previous_files": 161,
+  "previous_decls": 1141,
+  "input_relations": [
+    "TaskCost, TaskDeadline and TaskMaxNonpreemptiveSegment pointwise by SubNatRel",
+    "MaxArrivals pointwise by SubNatRel on durations",
+    "task sets by ArListRel"
+  ],
+  "coverage_for_inner_binders": [
+    "tasks (identity carrier)"
+  ],
+  "lean_representation_note": "`\\max_(x <- xs | P x) F x` is the accepted `bigMaxListCond xs P F`; `\\sum_(x <- xs | P x) F x` is the accepted `sumFiltered xs P F`; `a > b` is `decide (b < a)`; `\u03b5` is `1`; `Let D` is inlined; the local `let` functions are kept",
+  "export_diagnosis": "the accepted task-preemption-parameters export root merged with the accepted request-bound-function export root (both over the preemption-parameter closure, ~127k lines), reused so that both accepted certificate chains apply, plus the definition, bigMaxListCond with three kernel-checked equations and the TaskDeadline class",
+  "extra_artifacts": [
+    {
+      "from": "analysis_definitions_request_bound_function_final/source/RequestBoundFunctionSemanticSource.vo",
+      "to": "source/RequestBoundFunctionSemanticSource.vo",
+      "manifest": "analysis_definitions_request_bound_function",
+      "key": "source_vo_sha256"
+    }
+  ],
+  "extra_olean_artifacts": [
+    {
+      "from": "analysis_definitions_request_bound_function_final/olean/Prosa/Analysis/Definitions/RequestBoundFunction.olean",
+      "to": "Prosa/Analysis/Definitions/RequestBoundFunction.olean",
+      "manifest": "analysis_definitions_request_bound_function",
+      "key": "production_olean_sha256"
+    }
+  ]
+}

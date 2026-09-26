@@ -8,8 +8,9 @@ import json
 import re
 from pathlib import Path
 
-BEGIN = re.compile(r"AUDIT_BEGIN\s+([A-Za-z0-9_.'-]+)")
-END = re.compile(r"AUDIT_END\s+([A-Za-z0-9_.'-]+)")
+# certificate names may contain Unicode identifier characters (e.g. `job_max_nps_is_ε`)
+BEGIN = re.compile(r"AUDIT_BEGIN\s+([\w.'-]+)")
+END = re.compile(r"AUDIT_END\s+([\w.'-]+)")
 ENTRY = re.compile(r"^([A-Za-z_][A-Za-z0-9_'.]*)\s+(?:relies\b|:)")
 
 

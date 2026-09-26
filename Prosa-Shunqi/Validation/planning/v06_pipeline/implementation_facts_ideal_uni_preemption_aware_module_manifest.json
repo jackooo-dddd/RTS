@@ -1,0 +1,285 @@
+{
+  "slice": "TRANSLATION_ORDER_IMPLEMENTATION_FACTS_IDEAL_UNI_PREEMPTION_AWARE",
+  "generated_at": "2026-09-27T05:59:58.006021+08:00",
+  "published_at": "2026-09-27T05:59:58.006021+08:00",
+  "rank": 202,
+  "layer": 18,
+  "source_file": "implementation/facts/ideal_uni/preemption_aware.v",
+  "source_commit": "414e66760333eaa4ef78c685bcf53291c527a548",
+  "source_tree": "7d7e94c731f7eefde4ca738310d4cafdd7bebdf0",
+  "source_file_sha256": "8ad3dd34e78b82b36203edba7b53713a4512560943c52eaa205f797375138f90",
+  "pipeline": "Validation/scripts/translation_file_pipeline.py",
+  "spec": "Validation/tooling/file_specs/implementation_facts_ideal_uni_preemption_aware.json",
+  "spec_sha256": "755f56619ca4d5ef9fdf86ffcdc4cac631698a08f40b72c26653658976eed98c",
+  "source_compatibility": {
+    "mode": "extract",
+    "note": "theorem statements from the authoritative elaborated types (proofs omitted); the scheduler definitions are bound to their accepted extracted source (IdealUniSchedulerSemanticSource of the base run, which also exports the accepted extracted readiness and preemption-parameter sources and the pinned ideal processor, generic scheduler and work-conserving backlog); schedule_respects_preemption_model and preemption_time are bound to their accepted extracted sources (ScheduleLimitedPreemptiveSemanticSource / PreemptionTimeSemanticSource .vo copied from their accepted runs and hash-checked against their manifests), with model/schedule/scheduled (needed by the latter) compiled from the pinned tree; model/processor/ideal is kept as the pinned source of the base closure; the proof-only generic_schedule facts, ideal-schedule facts and util/tactics imports are dropped; the printed prefix match loses the implicit processor model of empty_schedule (its expected type is not propagated into the match branches when it is an argument of jobs_backlogged_at), so the recorded printer repair names it (PState := ideal.processor_state Job); the statements print back to the unrepaired evidence",
+    "extracted_sha256": "dae58d2f4b99b50cbe3c94bfb8f09e4141e93b258fadbc8e13bf51ca555b8b23",
+    "extraction_metadata_sha256": "c48f7d6306d5be807c0a570047627891f7375df2ccf29e5c6c3c942f7c95ffe3"
+  },
+  "source_type_evidence": {
+    "prosa.implementation.facts.ideal_uni.preemption_aware.allocation_at_idle": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.implementation.facts.ideal_uni.preemption_aware.idle_schedule_no_backlogged_jobs": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.implementation.facts.ideal_uni.preemption_aware.np_schedule_work_conserving": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.implementation.facts.ideal_uni.preemption_aware.np_schedule_jobs_from_arrival_sequence": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.implementation.facts.ideal_uni.preemption_aware.chosen_job_is_ready": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.implementation.facts.ideal_uni.preemption_aware.jobs_must_be_ready": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.implementation.facts.ideal_uni.preemption_aware.np_schedule_valid": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.implementation.facts.ideal_uni.preemption_aware.np_job_remains_scheduled": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.implementation.facts.ideal_uni.preemption_aware.np_consistent": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.implementation.facts.ideal_uni.preemption_aware.np_respects_preemption_model": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE"
+  },
+  "statement_only_export_boundary": [
+    "Prosa.Implementation.Facts.IdealUni.PreemptionAware.allocation_at_idle",
+    "Prosa.Implementation.Facts.IdealUni.PreemptionAware.idle_schedule_no_backlogged_jobs",
+    "Prosa.Implementation.Facts.IdealUni.PreemptionAware.np_schedule_work_conserving",
+    "Prosa.Implementation.Facts.IdealUni.PreemptionAware.np_schedule_jobs_from_arrival_sequence",
+    "Prosa.Implementation.Facts.IdealUni.PreemptionAware.chosen_job_is_ready",
+    "Prosa.Implementation.Facts.IdealUni.PreemptionAware.jobs_must_be_ready",
+    "Prosa.Implementation.Facts.IdealUni.PreemptionAware.np_schedule_valid",
+    "Prosa.Implementation.Facts.IdealUni.PreemptionAware.np_job_remains_scheduled",
+    "Prosa.Implementation.Facts.IdealUni.PreemptionAware.np_consistent",
+    "Prosa.Implementation.Facts.IdealUni.PreemptionAware.np_respects_preemption_model"
+  ],
+  "input_relations": [
+    "the processor model is fixed to the ideal uniprocessor on both sides; states related by the constructor-preserving Option map, schedules pointwise (covered in both directions)",
+    "job_cost by SvcJobCostRel",
+    "job_arrival by ArJobArrivalRel",
+    "arrival sequences by ArArrivalSequenceRel",
+    "the readiness model: job_ready related on related ideal schedules and instants; where it is quantified after a hypothesis, it is covered in both directions among nonclairvoyant models (which respect pointwise-equal schedules), with the covering models built from the other side's job_ready and its pending obligation",
+    "JobPreemptable pointwise (covered in both directions)",
+    "choose_job related on related instants and job lists (covered in both directions)"
+  ],
+  "coverage_for_inner_binders": [
+    "JobReady (among nonclairvoyant models)",
+    "JobPreemptable",
+    "choose_job",
+    "schedules",
+    "arrival sequences are leading inputs"
+  ],
+  "lean_representation_note": "the section-local idle_state is `none`; the section-local sched_prefix/prefix is inlined as a `match` on the instant, as in the elaborated types; `j \\in s` is `decide (j \u2208 s) = true`; `x == Some j` is `decide (x = some j) = true`; instance inputs quantified after a hypothesis are `\u2200 [..]` binders; `t.+1`/`t.-1` are `t + 1`/`t - 1`",
+  "export_size": {
+    "lines": 149714,
+    "soft_budget_flag": "OVER_100K_DIAGNOSED",
+    "diagnosis": "the accepted ideal-uniprocessor-scheduler export root (preemption-parameter closure with the Service / Schedule interfaces, ideal processor, generic scheduler, work-conserving backlog, scheduler definitions and the kernel-checked schedule_up_to/empty_schedule/replace_at/ideal-state equations) plus the readiness, prefix, validity, preemption-time and limited-preemptive definitions and the ten statements"
+  },
+  "file_dependencies": {
+    "analysis/facts/model/ideal/schedule.v": "analysis_facts_model_ideal_schedule_module_status.json",
+    "implementation/definitions/ideal_uni_scheduler.v": "implementation_definitions_ideal_uni_scheduler_module_status.json",
+    "implementation/facts/generic_schedule.v": "implementation_facts_generic_schedule_module_status.json",
+    "model/processor/ideal.v": "model_processor_ideal_module_status.json",
+    "model/schedule/limited_preemptive.v": "model_schedule_limited_preemptive_module_status.json",
+    "util/tactics.v": "foundation_slice_2_closure_status.json"
+  },
+  "production_file": "Prosa/Implementation/Facts/IdealUni/PreemptionAware.lean",
+  "production_source_sha256": "38d830b57fd1adbd87ad58e2e1af2c676a8db559931cbe2ac5649165dc78a9ab",
+  "production_olean_sha256": "697bb1f78a9e1b3e164b61eb79cddcad321089467fc62d1f681a03a2d49a29b0",
+  "export_config_sha256": "34900e8940bec068cfe36a611c350e11a66382204dc1242c698936b044bfcc2f",
+  "export_sha256": "fd08689930bcc8cf01507ca691f799eb1435831a29e03cfeee360463a0ec182e",
+  "export_lines": 149714,
+  "export_bytes": 3386289,
+  "import_sha256": "c210d6cda202a1f3f09ec9d7887b694c9f071370c69c81bd00e3d382978d3a01",
+  "source_vo_sha256": "f256ff35f24350615e2b87409d57d3d4b745c66f4cb0ce760c8fc0967168d3ed",
+  "lean_axiom_summary_sha256": "9f9a93c9085aa2876ecdb42859e7c267a978657be4b587e4c6aedd3391ca8573",
+  "rocq_assumption_summary_sha256": "bfd4c23901d0cc6679cfe33ea7adc10d2882c143224ada52ce93c53875ea559c",
+  "assumption_config_sha256": "6382e6a121d7c080f777c8c601daaa287001a907de11b18925e02e89d5658be6",
+  "stage_timing_seconds": {
+    "source_acquisition": {
+      "mode": "FRESH",
+      "seconds": 4
+    },
+    "lean_build": {
+      "mode": "FRESH",
+      "seconds": 255
+    },
+    "export": {
+      "mode": "FRESH",
+      "seconds": 20
+    },
+    "rocq_import": {
+      "mode": "FRESH",
+      "seconds": 45
+    },
+    "certificate_compile": {
+      "mode": "FRESH",
+      "seconds": 23
+    },
+    "assumption_audit": {
+      "mode": "FRESH",
+      "seconds": 0
+    }
+  },
+  "certificates": {
+    "ArrivalsSeqBaseAdapter": {
+      "source_sha256": "01a9c06573bf8244ee9c65c066f16a8033b31f70defe6f80bf2c4838fc532414",
+      "vo_sha256": "abec8e87e0fd1e9c131dbd9fef9e84a0d3bb3b3bf9c7a94b489052898dd2ec10"
+    },
+    "ArrivalsSeqOperations": {
+      "source_sha256": "ac59cd1bddb39bbc9a2a11df99e7fdf6cf112e3334fdaa2fed2e0e108240b2c9",
+      "vo_sha256": "526d11311fe587998b013eb9054af8a5872a5c5087bd3b7afdfcada2c624f91e"
+    },
+    "ArrivalsSeqCorrespondence": {
+      "source_sha256": "d4f98b5a7f988b4085c6dfa6fe74ea60d49afb9b2c75dc6f397ad127bee709aa",
+      "vo_sha256": "9551807614d47eb14449bd863ed545024e9bf602c833c0483278f9ca4c22af59"
+    },
+    "JitterSvcBaseAdapter": {
+      "source_sha256": "1dfd9e231dac85ab331ceb75082a669f10a0e391815d8897bf0ab1e9c7928b00",
+      "vo_sha256": "768de0c07a1a0290cc9f7af26dcbfa82bdd3169acc588d1b14855da24757527d"
+    },
+    "JitterSvcNatBoolOperations": {
+      "source_sha256": "77e16231b509d0de3a528a81743fc811be0172be0b6f028ded10c4b427dff0dc",
+      "vo_sha256": "42d45b8f45d129772a01fb59bd9755e1553d12e9806b234631dc320243844e1d"
+    },
+    "JitterSvcIntervalOperations": {
+      "source_sha256": "6d434bbdb5588650b3fa7a77f6ee686dbed082e143e7de7661dcb4d77e634e13",
+      "vo_sha256": "1a56b6eb5e2cfb09571c7128aa4865db4e273509aa9fe1d3fd9a6c4c39352cac"
+    },
+    "JitterSvcScheduleOperations": {
+      "source_sha256": "9b8df76449d78d1040dccac6e091afd6224deef9119d800326b34c06a007ddc0",
+      "vo_sha256": "8924dd8a517c1912c820ac72867a9bedbf85640a302ddc3857491c2c79b4f139"
+    },
+    "JitterSvcJobOperations": {
+      "source_sha256": "9573a135a8475993a32670d17553f9ce0e46aa309eb121259cdcb60dd04e783c",
+      "vo_sha256": "57af286754c23f816ab9e70ed0a0bcdfc430fdc6c7434811392721d12332cc1d"
+    },
+    "PreemptionParameterCorrespondence": {
+      "source_sha256": "280d7d602331d0ef14738b49541edd74fcf08b35e07e7f01e994893c6f40d572",
+      "vo_sha256": "14aa80a5df09c110e0d79040344e682a3f0617274d2b14bc6166fcbc26924811"
+    },
+    "IdealUniSchedulerCorrespondence": {
+      "source_sha256": "235318b972c5a32145e7028ea7cddea07d966e58d04830796131a3e36dbcb057",
+      "vo_sha256": "679a3f2fcffcc7ffb034e90bb10b1b56a78924f85dd950281359f3fb6db0b4be"
+    },
+    "PreemptionAwareCorrespondence": {
+      "source_sha256": "30bf26a139976ff8fedeac9bf09112642aaec5854fb79f3bc04853d62fe51600",
+      "vo_sha256": "ad9a6d91a3a627d953a1829be92187383e95322bfc0322efade11ac215c5e0a3"
+    },
+    "PreemptionAwareAssumptionAudit": {
+      "source_sha256": "21976a7eee72602fae8d39343af30c021f39b2f16a402de6bbec8ede2c66d49d",
+      "vo_sha256": "104b139ef0134f0f43659452ffcbc84b429c0dfd7c4e06f5b56a51cfcd88789a"
+    }
+  },
+  "declarations": [
+    {
+      "source_declaration": "prosa.implementation.facts.ideal_uni.preemption_aware.allocation_at_idle",
+      "lean_declaration": "Prosa.Implementation.Facts.IdealUni.PreemptionAware.allocation_at_idle",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "allocation_at_idle_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.implementation.facts.ideal_uni.preemption_aware.idle_schedule_no_backlogged_jobs",
+      "lean_declaration": "Prosa.Implementation.Facts.IdealUni.PreemptionAware.idle_schedule_no_backlogged_jobs",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "idle_schedule_no_backlogged_jobs_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.implementation.facts.ideal_uni.preemption_aware.np_schedule_work_conserving",
+      "lean_declaration": "Prosa.Implementation.Facts.IdealUni.PreemptionAware.np_schedule_work_conserving",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "np_schedule_work_conserving_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.implementation.facts.ideal_uni.preemption_aware.np_schedule_jobs_from_arrival_sequence",
+      "lean_declaration": "Prosa.Implementation.Facts.IdealUni.PreemptionAware.np_schedule_jobs_from_arrival_sequence",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "np_schedule_jobs_from_arrival_sequence_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.implementation.facts.ideal_uni.preemption_aware.chosen_job_is_ready",
+      "lean_declaration": "Prosa.Implementation.Facts.IdealUni.PreemptionAware.chosen_job_is_ready",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "chosen_job_is_ready_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.implementation.facts.ideal_uni.preemption_aware.jobs_must_be_ready",
+      "lean_declaration": "Prosa.Implementation.Facts.IdealUni.PreemptionAware.jobs_must_be_ready",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "jobs_must_be_ready_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.implementation.facts.ideal_uni.preemption_aware.np_schedule_valid",
+      "lean_declaration": "Prosa.Implementation.Facts.IdealUni.PreemptionAware.np_schedule_valid",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "np_schedule_valid_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.implementation.facts.ideal_uni.preemption_aware.np_job_remains_scheduled",
+      "lean_declaration": "Prosa.Implementation.Facts.IdealUni.PreemptionAware.np_job_remains_scheduled",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "np_job_remains_scheduled_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.implementation.facts.ideal_uni.preemption_aware.np_consistent",
+      "lean_declaration": "Prosa.Implementation.Facts.IdealUni.PreemptionAware.np_consistent",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "np_consistent_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.implementation.facts.ideal_uni.preemption_aware.np_respects_preemption_model",
+      "lean_declaration": "Prosa.Implementation.Facts.IdealUni.PreemptionAware.np_respects_preemption_model",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "np_respects_preemption_model_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    }
+  ],
+  "acceptance": "ACCEPTED_V06_FILE"
+}

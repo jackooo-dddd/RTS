@@ -1,0 +1,5 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedFactsModelOffset.
+
+Check ImportedFactsModelOffset.Prosa_Analysis_Facts_Model_Offset_first_job_arrival.
+Check ImportedFactsModelOffset.Prosa_Analysis_Facts_Model_Offset_max_offset_g.

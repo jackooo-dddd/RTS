@@ -63,6 +63,17 @@ def sha(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def _manifest_entries(obj):
+    """All dict entries (recursively) of an accepted manifest."""
+    if isinstance(obj, dict):
+        yield obj
+        for v in obj.values():
+            yield from _manifest_entries(v)
+    elif isinstance(obj, list):
+        for v in obj:
+            yield from _manifest_entries(v)
+
+
 def read(path: Path):
     return json.loads(path.read_text())
 
@@ -185,11 +196,39 @@ def prepare(spec: Spec) -> None:
     mode = spec["source_mode"]
     log = work / "source_build.log"
     log.write_text("")
+    # accepted dependencies bound only by extraction are reached at their logical
+    # path through a one-line re-export shim of their accepted semantic module
+    # (whose .vo is hash-checked by base_checks), as in the zero-declaration validator
+    for dep_rel, module in spec.get("dependency_shims", {}).items():
+        shim = src / dep_rel
+        require(not shim.exists(), f"shim target already exists: {dep_rel}", tag)
+        shim.parent.mkdir(parents=True, exist_ok=True)
+        shim.write_text(f"Require Export prosa.{module}.\nExport {module}.\n")
+        require(rocq(["-R", str(src), "prosa", dep_rel], log, src, append=True) == 0,
+                f"dependency shim failed: {dep_rel}", tag)
     for rel in spec.get("extra_pinned_sources", []):
         require(rocq(["-R", str(src), "prosa", rel], log, src, append=True) == 0,
                 f"extra pinned source failed: {rel}", tag)
     for rel, (stem, key) in spec.get("extra_source_vo_checks", {}).items():
         require(sha(src / rel) == manifest_hash(stem, key), f"extra source .vo changed: {rel}", tag)
+    # accepted generated (definition-extraction) validation sources of accepted
+    # files whose pinned proofs do not build in this toolchain: the .v is copied
+    # from its accepted run, its sha256 must equal the `validation_source_sha256`
+    # recorded for that source file in the accepted manifest, and it is compiled
+    for gen in spec.get("extra_generated_sources", []):
+        entries = [e for e in _manifest_entries(read(PIPE / gen["manifest_file"]))
+                   if e.get("source_file") == gen["source_file"]
+                   and e.get("file_status") == "ACCEPTED_V06_FILE"]
+        require(len(entries) == 1, f"no unique accepted manifest entry: {gen['source_file']}", tag)
+        require(entries[0].get("validation_source_file") == Path(gen["to"]).name,
+                f"validation source name differs: {gen['to']}", tag)
+        dest = src / gen["to"]
+        require(not dest.exists(), f"generated source target exists: {gen['to']}", tag)
+        shutil.copy2(V / gen["from"], dest)
+        require(sha(dest) == entries[0].get("validation_source_sha256"),
+                f"generated source changed: {gen['to']}", tag)
+        require(rocq(["-R", str(src), "prosa", gen["to"]], log, src, append=True) == 0,
+                f"generated source failed: {gen['to']}", tag)
     probe_args: list[str]
     if mode in ("pinned", "patched"):
         (src / spec.source).parent.mkdir(parents=True, exist_ok=True)
@@ -222,6 +261,8 @@ def prepare(spec: Spec) -> None:
                           ("--printer-repair", "printer_repairs"), ("--local-binding", "local_bindings")):
             for item in x.get(key, []):
                 cmd += [flag, item]
+        if x.get("source_order"):
+            cmd.append("--source-order")
         if x.get("omit_theorem_context", True):
             cmd.append("--omit-theorem-context-when-elaborated")
         require(run(cmd, work / "source_extraction.log", PROJECT) == 0, "extraction failed", tag)
@@ -269,9 +310,16 @@ def prepare(spec: Spec) -> None:
 
     # ---- export / import
     name = spec["export_name"]
+    export_env = dict(env)
+    # optional exporter switches recorded in the spec (e.g. keep theorem types
+    # un-reduced when a kernel-guarded Finset.Ico projection is configured)
+    allowed_export_env = {"LEAN4EXPORT_PRESERVE_REDUCIBLE_THEOREM_TYPES"}
+    for k, v in spec.get("export_env", {}).items():
+        require(k in allowed_export_env, f"export_env key not allowed: {k}", tag)
+        export_env[k] = v
     require(run(["bash", "Validation/scripts/export_actual_artifact.sh", "--config", spec["export_config"],
                  "--output", str(work / f"imported/{name}.out"), "--log", str(work / "export.log"),
-                 "--metadata", str(work / "export_metadata.json")], work / "export_driver.log", PROJECT, env) == 0,
+                 "--metadata", str(work / "export_metadata.json")], work / "export_driver.log", PROJECT, export_env) == 0,
             "export failed", tag)
     stamp(spec, "export", time.time() - t0)
     t0 = time.time()
@@ -360,18 +408,44 @@ def fingerprint_matches(spec: Spec, rows: list[dict]) -> dict:
         # own file module (`@readiness.x`) when another `x` was in scope there;
         # accept exactly that display qualifier and nothing else.
         own, short = name.split(".")[-2], name.split(".")[-1]
-        qualified = f"@{own}.{short} : "
-        if item["normalized_check"].startswith(qualified) and \
-                got == f"@{short} : " + item["normalized_check"][len(qualified):]:
+        # the display qualifier may also be a longer trailing suffix of the
+        # file's own logical path (`@restricted_supply.busy_prefix.x` when two
+        # files named `busy_prefix` declare `x`); it still names this file only
+        path = name.split(".")[1:-1]
+        own_qualifiers = [".".join(path[i:]) for i in range(len(path) - 1, -1, -1)]
+        matched_qualifier = False
+        for qual in own_qualifiers:
+            qualified = f"@{qual}.{short} : "
+            if item["normalized_check"].startswith(qualified) and \
+                    got == f"@{short} : " + item["normalized_check"][len(qualified):]:
+                matched_qualifier = True
+                break
+        if matched_qualifier:
             result[name] = "EXACT_MODULO_OWN_MODULE_QUALIFIER"
             continue
         m = re.match(r"statement_\S+ = (.*) : (Prop|Type)$", got)
         ref = item["normalized_check"].split(" : ", 1)[1]
         body = m.group(1) if m else None
-        unparen = re.sub(r"(\\/|<->) \((exists .*)\)$", r"\1 \2", ref)
+        unparen = re.sub(r"(\\/|<->|~) \((exists .*)\)$", r"\1 \2", ref)
+        # A statement may name a declaration of this same file qualified by the
+        # file's own module (`edf.x`) when another `x` was in scope in the
+        # official environment; the extraction repairs exactly that qualifier
+        # to the local name (recorded printer repair `own.x=x` for a declaration
+        # `x` of this file).  Accept exactly those recorded repairs, nothing else.
+        own_names = {r["declaration_name"] for r in inventory(spec)}
+        own_repairs = [tuple(r.split("=", 1)) for r in
+                       (spec.get("extraction") or {}).get("printer_repairs", [])]
+        own_repairs = [(old, new) for old, new in own_repairs
+                       if new in own_names and old == f"{own}.{new}"]
+        repaired = ref
+        for old, new in own_repairs:
+            repaired = re.sub(rf"(?<![\w.']){re.escape(old)}(?![\w'])", new, repaired)
         result[name] = ("STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE" if body == ref
                         else "TYPE_EQUAL_MODULO_EXISTS_PARENS" if body is not None and body == unparen
-                        and unparen != ref else "MISMATCH")
+                        and unparen != ref
+                        else "STATEMENT_BODY_EQUAL_MODULO_OWN_MODULE_QUALIFIER"
+                        if own_repairs and body is not None and body == repaired and repaired != ref
+                        else "MISMATCH")
         require(result[name] != "MISMATCH", f"source type mismatch: {name}: {got}", spec.tag)
     return result
 
@@ -527,7 +601,9 @@ def publish(spec: Spec) -> None:
             "shared Nat artifact changed", tag)
     type_audit = (work / "imported_type_audit.log").read_text()
     prefix = spec["lean_namespace"].replace(".", "_") + "_"
-    require("Error" not in type_audit and all(prefix + n in type_audit for n in targets),
+    # the Rocq importer spells non-ASCII identifier characters as `_UU<hex4>_`
+    mangle = lambda n: "".join(c if c.isascii() else f"_UU{ord(c):04x}_" for c in n)
+    require("Error" not in type_audit and all(prefix + mangle(n) in type_audit for n in targets),
             "imported type audit failed", tag)
 
     # certificates

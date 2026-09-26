@@ -1,0 +1,5 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedSearchSpaceEdf.
+
+Check ImportedSearchSpaceEdf.Prosa_Analysis_Abstract_RestrictedSupply_SearchSpace_Edf_is_in_search_space.
+Check ImportedSearchSpaceEdf.Prosa_Analysis_Abstract_RestrictedSupply_SearchSpace_Edf_search_space_sub.

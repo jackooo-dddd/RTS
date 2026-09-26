@@ -1,0 +1,84 @@
+{
+  "rank": 127,
+  "layer": 15,
+  "tag": "FPCL",
+  "slug": "analysis_facts_priority_classes",
+  "source": "analysis/facts/priority/classes.v",
+  "dependencies": [
+    "analysis/definitions/priority/classes.v",
+    "model/priority/classes.v"
+  ],
+  "declaration_count": 22,
+  "base_run": "analysis_definitions_priority_classes_final",
+  "base_checks": [
+    {
+      "manifest": "analysis_definitions_priority_classes",
+      "olean": "Prosa/Analysis/Definitions/Priority/Classes.olean",
+      "vo": "analysis/definitions/priority/classes.vo"
+    }
+  ],
+  "source_mode": "extract",
+  "fingerprint_probe": "Validation/fixtures/translation_order/FactsPriorityClassesStatementProbe.v",
+  "production": "Prosa/Analysis/Facts/Priority/Classes.lean",
+  "production_olean": "Prosa/Analysis/Facts/Priority/Classes.olean",
+  "lean_namespace": "Prosa.Analysis.Facts.Priority.Classes",
+  "fixtures": [
+    "FactsPriorityClassesComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/FactsPriorityClassesLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/analysis_facts_priority_classes_export_config.json",
+  "export_name": "FactsPriorityClasses",
+  "cert_dir": "certificates/analysis_facts_priority_classes",
+  "chain": [
+    "PcoBaseAdapter",
+    "PcoStaticOrder",
+    "PcoDynamicOrder",
+    "PriorityCoercionCorrespondence",
+    "AnalysisPriorityClassesCorrespondence",
+    "FactsPriorityClassesCorrespondence"
+  ],
+  "audit_module": "FactsPriorityClassesAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/FactsPriorityClassesImportedTypeAudit.v",
+  "assumption_config": "certificates/analysis_facts_priority_classes/facts_priority_classes_assumption_config.json",
+  "lean_axiom_config": "certificates/analysis_facts_priority_classes/facts_priority_classes_lean_axiom_config.json",
+  "computational": [],
+  "principal": {},
+  "helpers": [
+    "fpc_forall_jt",
+    "fpc_forall_ja",
+    "fpc_not_correspondence",
+    "fpc_false_correspondence",
+    "fpc_another_hep_job_related",
+    "fpc_same_task_related",
+    "fpc_job_of_task_related",
+    "fpc_another_task_hep_job_related",
+    "fpc_another_hep_job_of_same_task_related",
+    "fpc_hp_task_related",
+    "fpc_ep_task_related"
+  ],
+  "previous_status": "analysis_facts_model_workload_module_status.json",
+  "previous_files": 125,
+  "previous_decls": 995,
+  "input_relations": [
+    "PdJobTaskRel",
+    "PdJobArrivalRel",
+    "PdJLFPRel",
+    "PdFPRel"
+  ],
+  "coverage_for_inner_binders": [
+    "jobs and tasks (identity carriers)"
+  ],
+  "lean_representation_note": "`~ P` is `\u00ac P`; `~~ b` is `(!b) = true`; Booleans in Prop position are `= true`; `a != b` is `decide (a \u2260 b)`; MathComp `irreflexive`/`reflexive`/`transitive`/`total` of a Boolean relation are the corresponding pointwise `= true`/`= false` statements",
+  "extraction": {
+    "module": "FactsPriorityClassesSemanticSource",
+    "drop_imports": [],
+    "add_imports": [
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq.",
+      "Require Import prosa.model.priority.classes prosa.analysis.definitions.priority.classes."
+    ],
+    "note": "theorem statements from the authoritative elaborated types (proofs omitted): the pinned proofs use the ssrfun projection notation `.1`, which the accepted reduced util closure does not export; the evidence text prints the FP_to_JLFP coercion implicitly, so one printer repair makes it explicit for re-elaboration (the probe prints it back implicitly)",
+    "printer_repairs": [
+      "policy_respects_sequential_tasks FP=policy_respects_sequential_tasks (FP_to_JLFP FP)"
+    ]
+  }
+}

@@ -1,0 +1,218 @@
+{
+  "rank": 188,
+  "layer": 18,
+  "tag": "FRBF",
+  "slug": "analysis_facts_model_rbf",
+  "source": "analysis/facts/model/rbf.v",
+  "dependencies": [
+    "analysis/definitions/request_bound_function.v",
+    "analysis/definitions/schedulability.v",
+    "analysis/definitions/workload/bounded.v",
+    "analysis/facts/model/arrival_curves.v",
+    "analysis/facts/model/task_cost.v",
+    "analysis/facts/model/workload.v",
+    "model/job/properties.v",
+    "util/tactics.v"
+  ],
+  "declaration_count": 27,
+  "base_run": "analysis_facts_model_service_of_jobs_final",
+  "base_checks": [
+    {
+      "manifest": "analysis_definitions_workload_bounded",
+      "olean": "Prosa/Analysis/Definitions/Workload/Bounded.olean",
+      "vo": "WorkloadBoundedSemanticSource.vo"
+    }
+  ],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "FactsRbfSemanticSource",
+    "drop_imports": [
+      "Require Export prosa.model.job.properties.",
+      "Require Export prosa.analysis.facts.model.workload.",
+      "Require Export prosa.analysis.facts.model.arrival_curves.",
+      "Require Export prosa.analysis.facts.model.task_cost.",
+      "Require Export prosa.analysis.definitions.request_bound_function.",
+      "Require Export prosa.analysis.definitions.schedulability.",
+      "Require Export prosa.util.tactics.",
+      "Require Export prosa.analysis.definitions.workload.bounded."
+    ],
+    "add_imports": [
+      "Require Export prosa.WorkloadBoundedSemanticSource.",
+      "Export WorkloadBoundedSemanticSource.",
+      "Require Export prosa.RequestBoundFunctionSemanticSource.",
+      "Export RequestBoundFunctionSemanticSource.",
+      "Require Export prosa.SchedulabilitySemanticSource.",
+      "Export SchedulabilitySemanticSource.",
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq bigop.",
+      "Require Import prosa.util.epsilon prosa.util.rel prosa.behavior.all prosa.model.task.concept prosa.model.task.arrivals prosa.model.task.arrival.curves.",
+      "Require Import prosa.model.priority.classes prosa.model.job.properties prosa.model.aggregate.workload."
+    ],
+    "note": "theorem statements from the authoritative elaborated types (proofs omitted); the workload/bounded, request_bound_function and schedulability imports are bound to their accepted extracted sources (WorkloadBoundedSemanticSource hash-checked as base; RequestBoundFunctionSemanticSource and SchedulabilitySemanticSource .vo copied from their accepted runs and hash-checked against their manifests); model/job/properties, model/task/arrival/curves, model/aggregate/workload and model/task/absolute_deadline are pinned sources compiled from the pinned tree; the proof-only facts (workload, arrival_curves, task_cost) and util/tactics imports are dropped"
+  },
+  "extra_artifacts": [
+    {
+      "from": "analysis_definitions_request_bound_function_final/source/RequestBoundFunctionSemanticSource.vo",
+      "to": "source/RequestBoundFunctionSemanticSource.vo",
+      "manifest": "analysis_definitions_request_bound_function",
+      "key": "source_vo_sha256"
+    },
+    {
+      "from": "analysis_definitions_schedulability_final/source/SchedulabilitySemanticSource.vo",
+      "to": "source/SchedulabilitySemanticSource.vo",
+      "manifest": "analysis_definitions_schedulability",
+      "key": "source_vo_sha256"
+    }
+  ],
+  "extra_pinned_sources": [
+    "model/job/properties.v",
+    "model/aggregate/workload.v",
+    "model/task/absolute_deadline.v"
+  ],
+  "extra_olean_artifacts": [
+    {
+      "from": "analysis_facts_model_workload_final/olean/Prosa/Analysis/Facts/Model/Workload.olean",
+      "to": "Prosa/Analysis/Facts/Model/Workload.olean",
+      "manifest": "analysis_facts_model_workload",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_model_task_cost/olean/Prosa/Analysis/Facts/Model/TaskCost.olean",
+      "to": "Prosa/Analysis/Facts/Model/TaskCost.olean",
+      "manifest": "analysis_facts_model_task_cost",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_definitions_request_bound_function_final/olean/Prosa/Analysis/Definitions/RequestBoundFunction.olean",
+      "to": "Prosa/Analysis/Definitions/RequestBoundFunction.olean",
+      "manifest": "analysis_definitions_request_bound_function",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_definitions_tardiness_final/olean/Prosa/Model/Task/AbsoluteDeadline.olean",
+      "to": "Prosa/Model/Task/AbsoluteDeadline.olean",
+      "manifest": "model_task_absolute_deadline",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_definitions_tardiness_final/olean/Prosa/Analysis/Definitions/Schedulability.olean",
+      "to": "Prosa/Analysis/Definitions/Schedulability.olean",
+      "manifest": "analysis_definitions_schedulability",
+      "key": "production_olean_sha256"
+    }
+  ],
+  "fingerprint_probe": "Validation/fixtures/translation_order/FactsRbfStatementProbe.v",
+  "production": "Prosa/Analysis/Facts/Model/Rbf.lean",
+  "production_olean": "Prosa/Analysis/Facts/Model/Rbf.olean",
+  "lean_namespace": "Prosa.Analysis.Facts.Model.Rbf",
+  "fixtures": [
+    "NondecreasingComputationInterface",
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "PreemptionParameterComputationInterface",
+    "BusyIntervalClassicalComputationInterface",
+    "ArrivalsComputationInterface",
+    "WorkloadComputationInterface",
+    "WorkloadBoundedComputationInterface",
+    "RequestBoundFunctionComputationInterface",
+    "CurvesComputationInterface",
+    "ProcessorStateCoverInterface",
+    "FactsRbfComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/FactsRbfLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/analysis_facts_model_rbf_export_config.json",
+  "export_name": "FactsRbf",
+  "cert_dir": "certificates/analysis_facts_model_rbf",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "ArrivalsCorrespondence",
+    "JitterSvcBaseAdapter",
+    "JitterSvcNatBoolOperations",
+    "JitterSvcIntervalOperations",
+    "JitterSvcScheduleOperations",
+    "JitterSvcJobOperations",
+    "PreemptionParameterCorrespondence",
+    "WorkloadCorrespondence",
+    "CurvesCorrespondence",
+    "RequestBoundFunctionCorrespondence",
+    "WorkloadBoundedCorrespondence",
+    "FactsRbfCorrespondence"
+  ],
+  "audit_module": "FactsRbfAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/FactsRbfImportedTypeAudit.v",
+  "assumption_config": "certificates/analysis_facts_model_rbf/facts_rbf_assumption_config.json",
+  "lean_axiom_config": "certificates/analysis_facts_model_rbf/facts_rbf_lean_axiom_config.json",
+  "computational": [],
+  "principal": {},
+  "helpers": [
+    "frbf_forall_cover_sprop",
+    "frbf_forall_cover_type",
+    "frbf_lean_transport",
+    "frbf_nat_input",
+    "frbf_decide_eq_related",
+    "frbf_bool_rel_true",
+    "frbf_bool_false_of_rocq",
+    "frbf_map_values_canonical",
+    "frbf_ar_svc_list_eq",
+    "frbf_monotone_related",
+    "frbf_psr_sched_to_target_rel",
+    "frbf_psr_sched_to_source_rel",
+    "frbf_psr_service_at_related",
+    "frbf_psr_service_related",
+    "frbf_enum_nodup",
+    "frbf_enum_complete",
+    "frbf_law_le",
+    "frbf_law_zero",
+    "frbf_to_target_service_in",
+    "frbf_to_target_supply_in",
+    "frbf_core_eqP",
+    "frbf_core_list_rel",
+    "frbf_core_list_uniq",
+    "frbf_core_list_complete",
+    "frbf_core_enum_map",
+    "frbf_src_law_le",
+    "frbf_src_law_zero",
+    "frbf_core_enumeration_rel",
+    "frbf_to_source_service_in",
+    "frbf_to_source_supply_in",
+    "frbf_list_to_target_rel",
+    "frbf_list_to_source_rel",
+    "frbf_pred_to_source_rel",
+    "frbf_fp_to_target_rel",
+    "frbf_fp_to_source_rel",
+    "frbf_jlfp_to_target_rel",
+    "frbf_jlfp_to_source_rel",
+    "frbf_job_of_task_related",
+    "frbf_task_cost_of_job_related",
+    "frbf_valid_job_costs_related",
+    "frbf_all_jobs_from_taskset_related",
+    "frbf_hep_task_jobs",
+    "frbf_reflexive_task_related",
+    "frbf_max1_positive_related",
+    "frbf_task_response_time_bound_related"
+  ],
+  "previous_status": "analysis_facts_interference_module_status.json",
+  "previous_files": 177,
+  "previous_decls": 1240,
+  "input_relations": [
+    "TaskCost pointwise by SubNatRel",
+    "MaxArrivals by the accepted CvMaxArrivalsRel (leading)",
+    "JobTask by Lean.eq",
+    "job_arrival by ArJobArrivalRel",
+    "job_cost by SvcJobCostRel",
+    "SvcProcessorStateRel (two-sided) + SvcScheduleRel for the leading schedule of athep_workload_le_total_ohep_rbf"
+  ],
+  "coverage_for_inner_binders": [
+    "arrival sequences, task sets, job/task predicates (both directions)",
+    "FP and JLFP policies (pointwise on Booleans)",
+    "MaxArrivals instances (the accepted curve-family totals)",
+    "processor models and their schedules (the accepted ideal-service-of-jobs processor-model cover)",
+    "tasks and jobs (identity carriers)",
+    "Nats (both directions)"
+  ],
+  "lean_representation_note": "`monotone leq f` is `Prosa.Util.Rel.monotone (fun x y => decide (x \u2264 y)) f`; `\u03b5` is `1`; under an FP policy the job priority is the accepted `FP_to_JLFP` coercion named explicitly; `fun=> [eta f]` is `fun _ \u0394 => f \u0394`",
+  "export_diagnosis": "the accepted workload-bound export root (busy-interval + workload over the preemption-parameter / Service closure, ~127k lines) merged with the accepted request-bound-function and arrival-curve export roots, reused so that the accepted certificate chains apply, plus the 27 statements and the schedulability / task-concept predicates they mention"
+}

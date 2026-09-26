@@ -1,0 +1,109 @@
+{
+  "rank": 176,
+  "layer": 18,
+  "tag": "OFFSET",
+  "slug": "model_task_offset",
+  "source": "model/task/offset.v",
+  "dependencies": [
+    "analysis/facts/behavior/all.v",
+    "behavior/all.v",
+    "model/task/arrivals.v",
+    "model/task/concept.v",
+    "util/all.v"
+  ],
+  "declaration_count": 7,
+  "base_run": "model_preemption_parameter_final",
+  "base_checks": [
+    {
+      "manifest": "model_preemption_parameter",
+      "olean": "Prosa/Model/Preemption/Parameter.olean",
+      "vo": "PreemptionParameterSemanticSource.vo"
+    }
+  ],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "TaskOffsetSemanticSource",
+    "drop_imports": [
+      "Require Export prosa.analysis.facts.behavior.all."
+    ],
+    "add_imports": [
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq.",
+      "Require Import prosa.util.list.",
+      "Import ListSemanticSource."
+    ],
+    "note": "the class and the six definitions are byte-identical computational blocks; the proof-only analysis/facts/behavior/all import is dropped; model/task/concept, behavior/all, model/task/arrivals and util/all are the compiled pinned sources of the base closure, and `max0` comes from the accepted extracted util/list source (ListSemanticSource) of that closure; the source Section variables arr_seq and ts, implicit in the uses of the section-local definitions, is reconnected by recorded local notations",
+    "local_bindings": [
+      "job_released_at_offset=job_released_at_offset arr_seq",
+      "valid_offset=valid_offset arr_seq",
+      "task_offsets=task_offsets ts"
+    ]
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/TaskOffsetStatementProbe.v",
+  "production": "Prosa/Model/Task/Offset.lean",
+  "production_olean": "Prosa/Model/Task/Offset.olean",
+  "lean_namespace": "Prosa.Model.Task.Offset",
+  "fixtures": [
+    "NondecreasingComputationInterface",
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "PreemptionParameterComputationInterface",
+    "TaskOffsetComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/TaskOffsetLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/model_task_offset_export_config.json",
+  "export_name": "TaskOffset",
+  "cert_dir": "certificates/model_task_offset",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "JitterSvcBaseAdapter",
+    "JitterSvcNatBoolOperations",
+    "JitterSvcIntervalOperations",
+    "JitterSvcScheduleOperations",
+    "JitterSvcJobOperations",
+    "PreemptionParameterCorrespondence",
+    "TaskOffsetCorrespondence"
+  ],
+  "audit_module": "TaskOffsetAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/TaskOffsetImportedTypeAudit.v",
+  "assumption_config": "certificates/model_task_offset/task_offset_assumption_config.json",
+  "lean_axiom_config": "certificates/model_task_offset/task_offset_lean_axiom_config.json",
+  "computational": [
+    "TaskOffset",
+    "no_jobs_before_offset",
+    "job_released_at_offset",
+    "valid_offset",
+    "valid_offsets",
+    "task_offsets",
+    "max_task_offset"
+  ],
+  "principal": {
+    "TaskOffset": [
+      "TaskOffset_source_total",
+      "TaskOffset_target_total"
+    ]
+  },
+  "helpers": [
+    "off_eq_correspondence",
+    "off_exists_identity",
+    "off_map_canonical"
+  ],
+  "previous_status": "analysis_facts_preemption_job_nonpreemptive_module_status.json",
+  "previous_files": 165,
+  "previous_decls": 1152,
+  "input_relations": [
+    "TaskOffset pointwise by SubNatRel (with two-way totals)",
+    "JobTask by Lean.eq",
+    "job_arrival by ArJobArrivalRel",
+    "ArArrivalSequenceRel",
+    "task sets by ArListRel"
+  ],
+  "coverage_for_inner_binders": [
+    "jobs and tasks (identity carriers)"
+  ],
+  "lean_representation_note": "a single comparison in Prop position is the Lean proposition; `x \\in s` is `decide (x \u2208 s) = true`; `map f s` is `s.map f`; the unused `arr_seq` is absent from `no_jobs_before_offset`",
+  "export_diagnosis": "the accepted preemption-parameter export root (Service/Schedule closure, ~127k lines) without its theorem targets, reused so that the accepted certificate chain (arrival sequences, max0) applies, plus the class and the six definitions"
+}

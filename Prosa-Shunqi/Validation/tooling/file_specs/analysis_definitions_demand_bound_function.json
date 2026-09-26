@@ -1,0 +1,87 @@
+{
+  "rank": 163,
+  "layer": 17,
+  "tag": "DBF",
+  "slug": "analysis_definitions_demand_bound_function",
+  "source": "analysis/definitions/demand_bound_function.v",
+  "dependencies": [
+    "analysis/definitions/request_bound_function.v"
+  ],
+  "declaration_count": 2,
+  "base_run": "analysis_definitions_request_bound_function_final",
+  "base_checks": [
+    {
+      "manifest": "analysis_definitions_request_bound_function",
+      "olean": "Prosa/Analysis/Definitions/RequestBoundFunction.olean",
+      "vo": "RequestBoundFunctionSemanticSource.vo"
+    }
+  ],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "DemandBoundFunctionSemanticSource",
+    "drop_imports": [
+      "Require Export prosa.analysis.definitions.request_bound_function."
+    ],
+    "add_imports": [
+      "Require Export prosa.RequestBoundFunctionSemanticSource.",
+      "Export RequestBoundFunctionSemanticSource.",
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq bigop."
+    ],
+    "note": "the two definitions are byte-identical computational blocks; the analysis/definitions/request_bound_function import is bound to the accepted extracted request-bound-function source (RequestBoundFunctionSemanticSource, .vo hash-checked against its manifest)"
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/DemandBoundFunctionStatementProbe.v",
+  "production": "Prosa/Analysis/Definitions/DemandBoundFunction.lean",
+  "production_olean": "Prosa/Analysis/Definitions/DemandBoundFunction.olean",
+  "lean_namespace": "Prosa.Analysis.Definitions.DemandBoundFunction",
+  "fixtures": [
+    "NondecreasingComputationInterface",
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "PreemptionParameterComputationInterface",
+    "RequestBoundFunctionComputationInterface",
+    "DemandBoundFunctionComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/DemandBoundFunctionLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/analysis_definitions_demand_bound_function_export_config.json",
+  "export_name": "DemandBoundFunction",
+  "cert_dir": "certificates/analysis_definitions_demand_bound_function",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "JitterSvcBaseAdapter",
+    "JitterSvcNatBoolOperations",
+    "JitterSvcIntervalOperations",
+    "JitterSvcScheduleOperations",
+    "JitterSvcJobOperations",
+    "PreemptionParameterCorrespondence",
+    "RequestBoundFunctionCorrespondence",
+    "DemandBoundFunctionCorrespondence"
+  ],
+  "audit_module": "DemandBoundFunctionAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/DemandBoundFunctionImportedTypeAudit.v",
+  "assumption_config": "certificates/analysis_definitions_demand_bound_function/demand_bound_function_assumption_config.json",
+  "lean_axiom_config": "certificates/analysis_definitions_demand_bound_function/demand_bound_function_lean_axiom_config.json",
+  "computational": [
+    "task_demand_bound_function",
+    "total_demand_bound_function"
+  ],
+  "principal": {},
+  "helpers": [],
+  "previous_status": "analysis_facts_transform_replace_at_module_status.json",
+  "previous_files": 154,
+  "previous_decls": 1126,
+  "input_relations": [
+    "TaskCost pointwise by SubNatRel",
+    "TaskDeadline pointwise by SubNatRel",
+    "MaxArrivals pointwise by SubNatRel on durations",
+    "task sets by ArListRel"
+  ],
+  "coverage_for_inner_binders": [
+    "tasks (identity carrier)"
+  ],
+  "lean_representation_note": "`\\sum_(x <- xs) F x` is the accepted `sumSeq xs F`; the local `let delta'` is kept as a Lean `let`",
+  "export_diagnosis": "the accepted request-bound-function export root (preemption-parameter closure, ~127k lines) reused verbatim so that the accepted certificate chain (including the RBF certificate) applies, plus the two definitions and the TaskDeadline class"
+}

@@ -1,0 +1,71 @@
+{
+  "mode": "proof_independent_semantic_source_signature",
+  "source_file": "analysis/abstract/restricted_supply/search_space/fp.v",
+  "source_file_sha256": "d9f503d41d3c012b5b54d7737f23f0ea77dbfa9a0eb51204da8f2f1e8aa1d59b",
+  "source_commit": "414e66760333eaa4ef78c685bcf53291c527a548",
+  "generated_file": "/Users/shunqiwang/CityuHK/Research/Lean/TranslationProof/Prosa-Shunqi/Validation/.work/experiments/analysis_abstract_restricted_supply_search_space_fp_final/source/SearchSpaceFpSemanticSource.v",
+  "transformations": {
+    "computational": "byte-identical declaration block",
+    "theorem": "verified post-Section Check type converted to a definition with its declared Prop/Type sort preserved; exact source header retained as provenance; opaque proof omitted",
+    "local_bindings": {},
+    "dropped_irrelevant_imports": [
+      "Require Export prosa.analysis.abstract.search_space.",
+      "Require Export prosa.analysis.definitions.blocking_bound.fp.",
+      "Require Export prosa.analysis.facts.model.rbf."
+    ],
+    "added_validation_imports": [
+      "Require Export prosa.RequestBoundFunctionSemanticSource.",
+      "Export RequestBoundFunctionSemanticSource.",
+      "Require Export prosa.BlockingBoundFpSemanticSource.",
+      "Export BlockingBoundFpSemanticSource.",
+      "Require Export prosa.analysis.abstract.search_space.",
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq bigop.",
+      "Require Import prosa.util.epsilon prosa.util.rel prosa.model.task.concept prosa.model.task.arrival.curves prosa.model.priority.classes."
+    ]
+  },
+  "declarations": {
+    "is_in_search_space": {
+      "source_kind": "computational",
+      "acquisition_mode": "BODY_EXACT",
+      "source_block_sha256": "971d10a1b02fceb31c4d5ccc4e3aaa77324feaefa9c843d14d89939e5014335e",
+      "generated_text_sha256": "971d10a1b02fceb31c4d5ccc4e3aaa77324feaefa9c843d14d89939e5014335e",
+      "source_statement_sha256": null,
+      "normalized_statement_sha256": null,
+      "elaborated_type_sha256": null,
+      "elaborated_type_evidence": null,
+      "statement_sort": null,
+      "context": [
+        "  Context {Task : TaskType}.",
+        "  Context `{TaskCost Task}.",
+        "  Context `{TaskMaxNonpreemptiveSegment Task}.",
+        "  Context {FP : FP_policy Task}.",
+        "  Variable ts : list Task.",
+        "  Context `{MaxArrivals Task}.",
+        "  Hypothesis H_valid_arrival_curve :",
+        "    valid_taskset_arrival_curve ts max_arrivals.",
+        "  Variable tsk : Task.",
+        "  Hypothesis H_tsk_in_ts : tsk \\in ts.",
+        "  Let task_rbf := task_request_bound_function tsk.",
+        "  Let total_ohep_rbf := total_ohep_request_bound_function_FP ts tsk.",
+        "  Variable L : duration.",
+        "  Hypothesis H_L_positive : 0 < L."
+      ],
+      "omitted_context_for_elaborated_theorem": false,
+      "local_bindings": {}
+    },
+    "search_space_sub": {
+      "source_kind": "theorem",
+      "acquisition_mode": "STATEMENT_EXACT_PROOF_OMITTED",
+      "source_block_sha256": "62096d3e5c0d436318b13f6723d762a42963549cd8f1dcfebd1a8dc51d257742",
+      "generated_text_sha256": "4ec6e7157245ee56ea6634957cd49f828e042f71822333ac94c733d9305fd390",
+      "source_statement_sha256": "5c9bbb6cc944c4f71502ab135590d865d78584ef081264349f4da3cda2fb16eb",
+      "normalized_statement_sha256": "bb30bf538b5303adb11808bd865a4780577b97c41d72b86de7d287b56e86860c",
+      "elaborated_type_sha256": "8845a5bd36a7ee1ba451b6c16d0b823ce448e0de79b3f4b449260ef9ee9e70be",
+      "elaborated_type_evidence": "ELABORATED_ROCQ_CHECK",
+      "statement_sort": "Prop",
+      "context": [],
+      "omitted_context_for_elaborated_theorem": true,
+      "local_bindings": {}
+    }
+  }
+}

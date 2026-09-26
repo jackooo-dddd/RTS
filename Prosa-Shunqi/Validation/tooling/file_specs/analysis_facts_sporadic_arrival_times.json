@@ -1,0 +1,88 @@
+{
+  "rank": 128,
+  "layer": 15,
+  "tag": "FSAT",
+  "slug": "analysis_facts_sporadic_arrival_times",
+  "source": "analysis/facts/sporadic/arrival_times.v",
+  "dependencies": [
+    "analysis/facts/job_index.v",
+    "model/task/arrival/sporadic.v"
+  ],
+  "declaration_count": 3,
+  "base_run": "analysis_facts_sporadic_arrival_bound_final",
+  "base_checks": [
+    {
+      "manifest": "analysis_facts_sporadic_arrival_bound",
+      "olean": "Prosa/Analysis/Facts/Sporadic/ArrivalBound.olean",
+      "vo": "FactsSporadicArrivalBoundSemanticSource.vo"
+    }
+  ],
+  "extra_lean": [
+    [
+      "Prosa/Analysis/Facts/JobIndex.lean",
+      "Prosa/Analysis/Facts/JobIndex.olean",
+      "analysis_facts_job_index",
+      "production_olean_sha256"
+    ]
+  ],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "FactsSporadicArrivalTimesSemanticSource",
+    "drop_imports": [
+      "Require Export prosa.analysis.facts.job_index."
+    ],
+    "add_imports": [
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq.",
+      "Require Import prosa.model.task.arrivals."
+    ],
+    "note": "theorem statements from the authoritative elaborated types (proofs omitted); the proof-heavy facts/job_index import is dropped (the statements mention only the sporadic model and model/task/arrivals' job_index)"
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/FactsSporadicArrivalTimesStatementProbe.v",
+  "production": "Prosa/Analysis/Facts/Sporadic/ArrivalTimes.lean",
+  "production_olean": "Prosa/Analysis/Facts/Sporadic/ArrivalTimes.olean",
+  "lean_namespace": "Prosa.Analysis.Facts.Sporadic.ArrivalTimes",
+  "fixtures": [
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ArrivalsComputationInterface",
+    "FactsSporadicArrivalTimesComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/FactsSporadicArrivalTimesLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/analysis_facts_sporadic_arrival_times_export_config.json",
+  "export_name": "FactsSporadicArrivalTimes",
+  "cert_dir": "certificates/analysis_facts_sporadic_arrival_times",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "ArrivalsCorrespondence",
+    "FactsSporadicArrivalTimesCorrespondence"
+  ],
+  "audit_module": "FactsSporadicArrivalTimesAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/FactsSporadicArrivalTimesImportedTypeAudit.v",
+  "assumption_config": "certificates/analysis_facts_sporadic_arrival_times/facts_sporadic_arrival_times_assumption_config.json",
+  "lean_axiom_config": "certificates/analysis_facts_sporadic_arrival_times/facts_sporadic_arrival_times_lean_axiom_config.json",
+  "computational": [],
+  "principal": {},
+  "helpers": [
+    "fsat_eq_correspondence",
+    "fsat_false_correspondence",
+    "fsat_neq_correspondence",
+    "fsat_iff_correspondence",
+    "fsat_valid_min_inter_arrival_related",
+    "fsat_respects_sporadic_related"
+  ],
+  "previous_status": "analysis_facts_priority_classes_module_status.json",
+  "previous_files": 126,
+  "previous_decls": 1017,
+  "input_relations": [
+    "SporadicModel pointwise by SubNatRel on task_min_inter_arrival_time",
+    "JobTask by Lean.eq on job_task",
+    "ArJobArrivalRel",
+    "ArArrivalSequenceRel"
+  ],
+  "coverage_for_inner_binders": [
+    "tasks and jobs (identity carriers)"
+  ],
+  "lean_representation_note": "Booleans in Prop position are `= true`; `~ P`/`<>` are `\u00ac`/`\u2260`"
+}

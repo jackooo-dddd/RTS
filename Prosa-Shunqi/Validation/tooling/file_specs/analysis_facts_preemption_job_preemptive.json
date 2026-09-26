@@ -1,0 +1,112 @@
+{
+  "rank": 147,
+  "layer": 16,
+  "tag": "FPJ",
+  "slug": "analysis_facts_preemption_job_preemptive",
+  "source": "analysis/facts/preemption/job/preemptive.v",
+  "dependencies": [
+    "model/preemption/fully_preemptive.v",
+    "model/task/preemption/parameters.v"
+  ],
+  "declaration_count": 3,
+  "base_run": "model_preemption_parameter_final",
+  "base_checks": [
+    {
+      "manifest": "model_preemption_parameter",
+      "olean": "Prosa/Model/Preemption/Parameter.olean",
+      "vo": "PreemptionParameterSemanticSource.vo"
+    }
+  ],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "FactsPreemptiveJobSemanticSource",
+    "drop_imports": [
+      "Require Export prosa.model.task.preemption.parameters."
+    ],
+    "add_imports": [
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq.",
+      "Require Import prosa.util.epsilon.",
+      "#[local] Existing Instance fully_preemptive_job_model."
+    ],
+    "note": "theorem statements from the authoritative elaborated types (proofs omitted); the model/task/preemption/parameters import is dropped (the statements mention only model/preemption/parameter and the fully preemptive model); model/preemption/fully_preemptive.v is compiled from the pinned tree against its dependency model/preemption/parameter.v, which is bound to the accepted extracted parameter source by the same one-line re-export shim as in its accepted zero-declaration validation (the recompiled fully_preemptive.vo is hash-checked against that manifest); the source's `#[local] Existing Instance fully_preemptive_job_model` is replayed after the imports"
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/FactsPreemptiveJobStatementProbe.v",
+  "production": "Prosa/Analysis/Facts/Preemption/Job/Preemptive.lean",
+  "production_olean": "Prosa/Analysis/Facts/Preemption/Job/Preemptive.olean",
+  "lean_namespace": "Prosa.Analysis.Facts.Preemption.Job.Preemptive",
+  "fixtures": [
+    "NondecreasingComputationInterface",
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "PreemptionParameterComputationInterface",
+    "FactsPreemptiveJobComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/FactsPreemptiveJobLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/analysis_facts_preemption_job_preemptive_export_config.json",
+  "export_name": "FactsPreemptiveJob",
+  "cert_dir": "certificates/analysis_facts_preemption_job_preemptive",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "JitterSvcBaseAdapter",
+    "JitterSvcNatBoolOperations",
+    "JitterSvcIntervalOperations",
+    "JitterSvcScheduleOperations",
+    "JitterSvcJobOperations",
+    "PreemptionParameterCorrespondence",
+    "FactsPreemptiveJobCorrespondence"
+  ],
+  "audit_module": "FactsPreemptiveJobAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/FactsPreemptiveJobImportedTypeAudit.v",
+  "assumption_config": "certificates/analysis_facts_preemption_job_preemptive/facts_preemptive_job_assumption_config.json",
+  "lean_axiom_config": "certificates/analysis_facts_preemption_job_preemptive/facts_preemptive_job_lean_axiom_config.json",
+  "computational": [],
+  "principal": {},
+  "helpers": [
+    "fpj_fully_preemptive_related"
+  ],
+  "previous_status": "analysis_facts_behavior_deadlines_module_status.json",
+  "previous_files": 142,
+  "previous_decls": 1074,
+  "input_relations": [
+    "job_cost by SvcJobCostRel",
+    "SvcProcessorStateRel + SvcScheduleRel (two-sided)",
+    "ArArrivalSequenceRel",
+    "the fully preemptive model (source local instance) related to the accepted Lean definition"
+  ],
+  "coverage_for_inner_binders": [
+    "jobs (identity carrier)",
+    "Nats (both directions)"
+  ],
+  "lean_representation_note": "the section-local `#[local] Existing Instance fully_preemptive_job_model` is passed explicitly to the accepted Lean definition; `\u03b5` is `1`; `a > b` is `b < a`",
+  "export_diagnosis": "the accepted preemption-parameter export root (~127k lines) reused verbatim so that the accepted certificate chain applies, plus the three statements and the fully preemptive model",
+  "dependency_shims": {
+    "model/preemption/parameter.v": "PreemptionParameterSemanticSource"
+  },
+  "extra_pinned_sources": [
+    "model/preemption/fully_preemptive.v"
+  ],
+  "extra_source_vo_checks": {
+    "model/preemption/fully_preemptive.vo": [
+      "model_preemption_fully_preemptive",
+      "official_source_vo_sha256"
+    ]
+  },
+  "extra_lean": [
+    [
+      "Prosa/Model/Task/Preemption/Parameters.lean",
+      "Prosa/Model/Task/Preemption/Parameters.olean",
+      "model_task_preemption_parameters",
+      "production_olean_sha256"
+    ],
+    [
+      "Prosa/Model/Preemption/FullyPreemptive.lean",
+      "Prosa/Model/Preemption/FullyPreemptive.olean",
+      "model_preemption_fully_preemptive",
+      "production_olean_sha256"
+    ]
+  ]
+}

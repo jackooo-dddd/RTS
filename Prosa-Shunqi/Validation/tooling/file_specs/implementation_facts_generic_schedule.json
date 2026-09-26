@@ -1,0 +1,115 @@
+{
+  "rank": 200,
+  "layer": 17,
+  "tag": "FGS",
+  "slug": "implementation_facts_generic_schedule",
+  "source": "implementation/facts/generic_schedule.v",
+  "dependencies": [
+    "analysis/facts/transform/replace_at.v",
+    "implementation/definitions/generic_scheduler.v"
+  ],
+  "declaration_count": 6,
+  "base_run": "analysis_facts_transform_replace_at_final",
+  "base_checks": [
+    {
+      "manifest": "analysis_facts_transform_replace_at",
+      "olean": "Prosa/Analysis/Facts/Transform/ReplaceAt.olean",
+      "vo": "FactsReplaceAtSemanticSource.vo"
+    }
+  ],
+  "extra_pinned_sources": [
+    "implementation/definitions/generic_scheduler.v"
+  ],
+  "extra_lean": [
+    [
+      "Prosa/Analysis/Transform/Swap.lean",
+      "Prosa/Analysis/Transform/Swap.olean",
+      "analysis_transform_swap",
+      "production_olean_sha256"
+    ]
+  ],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "FactsGenericScheduleSemanticSource",
+    "drop_imports": [
+      "Require Export prosa.implementation.definitions.generic_scheduler.",
+      "Require Export prosa.analysis.facts.transform.replace_at."
+    ],
+    "add_imports": [
+      "Require Export prosa.implementation.definitions.generic_scheduler.",
+      "Require Export prosa.analysis.definitions.schedule_prefix.",
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq.",
+      "Require Import prosa.behavior.all."
+    ],
+    "note": "theorem statements from the authoritative elaborated types (proofs omitted); implementation/definitions/generic_scheduler is the pinned source compiled from the pinned tree (over the pinned analysis/transform/swap of the base run); analysis/definitions/schedule_prefix is the compiled pinned source of the base closure; the proof-only facts/transform/replace_at import is dropped"
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/FactsGenericScheduleStatementProbe.v",
+  "production": "Prosa/Implementation/Facts/GenericSchedule.lean",
+  "production_olean": "Prosa/Implementation/Facts/GenericSchedule.olean",
+  "lean_namespace": "Prosa.Implementation.Facts.GenericSchedule",
+  "fixtures": [
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "FactsCompletionComputationInterface",
+    "FactsReplaceAtComputationInterface",
+    "FactsGenericScheduleComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/FactsGenericScheduleLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/implementation_facts_generic_schedule_export_config.json",
+  "export_name": "FactsGenericSchedule",
+  "cert_dir": "certificates/implementation_facts_generic_schedule",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "JitterSvcBaseAdapter",
+    "JitterSvcNatBoolOperations",
+    "JitterSvcIntervalOperations",
+    "JitterSvcScheduleOperations",
+    "JitterSvcJobOperations",
+    "FactsGenericScheduleCorrespondence"
+  ],
+  "audit_module": "FactsGenericScheduleAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/FactsGenericScheduleImportedTypeAudit.v",
+  "assumption_config": "certificates/implementation_facts_generic_schedule/facts_generic_schedule_assumption_config.json",
+  "lean_axiom_config": "certificates/implementation_facts_generic_schedule/facts_generic_schedule_lean_axiom_config.json",
+  "computational": [],
+  "principal": {},
+  "helpers": [
+    "fgs_lean_transport",
+    "fgs_src_transport",
+    "fgs_nat_input",
+    "fgs_state_eq_correspondence",
+    "fgs_succ_related",
+    "fgs_empty_related",
+    "fgs_nat_not_eq",
+    "fgs_replace_at_related",
+    "fgs_sut_canonical",
+    "fgs_sut_related",
+    "fgs_prefix_def_related"
+  ],
+  "previous_status": "analysis_transform_wc_trans_module_status.json",
+  "previous_files": 189,
+  "previous_decls": 1334,
+  "input_relations": [
+    "SvcProcessorStateRel (two-sided) with states related through its conversion (Lean.eq)",
+    "the pointwise policy: related (through the state conversion) on related schedules and instants",
+    "the idle state through the state conversion"
+  ],
+  "coverage_for_inner_binders": [
+    "Nats (both directions)"
+  ],
+  "lean_representation_note": "the section-local `prefix` is inlined as a `match` on the instant, as in the elaborated types; `t.+1` is `t + 1`",
+  "export_diagnosis": "the accepted replace-at export root without its statements (Service / Schedule closure with the replace_at case equations), plus the generic scheduler, kernel-checked schedule_up_to/empty_schedule equations and the six statements",
+  "extra_artifacts": [],
+  "extra_olean_artifacts": [
+    {
+      "from": "implementation_definitions_generic_scheduler/lean/Prosa/Implementation/Definitions/GenericScheduler.olean",
+      "to": "Prosa/Implementation/Definitions/GenericScheduler.olean",
+      "manifest": "implementation_definitions_generic_scheduler",
+      "key": "production_olean_sha256"
+    }
+  ]
+}

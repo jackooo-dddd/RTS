@@ -1,0 +1,90 @@
+{
+  "rank": 159,
+  "layer": 16,
+  "tag": "TPFULLYP",
+  "slug": "model_task_preemption_fully_preemptive",
+  "source": "model/task/preemption/fully_preemptive.v",
+  "dependencies": [
+    "model/task/preemption/parameters.v"
+  ],
+  "declaration_count": 1,
+  "base_run": "model_task_preemption_parameters_final",
+  "base_checks": [
+    {
+      "manifest": "model_task_preemption_parameters",
+      "olean": "Prosa/Model/Task/Preemption/Parameters.olean",
+      "vo": "TaskPreemptionParametersSemanticSource.vo"
+    }
+  ],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "TaskPreemptionFullyPreemptiveSemanticSource",
+    "helper_blocks": [
+      "fully_preemptive_rtc_threshold"
+    ],
+    "source_order": true,
+    "drop_imports": [
+      "Require Export prosa.model.task.preemption.parameters."
+    ],
+    "add_imports": [
+      "Require Export prosa.TaskPreemptionParametersSemanticSource.",
+      "Export TaskPreemptionParametersSemanticSource.",
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq.",
+      "Require Import prosa.util.epsilon."
+    ],
+    "note": "the definition and the source-local instance fully_preemptive_rtc_threshold (helper block) are byte-identical computational blocks, emitted in source order; the model/task/preemption/parameters import is bound to the accepted extracted source (TaskPreemptionParametersSemanticSource, .vo hash-checked against its manifest)"
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/TaskPreemptionFullyPreemptiveStatementProbe.v",
+  "production": "Prosa/Model/Task/Preemption/FullyPreemptive.lean",
+  "production_olean": "Prosa/Model/Task/Preemption/FullyPreemptive.olean",
+  "lean_namespace": "Prosa.Model.Task.Preemption.FullyPreemptive",
+  "fixtures": [
+    "NondecreasingComputationInterface",
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "PreemptionParameterComputationInterface",
+    "TaskPreemptionParametersComputationInterface",
+    "TaskPreemptionFullyPreemptiveComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/TaskPreemptionFullyPreemptiveLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/model_task_preemption_fully_preemptive_export_config.json",
+  "export_name": "TaskPreemptionFullyPreemptive",
+  "cert_dir": "certificates/model_task_preemption_fully_preemptive",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "JitterSvcBaseAdapter",
+    "JitterSvcNatBoolOperations",
+    "JitterSvcIntervalOperations",
+    "JitterSvcScheduleOperations",
+    "JitterSvcJobOperations",
+    "PreemptionParameterCorrespondence",
+    "TaskPreemptionParametersCorrespondence",
+    "TaskPreemptionFullyPreemptiveCorrespondence"
+  ],
+  "audit_module": "TaskPreemptionFullyPreemptiveAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/TaskPreemptionFullyPreemptiveImportedTypeAudit.v",
+  "assumption_config": "certificates/model_task_preemption_fully_preemptive/model_task_preemption_fully_preemptive_assumption_config.json",
+  "lean_axiom_config": "certificates/model_task_preemption_fully_preemptive/model_task_preemption_fully_preemptive_lean_axiom_config.json",
+  "computational": [
+    "fully_preemptive_task_model"
+  ],
+  "principal": {},
+  "helpers": [
+    "tpfp_fully_preemptive_rtc_threshold_related"
+  ],
+  "previous_status": "model_task_preemption_fully_nonpreemptive_module_status.json",
+  "previous_files": 145,
+  "previous_decls": 1086,
+  "input_relations": [
+    "TaskCost pointwise by SubNatRel"
+  ],
+  "coverage_for_inner_binders": [
+    "tasks (identity carrier)"
+  ],
+  "lean_representation_note": "`\u03b5` is `1`; the source-local run-to-completion threshold instance is a plain `@[reducible] def`",
+  "export_diagnosis": "the accepted task-preemption-parameters export root (~135k lines) reused verbatim so that the accepted certificate chain applies, plus the definition and the local instance"
+}

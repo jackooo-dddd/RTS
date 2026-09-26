@@ -1,0 +1,158 @@
+{
+  "rank": 199,
+  "layer": 19,
+  "tag": "WCT",
+  "slug": "analysis_transform_wc_trans",
+  "source": "analysis/transform/wc_trans.v",
+  "dependencies": [
+    "analysis/transform/prefix.v",
+    "analysis/transform/swap.v",
+    "model/processor/ideal.v",
+    "util/list.v",
+    "util/search_arg.v"
+  ],
+  "declaration_count": 6,
+  "base_run": "analysis_transform_prefix_final",
+  "base_checks": [
+    {
+      "manifest": "analysis_transform_prefix",
+      "olean": "Prosa/Analysis/Transform/Prefix.olean",
+      "vo": "TransformPrefixSemanticSource.vo"
+    }
+  ],
+  "extra_pinned_sources": [
+    "analysis/transform/swap.v",
+    "model/processor/ideal.v"
+  ],
+  "extra_lean": [
+    [
+      "Prosa/Model/Processor/Ideal.lean",
+      "Prosa/Model/Processor/Ideal.olean",
+      "model_processor_ideal",
+      "production_olean_sha256"
+    ]
+  ],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "WcTransSemanticSource",
+    "drop_imports": [
+      "Require Export prosa.analysis.transform.swap.",
+      "Require Export prosa.analysis.transform.prefix.",
+      "Require Export prosa.util.search_arg.",
+      "Require Export prosa.util.list.",
+      "Require Export prosa.model.processor.ideal."
+    ],
+    "add_imports": [
+      "Require Export prosa.TransformPrefixSemanticSource.",
+      "Export TransformPrefixSemanticSource.",
+      "Require Export prosa.analysis.transform.swap.",
+      "Require Export prosa.GeneratedSearchArgSource.",
+      "Export GeneratedSearchArgSource.",
+      "Require Export prosa.util.list.",
+      "Export ListSemanticSource.",
+      "Require Export prosa.model.processor.ideal.",
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq.",
+      "Require Import prosa.behavior.all."
+    ],
+    "note": "the six definitions are byte-identical computational blocks (the section-local instance registration and `PState` Let included); the prefix import is bound to its accepted extracted source (TransformPrefixSemanticSource, hash-checked as base) and util/list to the accepted extracted list source of the base closure (ListSemanticSource at its logical path); analysis/transform/swap and model/processor/ideal (with its accepted Rocq 9.3 compatibility patch) are pinned sources compiled from the pinned tree; util/search_arg is bound to its accepted generated definition source (GeneratedSearchArgSource.v, sha256 equal to the validation_source_sha256 of its accepted manifest entry, compiled here; the pinned file's proofs do not build under the approved util/tactics patch); the source Section variable arr_seq, implicit in the uses of max_deadline_for_jobs_arrived_before, find_swap_candidate, make_wc_at and wc_transform_prefix inside later definitions of the same Section, is reconnected by recorded local notations",
+    "local_bindings": [
+      "max_deadline_for_jobs_arrived_before=max_deadline_for_jobs_arrived_before arr_seq",
+      "find_swap_candidate=find_swap_candidate arr_seq",
+      "make_wc_at=make_wc_at arr_seq",
+      "wc_transform_prefix=wc_transform_prefix arr_seq"
+    ]
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/WcTransStatementProbe.v",
+  "production": "Prosa/Analysis/Transform/WcTrans.lean",
+  "production_olean": "Prosa/Analysis/Transform/WcTrans.olean",
+  "lean_namespace": "Prosa.Analysis.Transform.WcTrans",
+  "fixtures": [
+    "NondecreasingComputationInterface",
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "PreemptionParameterComputationInterface",
+    "TransformPrefixComputationInterface",
+    "FactsWcTransComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/WcTransLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/analysis_transform_wc_trans_export_config.json",
+  "export_name": "WcTrans",
+  "cert_dir": "certificates/analysis_transform_wc_trans",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "JitterSvcBaseAdapter",
+    "JitterSvcNatBoolOperations",
+    "JitterSvcIntervalOperations",
+    "JitterSvcScheduleOperations",
+    "JitterSvcJobOperations",
+    "PreemptionParameterCorrespondence",
+    "WcTransCorrespondence"
+  ],
+  "audit_module": "WcTransAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/WcTransImportedTypeAudit.v",
+  "assumption_config": "certificates/analysis_transform_wc_trans/wc_trans_assumption_config.json",
+  "lean_axiom_config": "certificates/analysis_transform_wc_trans/wc_trans_lean_axiom_config.json",
+  "computational": [
+    "relevant_pstate",
+    "max_deadline_for_jobs_arrived_before",
+    "find_swap_candidate",
+    "make_wc_at",
+    "wc_transform_prefix",
+    "wc_transform"
+  ],
+  "principal": {},
+  "helpers": [
+    "wct_map_deadline_canonical",
+    "wct_src_search_arg_succ",
+    "wct_search_arg_canonical",
+    "wct_find_match_related",
+    "wct_nat_not_eq",
+    "wct_replace_at_related",
+    "wct_swapped_related",
+    "wct_prefix_map_canonical",
+    "wct_prefix_map_related"
+  ],
+  "previous_status": "analysis_transform_edf_trans_module_status.json",
+  "previous_files": 188,
+  "previous_decls": 1328,
+  "input_relations": [
+    "the processor model is fixed to the ideal uniprocessor on both sides; states related by the constructor-preserving Option map, schedules (and `instant -> option Job` functions) pointwise",
+    "job_deadline pointwise by SubNatRel",
+    "ArJobArrivalRel",
+    "ArArrivalSequenceRel",
+    "instants by SubNatRel"
+  ],
+  "coverage_for_inner_binders": [],
+  "lean_representation_note": "argument types follow the elaborated types (`Nat`/`Option Job` for the state predicate, `instant -> Option Job` for pointwise schedules); the processor model of `swapped`/`prefix_map` is the accepted ideal processor, named explicitly (the source's local instance); the local `let`s are kept; `map f s` is `s.map f`; `t.+1` is `t + 1`",
+  "export_diagnosis": "the accepted transform-prefix export root without its statements (preemption-parameter closure with the Nat-list max0 equations), plus the ideal processor, the six definitions, search_arg, prefix_map, replace_at/swapped and their kernel-checked equations at the ideal processor",
+  "extra_source_patches": [
+    "patches/prosa-v06-rocq93-model-processor-ideal.patch"
+  ],
+  "extra_artifacts": [],
+  "extra_olean_artifacts": [
+    {
+      "from": "analysis_facts_model_ideal_schedule_final/olean/Prosa/Model/Processor/Ideal.olean",
+      "to": "Prosa/Model/Processor/Ideal.olean",
+      "manifest": "model_processor_ideal",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_transform_swap/olean/Prosa/Analysis/Transform/Swap.olean",
+      "to": "Prosa/Analysis/Transform/Swap.olean",
+      "manifest": "analysis_transform_swap",
+      "key": "production_olean_sha256"
+    }
+  ],
+  "extra_generated_sources": [
+    {
+      "from": ".work/runs/utility_search_arg.EniSWx/source/GeneratedSearchArgSource.v",
+      "to": "GeneratedSearchArgSource.v",
+      "manifest_file": "utility_foundation_expansion_manifest.json",
+      "source_file": "util/search_arg.v"
+    }
+  ]
+}

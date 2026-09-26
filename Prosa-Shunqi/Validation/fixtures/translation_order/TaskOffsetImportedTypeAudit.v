@@ -1,0 +1,10 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedTaskOffset.
+
+Check ImportedTaskOffset.Prosa_Model_Task_Offset_TaskOffset.
+Check ImportedTaskOffset.Prosa_Model_Task_Offset_no_jobs_before_offset.
+Check ImportedTaskOffset.Prosa_Model_Task_Offset_job_released_at_offset.
+Check ImportedTaskOffset.Prosa_Model_Task_Offset_valid_offset.
+Check ImportedTaskOffset.Prosa_Model_Task_Offset_valid_offsets.
+Check ImportedTaskOffset.Prosa_Model_Task_Offset_task_offsets.
+Check ImportedTaskOffset.Prosa_Model_Task_Offset_max_task_offset.

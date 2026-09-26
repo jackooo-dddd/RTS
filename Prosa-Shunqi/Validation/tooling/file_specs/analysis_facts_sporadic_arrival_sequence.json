@@ -1,0 +1,89 @@
+{
+  "rank": 152,
+  "layer": 16,
+  "tag": "FSAS",
+  "slug": "analysis_facts_sporadic_arrival_sequence",
+  "source": "analysis/facts/sporadic/arrival_sequence.v",
+  "dependencies": [
+    "analysis/facts/sporadic/arrival_times.v"
+  ],
+  "declaration_count": 7,
+  "base_run": "analysis_facts_sporadic_arrival_times_final",
+  "base_checks": [
+    {
+      "manifest": "analysis_facts_sporadic_arrival_times",
+      "olean": "Prosa/Analysis/Facts/Sporadic/ArrivalTimes.olean",
+      "vo": "FactsSporadicArrivalTimesSemanticSource.vo"
+    },
+    {
+      "manifest": "analysis_facts_job_index",
+      "olean": "Prosa/Analysis/Facts/JobIndex.olean"
+    }
+  ],
+  "extra_lean": [],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "FactsSporadicArrivalSequenceSemanticSource",
+    "drop_imports": [
+      "Require Export analysis.facts.sporadic.arrival_times."
+    ],
+    "add_imports": [
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq.",
+      "Require Import prosa.model.task.arrivals prosa.model.task.arrival.sporadic."
+    ],
+    "note": "theorem statements from the authoritative elaborated types (proofs omitted); the proof-heavy analysis/facts/sporadic/arrival_times import is dropped (the statements mention only model/task/arrivals and model/task/arrival/sporadic, compiled pinned sources of the base run)"
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/FactsSporadicArrivalSequenceStatementProbe.v",
+  "production": "Prosa/Analysis/Facts/Sporadic/ArrivalSequence.lean",
+  "production_olean": "Prosa/Analysis/Facts/Sporadic/ArrivalSequence.olean",
+  "lean_namespace": "Prosa.Analysis.Facts.Sporadic.ArrivalSequence",
+  "fixtures": [
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ArrivalsComputationInterface",
+    "FactsSporadicArrivalTimesComputationInterface",
+    "FactsSporadicArrivalSequenceComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/FactsSporadicArrivalSequenceLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/analysis_facts_sporadic_arrival_sequence_export_config.json",
+  "export_name": "FactsSporadicArrivalSequence",
+  "cert_dir": "certificates/analysis_facts_sporadic_arrival_sequence",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "ArrivalsCorrespondence",
+    "FactsSporadicArrivalSequenceCorrespondence"
+  ],
+  "audit_module": "FactsSporadicArrivalSequenceAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/FactsSporadicArrivalSequenceImportedTypeAudit.v",
+  "assumption_config": "certificates/analysis_facts_sporadic_arrival_sequence/facts_sporadic_arrival_sequence_assumption_config.json",
+  "lean_axiom_config": "certificates/analysis_facts_sporadic_arrival_sequence/facts_sporadic_arrival_sequence_lean_axiom_config.json",
+  "computational": [],
+  "principal": {},
+  "helpers": [
+    "fsas_eq_correspondence",
+    "fsas_false_correspondence",
+    "fsas_neq_correspondence",
+    "fsas_exists_identity",
+    "fsas_singleton_related",
+    "fsas_valid_min_inter_arrival_related",
+    "fsas_respects_sporadic_related",
+    "fsas_prev_arrival_related"
+  ],
+  "previous_status": "analysis_facts_readiness_sequential_module_status.json",
+  "previous_files": 152,
+  "previous_decls": 1112,
+  "input_relations": [
+    "SporadicModel pointwise by SubNatRel",
+    "JobTask by Lean.eq",
+    "ArJobArrivalRel",
+    "ArArrivalSequenceRel"
+  ],
+  "coverage_for_inner_binders": [
+    "tasks and jobs (identity carriers)",
+    "Nats (both directions)"
+  ],
+  "lean_representation_note": "`size s` is `s.length`; `index x s` is `List.idxOf x s`; `[:: x]` is `[x]`; `~ P` is `\u00ac P`; Booleans in Prop position are `= true`",
+  "export_diagnosis": "the accepted sporadic arrival-times export root without its theorem targets, plus the seven statements"
+}

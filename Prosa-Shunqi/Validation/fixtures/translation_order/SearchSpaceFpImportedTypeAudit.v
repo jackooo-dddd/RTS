@@ -1,0 +1,5 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedSearchSpaceFp.
+
+Check ImportedSearchSpaceFp.Prosa_Analysis_Abstract_RestrictedSupply_SearchSpace_Fp_is_in_search_space.
+Check ImportedSearchSpaceFp.Prosa_Analysis_Abstract_RestrictedSupply_SearchSpace_Fp_search_space_sub.

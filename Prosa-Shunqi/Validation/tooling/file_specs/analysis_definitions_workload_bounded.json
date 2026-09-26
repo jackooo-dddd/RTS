@@ -1,0 +1,123 @@
+{
+  "rank": 169,
+  "layer": 17,
+  "tag": "WLB",
+  "slug": "analysis_definitions_workload_bounded",
+  "source": "analysis/definitions/workload/bounded.v",
+  "dependencies": [
+    "analysis/definitions/busy_interval/classical.v",
+    "model/aggregate/workload.v"
+  ],
+  "declaration_count": 1,
+  "base_run": "analysis_definitions_busy_interval_classical_final",
+  "base_checks": [
+    {
+      "manifest": "analysis_definitions_busy_interval_classical",
+      "olean": "Prosa/Analysis/Definitions/BusyInterval/Classical.olean",
+      "vo": "BusyIntervalClassicalSemanticSource.vo"
+    }
+  ],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "WorkloadBoundedSemanticSource",
+    "drop_imports": [
+      "Require Export prosa.model.aggregate.workload.",
+      "Require Export prosa.analysis.definitions.busy_interval.classical."
+    ],
+    "add_imports": [
+      "Require Export prosa.BusyIntervalClassicalSemanticSource.",
+      "Export BusyIntervalClassicalSemanticSource.",
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq bigop.",
+      "Require Import prosa.model.task.concept.",
+      "Require Import prosa.model.job.properties.",
+      "Require Import prosa.model.aggregate.workload."
+    ],
+    "note": "the definition is a byte-identical computational block; the analysis/definitions/busy_interval/classical import is bound to the accepted extracted busy-interval source (BusyIntervalClassicalSemanticSource, .vo hash-checked against its manifest); model/aggregate/workload and model/job/properties are the pinned sources (compiled from the pinned tree), and model/task/concept is imported explicitly"
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/WorkloadBoundedStatementProbe.v",
+  "production": "Prosa/Analysis/Definitions/Workload/Bounded.lean",
+  "production_olean": "Prosa/Analysis/Definitions/Workload/Bounded.olean",
+  "lean_namespace": "Prosa.Analysis.Definitions.Workload.Bounded",
+  "fixtures": [
+    "NondecreasingComputationInterface",
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "PreemptionParameterComputationInterface",
+    "BusyIntervalClassicalComputationInterface",
+    "ArrivalsComputationInterface",
+    "WorkloadComputationInterface",
+    "WorkloadBoundedComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/WorkloadBoundedLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/analysis_definitions_workload_bounded_export_config.json",
+  "export_name": "WorkloadBounded",
+  "cert_dir": "certificates/analysis_definitions_workload_bounded",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "ArrivalsCorrespondence",
+    "JitterSvcBaseAdapter",
+    "JitterSvcNatBoolOperations",
+    "JitterSvcIntervalOperations",
+    "JitterSvcScheduleOperations",
+    "JitterSvcJobOperations",
+    "PreemptionParameterCorrespondence",
+    "WorkloadCorrespondence",
+    "WorkloadBoundedCorrespondence"
+  ],
+  "audit_module": "WorkloadBoundedAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/WorkloadBoundedImportedTypeAudit.v",
+  "assumption_config": "certificates/analysis_definitions_workload_bounded/workload_bounded_assumption_config.json",
+  "lean_axiom_config": "certificates/analysis_definitions_workload_bounded/workload_bounded_lean_axiom_config.json",
+  "computational": [
+    "athep_workload_is_bounded"
+  ],
+  "principal": {},
+  "helpers": [
+    "wlb_logic_eq_to_lean_eq",
+    "wlb_lean_transport",
+    "wlb_decide_eq_related",
+    "wlb_quiet_time_related",
+    "wlb_job_of_task_related",
+    "wlb_another_task_hep_job_related"
+  ],
+  "previous_status": "analysis_definitions_workload_edf_athep_bound_module_status.json",
+  "previous_files": 159,
+  "previous_decls": 1138,
+  "input_relations": [
+    "job_cost by SvcJobCostRel",
+    "job_arrival by ArJobArrivalRel",
+    "JobTask by Lean.eq",
+    "SvcProcessorStateRel (two-sided) + SvcScheduleRel",
+    "ArArrivalSequenceRel",
+    "JLFP policy pointwise on Booleans",
+    "bound functions B on related Nats"
+  ],
+  "coverage_for_inner_binders": [
+    "jobs (identity carrier)",
+    "Nats (both directions)"
+  ],
+  "lean_representation_note": "Booleans in Prop position are `= true`; `f^~ y` is `fun x => f x y`; the JLFP policy precedes `arr_seq` as in the source context",
+  "export_diagnosis": "the accepted busy-interval export root (preemption-parameter / Service closure, ~127k lines) without its theorem targets, merged with the accepted workload export root (task arrivals), reused so that both accepted certificate chains apply, plus the definition and job_cost_positive",
+  "extra_pinned_sources": [
+    "model/job/properties.v",
+    "model/aggregate/workload.v"
+  ],
+  "extra_lean": [
+    [
+      "Prosa/Model/Job/Properties.lean",
+      "Prosa/Model/Job/Properties.olean",
+      "model_job_properties",
+      "production_olean_sha256"
+    ],
+    [
+      "Prosa/Model/Aggregate/Workload.lean",
+      "Prosa/Model/Aggregate/Workload.olean",
+      "model_aggregate_workload",
+      "production_olean_sha256"
+    ]
+  ]
+}

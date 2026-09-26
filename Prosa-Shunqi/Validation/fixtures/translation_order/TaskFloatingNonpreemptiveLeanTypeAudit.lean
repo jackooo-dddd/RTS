@@ -1,0 +1,10 @@
+import Prosa.Model.Task.Preemption.FloatingNonpreemptive
+set_option pp.fieldNotation false
+
+#check @Prosa.Model.Task.Preemption.FloatingNonpreemptive.job_respects_task_max_np_segment
+#check @Prosa.Model.Task.Preemption.FloatingNonpreemptive.valid_model_with_floating_nonpreemptive_regions
+#check @Prosa.Model.Task.Preemption.FloatingNonpreemptive.floating_preemptive_rtc_threshold
+
+#print axioms Prosa.Model.Task.Preemption.FloatingNonpreemptive.job_respects_task_max_np_segment
+#print axioms Prosa.Model.Task.Preemption.FloatingNonpreemptive.valid_model_with_floating_nonpreemptive_regions
+#print axioms Prosa.Model.Task.Preemption.FloatingNonpreemptive.floating_preemptive_rtc_threshold

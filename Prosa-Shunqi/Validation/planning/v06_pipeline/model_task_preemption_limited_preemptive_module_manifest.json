@@ -1,0 +1,245 @@
+{
+  "slice": "TRANSLATION_ORDER_MODEL_TASK_PREEMPTION_LIMITED_PREEMPTIVE",
+  "generated_at": "2026-09-26T18:33:13.303446+08:00",
+  "published_at": "2026-09-26T18:33:13.303446+08:00",
+  "rank": 160,
+  "layer": 16,
+  "source_file": "model/task/preemption/limited_preemptive.v",
+  "source_commit": "414e66760333eaa4ef78c685bcf53291c527a548",
+  "source_tree": "7d7e94c731f7eefde4ca738310d4cafdd7bebdf0",
+  "source_file_sha256": "97672ae61caec36892350a13abe770dbf4d3db8f0bf887521fa57941d0d04875",
+  "pipeline": "Validation/scripts/translation_file_pipeline.py",
+  "spec": "Validation/tooling/file_specs/model_task_preemption_limited_preemptive.json",
+  "spec_sha256": "b4525f12d7e677184e6c275614e0f1539a6ce9271dc33917311364e471823c7a",
+  "source_compatibility": {
+    "mode": "extract",
+    "note": "the eight definitions and the source-local instance limited_preemptions_rtc_threshold (helper block) are byte-identical computational blocks, emitted in source order; the model/task/preemption/parameters and model/preemption/limited_preemptive imports are bound to their accepted extracted sources (TaskPreemptionParametersSemanticSource via base_checks, LimitedPreemptiveSemanticSource via a manifest-hash-checked artifact); the accepted utility sources are imported explicitly; the source Section variables arr_seq and ts, implicit in the uses of the component definitions inside later definitions of the same Section, are reconnected by recorded local notations",
+    "extracted_sha256": "3790964c95ad1ba19ceba4e4790b2cca3d6723f13ed0489789659c4ec155296a",
+    "extraction_metadata_sha256": "2e46cbe4e868765b69b1e361948c569b894ca873373112687b5a349b4d94cba0"
+  },
+  "source_type_evidence": {
+    "prosa.model.task.preemption.limited_preemptive.task_beginning_of_execution_in_preemption_points": "EXACT_HASH",
+    "prosa.model.task.preemption.limited_preemptive.task_end_of_execution_in_preemption_points": "EXACT_HASH",
+    "prosa.model.task.preemption.limited_preemptive.nondecreasing_task_preemption_points": "EXACT_HASH",
+    "prosa.model.task.preemption.limited_preemptive.consistent_job_segment_count": "EXACT_HASH",
+    "prosa.model.task.preemption.limited_preemptive.job_respects_segment_lengths": "EXACT_HASH",
+    "prosa.model.task.preemption.limited_preemptive.task_segments_are_nonempty": "EXACT_HASH",
+    "prosa.model.task.preemption.limited_preemptive.valid_fixed_preemption_points_task_model": "EXACT_HASH",
+    "prosa.model.task.preemption.limited_preemptive.valid_fixed_preemption_points_model": "EXACT_HASH"
+  },
+  "statement_only_export_boundary": [],
+  "input_relations": [
+    "TaskCost pointwise by SubNatRel",
+    "TaskPreemptionPoints (accepted TppPointsRel)",
+    "JobPreemptionPoints (accepted LpJobPreemptionPointsRel)",
+    "job_cost by SvcJobCostRel",
+    "JobTask by Lean.eq",
+    "ArArrivalSequenceRel",
+    "task sets by ArListRel"
+  ],
+  "coverage_for_inner_binders": [
+    "jobs and tasks (identity carriers)",
+    "Nats (both directions)"
+  ],
+  "lean_representation_note": "`tsk \\in ts` is `decide (tsk \u2208 ts) = true`; `size s` is `s.length`; `nth 0 s n` is `s.getD n 0`; `\u03b5` is `1`; the source-local run-to-completion threshold instance is a plain `@[reducible] def`",
+  "export_size": {
+    "lines": 136202,
+    "soft_budget_flag": "OVER_100K_DIAGNOSED",
+    "diagnosis": "the union of the accepted task-preemption-parameters and limited-preemptive export roots (preemption-parameter closure, ~135k lines) so that the accepted certificate chain applies, plus the eight definitions, the local instance and first0"
+  },
+  "file_dependencies": {
+    "model/preemption/limited_preemptive.v": "model_preemption_limited_preemptive_module_status.json",
+    "model/task/preemption/parameters.v": "model_task_preemption_parameters_module_status.json"
+  },
+  "production_file": "Prosa/Model/Task/Preemption/LimitedPreemptive.lean",
+  "production_source_sha256": "5701bf32dbf7c163a40cb1436bace70ee815f30af8ce94ce5ed7f02f4db72a63",
+  "production_olean_sha256": "2ab3685e2a77c0340df87a2b6d6e4e29b419608f9355290086332f1937d74b6d",
+  "export_config_sha256": "37e25c2e66f27c380933516e8b40187ca8e25648cb3ee1a3586e156fa7e576d7",
+  "export_sha256": "67fa510bba2ee93256ff6328bf3faa70c76bf1df5890541b6ff4fd97e41d9089",
+  "export_lines": 136202,
+  "export_bytes": 3049671,
+  "import_sha256": "fa064256f16ce59f42f23a5ff5ca9050839dde387bc9ec666d88920cb6870b9f",
+  "source_vo_sha256": "55c743915a48c83ccda8605befaf573de454fde06442c33073cb6de0cf58ceb2",
+  "lean_axiom_summary_sha256": "3d0a54308615f71664d9ffe2f3d0908de0af4b2f8d4a3f79aa0576bb80245621",
+  "rocq_assumption_summary_sha256": "d34139b07d1c616219ca9fd45260096ee3af2ea6de7e07cfd4d7b43ee20f617b",
+  "assumption_config_sha256": "914f916a995a0fd04ae410fec8b553b90462f87faf173cc32d713df73d05dfd6",
+  "stage_timing_seconds": {
+    "source_acquisition": {
+      "mode": "FRESH",
+      "seconds": 3
+    },
+    "lean_build": {
+      "mode": "FRESH",
+      "seconds": 638
+    },
+    "export": {
+      "mode": "FRESH",
+      "seconds": 47
+    },
+    "rocq_import": {
+      "mode": "FRESH",
+      "seconds": 42
+    },
+    "certificate_compile": {
+      "mode": "FRESH",
+      "seconds": 21
+    },
+    "assumption_audit": {
+      "mode": "FRESH",
+      "seconds": 0
+    }
+  },
+  "certificates": {
+    "ArrivalsSeqBaseAdapter": {
+      "source_sha256": "dfbc762d7ca29ef27930e9de74c62f29c1004858b2e18243fd2a67c5a7d771e9",
+      "vo_sha256": "821b70b567fd32b97495330c76cbbbdeee27e6d9888c695b00c631fbe86e0683"
+    },
+    "ArrivalsSeqOperations": {
+      "source_sha256": "f5710cc8f910ebb35b96d3a005d163f8c39467e9be0f0428077e300a3753a85d",
+      "vo_sha256": "d1d0b64d5618bc29577928e52bb4cce5d3ac786b049914a1def54c91f941cd32"
+    },
+    "ArrivalsSeqCorrespondence": {
+      "source_sha256": "195c32c0ecdf7195117dd31a909fc03448f34c072368504efb34a5016eb0771d",
+      "vo_sha256": "cc6a55a005f235b3c910c4b476dd4531f664150ab1553928574de45a7f4ac88b"
+    },
+    "JitterSvcBaseAdapter": {
+      "source_sha256": "a1bc5daa15e9fc6317166b1074f28e6d18b9ae3146909528b3cafac78678b267",
+      "vo_sha256": "76673f9dce978e1536ebdbdc3931793f8d4a2c6d1696fd8042d1a144d2a2114b"
+    },
+    "JitterSvcNatBoolOperations": {
+      "source_sha256": "d143bcc18a7e29a0583a2948e5bc7b4b43e7485971e8ef83812c725e57b5825c",
+      "vo_sha256": "f09eac208ec3a68ba44c1d69ed677e1bcff052e027c9493ac5fff695bb238473"
+    },
+    "JitterSvcIntervalOperations": {
+      "source_sha256": "ef26d2be89b253085e1c882ad9c1afc72b2aec724a5f642684eb7f4e09b0443a",
+      "vo_sha256": "c19315a76436083c794ea3b3198aa03dad23c4bd438e4b37147698aca5605588"
+    },
+    "JitterSvcScheduleOperations": {
+      "source_sha256": "9ed1979762315ca09ba23413ebb853716e3fc37da410bb6c6363d3c0ffc99078",
+      "vo_sha256": "ade07eb44c5789825bebc7fc74b9067d7c2df3bf9a6b08859e5a42e210bcf882"
+    },
+    "JitterSvcJobOperations": {
+      "source_sha256": "43def8ce930999295ed9850aa72c9533bb663ef85c3983dac2c99f4de1752ab9",
+      "vo_sha256": "1226906d7749943a6d1ac47da0213345e18ff39b77fcb9e81a10a385ca8861b0"
+    },
+    "PreemptionParameterCorrespondence": {
+      "source_sha256": "d2dac509910e8f0cd2cb24a6cd91194c1fbec44d38444fe2aacab8697ce8c980",
+      "vo_sha256": "4c23c89bfac62fe147efd935cba04cc1adb48e82a3afd64ce07bb8809f05e474"
+    },
+    "LimitedPreemptiveCorrespondence": {
+      "source_sha256": "90a4dfeb0e1e72ecc42d542eb307fab80ba88ad04a34be228c31c5c805e5ea1a",
+      "vo_sha256": "cea62af861f62ff5d83e297d237101fd154333cca3689c09308ccc879960f6b0"
+    },
+    "TaskPreemptionParametersCorrespondence": {
+      "source_sha256": "00ef499e0772d88a7ad2cf996c24d717538c95bdc634b7a460e740f0419f75ce",
+      "vo_sha256": "eff1770b9fb63d24bd0ce51ab003b3e81e858a964469ac699ede5ac603038e28"
+    },
+    "TaskLimitedPreemptiveCorrespondence": {
+      "source_sha256": "67c7f1dd312abf08109c22863fa5515c8da199df7afbca738cd640be96e72649",
+      "vo_sha256": "e76e3d36b67fe9b5fdf82861a6c40bf49ff5b42215154a487927073213b0b2e9"
+    },
+    "TaskLimitedPreemptiveAssumptionAudit": {
+      "source_sha256": "a4bd71316172773a417c0ff11d78e86e8273f1553b974fc62284718eb49d5b17",
+      "vo_sha256": "f159c6b7598779cfbf8d01a90bcab88ccd202733bc42a1c3d24d1e5df82ca5c9"
+    }
+  },
+  "declarations": [
+    {
+      "source_declaration": "prosa.model.task.preemption.limited_preemptive.task_beginning_of_execution_in_preemption_points",
+      "lean_declaration": "Prosa.Model.Task.Preemption.LimitedPreemptive.task_beginning_of_execution_in_preemption_points",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "task_beginning_of_execution_in_preemption_points_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.model.task.preemption.limited_preemptive.task_end_of_execution_in_preemption_points",
+      "lean_declaration": "Prosa.Model.Task.Preemption.LimitedPreemptive.task_end_of_execution_in_preemption_points",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "task_end_of_execution_in_preemption_points_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.model.task.preemption.limited_preemptive.nondecreasing_task_preemption_points",
+      "lean_declaration": "Prosa.Model.Task.Preemption.LimitedPreemptive.nondecreasing_task_preemption_points",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "nondecreasing_task_preemption_points_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.model.task.preemption.limited_preemptive.consistent_job_segment_count",
+      "lean_declaration": "Prosa.Model.Task.Preemption.LimitedPreemptive.consistent_job_segment_count",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "consistent_job_segment_count_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.model.task.preemption.limited_preemptive.job_respects_segment_lengths",
+      "lean_declaration": "Prosa.Model.Task.Preemption.LimitedPreemptive.job_respects_segment_lengths",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "job_respects_segment_lengths_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.model.task.preemption.limited_preemptive.task_segments_are_nonempty",
+      "lean_declaration": "Prosa.Model.Task.Preemption.LimitedPreemptive.task_segments_are_nonempty",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "task_segments_are_nonempty_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.model.task.preemption.limited_preemptive.valid_fixed_preemption_points_task_model",
+      "lean_declaration": "Prosa.Model.Task.Preemption.LimitedPreemptive.valid_fixed_preemption_points_task_model",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "valid_fixed_preemption_points_task_model_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.model.task.preemption.limited_preemptive.valid_fixed_preemption_points_model",
+      "lean_declaration": "Prosa.Model.Task.Preemption.LimitedPreemptive.valid_fixed_preemption_points_model",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "valid_fixed_preemption_points_model_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    }
+  ],
+  "acceptance": "ACCEPTED_V06_FILE"
+}

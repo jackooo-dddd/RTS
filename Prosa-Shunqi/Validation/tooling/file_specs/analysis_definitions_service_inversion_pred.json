@@ -1,0 +1,118 @@
+{
+  "rank": 145,
+  "layer": 16,
+  "tag": "SIP",
+  "slug": "analysis_definitions_service_inversion_pred",
+  "source": "analysis/definitions/service_inversion/pred.v",
+  "dependencies": [
+    "analysis/definitions/service.v",
+    "analysis/facts/behavior/completion.v",
+    "model/priority/classes.v"
+  ],
+  "declaration_count": 4,
+  "base_run": "model_preemption_parameter_final",
+  "base_checks": [
+    {
+      "manifest": "model_preemption_parameter",
+      "olean": "Prosa/Model/Preemption/Parameter.olean",
+      "vo": "PreemptionParameterSemanticSource.vo"
+    }
+  ],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "ServiceInversionPredSemanticSource",
+    "drop_imports": [
+      "Require Export prosa.analysis.facts.behavior.completion."
+    ],
+    "add_imports": [
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq bigop."
+    ],
+    "local_bindings": [
+      "service_inversion=service_inversion arr_seq sched j",
+      "cumulative_service_inversion=cumulative_service_inversion arr_seq sched j"
+    ],
+    "note": "the four definitions are byte-identical computational blocks; the proof-heavy analysis/facts/behavior/completion import is dropped (the definitions mention only model/priority/classes, the compiled pinned source of the base run, and analysis/definitions/service, compiled from the pinned tree); the source Section variables arr_seq, sched and j, implicit in the uses of service_inversion and cumulative_service_inversion inside later definitions of the same Section, are reconnected by recorded local notations"
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/ServiceInversionPredStatementProbe.v",
+  "production": "Prosa/Analysis/Definitions/ServiceInversion/Pred.lean",
+  "production_olean": "Prosa/Analysis/Definitions/ServiceInversion/Pred.olean",
+  "lean_namespace": "Prosa.Analysis.Definitions.ServiceInversion.Pred",
+  "fixtures": [
+    "NondecreasingComputationInterface",
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "PreemptionParameterComputationInterface",
+    "ServiceInversionPredComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/ServiceInversionPredLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/analysis_definitions_service_inversion_pred_export_config.json",
+  "export_name": "ServiceInversionPred",
+  "cert_dir": "certificates/analysis_definitions_service_inversion_pred",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "JitterSvcBaseAdapter",
+    "JitterSvcNatBoolOperations",
+    "JitterSvcIntervalOperations",
+    "JitterSvcScheduleOperations",
+    "JitterSvcJobOperations",
+    "PreemptionParameterCorrespondence",
+    "ServiceInversionPredCorrespondence"
+  ],
+  "audit_module": "ServiceInversionPredAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/ServiceInversionPredImportedTypeAudit.v",
+  "assumption_config": "certificates/analysis_definitions_service_inversion_pred/service_inversion_pred_assumption_config.json",
+  "lean_axiom_config": "certificates/analysis_definitions_service_inversion_pred/service_inversion_pred_lean_axiom_config.json",
+  "computational": [
+    "service_inversion",
+    "cumulative_service_inversion",
+    "pred_service_inversion_of_job_is_bounded_by",
+    "pred_service_inversion_is_bounded_by"
+  ],
+  "principal": {},
+  "helpers": [
+    "sip_lean_transport",
+    "sip_logic_eq_to_lean_eq",
+    "sip_decide_eq_related",
+    "sip_bool_to_nat_related",
+    "sip_has_canonical",
+    "sip_has_related",
+    "sip_service_at_related",
+    "sip_receives_service_at_related",
+    "sip_served_jobs_at_related",
+    "sip_job_of_task_related"
+  ],
+  "previous_status": "analysis_definitions_schedulability_module_status.json",
+  "previous_files": 140,
+  "previous_decls": 1066,
+  "input_relations": [
+    "SvcProcessorStateRel + SvcScheduleRel (two-sided)",
+    "ArArrivalSequenceRel",
+    "JLDP policy pointwise on Booleans",
+    "P pointwise by PropSPropRel",
+    "B pointwise by SubNatRel",
+    "job_arrival by ArJobArrivalRel",
+    "job_cost by SvcJobCostRel",
+    "JobTask by Lean.eq"
+  ],
+  "coverage_for_inner_binders": [
+    "jobs (identity carrier)",
+    "Nats (both directions)"
+  ],
+  "lean_representation_note": "`x \\notin s` is `!decide (x \u2208 s)`; `has p s` is `s.any p`; the Boolean interval sum is `\u2211 t \u2208 Finset.Ico t1 t2, (b t).toNat` (as in the accepted abstract definitions), exported through a kernel-guarded list-fold projection; Booleans in Prop position are `= true`",
+  "export_diagnosis": "the accepted preemption-parameter export root (~127k lines) reused verbatim so that the accepted certificate chain applies, plus the four definitions, served_jobs_at, the guarded projection and two List.any equations",
+  "extra_pinned_sources": [
+    "analysis/definitions/service.v"
+  ],
+  "extra_lean": [
+    [
+      "Prosa/Analysis/Definitions/Service.lean",
+      "Prosa/Analysis/Definitions/Service.olean",
+      "analysis_service",
+      "production_olean_sha256"
+    ]
+  ]
+}

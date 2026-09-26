@@ -1,0 +1,109 @@
+{
+  "rank": 142,
+  "layer": 16,
+  "tag": "BIC",
+  "slug": "analysis_definitions_busy_interval_classical",
+  "source": "analysis/definitions/busy_interval/classical.v",
+  "dependencies": [
+    "analysis/facts/behavior/completion.v",
+    "model/priority/classes.v"
+  ],
+  "declaration_count": 5,
+  "base_run": "model_preemption_parameter_final",
+  "base_checks": [
+    {
+      "manifest": "model_preemption_parameter",
+      "olean": "Prosa/Model/Preemption/Parameter.olean",
+      "vo": "PreemptionParameterSemanticSource.vo"
+    }
+  ],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "BusyIntervalClassicalSemanticSource",
+    "drop_imports": [
+      "Require Export prosa.analysis.facts.behavior.completion."
+    ],
+    "add_imports": [
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq."
+    ],
+    "local_bindings": [
+      "quiet_time=quiet_time arr_seq sched j",
+      "busy_interval_prefix=busy_interval_prefix arr_seq sched j"
+    ],
+    "note": "the four definitions are byte-identical computational blocks and the quiet_time_P statement (a reflect view in Type) is the authoritative elaborated type (proof omitted); the proof-heavy analysis/facts/behavior/completion import is dropped (the declarations mention only behavior and model/priority/classes, the compiled pinned source of the base run); the source Section variables arr_seq, sched and j, implicit in the uses of quiet_time and busy_interval_prefix inside later definitions of the same Section, are reconnected by recorded local notations"
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/BusyIntervalClassicalStatementProbe.v",
+  "production": "Prosa/Analysis/Definitions/BusyInterval/Classical.lean",
+  "production_olean": "Prosa/Analysis/Definitions/BusyInterval/Classical.olean",
+  "lean_namespace": "Prosa.Analysis.Definitions.BusyInterval.Classical",
+  "fixtures": [
+    "NondecreasingComputationInterface",
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "PreemptionParameterComputationInterface",
+    "BusyIntervalClassicalComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/BusyIntervalClassicalLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/analysis_definitions_busy_interval_classical_export_config.json",
+  "export_name": "BusyIntervalClassical",
+  "cert_dir": "certificates/analysis_definitions_busy_interval_classical",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "JitterSvcBaseAdapter",
+    "JitterSvcNatBoolOperations",
+    "JitterSvcIntervalOperations",
+    "JitterSvcScheduleOperations",
+    "JitterSvcJobOperations",
+    "PreemptionParameterCorrespondence",
+    "BusyIntervalClassicalCorrespondence"
+  ],
+  "audit_module": "BusyIntervalClassicalAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/BusyIntervalClassicalImportedTypeAudit.v",
+  "assumption_config": "certificates/analysis_definitions_busy_interval_classical/busy_interval_classical_assumption_config.json",
+  "lean_axiom_config": "certificates/analysis_definitions_busy_interval_classical/busy_interval_classical_lean_axiom_config.json",
+  "computational": [
+    "quiet_time",
+    "busy_interval_prefix",
+    "busy_interval",
+    "quiet_time_dec"
+  ],
+  "principal": {},
+  "helpers": [
+    "bic_lean_transport",
+    "bic_nat_input",
+    "bic_false_correspondence",
+    "bic_not_correspondence",
+    "bic_implb_related",
+    "bic_all_canonical",
+    "bic_all_related",
+    "bic_schedule_to_target_rel",
+    "bic_schedule_to_source_rel",
+    "bic_jlfp_to_target_rel",
+    "bic_jlfp_to_source_rel"
+  ],
+  "previous_status": "analysis_definitions_blocking_bound_fp_module_status.json",
+  "previous_files": 137,
+  "previous_decls": 1049,
+  "input_relations": [
+    "job_arrival by ArJobArrivalRel",
+    "job_cost by SvcJobCostRel",
+    "SvcProcessorStateRel (two-sided) + schedules by FcScheduleFunRel with two-way covers",
+    "ArArrivalSequenceRel",
+    "JLFP policy pointwise on Booleans (two-way covers)"
+  ],
+  "coverage_for_inner_binders": [
+    "jobs (identity carrier)",
+    "Nats (both directions)",
+    "schedules (both directions)",
+    "JLFP policies (both directions)"
+  ],
+  "lean_representation_note": "Booleans in Prop position are `= true`; single comparisons are Lean propositions; chained comparisons are `(decide _ && decide _) = true`; `~ P` is `\u00ac P`; `a ==> b` is `!a || b`; `all p s` is `s.all p`; `reflect` is the informative `BoolReflect` family",
+  "export_diagnosis": "the accepted preemption-parameter export root (Service/Schedule interface closure, ~127k lines) reused verbatim so that the accepted certificate chain applies, plus the five declarations, BoolReflect and two List.all equations",
+  "type_valued": [
+    "quiet_time_P"
+  ]
+}

@@ -1,0 +1,128 @@
+{
+  "rank": 178,
+  "layer": 18,
+  "tag": "FPI",
+  "slug": "analysis_facts_priority_inversion",
+  "source": "analysis/facts/priority/inversion.v",
+  "dependencies": [
+    "analysis/definitions/priority_inversion.v",
+    "analysis/facts/model/uniprocessor.v"
+  ],
+  "declaration_count": 7,
+  "base_run": "analysis_definitions_priority_inversion_final",
+  "base_checks": [
+    {
+      "manifest": "analysis_definitions_priority_inversion",
+      "olean": "Prosa/Analysis/Definitions/PriorityInversion.olean",
+      "vo": "PriorityInversionSemanticSource.vo"
+    }
+  ],
+  "extra_olean_artifacts": [
+    {
+      "from": "analysis_facts_behavior_all_final/olean/Prosa/Analysis/Definitions/Service.olean",
+      "to": "Prosa/Analysis/Definitions/Service.olean",
+      "manifest": "analysis_service",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_behavior_all_final/olean/Prosa/Analysis/Facts/Model/Scheduled.olean",
+      "to": "Prosa/Analysis/Facts/Model/Scheduled.olean",
+      "manifest": "analysis_facts_model_scheduled",
+      "key": "production_olean_sha256"
+    }
+  ],
+  "source_mode": "extract",
+  "type_valued": [
+    "uni_priority_inversion_P"
+  ],
+  "extraction": {
+    "module": "FactsPriorityInversionSemanticSource",
+    "drop_imports": [
+      "Require Export prosa.analysis.definitions.priority_inversion.",
+      "Require Export prosa.analysis.facts.model.uniprocessor."
+    ],
+    "add_imports": [
+      "Require Export prosa.PriorityInversionSemanticSource.",
+      "Export PriorityInversionSemanticSource.",
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq.",
+      "Require Import prosa.behavior.all prosa.model.processor.platform_properties prosa.model.schedule.scheduled."
+    ],
+    "note": "theorem statements (and the Type-valued reflect view) from the authoritative elaborated types (proofs omitted); the analysis/definitions/priority_inversion import is bound to the accepted extracted priority-inversion source (PriorityInversionSemanticSource, .vo hash-checked as base); the proof-only analysis/facts/model/uniprocessor import is dropped (uniprocessor_model is model/processor/platform_properties, is_idle is the pinned model/schedule/scheduled, both compiled in the base closure)"
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/FactsPriorityInversionStatementProbe.v",
+  "production": "Prosa/Analysis/Facts/Priority/Inversion.lean",
+  "production_olean": "Prosa/Analysis/Facts/Priority/Inversion.olean",
+  "lean_namespace": "Prosa.Analysis.Facts.Priority.Inversion",
+  "fixtures": [
+    "NondecreasingComputationInterface",
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "PreemptionParameterComputationInterface",
+    "BusyIntervalClassicalComputationInterface",
+    "PriorityInversionComputationInterface",
+    "FactsPriorityInversionComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/FactsPriorityInversionLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/analysis_facts_priority_inversion_export_config.json",
+  "export_name": "FactsPriorityInversion",
+  "cert_dir": "certificates/analysis_facts_priority_inversion",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "JitterSvcBaseAdapter",
+    "JitterSvcNatBoolOperations",
+    "JitterSvcIntervalOperations",
+    "JitterSvcScheduleOperations",
+    "JitterSvcJobOperations",
+    "PreemptionParameterCorrespondence",
+    "PriorityInversionCorrespondence",
+    "FactsPriorityInversionCorrespondence"
+  ],
+  "audit_module": "FactsPriorityInversionAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/FactsPriorityInversionImportedTypeAudit.v",
+  "assumption_config": "certificates/analysis_facts_priority_inversion/facts_priority_inversion_assumption_config.json",
+  "lean_axiom_config": "certificates/analysis_facts_priority_inversion/facts_priority_inversion_lean_axiom_config.json",
+  "computational": [],
+  "principal": {},
+  "helpers": [
+    "fpi_forall_cover_sprop",
+    "fpi_lean_transport",
+    "fpi_nat_input",
+    "fpi_eq_correspondence",
+    "fpi_bool_eq_correspondence",
+    "fpi_exists_identity",
+    "fpi_exists2_identity",
+    "fpi_schedule_to_target_rel",
+    "fpi_schedule_to_source_rel",
+    "fpi_jlfp_to_target_rel",
+    "fpi_jlfp_to_source_rel",
+    "fpi_jobs_come_from_related",
+    "fpi_jobs_must_arrive_related",
+    "fpi_reflexive_related",
+    "fpi_is_idle_related",
+    "fpi_not_pi_related",
+    "fpi_uniprocessor_related",
+    "fpi_witness_related"
+  ],
+  "previous_status": "analysis_transform_prefix_module_status.json",
+  "previous_files": 167,
+  "previous_decls": 1162,
+  "input_relations": [
+    "job_arrival by ArJobArrivalRel",
+    "SvcProcessorStateRel (two-sided)",
+    "ArArrivalSequenceRel",
+    "schedules covered in both directions through the state conversion (SvcScheduleRel)",
+    "JLFP policies covered in both directions (pointwise on Booleans)"
+  ],
+  "coverage_for_inner_binders": [
+    "jobs (identity carrier)",
+    "Nats (both directions)",
+    "schedules (both directions)",
+    "JLFP policies (both directions)"
+  ],
+  "lean_representation_note": "Booleans in Prop position are `= true`; `exists2 x, P x & Q x` is `\u2203 x, P x \u2227 Q x`; the reflect view is the accepted BoolReflect family; hypotheses unused by a statement are absent as in the elaborated source",
+  "export_diagnosis": "the accepted priority-inversion export root (busy-interval / preemption-parameter closure, ~136k lines) reused so that the accepted certificate chain applies, plus the seven statements and the platform/readiness predicates they mention"
+}

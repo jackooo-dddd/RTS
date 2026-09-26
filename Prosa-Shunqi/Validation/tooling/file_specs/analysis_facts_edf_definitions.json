@@ -1,0 +1,196 @@
+{
+  "rank": 205,
+  "layer": 17,
+  "tag": "EDFD",
+  "slug": "analysis_facts_edf_definitions",
+  "source": "analysis/facts/edf_definitions.v",
+  "dependencies": [
+    "analysis/definitions/schedulability.v",
+    "analysis/facts/behavior/deadlines.v",
+    "analysis/facts/model/ideal/schedule.v",
+    "model/preemption/fully_preemptive.v",
+    "model/priority/edf.v",
+    "model/readiness/basic.v",
+    "model/schedule/edf.v",
+    "model/schedule/priority_driven.v"
+  ],
+  "declaration_count": 3,
+  "base_run": "implementation_facts_ideal_uni_prio_aware_final",
+  "base_checks": [
+    {
+      "manifest": "implementation_facts_ideal_uni_prio_aware",
+      "olean": "Prosa/Implementation/Facts/IdealUni/PrioAware.olean",
+      "vo": "PrioAwareSemanticSource.vo"
+    }
+  ],
+  "extra_pinned_sources": [
+    "model/task/absolute_deadline.v",
+    "model/schedule/edf.v",
+    "model/priority/edf.v",
+    "model/preemption/fully_preemptive.v"
+  ],
+  "extra_lean": [],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "EdfDefinitionsSemanticSource",
+    "drop_imports": [
+      "Require Export prosa.analysis.facts.model.ideal.schedule.",
+      "Require Export prosa.analysis.facts.behavior.deadlines.",
+      "Require Export prosa.analysis.definitions.schedulability.",
+      "Require Export prosa.model.priority.edf.",
+      "Require Export prosa.model.schedule.edf.",
+      "Require Export prosa.model.schedule.priority_driven.",
+      "Require Import prosa.model.readiness.basic.",
+      "Require Import prosa.model.preemption.fully_preemptive."
+    ],
+    "add_imports": [
+      "Require Export prosa.SchedulabilitySemanticSource.",
+      "Export SchedulabilitySemanticSource.",
+      "Require Export prosa.PriorityDrivenSemanticSource.",
+      "Export PriorityDrivenSemanticSource.",
+      "Require Export prosa.model.priority.edf.",
+      "Require Export prosa.model.schedule.edf.",
+      "Require Import prosa.model.readiness.basic.",
+      "Require Import prosa.model.preemption.fully_preemptive.",
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq.",
+      "Require Import prosa.behavior.all prosa.model.processor.ideal.",
+      "#[local] Existing Instance basic_ready_instance.",
+      "#[local] Existing Instance fully_preemptive_job_model."
+    ],
+    "note": "theorem statements from the authoritative elaborated types (proofs omitted); all_deadlines_of_arrivals_met is bound to its accepted extracted source (SchedulabilitySemanticSource .vo copied from its accepted run and hash-checked, over the pinned model/task/absolute_deadline); respects_JLFP_policy_at_preemption_point to its accepted extracted PriorityDrivenSemanticSource of the base closure; model/schedule/edf, model/priority/edf and model/preemption/fully_preemptive are compiled from the pinned tree, the latter against model/preemption/parameter bound to the accepted extracted parameter source by the one-line re-export shim; model/readiness/basic and model/processor/ideal are the compiled pinned sources of the base closure; the section's `#[local] Existing Instance basic_ready_instance` and `#[local] Existing Instance fully_preemptive_job_model` are replayed after the imports; the proof-only facts imports are dropped"
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/EdfDefinitionsStatementProbe.v",
+  "production": "Prosa/Analysis/Facts/EdfDefinitions.lean",
+  "production_olean": "Prosa/Analysis/Facts/EdfDefinitions.olean",
+  "lean_namespace": "Prosa.Analysis.Facts.EdfDefinitions",
+  "fixtures": [
+    "NondecreasingComputationInterface",
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "PreemptionParameterComputationInterface",
+    "TransformPrefixComputationInterface",
+    "IdealUniSchedulerComputationInterface",
+    "EdfDefinitionsComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/EdfDefinitionsLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/analysis_facts_edf_definitions_export_config.json",
+  "export_name": "EdfDefinitions",
+  "cert_dir": "certificates/analysis_facts_edf_definitions",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "JitterSvcBaseAdapter",
+    "JitterSvcNatBoolOperations",
+    "JitterSvcIntervalOperations",
+    "JitterSvcScheduleOperations",
+    "JitterSvcJobOperations",
+    "PreemptionParameterCorrespondence",
+    "IdealUniSchedulerCorrespondence",
+    "EdfDefinitionsHelpers",
+    "EdfDefinitionsCorrespondence"
+  ],
+  "audit_module": "EdfDefinitionsAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/EdfDefinitionsImportedTypeAudit.v",
+  "assumption_config": "certificates/analysis_facts_edf_definitions/edf_definitions_assumption_config.json",
+  "lean_axiom_config": "certificates/analysis_facts_edf_definitions/edf_definitions_lean_axiom_config.json",
+  "computational": [],
+  "principal": {},
+  "helpers": [
+    "edfd_ready_related",
+    "edfd_preemptable_related",
+    "edfd_jobs_must_arrive_rel",
+    "edfd_completed_jobs_dont_execute_rel",
+    "edfd_deadlines_met_rel",
+    "edfd_EDF_schedule_rel",
+    "edfd_respects_rel"
+  ],
+  "previous_status": "analysis_facts_model_ideal_priority_inversion_module_status.json",
+  "previous_files": 194,
+  "previous_decls": 1364,
+  "input_relations": [
+    "the processor model is fixed to the ideal uniprocessor on both sides; states related by the constructor-preserving Option map, schedules pointwise (covered in both directions)",
+    "job_cost by SvcJobCostRel",
+    "job_deadline by SubNatRel pointwise",
+    "job_arrival by ArJobArrivalRel",
+    "arrival sequences by ArArrivalSequenceRel",
+    "the readiness and preemption models are the source's local basic (pending) and fully preemptive instances on both sides; the EDF policy is the deadline comparison on both sides"
+  ],
+  "coverage_for_inner_binders": [
+    "schedules",
+    "jobs and instants"
+  ],
+  "lean_representation_note": "the source's local `basic_ready_instance` and `fully_preemptive_job_model` registrations are local instance attributes; a Boolean in `Prop` position is `= true`",
+  "export_diagnosis": "the accepted ideal-uniprocessor-scheduler export root (as for prio_aware, without its statements) plus the EDF-schedule, EDF-policy, schedulability, validity, basic-readiness, fully-preemptive and JLFP respects-policy definitions and the three statements",
+  "extra_source_patches": [],
+  "extra_artifacts": [
+    {
+      "from": "analysis_definitions_schedulability_final/source/SchedulabilitySemanticSource.vo",
+      "to": "source/SchedulabilitySemanticSource.vo",
+      "manifest": "analysis_definitions_schedulability",
+      "key": "source_vo_sha256"
+    }
+  ],
+  "extra_olean_artifacts": [
+    {
+      "from": "analysis_facts_model_rbf_final/olean/Prosa/Analysis/Facts/Behavior/Completion.olean",
+      "to": "Prosa/Analysis/Facts/Behavior/Completion.olean",
+      "manifest": "analysis_facts_behavior_completion",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_behavior_all_final/olean/Prosa/Analysis/Facts/Behavior/Deadlines.olean",
+      "to": "Prosa/Analysis/Facts/Behavior/Deadlines.olean",
+      "manifest": "analysis_facts_behavior_deadlines",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_model_rbf_final/olean/Prosa/Analysis/Definitions/Schedulability.olean",
+      "to": "Prosa/Analysis/Definitions/Schedulability.olean",
+      "manifest": "analysis_definitions_schedulability",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "model_priority_edf_final/olean/Prosa/Model/Priority/Edf.olean",
+      "to": "Prosa/Model/Priority/Edf.olean",
+      "manifest": "model_priority_edf",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_model_rbf_final/olean/Prosa/Model/Job/Properties.olean",
+      "to": "Prosa/Model/Job/Properties.olean",
+      "manifest": "model_job_properties",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_model_rbf_final/olean/Prosa/Model/Task/AbsoluteDeadline.olean",
+      "to": "Prosa/Model/Task/AbsoluteDeadline.olean",
+      "manifest": "model_task_absolute_deadline",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "model_schedule_edf/olean/Prosa/Model/Schedule/Edf.olean",
+      "to": "Prosa/Model/Schedule/Edf.olean",
+      "manifest": "model_schedule_edf",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_readiness_basic_final/olean/Prosa/Model/Readiness/Basic.olean",
+      "to": "Prosa/Model/Readiness/Basic.olean",
+      "manifest": "model_readiness_basic",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "model_preemption_fully_preemptive_final/olean/Prosa/Model/Preemption/FullyPreemptive.olean",
+      "to": "Prosa/Model/Preemption/FullyPreemptive.olean",
+      "manifest": "model_preemption_fully_preemptive",
+      "key": "production_olean_sha256"
+    }
+  ],
+  "extra_generated_sources": [],
+  "dependency_shims": {
+    "model/preemption/parameter.v": "PreemptionParameterSemanticSource"
+  }
+}

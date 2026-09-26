@@ -1,0 +1,4 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedScheduleLimitedPreemptive.
+
+Check ImportedScheduleLimitedPreemptive.Prosa_Model_Schedule_LimitedPreemptive_schedule_respects_preemption_model.

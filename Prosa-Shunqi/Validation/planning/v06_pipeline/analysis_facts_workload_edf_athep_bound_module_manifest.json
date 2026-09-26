@@ -1,0 +1,218 @@
+{
+  "slice": "TRANSLATION_ORDER_ANALYSIS_FACTS_WORKLOAD_EDF_ATHEP_BOUND",
+  "generated_at": "2026-09-27T02:02:57.137263+08:00",
+  "published_at": "2026-09-27T02:02:57.137263+08:00",
+  "rank": 190,
+  "layer": 19,
+  "source_file": "analysis/facts/workload/edf_athep_bound.v",
+  "source_commit": "414e66760333eaa4ef78c685bcf53291c527a548",
+  "source_tree": "7d7e94c731f7eefde4ca738310d4cafdd7bebdf0",
+  "source_file_sha256": "0665aaaa7f77ac2bd079c3cf2348a122a423af8e0cfe60f375773a641382050a",
+  "pipeline": "Validation/scripts/translation_file_pipeline.py",
+  "spec": "Validation/tooling/file_specs/analysis_facts_workload_edf_athep_bound.json",
+  "spec_sha256": "e060fa43977fba56ba105cc7332e198507a62e6a51ce323aa03d4ebe3b259192",
+  "source_compatibility": {
+    "mode": "extract",
+    "note": "theorem statements from the authoritative elaborated types (proofs omitted); the workload/bounded and definitions/workload/edf_athep_bound imports are bound to their accepted extracted sources (WorkloadBoundedSemanticSource hash-checked as base; RequestBoundFunctionSemanticSource and EdfAthepBoundSemanticSource .vo copied from their accepted runs and hash-checked against their manifests); model/priority/edf, model/task/absolute_deadline, model/job/properties, model/task/arrival/curves and model/aggregate/workload are pinned sources compiled from the pinned tree; the proof-only facts/model/rbf import is dropped; the elaborated types name the athep bound by its module-qualified name `edf_athep_bound.bound_on_athep_workload`, which is reconnected to the accepted extracted definition by a recorded validation-only module alias (the statement text is unchanged)",
+    "extracted_sha256": "320a73e57c3274fd5f3d856174cc2985ec0f66925123b8866092e5198fb492f2",
+    "extraction_metadata_sha256": "142b9ae2c51cccb862b79f8c9e5a4478961ed8db98cc52fe9fa829c9539d4ef2"
+  },
+  "source_type_evidence": {
+    "prosa.analysis.facts.workload.edf_athep_bound.total_workload_shorten_range": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.workload.edf_athep_bound.sum_of_workloads_is_at_most_bound_on_total_hep_workload": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.workload.edf_athep_bound.bound_on_athep_workload_is_valid": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.workload.edf_athep_bound.bound_on_athep_workload_monotone": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE"
+  },
+  "statement_only_export_boundary": [
+    "Prosa.Analysis.Facts.Workload.EdfAthepBound.total_workload_shorten_range",
+    "Prosa.Analysis.Facts.Workload.EdfAthepBound.sum_of_workloads_is_at_most_bound_on_total_hep_workload",
+    "Prosa.Analysis.Facts.Workload.EdfAthepBound.bound_on_athep_workload_is_valid",
+    "Prosa.Analysis.Facts.Workload.EdfAthepBound.bound_on_athep_workload_monotone"
+  ],
+  "input_relations": [
+    "TaskCost pointwise by SubNatRel",
+    "TaskDeadline pointwise by SubNatRel",
+    "MaxArrivals by the accepted CvMaxArrivalsRel",
+    "JobTask by Lean.eq",
+    "job_arrival by ArJobArrivalRel",
+    "job_cost by SvcJobCostRel",
+    "SvcProcessorStateRel (two-sided) + SvcScheduleRel for the schedule of bound_on_athep_workload_is_valid"
+  ],
+  "coverage_for_inner_binders": [
+    "arrival sequences and task sets (both directions)",
+    "tasks and jobs (identity carriers)",
+    "Nats (both directions)"
+  ],
+  "lean_representation_note": "the EDF policy is the accepted `EDF` instance over the accepted `job_deadline_from_task_deadline` instance, named explicitly; the section-local `EDF_from tsk_o` is inlined; `A` is `job_arrival j - t1`; `\u03b5` is `1`; `\\sum_(x <- xs | P x) F x` is `sumFiltered xs P F`; `monotone leq f` is `Prosa.Util.Rel.monotone (fun x y => decide (x \u2264 y)) f`",
+  "export_size": {
+    "lines": 139300,
+    "soft_budget_flag": "OVER_100K_DIAGNOSED",
+    "diagnosis": "the accepted request-bound-function facts export root without its statements (workload-bound + request-bound-function + arrival-curve roots over the preemption-parameter / Service closure, ~140k lines), reused so that the accepted certificate chains apply, merged with the accepted EDF athep-bound definition root (its kernel-checked min case equations), plus the 4 statements, the EDF policy and the absolute-deadline instance"
+  },
+  "file_dependencies": {
+    "analysis/definitions/workload/bounded.v": "analysis_definitions_workload_bounded_module_status.json",
+    "analysis/definitions/workload/edf_athep_bound.v": "analysis_definitions_workload_edf_athep_bound_module_status.json",
+    "analysis/facts/model/rbf.v": "analysis_facts_model_rbf_module_status.json",
+    "model/priority/edf.v": "model_priority_edf_module_status.json",
+    "model/task/absolute_deadline.v": "model_task_absolute_deadline_module_status.json"
+  },
+  "production_file": "Prosa/Analysis/Facts/Workload/EdfAthepBound.lean",
+  "production_source_sha256": "d99a377370d6723b73492378cf64c3f72ab4f9fd33ce973920d9646a30d6de56",
+  "production_olean_sha256": "0e549926e170b5e4f4e872fd5e1854a925fbd9ed48f23ca8573eef7728c5b479",
+  "export_config_sha256": "24fbd8ad9e52366a74cf2274bdbb1ecfef4d76b4f53abecc3d7b44b705431ede",
+  "export_sha256": "384bb1a9e62bd147159e9c8a13317ebb3769ea6d7dcd38b2d65ffd59e7c9eb15",
+  "export_lines": 139300,
+  "export_bytes": 3127420,
+  "import_sha256": "2088f44085b6dc9a18c85af50d47d868c5c68011ed484d75bac78dfc2fbc14f6",
+  "source_vo_sha256": "f885e6d1ae40ef5e675e67fba487f6acf9245f724180c789b560ebc66a71ec13",
+  "lean_axiom_summary_sha256": "54eec75751f448795142da7d80da7b9ebae646dd859fc2488ea6885827592efd",
+  "rocq_assumption_summary_sha256": "5828cede583bee83ccb376e806f7fe8f26f7b2212059e10d0724604b12b1800f",
+  "assumption_config_sha256": "8607546dd26315f4c3245db92ee460e41de9ebe198b9b1c393e4c5f11b9b5edc",
+  "stage_timing_seconds": {
+    "source_acquisition": {
+      "mode": "FRESH",
+      "seconds": 8
+    },
+    "lean_build": {
+      "mode": "FRESH",
+      "seconds": 647
+    },
+    "export": {
+      "mode": "FRESH",
+      "seconds": 38
+    },
+    "rocq_import": {
+      "mode": "FRESH",
+      "seconds": 43
+    },
+    "certificate_compile": {
+      "mode": "FRESH",
+      "seconds": 33
+    },
+    "assumption_audit": {
+      "mode": "FRESH",
+      "seconds": 0
+    }
+  },
+  "certificates": {
+    "ArrivalsSeqBaseAdapter": {
+      "source_sha256": "f8e1c928b4c7b49dc7c598a6a35d49be7e9436836b210766fcf6519dedf14c9c",
+      "vo_sha256": "2901da3f4065c0cad24b8c723e5745e8376fbc516b161bdc45851f6ce04d64b0"
+    },
+    "ArrivalsSeqOperations": {
+      "source_sha256": "f60f19d04bdd89cb1ad4d7ea3d9db998196a9c92fe49b775de18dd5cbde161cd",
+      "vo_sha256": "8dbc6c171e08d1b342392471902f46b025079a66c952f54357fe3f754b8b43ce"
+    },
+    "ArrivalsSeqCorrespondence": {
+      "source_sha256": "cafd043f2fe379512d1d4d14fc87d5ddcdb730e057e072b3eff23e152a30e642",
+      "vo_sha256": "63f7a8c79960ad2cf3542bae0c6345eb48c287d32de12dcca39a3bc580f3d40d"
+    },
+    "ArrivalsCorrespondence": {
+      "source_sha256": "4002a206bfa21114b0e4759a5acdf9baad1ab3b7135e534e33d802aaf8d5d4ef",
+      "vo_sha256": "8859a9242491e6a23349cf39a78decea48e07f23f616ab8a1398e39fc61eebf8"
+    },
+    "JitterSvcBaseAdapter": {
+      "source_sha256": "ec64f5d24c3302d8222318956f7916e56b738e9ff01fbd2cd560c5174177ec0e",
+      "vo_sha256": "9ba1db1a30c1c38cfd18006231fc5ae7bc9dba7e308f3fac0c0275fe9b264ce2"
+    },
+    "JitterSvcNatBoolOperations": {
+      "source_sha256": "1ae8239110e8419b159a9c522ce51f6029802523efc2596a1c14058636f8324d",
+      "vo_sha256": "d9b63aae0388688cf4edd9aa133a1b9ac0de5caf3a82627c511b3f2a15d7106a"
+    },
+    "JitterSvcIntervalOperations": {
+      "source_sha256": "30cb809cd7d1ff9f422881eb4e80f01f388cb01b1b292a79fb6e3bb3444138ed",
+      "vo_sha256": "9ec03c058e09aeb5e6f0284c1370a66e76135c00dc96848e2ea408c3c9abf2f0"
+    },
+    "JitterSvcScheduleOperations": {
+      "source_sha256": "6580683e0b7aebada7b7351b45fb7b0aa1f56c0cfb8a377f3c7b27809767b90f",
+      "vo_sha256": "36907cedeb75ea284a00d5e2c4f703ee9d6dea377f30acd23e74927d540ada12"
+    },
+    "JitterSvcJobOperations": {
+      "source_sha256": "39f02dea1d01c466ab7a92eb0182c016f9a92ab75fb98fc3e3ba4df3c0606afe",
+      "vo_sha256": "05999bebbf0e57b6955021f17b46c8f396f7e3cd3cb54dcf4992fcfc09989730"
+    },
+    "PreemptionParameterCorrespondence": {
+      "source_sha256": "a59b9593d1461b34406991aa3969b133cb526155c25ba99b4289c94eab9c4c64",
+      "vo_sha256": "56cbb52e8254b56522a931dfd95e73c8a411c449a7d896da201fedf9bbcf9930"
+    },
+    "WorkloadCorrespondence": {
+      "source_sha256": "8ed05c534d69814ab1c3659a55eccad04983caec89c0201dc0ae9522fa486f01",
+      "vo_sha256": "8538717fbe7918a40576ae71ab8cdbd742b6e1043486bcb1ba024ca4852a9b07"
+    },
+    "CurvesCorrespondence": {
+      "source_sha256": "a15bd0de32a129d0ca8ce83f747b0aec165671536d26fae9c5d1a35a7dcc7c19",
+      "vo_sha256": "79433f44f282c4bc81df28bd35a77f7c68cf98095119d7fcf961761ab371c62d"
+    },
+    "RequestBoundFunctionCorrespondence": {
+      "source_sha256": "a0f7e4978949cf35954210e99e6c67c0ab589f6177855ac226f6e7230018836e",
+      "vo_sha256": "c1f59ced21f5b3d27c9804fb10cfc2aa5f31c2449637a3d6795bbca6ae75baaf"
+    },
+    "WorkloadBoundedCorrespondence": {
+      "source_sha256": "ff8919cf96ec77534e272cce0b8b4b3b7aed75d892f83b9832dd59534e2b5637",
+      "vo_sha256": "e00cc3da0f3764570a921463d33163c15ab6669b5b2e1dae0ac8a091ef86a5a9"
+    },
+    "EdfAthepBoundCorrespondence": {
+      "source_sha256": "7e872e472991417679e0b0a7f5722893a4d52757ca605d423d403c36fc579645",
+      "vo_sha256": "e67191b498a9ba6c9e24b3d5b6db37232a44868c50f1f617fbae416d551a9635"
+    },
+    "FactsEdfAthepBoundCorrespondence": {
+      "source_sha256": "f73efec28dae26877dec50c38ba18aff0fc30d0d88129e129cbdbe3211ec20a8",
+      "vo_sha256": "5f2803a3aa713ddeefda66c6f02c4fe7f2604babfdb5d56e1399fa8b4fbe7436"
+    },
+    "FactsEdfAthepBoundAssumptionAudit": {
+      "source_sha256": "5e88bff668fced54a2a038614bea6a1a5dc4235cc4d134e32f43e254003153d0",
+      "vo_sha256": "619cfad5260a4c8966e302ca7986a6cbb0f33f7df7f864586f9a12c7dfcfa9c7"
+    }
+  },
+  "declarations": [
+    {
+      "source_declaration": "prosa.analysis.facts.workload.edf_athep_bound.total_workload_shorten_range",
+      "lean_declaration": "Prosa.Analysis.Facts.Workload.EdfAthepBound.total_workload_shorten_range",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "total_workload_shorten_range_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.workload.edf_athep_bound.sum_of_workloads_is_at_most_bound_on_total_hep_workload",
+      "lean_declaration": "Prosa.Analysis.Facts.Workload.EdfAthepBound.sum_of_workloads_is_at_most_bound_on_total_hep_workload",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "sum_of_workloads_is_at_most_bound_on_total_hep_workload_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.workload.edf_athep_bound.bound_on_athep_workload_is_valid",
+      "lean_declaration": "Prosa.Analysis.Facts.Workload.EdfAthepBound.bound_on_athep_workload_is_valid",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "bound_on_athep_workload_is_valid_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.workload.edf_athep_bound.bound_on_athep_workload_monotone",
+      "lean_declaration": "Prosa.Analysis.Facts.Workload.EdfAthepBound.bound_on_athep_workload_monotone",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "bound_on_athep_workload_monotone_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    }
+  ],
+  "acceptance": "ACCEPTED_V06_FILE"
+}

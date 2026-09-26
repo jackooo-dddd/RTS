@@ -1,0 +1,14 @@
+import Prosa.Model.Task.Arrival.PeriodicAsSporadic
+set_option pp.fieldNotation false
+
+#check @Prosa.Model.Task.Arrival.PeriodicAsSporadic.periodic_as_sporadic
+#check @Prosa.Model.Task.Arrival.PeriodicAsSporadic.valid_period_is_valid_inter_arrival_time
+#check @Prosa.Model.Task.Arrival.PeriodicAsSporadic.periodic_task_respects_sporadic_task_model
+#check @Prosa.Model.Task.Arrival.PeriodicAsSporadic.valid_periods_are_valid_inter_arrival_times
+#check @Prosa.Model.Task.Arrival.PeriodicAsSporadic.periodic_task_sets_respect_sporadic_task_model
+
+#print axioms Prosa.Model.Task.Arrival.PeriodicAsSporadic.periodic_as_sporadic
+#print axioms Prosa.Model.Task.Arrival.PeriodicAsSporadic.valid_period_is_valid_inter_arrival_time
+#print axioms Prosa.Model.Task.Arrival.PeriodicAsSporadic.periodic_task_respects_sporadic_task_model
+#print axioms Prosa.Model.Task.Arrival.PeriodicAsSporadic.valid_periods_are_valid_inter_arrival_times
+#print axioms Prosa.Model.Task.Arrival.PeriodicAsSporadic.periodic_task_sets_respect_sporadic_task_model

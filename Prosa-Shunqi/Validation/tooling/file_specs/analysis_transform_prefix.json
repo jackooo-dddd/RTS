@@ -1,0 +1,91 @@
+{
+  "rank": 177,
+  "layer": 18,
+  "tag": "PREFIX",
+  "slug": "analysis_transform_prefix",
+  "source": "analysis/transform/prefix.v",
+  "dependencies": [
+    "analysis/facts/behavior/all.v"
+  ],
+  "declaration_count": 3,
+  "base_run": "model_preemption_parameter_final",
+  "base_checks": [
+    {
+      "manifest": "model_preemption_parameter",
+      "olean": "Prosa/Model/Preemption/Parameter.olean",
+      "vo": "PreemptionParameterSemanticSource.vo"
+    }
+  ],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "TransformPrefixSemanticSource",
+    "drop_imports": [
+      "Require Export prosa.analysis.facts.behavior.all."
+    ],
+    "add_imports": [
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq.",
+      "Require Import prosa.behavior.all."
+    ],
+    "note": "the Fixpoint prefix_map is a byte-identical computational block and the two lemma statements are the authoritative elaborated types (proofs omitted); the proof-only analysis/facts/behavior/all import is dropped (the declarations mention only behavior, the compiled pinned source of the base closure)"
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/TransformPrefixStatementProbe.v",
+  "production": "Prosa/Analysis/Transform/Prefix.lean",
+  "production_olean": "Prosa/Analysis/Transform/Prefix.olean",
+  "lean_namespace": "Prosa.Analysis.Transform.Prefix",
+  "fixtures": [
+    "NondecreasingComputationInterface",
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "PreemptionParameterComputationInterface",
+    "TransformPrefixComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/TransformPrefixLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/analysis_transform_prefix_export_config.json",
+  "export_name": "TransformPrefix",
+  "cert_dir": "certificates/analysis_transform_prefix",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "JitterSvcBaseAdapter",
+    "JitterSvcNatBoolOperations",
+    "JitterSvcIntervalOperations",
+    "JitterSvcScheduleOperations",
+    "JitterSvcJobOperations",
+    "PreemptionParameterCorrespondence",
+    "TransformPrefixCorrespondence"
+  ],
+  "audit_module": "TransformPrefixAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/TransformPrefixImportedTypeAudit.v",
+  "assumption_config": "certificates/analysis_transform_prefix/transform_prefix_assumption_config.json",
+  "lean_axiom_config": "certificates/analysis_transform_prefix/transform_prefix_lean_axiom_config.json",
+  "computational": [
+    "prefix_map"
+  ],
+  "principal": {},
+  "helpers": [
+    "pfx_forall_cover_sprop",
+    "pfx_lean_transport",
+    "pfx_nat_input",
+    "pfx_schedule_to_target_rel",
+    "pfx_schedule_to_source_rel",
+    "pfx_prefix_map_canonical"
+  ],
+  "previous_status": "model_task_offset_module_status.json",
+  "previous_files": 166,
+  "previous_decls": 1159,
+  "input_relations": [
+    "SvcProcessorStateRel (two-sided)",
+    "schedules functionally through the state conversion (FunRel)",
+    "the schedule transformation f preserving FunRel on related instants",
+    "the predicates P/Q pointwise on FunRel-related schedules (and related instants)"
+  ],
+  "coverage_for_inner_binders": [
+    "schedules (functionally, through the state conversion with its roundtrips)",
+    "Nats (both directions)"
+  ],
+  "lean_representation_note": "the structural recursion and the local `let prefix` are kept (the local is named `pfx`, since `prefix` is a Lean keyword)",
+  "export_diagnosis": "the accepted preemption-parameter export root (Service/Schedule closure, ~127k lines) reused so that the accepted certificate chain applies, plus the definition, the two statements and two kernel-checked case equations"
+}

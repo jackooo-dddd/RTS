@@ -1,0 +1,236 @@
+{
+  "slice": "TRANSLATION_ORDER_ANALYSIS_FACTS_PRIORITY_INVERSION",
+  "generated_at": "2026-09-26T22:53:58.589284+08:00",
+  "published_at": "2026-09-26T22:53:58.589284+08:00",
+  "rank": 178,
+  "layer": 18,
+  "source_file": "analysis/facts/priority/inversion.v",
+  "source_commit": "414e66760333eaa4ef78c685bcf53291c527a548",
+  "source_tree": "7d7e94c731f7eefde4ca738310d4cafdd7bebdf0",
+  "source_file_sha256": "59c1c13d4ae1de6443ce6b64cd9a73c881338187bba8bd7b73aa55e572b1c3b4",
+  "pipeline": "Validation/scripts/translation_file_pipeline.py",
+  "spec": "Validation/tooling/file_specs/analysis_facts_priority_inversion.json",
+  "spec_sha256": "3ad8d7a076ec9c237a12e9cebf16a7e65fd7521e7caacb1d4b2315c448f21dc7",
+  "source_compatibility": {
+    "mode": "extract",
+    "note": "theorem statements (and the Type-valued reflect view) from the authoritative elaborated types (proofs omitted); the analysis/definitions/priority_inversion import is bound to the accepted extracted priority-inversion source (PriorityInversionSemanticSource, .vo hash-checked as base); the proof-only analysis/facts/model/uniprocessor import is dropped (uniprocessor_model is model/processor/platform_properties, is_idle is the pinned model/schedule/scheduled, both compiled in the base closure)",
+    "extracted_sha256": "9d6913f2a5b92d14d0ff0609723956b35fa3823b0fde54f1c0d54b7fb2131283",
+    "extraction_metadata_sha256": "74c89fc822e75ffee4d3d51bfa7d25f6a178621a6214af2759139c229c7c8fd8"
+  },
+  "source_type_evidence": {
+    "prosa.analysis.facts.priority.inversion.sched_itself_implies_no_priority_inversion": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.priority.inversion.priority_inversion_scheduled_at": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.priority.inversion.no_priority_inversion_when_idle": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.priority.inversion.priority_inversion_hep_job": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.priority.inversion.no_priority_inversion_when_hep_job_scheduled": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.priority.inversion.uni_priority_inversion_P": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.priority.inversion.cumulative_priority_inversion_cat": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE"
+  },
+  "statement_only_export_boundary": [
+    "Prosa.Analysis.Facts.Priority.Inversion.sched_itself_implies_no_priority_inversion",
+    "Prosa.Analysis.Facts.Priority.Inversion.priority_inversion_scheduled_at",
+    "Prosa.Analysis.Facts.Priority.Inversion.no_priority_inversion_when_idle",
+    "Prosa.Analysis.Facts.Priority.Inversion.priority_inversion_hep_job",
+    "Prosa.Analysis.Facts.Priority.Inversion.no_priority_inversion_when_hep_job_scheduled",
+    "Prosa.Analysis.Facts.Priority.Inversion.uni_priority_inversion_P",
+    "Prosa.Analysis.Facts.Priority.Inversion.cumulative_priority_inversion_cat"
+  ],
+  "input_relations": [
+    "job_arrival by ArJobArrivalRel",
+    "SvcProcessorStateRel (two-sided)",
+    "ArArrivalSequenceRel",
+    "schedules covered in both directions through the state conversion (SvcScheduleRel)",
+    "JLFP policies covered in both directions (pointwise on Booleans)"
+  ],
+  "coverage_for_inner_binders": [
+    "jobs (identity carrier)",
+    "Nats (both directions)",
+    "schedules (both directions)",
+    "JLFP policies (both directions)"
+  ],
+  "lean_representation_note": "Booleans in Prop position are `= true`; `exists2 x, P x & Q x` is `\u2203 x, P x \u2227 Q x`; the reflect view is the accepted BoolReflect family; hypotheses unused by a statement are absent as in the elaborated source",
+  "export_size": {
+    "lines": 137051,
+    "soft_budget_flag": "OVER_100K_DIAGNOSED",
+    "diagnosis": "the accepted priority-inversion export root (busy-interval / preemption-parameter closure, ~136k lines) reused so that the accepted certificate chain applies, plus the seven statements and the platform/readiness predicates they mention"
+  },
+  "file_dependencies": {
+    "analysis/definitions/priority_inversion.v": "analysis_definitions_priority_inversion_module_status.json",
+    "analysis/facts/model/uniprocessor.v": "analysis_facts_model_uniprocessor_module_status.json"
+  },
+  "production_file": "Prosa/Analysis/Facts/Priority/Inversion.lean",
+  "production_source_sha256": "d211a42171e3335de37ebf2440f717e681483c19398fc30ee922ab67dee74ea7",
+  "production_olean_sha256": "0f480a23a5a9175bd1b597dd2ded07f0ccfa1a125e9c9c02b26481bdd3480f4f",
+  "export_config_sha256": "f3193ee2e32ef845929ab13e2bcd34d22d0266d97e8546f1bccbc8d0114ee18b",
+  "export_sha256": "b58e0067a146fa22c8630eab3b69a7276d18f9b02330305b2940e22c103a77bd",
+  "export_lines": 137051,
+  "export_bytes": 3068763,
+  "import_sha256": "0f801bb6e9273ef6a55a5d86dd6b5743d019b8ac51fdd33e9cdc5bd5877edb7d",
+  "source_vo_sha256": "36cd2ac443dd99c640008d7219b8a2abb5ae2c120a7107b5f64d7841bfe00a6f",
+  "lean_axiom_summary_sha256": "0b82ff8dcbbf48f068193413c0f43045b9cefffb334874374f7f28ce565a7c10",
+  "rocq_assumption_summary_sha256": "78bc6d80747409a92d5f9c5183a0c6962c130163173defc8ee0d351bc325eaa9",
+  "assumption_config_sha256": "a3fb07cc7f0b2af4a51510070f054e3a1529090dd9770c7d5ec0dbdb402c7f34",
+  "stage_timing_seconds": {
+    "source_acquisition": {
+      "mode": "FRESH",
+      "seconds": 6
+    },
+    "lean_build": {
+      "mode": "FRESH",
+      "seconds": 786
+    },
+    "export": {
+      "mode": "FRESH",
+      "seconds": 68
+    },
+    "rocq_import": {
+      "mode": "FRESH",
+      "seconds": 59
+    },
+    "certificate_compile": {
+      "mode": "FRESH",
+      "seconds": 28
+    },
+    "assumption_audit": {
+      "mode": "FRESH",
+      "seconds": 0
+    }
+  },
+  "certificates": {
+    "ArrivalsSeqBaseAdapter": {
+      "source_sha256": "e056d05f4c5089336e1bca3707cd9b81ce470d511ac6d9260ae272f6aae17940",
+      "vo_sha256": "6693a293e2f700f1f021b46a3609b6aebd8f833373dde2e0e68e6cfa370ecaba"
+    },
+    "ArrivalsSeqOperations": {
+      "source_sha256": "a28f6885926f9cad8d011b8f6b3f5fe78806a0be0595a2a7cf4b7703cd7175d7",
+      "vo_sha256": "934f6fb13eed22f42c56bf6cf8707d32c8ac9682c46993536e8b72a6002beeb8"
+    },
+    "ArrivalsSeqCorrespondence": {
+      "source_sha256": "cc33d0e53276bb9938a64140826154991f5fec4ecf20954a9de3053b8cd25eb1",
+      "vo_sha256": "fb058724308f4fe50c2d7458358ad7daebde8435ae4f602f9c62b677419f2b02"
+    },
+    "JitterSvcBaseAdapter": {
+      "source_sha256": "f1f47e4c6eefd3eca6950651de9ae36771d080d6e5690e736715d0a5b7580617",
+      "vo_sha256": "a65ab5899a9a7fd6207b71d29a8d15851c4a160c7d415951d9b4b181d69ea191"
+    },
+    "JitterSvcNatBoolOperations": {
+      "source_sha256": "01c3f0c2c271a359e694b0f075632b04e3484c27eaa2052225f3d1f30337822e",
+      "vo_sha256": "0a4949ea43fb002bc129e0e72bae8dd6dfe53b7c7f53537a5eac2ba4cb45d605"
+    },
+    "JitterSvcIntervalOperations": {
+      "source_sha256": "e7ddfa7cb97f19b7ba427459b4c5fe3afc1cc365e9aafa7f1aee4159502cab77",
+      "vo_sha256": "b48954ff835b64535d24443cfaa99e06a0365cee9ebca2b00c67600a72886f58"
+    },
+    "JitterSvcScheduleOperations": {
+      "source_sha256": "5005e68bebe85cc98270ee0b5fac68877caad9b974bf1f94f56b3f146928230d",
+      "vo_sha256": "76bb97b4c0ca2712a635e066a66645e827f0dc3b7d3b1acc41884b1f1c24ee9a"
+    },
+    "JitterSvcJobOperations": {
+      "source_sha256": "aad4d43743233e0d37251bfbd9ed1173366c0f6aeb88bf8f8101ad4a644c6adf",
+      "vo_sha256": "b04e3b9268c84c6406d00298aa791564dc0b399b27214174df4b6aa9dca294ee"
+    },
+    "PreemptionParameterCorrespondence": {
+      "source_sha256": "0ed44adf544a14446c47a31468a432b23acaf174dd73e303cdfcc230b5e0ba38",
+      "vo_sha256": "8ef72fb0b935eeea85c3d05c39be7ee2660ce6db02bb3e78ed9150ce7ec731a3"
+    },
+    "PriorityInversionCorrespondence": {
+      "source_sha256": "189198ebd6d0a47a90836849c41f39c817be003e754fc7421501be789051d779",
+      "vo_sha256": "74879b5dfaeca8a64597a2a720ffb7af48c2e6170c32dfc10c107d995dced245"
+    },
+    "FactsPriorityInversionCorrespondence": {
+      "source_sha256": "28e1d65da9390443ce29615ddd95ca1e157870a32ae772c8e79fe9722531fdb0",
+      "vo_sha256": "d20c90730725ac3600e8deb38d62c176b1de9aac94cbbed1aa9db9a16d5848d8"
+    },
+    "FactsPriorityInversionAssumptionAudit": {
+      "source_sha256": "cd6406ab23ab1494e434e29001ccbd2edd1f72020ec014484f7cf49d3d58eb22",
+      "vo_sha256": "a8d937c57ba87f87be2adb750bd4a29a9927f85b660a8857e19d81298b407606"
+    }
+  },
+  "declarations": [
+    {
+      "source_declaration": "prosa.analysis.facts.priority.inversion.sched_itself_implies_no_priority_inversion",
+      "lean_declaration": "Prosa.Analysis.Facts.Priority.Inversion.sched_itself_implies_no_priority_inversion",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "sched_itself_implies_no_priority_inversion_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.priority.inversion.priority_inversion_scheduled_at",
+      "lean_declaration": "Prosa.Analysis.Facts.Priority.Inversion.priority_inversion_scheduled_at",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "priority_inversion_scheduled_at_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.priority.inversion.no_priority_inversion_when_idle",
+      "lean_declaration": "Prosa.Analysis.Facts.Priority.Inversion.no_priority_inversion_when_idle",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "no_priority_inversion_when_idle_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.priority.inversion.priority_inversion_hep_job",
+      "lean_declaration": "Prosa.Analysis.Facts.Priority.Inversion.priority_inversion_hep_job",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "priority_inversion_hep_job_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.priority.inversion.no_priority_inversion_when_hep_job_scheduled",
+      "lean_declaration": "Prosa.Analysis.Facts.Priority.Inversion.no_priority_inversion_when_hep_job_scheduled",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "no_priority_inversion_when_hep_job_scheduled_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.priority.inversion.uni_priority_inversion_P",
+      "lean_declaration": "Prosa.Analysis.Facts.Priority.Inversion.uni_priority_inversion_P",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "uni_priority_inversion_P_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.priority.inversion.cumulative_priority_inversion_cat",
+      "lean_declaration": "Prosa.Analysis.Facts.Priority.Inversion.cumulative_priority_inversion_cat",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "cumulative_priority_inversion_cat_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    }
+  ],
+  "acceptance": "ACCEPTED_V06_FILE"
+}

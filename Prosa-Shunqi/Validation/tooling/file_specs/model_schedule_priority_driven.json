@@ -1,0 +1,104 @@
+{
+  "rank": 156,
+  "layer": 15,
+  "tag": "PDRV",
+  "slug": "model_schedule_priority_driven",
+  "source": "model/schedule/priority_driven.v",
+  "dependencies": [
+    "model/priority/classes.v",
+    "model/schedule/preemption_time.v"
+  ],
+  "declaration_count": 3,
+  "base_run": "model_schedule_preemption_time_final",
+  "base_checks": [
+    {
+      "manifest": "model_schedule_preemption_time",
+      "olean": "Prosa/Model/Schedule/PreemptionTime.olean",
+      "vo": "PreemptionTimeSemanticSource.vo"
+    },
+    {
+      "manifest": "model_preemption_parameter",
+      "olean": "Prosa/Model/Preemption/Parameter.olean",
+      "vo": "PreemptionParameterSemanticSource.vo"
+    }
+  ],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "PriorityDrivenSemanticSource",
+    "drop_imports": [
+      "Require Export prosa.model.schedule.preemption_time."
+    ],
+    "add_imports": [
+      "Require Export prosa.PreemptionTimeSemanticSource.",
+      "Export PreemptionTimeSemanticSource.",
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq."
+    ],
+    "note": "the three definitions are byte-identical computational blocks; the model/schedule/preemption_time import is bound to its accepted extracted source (PreemptionTimeSemanticSource, .vo hash-checked against its manifest), which re-exports model/schedule/scheduled and the accepted extracted parameter source; model/priority/classes is the compiled pinned source of the base run; the Section variables arr_seq and sched, implicit in the uses of respects_JLDP_policy_at_preemption_point inside the JLFP/FP wrappers, are reconnected by a recorded local notation",
+    "local_bindings": [
+      "respects_JLDP_policy_at_preemption_point=respects_JLDP_policy_at_preemption_point arr_seq sched"
+    ]
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/PriorityDrivenStatementProbe.v",
+  "production": "Prosa/Model/Schedule/PriorityDriven.lean",
+  "production_olean": "Prosa/Model/Schedule/PriorityDriven.olean",
+  "lean_namespace": "Prosa.Model.Schedule.PriorityDriven",
+  "fixtures": [
+    "NondecreasingComputationInterface",
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "PreemptionParameterComputationInterface",
+    "PreemptionTimeComputationInterface",
+    "PriorityDrivenComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/PriorityDrivenLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/model_schedule_priority_driven_export_config.json",
+  "export_name": "PriorityDriven",
+  "cert_dir": "certificates/model_schedule_priority_driven",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "JitterSvcBaseAdapter",
+    "JitterSvcNatBoolOperations",
+    "JitterSvcIntervalOperations",
+    "JitterSvcScheduleOperations",
+    "JitterSvcJobOperations",
+    "PreemptionParameterCorrespondence",
+    "PreemptionTimeCorrespondence",
+    "PriorityDrivenCorrespondence"
+  ],
+  "audit_module": "PriorityDrivenAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/PriorityDrivenImportedTypeAudit.v",
+  "assumption_config": "certificates/model_schedule_priority_driven/priority_driven_assumption_config.json",
+  "lean_axiom_config": "certificates/model_schedule_priority_driven/priority_driven_lean_axiom_config.json",
+  "computational": [
+    "respects_JLDP_policy_at_preemption_point",
+    "respects_JLFP_policy_at_preemption_point",
+    "respects_FP_policy_at_preemption_point"
+  ],
+  "principal": {},
+  "helpers": [
+    "pdrv_backlogged_related"
+  ],
+  "previous_status": "model_task_preemption_floating_nonpreemptive_module_status.json",
+  "previous_files": 148,
+  "previous_decls": 1097,
+  "input_relations": [
+    "JobPreemptable (accepted PpJobPreemptableRel)",
+    "JobReady pointwise on Booleans for related schedules",
+    "SvcProcessorStateRel + SvcScheduleRel (two-sided)",
+    "ArArrivalSequenceRel",
+    "JLDP/JLFP/FP policies pointwise on Booleans",
+    "JobTask by Lean.eq"
+  ],
+  "coverage_for_inner_binders": [
+    "jobs (identity carrier)",
+    "Nats (both directions)"
+  ],
+  "lean_representation_note": "Booleans in Prop position are `= true`; the canonical conversions JLFP\u2192JLDP and FP\u2192JLFP are the accepted `JLFP_to_JLDP`/`FP_to_JLFP`, passed explicitly",
+  "export_diagnosis": "the accepted preemption-time export root (preemption-parameter closure, ~135k lines) reused so that the accepted certificate chain applies, plus the three definitions and the priority coercions",
+  "extra_pinned_sources": [],
+  "extra_lean": []
+}

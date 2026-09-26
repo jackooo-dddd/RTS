@@ -1,0 +1,5 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedBlockingBoundEdf.
+
+Check ImportedBlockingBoundEdf.Prosa_Analysis_Definitions_BlockingBound_Edf_blocking_relevant.
+Check ImportedBlockingBoundEdf.Prosa_Analysis_Definitions_BlockingBound_Edf_blocking_bound.

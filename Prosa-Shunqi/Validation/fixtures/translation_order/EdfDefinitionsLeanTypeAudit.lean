@@ -1,0 +1,10 @@
+import Prosa.Analysis.Facts.EdfDefinitions
+set_option pp.fieldNotation false
+
+#check @Prosa.Analysis.Facts.EdfDefinitions.EDF_schedule_implies_respects_policy_at_preemption_point
+#check @Prosa.Analysis.Facts.EdfDefinitions.respects_policy_at_preemption_point_implies_EDF_schedule
+#check @Prosa.Analysis.Facts.EdfDefinitions.EDF_schedule_equiv
+
+#print axioms Prosa.Analysis.Facts.EdfDefinitions.EDF_schedule_implies_respects_policy_at_preemption_point
+#print axioms Prosa.Analysis.Facts.EdfDefinitions.respects_policy_at_preemption_point_implies_EDF_schedule
+#print axioms Prosa.Analysis.Facts.EdfDefinitions.EDF_schedule_equiv

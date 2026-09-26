@@ -1,0 +1,181 @@
+{
+  "rank": 175,
+  "layer": 18,
+  "tag": "FNPJ",
+  "slug": "analysis_facts_preemption_job_nonpreemptive",
+  "source": "analysis/facts/preemption/job/nonpreemptive.v",
+  "dependencies": [
+    "analysis/facts/behavior/all.v",
+    "model/job/properties.v",
+    "model/preemption/fully_nonpreemptive.v",
+    "model/schedule/nonpreemptive.v"
+  ],
+  "declaration_count": 4,
+  "base_run": "model_preemption_parameter_final",
+  "base_checks": [
+    {
+      "manifest": "model_preemption_parameter",
+      "olean": "Prosa/Model/Preemption/Parameter.olean",
+      "vo": "PreemptionParameterSemanticSource.vo"
+    }
+  ],
+  "extra_pinned_sources": [
+    "model/job/properties.v",
+    "model/schedule/nonpreemptive.v",
+    "model/preemption/fully_nonpreemptive.v"
+  ],
+  "dependency_shims": {
+    "model/preemption/parameter.v": "PreemptionParameterSemanticSource"
+  },
+  "extra_source_vo_checks": {
+    "model/preemption/fully_nonpreemptive.vo": [
+      "model_preemption_fully_nonpreemptive",
+      "official_source_vo_sha256"
+    ]
+  },
+  "extra_olean_artifacts": [
+    {
+      "from": "analysis_facts_behavior_all_final/olean/Prosa/Analysis/Definitions/SchedulePrefix.olean",
+      "to": "Prosa/Analysis/Definitions/SchedulePrefix.olean",
+      "manifest": "analysis_schedule_prefix",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_behavior_all_final/olean/Prosa/Analysis/Definitions/Service.olean",
+      "to": "Prosa/Analysis/Definitions/Service.olean",
+      "manifest": "analysis_service",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_behavior_all_final/olean/Prosa/Analysis/Facts/Behavior/All.olean",
+      "to": "Prosa/Analysis/Facts/Behavior/All.olean",
+      "manifest": "analysis_facts_behavior_all",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_behavior_all_final/olean/Prosa/Analysis/Facts/Behavior/Completion.olean",
+      "to": "Prosa/Analysis/Facts/Behavior/Completion.olean",
+      "manifest": "analysis_facts_behavior_completion",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_behavior_all_final/olean/Prosa/Analysis/Facts/Behavior/Deadlines.olean",
+      "to": "Prosa/Analysis/Facts/Behavior/Deadlines.olean",
+      "manifest": "analysis_facts_behavior_deadlines",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_behavior_all_final/olean/Prosa/Analysis/Facts/Behavior/Service.olean",
+      "to": "Prosa/Analysis/Facts/Behavior/Service.olean",
+      "manifest": "analysis_facts_behavior_service",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_behavior_all_final/olean/Prosa/Analysis/Facts/Behavior/Supply.olean",
+      "to": "Prosa/Analysis/Facts/Behavior/Supply.olean",
+      "manifest": "analysis_facts_behavior_supply",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_behavior_all_final/olean/Prosa/Analysis/Facts/Model/Scheduled.olean",
+      "to": "Prosa/Analysis/Facts/Model/Scheduled.olean",
+      "manifest": "analysis_facts_model_scheduled",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_behavior_all_final/olean/Prosa/Model/Job/Properties.olean",
+      "to": "Prosa/Model/Job/Properties.olean",
+      "manifest": "model_job_properties",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_behavior_all_final/olean/Prosa/Model/Schedule/Scheduled.olean",
+      "to": "Prosa/Model/Schedule/Scheduled.olean",
+      "manifest": "model_schedule_scheduled",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "model_preemption_fully_nonpreemptive_final/olean/Prosa/Model/Preemption/FullyNonpreemptive.olean",
+      "to": "Prosa/Model/Preemption/FullyNonpreemptive.olean",
+      "manifest": "model_preemption_fully_nonpreemptive",
+      "key": "production_olean_sha256"
+    }
+  ],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "FactsNonpreemptiveJobSemanticSource",
+    "drop_imports": [
+      "Require Export prosa.analysis.facts.behavior.all."
+    ],
+    "add_imports": [
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq.",
+      "Require Import prosa.model.processor.platform_properties.",
+      "#[local] Existing Instance fully_nonpreemptive_job_model."
+    ],
+    "note": "theorem statements from the authoritative elaborated types (proofs omitted); the proof-only analysis/facts/behavior/all import is dropped; model/job/properties, model/schedule/nonpreemptive and model/preemption/fully_nonpreemptive are compiled from the pinned tree (the latter against model/preemption/parameter.v bound to the accepted extracted parameter source by the same one-line re-export shim as in its accepted zero-declaration validation; its recompiled .vo is hash-checked against that manifest); the source's `#[local] Existing Instance fully_nonpreemptive_job_model` is replayed after the imports; model/processor/platform_properties (unit_service_proc_model, in the statements) is imported explicitly from the compiled pinned source of the base"
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/FactsNonpreemptiveJobStatementProbe.v",
+  "production": "Prosa/Analysis/Facts/Preemption/Job/Nonpreemptive.lean",
+  "production_olean": "Prosa/Analysis/Facts/Preemption/Job/Nonpreemptive.olean",
+  "lean_namespace": "Prosa.Analysis.Facts.Preemption.Job.Nonpreemptive",
+  "fixtures": [
+    "NondecreasingComputationInterface",
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "PreemptionParameterComputationInterface",
+    "FactsNonpreemptiveJobComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/FactsNonpreemptiveJobLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/analysis_facts_preemption_job_nonpreemptive_export_config.json",
+  "export_name": "FactsNonpreemptiveJob",
+  "cert_dir": "certificates/analysis_facts_preemption_job_nonpreemptive",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "JitterSvcBaseAdapter",
+    "JitterSvcNatBoolOperations",
+    "JitterSvcIntervalOperations",
+    "JitterSvcScheduleOperations",
+    "JitterSvcJobOperations",
+    "PreemptionParameterCorrespondence",
+    "FactsNonpreemptiveJobCorrespondence"
+  ],
+  "audit_module": "FactsNonpreemptiveJobAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/FactsNonpreemptiveJobImportedTypeAudit.v",
+  "assumption_config": "certificates/analysis_facts_preemption_job_nonpreemptive/facts_nonpreemptive_job_assumption_config.json",
+  "lean_axiom_config": "certificates/analysis_facts_preemption_job_nonpreemptive/facts_nonpreemptive_job_lean_axiom_config.json",
+  "computational": [],
+  "principal": {},
+  "helpers": [
+    "fnpj_forall_cover_sprop",
+    "fnpj_lean_transport",
+    "fnpj_nat_input",
+    "fnpj_fully_nonpreemptive_related",
+    "fnpj_unit_service_related",
+    "fnpj_nonpreemptive_schedule_related",
+    "fnpj_completed_jobs_dont_execute_related",
+    "fnpj_schedule_fun_to_svc",
+    "fnpj_schedule_to_target_rel",
+    "fnpj_schedule_to_source_rel"
+  ],
+  "previous_status": "analysis_facts_busy_interval_quiet_time_module_status.json",
+  "previous_files": 164,
+  "previous_decls": 1148,
+  "input_relations": [
+    "job_cost by SvcJobCostRel",
+    "SvcProcessorStateRel (two-sided) + SvcScheduleRel",
+    "ArArrivalSequenceRel",
+    "the source-local fully nonpreemptive instance related to the accepted Lean definition"
+  ],
+  "coverage_for_inner_binders": [
+    "jobs (identity carrier)",
+    "Nats (both directions)",
+    "processor states (through the state conversion)",
+    "schedules (functionally, through the state conversion with its roundtrips)"
+  ],
+  "lean_representation_note": "the source's section-local fully nonpreemptive instance is passed explicitly as the accepted Lean definition of the same name, as the elaborated source types do; `~~ b` in Prop position is `(!b) = true`",
+  "export_diagnosis": "the accepted preemption-parameter export root (Service/Schedule closure, ~127k lines) reused so that the accepted certificate chain applies, plus the four statements, the fully nonpreemptive job model and the nonpreemptive-schedule definition"
+}

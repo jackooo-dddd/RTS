@@ -1,0 +1,171 @@
+{
+  "rank": 179,
+  "layer": 18,
+  "tag": "FRTC",
+  "slug": "analysis_facts_preemption_rtc_threshold_job_preemptable",
+  "source": "analysis/facts/preemption/rtc_threshold/job_preemptable.v",
+  "dependencies": [
+    "analysis/facts/behavior/all.v",
+    "model/job/properties.v",
+    "model/task/preemption/parameters.v"
+  ],
+  "declaration_count": 14,
+  "base_run": "model_task_preemption_parameters_final",
+  "base_checks": [
+    {
+      "manifest": "model_task_preemption_parameters",
+      "olean": "Prosa/Model/Task/Preemption/Parameters.olean",
+      "vo": "TaskPreemptionParametersSemanticSource.vo"
+    },
+    {
+      "manifest": "model_preemption_parameter",
+      "olean": "Prosa/Model/Preemption/Parameter.olean",
+      "vo": "PreemptionParameterSemanticSource.vo"
+    }
+  ],
+  "extra_pinned_sources": [
+    "model/job/properties.v"
+  ],
+  "extra_olean_artifacts": [
+    {
+      "from": "analysis_facts_behavior_all_final/olean/Prosa/Analysis/Definitions/SchedulePrefix.olean",
+      "to": "Prosa/Analysis/Definitions/SchedulePrefix.olean",
+      "manifest": "analysis_schedule_prefix",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_behavior_all_final/olean/Prosa/Analysis/Definitions/Service.olean",
+      "to": "Prosa/Analysis/Definitions/Service.olean",
+      "manifest": "analysis_service",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_behavior_all_final/olean/Prosa/Analysis/Facts/Behavior/All.olean",
+      "to": "Prosa/Analysis/Facts/Behavior/All.olean",
+      "manifest": "analysis_facts_behavior_all",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_behavior_all_final/olean/Prosa/Analysis/Facts/Behavior/Completion.olean",
+      "to": "Prosa/Analysis/Facts/Behavior/Completion.olean",
+      "manifest": "analysis_facts_behavior_completion",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_behavior_all_final/olean/Prosa/Analysis/Facts/Behavior/Deadlines.olean",
+      "to": "Prosa/Analysis/Facts/Behavior/Deadlines.olean",
+      "manifest": "analysis_facts_behavior_deadlines",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_behavior_all_final/olean/Prosa/Analysis/Facts/Behavior/Service.olean",
+      "to": "Prosa/Analysis/Facts/Behavior/Service.olean",
+      "manifest": "analysis_facts_behavior_service",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_behavior_all_final/olean/Prosa/Analysis/Facts/Behavior/Supply.olean",
+      "to": "Prosa/Analysis/Facts/Behavior/Supply.olean",
+      "manifest": "analysis_facts_behavior_supply",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_behavior_all_final/olean/Prosa/Analysis/Facts/Model/Scheduled.olean",
+      "to": "Prosa/Analysis/Facts/Model/Scheduled.olean",
+      "manifest": "analysis_facts_model_scheduled",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_behavior_all_final/olean/Prosa/Model/Job/Properties.olean",
+      "to": "Prosa/Model/Job/Properties.olean",
+      "manifest": "model_job_properties",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_behavior_all_final/olean/Prosa/Model/Schedule/Scheduled.olean",
+      "to": "Prosa/Model/Schedule/Scheduled.olean",
+      "manifest": "model_schedule_scheduled",
+      "key": "production_olean_sha256"
+    }
+  ],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "FactsRtcJobPreemptableSemanticSource",
+    "drop_imports": [
+      "Require Export prosa.analysis.facts.behavior.all.",
+      "Require Export prosa.model.task.preemption.parameters."
+    ],
+    "add_imports": [
+      "Require Export prosa.TaskPreemptionParametersSemanticSource.",
+      "Export TaskPreemptionParametersSemanticSource.",
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq.",
+      "Require Import prosa.util.list.",
+      "Import ListSemanticSource.",
+      "Require Import prosa.GeneratedNondecreasingSource.",
+      "Import GeneratedNondecreasingSource."
+    ],
+    "note": "theorem statements from the authoritative elaborated types (proofs omitted); the model/task/preemption/parameters import is bound to the accepted extracted source (TaskPreemptionParametersSemanticSource, .vo hash-checked as base); model/job/properties is the pinned source compiled from the pinned tree; the proof-only analysis/facts/behavior/all import is dropped; last0 and nondecreasing_sequence come from the accepted extracted util/list and generated util/nondecreasing sources of the base closure"
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/FactsRtcJobPreemptableStatementProbe.v",
+  "production": "Prosa/Analysis/Facts/Preemption/RtcThreshold/JobPreemptable.lean",
+  "production_olean": "Prosa/Analysis/Facts/Preemption/RtcThreshold/JobPreemptable.olean",
+  "lean_namespace": "Prosa.Analysis.Facts.Preemption.RtcThreshold.JobPreemptable",
+  "fixtures": [
+    "NondecreasingComputationInterface",
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "PreemptionParameterComputationInterface",
+    "TaskPreemptionParametersComputationInterface",
+    "FactsRtcJobPreemptableComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/FactsRtcJobPreemptableLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/analysis_facts_preemption_rtc_threshold_job_preemptable_export_config.json",
+  "export_name": "FactsRtcJobPreemptable",
+  "cert_dir": "certificates/analysis_facts_preemption_rtc_threshold_job_preemptable",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "JitterSvcBaseAdapter",
+    "JitterSvcNatBoolOperations",
+    "JitterSvcIntervalOperations",
+    "JitterSvcScheduleOperations",
+    "JitterSvcJobOperations",
+    "PreemptionParameterCorrespondence",
+    "FactsRtcJobPreemptableCorrespondence"
+  ],
+  "audit_module": "FactsRtcJobPreemptableAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/FactsRtcJobPreemptableImportedTypeAudit.v",
+  "assumption_config": "certificates/analysis_facts_preemption_rtc_threshold_job_preemptable/facts_rtc_job_preemptable_assumption_config.json",
+  "lean_axiom_config": "certificates/analysis_facts_preemption_rtc_threshold_job_preemptable/facts_rtc_job_preemptable_lean_axiom_config.json",
+  "computational": [],
+  "principal": {},
+  "helpers": [
+    "frtc_length_canonical",
+    "frtc_length_related",
+    "frtc_nthD_canonical",
+    "frtc_nthD_related",
+    "frtc_nondecreasing_sequence_related",
+    "frtc_nat_list_to_rocq",
+    "frtc_nat_list_source_roundtrip",
+    "frtc_list_eq_correspondence",
+    "frtc_cost_positive_related"
+  ],
+  "previous_status": "analysis_facts_priority_inversion_module_status.json",
+  "previous_files": 168,
+  "previous_decls": 1169,
+  "input_relations": [
+    "job_cost by SvcJobCostRel",
+    "JobPreemptable by the accepted PpJobPreemptableRel",
+    "SvcProcessorStateRel (two-sided) + SvcScheduleRel",
+    "ArArrivalSequenceRel"
+  ],
+  "coverage_for_inner_binders": [
+    "jobs (identity carrier)",
+    "Nats (both directions)"
+  ],
+  "lean_representation_note": "Booleans in Prop position are `= true`; single comparisons are Lean propositions; the chained `a <= b < c` is `(decide (a \u2264 b) && decide (b < c)) = true`; `x \\in s` is `decide (x \u2208 s) = true`; `size` is `length`; section hypotheses appear only in the statements that use them",
+  "export_diagnosis": "the accepted task-preemption-parameters export root (preemption-parameter closure, ~127k lines) reused so that the accepted certificate chain applies, plus the fourteen statements and job_cost_positive"
+}

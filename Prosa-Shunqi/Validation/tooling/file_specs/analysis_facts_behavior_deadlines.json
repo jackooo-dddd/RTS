@@ -1,0 +1,87 @@
+{
+  "rank": 146,
+  "layer": 16,
+  "tag": "FDL",
+  "slug": "analysis_facts_behavior_deadlines",
+  "source": "analysis/facts/behavior/deadlines.v",
+  "dependencies": [
+    "analysis/facts/behavior/completion.v"
+  ],
+  "declaration_count": 4,
+  "base_run": "analysis_facts_behavior_completion_final",
+  "base_checks": [
+    {
+      "manifest": "analysis_facts_behavior_completion",
+      "olean": "Prosa/Analysis/Facts/Behavior/Completion.olean",
+      "vo": "FactsCompletionSemanticSource.vo"
+    }
+  ],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "FactsDeadlinesSemanticSource",
+    "drop_imports": [
+      "Require Export prosa.analysis.facts.behavior.completion."
+    ],
+    "add_imports": [
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq.",
+      "Require Import prosa.behavior.all."
+    ],
+    "note": "theorem statements from the authoritative elaborated types (proofs omitted); the proof-heavy analysis/facts/behavior/completion import is dropped (the statements mention only behavior/all)"
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/FactsDeadlinesStatementProbe.v",
+  "production": "Prosa/Analysis/Facts/Behavior/Deadlines.lean",
+  "production_olean": "Prosa/Analysis/Facts/Behavior/Deadlines.olean",
+  "lean_namespace": "Prosa.Analysis.Facts.Behavior.Deadlines",
+  "fixtures": [
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "FactsCompletionComputationInterface",
+    "FactsDeadlinesComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/FactsDeadlinesLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/analysis_facts_behavior_deadlines_export_config.json",
+  "export_name": "FactsDeadlines",
+  "cert_dir": "certificates/analysis_facts_behavior_deadlines",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "JitterSvcBaseAdapter",
+    "JitterSvcNatBoolOperations",
+    "JitterSvcIntervalOperations",
+    "JitterSvcScheduleOperations",
+    "JitterSvcJobOperations",
+    "FactsDeadlinesCorrespondence"
+  ],
+  "audit_module": "FactsDeadlinesAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/FactsDeadlinesImportedTypeAudit.v",
+  "assumption_config": "certificates/analysis_facts_behavior_deadlines/facts_deadlines_assumption_config.json",
+  "lean_axiom_config": "certificates/analysis_facts_behavior_deadlines/facts_deadlines_lean_axiom_config.json",
+  "computational": [],
+  "principal": {},
+  "helpers": [
+    "fdl_iff_correspondence",
+    "fdl_scheduled_at_related",
+    "fdl_service_at_related",
+    "fdl_service_related",
+    "fdl_completed_by_related",
+    "fdl_job_meets_deadline_related",
+    "fdl_completed_jobs_dont_execute_related"
+  ],
+  "previous_status": "analysis_definitions_service_inversion_pred_module_status.json",
+  "previous_files": 141,
+  "previous_decls": 1070,
+  "input_relations": [
+    "job_cost by SvcJobCostRel",
+    "JobDeadline pointwise by SubNatRel",
+    "SvcProcessorStateRel + SvcScheduleRel (two-sided)"
+  ],
+  "coverage_for_inner_binders": [
+    "jobs (identity carrier)",
+    "Nats (both directions)"
+  ],
+  "lean_representation_note": "Booleans in Prop position are `= true`; `~~ b` is `!b`; single comparisons are Lean propositions; chained comparisons are `(decide _ && decide _) = true`",
+  "export_diagnosis": "the accepted completion-facts export root (Service/Schedule interface closure, ~127k lines) without its theorem targets, reused so that the accepted certificate chain applies, plus the four statements"
+}

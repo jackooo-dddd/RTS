@@ -1,0 +1,141 @@
+{
+  "rank": 204,
+  "layer": 19,
+  "tag": "IPI",
+  "slug": "analysis_facts_model_ideal_priority_inversion",
+  "source": "analysis/facts/model/ideal/priority_inversion.v",
+  "dependencies": [
+    "analysis/facts/model/ideal/schedule.v",
+    "analysis/facts/priority/inversion.v",
+    "model/processor/ideal.v"
+  ],
+  "declaration_count": 4,
+  "base_run": "analysis_facts_priority_inversion_final",
+  "base_checks": [
+    {
+      "manifest": "analysis_facts_priority_inversion",
+      "olean": "Prosa/Analysis/Facts/Priority/Inversion.olean",
+      "vo": "FactsPriorityInversionSemanticSource.vo"
+    }
+  ],
+  "extra_pinned_sources": [
+    "model/processor/ideal.v"
+  ],
+  "extra_source_patches": [
+    "patches/prosa-v06-rocq93-model-processor-ideal.patch"
+  ],
+  "extra_lean": [],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "IdealPriorityInversionSemanticSource",
+    "drop_imports": [
+      "Require Export prosa.analysis.facts.priority.inversion.",
+      "Require Import prosa.model.processor.ideal.",
+      "Require Export prosa.analysis.facts.model.ideal.schedule."
+    ],
+    "add_imports": [
+      "Require Export prosa.PriorityInversionSemanticSource.",
+      "Export PriorityInversionSemanticSource.",
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq.",
+      "Require Import prosa.behavior.all prosa.model.processor.ideal prosa.model.schedule.scheduled."
+    ],
+    "note": "theorem statements from the authoritative elaborated types (proofs omitted); priority_inversion is bound to its accepted extracted source (PriorityInversionSemanticSource of the base closure); model/processor/ideal is compiled from the pinned tree under its accepted proof-only Rocq 9.3 compatibility patch; the proof-only priority-inversion facts and ideal-schedule facts imports are dropped"
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/IdealPriorityInversionStatementProbe.v",
+  "production": "Prosa/Analysis/Facts/Model/Ideal/PriorityInversion.lean",
+  "production_olean": "Prosa/Analysis/Facts/Model/Ideal/PriorityInversion.olean",
+  "lean_namespace": "Prosa.Analysis.Facts.Model.Ideal.PriorityInversion",
+  "fixtures": [
+    "NondecreasingComputationInterface",
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "PreemptionParameterComputationInterface",
+    "BusyIntervalClassicalComputationInterface",
+    "PriorityInversionComputationInterface",
+    "FactsPriorityInversionComputationInterface",
+    "ScheduledComputationInterface",
+    "IdealScheduleComputationInterface",
+    "IdealPriorityInversionComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/IdealPriorityInversionLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/analysis_facts_model_ideal_priority_inversion_export_config.json",
+  "export_name": "IdealPriorityInversion",
+  "cert_dir": "certificates/analysis_facts_model_ideal_priority_inversion",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "JitterSvcBaseAdapter",
+    "JitterSvcNatBoolOperations",
+    "JitterSvcIntervalOperations",
+    "JitterSvcScheduleOperations",
+    "JitterSvcJobOperations",
+    "PreemptionParameterCorrespondence",
+    "PriorityInversionCorrespondence",
+    "IdealPriorityInversionCorrespondence"
+  ],
+  "audit_module": "IdealPriorityInversionAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/IdealPriorityInversionImportedTypeAudit.v",
+  "assumption_config": "certificates/analysis_facts_model_ideal_priority_inversion/ideal_priority_inversion_assumption_config.json",
+  "lean_axiom_config": "certificates/analysis_facts_model_ideal_priority_inversion/ideal_priority_inversion_lean_axiom_config.json",
+  "computational": [],
+  "principal": {},
+  "helpers": [
+    "ipi_forall_cover",
+    "ipi_nat_input",
+    "ipi_bool_eq_correspondence",
+    "ipi_opt_target_roundtrip",
+    "ipi_option_some_eq_correspondence",
+    "ipi_src_scheduled_on",
+    "ipi_src_scheduled_in",
+    "ipi_scheduled_in_related",
+    "ipi_sched_to_target_rel",
+    "ipi_sched_to_source_rel",
+    "ipi_forall_sched",
+    "ipi_jlfp_to_target_rel",
+    "ipi_jlfp_to_source_rel",
+    "ipi_forall_jlfp",
+    "ipi_reflexive_rel",
+    "ipi_scheduled_at_related",
+    "ipi_ideal_is_idle_related",
+    "ipi_jobs_come_from_rel",
+    "ipi_jobs_must_arrive_rel",
+    "ipi_scheduled_jobs_at_related",
+    "ipi_priority_inversion_related",
+    "ipi_prefix_rel"
+  ],
+  "previous_status": "implementation_facts_ideal_uni_prio_aware_module_status.json",
+  "previous_files": 193,
+  "previous_decls": 1360,
+  "input_relations": [
+    "the processor model is fixed to the ideal uniprocessor on both sides; states related by the constructor-preserving Option map, schedules pointwise (covered in both directions)",
+    "job_arrival by ArJobArrivalRel",
+    "arrival sequences by ArArrivalSequenceRel",
+    "the JLFP policy pointwise on Booleans (covered in both directions)"
+  ],
+  "coverage_for_inner_binders": [
+    "schedules",
+    "JLFP_policy",
+    "jobs and instants"
+  ],
+  "lean_representation_note": "a Boolean in `Prop` position is `= true`; `~~ b` is `!b`; the JLFP policy, quantified after the schedule hypotheses, is a `\u2200 [..]` binder; the unused task, cost and completion context is absent",
+  "export_diagnosis": "the accepted priority-inversion-facts export root without its statements plus the ideal processor, ideal_is_idle, the kernel-checked ideal-state scheduled_in equation and the four statements",
+  "extra_artifacts": [],
+  "extra_olean_artifacts": [
+    {
+      "from": "analysis_facts_model_ideal_schedule_final/olean/Prosa/Model/Processor/Ideal.olean",
+      "to": "Prosa/Model/Processor/Ideal.olean",
+      "manifest": "model_processor_ideal",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_transform_edf_trans_final/olean/Prosa/Analysis/Facts/Model/Ideal/Schedule.olean",
+      "to": "Prosa/Analysis/Facts/Model/Ideal/Schedule.olean",
+      "manifest": "analysis_facts_model_ideal_schedule",
+      "key": "production_olean_sha256"
+    }
+  ],
+  "extra_generated_sources": []
+}

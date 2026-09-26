@@ -1,0 +1,5 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedBusyPrefix.
+
+Check ImportedBusyPrefix.Prosa_Analysis_Abstract_RestrictedSupply_BusyPrefix_service_inversion_of_job_is_bounded_by.
+Check ImportedBusyPrefix.Prosa_Analysis_Abstract_RestrictedSupply_BusyPrefix_service_inversion_is_bounded_by.

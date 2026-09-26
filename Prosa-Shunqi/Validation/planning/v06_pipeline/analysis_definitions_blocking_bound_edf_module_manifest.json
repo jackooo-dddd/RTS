@@ -1,0 +1,160 @@
+{
+  "slice": "TRANSLATION_ORDER_ANALYSIS_DEFINITIONS_BLOCKING_BOUND_EDF",
+  "generated_at": "2026-09-26T16:19:42.247819+08:00",
+  "published_at": "2026-09-26T16:19:42.247819+08:00",
+  "rank": 139,
+  "layer": 16,
+  "source_file": "analysis/definitions/blocking_bound/edf.v",
+  "source_commit": "414e66760333eaa4ef78c685bcf53291c527a548",
+  "source_tree": "7d7e94c731f7eefde4ca738310d4cafdd7bebdf0",
+  "source_file_sha256": "c625c611a06df46fc3e96f979dc872222c6fd2da87edebcc70f1e035a774dff1",
+  "pipeline": "Validation/scripts/translation_file_pipeline.py",
+  "spec": "Validation/tooling/file_specs/analysis_definitions_blocking_bound_edf.json",
+  "spec_sha256": "a0d7f34230ef5185825a8e1404aed4273b15980644b4b1bda8d38495c3c5453a",
+  "source_compatibility": {
+    "mode": "extract",
+    "note": "the two definitions are byte-identical computational blocks; the model/task/preemption/parameters import is bound to the accepted extracted source (TaskPreemptionParametersSemanticSource, .vo hash-checked against its manifest); model/task/arrival/curves is the compiled pinned source of the base run; the section-local `Let D tsk := task_deadline tsk` is reconnected by a recorded local notation",
+    "extracted_sha256": "17bbd9d2fc91aae1d19e43df64c2b1695697bcfeadb511fb327484476fd9bbc3",
+    "extraction_metadata_sha256": "2978eb2e83f28c0faf1b5123269cf53284188fd3e9109a782f58a1b3aeb56eac"
+  },
+  "source_type_evidence": {
+    "prosa.analysis.definitions.blocking_bound.edf.blocking_relevant": "EXACT_HASH",
+    "prosa.analysis.definitions.blocking_bound.edf.blocking_bound": "EXACT_MODULO_OWN_MODULE_QUALIFIER"
+  },
+  "statement_only_export_boundary": [],
+  "input_relations": [
+    "TaskCost / TaskDeadline pointwise by SubNatRel",
+    "MaxArrivals pointwise by SubNatRel on durations",
+    "TaskMaxNonpreemptiveSegment (accepted TppMaxSegmentRel)",
+    "task sets by ArListRel"
+  ],
+  "coverage_for_inner_binders": [
+    "tasks (identity carrier)",
+    "Nats (both directions)"
+  ],
+  "lean_representation_note": "`\\max_(x <- xs | P x) F x` is the accepted `bigMaxListCond xs P F`; `a > b` is `decide (b < a)`; `\u03b5` is `1`; the section-local `Let D` is inlined",
+  "export_size": {
+    "lines": 135866,
+    "soft_budget_flag": "OVER_100K_DIAGNOSED",
+    "diagnosis": "the accepted task-preemption-parameters export root (preemption-parameter Service/Schedule closure, ~135k lines) reused verbatim so that the accepted certificate chain applies, plus two definitions, bigMaxListCond with three kernel-checked equations, and the TaskDeadline/MaxArrivals classes"
+  },
+  "file_dependencies": {
+    "model/task/arrival/curves.v": "model_task_arrival_curves_module_status.json",
+    "model/task/preemption/parameters.v": "model_task_preemption_parameters_module_status.json"
+  },
+  "production_file": "Prosa/Analysis/Definitions/BlockingBound/Edf.lean",
+  "production_source_sha256": "0ba4095315560af52a2e791073740891355e0f45c9f5057002819e7778b6939a",
+  "production_olean_sha256": "566a6d225e6b0e235bff6763559333d20db4d18d3bf17ab8b9d599fae316cc69",
+  "export_config_sha256": "00d25fcc73386f4ece73dc6f224865efb5504189b1742f64542346e5340cf6a8",
+  "export_sha256": "813db49ac3d451f7e258d72742453803c530d91867bca6d119bd2d36ffe5b015",
+  "export_lines": 135866,
+  "export_bytes": 3041126,
+  "import_sha256": "e32bea1e9ab9d5bf1ed79403927cf66108e636d75d0dfa85585630d48445ace0",
+  "source_vo_sha256": "ecf803b40e165c886a2c7ba542c08118696ae920e774fce4ee5f0e73cf74f9f7",
+  "lean_axiom_summary_sha256": "2e093778deffade345821e12ff9b8b1d5e7f65f6435ab7b2ae2d9f5e0ebe70ff",
+  "rocq_assumption_summary_sha256": "06ed8775350c7e371eeb898e5fef20b86ed4944d17e103f23bc3e816ef467508",
+  "assumption_config_sha256": "99b9fb977c2e3ca0ca3e13dc0ace94498c71c4ca934203c781235e1f0e49aa32",
+  "stage_timing_seconds": {
+    "source_acquisition": {
+      "mode": "FRESH",
+      "seconds": 3
+    },
+    "lean_build": {
+      "mode": "FRESH",
+      "seconds": 558
+    },
+    "export": {
+      "mode": "FRESH",
+      "seconds": 44
+    },
+    "rocq_import": {
+      "mode": "FRESH",
+      "seconds": 42
+    },
+    "certificate_compile": {
+      "mode": "FRESH",
+      "seconds": 17
+    },
+    "assumption_audit": {
+      "mode": "FRESH",
+      "seconds": 0
+    }
+  },
+  "certificates": {
+    "ArrivalsSeqBaseAdapter": {
+      "source_sha256": "7328cc59daa3a224c598048909de4f7db0abded8978cbe655daeaf0793ccdc25",
+      "vo_sha256": "8d50969aedc8292bfff646c14db5d5b2c9f18379feff60f64ae2a22a4e4f82f2"
+    },
+    "ArrivalsSeqOperations": {
+      "source_sha256": "7255ae33c4d90132fd5c6cf3967f9c5f3c7559d4df4ecff2d7815167baea6877",
+      "vo_sha256": "fa218afb60df9d62d6f40f311be866c7f65d1ac5e023cf41a8d26178a235c64f"
+    },
+    "ArrivalsSeqCorrespondence": {
+      "source_sha256": "a0be9154d00ed856b23cd8ffdab516d674c861f375d03a32b9918cbaac6ee5bc",
+      "vo_sha256": "259be835e6b28688849b544a5c48c506735df33c88e8d39924d481d98d25d4b9"
+    },
+    "JitterSvcBaseAdapter": {
+      "source_sha256": "4a7d70289dcc4cc949ae8475edd667f45090cd49c204998a64f4cc87aecc5646",
+      "vo_sha256": "2e622040485ae5924cda13b9f1d0faeb7242b7059d40b08989d813d4ce4e4b41"
+    },
+    "JitterSvcNatBoolOperations": {
+      "source_sha256": "6f16d6decc041a31e6bd329c67348ac2a37f7ded217e0664e8f8413afd0afcd5",
+      "vo_sha256": "b7d9a85b0e497fac059549ca891faf31df3e803e4c687d08a7771807ba89e783"
+    },
+    "JitterSvcIntervalOperations": {
+      "source_sha256": "d4b10ed5de96480aca59fe5fb75f0c304a9d8bd7388dbb12c69b99d693c31545",
+      "vo_sha256": "18a048ff99150629692bea8f67059e80f6cc3f757297b4e89a1f61fdea80e847"
+    },
+    "JitterSvcScheduleOperations": {
+      "source_sha256": "bab50e25f5e18971b08e3a9a15ba6e95bdcdaba2aa2a0b7748c18e63d6debe53",
+      "vo_sha256": "c17530f833fc9366d111ca8b1c84fc371a67c60d0fe5b5dca248dcc950ca2f39"
+    },
+    "JitterSvcJobOperations": {
+      "source_sha256": "438babc67a36b94aa19fe58a4727667550802c5b90a965f8e21de9e03275d034",
+      "vo_sha256": "dc186e2df274b6fdd84ffd3ae4612b51e65e8c9fa744449f8c09377e775561b5"
+    },
+    "PreemptionParameterCorrespondence": {
+      "source_sha256": "54f6696e23b7280aea3eee33b6e91703dd6aa26095069115684defbd010cd37d",
+      "vo_sha256": "d61653a746e6cad4c72d5f0bc5bee8b10be52e401eac06e4f07542e0365fbe53"
+    },
+    "TaskPreemptionParametersCorrespondence": {
+      "source_sha256": "e8f53138320203825b10ed54812add1bb125d2d19827d937f046dbf353b63d64",
+      "vo_sha256": "c01979e7e6083c5f22499f4d2c960bfb674381d76fbf3da1263398d5fa33caf4"
+    },
+    "BlockingBoundEdfCorrespondence": {
+      "source_sha256": "8ccae293812b764d4a7b535412a954912661b1296f0c9d34f7889d2eeca8eb81",
+      "vo_sha256": "c4736eaf4ca5769e5649cbac06bf3fbf12fb0609db80f5098fa2ddb1ae5e9c39"
+    },
+    "BlockingBoundEdfAssumptionAudit": {
+      "source_sha256": "684ef9c7604fa025db68b050aeaf34eedfaf345c0aa33ee1555a476096355219",
+      "vo_sha256": "5f4bfd05e00326debbb4362426c71f8c68bbf0ff9859f20434f443e86a572fe4"
+    }
+  },
+  "declarations": [
+    {
+      "source_declaration": "prosa.analysis.definitions.blocking_bound.edf.blocking_relevant",
+      "lean_declaration": "Prosa.Analysis.Definitions.BlockingBound.Edf.blocking_relevant",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "blocking_relevant_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.definitions.blocking_bound.edf.blocking_bound",
+      "lean_declaration": "Prosa.Analysis.Definitions.BlockingBound.Edf.blocking_bound",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "blocking_bound_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    }
+  ],
+  "acceptance": "ACCEPTED_V06_FILE"
+}

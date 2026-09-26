@@ -1,0 +1,203 @@
+{
+  "slice": "TRANSLATION_ORDER_ANALYSIS_TRANSFORM_EDF_TRANS",
+  "generated_at": "2026-09-27T04:21:55.595909+08:00",
+  "published_at": "2026-09-27T04:21:55.595909+08:00",
+  "rank": 198,
+  "layer": 19,
+  "source_file": "analysis/transform/edf_trans.v",
+  "source_commit": "414e66760333eaa4ef78c685bcf53291c527a548",
+  "source_tree": "7d7e94c731f7eefde4ca738310d4cafdd7bebdf0",
+  "source_file_sha256": "038f6af2e7ccdf8e814788b79ec3921d1cd5d4456626917878f5ab2d2350fb74",
+  "pipeline": "Validation/scripts/translation_file_pipeline.py",
+  "spec": "Validation/tooling/file_specs/analysis_transform_edf_trans.json",
+  "spec_sha256": "72e80cb148d400954e3a5c805b26aa3e4165001faf532f981722122db79f661c",
+  "source_compatibility": {
+    "mode": "extract",
+    "note": "the six definitions are byte-identical computational blocks (the section-local `PState`/`SchedType` Lets included); the prefix import is bound to its accepted extracted source (TransformPrefixSemanticSource .vo copied from its accepted run and hash-checked against its manifest, compiled against pinned behavior .vo files byte-identical to the base run's); analysis/transform/swap is the pinned source compiled from the pinned tree; util/search_arg is bound to its accepted generated definition source (GeneratedSearchArgSource.v, copied from its accepted run, sha256 equal to the validation_source_sha256 of its accepted manifest entry, compiled here; the pinned file's proofs do not build under the approved util/tactics patch); model/processor/ideal is the compiled patched pinned source of the base run; the proof-only facts/model/ideal/schedule import is dropped",
+    "extracted_sha256": "0274cce952a662aadde0e086c7e4439ba0a0f6ea4993a2c32a7e98b9fc4a792b",
+    "extraction_metadata_sha256": "6c340b8080238328275a7f67b86e87f2256bd4a73af0fa2b68eefb84fd5a2ffa"
+  },
+  "source_type_evidence": {
+    "prosa.analysis.transform.edf_trans.earlier_deadline": "EXACT_HASH",
+    "prosa.analysis.transform.edf_trans.relevant_pstate": "EXACT_MODULO_OWN_MODULE_QUALIFIER",
+    "prosa.analysis.transform.edf_trans.find_swap_candidate": "EXACT_MODULO_OWN_MODULE_QUALIFIER",
+    "prosa.analysis.transform.edf_trans.make_edf_at": "EXACT_HASH",
+    "prosa.analysis.transform.edf_trans.edf_transform_prefix": "EXACT_HASH",
+    "prosa.analysis.transform.edf_trans.edf_transform": "EXACT_HASH"
+  },
+  "statement_only_export_boundary": [],
+  "input_relations": [
+    "the processor model is fixed to the ideal uniprocessor on both sides; states related by the accepted constructor-preserving Option map (IdOptRel), schedules pointwise (IdScheduleRel)",
+    "job_deadline pointwise by SubNatRel",
+    "ArJobArrivalRel",
+    "instants by SubNatRel",
+    "jobs (identity carrier)"
+  ],
+  "coverage_for_inner_binders": [],
+  "lean_representation_note": "the section-local `PState` is the accepted ideal processor `processor_state Job` (states `Option Job`); `oapp f d s` and `if e is Some t then t else 0` are `match`es; the local `let`s are kept; `t.+1` is `t + 1`",
+  "export_size": {
+    "lines": 140298,
+    "soft_budget_flag": "OVER_100K_DIAGNOSED",
+    "diagnosis": "the accepted ideal-schedule export root without its statements (ideal processor over the Service / Schedule closure), plus the six definitions, search_arg, prefix_map, replace_at/swapped and their kernel-checked equations at the ideal processor"
+  },
+  "file_dependencies": {
+    "analysis/facts/model/ideal/schedule.v": "analysis_facts_model_ideal_schedule_module_status.json",
+    "analysis/transform/prefix.v": "analysis_transform_prefix_module_status.json",
+    "analysis/transform/swap.v": "analysis_transform_swap_module_status.json"
+  },
+  "production_file": "Prosa/Analysis/Transform/EdfTrans.lean",
+  "production_source_sha256": "74201c7d9233c58aadffa0810fbbe924b1819300d376175d72e3a37dc8eba47d",
+  "production_olean_sha256": "6dcdf177ec75a5def994b5aa32d3dab3add9090daafae919b4086c8e7f16d348",
+  "export_config_sha256": "1ff57979242761dd430f04d67ae539085ba5a1d99e5d6c4a11c098bd1a8e5d65",
+  "export_sha256": "fdf14dbe57a23522df029d00f556a9018d1c6c297ded355d28f5f9d4f18d1c32",
+  "export_lines": 140298,
+  "export_bytes": 3149897,
+  "import_sha256": "40b6706d5d2914d0048398c196d8b6e00269b968cf112fc7aacd0db5299dde24",
+  "source_vo_sha256": "de3496cd632f02fe722319957f769dbcd48985403532690828cc2ed2b0c3a9d6",
+  "lean_axiom_summary_sha256": "a73632d8099cd4e34637d0e9d20757324d69b75ffbf6cb9865c9d0eb3204b600",
+  "rocq_assumption_summary_sha256": "243c571d17c0c739222e22753b461d85b3e4d58b1618ddac6dc61d9d7046ffa9",
+  "assumption_config_sha256": "53a26834b49cc2cfd2b2c76d04c44c6c36bc7169485cde087657bec26bfeb2bf",
+  "stage_timing_seconds": {
+    "source_acquisition": {
+      "mode": "FRESH",
+      "seconds": 4
+    },
+    "lean_build": {
+      "mode": "FRESH",
+      "seconds": 380
+    },
+    "export": {
+      "mode": "FRESH",
+      "seconds": 33
+    },
+    "rocq_import": {
+      "mode": "FRESH",
+      "seconds": 44
+    },
+    "certificate_compile": {
+      "mode": "FRESH",
+      "seconds": 14
+    },
+    "assumption_audit": {
+      "mode": "FRESH",
+      "seconds": 0
+    }
+  },
+  "certificates": {
+    "ArrivalsSeqBaseAdapter": {
+      "source_sha256": "d3967323b0b92b196efb2e804c296107b397b596d72f9140edf9ea97b05b470f",
+      "vo_sha256": "07469a1f6080f3e83696d4f1072ae81b20e77ae3f20b89e1b47bfd0dce5453c9"
+    },
+    "ArrivalsSeqOperations": {
+      "source_sha256": "eced17af8b147e23fa6b1a2f7d447738c1d31857e922bd7bd2b22128909cfb24",
+      "vo_sha256": "06d1e68c55a92223041e1d1550eebbc5e047030e61c31cccae408bf3e36d75bf"
+    },
+    "ArrivalsSeqCorrespondence": {
+      "source_sha256": "b411105f33f82b9a274b316de13e7e06459322833018c7529b3ba02401691e1a",
+      "vo_sha256": "ca272a1afb512776e78c9021836593c4b07396d5eb83297e76d42a9a9da0a7b5"
+    },
+    "JitterSvcBaseAdapter": {
+      "source_sha256": "0eeca19e77015b2cf0df7f6d32d006e6b0e0060d60ae5890527f5aaa4c6d0129",
+      "vo_sha256": "0da6a084f75c521a956f2973cec0c9c73a7f770c8d346f8ddbeb8da9b06682f3"
+    },
+    "JitterSvcNatBoolOperations": {
+      "source_sha256": "9e51ea4fc47130de7e754017d088dc04f68fcfb60cb1369a4a52c7f887b64b20",
+      "vo_sha256": "4c9c9354385000e9fa9fdbcf090ca9e14606580faa02588cf137e9080760d98a"
+    },
+    "JitterSvcIntervalOperations": {
+      "source_sha256": "d2446d4d61e393af3036a7fc0321b537f5dc3b7e8d16aa8e27cf5e0a63233166",
+      "vo_sha256": "ff57e114017bf867a7c5b4602a818429533627b1bd9bdd68524d83475f5e34cc"
+    },
+    "JitterSvcScheduleOperations": {
+      "source_sha256": "15b25f9adee3414329d322f2f24e7f887ac5e64a3d643e0c5dacaa2de53e45ea",
+      "vo_sha256": "9a0856650615c95e3d43d2ec08b7a2aee42a8dfb56bfd63f23c95e9a48d1d597"
+    },
+    "JitterSvcJobOperations": {
+      "source_sha256": "9fc653ee6d5bfc1cad2629bd853fce54ebcdc0d2162b9241d410a9f885db8659",
+      "vo_sha256": "4c18adcd08db5872e644575ee09585fa8f6003d0b4699c08938e164f13f0e1fb"
+    },
+    "EdfTransCorrespondence": {
+      "source_sha256": "c8d6f075bb92e21f6b46a052566c3c711f3ee599991c7b98696764ea4b336dae",
+      "vo_sha256": "cd96cb4bdf54acf7789d2b0c89cd4d3087ce6e4ec03d463b946845e0eaa4e47c"
+    },
+    "EdfTransAssumptionAudit": {
+      "source_sha256": "45bda25db171413c2e76366a68d0aef81fad46e93993e02cb08175a2cf9af831",
+      "vo_sha256": "3c9b6ee0f6cb77f203a3700f8f47ca64c61db8561d0ee20574719f7d78637383"
+    }
+  },
+  "declarations": [
+    {
+      "source_declaration": "prosa.analysis.transform.edf_trans.earlier_deadline",
+      "lean_declaration": "Prosa.Analysis.Transform.EdfTrans.earlier_deadline",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "earlier_deadline_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.transform.edf_trans.relevant_pstate",
+      "lean_declaration": "Prosa.Analysis.Transform.EdfTrans.relevant_pstate",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "relevant_pstate_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.transform.edf_trans.find_swap_candidate",
+      "lean_declaration": "Prosa.Analysis.Transform.EdfTrans.find_swap_candidate",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "find_swap_candidate_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.transform.edf_trans.make_edf_at",
+      "lean_declaration": "Prosa.Analysis.Transform.EdfTrans.make_edf_at",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "make_edf_at_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.transform.edf_trans.edf_transform_prefix",
+      "lean_declaration": "Prosa.Analysis.Transform.EdfTrans.edf_transform_prefix",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "edf_transform_prefix_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.transform.edf_trans.edf_transform",
+      "lean_declaration": "Prosa.Analysis.Transform.EdfTrans.edf_transform",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "edf_transform_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    }
+  ],
+  "acceptance": "ACCEPTED_V06_FILE"
+}

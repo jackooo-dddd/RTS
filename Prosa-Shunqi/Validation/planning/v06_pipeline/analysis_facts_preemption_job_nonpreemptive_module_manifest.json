@@ -1,0 +1,191 @@
+{
+  "slice": "TRANSLATION_ORDER_ANALYSIS_FACTS_PREEMPTION_JOB_NONPREEMPTIVE",
+  "generated_at": "2026-09-26T22:23:47.417288+08:00",
+  "published_at": "2026-09-26T22:23:47.417288+08:00",
+  "rank": 175,
+  "layer": 18,
+  "source_file": "analysis/facts/preemption/job/nonpreemptive.v",
+  "source_commit": "414e66760333eaa4ef78c685bcf53291c527a548",
+  "source_tree": "7d7e94c731f7eefde4ca738310d4cafdd7bebdf0",
+  "source_file_sha256": "87fde2f88d2f93b494438da572efe536db835014fab12ec19f4ed7c85bf34ff8",
+  "pipeline": "Validation/scripts/translation_file_pipeline.py",
+  "spec": "Validation/tooling/file_specs/analysis_facts_preemption_job_nonpreemptive.json",
+  "spec_sha256": "832e6b048864f2e9d21f0f5e4a0a5a1fb4d9059c60ff7494b1fbfcffcdde58bf",
+  "source_compatibility": {
+    "mode": "extract",
+    "note": "theorem statements from the authoritative elaborated types (proofs omitted); the proof-only analysis/facts/behavior/all import is dropped; model/job/properties, model/schedule/nonpreemptive and model/preemption/fully_nonpreemptive are compiled from the pinned tree (the latter against model/preemption/parameter.v bound to the accepted extracted parameter source by the same one-line re-export shim as in its accepted zero-declaration validation; its recompiled .vo is hash-checked against that manifest); the source's `#[local] Existing Instance fully_nonpreemptive_job_model` is replayed after the imports; model/processor/platform_properties (unit_service_proc_model, in the statements) is imported explicitly from the compiled pinned source of the base",
+    "extracted_sha256": "e35412e6dc22c54945eb7c1f5283170a0a63fbb5a367dbf7d59d7e3dc9fac95f",
+    "extraction_metadata_sha256": "2a29145baa51c4b643d135f4e8985db460a8174d940e940f2669d48f64a96fdc"
+  },
+  "source_type_evidence": {
+    "prosa.analysis.facts.preemption.job.nonpreemptive.valid_fully_nonpreemptive_model": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.preemption.job.nonpreemptive.job_max_nps_is_job_cost": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.preemption.job.nonpreemptive.job_last_nps_is_job_cost": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.preemption.job.nonpreemptive.no_preemptions_equiv_nonpreemptive": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE"
+  },
+  "statement_only_export_boundary": [
+    "Prosa.Analysis.Facts.Preemption.Job.Nonpreemptive.valid_fully_nonpreemptive_model",
+    "Prosa.Analysis.Facts.Preemption.Job.Nonpreemptive.job_max_nps_is_job_cost",
+    "Prosa.Analysis.Facts.Preemption.Job.Nonpreemptive.job_last_nps_is_job_cost",
+    "Prosa.Analysis.Facts.Preemption.Job.Nonpreemptive.no_preemptions_equiv_nonpreemptive"
+  ],
+  "input_relations": [
+    "job_cost by SvcJobCostRel",
+    "SvcProcessorStateRel (two-sided) + SvcScheduleRel",
+    "ArArrivalSequenceRel",
+    "the source-local fully nonpreemptive instance related to the accepted Lean definition"
+  ],
+  "coverage_for_inner_binders": [
+    "jobs (identity carrier)",
+    "Nats (both directions)",
+    "processor states (through the state conversion)",
+    "schedules (functionally, through the state conversion with its roundtrips)"
+  ],
+  "lean_representation_note": "the source's section-local fully nonpreemptive instance is passed explicitly as the accepted Lean definition of the same name, as the elaborated source types do; `~~ b` in Prop position is `(!b) = true`",
+  "export_size": {
+    "lines": 135105,
+    "soft_budget_flag": "OVER_100K_DIAGNOSED",
+    "diagnosis": "the accepted preemption-parameter export root (Service/Schedule closure, ~127k lines) reused so that the accepted certificate chain applies, plus the four statements, the fully nonpreemptive job model and the nonpreemptive-schedule definition"
+  },
+  "file_dependencies": {
+    "analysis/facts/behavior/all.v": "analysis_facts_behavior_all_module_status.json",
+    "model/job/properties.v": "model_job_properties_module_status.json",
+    "model/preemption/fully_nonpreemptive.v": "model_preemption_fully_nonpreemptive_module_status.json",
+    "model/schedule/nonpreemptive.v": "model_schedule_nonpreemptive_module_status.json"
+  },
+  "production_file": "Prosa/Analysis/Facts/Preemption/Job/Nonpreemptive.lean",
+  "production_source_sha256": "ab60451a80b62238a6762733a4dedd31877fdb6c934f71e0c386c4081fdd2115",
+  "production_olean_sha256": "e5ef9efdb478a1d919adb8d75aa64741914cf609ddcf386cd31f58d6c703511a",
+  "export_config_sha256": "300bc5a9ac6211fc4ab352ff19e5cf1d106b38b78b9bc0bf4fd03ff7618d5ec5",
+  "export_sha256": "d99fe5ae71299b5573ce2c207d31b0f7644dd8823074b40dfcde88fe487e5427",
+  "export_lines": 135105,
+  "export_bytes": 3017236,
+  "import_sha256": "37e20dd5cb884e117fe4bc2e834ecc269833f15fd1a2468e9dd42a61b53918af",
+  "source_vo_sha256": "e942f84095b17551a82e168fda8b803e33496264447a61c61897e3400a599f44",
+  "lean_axiom_summary_sha256": "a57cf2d8f1a1c458da0f766c632454e8e8ed2a452b9bd4d3e8df84723f83ae87",
+  "rocq_assumption_summary_sha256": "fddc9fa06da5994813a3956e91555b653d138355d2b0e75666263963c6a05b17",
+  "assumption_config_sha256": "6eb708f7e4697a62efed9ea205b5fdf7b23be62e12af4f065c45b2ee3088c741",
+  "stage_timing_seconds": {
+    "source_acquisition": {
+      "mode": "FRESH",
+      "seconds": 9
+    },
+    "lean_build": {
+      "mode": "FRESH",
+      "seconds": 636
+    },
+    "export": {
+      "mode": "FRESH",
+      "seconds": 63
+    },
+    "rocq_import": {
+      "mode": "FRESH",
+      "seconds": 58
+    },
+    "certificate_compile": {
+      "mode": "FRESH",
+      "seconds": 32
+    },
+    "assumption_audit": {
+      "mode": "FRESH",
+      "seconds": 0
+    }
+  },
+  "certificates": {
+    "ArrivalsSeqBaseAdapter": {
+      "source_sha256": "2f1b87009192478c86680309ddbfdf44964d189dcb0ebc1b2ae52a97f788dff9",
+      "vo_sha256": "b776a0ecc88cf2a390bdc4bb9e890b11f5a178a97d83980095b49051198880ab"
+    },
+    "ArrivalsSeqOperations": {
+      "source_sha256": "cea45ac9f8a8ed2dcf725fb2d95a3a1482ed35070fd13890a70c515d6017f33a",
+      "vo_sha256": "1bd4517070f37801ae825e957851a706d66b99a974b1cd5375913fd5b5cff067"
+    },
+    "ArrivalsSeqCorrespondence": {
+      "source_sha256": "5ff847914eae8e981a9a88cc5647b19a446277f275ca948978067e21e06055c3",
+      "vo_sha256": "edc5e187a2fadb036e9842646b25a7dc90fc73ac8fa5e47e0f7e26534a12d97f"
+    },
+    "JitterSvcBaseAdapter": {
+      "source_sha256": "71aca0ed167df456c9dd2f9554f309f11cf5bd7ef3c5302befb814da6f8626f8",
+      "vo_sha256": "d265607b5d27672478a807d23e1bb05f41194f5f1fa14ebeb5975379ad22fcad"
+    },
+    "JitterSvcNatBoolOperations": {
+      "source_sha256": "0b9aa8a4481388d25d903ca19cdc8974240046cc21e572d003a0021b4c22ee18",
+      "vo_sha256": "4a9f7a3fe2549af0534bf4d662be6af86344e5a583c9459e8f3d918a7c8acf51"
+    },
+    "JitterSvcIntervalOperations": {
+      "source_sha256": "4941efc057bdcfbf008ceec74a2fe84ce205e86df70a1ba128e00bf6b01d77d6",
+      "vo_sha256": "a2754d9520bf7df24101fa9741d6d4680fefc9878159cc24b0ba0f26e81bc5bd"
+    },
+    "JitterSvcScheduleOperations": {
+      "source_sha256": "811d167f6176e76aa6dff84656bbb54888b943000a687ef0252a2e6141f02e1d",
+      "vo_sha256": "f579f305badec05223aecd7f453561ef359a74a1f07bd062ff0982cb7dcff4fc"
+    },
+    "JitterSvcJobOperations": {
+      "source_sha256": "5f3e02995698e550848d5a097adb9cc634a0999b2f14d1211b44fc71c949429a",
+      "vo_sha256": "11bbe208c8b655e8f35d87b4652dc7c518e2b2861dc56254931590039f237819"
+    },
+    "PreemptionParameterCorrespondence": {
+      "source_sha256": "5e52ba26c0982598933fa59421e4460bcc88c9a6b37675f779a00a4a242c154e",
+      "vo_sha256": "3461366ef3fe24f5cd8811a67e126ef2a962d31c8a83d9636ca04fe49ea33c31"
+    },
+    "FactsNonpreemptiveJobCorrespondence": {
+      "source_sha256": "66c97c34d2b85055d1f70010a797a68945b9c686518cd185dff4bbc19bcaf908",
+      "vo_sha256": "04225d83634617c036bf13004b7007ba796fae1c8125954ad7cc2198eaaab1f1"
+    },
+    "FactsNonpreemptiveJobAssumptionAudit": {
+      "source_sha256": "79e22229076ddf323c9320a1763dddf84ed59d42482af80560c3856dec94713c",
+      "vo_sha256": "e0a709a81f40c934484ac5dc387fa05a616ebfd9fbe36b382a60ef3d458e74aa"
+    }
+  },
+  "declarations": [
+    {
+      "source_declaration": "prosa.analysis.facts.preemption.job.nonpreemptive.valid_fully_nonpreemptive_model",
+      "lean_declaration": "Prosa.Analysis.Facts.Preemption.Job.Nonpreemptive.valid_fully_nonpreemptive_model",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "valid_fully_nonpreemptive_model_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.preemption.job.nonpreemptive.job_max_nps_is_job_cost",
+      "lean_declaration": "Prosa.Analysis.Facts.Preemption.Job.Nonpreemptive.job_max_nps_is_job_cost",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "job_max_nps_is_job_cost_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.preemption.job.nonpreemptive.job_last_nps_is_job_cost",
+      "lean_declaration": "Prosa.Analysis.Facts.Preemption.Job.Nonpreemptive.job_last_nps_is_job_cost",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "job_last_nps_is_job_cost_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.preemption.job.nonpreemptive.no_preemptions_equiv_nonpreemptive",
+      "lean_declaration": "Prosa.Analysis.Facts.Preemption.Job.Nonpreemptive.no_preemptions_equiv_nonpreemptive",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "no_preemptions_equiv_nonpreemptive_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    }
+  ],
+  "acceptance": "ACCEPTED_V06_FILE"
+}

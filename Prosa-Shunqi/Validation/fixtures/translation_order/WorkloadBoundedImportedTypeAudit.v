@@ -1,0 +1,4 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedWorkloadBounded.
+
+Check ImportedWorkloadBounded.Prosa_Analysis_Definitions_Workload_Bounded_athep_workload_is_bounded.

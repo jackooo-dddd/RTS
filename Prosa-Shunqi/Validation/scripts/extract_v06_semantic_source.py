@@ -62,7 +62,8 @@ def active_context(text: str, stop: int) -> list[str]:
                 frames.pop()
         elif re.match(
             r"^(?:Variable|Variables|Hypothesis|Hypotheses|Context|"
-            r"Local\s+Context|Let|Local\s+Definition|Notation|Local\s+Notation)\b",
+            r"Local\s+Context|Let|Local\s+Definition|Notation|Local\s+Notation|"
+            r"#\[local\]\s*Existing\s+Instance)\b",
             stripped,
         ):
             command = [lines[i]]
@@ -151,6 +152,11 @@ def main() -> None:
               "recorded in metadata.  The generated statement must still print "
               "back to the unrepaired evidence text, which the caller verifies"),
     )
+    parser.add_argument(
+        "--source-order", action="store_true",
+        help="emit the requested blocks in source-file order rather than request order "
+             "(needed when a helper block depends on a later-requested declaration)",
+    )
     parser.add_argument("--output", required=True, type=Path)
     parser.add_argument("--metadata", required=True, type=Path)
     args = parser.parse_args()
@@ -224,6 +230,8 @@ def main() -> None:
         },
         "declarations": {},
     }
+    if args.source_order:
+        requested = sorted(requested, key=lambda name: declarations[name][0])
     for index, name in enumerate(requested):
         position, kind, block = declarations[name]
         context = active_context(text, position)

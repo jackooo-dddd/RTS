@@ -1,0 +1,202 @@
+{
+  "slice": "TRANSLATION_ORDER_ANALYSIS_FACTS_READINESS_SEQUENTIAL",
+  "generated_at": "2026-09-26T19:39:10.318846+08:00",
+  "published_at": "2026-09-26T19:39:10.318846+08:00",
+  "rank": 151,
+  "layer": 16,
+  "source_file": "analysis/facts/readiness/sequential.v",
+  "source_commit": "414e66760333eaa4ef78c685bcf53291c527a548",
+  "source_tree": "7d7e94c731f7eefde4ca738310d4cafdd7bebdf0",
+  "source_file_sha256": "91d41698cd751a33e055f7508ff5651bbc3135632929840f9867d504e7d76ee8",
+  "pipeline": "Validation/scripts/translation_file_pipeline.py",
+  "spec": "Validation/tooling/file_specs/analysis_facts_readiness_sequential.json",
+  "spec_sha256": "f441096543bbe3b897ebd7597b98e46e0b73ad4b91b816930835cfca794ea8ef",
+  "source_compatibility": {
+    "mode": "extract",
+    "note": "the source-local instance sequential_readiness_instance is a byte-identical helper block and the four statements are the authoritative elaborated types (proofs omitted); the proof-heavy analysis/facts imports are dropped; the elaborated evidence names `readiness.sequential_readiness`, so analysis/definitions/readiness.v itself is compiled from the pinned tree (its dependency model/preemption/parameter.v bound to the accepted extracted parameter source by the same one-line re-export shim as in the accepted zero-declaration validations), together with analysis/definitions/work_bearing_readiness.v and model/readiness/sequential.v (the latter with its accepted audited proof-only Rocq 9.3 obligation patch; its .vo is hash-checked against its manifest); the section-local readiness instance and the FP\u2192JLFP coercion, both implicit in the elaborated statements, are made explicit by recorded printer repairs (the statements print back to the evidence text)",
+    "extracted_sha256": "e31d3661c18e0b6ae728ca06ac2147053f53e7f73f4a95793e9bcf8d7eac51c2",
+    "extraction_metadata_sha256": "3cfd6ce92b35dbf35aa10b2c56980a9e5956fd58b211c35765da2818e56a8022"
+  },
+  "source_type_evidence": {
+    "prosa.analysis.facts.readiness.sequential.sequential_readiness_is_sequential": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.readiness.sequential.sequential_readiness_nonclairvoyance": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.readiness.sequential.sequential_readiness_implies_sequential_tasks": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.readiness.sequential.sequential_readiness_implies_work_bearing_readiness": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE"
+  },
+  "statement_only_export_boundary": [
+    "Prosa.Analysis.Facts.Readiness.Sequential.sequential_readiness_is_sequential",
+    "Prosa.Analysis.Facts.Readiness.Sequential.sequential_readiness_nonclairvoyance",
+    "Prosa.Analysis.Facts.Readiness.Sequential.sequential_readiness_implies_sequential_tasks",
+    "Prosa.Analysis.Facts.Readiness.Sequential.sequential_readiness_implies_work_bearing_readiness"
+  ],
+  "input_relations": [
+    "job_arrival by ArJobArrivalRel",
+    "job_cost by SvcJobCostRel",
+    "JobTask by Lean.eq",
+    "SvcProcessorStateRel + schedules (covered in both directions)",
+    "ArArrivalSequenceRel",
+    "FP policy pointwise on Booleans (covered in both directions)",
+    "the sequential readiness model related to the accepted Lean definition"
+  ],
+  "coverage_for_inner_binders": [
+    "jobs (identity carrier)",
+    "Nats (both directions)",
+    "schedules and FP policies (both directions)"
+  ],
+  "lean_representation_note": "the source-local instance is a plain definition passed explicitly; the JLFP policy of work-bearing readiness is the accepted `FP_to_JLFP` of the FP policy, as elaborated",
+  "export_size": {
+    "lines": 126752,
+    "soft_budget_flag": "OVER_100K_DIAGNOSED",
+    "diagnosis": "the accepted readiness export root reused so that the accepted certificate chain applies, plus the four statements, the local instance, the sequential readiness model and the work-bearing readiness definition"
+  },
+  "file_dependencies": {
+    "analysis/definitions/readiness.v": "analysis_definitions_readiness_module_status.json",
+    "analysis/definitions/work_bearing_readiness.v": "analysis_definitions_work_bearing_readiness_module_status.json",
+    "analysis/facts/behavior/completion.v": "analysis_facts_behavior_completion_module_status.json",
+    "analysis/facts/model/task_arrivals.v": "analysis_facts_model_task_arrivals_module_status.json",
+    "model/readiness/sequential.v": "model_readiness_sequential_module_status.json"
+  },
+  "production_file": "Prosa/Analysis/Facts/Readiness/Sequential.lean",
+  "production_source_sha256": "a6f73743ef5a5645440f0e09de3812d9434b17a7ae213245fabc0634c88045c8",
+  "production_olean_sha256": "0136b8aaeeaaf1eaff57236cd61ed8d3bc81b95ff4299f5f5d24472f38cf9265",
+  "export_config_sha256": "8253633220cd32c3c0339465f2e762649733e5fad9fb22b22947cdd7268ef175",
+  "export_sha256": "a3ecd5c25547a28ceb420103dcbac5537502f861289ae78ababcba93f282a27c",
+  "export_lines": 126752,
+  "export_bytes": 2818573,
+  "import_sha256": "85bc1503b76990f823cd435f3525b0a29497165f3aa939e9ddd1d139dde372de",
+  "source_vo_sha256": "61428c8b954040b11da63b4300ef1d65b66f8f5814ca95629b25955783ecf12d",
+  "lean_axiom_summary_sha256": "0640cda90b92448102306bf7afef02d43f9540b1b706e0682aa8a50429ebe4ad",
+  "rocq_assumption_summary_sha256": "f1652e889a9bfa66c3fb881b29c9308d0714d1b543cf78d16be6a66632085f56",
+  "assumption_config_sha256": "e5915a1d53f3f8ec2daaa4684f483ebd8c60982567d1579a1f0318fa47b15767",
+  "stage_timing_seconds": {
+    "source_acquisition": {
+      "mode": "FRESH",
+      "seconds": 8
+    },
+    "lean_build": {
+      "mode": "FRESH",
+      "seconds": 540
+    },
+    "export": {
+      "mode": "FRESH",
+      "seconds": 41
+    },
+    "rocq_import": {
+      "mode": "FRESH",
+      "seconds": 43
+    },
+    "certificate_compile": {
+      "mode": "FRESH",
+      "seconds": 23
+    },
+    "assumption_audit": {
+      "mode": "FRESH",
+      "seconds": 0
+    }
+  },
+  "certificates": {
+    "ArrivalsSeqBaseAdapter": {
+      "source_sha256": "e4644ff25d177beb70592d5f3086f7313042ceaadcddfd8c368a81c8775785c0",
+      "vo_sha256": "35f824074c12e2c382293b1f6b2df04d2d2da8c166a6eb21c5e9b759eb64e038"
+    },
+    "ArrivalsSeqOperations": {
+      "source_sha256": "b198c7b4c3b8397f4eb62ea23a10f71437626a185e70cbdaf2edd2f9442bd6d4",
+      "vo_sha256": "b0445acca802b2deb3c749d25bfb7fbdf5929a564d438af6d4b7529eafef58f8"
+    },
+    "ArrivalsSeqCorrespondence": {
+      "source_sha256": "684fdf1f7f41d0a34fe4208e0181a7a5d0e814bda4ed588f8c3c4fe773282b75",
+      "vo_sha256": "cf8019ee95f6e214ed23ea5c89bcdf480df5fdb299bdb024af594d37ee4ffd66"
+    },
+    "ArrivalsCorrespondence": {
+      "source_sha256": "e163dbffcbe016c33742fd26fcc2ff5b50281d364b85f4066ea32a85d2777535",
+      "vo_sha256": "9d85b107aae446f9d8bfc690f0645e9ef00256e8ed3f5f05427183daa3f7a6d6"
+    },
+    "JitterSvcBaseAdapter": {
+      "source_sha256": "10130af308f638d0f3f65cf2ca0ff2c0fb7ba7d2f14dfae2e8d0f93d434c9c54",
+      "vo_sha256": "f82ea5fad5ed11d9a66b1b07fa07cd0884b89495b6f50dfd0ae6ce733955a989"
+    },
+    "JitterSvcNatBoolOperations": {
+      "source_sha256": "188c83e31b9f1292eb4c39c39ec6eb4cce3bc0d85fd41eb2fea19b10595fa7e3",
+      "vo_sha256": "0be0e686b6cdffb360269bb76ce86a101afe61ee5b2cceaa44961f223251cb2d"
+    },
+    "JitterSvcIntervalOperations": {
+      "source_sha256": "177cd496e335e05dc942e459c669156f245d9f0431cfe4c4dfa1eb803dc74417",
+      "vo_sha256": "579b9dcf78d6dd9465f51a8bcc41b99a12b80baf63b50674be988fb96f901393"
+    },
+    "JitterSvcScheduleOperations": {
+      "source_sha256": "ea190f123008c5e7e4d4eb4675e32b3b05add04eafdee33dacece444c6d0a5e0",
+      "vo_sha256": "4cfdeab85e442f5bdd727bbe4539eea58553a68dd0f9f55bb9bdd14f035c7b93"
+    },
+    "JitterSvcJobOperations": {
+      "source_sha256": "23f95e5ecb22e808f55b013fc236a7b83e6586f34bfa9e1be22c44ed03e6dec8",
+      "vo_sha256": "ebe2b423a92efd63b6aada240f00b719634381459872d66c8e1a74c7ed0482fa"
+    },
+    "SequentialityCorrespondence": {
+      "source_sha256": "867d542715df02c23e2b50de8929cd2bf58249646ef45b862473a8ab092d5efc",
+      "vo_sha256": "efbed07ecf1208761c12600facc3195bbaae97fdfeab49be09143f65c4c3bf13"
+    },
+    "ReadinessCorrespondence": {
+      "source_sha256": "64fb73b002a30be52fcfa2d8898a2d7ada8bbe565db0f17dab4f1957ac4b9c92",
+      "vo_sha256": "a46e9cefac227b99c8149141e79138606d24b350ad2e407b17e919dfb8479e7b"
+    },
+    "FactsReadinessSequentialCorrespondence": {
+      "source_sha256": "2d3030a36e54de050a624f15c7f539f78b9b5220b131347b52164b8f1ea9fc68",
+      "vo_sha256": "9148c59b7cfe1ba2e920f0ebedd2ce3c93314aeaca21b5fdf7cd012535b119f9"
+    },
+    "FactsReadinessSequentialAssumptionAudit": {
+      "source_sha256": "16af2bb4fef46900eefb07c7605c1304f9124f0b90ecd39e6017a93d5ef97bfc",
+      "vo_sha256": "d291e9d91639b16d4e416b481354680c1516b013d67fe3256f85d6244b460227"
+    }
+  },
+  "declarations": [
+    {
+      "source_declaration": "prosa.analysis.facts.readiness.sequential.sequential_readiness_is_sequential",
+      "lean_declaration": "Prosa.Analysis.Facts.Readiness.Sequential.sequential_readiness_is_sequential",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "sequential_readiness_is_sequential_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.readiness.sequential.sequential_readiness_nonclairvoyance",
+      "lean_declaration": "Prosa.Analysis.Facts.Readiness.Sequential.sequential_readiness_nonclairvoyance",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "sequential_readiness_nonclairvoyance_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.readiness.sequential.sequential_readiness_implies_sequential_tasks",
+      "lean_declaration": "Prosa.Analysis.Facts.Readiness.Sequential.sequential_readiness_implies_sequential_tasks",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "sequential_readiness_implies_sequential_tasks_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.readiness.sequential.sequential_readiness_implies_work_bearing_readiness",
+      "lean_declaration": "Prosa.Analysis.Facts.Readiness.Sequential.sequential_readiness_implies_work_bearing_readiness",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "sequential_readiness_implies_work_bearing_readiness_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    }
+  ],
+  "acceptance": "ACCEPTED_V06_FILE"
+}

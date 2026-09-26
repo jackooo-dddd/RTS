@@ -1,0 +1,100 @@
+{
+  "rank": 136,
+  "layer": 15,
+  "tag": "SPT",
+  "slug": "model_schedule_preemption_time",
+  "source": "model/schedule/preemption_time.v",
+  "dependencies": [
+    "model/preemption/parameter.v",
+    "model/schedule/scheduled.v"
+  ],
+  "declaration_count": 1,
+  "base_run": "model_preemption_parameter_final",
+  "base_checks": [
+    {
+      "manifest": "model_preemption_parameter",
+      "olean": "Prosa/Model/Preemption/Parameter.olean",
+      "vo": "PreemptionParameterSemanticSource.vo"
+    }
+  ],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "PreemptionTimeSemanticSource",
+    "drop_imports": [
+      "Require Export prosa.model.preemption.parameter."
+    ],
+    "add_imports": [
+      "Require Export prosa.PreemptionParameterSemanticSource.",
+      "Export PreemptionParameterSemanticSource.",
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq."
+    ],
+    "note": "the definition is a byte-identical computational block; the model/schedule/scheduled import is the pinned source (compiled from the pinned tree) and the model/preemption/parameter import is bound to the accepted extracted parameter source (PreemptionParameterSemanticSource, .vo hash-checked against the parameter manifest)"
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/PreemptionTimeStatementProbe.v",
+  "production": "Prosa/Model/Schedule/PreemptionTime.lean",
+  "production_olean": "Prosa/Model/Schedule/PreemptionTime.olean",
+  "lean_namespace": "Prosa.Model.Schedule.PreemptionTime",
+  "fixtures": [
+    "NondecreasingComputationInterface",
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "PreemptionParameterComputationInterface",
+    "PreemptionTimeComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/PreemptionTimeLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/model_schedule_preemption_time_export_config.json",
+  "export_name": "PreemptionTime",
+  "cert_dir": "certificates/model_schedule_preemption_time",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "JitterSvcBaseAdapter",
+    "JitterSvcNatBoolOperations",
+    "JitterSvcIntervalOperations",
+    "JitterSvcScheduleOperations",
+    "JitterSvcJobOperations",
+    "PreemptionParameterCorrespondence",
+    "PreemptionTimeCorrespondence"
+  ],
+  "audit_module": "PreemptionTimeAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/PreemptionTimeImportedTypeAudit.v",
+  "assumption_config": "certificates/model_schedule_preemption_time/preemption_time_assumption_config.json",
+  "lean_axiom_config": "certificates/model_schedule_preemption_time/preemption_time_lean_axiom_config.json",
+  "computational": [
+    "preemption_time"
+  ],
+  "principal": {},
+  "helpers": [
+    "spt_scheduled_jobs_related",
+    "spt_case"
+  ],
+  "previous_status": "model_schedule_limited_preemptive_module_status.json",
+  "previous_files": 132,
+  "previous_decls": 1027,
+  "input_relations": [
+    "JobPreemptable pointwise (accepted PpJobPreemptableRel)",
+    "SvcProcessorStateRel + SvcScheduleRel (two-sided)",
+    "ArArrivalSequenceRel",
+    "SubNatRel on instants"
+  ],
+  "coverage_for_inner_binders": [
+    "jobs (identity carrier)",
+    "Nats (both directions)"
+  ],
+  "lean_representation_note": "`if o is Some j then a else b` is a `match` on the Option",
+  "export_diagnosis": "the accepted preemption-parameter export root (Service/Schedule interface closure, ~127k lines) reused verbatim so that the accepted certificate chain applies, plus preemption_time, scheduled_job(s)_at and five kernel-checked case equations",
+  "extra_pinned_sources": [
+    "model/schedule/scheduled.v"
+  ],
+  "extra_lean": [
+    [
+      "Prosa/Model/Schedule/Scheduled.lean",
+      "Prosa/Model/Schedule/Scheduled.olean",
+      "model_schedule_scheduled",
+      "production_olean_sha256"
+    ]
+  ]
+}

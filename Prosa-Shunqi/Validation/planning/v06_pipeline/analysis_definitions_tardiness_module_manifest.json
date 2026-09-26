@@ -1,0 +1,139 @@
+{
+  "slice": "TRANSLATION_ORDER_ANALYSIS_DEFINITIONS_TARDINESS",
+  "generated_at": "2026-09-26T20:57:16.747216+08:00",
+  "published_at": "2026-09-26T20:57:16.747216+08:00",
+  "rank": 168,
+  "layer": 17,
+  "source_file": "analysis/definitions/tardiness.v",
+  "source_commit": "414e66760333eaa4ef78c685bcf53291c527a548",
+  "source_tree": "7d7e94c731f7eefde4ca738310d4cafdd7bebdf0",
+  "source_file_sha256": "3fea97fdc1fc8ffda146f6aa399a72597941ab3509723eda457c33942069c771",
+  "pipeline": "Validation/scripts/translation_file_pipeline.py",
+  "spec": "Validation/tooling/file_specs/analysis_definitions_tardiness.json",
+  "spec_sha256": "281566c79f93fe51132d29c69def093397d9759a63203945513ba1d04c18a5f9",
+  "source_compatibility": {
+    "mode": "extract",
+    "note": "the definition is a byte-identical computational block; the analysis/definitions/schedulability import is bound to the accepted extracted schedulability source (SchedulabilitySemanticSource, .vo hash-checked against its manifest); the task concepts (TaskType, TaskDeadline, JobTask) are imported explicitly from the compiled pinned model/task/concept",
+    "extracted_sha256": "fd07f6563f56d8e3a3bee949400866f36af548d3d1d302e3d5a2967e3913f4c0",
+    "extraction_metadata_sha256": "39eec32a1c14309f433a5045be106008e98cb6dcee1cdf284fa385c33647fd15"
+  },
+  "source_type_evidence": {
+    "prosa.analysis.definitions.tardiness.task_tardiness_is_bounded": "EXACT_HASH"
+  },
+  "statement_only_export_boundary": [],
+  "input_relations": [
+    "TaskDeadline pointwise by SubNatRel",
+    "job_arrival by ArJobArrivalRel",
+    "job_cost by SvcJobCostRel",
+    "JobTask by Lean.eq",
+    "SvcProcessorStateRel (two-sided) + SvcScheduleRel",
+    "ArArrivalSequenceRel"
+  ],
+  "coverage_for_inner_binders": [
+    "jobs (identity carrier)"
+  ],
+  "lean_representation_note": "the definition rebinds `arr_seq sched tsk B` explicitly, so the unused section variables are absent",
+  "export_size": {
+    "lines": 125637,
+    "soft_budget_flag": "OVER_100K_DIAGNOSED",
+    "diagnosis": "the accepted schedulability export root (completion-facts Service/Schedule interface closure, ~127k lines) without its theorem targets, reused so that the accepted certificate chain applies, plus the definition"
+  },
+  "file_dependencies": {
+    "analysis/definitions/schedulability.v": "analysis_definitions_schedulability_module_status.json"
+  },
+  "production_file": "Prosa/Analysis/Definitions/Tardiness.lean",
+  "production_source_sha256": "b6741f8e46e92c08db7df60e20b03a856dabcc8c102417a6cf104be568ceab6b",
+  "production_olean_sha256": "2a4e58da23b0f2bff79a375d665b5e04c33ad5ffa950602ae6c2fb608b8ede90",
+  "export_config_sha256": "dfc8dd17d5d087ae780e8525a8f0adf3e004a9b8d62d630da2595123e356d705",
+  "export_sha256": "f9542f75a3ce58a61f5a960f80ac01a9513efecefd46e5cb86bb1de2db7ee9ef",
+  "export_lines": 125637,
+  "export_bytes": 2794355,
+  "import_sha256": "82f67d4d994acb5a5c40c52304c1e675118848b770b597fbe42ffbdda3362d66",
+  "source_vo_sha256": "248ea22c093d63c363cc5c4dcd95d7eec4633d884690f3e727ce79271b4a2d1f",
+  "lean_axiom_summary_sha256": "72d59bff8c8d40a889c12d2e384c543b1e21dcafb489185220f265af7a94849a",
+  "rocq_assumption_summary_sha256": "7b9a255b1beb7a14a84b761e8f2e5b5edf70959cac4756a9fe6d2d2b4220df83",
+  "assumption_config_sha256": "c9e61be557de0f7008c9f7f5ad136e99b1b388df51cbc13a3d01b7108e997700",
+  "stage_timing_seconds": {
+    "source_acquisition": {
+      "mode": "FRESH",
+      "seconds": 5
+    },
+    "lean_build": {
+      "mode": "FRESH",
+      "seconds": 1011
+    },
+    "export": {
+      "mode": "FRESH",
+      "seconds": 89
+    },
+    "rocq_import": {
+      "mode": "FRESH",
+      "seconds": 58
+    },
+    "certificate_compile": {
+      "mode": "FRESH",
+      "seconds": 15
+    },
+    "assumption_audit": {
+      "mode": "FRESH",
+      "seconds": 0
+    }
+  },
+  "certificates": {
+    "ArrivalsSeqBaseAdapter": {
+      "source_sha256": "3c528c072ff355430faa21fd2fe3ab3c57c674d97968ccb569d7fe503771c055",
+      "vo_sha256": "cf97e756a291cc2738679c1543853387676ffb1b0c223debb9d33b819b3b6fcf"
+    },
+    "ArrivalsSeqOperations": {
+      "source_sha256": "f882480abe069b89c256661cf24a6b21fe81cab247f683f5a70e223776d40898",
+      "vo_sha256": "d423750da1ce4b9c93cf9017bafb1846e3fb118df00de74ed1d64b0e22128690"
+    },
+    "ArrivalsSeqCorrespondence": {
+      "source_sha256": "b193334d5c2604b3536b51374ae7dc9156ca09d63ca1465ec4792602becfbb14",
+      "vo_sha256": "e49761c461377e18ebb98d210cc7141076bb213db5c5f80be2094e196029087e"
+    },
+    "JitterSvcBaseAdapter": {
+      "source_sha256": "a92b7d8b7dc321c7b15d70b4ae42529a587b179479ddc31038b7ecc0d730ab3e",
+      "vo_sha256": "cb4daafc2f6f44b4f2393b09c64b0f92bc9eb263aea1be18d6451414d5fd875f"
+    },
+    "JitterSvcNatBoolOperations": {
+      "source_sha256": "88bfc98f4ec2d7a825d46a31d11c3d5f9675539adda71eeed261258e5a209784",
+      "vo_sha256": "78f62a41eb753b2640214383b3c15e9e4a5b66fa8027caaed950912fd292e597"
+    },
+    "JitterSvcIntervalOperations": {
+      "source_sha256": "753b50cb020259b451f8325cab1d5a7982114e5b51ff512859606933711136e6",
+      "vo_sha256": "10b6dc0ed015a0ed1444b0610f5a30e3860e28429387379a26998a0e62ceaa5a"
+    },
+    "JitterSvcScheduleOperations": {
+      "source_sha256": "e2fe9a2ec1510233238bd2512706b15cc17a1f4791ebce48a1e353f15fc204d2",
+      "vo_sha256": "cce324cef1b499ce84396fbb92d7c88a159108f8f6585b249863d02decb673d1"
+    },
+    "JitterSvcJobOperations": {
+      "source_sha256": "5d12b0c79bcadca1d2ae5a4e8722150e9bf83d1d06e057f90e7e2e37f86eaa3a",
+      "vo_sha256": "5aed41bb2676c274ec96afd9a94079a330d7cc54c0ece017ec520446e73c8ed6"
+    },
+    "TardinessCorrespondence": {
+      "source_sha256": "01f62060d09750c3e72f2d062be12b2e5ed634b60e6ce9846ed129231ce08da1",
+      "vo_sha256": "1d243c72dce484fd31dab2a284813fc3fea10d758c58db4d40cc39ed9eba8048"
+    },
+    "TardinessAssumptionAudit": {
+      "source_sha256": "04d4b83224b89e184d85131ba1d01bd0d671106164ecc98dc030d8ace91d0661",
+      "vo_sha256": "b67175ac802a2f799bbbea12e54137e082902e6d3b44c11fcc463402b05c9fbe"
+    }
+  },
+  "declarations": [
+    {
+      "source_declaration": "prosa.analysis.definitions.tardiness.task_tardiness_is_bounded",
+      "lean_declaration": "Prosa.Analysis.Definitions.Tardiness.task_tardiness_is_bounded",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "task_tardiness_is_bounded_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    }
+  ],
+  "acceptance": "ACCEPTED_V06_FILE"
+}

@@ -1,0 +1,209 @@
+{
+  "slice": "TRANSLATION_ORDER_ANALYSIS_TRANSFORM_WC_TRANS",
+  "generated_at": "2026-09-27T04:40:49.140437+08:00",
+  "published_at": "2026-09-27T04:40:49.140437+08:00",
+  "rank": 199,
+  "layer": 19,
+  "source_file": "analysis/transform/wc_trans.v",
+  "source_commit": "414e66760333eaa4ef78c685bcf53291c527a548",
+  "source_tree": "7d7e94c731f7eefde4ca738310d4cafdd7bebdf0",
+  "source_file_sha256": "92527842a0c11c971151ef6e8283e07991951700833194a6909a75afb6271d76",
+  "pipeline": "Validation/scripts/translation_file_pipeline.py",
+  "spec": "Validation/tooling/file_specs/analysis_transform_wc_trans.json",
+  "spec_sha256": "4b3be7b132a5f8af1ea677f8aa39dbae5886a53fb8688cddc4491a576ef41c7d",
+  "source_compatibility": {
+    "mode": "extract",
+    "note": "the six definitions are byte-identical computational blocks (the section-local instance registration and `PState` Let included); the prefix import is bound to its accepted extracted source (TransformPrefixSemanticSource, hash-checked as base) and util/list to the accepted extracted list source of the base closure (ListSemanticSource at its logical path); analysis/transform/swap and model/processor/ideal (with its accepted Rocq 9.3 compatibility patch) are pinned sources compiled from the pinned tree; util/search_arg is bound to its accepted generated definition source (GeneratedSearchArgSource.v, sha256 equal to the validation_source_sha256 of its accepted manifest entry, compiled here; the pinned file's proofs do not build under the approved util/tactics patch); the source Section variable arr_seq, implicit in the uses of max_deadline_for_jobs_arrived_before, find_swap_candidate, make_wc_at and wc_transform_prefix inside later definitions of the same Section, is reconnected by recorded local notations",
+    "extracted_sha256": "6e70888eec6f95b27ad350ebbbd926d96f6fe73ff0dcf10951e75e68383fd246",
+    "extraction_metadata_sha256": "2ee19aac1f69b82ec6a9f45a5fb3cc55483074269b3bf8df1b0155c21053e8c0"
+  },
+  "source_type_evidence": {
+    "prosa.analysis.transform.wc_trans.relevant_pstate": "EXACT_HASH",
+    "prosa.analysis.transform.wc_trans.max_deadline_for_jobs_arrived_before": "EXACT_HASH",
+    "prosa.analysis.transform.wc_trans.find_swap_candidate": "EXACT_HASH",
+    "prosa.analysis.transform.wc_trans.make_wc_at": "EXACT_HASH",
+    "prosa.analysis.transform.wc_trans.wc_transform_prefix": "EXACT_HASH",
+    "prosa.analysis.transform.wc_trans.wc_transform": "EXACT_HASH"
+  },
+  "statement_only_export_boundary": [],
+  "input_relations": [
+    "the processor model is fixed to the ideal uniprocessor on both sides; states related by the constructor-preserving Option map, schedules (and `instant -> option Job` functions) pointwise",
+    "job_deadline pointwise by SubNatRel",
+    "ArJobArrivalRel",
+    "ArArrivalSequenceRel",
+    "instants by SubNatRel"
+  ],
+  "coverage_for_inner_binders": [],
+  "lean_representation_note": "argument types follow the elaborated types (`Nat`/`Option Job` for the state predicate, `instant -> Option Job` for pointwise schedules); the processor model of `swapped`/`prefix_map` is the accepted ideal processor, named explicitly (the source's local instance); the local `let`s are kept; `map f s` is `s.map f`; `t.+1` is `t + 1`",
+  "export_size": {
+    "lines": 149196,
+    "soft_budget_flag": "OVER_100K_DIAGNOSED",
+    "diagnosis": "the accepted transform-prefix export root without its statements (preemption-parameter closure with the Nat-list max0 equations), plus the ideal processor, the six definitions, search_arg, prefix_map, replace_at/swapped and their kernel-checked equations at the ideal processor"
+  },
+  "file_dependencies": {
+    "analysis/transform/prefix.v": "analysis_transform_prefix_module_status.json",
+    "analysis/transform/swap.v": "analysis_transform_swap_module_status.json",
+    "model/processor/ideal.v": "model_processor_ideal_module_status.json",
+    "util/list.v": "utility_foundation_expansion_status.json",
+    "util/search_arg.v": "utility_foundation_expansion_status.json"
+  },
+  "production_file": "Prosa/Analysis/Transform/WcTrans.lean",
+  "production_source_sha256": "bd885abb44b134e6d89970b0a8f164a6d65e7ac64b2416deb7ae3618d74c7ce7",
+  "production_olean_sha256": "1e1135412bcb564f0915a7cf0912fcb23dccfb1f3960e8f9f433f81fb080d391",
+  "export_config_sha256": "b51e5248ae3c7fdfb2af02ed5dc7e6449328ac4e2b82e4b11cfbe5a2d8a44ecc",
+  "export_sha256": "ca4ba8a393ecd3d2c4e1101504111271b984244d9463511df0986b48c96309bf",
+  "export_lines": 149196,
+  "export_bytes": 3372464,
+  "import_sha256": "ade55b02917916f62623acbc36fde976c1424201d4fb630a7f71d945a5ada1a0",
+  "source_vo_sha256": "e82c11af2e87de7dbb1f397c54e796f0edc10bef01dc4b1c92c9030e283eb20a",
+  "lean_axiom_summary_sha256": "c9711153542dd182856cfde307452d01a2c6d44e0cdbb38bb2be5d7c3167e772",
+  "rocq_assumption_summary_sha256": "878d467ef34de325f9998ad72719d2860fa4c2592e09eacfc4af41ac4bd03bf6",
+  "assumption_config_sha256": "33b249b8ec6cf6352ddc6776c9b10898f883daf40f432ec5a46e5242d8069878",
+  "stage_timing_seconds": {
+    "source_acquisition": {
+      "mode": "FRESH",
+      "seconds": 6
+    },
+    "lean_build": {
+      "mode": "FRESH",
+      "seconds": 446
+    },
+    "export": {
+      "mode": "FRESH",
+      "seconds": 35
+    },
+    "rocq_import": {
+      "mode": "FRESH",
+      "seconds": 44
+    },
+    "certificate_compile": {
+      "mode": "FRESH",
+      "seconds": 17
+    },
+    "assumption_audit": {
+      "mode": "FRESH",
+      "seconds": 0
+    }
+  },
+  "certificates": {
+    "ArrivalsSeqBaseAdapter": {
+      "source_sha256": "bbe0afcdcedd89a1d4ad01a3cdc5c78cf8802e3a858ba3134a02bb3285c3565e",
+      "vo_sha256": "8f428a6e0c03e90dba05010bef67879c59a7d4a3c238cf3e17455175e7f3fbdb"
+    },
+    "ArrivalsSeqOperations": {
+      "source_sha256": "f4da5e4d9378a7d12009f171603bdd4dd5808db0a626c03729a37250eec6d439",
+      "vo_sha256": "c197c4a758b66d31e4211ea9d6b54a995eb6f9723360537255e350037701937a"
+    },
+    "ArrivalsSeqCorrespondence": {
+      "source_sha256": "81a237c5f943c292aea1525f950ac506d00fda2e41a56a61b5c564d563126640",
+      "vo_sha256": "aa6cad536e7ac5971699bab9efff085a9bbda2be827411bd815677340d4b8bf2"
+    },
+    "JitterSvcBaseAdapter": {
+      "source_sha256": "e54508dc1ffe6ed9cc305facbe0e2e57a284f913272aaa3e974284fdd4b76945",
+      "vo_sha256": "8306250cb7f9c1cb873700c613d97a705087444faa073fe674dd665d73744187"
+    },
+    "JitterSvcNatBoolOperations": {
+      "source_sha256": "95dc77d49b9f161db64df3f40955d9fa8ba1a6cfa43d7acd8e454e52901e775f",
+      "vo_sha256": "cb88a74379d2343992517de4745e5c5879f9807cb081e7432c5f3c25dc25da70"
+    },
+    "JitterSvcIntervalOperations": {
+      "source_sha256": "dcd80f888f3566e688403d65e4d5d53455e2b40ea2a2c2b0fa0b076e290f0d6a",
+      "vo_sha256": "07e0de8d5edbf41ecf092f3c82374d6792d3c9f5999053272e79c6e65f8d0828"
+    },
+    "JitterSvcScheduleOperations": {
+      "source_sha256": "42e72ef5125e541ae593b63d1e840dba398f78367efb4d3d3de763ad74ae8653",
+      "vo_sha256": "d7ada2398762ff9adce25a8bfe303f9534c96c692aafce486dc0e3eeb68a814a"
+    },
+    "JitterSvcJobOperations": {
+      "source_sha256": "9638c4defbfdf3b9004f64b92791f85b11f1b6f9eb98116d7bca9e2e247f6cbb",
+      "vo_sha256": "1aea816a524b5491ffcfb7bce2e7d8b484df00b8a2048861e41277e2e9f69bc5"
+    },
+    "PreemptionParameterCorrespondence": {
+      "source_sha256": "b9f36564a6724e73fdf1d14ac7db7cd5750c91dc8ec53be0a37bc74367494af1",
+      "vo_sha256": "d123f94a864d7d404a7d3f84a26108fce485d063903682483a0d83e5d2a5d64f"
+    },
+    "WcTransCorrespondence": {
+      "source_sha256": "587c128f26f8d228cd247a95bb698273a4158dbb19da7967e9257607ade24b00",
+      "vo_sha256": "06c5da7451fd066dc54aa12da115f824ea340f0f9d2c6b8009fb8794c7dd6ba3"
+    },
+    "WcTransAssumptionAudit": {
+      "source_sha256": "c7d0b817ac5ec235aa800bdc9a7d8cbcd539dcf50a6bff1f6d6b371933477d27",
+      "vo_sha256": "ebf360917fbab14a27dbc50e83dc3135c9c82dc3b3617869da2234a9752da202"
+    }
+  },
+  "declarations": [
+    {
+      "source_declaration": "prosa.analysis.transform.wc_trans.relevant_pstate",
+      "lean_declaration": "Prosa.Analysis.Transform.WcTrans.relevant_pstate",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "relevant_pstate_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.transform.wc_trans.max_deadline_for_jobs_arrived_before",
+      "lean_declaration": "Prosa.Analysis.Transform.WcTrans.max_deadline_for_jobs_arrived_before",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "max_deadline_for_jobs_arrived_before_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.transform.wc_trans.find_swap_candidate",
+      "lean_declaration": "Prosa.Analysis.Transform.WcTrans.find_swap_candidate",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "find_swap_candidate_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.transform.wc_trans.make_wc_at",
+      "lean_declaration": "Prosa.Analysis.Transform.WcTrans.make_wc_at",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "make_wc_at_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.transform.wc_trans.wc_transform_prefix",
+      "lean_declaration": "Prosa.Analysis.Transform.WcTrans.wc_transform_prefix",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "wc_transform_prefix_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.transform.wc_trans.wc_transform",
+      "lean_declaration": "Prosa.Analysis.Transform.WcTrans.wc_transform",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "wc_transform_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    }
+  ],
+  "acceptance": "ACCEPTED_V06_FILE"
+}

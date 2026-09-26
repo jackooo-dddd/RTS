@@ -1,0 +1,173 @@
+{
+  "rank": 191,
+  "layer": 19,
+  "tag": "FSSFP",
+  "slug": "analysis_abstract_restricted_supply_search_space_fp",
+  "source": "analysis/abstract/restricted_supply/search_space/fp.v",
+  "dependencies": [
+    "analysis/abstract/search_space.v",
+    "analysis/definitions/blocking_bound/fp.v",
+    "analysis/facts/model/rbf.v"
+  ],
+  "declaration_count": 2,
+  "base_run": "analysis_facts_model_rbf_final",
+  "base_checks": [
+    {
+      "manifest": "analysis_facts_model_rbf",
+      "olean": "Prosa/Analysis/Facts/Model/Rbf.olean"
+    },
+    {
+      "manifest": "analysis_definitions_request_bound_function",
+      "olean": "Prosa/Analysis/Definitions/RequestBoundFunction.olean"
+    }
+  ],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "SearchSpaceFpSemanticSource",
+    "drop_imports": [
+      "Require Export prosa.analysis.facts.model.rbf.",
+      "Require Export prosa.analysis.abstract.search_space.",
+      "Require Export prosa.analysis.definitions.blocking_bound.fp."
+    ],
+    "add_imports": [
+      "Require Export prosa.RequestBoundFunctionSemanticSource.",
+      "Export RequestBoundFunctionSemanticSource.",
+      "Require Export prosa.BlockingBoundFpSemanticSource.",
+      "Export BlockingBoundFpSemanticSource.",
+      "Require Export prosa.analysis.abstract.search_space.",
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq bigop.",
+      "Require Import prosa.util.epsilon prosa.util.rel prosa.model.task.concept prosa.model.task.arrival.curves prosa.model.priority.classes."
+    ],
+    "note": "the definition is a byte-identical computational block and the lemma statement is the authoritative elaborated type (proof omitted); the request-bound-function and blocking_bound/fp imports are bound to their accepted extracted sources (RequestBoundFunctionSemanticSource, BlockingBoundFpSemanticSource and its TaskPreemptionParametersSemanticSource, .vo copied from their accepted runs and hash-checked against their manifests); analysis/abstract/search_space is the pinned source compiled from the pinned tree with its accepted proof-only Rocq 9.3 compatibility patch; the proof-only facts/model/rbf import is dropped"
+  },
+  "extra_artifacts": [
+    {
+      "from": "analysis_definitions_request_bound_function_final/source/RequestBoundFunctionSemanticSource.vo",
+      "to": "source/RequestBoundFunctionSemanticSource.vo",
+      "manifest": "analysis_definitions_request_bound_function",
+      "key": "source_vo_sha256"
+    },
+    {
+      "from": "model_task_preemption_parameters_final/source/TaskPreemptionParametersSemanticSource.vo",
+      "to": "source/TaskPreemptionParametersSemanticSource.vo",
+      "manifest": "model_task_preemption_parameters",
+      "key": "source_vo_sha256"
+    },
+    {
+      "from": "analysis_definitions_blocking_bound_fp_final/source/BlockingBoundFpSemanticSource.vo",
+      "to": "source/BlockingBoundFpSemanticSource.vo",
+      "manifest": "analysis_definitions_blocking_bound_fp",
+      "key": "source_vo_sha256"
+    }
+  ],
+  "extra_pinned_sources": [
+    "analysis/abstract/search_space.v"
+  ],
+  "extra_olean_artifacts": [
+    {
+      "from": "model_task_preemption_parameters_final/olean/Prosa/Model/Task/Preemption/Parameters.olean",
+      "to": "Prosa/Model/Task/Preemption/Parameters.olean",
+      "manifest": "model_task_preemption_parameters",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_definitions_blocking_bound_edf_final/olean/Prosa/Analysis/Definitions/BlockingBound/Edf.olean",
+      "to": "Prosa/Analysis/Definitions/BlockingBound/Edf.olean",
+      "manifest": "analysis_definitions_blocking_bound_edf",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_definitions_blocking_bound_fp_final/olean/Prosa/Analysis/Definitions/BlockingBound/Fp.olean",
+      "to": "Prosa/Analysis/Definitions/BlockingBound/Fp.olean",
+      "manifest": "analysis_definitions_blocking_bound_fp",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_abstract_search_space/olean/Prosa/Analysis/Abstract/SearchSpace.olean",
+      "to": "Prosa/Analysis/Abstract/SearchSpace.olean",
+      "manifest": "analysis_abstract_search_space",
+      "key": "production_olean_sha256"
+    }
+  ],
+  "fingerprint_probe": "Validation/fixtures/translation_order/SearchSpaceFpStatementProbe.v",
+  "production": "Prosa/Analysis/Abstract/RestrictedSupply/SearchSpace/Fp.lean",
+  "production_olean": "Prosa/Analysis/Abstract/RestrictedSupply/SearchSpace/Fp.olean",
+  "lean_namespace": "Prosa.Analysis.Abstract.RestrictedSupply.SearchSpace.Fp",
+  "fixtures": [
+    "NondecreasingComputationInterface",
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "PreemptionParameterComputationInterface",
+    "BusyIntervalClassicalComputationInterface",
+    "ArrivalsComputationInterface",
+    "WorkloadComputationInterface",
+    "WorkloadBoundedComputationInterface",
+    "RequestBoundFunctionComputationInterface",
+    "CurvesComputationInterface",
+    "ProcessorStateCoverInterface",
+    "TaskPreemptionParametersComputationInterface",
+    "BlockingBoundEdfComputationInterface",
+    "BlockingBoundFpComputationInterface",
+    "FactsSearchSpaceFpComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/SearchSpaceFpLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/analysis_abstract_restricted_supply_search_space_fp_export_config.json",
+  "export_name": "SearchSpaceFp",
+  "cert_dir": "certificates/analysis_abstract_restricted_supply_search_space_fp",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "ArrivalsCorrespondence",
+    "JitterSvcBaseAdapter",
+    "JitterSvcNatBoolOperations",
+    "JitterSvcIntervalOperations",
+    "JitterSvcScheduleOperations",
+    "JitterSvcJobOperations",
+    "PreemptionParameterCorrespondence",
+    "WorkloadCorrespondence",
+    "CurvesCorrespondence",
+    "RequestBoundFunctionCorrespondence",
+    "WorkloadBoundedCorrespondence",
+    "TaskPreemptionParametersCorrespondence",
+    "BlockingBoundFpCorrespondence",
+    "SearchSpaceFpCorrespondence"
+  ],
+  "audit_module": "SearchSpaceFpAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/SearchSpaceFpImportedTypeAudit.v",
+  "assumption_config": "certificates/analysis_abstract_restricted_supply_search_space_fp/search_space_fp_assumption_config.json",
+  "lean_axiom_config": "certificates/analysis_abstract_restricted_supply_search_space_fp/search_space_fp_lean_axiom_config.json",
+  "computational": [
+    "is_in_search_space"
+  ],
+  "principal": {},
+  "helpers": [
+    "ssfp_false_correspondence",
+    "ssfp_nat_neq_correspondence",
+    "ssfp_or_correspondence",
+    "ssfp_and3_correspondence",
+    "ssfp_decide_not",
+    "ssfp_nat_neqb_related"
+  ],
+  "previous_status": "analysis_facts_workload_edf_athep_bound_module_status.json",
+  "previous_files": 180,
+  "previous_decls": 1293,
+  "input_relations": [
+    "TaskCost pointwise by SubNatRel",
+    "TaskMaxNonpreemptiveSegment by the accepted TppMaxSegmentRel",
+    "FP policy pointwise on Booleans",
+    "MaxArrivals by the accepted CvMaxArrivalsRel",
+    "task set by ArListRel"
+  ],
+  "coverage_for_inner_binders": [
+    "tasks (identity carriers)",
+    "Nats (both directions)"
+  ],
+  "lean_representation_note": "`\u03b5` is `1`; the section-local `task_rbf`, `total_ohep_rbf` and `intra_IBF` are inlined; the section's FP policy is an explicit binder acting as a local instance; `a != b` is `decide (a \u2260 b)`; `x \\in xs` in `Prop` position is `decide (x \u2208 xs) = true`; `search_space.is_in_search_space` is the accepted abstract search-space predicate",
+  "export_diagnosis": "the accepted RBF-facts export root without its statements (workload-bound + request-bound-function + arrival-curve roots over the preemption-parameter / Service closure, ~139k lines), reused so that the accepted certificate chains apply, merged with the accepted task-preemption-parameter and EDF/FP blocking-bound roots, plus the abstract search-space predicate, the definition and the statement",
+  "extra_source_patches": [
+    "patches/prosa-v06-rocq93-analysis-abstract-search-space.patch"
+  ]
+}

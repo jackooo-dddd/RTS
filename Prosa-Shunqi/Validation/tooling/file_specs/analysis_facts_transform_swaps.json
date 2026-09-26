@@ -1,0 +1,122 @@
+{
+  "rank": 189,
+  "layer": 17,
+  "tag": "SWAPS",
+  "slug": "analysis_facts_transform_swaps",
+  "source": "analysis/facts/transform/swaps.v",
+  "dependencies": [
+    "analysis/facts/behavior/deadlines.v",
+    "analysis/facts/transform/replace_at.v"
+  ],
+  "declaration_count": 22,
+  "base_run": "analysis_facts_transform_replace_at_final",
+  "base_checks": [
+    {
+      "manifest": "analysis_facts_transform_replace_at",
+      "olean": "Prosa/Analysis/Facts/Transform/ReplaceAt.olean",
+      "vo": "FactsReplaceAtSemanticSource.vo"
+    }
+  ],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "FactsSwapsSemanticSource",
+    "drop_imports": [
+      "Require Export prosa.analysis.facts.transform.replace_at.",
+      "Require Export prosa.analysis.facts.behavior.deadlines."
+    ],
+    "add_imports": [
+      "Require Export prosa.analysis.transform.swap.",
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq.",
+      "Require Import prosa.behavior.all prosa.model.processor.platform_properties."
+    ],
+    "note": "theorem statements from the authoritative elaborated types (proofs omitted); the proof-heavy facts/transform/replace_at and facts/behavior/deadlines imports are dropped (the statements mention only behavior, the platform properties and analysis/transform/swap, the compiled pinned sources of the base run)"
+  },
+  "extra_olean_artifacts": [
+    {
+      "from": "analysis_facts_preemption_rtc_threshold_nonpreemptive_final/olean/Prosa/Analysis/Facts/Behavior/Deadlines.olean",
+      "to": "Prosa/Analysis/Facts/Behavior/Deadlines.olean",
+      "manifest": "analysis_facts_behavior_deadlines",
+      "key": "production_olean_sha256"
+    }
+  ],
+  "fingerprint_probe": "Validation/fixtures/translation_order/FactsSwapsStatementProbe.v",
+  "production": "Prosa/Analysis/Facts/Transform/Swaps.lean",
+  "production_olean": "Prosa/Analysis/Facts/Transform/Swaps.olean",
+  "lean_namespace": "Prosa.Analysis.Facts.Transform.Swaps",
+  "fixtures": [
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "FactsCompletionComputationInterface",
+    "FactsReplaceAtComputationInterface",
+    "FactsSwapsComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/FactsSwapsLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/analysis_facts_transform_swaps_export_config.json",
+  "export_name": "FactsSwaps",
+  "cert_dir": "certificates/analysis_facts_transform_swaps",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "JitterSvcBaseAdapter",
+    "JitterSvcNatBoolOperations",
+    "JitterSvcIntervalOperations",
+    "JitterSvcScheduleOperations",
+    "JitterSvcJobOperations",
+    "FactsSwapsCorrespondence"
+  ],
+  "audit_module": "FactsSwapsAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/FactsSwapsImportedTypeAudit.v",
+  "assumption_config": "certificates/analysis_facts_transform_swaps/facts_swaps_assumption_config.json",
+  "lean_axiom_config": "certificates/analysis_facts_transform_swaps/facts_swaps_lean_axiom_config.json",
+  "computational": [],
+  "principal": {},
+  "helpers": [
+    "swp_forall_cover_sprop",
+    "swp_nat_input",
+    "swp_lean_transport",
+    "swp_false_correspondence",
+    "swp_nat_neq_correspondence",
+    "swp_or_correspondence",
+    "swp_bool_eq_correspondence",
+    "swp_exists_identity",
+    "swp_decide_not",
+    "swp_nat_neqb_related",
+    "swp_state_rel",
+    "swp_state_eq_correspondence",
+    "swp_nat_not_eq",
+    "swp_src_same",
+    "swp_src_other",
+    "swp_replace_at_fun",
+    "swp_swapped_fun",
+    "swp_scheduled_at_related",
+    "swp_service_at_related",
+    "swp_service_related",
+    "swp_completed_jobs_dont_execute_related",
+    "swp_service_bound_related",
+    "swp_job_meets_deadline_related",
+    "swp_unit_service_related",
+    "swp_ideal_progress_related",
+    "swp_arrival_sequence_to_source_rel",
+    "swp_cases_related",
+    "swp_original_cases_related"
+  ],
+  "previous_status": "analysis_facts_model_rbf_module_status.json",
+  "previous_files": 178,
+  "previous_decls": 1267,
+  "input_relations": [
+    "SvcProcessorStateRel (two-sided) with schedules related through the state conversion (FraScheduleFunRel)",
+    "job_cost by SvcJobCostRel",
+    "job_deadline pointwise by SubNatRel",
+    "ArArrivalSequenceRel"
+  ],
+  "coverage_for_inner_binders": [
+    "processor states (the accepted state conversion)",
+    "jobs (identity carrier)",
+    "Nats (both directions)"
+  ],
+  "lean_representation_note": "the section-local `sched'` is inlined as `swapped sched t1 t2`; `a != b` is `decide (a \u2260 b) = true`; Boolean equalities are equalities of `Bool`",
+  "export_diagnosis": "the accepted replace-at export root (Service / Schedule closure, ~125k lines) without its statements, reused so that the accepted certificate chain and the kernel-checked replace_at equations apply, plus the 22 statements and the deadline / platform predicates they mention"
+}

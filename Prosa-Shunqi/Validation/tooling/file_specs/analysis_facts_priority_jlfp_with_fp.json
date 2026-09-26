@@ -1,0 +1,133 @@
+{
+  "rank": 148,
+  "layer": 16,
+  "tag": "JWF",
+  "slug": "analysis_facts_priority_jlfp_with_fp",
+  "source": "analysis/facts/priority/jlfp_with_fp.v",
+  "dependencies": [
+    "analysis/definitions/priority/classes.v",
+    "analysis/facts/model/workload.v",
+    "analysis/facts/priority/classes.v",
+    "model/priority/elf.v"
+  ],
+  "declaration_count": 8,
+  "base_run": "analysis_facts_model_workload_final",
+  "base_checks": [
+    {
+      "manifest": "analysis_facts_model_workload",
+      "olean": "Prosa/Analysis/Facts/Model/Workload.olean",
+      "vo": "FactsWorkloadSemanticSource.vo"
+    },
+    {
+      "manifest": "model_aggregate_workload",
+      "olean": "Prosa/Model/Aggregate/Workload.olean",
+      "vo": "model/aggregate/workload.vo"
+    }
+  ],
+  "extra_pinned_sources": [
+    "util/int.v",
+    "model/priority/gel.v",
+    "model/priority/elf.v",
+    "analysis/definitions/priority/classes.v"
+  ],
+  "extra_lean": [
+    [
+      "Prosa/Analysis/Definitions/Priority/Classes.lean",
+      "Prosa/Analysis/Definitions/Priority/Classes.olean",
+      "analysis_definitions_priority_classes",
+      "production_olean_sha256"
+    ],
+    [
+      "Prosa/Analysis/Facts/Priority/Classes.lean",
+      "Prosa/Analysis/Facts/Priority/Classes.olean",
+      "analysis_facts_priority_classes",
+      "production_olean_sha256"
+    ]
+  ],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "JlfpWithFpSemanticSource",
+    "drop_imports": [
+      "Require Export prosa.analysis.facts.priority.classes.",
+      "Require Export prosa.analysis.facts.model.workload."
+    ],
+    "add_imports": [
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq bigop.",
+      "Require Import prosa.behavior.all prosa.model.task.concept prosa.model.priority.classes prosa.model.aggregate.workload."
+    ],
+    "note": "the five definitions are byte-identical computational blocks and the three lemma statements are the authoritative elaborated types (proofs omitted); the proof-heavy analysis/facts imports are dropped (the declarations mention only behavior, model/task/concept, model/priority/classes, model/aggregate/workload and analysis/definitions/priority/classes); the model/priority/elf import is kept (the source section context mentions its PriorityPoint class), so util/int, model/priority/gel and model/priority/elf are compiled from the pinned tree together with analysis/definitions/priority/classes (util/int.vo hash-checked against its manifest; gel.vo depends on this base's dependency .vo digests)"
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/JlfpWithFpStatementProbe.v",
+  "production": "Prosa/Analysis/Facts/Priority/JlfpWithFp.lean",
+  "production_olean": "Prosa/Analysis/Facts/Priority/JlfpWithFp.olean",
+  "lean_namespace": "Prosa.Analysis.Facts.Priority.JlfpWithFp",
+  "fixtures": [
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ArrivalsComputationInterface",
+    "WorkloadComputationInterface",
+    "FactsWorkloadComputationInterface",
+    "JlfpWithFpComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/JlfpWithFpLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/analysis_facts_priority_jlfp_with_fp_export_config.json",
+  "export_name": "JlfpWithFp",
+  "cert_dir": "certificates/analysis_facts_priority_jlfp_with_fp",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "ArrivalsCorrespondence",
+    "WorkloadCorrespondence",
+    "JlfpWithFpCorrespondence"
+  ],
+  "audit_module": "JlfpWithFpAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/JlfpWithFpImportedTypeAudit.v",
+  "assumption_config": "certificates/analysis_facts_priority_jlfp_with_fp/jlfp_with_fp_assumption_config.json",
+  "lean_axiom_config": "certificates/analysis_facts_priority_jlfp_with_fp/jlfp_with_fp_lean_axiom_config.json",
+  "computational": [
+    "other_ep_task",
+    "hep_job_of_ep_other_task",
+    "from_hp_task",
+    "hep_from_hp_task",
+    "hep_from_ep_task"
+  ],
+  "principal": {},
+  "helpers": [
+    "jwf_forall_list",
+    "jwf_arrival_sequence_to_source_rel",
+    "jwf_forall_arrival_sequence",
+    "jwf_ne_transport",
+    "jwf_eq_transport",
+    "jwf_bool_not_related",
+    "jwf_ep_task_related",
+    "jwf_hp_task_related",
+    "jwf_compatible_related",
+    "jwf_all_jobs_from_taskset_related"
+  ],
+  "previous_status": "analysis_facts_preemption_job_preemptive_module_status.json",
+  "previous_files": 143,
+  "previous_decls": 1077,
+  "input_relations": [
+    "FP policy pointwise on Booleans",
+    "JLFP policy pointwise on Booleans",
+    "JobTask by Lean.eq",
+    "job_cost pointwise by SubNatRel",
+    "job_arrival by ArJobArrivalRel",
+    "ArArrivalSequenceRel",
+    "task sets by ArListRel"
+  ],
+  "coverage_for_inner_binders": [
+    "jobs and tasks (identity carriers)",
+    "Nats (both directions)",
+    "task sets and arrival sequences (both directions)"
+  ],
+  "lean_representation_note": "`a != b` is `decide (a \u2260 b)`; `a == b` is `decide (a = b)`; `\\sum_(x <- xs | P x) F x` is the accepted `sumFiltered xs P F`; `uniq` is `List.Nodup`; Booleans in Prop position are `= true`",
+  "export_diagnosis": "the accepted workload-facts export root without its theorem targets, reused so that the accepted certificate chain applies, plus the eight declarations and the JLFP/FP compatibility definition",
+  "extra_source_vo_checks": {
+    "util/int.vo": [
+      "util_int",
+      "official_rocq_vo_sha256"
+    ]
+  }
+}

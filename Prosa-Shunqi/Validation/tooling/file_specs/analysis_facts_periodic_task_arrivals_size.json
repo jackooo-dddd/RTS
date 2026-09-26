@@ -1,0 +1,145 @@
+{
+  "rank": 196,
+  "layer": 24,
+  "tag": "FPTAS",
+  "slug": "analysis_facts_periodic_task_arrivals_size",
+  "source": "analysis/facts/periodic/task_arrivals_size.v",
+  "dependencies": [
+    "analysis/definitions/infinite_jobs.v",
+    "analysis/facts/periodic/arrival_times.v",
+    "analysis/facts/sporadic/arrival_sequence.v"
+  ],
+  "declaration_count": 8,
+  "base_run": "analysis_facts_periodic_arrival_times_final",
+  "base_checks": [
+    {
+      "manifest": "analysis_facts_periodic_arrival_times",
+      "olean": "Prosa/Analysis/Facts/Periodic/ArrivalTimes.olean"
+    },
+    {
+      "manifest": "model_task_offset",
+      "olean": "Prosa/Model/Task/Offset.olean",
+      "vo": "TaskOffsetSemanticSource.vo"
+    },
+    {
+      "manifest": "model_task_arrival_periodic",
+      "olean": "Prosa/Model/Task/Arrival/Periodic.olean",
+      "vo": "PeriodicSemanticSource.vo"
+    }
+  ],
+  "extra_olean_artifacts": [
+    {
+      "from": "analysis_definitions_infinite_jobs_final/olean/Prosa/Analysis/Definitions/InfiniteJobs.olean",
+      "to": "Prosa/Analysis/Definitions/InfiniteJobs.olean",
+      "manifest": "analysis_definitions_infinite_jobs",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "model_task_arrival_sporadic_as_curve_final/olean/Prosa/Model/Task/Arrival/Sporadic.olean",
+      "to": "Prosa/Model/Task/Arrival/Sporadic.olean",
+      "manifest": "model_task_arrival_sporadic",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_periodic_arrival_separation_final/olean/Prosa/Model/Task/Arrival/PeriodicAsSporadic.olean",
+      "to": "Prosa/Model/Task/Arrival/PeriodicAsSporadic.olean",
+      "manifest": "model_task_arrival_periodic_as_sporadic",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_periodic_arrival_separation_final/olean/Prosa/Analysis/Facts/Sporadic/ArrivalTimes.olean",
+      "to": "Prosa/Analysis/Facts/Sporadic/ArrivalTimes.olean",
+      "manifest": "analysis_facts_sporadic_arrival_times",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_sporadic_arrival_sequence_final/olean/Prosa/Analysis/Facts/Sporadic/ArrivalSequence.olean",
+      "to": "Prosa/Analysis/Facts/Sporadic/ArrivalSequence.olean",
+      "manifest": "analysis_facts_sporadic_arrival_sequence",
+      "key": "production_olean_sha256"
+    }
+  ],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "FactsPeriodicTaskArrivalsSizeSemanticSource",
+    "drop_imports": [
+      "Require Export prosa.analysis.facts.periodic.arrival_times.",
+      "Require Export prosa.analysis.definitions.infinite_jobs.",
+      "Require Export prosa.analysis.facts.sporadic.arrival_sequence."
+    ],
+    "add_imports": [
+      "Require Export prosa.TaskOffsetSemanticSource.",
+      "Export TaskOffsetSemanticSource.",
+      "Require Export prosa.PeriodicSemanticSource.",
+      "Export PeriodicSemanticSource.",
+      "Require Export prosa.analysis.definitions.infinite_jobs.",
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq.",
+      "Require Import prosa.behavior.all prosa.model.task.concept prosa.model.task.arrivals."
+    ],
+    "note": "theorem statements from the authoritative elaborated types (proofs omitted); the task-offset and periodic models are bound to their accepted extracted sources (hash-checked in the base); analysis/definitions/infinite_jobs is the pinned source compiled from the pinned tree, as in its accepted run; the proof-only facts/periodic/arrival_times and facts/sporadic/arrival_sequence imports are dropped (the task-arrival lists are the pinned model/task/arrivals of the base closure)"
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/FactsPeriodicTaskArrivalsSizeStatementProbe.v",
+  "production": "Prosa/Analysis/Facts/Periodic/TaskArrivalsSize.lean",
+  "production_olean": "Prosa/Analysis/Facts/Periodic/TaskArrivalsSize.olean",
+  "lean_namespace": "Prosa.Analysis.Facts.Periodic.TaskArrivalsSize",
+  "fixtures": [
+    "NondecreasingComputationInterface",
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "PreemptionParameterComputationInterface",
+    "TaskOffsetComputationInterface",
+    "ArrivalsComputationInterface",
+    "PeriodicComputationInterface",
+    "InfiniteJobsComputationInterface",
+    "FactsPeriodicTaskArrivalsSizeComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/FactsPeriodicTaskArrivalsSizeLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/analysis_facts_periodic_task_arrivals_size_export_config.json",
+  "export_name": "FactsPeriodicTaskArrivalsSize",
+  "cert_dir": "certificates/analysis_facts_periodic_task_arrivals_size",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "ArrivalsCorrespondence",
+    "JitterSvcBaseAdapter",
+    "JitterSvcNatBoolOperations",
+    "JitterSvcIntervalOperations",
+    "JitterSvcScheduleOperations",
+    "JitterSvcJobOperations",
+    "PreemptionParameterCorrespondence",
+    "TaskOffsetCorrespondence",
+    "PeriodicCorrespondence",
+    "InfiniteJobsCorrespondence",
+    "FactsPeriodicTaskArrivalsSizeCorrespondence"
+  ],
+  "audit_module": "FactsPeriodicTaskArrivalsSizeAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/FactsPeriodicTaskArrivalsSizeImportedTypeAudit.v",
+  "assumption_config": "certificates/analysis_facts_periodic_task_arrivals_size/facts_periodic_task_arrivals_size_assumption_config.json",
+  "lean_axiom_config": "certificates/analysis_facts_periodic_task_arrivals_size/facts_periodic_task_arrivals_size_lean_axiom_config.json",
+  "computational": [],
+  "principal": {},
+  "helpers": [],
+  "previous_status": "analysis_facts_periodic_arrival_times_module_status.json",
+  "previous_files": 185,
+  "previous_decls": 1306,
+  "input_relations": [
+    "TaskOffset pointwise by SubNatRel (the accepted OffRel)",
+    "PeriodicModel pointwise by SubNatRel (the accepted PerRel)",
+    "JobTask by Lean.eq",
+    "job_arrival by ArJobArrivalRel",
+    "ArArrivalSequenceRel"
+  ],
+  "coverage_for_inner_binders": [
+    "jobs and tasks (identity carriers)",
+    "Nats (both directions)"
+  ],
+  "lean_representation_note": "`size s` is `s.length`; `[::]` is `[]`; `x.+1` is `x + 1`; the statement-level `let`s are kept; a Boolean in `Prop` position is `= true`; the sporadic facts are used in the proofs through the accepted `periodic_as_sporadic` instance, as in the source",
+  "export_diagnosis": "the accepted periodic arrival-times export root without its statements (task-offset root over the preemption-parameter closure, task-arrivals and periodic roots) merged with the accepted infinite-jobs root, plus the eight statements",
+  "extra_artifacts": [],
+  "extra_pinned_sources": [
+    "analysis/definitions/infinite_jobs.v"
+  ]
+}

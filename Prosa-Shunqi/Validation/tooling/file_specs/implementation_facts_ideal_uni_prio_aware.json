@@ -1,0 +1,131 @@
+{
+  "rank": 203,
+  "layer": 19,
+  "tag": "PRA",
+  "slug": "implementation_facts_ideal_uni_prio_aware",
+  "source": "implementation/facts/ideal_uni/prio_aware.v",
+  "dependencies": [
+    "implementation/facts/ideal_uni/preemption_aware.v"
+  ],
+  "declaration_count": 5,
+  "base_run": "implementation_facts_ideal_uni_preemption_aware_final",
+  "base_checks": [
+    {
+      "manifest": "implementation_facts_ideal_uni_preemption_aware",
+      "olean": "Prosa/Implementation/Facts/IdealUni/PreemptionAware.olean",
+      "vo": "PreemptionAwareSemanticSource.vo"
+    }
+  ],
+  "extra_pinned_sources": [],
+  "extra_lean": [],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "PrioAwareSemanticSource",
+    "drop_imports": [
+      "Require Export prosa.implementation.facts.ideal_uni.preemption_aware."
+    ],
+    "add_imports": [
+      "Require Export prosa.PreemptionAwareSemanticSource.",
+      "Require Export prosa.IdealUniSchedulerSemanticSource.",
+      "Export IdealUniSchedulerSemanticSource.",
+      "Require Export prosa.ScheduleLimitedPreemptiveSemanticSource.",
+      "Export ScheduleLimitedPreemptiveSemanticSource.",
+      "Require Export prosa.PreemptionTimeSemanticSource.",
+      "Export PreemptionTimeSemanticSource.",
+      "Require Export prosa.PriorityDrivenSemanticSource.",
+      "Export PriorityDrivenSemanticSource.",
+      "Require Import prosa.model.processor.ideal.",
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq.",
+      "Require Import prosa.behavior.all."
+    ],
+    "printer_repairs": [
+      "empty_schedule None=empty_schedule (PState := ideal.processor_state Job) None"
+    ],
+    "note": "theorem statements from the authoritative elaborated types (proofs omitted); the proof-only preemption_aware facts import is replaced by its accepted extracted source of the base run (which carries the accepted scheduler, readiness, preemption-parameter, preemption-time and limited-preemptive sources, re-exported here explicitly); respects_JLDP_policy_at_preemption_point is bound to its accepted extracted source (PriorityDrivenSemanticSource .vo copied from its accepted run and hash-checked against its manifest); model/priority/definitions, util/supremum and model/processor/ideal are the compiled pinned sources of the base closure; the printed prefix match loses the implicit processor model of empty_schedule, so the recorded printer repair names it (PState := ideal.processor_state Job); the statements print back to the unrepaired evidence"
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/PrioAwareStatementProbe.v",
+  "production": "Prosa/Implementation/Facts/IdealUni/PrioAware.lean",
+  "production_olean": "Prosa/Implementation/Facts/IdealUni/PrioAware.olean",
+  "lean_namespace": "Prosa.Implementation.Facts.IdealUni.PrioAware",
+  "fixtures": [
+    "NondecreasingComputationInterface",
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "PreemptionParameterComputationInterface",
+    "TransformPrefixComputationInterface",
+    "IdealUniSchedulerComputationInterface",
+    "PrioAwareComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/PrioAwareLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/implementation_facts_ideal_uni_prio_aware_export_config.json",
+  "export_name": "PrioAware",
+  "cert_dir": "certificates/implementation_facts_ideal_uni_prio_aware",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "JitterSvcBaseAdapter",
+    "JitterSvcNatBoolOperations",
+    "JitterSvcIntervalOperations",
+    "JitterSvcScheduleOperations",
+    "JitterSvcJobOperations",
+    "PreemptionParameterCorrespondence",
+    "IdealUniSchedulerCorrespondence",
+    "PreemptionAwareHelpers",
+    "PrioAwareCorrespondence"
+  ],
+  "audit_module": "PrioAwareAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/PrioAwareImportedTypeAudit.v",
+  "assumption_config": "certificates/implementation_facts_ideal_uni_prio_aware/prio_aware_assumption_config.json",
+  "lean_axiom_config": "certificates/implementation_facts_ideal_uni_prio_aware/prio_aware_lean_axiom_config.json",
+  "computational": [],
+  "principal": {},
+  "helpers": [
+    "pr_jldp_to_target_rel",
+    "pr_jldp_to_source_rel",
+    "pr_forall_jldp",
+    "pr_uni_related",
+    "pr_choose_related"
+  ],
+  "previous_status": "implementation_facts_ideal_uni_preemption_aware_module_status.json",
+  "previous_files": 192,
+  "previous_decls": 1355,
+  "input_relations": [
+    "the processor model is fixed to the ideal uniprocessor on both sides; states related by the constructor-preserving Option map, schedules pointwise (covered in both directions)",
+    "job_cost by SvcJobCostRel",
+    "job_arrival by ArJobArrivalRel",
+    "arrival sequences by ArArrivalSequenceRel",
+    "the readiness model: job_ready related on related ideal schedules and instants; where it is quantified after a hypothesis, it is covered in both directions among nonclairvoyant models (which respect pointwise-equal schedules), with the covering models built from the other side's job_ready and its pending obligation",
+    "JobPreemptable pointwise (covered in both directions)",
+    "choose_job related on related instants and job lists (covered in both directions)",
+    "the JLDP policy pointwise on Booleans (covered in both directions)"
+  ],
+  "coverage_for_inner_binders": [
+    "JobReady (among nonclairvoyant models)",
+    "JobPreemptable",
+    "JLDP_policy",
+    "jobs and instants"
+  ],
+  "lean_representation_note": "the section-local idle_state is `none`; the section-local prefix is inlined as a `match` on the instant, as in the elaborated types; a Boolean in `Prop` position is `= true`; instance inputs quantified after a hypothesis are `\u2200 [..]` binders; `t.+1` is `t + 1`",
+  "export_diagnosis": "the accepted ideal-uniprocessor-scheduler export root (as for preemption_aware) plus the preemption-aware definitions, the priority-driven respects-policy definition, the JLDP properties, supremum, the priority-aware scheduler and the five statements",
+  "extra_source_patches": [],
+  "extra_artifacts": [
+    {
+      "from": "model_schedule_priority_driven_final/source/PriorityDrivenSemanticSource.vo",
+      "to": "source/PriorityDrivenSemanticSource.vo",
+      "manifest": "model_schedule_priority_driven",
+      "key": "source_vo_sha256"
+    }
+  ],
+  "extra_olean_artifacts": [
+    {
+      "from": "model_schedule_priority_driven_final/olean/Prosa/Model/Schedule/PriorityDriven.olean",
+      "to": "Prosa/Model/Schedule/PriorityDriven.olean",
+      "manifest": "model_schedule_priority_driven",
+      "key": "production_olean_sha256"
+    }
+  ],
+  "extra_generated_sources": []
+}

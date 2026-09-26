@@ -1,0 +1,173 @@
+{
+  "rank": 193,
+  "layer": 20,
+  "tag": "FSSEDF",
+  "slug": "analysis_abstract_restricted_supply_search_space_edf",
+  "source": "analysis/abstract/restricted_supply/search_space/edf.v",
+  "dependencies": [
+    "analysis/abstract/search_space.v",
+    "analysis/definitions/blocking_bound/edf.v",
+    "analysis/facts/model/rbf.v",
+    "analysis/facts/workload/edf_athep_bound.v"
+  ],
+  "declaration_count": 2,
+  "base_run": "analysis_facts_workload_edf_athep_bound_final",
+  "base_checks": [
+    {
+      "manifest": "analysis_facts_workload_edf_athep_bound",
+      "olean": "Prosa/Analysis/Facts/Workload/EdfAthepBound.olean"
+    },
+    {
+      "manifest": "analysis_definitions_workload_edf_athep_bound",
+      "olean": "Prosa/Analysis/Definitions/Workload/EdfAthepBound.olean",
+      "vo": "EdfAthepBoundSemanticSource.vo"
+    }
+  ],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "SearchSpaceEdfSemanticSource",
+    "drop_imports": [
+      "Require Export prosa.analysis.facts.model.rbf.",
+      "Require Export prosa.analysis.abstract.search_space.",
+      "Require Export prosa.analysis.definitions.blocking_bound.edf.",
+      "Require Export prosa.analysis.facts.workload.edf_athep_bound."
+    ],
+    "add_imports": [
+      "Require Export prosa.RequestBoundFunctionSemanticSource.",
+      "Export RequestBoundFunctionSemanticSource.",
+      "Require Export prosa.BlockingBoundEdfSemanticSource.",
+      "Export BlockingBoundEdfSemanticSource.",
+      "Require Export prosa.EdfAthepBoundSemanticSource.",
+      "Export EdfAthepBoundSemanticSource.",
+      "Require Export prosa.analysis.abstract.search_space.",
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq bigop.",
+      "Require Import prosa.util.epsilon prosa.util.rel prosa.model.task.concept prosa.model.task.arrival.curves.",
+      "Module edf := prosa.BlockingBoundEdfSemanticSource.BlockingBoundEdfSemanticSource.",
+      "Module edf_athep_bound := prosa.EdfAthepBoundSemanticSource.EdfAthepBoundSemanticSource."
+    ],
+    "printer_repairs": [
+      "edf.is_in_search_space=is_in_search_space"
+    ],
+    "note": "the definition is a byte-identical computational block (its section-local Lets included) and the lemma statement is the authoritative elaborated type (proof omitted); the request-bound-function, blocking_bound/edf and definitions/workload/edf_athep_bound imports are bound to their accepted extracted sources (RequestBoundFunctionSemanticSource and EdfAthepBoundSemanticSource hash-checked in the base; BlockingBoundEdfSemanticSource and its TaskPreemptionParametersSemanticSource .vo copied from their accepted runs and hash-checked against their manifests); analysis/abstract/search_space is the pinned source compiled with its accepted proof-only Rocq 9.3 compatibility patch; the proof-only facts/model/rbf and facts/workload/edf_athep_bound imports are dropped; the elaborated statement prints the module-qualified names `edf.blocking_bound` and `edf_athep_bound.bound_on_athep_workload`, reconnected to the accepted extracted definitions by recorded validation-only module aliases, and `edf.is_in_search_space` (this file's own definition, qualified only to disambiguate it from `search_space.is_in_search_space`) by a recorded printer repair to the unqualified local name"
+  },
+  "extra_artifacts": [
+    {
+      "from": "model_task_preemption_parameters_final/source/TaskPreemptionParametersSemanticSource.vo",
+      "to": "source/TaskPreemptionParametersSemanticSource.vo",
+      "manifest": "model_task_preemption_parameters",
+      "key": "source_vo_sha256"
+    },
+    {
+      "from": "analysis_definitions_blocking_bound_edf_final/source/BlockingBoundEdfSemanticSource.vo",
+      "to": "source/BlockingBoundEdfSemanticSource.vo",
+      "manifest": "analysis_definitions_blocking_bound_edf",
+      "key": "source_vo_sha256"
+    }
+  ],
+  "extra_pinned_sources": [
+    "analysis/abstract/search_space.v"
+  ],
+  "extra_olean_artifacts": [
+    {
+      "from": "model_task_preemption_parameters_final/olean/Prosa/Model/Task/Preemption/Parameters.olean",
+      "to": "Prosa/Model/Task/Preemption/Parameters.olean",
+      "manifest": "model_task_preemption_parameters",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_definitions_blocking_bound_edf_final/olean/Prosa/Analysis/Definitions/BlockingBound/Edf.olean",
+      "to": "Prosa/Analysis/Definitions/BlockingBound/Edf.olean",
+      "manifest": "analysis_definitions_blocking_bound_edf",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_abstract_search_space/olean/Prosa/Analysis/Abstract/SearchSpace.olean",
+      "to": "Prosa/Analysis/Abstract/SearchSpace.olean",
+      "manifest": "analysis_abstract_search_space",
+      "key": "production_olean_sha256"
+    }
+  ],
+  "fingerprint_probe": "Validation/fixtures/translation_order/SearchSpaceEdfStatementProbe.v",
+  "production": "Prosa/Analysis/Abstract/RestrictedSupply/SearchSpace/Edf.lean",
+  "production_olean": "Prosa/Analysis/Abstract/RestrictedSupply/SearchSpace/Edf.olean",
+  "lean_namespace": "Prosa.Analysis.Abstract.RestrictedSupply.SearchSpace.Edf",
+  "fixtures": [
+    "NondecreasingComputationInterface",
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "PreemptionParameterComputationInterface",
+    "BusyIntervalClassicalComputationInterface",
+    "ArrivalsComputationInterface",
+    "WorkloadComputationInterface",
+    "WorkloadBoundedComputationInterface",
+    "RequestBoundFunctionComputationInterface",
+    "CurvesComputationInterface",
+    "ProcessorStateCoverInterface",
+    "EdfAthepBoundComputationInterface",
+    "TaskPreemptionParametersComputationInterface",
+    "BlockingBoundEdfComputationInterface",
+    "FactsSearchSpaceEdfComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/SearchSpaceEdfLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/analysis_abstract_restricted_supply_search_space_edf_export_config.json",
+  "export_name": "SearchSpaceEdf",
+  "cert_dir": "certificates/analysis_abstract_restricted_supply_search_space_edf",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "ArrivalsCorrespondence",
+    "JitterSvcBaseAdapter",
+    "JitterSvcNatBoolOperations",
+    "JitterSvcIntervalOperations",
+    "JitterSvcScheduleOperations",
+    "JitterSvcJobOperations",
+    "PreemptionParameterCorrespondence",
+    "WorkloadCorrespondence",
+    "CurvesCorrespondence",
+    "RequestBoundFunctionCorrespondence",
+    "WorkloadBoundedCorrespondence",
+    "EdfAthepBoundCorrespondence",
+    "TaskPreemptionParametersCorrespondence",
+    "BlockingBoundEdfCorrespondence",
+    "SearchSpaceEdfCorrespondence"
+  ],
+  "audit_module": "SearchSpaceEdfAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/SearchSpaceEdfImportedTypeAudit.v",
+  "assumption_config": "certificates/analysis_abstract_restricted_supply_search_space_edf/search_space_edf_assumption_config.json",
+  "lean_axiom_config": "certificates/analysis_abstract_restricted_supply_search_space_edf/search_space_edf_lean_axiom_config.json",
+  "computational": [
+    "is_in_search_space"
+  ],
+  "principal": {},
+  "helpers": [
+    "sse_false_correspondence",
+    "sse_nat_neq_correspondence",
+    "sse_or_correspondence",
+    "sse_and3_correspondence",
+    "sse_decide_not",
+    "sse_nat_neqb_related",
+    "sse_has_canonical",
+    "sse_has_related"
+  ],
+  "previous_status": "analysis_facts_periodic_arrival_separation_module_status.json",
+  "previous_files": 182,
+  "previous_decls": 1298,
+  "input_relations": [
+    "TaskCost and TaskDeadline pointwise by SubNatRel",
+    "TaskMaxNonpreemptiveSegment by the accepted TppMaxSegmentRel",
+    "MaxArrivals by the accepted CvMaxArrivalsRel",
+    "task set by ArListRel"
+  ],
+  "coverage_for_inner_binders": [
+    "tasks (identity carriers)",
+    "Nats (both directions)"
+  ],
+  "lean_representation_note": "`\u03b5` is `1`; the section-local `D`, `rbf`, the three change indicators (including the local `let`) and `intra_IBF` are inlined; `a != b` is `decide (a \u2260 b)`; `has p xs` is `xs.any p`; `search_space.is_in_search_space` is the accepted abstract search-space predicate",
+  "export_diagnosis": "the accepted EDF athep-bound facts export root without its statements (RBF-facts + EDF athep-bound definition roots over the preemption-parameter / Service closure, ~139k lines), reused so that the accepted certificate chains apply, merged with the accepted task-preemption-parameter and EDF blocking-bound roots, plus the abstract search-space predicate, kernel-checked `List.any` equations, the definition and the statement",
+  "extra_source_patches": [
+    "patches/prosa-v06-rocq93-analysis-abstract-search-space.patch"
+  ]
+}

@@ -1,0 +1,190 @@
+{
+  "slice": "TRANSLATION_ORDER_MODEL_PREEMPTION_LIMITED_PREEMPTIVE",
+  "generated_at": "2026-09-26T15:02:43.523220+08:00",
+  "published_at": "2026-09-26T15:02:43.523220+08:00",
+  "rank": 132,
+  "layer": 15,
+  "source_file": "model/preemption/limited_preemptive.v",
+  "source_commit": "414e66760333eaa4ef78c685bcf53291c527a548",
+  "source_tree": "7d7e94c731f7eefde4ca738310d4cafdd7bebdf0",
+  "source_file_sha256": "9ac4073fdb178b1329840fa16eb4ea6d186e3f0668efc34e15f602eee745afa8",
+  "pipeline": "Validation/scripts/translation_file_pipeline.py",
+  "spec": "Validation/tooling/file_specs/model_preemption_limited_preemptive.json",
+  "spec_sha256": "0f9ea7d3ed25680b9f92624ac6fe1ca3a707651fec53751795acb3fc2680132f",
+  "source_compatibility": {
+    "mode": "extract",
+    "note": "the class, the source-local instance limited_preemptive_job_model (helper block) and the four definitions are byte-identical computational blocks; the model/preemption/parameter import is bound to the accepted extracted parameter source (PreemptionParameterSemanticSource, .vo hash-checked against the parameter manifest), and the accepted utility sources are imported explicitly: util/list (last0; ListSemanticSource) and the accepted generated source of util/nondecreasing.v (nondecreasing_sequence); blocks are emitted in source order (source_order) because the helper instance mentions the class declared before it; the source Section variable arr_seq, implicit in the uses of the three component definitions inside valid_limited_preemptions_job_model, is reconnected by recorded local notations",
+    "extracted_sha256": "ff147ed24fed7eed6d26310224feac17b5249d6a370791ee17f1cfc1c8893e57",
+    "extraction_metadata_sha256": "9098a2aae03c9d61e03e330a1f009940cb985224100dc4378a8c83db2a64807b"
+  },
+  "source_type_evidence": {
+    "prosa.model.preemption.limited_preemptive.JobPreemptionPoints": "EXACT_HASH",
+    "prosa.model.preemption.limited_preemptive.beginning_of_execution_in_preemption_points": "EXACT_HASH",
+    "prosa.model.preemption.limited_preemptive.end_of_execution_in_preemption_points": "EXACT_HASH",
+    "prosa.model.preemption.limited_preemptive.preemption_points_is_nondecreasing_sequence": "EXACT_HASH",
+    "prosa.model.preemption.limited_preemptive.valid_limited_preemptions_job_model": "EXACT_HASH"
+  },
+  "statement_only_export_boundary": [],
+  "input_relations": [
+    "JobPreemptionPoints pointwise by SvcNatListRel with two-way totals",
+    "job_cost by SvcJobCostRel",
+    "ArArrivalSequenceRel"
+  ],
+  "coverage_for_inner_binders": [
+    "jobs (identity carrier)",
+    "Nats (both directions)"
+  ],
+  "lean_representation_note": "`seq work` is `List work`; `\u03c1 \\in s` is `decide (\u03c1 \u2208 s) = true`; `last0` and `nondecreasing_sequence` are the accepted utilities; the source-local instance is a plain `@[reducible] def`; unused section context (JobArrival) is absent",
+  "export_size": {
+    "lines": 135039,
+    "soft_budget_flag": "OVER_100K_DIAGNOSED",
+    "diagnosis": "the accepted preemption-parameter export root (Service/Schedule interface closure, ~127k lines) reused verbatim so that the accepted JitterSvc/Arrivals certificate chain applies, plus the five declarations, the source-local instance and nondecreasing_sequence"
+  },
+  "file_dependencies": {
+    "model/preemption/parameter.v": "model_preemption_parameter_module_status.json"
+  },
+  "production_file": "Prosa/Model/Preemption/LimitedPreemptive.lean",
+  "production_source_sha256": "d09644cac6e750e9b9351b8a2fa25a4690701c41a35124c997600ec87a1fb445",
+  "production_olean_sha256": "13c7cf59959c20ebb82dd1944945f2767659b0e541c7314c6c20955d37c4756b",
+  "export_config_sha256": "f03c884038bf12b131a402a891056ca1eb00c7f8b0db96d6a1899164344a40ae",
+  "export_sha256": "b02e1a3d08df7241f3d4c7f9d802462843260641a235ba9ccc86e28915276161",
+  "export_lines": 135039,
+  "export_bytes": 3018463,
+  "import_sha256": "9198c94d7131596df2335855b23608a4e689cd8f74aa4dd46f1475380f103bd5",
+  "source_vo_sha256": "d3545745fbfb5883b604a655fccf6c0083743a79412b93a34751d6cd2c00da35",
+  "lean_axiom_summary_sha256": "e641e9d9e0d60e67355c3f788f91ef706a6956c0b861fd6c87664c0fb2dfe513",
+  "rocq_assumption_summary_sha256": "56babd2c206a213156ad76e64aba4cb79a361859c55139df8a6a8e1cfb9b57b3",
+  "assumption_config_sha256": "02489861b234e46f55de5ab2cabf5d5585107050042b1381b2ed28c9a6b9e189",
+  "stage_timing_seconds": {
+    "source_acquisition": {
+      "mode": "FRESH",
+      "seconds": 3
+    },
+    "lean_build": {
+      "mode": "FRESH",
+      "seconds": 567
+    },
+    "export": {
+      "mode": "FRESH",
+      "seconds": 55
+    },
+    "rocq_import": {
+      "mode": "FRESH",
+      "seconds": 45
+    },
+    "certificate_compile": {
+      "mode": "FRESH",
+      "seconds": 13
+    },
+    "assumption_audit": {
+      "mode": "FRESH",
+      "seconds": 0
+    }
+  },
+  "certificates": {
+    "ArrivalsSeqBaseAdapter": {
+      "source_sha256": "274783fa1f976ccfebc5245a68384ff4b0b1447a07b0a97fb6dda5dd09d4a8d9",
+      "vo_sha256": "a9d8cde9824e7eef54107ab0c353bce726526e8b7babd0291029ea9841b2436b"
+    },
+    "ArrivalsSeqOperations": {
+      "source_sha256": "128d08041d1074bd10d8d1541c8607faec7c0460fa5e90baee9dd6397eb49966",
+      "vo_sha256": "9cd83a6af0d722b8ba3ce257e656203d42c29fcd489d9ac7d283aea77b7fab77"
+    },
+    "ArrivalsSeqCorrespondence": {
+      "source_sha256": "84ee34bd1abaf31ecb7fbb8c4d8f2601762ff7a14eb36cb6d19ea154a7b9584c",
+      "vo_sha256": "c274b67a6b631e02fcd076a5ac3375e2748b94b88a2eba9262a3e70f9340b430"
+    },
+    "JitterSvcBaseAdapter": {
+      "source_sha256": "41db422b962ad77b571c8fea85f455d5dd1eec046fed835d8115e1c21c8dc335",
+      "vo_sha256": "ac09f4ee521160d835a15b9fb4bc833b4dccdeea5ce44c25c138d932d8011406"
+    },
+    "JitterSvcNatBoolOperations": {
+      "source_sha256": "1a8461a0b1fd1ecb99b0254c3b6546b0bdeefc9e772d6bda7dd0e3e6737d75a0",
+      "vo_sha256": "2aef336898f092458f4200dc2749e42c84a633ecff8dc39883005f25786db377"
+    },
+    "JitterSvcIntervalOperations": {
+      "source_sha256": "13d4a90e03604b8c2f8fbf374f87b32a9fa0da45a78b14ac9af418f056495972",
+      "vo_sha256": "7b3c35c0021e359d9e2b015b0c8294fa8691ab17b2bba5d82404cfea16555db9"
+    },
+    "JitterSvcScheduleOperations": {
+      "source_sha256": "8e3459132b926e5c4a9cedccf6f55ad929e1062879469964dfb51eb275136a99",
+      "vo_sha256": "e03c6379473b03e99b7a8de872eb3da039a66684a9d059313bbefc5ac682af1c"
+    },
+    "JitterSvcJobOperations": {
+      "source_sha256": "44068ad9ee7bd3cb9c3052d1238c9ce33c324e7867b411df60221df00e4b01e3",
+      "vo_sha256": "f4e583c1ba00cc2d3f6f80deea97afd2d2077fb3699bdcf09b4f9e1a16a066d6"
+    },
+    "LimitedPreemptiveCorrespondence": {
+      "source_sha256": "4e150303d25ad4546bf07af35014c942643eb090b073310df8708c3ef73eb5c0",
+      "vo_sha256": "4e885ff4996fd679ebb3cc292217bf80e349280a0956aaefef0dcc96b0da46d6"
+    },
+    "LimitedPreemptiveAssumptionAudit": {
+      "source_sha256": "191b3bc17439cfc12a2d9d62347761bdd564d2ae81a4f1c5949806b7220cdaa3",
+      "vo_sha256": "6b8c826750762dc86973efd8f5fd5940fcccc2240caa7bde65fd9c4363ea64d0"
+    }
+  },
+  "declarations": [
+    {
+      "source_declaration": "prosa.model.preemption.limited_preemptive.JobPreemptionPoints",
+      "lean_declaration": "Prosa.Model.Preemption.LimitedPreemptive.JobPreemptionPoints",
+      "semantic_status": "CERTIFIED",
+      "certificates": [
+        "JobPreemptionPoints_source_total",
+        "JobPreemptionPoints_target_total"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.model.preemption.limited_preemptive.beginning_of_execution_in_preemption_points",
+      "lean_declaration": "Prosa.Model.Preemption.LimitedPreemptive.beginning_of_execution_in_preemption_points",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "beginning_of_execution_in_preemption_points_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.model.preemption.limited_preemptive.end_of_execution_in_preemption_points",
+      "lean_declaration": "Prosa.Model.Preemption.LimitedPreemptive.end_of_execution_in_preemption_points",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "end_of_execution_in_preemption_points_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.model.preemption.limited_preemptive.preemption_points_is_nondecreasing_sequence",
+      "lean_declaration": "Prosa.Model.Preemption.LimitedPreemptive.preemption_points_is_nondecreasing_sequence",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "preemption_points_is_nondecreasing_sequence_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.model.preemption.limited_preemptive.valid_limited_preemptions_job_model",
+      "lean_declaration": "Prosa.Model.Preemption.LimitedPreemptive.valid_limited_preemptions_job_model",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "valid_limited_preemptions_job_model_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    }
+  ],
+  "acceptance": "ACCEPTED_V06_FILE"
+}

@@ -1,0 +1,98 @@
+{
+  "rank": 143,
+  "layer": 16,
+  "tag": "RBF",
+  "slug": "analysis_definitions_request_bound_function",
+  "source": "analysis/definitions/request_bound_function.v",
+  "dependencies": [
+    "analysis/facts/priority/classes.v",
+    "model/priority/classes.v",
+    "model/task/arrival/curves.v",
+    "util/sum.v"
+  ],
+  "declaration_count": 6,
+  "base_run": "model_preemption_parameter_final",
+  "base_checks": [
+    {
+      "manifest": "model_preemption_parameter",
+      "olean": "Prosa/Model/Preemption/Parameter.olean",
+      "vo": "PreemptionParameterSemanticSource.vo"
+    }
+  ],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "RequestBoundFunctionSemanticSource",
+    "drop_imports": [
+      "Require Export prosa.analysis.facts.priority.classes.",
+      "Require Export prosa.util.sum."
+    ],
+    "add_imports": [
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq bigop."
+    ],
+    "note": "the six definitions are byte-identical computational blocks; the proof-only analysis/facts/priority/classes and util/sum imports are dropped (the definitions use only MathComp big operators, model/task/arrival/curves and model/priority/classes, the compiled pinned sources of the base run)"
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/RequestBoundFunctionStatementProbe.v",
+  "production": "Prosa/Analysis/Definitions/RequestBoundFunction.lean",
+  "production_olean": "Prosa/Analysis/Definitions/RequestBoundFunction.olean",
+  "lean_namespace": "Prosa.Analysis.Definitions.RequestBoundFunction",
+  "fixtures": [
+    "NondecreasingComputationInterface",
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "PreemptionParameterComputationInterface",
+    "RequestBoundFunctionComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/RequestBoundFunctionLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/analysis_definitions_request_bound_function_export_config.json",
+  "export_name": "RequestBoundFunction",
+  "cert_dir": "certificates/analysis_definitions_request_bound_function",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "JitterSvcBaseAdapter",
+    "JitterSvcNatBoolOperations",
+    "JitterSvcIntervalOperations",
+    "JitterSvcScheduleOperations",
+    "JitterSvcJobOperations",
+    "PreemptionParameterCorrespondence",
+    "RequestBoundFunctionCorrespondence"
+  ],
+  "audit_module": "RequestBoundFunctionAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/RequestBoundFunctionImportedTypeAudit.v",
+  "assumption_config": "certificates/analysis_definitions_request_bound_function/request_bound_function_assumption_config.json",
+  "lean_axiom_config": "certificates/analysis_definitions_request_bound_function/request_bound_function_lean_axiom_config.json",
+  "computational": [
+    "task_request_bound_function",
+    "total_request_bound_function",
+    "total_hep_request_bound_function_FP",
+    "total_ohep_request_bound_function_FP",
+    "total_ep_request_bound_function_FP",
+    "total_hp_request_bound_function_FP"
+  ],
+  "principal": {},
+  "helpers": [
+    "rbf_logic_eq_to_lean_eq",
+    "rbf_neq_related",
+    "rbf_sum_canonical",
+    "rbf_sum_related",
+    "rbf_sum_filtered_canonical",
+    "rbf_sum_filtered_related"
+  ],
+  "previous_status": "analysis_definitions_busy_interval_classical_module_status.json",
+  "previous_files": 138,
+  "previous_decls": 1054,
+  "input_relations": [
+    "TaskCost pointwise by SubNatRel",
+    "MaxArrivals pointwise by SubNatRel on durations",
+    "FP policy pointwise on Booleans",
+    "task sets by ArListRel"
+  ],
+  "coverage_for_inner_binders": [
+    "tasks (identity carrier)"
+  ],
+  "lean_representation_note": "`\\sum_(x <- xs) F x` is the accepted `sumSeq xs F`; `\\sum_(x <- xs | P x) F x` is the accepted `sumFiltered xs P F`; `a != b` is `decide (a \u2260 b)`",
+  "export_diagnosis": "the accepted preemption-parameter export root (~127k lines) reused verbatim so that the accepted certificate chain applies, plus the six definitions, sumSeq/sumFiltered with five kernel-checked equations, hp_task/ep_task and the task classes"
+}

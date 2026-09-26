@@ -1,0 +1,238 @@
+{
+  "slice": "TRANSLATION_ORDER_ANALYSIS_DEFINITIONS_PRIORITY_INVERSION",
+  "generated_at": "2026-09-26T20:58:30.717321+08:00",
+  "published_at": "2026-09-26T20:58:30.717321+08:00",
+  "rank": 164,
+  "layer": 17,
+  "source_file": "analysis/definitions/priority_inversion.v",
+  "source_commit": "414e66760333eaa4ef78c685bcf53291c527a548",
+  "source_tree": "7d7e94c731f7eefde4ca738310d4cafdd7bebdf0",
+  "source_file_sha256": "619847df52c7174e34e10c64efc115454971411dbf11ce8b08e1613282e64cc1",
+  "pipeline": "Validation/scripts/translation_file_pipeline.py",
+  "spec": "Validation/tooling/file_specs/analysis_definitions_priority_inversion.json",
+  "spec_sha256": "4ef2d4e64601de8a61bc579761add4b19a95e410a3a492bbf682db95953a972d",
+  "source_compatibility": {
+    "mode": "extract",
+    "note": "the eight definitions are byte-identical computational blocks; the analysis/definitions/busy_interval/classical import is bound to the accepted extracted busy-interval source (BusyIntervalClassicalSemanticSource, .vo hash-checked against its manifest); the proof-only analysis/facts/model/scheduled import is replaced by the pinned model/schedule/scheduled (scheduled_jobs_at, compiled from the pinned tree) and the pinned model/task/concept (job_of_task, TaskCost); the source Section variables arr_seq, sched and j, implicit in the uses of the section-local definitions inside the cumulative sums and bounds, are reconnected by recorded local notations",
+    "extracted_sha256": "2112d349c06af3acc0ba0b7621fa9d5402f640d81529639ce8b9044606bfab3c",
+    "extraction_metadata_sha256": "e31e6501e4e7f5b520bfb4d1685803324ebbe2d61dce4292475defd9e7904855"
+  },
+  "source_type_evidence": {
+    "prosa.analysis.definitions.priority_inversion.priority_inversion": "EXACT_HASH",
+    "prosa.analysis.definitions.priority_inversion.priority_inversion_cond": "EXACT_HASH",
+    "prosa.analysis.definitions.priority_inversion.cumulative_priority_inversion": "EXACT_HASH",
+    "prosa.analysis.definitions.priority_inversion.cumulative_priority_inversion_cond": "EXACT_HASH",
+    "prosa.analysis.definitions.priority_inversion.priority_inversion_of_job_is_bounded_by": "EXACT_HASH",
+    "prosa.analysis.definitions.priority_inversion.priority_inversion_of_job_cond_is_bounded_by": "EXACT_HASH",
+    "prosa.analysis.definitions.priority_inversion.priority_inversion_is_bounded_by": "EXACT_HASH",
+    "prosa.analysis.definitions.priority_inversion.priority_inversion_cond_is_bounded_by": "EXACT_HASH"
+  },
+  "statement_only_export_boundary": [],
+  "input_relations": [
+    "job_arrival by ArJobArrivalRel",
+    "job_cost by SvcJobCostRel",
+    "JobTask by Lean.eq",
+    "SvcProcessorStateRel (two-sided) + SvcScheduleRel",
+    "ArArrivalSequenceRel",
+    "JLFP policy pointwise on Booleans",
+    "predicates P pointwise on Booleans",
+    "bound functions B by SubNatRel on related Nats"
+  ],
+  "coverage_for_inner_binders": [
+    "jobs (identity carrier)",
+    "Nats (both directions)"
+  ],
+  "lean_representation_note": "`x \\notin s` is `!decide (x \u2208 s)`; `has p s` is `s.any p`; the half-open Boolean sum is `\u2211 t \u2208 Finset.Ico t1 t2, (b t).toNat` (kernel-guarded list-fold projection); unused section context is absent",
+  "export_size": {
+    "lines": 136013,
+    "soft_budget_flag": "OVER_100K_DIAGNOSED",
+    "diagnosis": "the accepted busy-interval export root (preemption-parameter closure, ~127k lines) without its theorem targets, reused so that the accepted certificate chain applies, plus the eight definitions, scheduled_jobs_at, the two guarded sum projections and the task classes"
+  },
+  "file_dependencies": {
+    "analysis/definitions/busy_interval/classical.v": "analysis_definitions_busy_interval_classical_module_status.json",
+    "analysis/facts/model/scheduled.v": "analysis_facts_model_scheduled_module_status.json"
+  },
+  "production_file": "Prosa/Analysis/Definitions/PriorityInversion.lean",
+  "production_source_sha256": "d5e3552980dc386fdef467942eff2def0918b64db207b045d913e0c3d788e50b",
+  "production_olean_sha256": "6f5685f1c1c751f9644832291a8f8237cf5eab51c7487b1e2a43043bbba2aa23",
+  "export_config_sha256": "bbfe2ffd3fec0004a5d00083f28e6144acf7b061c582b7ecc7b44f05737828a7",
+  "export_sha256": "9f3e910df3cf10699decaafd375719547aec4e0166b8f5cf9c7c44320fe9ebbd",
+  "export_lines": 136013,
+  "export_bytes": 3049864,
+  "import_sha256": "b85672c4b516245c7c8c5e5209efd4f523d695ff0bdf9777b01463b50370afc0",
+  "source_vo_sha256": "4cca10892012c68d522a343f4004afba55f8da859a4ae61e0858ac5127c18676",
+  "lean_axiom_summary_sha256": "7f0db05b0c306b753635fdbfe93f89d1096ec45acf9df4575c2c393482fde5ce",
+  "rocq_assumption_summary_sha256": "7ae19857c37965d10e2ba1a70c1c2b97bd4fd71134232f2b327f801279c340b7",
+  "assumption_config_sha256": "7b112aa318fbf7611c1e150bd9f64bb5701460b3fc6f6a1480a216cd1b77aa5f",
+  "stage_timing_seconds": {
+    "source_acquisition": {
+      "mode": "FRESH",
+      "seconds": 6
+    },
+    "lean_build": {
+      "mode": "FRESH",
+      "seconds": 1122
+    },
+    "export": {
+      "mode": "FRESH",
+      "seconds": 114
+    },
+    "rocq_import": {
+      "mode": "FRESH",
+      "seconds": 85
+    },
+    "certificate_compile": {
+      "mode": "FRESH",
+      "seconds": 19
+    },
+    "assumption_audit": {
+      "mode": "FRESH",
+      "seconds": 0
+    }
+  },
+  "certificates": {
+    "ArrivalsSeqBaseAdapter": {
+      "source_sha256": "fc0e7337d559cf89cd247d5a0bdb1f351f32857f66108e852cb1366234524884",
+      "vo_sha256": "c41642d338325dd0f9fd4574b3437203c97c1181b054fd8b9e1a75db092757ad"
+    },
+    "ArrivalsSeqOperations": {
+      "source_sha256": "cb207836e9067e94ed09369ce15c81cf758eba5bf9040947834ca3dc85382e89",
+      "vo_sha256": "8cc2b62b8a732c84645b25061da18b257b8eb0f228007a83be0e551eead911ca"
+    },
+    "ArrivalsSeqCorrespondence": {
+      "source_sha256": "b60b7102d049f305ed1b9b6375a5ceaa03b2e485a5caeac5f6f0ceff97ee626e",
+      "vo_sha256": "5e4fcbc48681e61cb59a2544acb85bfb8a7661614914b3c7d3d6c803d26acc32"
+    },
+    "JitterSvcBaseAdapter": {
+      "source_sha256": "052a940d852a563d07fed07203268f15a8bfee59a3c07e2311092612f3b20ca7",
+      "vo_sha256": "20f7cf5d8bb07ba2882b3568a3200124fbb1961c0cbe7e07ecc60af84b0300a8"
+    },
+    "JitterSvcNatBoolOperations": {
+      "source_sha256": "ac0e34a878858f7984413c8ecdb56b35b75f2800fec50fa6f6fc4cb26fa4d4ff",
+      "vo_sha256": "762a853fe22e5ae8caf79fbd38801da78b6d559f8d0054de1ece71d595847eb0"
+    },
+    "JitterSvcIntervalOperations": {
+      "source_sha256": "f91bd874f7afd2e1663ee66f826d7ad5c7da11795ad48d3449e0c334eab0a8fc",
+      "vo_sha256": "e3ac45428c9aa4083244096a16f5f752d1d1fa705723f6fa3759d78276b0d700"
+    },
+    "JitterSvcScheduleOperations": {
+      "source_sha256": "24203ac2522ac56dc965f9186088472b905a6403f877db637e638870cc7ffae3",
+      "vo_sha256": "babff033e5c6bf3561956ccd4125e637b5978182b1413baa016a1020fe3c06f1"
+    },
+    "JitterSvcJobOperations": {
+      "source_sha256": "e84958cd1e1959b773569182e1e1c7c7a0bdbaf02ced7a481018098bfa9ab094",
+      "vo_sha256": "402f4395bc57e1697c0ca1baf6fba3b9020f80d5e494fdde3fa2638899684917"
+    },
+    "PreemptionParameterCorrespondence": {
+      "source_sha256": "7d87b7cb34e4eafc1794d6bd9f66b016295ed23d27567b2ba7915f098f9dc02c",
+      "vo_sha256": "7bfd7e9ff21e410290003611238f390c39ebc08254fe18fdd6e2d58d3e7a38b0"
+    },
+    "PriorityInversionCorrespondence": {
+      "source_sha256": "4d133b0990607e5023767ca37a91bb3b6352977de3a0cf6b12470da833fb3b33",
+      "vo_sha256": "74ae50fdf57dae43166250f5d5e37ae17ffbdc41eba02ee4f99dfd0f41d72f21"
+    },
+    "PriorityInversionAssumptionAudit": {
+      "source_sha256": "985ef0258c0c4682c0c1b67cd7b055ec394dfaab85e59f2a42dede8504756a79",
+      "vo_sha256": "7bdcf4f01852866e2af7cedabdaf3e3af66842a51969e5d6bac4327b184e2c94"
+    }
+  },
+  "declarations": [
+    {
+      "source_declaration": "prosa.analysis.definitions.priority_inversion.priority_inversion",
+      "lean_declaration": "Prosa.Analysis.Definitions.PriorityInversion.priority_inversion",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "priority_inversion_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.definitions.priority_inversion.priority_inversion_cond",
+      "lean_declaration": "Prosa.Analysis.Definitions.PriorityInversion.priority_inversion_cond",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "priority_inversion_cond_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.definitions.priority_inversion.cumulative_priority_inversion",
+      "lean_declaration": "Prosa.Analysis.Definitions.PriorityInversion.cumulative_priority_inversion",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "cumulative_priority_inversion_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.definitions.priority_inversion.cumulative_priority_inversion_cond",
+      "lean_declaration": "Prosa.Analysis.Definitions.PriorityInversion.cumulative_priority_inversion_cond",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "cumulative_priority_inversion_cond_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.definitions.priority_inversion.priority_inversion_of_job_is_bounded_by",
+      "lean_declaration": "Prosa.Analysis.Definitions.PriorityInversion.priority_inversion_of_job_is_bounded_by",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "priority_inversion_of_job_is_bounded_by_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.definitions.priority_inversion.priority_inversion_of_job_cond_is_bounded_by",
+      "lean_declaration": "Prosa.Analysis.Definitions.PriorityInversion.priority_inversion_of_job_cond_is_bounded_by",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "priority_inversion_of_job_cond_is_bounded_by_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.definitions.priority_inversion.priority_inversion_is_bounded_by",
+      "lean_declaration": "Prosa.Analysis.Definitions.PriorityInversion.priority_inversion_is_bounded_by",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "priority_inversion_is_bounded_by_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.definitions.priority_inversion.priority_inversion_cond_is_bounded_by",
+      "lean_declaration": "Prosa.Analysis.Definitions.PriorityInversion.priority_inversion_cond_is_bounded_by",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "priority_inversion_cond_is_bounded_by_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    }
+  ],
+  "acceptance": "ACCEPTED_V06_FILE"
+}

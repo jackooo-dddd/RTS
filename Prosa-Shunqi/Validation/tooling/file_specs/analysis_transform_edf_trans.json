@@ -1,0 +1,150 @@
+{
+  "rank": 198,
+  "layer": 19,
+  "tag": "FET",
+  "slug": "analysis_transform_edf_trans",
+  "source": "analysis/transform/edf_trans.v",
+  "dependencies": [
+    "analysis/facts/model/ideal/schedule.v",
+    "analysis/transform/prefix.v",
+    "analysis/transform/swap.v"
+  ],
+  "declaration_count": 6,
+  "base_run": "analysis_facts_model_ideal_schedule_final",
+  "base_checks": [
+    {
+      "manifest": "analysis_facts_model_ideal_schedule",
+      "olean": "Prosa/Analysis/Facts/Model/Ideal/Schedule.olean"
+    }
+  ],
+  "extra_pinned_sources": [
+    "analysis/transform/swap.v"
+  ],
+  "extra_lean": [
+    [
+      "Prosa/Model/Processor/Ideal.lean",
+      "Prosa/Model/Processor/Ideal.olean",
+      "model_processor_ideal",
+      "production_olean_sha256"
+    ]
+  ],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "EdfTransSemanticSource",
+    "drop_imports": [
+      "Require Export prosa.analysis.transform.prefix.",
+      "Require Export prosa.analysis.transform.swap.",
+      "Require Export prosa.analysis.facts.model.ideal.schedule."
+    ],
+    "add_imports": [
+      "Require Export prosa.TransformPrefixSemanticSource.",
+      "Export TransformPrefixSemanticSource.",
+      "Require Export prosa.analysis.transform.swap.",
+      "Require Export prosa.GeneratedSearchArgSource.",
+      "Export GeneratedSearchArgSource.",
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq.",
+      "Require Import prosa.behavior.all prosa.model.processor.ideal."
+    ],
+    "note": "the six definitions are byte-identical computational blocks (the section-local `PState`/`SchedType` Lets included); the prefix import is bound to its accepted extracted source (TransformPrefixSemanticSource .vo copied from its accepted run and hash-checked against its manifest, compiled against pinned behavior .vo files byte-identical to the base run's); analysis/transform/swap is the pinned source compiled from the pinned tree; util/search_arg is bound to its accepted generated definition source (GeneratedSearchArgSource.v, copied from its accepted run, sha256 equal to the validation_source_sha256 of its accepted manifest entry, compiled here; the pinned file's proofs do not build under the approved util/tactics patch); model/processor/ideal is the compiled patched pinned source of the base run; the proof-only facts/model/ideal/schedule import is dropped"
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/EdfTransStatementProbe.v",
+  "production": "Prosa/Analysis/Transform/EdfTrans.lean",
+  "production_olean": "Prosa/Analysis/Transform/EdfTrans.olean",
+  "lean_namespace": "Prosa.Analysis.Transform.EdfTrans",
+  "fixtures": [
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "ScheduledComputationInterface",
+    "IdealScheduleComputationInterface",
+    "FactsEdfTransComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/EdfTransLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/analysis_transform_edf_trans_export_config.json",
+  "export_name": "EdfTrans",
+  "cert_dir": "certificates/analysis_transform_edf_trans",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "JitterSvcBaseAdapter",
+    "JitterSvcNatBoolOperations",
+    "JitterSvcIntervalOperations",
+    "JitterSvcScheduleOperations",
+    "JitterSvcJobOperations",
+    "EdfTransCorrespondence"
+  ],
+  "audit_module": "EdfTransAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/EdfTransImportedTypeAudit.v",
+  "assumption_config": "certificates/analysis_transform_edf_trans/edf_trans_assumption_config.json",
+  "lean_axiom_config": "certificates/analysis_transform_edf_trans/edf_trans_lean_axiom_config.json",
+  "computational": [
+    "earlier_deadline",
+    "relevant_pstate",
+    "find_swap_candidate",
+    "make_edf_at",
+    "edf_transform_prefix",
+    "edf_transform"
+  ],
+  "principal": {},
+  "helpers": [
+    "fet_src_transport",
+    "fet_bool_true",
+    "fet_bool_false",
+    "fet_bool_false_not",
+    "fet_deadline_of_state_related",
+    "fet_src_search_arg_succ",
+    "fet_search_arg_canonical",
+    "fet_find_match_related",
+    "fet_nat_not_eq",
+    "fet_replace_at_related",
+    "fet_swapped_related",
+    "fet_prefix_map_canonical",
+    "fet_prefix_map_related"
+  ],
+  "previous_status": "analysis_facts_model_dbf_module_status.json",
+  "previous_files": 187,
+  "previous_decls": 1322,
+  "input_relations": [
+    "the processor model is fixed to the ideal uniprocessor on both sides; states related by the accepted constructor-preserving Option map (IdOptRel), schedules pointwise (IdScheduleRel)",
+    "job_deadline pointwise by SubNatRel",
+    "ArJobArrivalRel",
+    "instants by SubNatRel",
+    "jobs (identity carrier)"
+  ],
+  "coverage_for_inner_binders": [],
+  "lean_representation_note": "the section-local `PState` is the accepted ideal processor `processor_state Job` (states `Option Job`); `oapp f d s` and `if e is Some t then t else 0` are `match`es; the local `let`s are kept; `t.+1` is `t + 1`",
+  "export_diagnosis": "the accepted ideal-schedule export root without its statements (ideal processor over the Service / Schedule closure), plus the six definitions, search_arg, prefix_map, replace_at/swapped and their kernel-checked equations at the ideal processor",
+  "extra_source_patches": [],
+  "extra_artifacts": [
+    {
+      "from": "analysis_transform_prefix_final/source/TransformPrefixSemanticSource.vo",
+      "to": "source/TransformPrefixSemanticSource.vo",
+      "manifest": "analysis_transform_prefix",
+      "key": "source_vo_sha256"
+    }
+  ],
+  "extra_olean_artifacts": [
+    {
+      "from": "analysis_transform_prefix_final/olean/Prosa/Analysis/Transform/Prefix.olean",
+      "to": "Prosa/Analysis/Transform/Prefix.olean",
+      "manifest": "analysis_transform_prefix",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_transform_swap/olean/Prosa/Analysis/Transform/Swap.olean",
+      "to": "Prosa/Analysis/Transform/Swap.olean",
+      "manifest": "analysis_transform_swap",
+      "key": "production_olean_sha256"
+    }
+  ],
+  "extra_generated_sources": [
+    {
+      "from": ".work/runs/utility_search_arg.EniSWx/source/GeneratedSearchArgSource.v",
+      "to": "GeneratedSearchArgSource.v",
+      "manifest_file": "utility_foundation_expansion_manifest.json",
+      "source_file": "util/search_arg.v"
+    }
+  ]
+}

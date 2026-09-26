@@ -1,0 +1,4 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedBlockingBoundFp.
+
+Check ImportedBlockingBoundFp.Prosa_Analysis_Definitions_BlockingBound_Fp_blocking_bound.

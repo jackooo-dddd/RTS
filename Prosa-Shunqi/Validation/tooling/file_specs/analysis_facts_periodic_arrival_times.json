@@ -1,0 +1,117 @@
+{
+  "rank": 195,
+  "layer": 23,
+  "tag": "FPAT",
+  "slug": "analysis_facts_periodic_arrival_times",
+  "source": "analysis/facts/periodic/arrival_times.v",
+  "dependencies": [
+    "analysis/facts/model/offset.v",
+    "analysis/facts/periodic/max_inter_arrival.v",
+    "model/task/arrival/periodic_as_sporadic.v"
+  ],
+  "declaration_count": 3,
+  "base_run": "analysis_facts_model_offset_final",
+  "base_checks": [
+    {
+      "manifest": "analysis_facts_model_offset",
+      "olean": "Prosa/Analysis/Facts/Model/Offset.olean"
+    },
+    {
+      "manifest": "model_task_offset",
+      "olean": "Prosa/Model/Task/Offset.olean",
+      "vo": "TaskOffsetSemanticSource.vo"
+    }
+  ],
+  "extra_olean_artifacts": [
+    {
+      "from": "model_task_arrival_periodic_final/olean/Prosa/Model/Task/Arrival/Periodic.olean",
+      "to": "Prosa/Model/Task/Arrival/Periodic.olean",
+      "manifest": "model_task_arrival_periodic",
+      "key": "production_olean_sha256"
+    }
+  ],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "FactsPeriodicArrivalTimesSemanticSource",
+    "drop_imports": [
+      "Require Export prosa.model.task.arrival.periodic_as_sporadic.",
+      "Require Export prosa.analysis.facts.periodic.max_inter_arrival.",
+      "Require Export prosa.analysis.facts.model.offset."
+    ],
+    "add_imports": [
+      "Require Export prosa.TaskOffsetSemanticSource.",
+      "Export TaskOffsetSemanticSource.",
+      "Require Export prosa.PeriodicSemanticSource.",
+      "Export PeriodicSemanticSource.",
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq.",
+      "Require Import prosa.behavior.all prosa.model.task.concept prosa.model.task.arrivals."
+    ],
+    "note": "theorem statements from the authoritative elaborated types (proofs omitted); the task-offset and periodic models are bound to their accepted extracted sources (TaskOffsetSemanticSource hash-checked as base; PeriodicSemanticSource .vo copied from its accepted run and hash-checked against its manifest, compiled against byte-identical pinned model/task/arrivals, model/task/concept and behavior .vo files); the proof-only periodic_as_sporadic, facts/periodic/max_inter_arrival and facts/model/offset imports are dropped (job_index is the pinned model/task/arrivals of the base closure)"
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/FactsPeriodicArrivalTimesStatementProbe.v",
+  "production": "Prosa/Analysis/Facts/Periodic/ArrivalTimes.lean",
+  "production_olean": "Prosa/Analysis/Facts/Periodic/ArrivalTimes.olean",
+  "lean_namespace": "Prosa.Analysis.Facts.Periodic.ArrivalTimes",
+  "fixtures": [
+    "NondecreasingComputationInterface",
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "PreemptionParameterComputationInterface",
+    "TaskOffsetComputationInterface",
+    "ArrivalsComputationInterface",
+    "PeriodicComputationInterface",
+    "FactsPeriodicArrivalTimesComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/FactsPeriodicArrivalTimesLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/analysis_facts_periodic_arrival_times_export_config.json",
+  "export_name": "FactsPeriodicArrivalTimes",
+  "cert_dir": "certificates/analysis_facts_periodic_arrival_times",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "ArrivalsCorrespondence",
+    "JitterSvcBaseAdapter",
+    "JitterSvcNatBoolOperations",
+    "JitterSvcIntervalOperations",
+    "JitterSvcScheduleOperations",
+    "JitterSvcJobOperations",
+    "PreemptionParameterCorrespondence",
+    "TaskOffsetCorrespondence",
+    "PeriodicCorrespondence",
+    "FactsPeriodicArrivalTimesCorrespondence"
+  ],
+  "audit_module": "FactsPeriodicArrivalTimesAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/FactsPeriodicArrivalTimesImportedTypeAudit.v",
+  "assumption_config": "certificates/analysis_facts_periodic_arrival_times/facts_periodic_arrival_times_assumption_config.json",
+  "lean_axiom_config": "certificates/analysis_facts_periodic_arrival_times/facts_periodic_arrival_times_lean_axiom_config.json",
+  "computational": [],
+  "principal": {},
+  "helpers": [],
+  "previous_status": "analysis_facts_periodic_max_inter_arrival_module_status.json",
+  "previous_files": 184,
+  "previous_decls": 1303,
+  "input_relations": [
+    "TaskOffset pointwise by SubNatRel (the accepted OffRel)",
+    "PeriodicModel pointwise by SubNatRel (the accepted PerRel)",
+    "JobTask by Lean.eq",
+    "job_arrival by ArJobArrivalRel",
+    "ArArrivalSequenceRel"
+  ],
+  "coverage_for_inner_binders": [
+    "jobs and tasks (identity carriers)",
+    "Nats (both directions)"
+  ],
+  "lean_representation_note": "a Boolean in `Prop` position is `= true`; the source's proof-only periodic_as_sporadic and max_inter_arrival imports are not needed by the Lean statements or proofs",
+  "export_diagnosis": "the accepted offset-facts export root without its statements (task-offset root over the preemption-parameter closure plus the task-arrivals root) merged with the accepted periodic root, plus the three statements",
+  "extra_artifacts": [
+    {
+      "from": "model_task_arrival_periodic_final/source/PeriodicSemanticSource.vo",
+      "to": "source/PeriodicSemanticSource.vo",
+      "manifest": "model_task_arrival_periodic",
+      "key": "source_vo_sha256"
+    }
+  ]
+}

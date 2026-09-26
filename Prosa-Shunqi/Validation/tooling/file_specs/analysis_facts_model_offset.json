@@ -1,0 +1,102 @@
+{
+  "rank": 182,
+  "layer": 19,
+  "tag": "FMO",
+  "slug": "analysis_facts_model_offset",
+  "source": "analysis/facts/model/offset.v",
+  "dependencies": [
+    "analysis/facts/job_index.v",
+    "model/task/offset.v"
+  ],
+  "declaration_count": 2,
+  "base_run": "model_task_offset_final",
+  "base_checks": [
+    {
+      "manifest": "model_task_offset",
+      "olean": "Prosa/Model/Task/Offset.olean",
+      "vo": "TaskOffsetSemanticSource.vo"
+    }
+  ],
+  "extra_olean_artifacts": [
+    {
+      "from": "analysis_facts_job_index_final/olean/Prosa/Analysis/Facts/JobIndex.olean",
+      "to": "Prosa/Analysis/Facts/JobIndex.olean",
+      "manifest": "analysis_facts_job_index",
+      "key": "production_olean_sha256"
+    }
+  ],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "FactsModelOffsetSemanticSource",
+    "drop_imports": [
+      "Require Export prosa.model.task.offset.",
+      "Require Export prosa.analysis.facts.job_index."
+    ],
+    "add_imports": [
+      "Require Export prosa.TaskOffsetSemanticSource.",
+      "Export TaskOffsetSemanticSource.",
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq.",
+      "Require Import prosa.behavior.all prosa.model.task.concept prosa.model.task.arrivals.",
+      "Require Import prosa.util.list.",
+      "Import ListSemanticSource."
+    ],
+    "note": "theorem statements from the authoritative elaborated types (proofs omitted); the model/task/offset import is bound to the accepted extracted task-offset source (TaskOffsetSemanticSource, .vo hash-checked as base); the proof-only analysis/facts/job_index import is dropped (job_index is the pinned model/task/arrivals of the base closure)"
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/FactsModelOffsetStatementProbe.v",
+  "production": "Prosa/Analysis/Facts/Model/Offset.lean",
+  "production_olean": "Prosa/Analysis/Facts/Model/Offset.olean",
+  "lean_namespace": "Prosa.Analysis.Facts.Model.Offset",
+  "fixtures": [
+    "NondecreasingComputationInterface",
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "PreemptionParameterComputationInterface",
+    "TaskOffsetComputationInterface",
+    "ArrivalsComputationInterface",
+    "FactsModelOffsetComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/FactsModelOffsetLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/analysis_facts_model_offset_export_config.json",
+  "export_name": "FactsModelOffset",
+  "cert_dir": "certificates/analysis_facts_model_offset",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "ArrivalsCorrespondence",
+    "JitterSvcBaseAdapter",
+    "JitterSvcNatBoolOperations",
+    "JitterSvcIntervalOperations",
+    "JitterSvcScheduleOperations",
+    "JitterSvcJobOperations",
+    "PreemptionParameterCorrespondence",
+    "TaskOffsetCorrespondence",
+    "FactsModelOffsetCorrespondence"
+  ],
+  "audit_module": "FactsModelOffsetAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/FactsModelOffsetImportedTypeAudit.v",
+  "assumption_config": "certificates/analysis_facts_model_offset/facts_model_offset_assumption_config.json",
+  "lean_axiom_config": "certificates/analysis_facts_model_offset/facts_model_offset_lean_axiom_config.json",
+  "computational": [],
+  "principal": {},
+  "helpers": [
+    "fmo_eq_correspondence"
+  ],
+  "previous_status": "analysis_facts_preemption_rtc_threshold_nonpreemptive_module_status.json",
+  "previous_files": 171,
+  "previous_decls": 1188,
+  "input_relations": [
+    "TaskOffset by the accepted OffRel",
+    "JobTask by Lean.eq",
+    "job_arrival by ArJobArrivalRel",
+    "ArArrivalSequenceRel",
+    "task sets by ArListRel"
+  ],
+  "coverage_for_inner_binders": [
+    "jobs and tasks (identity carriers)"
+  ],
+  "lean_representation_note": "a single comparison in Prop position is the Lean proposition; `x \\in s` is `decide (x \u2208 s) = true`; section hypotheses appear only in the statements that use them",
+  "export_diagnosis": "the accepted task-offset export root (preemption-parameter closure, ~127k lines) merged with the accepted task-arrivals export root, reused so that both accepted certificate chains apply, plus the two statements"
+}

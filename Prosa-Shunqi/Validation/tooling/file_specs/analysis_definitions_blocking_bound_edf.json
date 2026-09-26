@@ -1,0 +1,101 @@
+{
+  "rank": 139,
+  "layer": 16,
+  "tag": "BBEDF",
+  "slug": "analysis_definitions_blocking_bound_edf",
+  "source": "analysis/definitions/blocking_bound/edf.v",
+  "dependencies": [
+    "model/task/arrival/curves.v",
+    "model/task/preemption/parameters.v"
+  ],
+  "declaration_count": 2,
+  "base_run": "model_task_preemption_parameters_final",
+  "base_checks": [
+    {
+      "manifest": "model_task_preemption_parameters",
+      "olean": "Prosa/Model/Task/Preemption/Parameters.olean",
+      "vo": "TaskPreemptionParametersSemanticSource.vo"
+    },
+    {
+      "manifest": "model_preemption_parameter",
+      "olean": "Prosa/Model/Preemption/Parameter.olean",
+      "vo": "PreemptionParameterSemanticSource.vo"
+    }
+  ],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "BlockingBoundEdfSemanticSource",
+    "drop_imports": [
+      "Require Export prosa.model.task.preemption.parameters."
+    ],
+    "add_imports": [
+      "Require Export prosa.TaskPreemptionParametersSemanticSource.",
+      "Export TaskPreemptionParametersSemanticSource.",
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq bigop.",
+      "Require Import prosa.util.epsilon."
+    ],
+    "local_bindings": [
+      "D=task_deadline"
+    ],
+    "note": "the two definitions are byte-identical computational blocks; the model/task/preemption/parameters import is bound to the accepted extracted source (TaskPreemptionParametersSemanticSource, .vo hash-checked against its manifest); model/task/arrival/curves is the compiled pinned source of the base run; the section-local `Let D tsk := task_deadline tsk` is reconnected by a recorded local notation"
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/BlockingBoundEdfStatementProbe.v",
+  "production": "Prosa/Analysis/Definitions/BlockingBound/Edf.lean",
+  "production_olean": "Prosa/Analysis/Definitions/BlockingBound/Edf.olean",
+  "lean_namespace": "Prosa.Analysis.Definitions.BlockingBound.Edf",
+  "fixtures": [
+    "NondecreasingComputationInterface",
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "PreemptionParameterComputationInterface",
+    "TaskPreemptionParametersComputationInterface",
+    "BlockingBoundEdfComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/BlockingBoundEdfLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/analysis_definitions_blocking_bound_edf_export_config.json",
+  "export_name": "BlockingBoundEdf",
+  "cert_dir": "certificates/analysis_definitions_blocking_bound_edf",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "JitterSvcBaseAdapter",
+    "JitterSvcNatBoolOperations",
+    "JitterSvcIntervalOperations",
+    "JitterSvcScheduleOperations",
+    "JitterSvcJobOperations",
+    "PreemptionParameterCorrespondence",
+    "TaskPreemptionParametersCorrespondence",
+    "BlockingBoundEdfCorrespondence"
+  ],
+  "audit_module": "BlockingBoundEdfAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/BlockingBoundEdfImportedTypeAudit.v",
+  "assumption_config": "certificates/analysis_definitions_blocking_bound_edf/blocking_bound_edf_assumption_config.json",
+  "lean_axiom_config": "certificates/analysis_definitions_blocking_bound_edf/blocking_bound_edf_lean_axiom_config.json",
+  "computational": [
+    "blocking_relevant",
+    "blocking_bound"
+  ],
+  "principal": {},
+  "helpers": [
+    "bbe_bigmax_canonical",
+    "bbe_bigmax_related"
+  ],
+  "previous_status": "model_task_preemption_parameters_module_status.json",
+  "previous_files": 135,
+  "previous_decls": 1046,
+  "input_relations": [
+    "TaskCost / TaskDeadline pointwise by SubNatRel",
+    "MaxArrivals pointwise by SubNatRel on durations",
+    "TaskMaxNonpreemptiveSegment (accepted TppMaxSegmentRel)",
+    "task sets by ArListRel"
+  ],
+  "coverage_for_inner_binders": [
+    "tasks (identity carrier)",
+    "Nats (both directions)"
+  ],
+  "lean_representation_note": "`\\max_(x <- xs | P x) F x` is the accepted `bigMaxListCond xs P F`; `a > b` is `decide (b < a)`; `\u03b5` is `1`; the section-local `Let D` is inlined",
+  "export_diagnosis": "the accepted task-preemption-parameters export root (preemption-parameter Service/Schedule closure, ~135k lines) reused verbatim so that the accepted certificate chain applies, plus two definitions, bigMaxListCond with three kernel-checked equations, and the TaskDeadline/MaxArrivals classes"
+}

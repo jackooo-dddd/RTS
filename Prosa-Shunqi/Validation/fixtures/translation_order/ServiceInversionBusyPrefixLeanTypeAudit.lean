@@ -1,0 +1,8 @@
+import Prosa.Analysis.Definitions.ServiceInversion.BusyPrefix
+set_option pp.fieldNotation false
+
+#check @Prosa.Analysis.Definitions.ServiceInversion.BusyPrefix.service_inversion_of_job_is_bounded_by
+#check @Prosa.Analysis.Definitions.ServiceInversion.BusyPrefix.service_inversion_is_bounded_by
+
+#print axioms Prosa.Analysis.Definitions.ServiceInversion.BusyPrefix.service_inversion_of_job_is_bounded_by
+#print axioms Prosa.Analysis.Definitions.ServiceInversion.BusyPrefix.service_inversion_is_bounded_by

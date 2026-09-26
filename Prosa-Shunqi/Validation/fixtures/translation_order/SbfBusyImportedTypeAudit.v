@@ -1,0 +1,5 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedSbfBusy.
+
+Check ImportedSbfBusy.Prosa_Analysis_Definitions_Sbf_Busy_sbf_respected_in_busy_interval.
+Check ImportedSbfBusy.Prosa_Analysis_Definitions_Sbf_Busy_valid_busy_sbf.

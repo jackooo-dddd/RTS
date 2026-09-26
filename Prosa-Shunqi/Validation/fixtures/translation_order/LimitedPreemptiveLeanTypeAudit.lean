@@ -1,0 +1,16 @@
+import Prosa.Model.Preemption.LimitedPreemptive
+set_option pp.fieldNotation false
+
+#check @Prosa.Model.Preemption.LimitedPreemptive.JobPreemptionPoints
+#check @Prosa.Model.Preemption.LimitedPreemptive.limited_preemptive_job_model
+#check @Prosa.Model.Preemption.LimitedPreemptive.beginning_of_execution_in_preemption_points
+#check @Prosa.Model.Preemption.LimitedPreemptive.end_of_execution_in_preemption_points
+#check @Prosa.Model.Preemption.LimitedPreemptive.preemption_points_is_nondecreasing_sequence
+#check @Prosa.Model.Preemption.LimitedPreemptive.valid_limited_preemptions_job_model
+
+#print axioms Prosa.Model.Preemption.LimitedPreemptive.limited_preemptive_job_model
+#print axioms Prosa.Model.Preemption.LimitedPreemptive.beginning_of_execution_in_preemption_points
+#print axioms Prosa.Model.Preemption.LimitedPreemptive.end_of_execution_in_preemption_points
+#print axioms Prosa.Model.Preemption.LimitedPreemptive.preemption_points_is_nondecreasing_sequence
+#print axioms Prosa.Model.Preemption.LimitedPreemptive.valid_limited_preemptions_job_model
+#print axioms Prosa.Model.Preemption.LimitedPreemptive.JobPreemptionPoints

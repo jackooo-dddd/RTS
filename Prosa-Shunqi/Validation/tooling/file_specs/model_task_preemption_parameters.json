@@ -1,0 +1,135 @@
+{
+  "rank": 138,
+  "layer": 15,
+  "tag": "TPP",
+  "slug": "model_task_preemption_parameters",
+  "source": "model/task/preemption/parameters.v",
+  "dependencies": [
+    "model/preemption/parameter.v",
+    "model/task/concept.v"
+  ],
+  "declaration_count": 13,
+  "base_run": "model_preemption_parameter_final",
+  "base_checks": [
+    {
+      "manifest": "model_preemption_parameter",
+      "olean": "Prosa/Model/Preemption/Parameter.olean",
+      "vo": "PreemptionParameterSemanticSource.vo"
+    },
+    {
+      "manifest": "nondecreasing",
+      "olean": "Prosa/Util/Nondecreasing.olean"
+    }
+  ],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "TaskPreemptionParametersSemanticSource",
+    "drop_imports": [
+      "Require Export prosa.model.preemption.parameter."
+    ],
+    "add_imports": [
+      "Require Export prosa.PreemptionParameterSemanticSource.",
+      "Export PreemptionParameterSemanticSource.",
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq.",
+      "Require Import prosa.util.list.",
+      "Import ListSemanticSource.",
+      "Require Import prosa.util.epsilon.",
+      "Require Import prosa.GeneratedNondecreasingSource.",
+      "Import GeneratedNondecreasingSource."
+    ],
+    "local_bindings": [
+      "model_with_bounded_nonpreemptive_segments=model_with_bounded_nonpreemptive_segments arr_seq",
+      "job_respects_task_rtc=job_respects_task_rtc arr_seq"
+    ],
+    "note": "the three classes, the global conversion instance and the nine definitions are byte-identical computational blocks; the model/preemption/parameter import is bound to the accepted extracted parameter source (PreemptionParameterSemanticSource, .vo hash-checked against the parameter manifest); model/task/concept is the compiled pinned source of the base run; the accepted utility sources are imported explicitly (util/list: max0, last0; util/epsilon; generated util/nondecreasing: distances); the source Section variable arr_seq, implicit in the uses of model_with_bounded_nonpreemptive_segments and job_respects_task_rtc inside later definitions of the same Section, is reconnected by recorded local notations"
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/TaskPreemptionParametersStatementProbe.v",
+  "production": "Prosa/Model/Task/Preemption/Parameters.lean",
+  "production_olean": "Prosa/Model/Task/Preemption/Parameters.olean",
+  "lean_namespace": "Prosa.Model.Task.Preemption.Parameters",
+  "fixtures": [
+    "NondecreasingComputationInterface",
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "PreemptionParameterComputationInterface",
+    "TaskPreemptionParametersComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/TaskPreemptionParametersLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/model_task_preemption_parameters_export_config.json",
+  "export_name": "TaskPreemptionParameters",
+  "cert_dir": "certificates/model_task_preemption_parameters",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "JitterSvcBaseAdapter",
+    "JitterSvcNatBoolOperations",
+    "JitterSvcIntervalOperations",
+    "JitterSvcScheduleOperations",
+    "JitterSvcJobOperations",
+    "PreemptionParameterCorrespondence",
+    "TaskPreemptionParametersCorrespondence"
+  ],
+  "audit_module": "TaskPreemptionParametersAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/TaskPreemptionParametersImportedTypeAudit.v",
+  "assumption_config": "certificates/model_task_preemption_parameters/task_preemption_parameters_assumption_config.json",
+  "lean_axiom_config": "certificates/model_task_preemption_parameters/task_preemption_parameters_lean_axiom_config.json",
+  "computational": [
+    "TaskMaxNonpreemptiveSegment",
+    "TaskRunToCompletionThreshold",
+    "TaskPreemptionPoints",
+    "task_max_nonpr_segment",
+    "task_last_nonpr_segment",
+    "TaskPreemptionPoints_to_TaskMaxNonpreemptiveSegment_conversion",
+    "job_respects_max_nonpreemptive_segment",
+    "nonpreemptive_regions_have_bounded_length",
+    "model_with_bounded_nonpreemptive_segments",
+    "valid_model_with_bounded_nonpreemptive_segments",
+    "task_rtc_bounded_by_cost",
+    "job_respects_task_rtc",
+    "valid_task_run_to_completion_threshold"
+  ],
+  "principal": {
+    "TaskMaxNonpreemptiveSegment": [
+      "TaskMaxNonpreemptiveSegment_source_total",
+      "TaskMaxNonpreemptiveSegment_target_total"
+    ],
+    "TaskRunToCompletionThreshold": [
+      "TaskRunToCompletionThreshold_source_total",
+      "TaskRunToCompletionThreshold_target_total"
+    ],
+    "TaskPreemptionPoints": [
+      "TaskPreemptionPoints_source_total",
+      "TaskPreemptionPoints_target_total"
+    ]
+  },
+  "helpers": [
+    "tpp_lean_transport",
+    "tpp_logic_eq_to_lean_eq",
+    "tpp_decide_eq_related",
+    "tpp_nat_list_to_rocq",
+    "tpp_nat_list_target_roundtrip",
+    "tpp_job_of_task_related"
+  ],
+  "previous_status": "model_task_arrival_sporadic_as_curve_module_status.json",
+  "previous_files": 134,
+  "previous_decls": 1033,
+  "input_relations": [
+    "TaskMaxNonpreemptiveSegment / TaskRunToCompletionThreshold pointwise by SubNatRel (two-way totals)",
+    "TaskPreemptionPoints pointwise by SvcNatListRel (two-way totals)",
+    "JobPreemptable (accepted PpJobPreemptableRel)",
+    "job_cost by SvcJobCostRel",
+    "TaskCost pointwise by SubNatRel",
+    "JobTask by Lean.eq",
+    "SvcProcessorStateRel + SvcScheduleRel (two-sided)",
+    "ArArrivalSequenceRel"
+  ],
+  "coverage_for_inner_binders": [
+    "jobs (identity carrier)",
+    "Nats (both directions)"
+  ],
+  "lean_representation_note": "`a <= b <= c` in Prop position is `(decide (a \u2264 b) && decide (b \u2264 c)) = true`; Booleans in Prop position are `= true`; `\u03b5` is `1`; the global conversion instance is a Lean global instance; unused section context is absent",
+  "export_diagnosis": "the accepted preemption-parameter export root (Service/Schedule interface closure, ~127k lines) reused verbatim so that the accepted certificate chain applies, plus the thirteen declarations and the task-concept classes"
+}

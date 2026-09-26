@@ -1,0 +1,15 @@
+From FoundationCertificates Require Import
+  ArrivalsSeqBaseAdapter ArrivalsSeqOperations ArrivalsSeqCorrespondence JitterSvcBaseAdapter JitterSvcNatBoolOperations JitterSvcIntervalOperations JitterSvcScheduleOperations JitterSvcJobOperations PreemptionParameterCorrespondence ServiceInversionPredCorrespondence AbstractDefinitionsBaseAdapter ServiceBaseAdapter ServiceNatBoolOperations AbstractDefinitionsArrivalOperations AbstractDefinitionsClasses AbstractDefinitionsNatBoolOperations AbstractDefinitionsIntervalOperations AbstractDefinitionsOperations AbstractDefinitionsSums AbstractDefinitionsLogical ServiceIntervalOperations ServiceScheduleOperations AbstractDefinitionsPendingOperations AbstractDefinitionsTaskOperations AbstractDefinitionsBusyIntervalHelpers BusyPrefixCorrespondence.
+Set Printing Width 1000.
+
+Goal Logic.True. idtac "AUDIT_BEGIN service_inversion_of_job_is_bounded_by_correspondence". exact Logic.I. Qed.
+Print Assumptions service_inversion_of_job_is_bounded_by_correspondence.
+Goal Logic.True. idtac "AUDIT_END service_inversion_of_job_is_bounded_by_correspondence". exact Logic.I. Qed.
+
+Goal Logic.True. idtac "AUDIT_BEGIN service_inversion_is_bounded_by_correspondence". exact Logic.I. Qed.
+Print Assumptions service_inversion_is_bounded_by_correspondence.
+Goal Logic.True. idtac "AUDIT_END service_inversion_is_bounded_by_correspondence". exact Logic.I. Qed.
+
+Goal Logic.True. idtac "AUDIT_BEGIN bpfx_busy_prefix_related". exact Logic.I. Qed.
+Print Assumptions bpfx_busy_prefix_related.
+Goal Logic.True. idtac "AUDIT_END bpfx_busy_prefix_related". exact Logic.I. Qed.

@@ -1,0 +1,15 @@
+From FoundationCertificates Require Import
+  ArrivalsSeqBaseAdapter ArrivalsSeqOperations ArrivalsSeqCorrespondence JitterSvcBaseAdapter JitterSvcNatBoolOperations JitterSvcIntervalOperations JitterSvcScheduleOperations JitterSvcJobOperations PreemptionParameterCorrespondence TaskPreemptionParametersCorrespondence TaskPreemptionFullyPreemptiveCorrespondence FactsPreemptiveTaskCorrespondence.
+Set Printing Width 1000.
+
+Goal Logic.True. idtac "AUDIT_BEGIN fully_preemptive_model_is_model_with_bounded_nonpreemptive_regions_correspondence". exact Logic.I. Qed.
+Print Assumptions fully_preemptive_model_is_model_with_bounded_nonpreemptive_regions_correspondence.
+Goal Logic.True. idtac "AUDIT_END fully_preemptive_model_is_model_with_bounded_nonpreemptive_regions_correspondence". exact Logic.I. Qed.
+
+Goal Logic.True. idtac "AUDIT_BEGIN fully_preemptive_model_is_valid_model_with_bounded_nonpreemptive_segments_correspondence". exact Logic.I. Qed.
+Print Assumptions fully_preemptive_model_is_valid_model_with_bounded_nonpreemptive_segments_correspondence.
+Goal Logic.True. idtac "AUDIT_END fully_preemptive_model_is_valid_model_with_bounded_nonpreemptive_segments_correspondence". exact Logic.I. Qed.
+
+Goal Logic.True. idtac "AUDIT_BEGIN fptp_fully_preemptive_job_related". exact Logic.I. Qed.
+Print Assumptions fptp_fully_preemptive_job_related.
+Goal Logic.True. idtac "AUDIT_END fptp_fully_preemptive_job_related". exact Logic.I. Qed.

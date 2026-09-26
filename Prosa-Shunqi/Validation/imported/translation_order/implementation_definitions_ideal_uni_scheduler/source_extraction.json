@@ -1,0 +1,170 @@
+{
+  "mode": "proof_independent_semantic_source_signature",
+  "source_file": "implementation/definitions/ideal_uni_scheduler.v",
+  "source_file_sha256": "16711ff02f29dc3934f09c2a714fd22ea89a0363ab7d03eda6734cbaa99fed17",
+  "source_commit": "414e66760333eaa4ef78c685bcf53291c527a548",
+  "generated_file": "/Users/shunqiwang/CityuHK/Research/Lean/TranslationProof/Prosa-Shunqi/Validation/.work/experiments/implementation_definitions_ideal_uni_scheduler_final/source/IdealUniSchedulerSemanticSource.v",
+  "transformations": {
+    "computational": "byte-identical declaration block",
+    "theorem": "verified post-Section Check type converted to a definition with its declared Prop/Type sort preserved; exact source header retained as provenance; opaque proof omitted",
+    "local_bindings": {
+      "prev_job_nonpreemptive": "prev_job_nonpreemptive sched_prefix t",
+      "allocation_at": "allocation_at arr_seq choose_job",
+      "pmc_uni_schedule": "pmc_uni_schedule arr_seq"
+    },
+    "dropped_irrelevant_imports": [
+      "Require Export prosa.analysis.facts.readiness.backlogged.",
+      "Require Export prosa.analysis.transform.swap.",
+      "Require Export prosa.implementation.definitions.generic_scheduler.",
+      "Require Export prosa.model.preemption.parameter.",
+      "Require Export prosa.model.processor.ideal.",
+      "Require Export prosa.model.schedule.priority_driven."
+    ],
+    "added_validation_imports": [
+      "Require Export prosa.analysis.transform.swap.",
+      "Require Export prosa.implementation.definitions.generic_scheduler.",
+      "Require Export prosa.model.processor.ideal.",
+      "Require Export prosa.PreemptionParameterSemanticSource.",
+      "Export PreemptionParameterSemanticSource.",
+      "Require Export prosa.ReadinessSemanticSource.",
+      "Export ReadinessSemanticSource.",
+      "Require Export prosa.model.schedule.work_conserving.",
+      "Require Export prosa.model.priority.classes.",
+      "Require Export prosa.util.supremum.",
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq.",
+      "Require Import prosa.behavior.all."
+    ]
+  },
+  "declarations": {
+    "prev_job_nonpreemptive": {
+      "source_kind": "computational",
+      "acquisition_mode": "BODY_EXACT",
+      "source_block_sha256": "7a75d0832ef1cc12047495da0365fdacb92bc2c6bddf1566c5216759f8734cb7",
+      "generated_text_sha256": "7a75d0832ef1cc12047495da0365fdacb92bc2c6bddf1566c5216759f8734cb7",
+      "source_statement_sha256": null,
+      "normalized_statement_sha256": null,
+      "elaborated_type_sha256": null,
+      "elaborated_type_evidence": null,
+      "statement_sort": null,
+      "context": [
+        "  Context {Job : JobType} {JC : JobCost Job} {JA : JobArrival Job}.",
+        "  Let PState := ideal.processor_state Job.",
+        "  Let idle_state : PState := None.",
+        "  Variable arr_seq : arrival_sequence Job.",
+        "  Hypothesis H_consistent_arrival_times : consistent_arrival_times arr_seq.",
+        "  Context {RM : JobReady Job (ideal.processor_state Job)}.",
+        "  Hypothesis H_nonclairvoyant_job_readiness : nonclairvoyant_readiness RM.",
+        "  Context `{JobPreemptable Job}.",
+        "    Variable choose_job : instant -> seq Job -> option Job.",
+        "      Variable sched_prefix : schedule (ideal.processor_state Job).",
+        "      Variable t : instant."
+      ],
+      "omitted_context_for_elaborated_theorem": false,
+      "local_bindings": {}
+    },
+    "allocation_at": {
+      "source_kind": "computational",
+      "acquisition_mode": "BODY_EXACT",
+      "source_block_sha256": "14aa9261fd2d21ce7e454e06a69d5f8f832fa64f37f06183e22a3401f86e56c4",
+      "generated_text_sha256": "14aa9261fd2d21ce7e454e06a69d5f8f832fa64f37f06183e22a3401f86e56c4",
+      "source_statement_sha256": null,
+      "normalized_statement_sha256": null,
+      "elaborated_type_sha256": null,
+      "elaborated_type_evidence": null,
+      "statement_sort": null,
+      "context": [
+        "  Context {Job : JobType} {JC : JobCost Job} {JA : JobArrival Job}.",
+        "  Let PState := ideal.processor_state Job.",
+        "  Let idle_state : PState := None.",
+        "  Variable arr_seq : arrival_sequence Job.",
+        "  Hypothesis H_consistent_arrival_times : consistent_arrival_times arr_seq.",
+        "  Context {RM : JobReady Job (ideal.processor_state Job)}.",
+        "  Hypothesis H_nonclairvoyant_job_readiness : nonclairvoyant_readiness RM.",
+        "  Context `{JobPreemptable Job}.",
+        "    Variable choose_job : instant -> seq Job -> option Job.",
+        "      Variable sched_prefix : schedule (ideal.processor_state Job).",
+        "      Variable t : instant."
+      ],
+      "omitted_context_for_elaborated_theorem": false,
+      "local_bindings": {
+        "prev_job_nonpreemptive": "prev_job_nonpreemptive sched_prefix t"
+      }
+    },
+    "pmc_uni_schedule": {
+      "source_kind": "computational",
+      "acquisition_mode": "BODY_EXACT",
+      "source_block_sha256": "971c3125c81ffb1e790a5f14417aea636c5a969bf93e429021095c9367abbf8c",
+      "generated_text_sha256": "971c3125c81ffb1e790a5f14417aea636c5a969bf93e429021095c9367abbf8c",
+      "source_statement_sha256": null,
+      "normalized_statement_sha256": null,
+      "elaborated_type_sha256": null,
+      "elaborated_type_evidence": null,
+      "statement_sort": null,
+      "context": [
+        "  Context {Job : JobType} {JC : JobCost Job} {JA : JobArrival Job}.",
+        "  Let PState := ideal.processor_state Job.",
+        "  Let idle_state : PState := None.",
+        "  Variable arr_seq : arrival_sequence Job.",
+        "  Hypothesis H_consistent_arrival_times : consistent_arrival_times arr_seq.",
+        "  Context {RM : JobReady Job (ideal.processor_state Job)}.",
+        "  Hypothesis H_nonclairvoyant_job_readiness : nonclairvoyant_readiness RM.",
+        "  Context `{JobPreemptable Job}.",
+        "    Variable choose_job : instant -> seq Job -> option Job."
+      ],
+      "omitted_context_for_elaborated_theorem": false,
+      "local_bindings": {
+        "allocation_at": "allocation_at arr_seq choose_job"
+      }
+    },
+    "choose_highest_prio_job": {
+      "source_kind": "computational",
+      "acquisition_mode": "BODY_EXACT",
+      "source_block_sha256": "2869cf5706a5fef6af966fb6ad0b7fc86e2238ea9204bb022609b07b6da772dd",
+      "generated_text_sha256": "2869cf5706a5fef6af966fb6ad0b7fc86e2238ea9204bb022609b07b6da772dd",
+      "source_statement_sha256": null,
+      "normalized_statement_sha256": null,
+      "elaborated_type_sha256": null,
+      "elaborated_type_evidence": null,
+      "statement_sort": null,
+      "context": [
+        "  Context {Job : JobType} {JC : JobCost Job} {JA : JobArrival Job}.",
+        "  Let PState := ideal.processor_state Job.",
+        "  Let idle_state : PState := None.",
+        "  Variable arr_seq : arrival_sequence Job.",
+        "  Hypothesis H_consistent_arrival_times : consistent_arrival_times arr_seq.",
+        "  Context {RM : JobReady Job (ideal.processor_state Job)}.",
+        "  Hypothesis H_nonclairvoyant_job_readiness : nonclairvoyant_readiness RM.",
+        "  Context `{JobPreemptable Job}.",
+        "    Context `{JLDP_policy Job}."
+      ],
+      "omitted_context_for_elaborated_theorem": false,
+      "local_bindings": {}
+    },
+    "uni_schedule": {
+      "source_kind": "computational",
+      "acquisition_mode": "BODY_EXACT",
+      "source_block_sha256": "f252eadadd731cbec3cba4e908444c5cf913a0fed4cf8b88362c96c4ae718f10",
+      "generated_text_sha256": "f252eadadd731cbec3cba4e908444c5cf913a0fed4cf8b88362c96c4ae718f10",
+      "source_statement_sha256": null,
+      "normalized_statement_sha256": null,
+      "elaborated_type_sha256": null,
+      "elaborated_type_evidence": null,
+      "statement_sort": null,
+      "context": [
+        "  Context {Job : JobType} {JC : JobCost Job} {JA : JobArrival Job}.",
+        "  Let PState := ideal.processor_state Job.",
+        "  Let idle_state : PState := None.",
+        "  Variable arr_seq : arrival_sequence Job.",
+        "  Hypothesis H_consistent_arrival_times : consistent_arrival_times arr_seq.",
+        "  Context {RM : JobReady Job (ideal.processor_state Job)}.",
+        "  Hypothesis H_nonclairvoyant_job_readiness : nonclairvoyant_readiness RM.",
+        "  Context `{JobPreemptable Job}.",
+        "    Context `{JLDP_policy Job}."
+      ],
+      "omitted_context_for_elaborated_theorem": false,
+      "local_bindings": {
+        "pmc_uni_schedule": "pmc_uni_schedule arr_seq"
+      }
+    }
+  }
+}

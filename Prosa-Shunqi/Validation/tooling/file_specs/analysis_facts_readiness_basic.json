@@ -1,0 +1,115 @@
+{
+  "rank": 150,
+  "layer": 16,
+  "tag": "FRB",
+  "slug": "analysis_facts_readiness_basic",
+  "source": "analysis/facts/readiness/basic.v",
+  "dependencies": [
+    "analysis/definitions/readiness.v",
+    "analysis/definitions/work_bearing_readiness.v",
+    "analysis/facts/behavior/completion.v",
+    "model/readiness/basic.v"
+  ],
+  "declaration_count": 3,
+  "base_run": "analysis_definitions_readiness_final",
+  "base_checks": [
+    {
+      "manifest": "analysis_definitions_readiness",
+      "olean": "Prosa/Analysis/Definitions/Readiness.olean",
+      "vo": "ReadinessSemanticSource.vo"
+    }
+  ],
+  "extra_pinned_sources": [
+    "analysis/definitions/work_bearing_readiness.v"
+  ],
+  "extra_lean": [
+    [
+      "Prosa/Model/Readiness/Basic.lean",
+      "Prosa/Model/Readiness/Basic.olean",
+      "model_readiness_basic",
+      "production_olean_sha256"
+    ],
+    [
+      "Prosa/Analysis/Definitions/WorkBearingReadiness.lean",
+      "Prosa/Analysis/Definitions/WorkBearingReadiness.olean",
+      "analysis_definitions_work_bearing_readiness",
+      "production_olean_sha256"
+    ]
+  ],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "FactsReadinessBasicSemanticSource",
+    "drop_imports": [
+      "Require Export prosa.analysis.facts.behavior.completion.",
+      "Require Export prosa.analysis.definitions.readiness."
+    ],
+    "add_imports": [
+      "Require Export prosa.ReadinessSemanticSource.",
+      "Export ReadinessSemanticSource.",
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq.",
+      "#[local] Existing Instance basic_ready_instance."
+    ],
+    "note": "theorem statements from the authoritative elaborated types (proofs omitted); the proof-heavy analysis/facts/behavior/completion import is dropped and the analysis/definitions/readiness import is bound to its accepted extracted source (ReadinessSemanticSource, .vo hash-checked against its manifest); model/readiness/basic is the compiled pinned source of the base run and analysis/definitions/work_bearing_readiness is compiled from the pinned tree; the source's `#[local] Existing Instance basic_ready_instance` is replayed after the imports"
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/FactsReadinessBasicStatementProbe.v",
+  "production": "Prosa/Analysis/Facts/Readiness/Basic.lean",
+  "production_olean": "Prosa/Analysis/Facts/Readiness/Basic.olean",
+  "lean_namespace": "Prosa.Analysis.Facts.Readiness.Basic",
+  "fixtures": [
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ArrivalsComputationInterface",
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "ReadinessComputationInterface",
+    "FactsReadinessBasicComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/FactsReadinessBasicLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/analysis_facts_readiness_basic_export_config.json",
+  "export_name": "FactsReadinessBasic",
+  "cert_dir": "certificates/analysis_facts_readiness_basic",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "ArrivalsCorrespondence",
+    "JitterSvcBaseAdapter",
+    "JitterSvcNatBoolOperations",
+    "JitterSvcIntervalOperations",
+    "JitterSvcScheduleOperations",
+    "JitterSvcJobOperations",
+    "SequentialityCorrespondence",
+    "ReadinessCorrespondence",
+    "FactsReadinessBasicCorrespondence"
+  ],
+  "audit_module": "FactsReadinessBasicAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/FactsReadinessBasicImportedTypeAudit.v",
+  "assumption_config": "certificates/analysis_facts_readiness_basic/facts_readiness_basic_assumption_config.json",
+  "lean_axiom_config": "certificates/analysis_facts_readiness_basic/facts_readiness_basic_lean_axiom_config.json",
+  "computational": [],
+  "principal": {},
+  "helpers": [
+    "frb_scheduled_at_related",
+    "frb_completed_by_related",
+    "frb_pending_related",
+    "frb_basic_ready_related",
+    "frb_exists_identity"
+  ],
+  "previous_status": "analysis_facts_readiness_backlogged_module_status.json",
+  "previous_files": 150,
+  "previous_decls": 1105,
+  "input_relations": [
+    "job_arrival by ArJobArrivalRel",
+    "job_cost by SvcJobCostRel",
+    "SvcProcessorStateRel + SvcScheduleRel",
+    "ArArrivalSequenceRel",
+    "JLFP policy pointwise on Booleans",
+    "the basic readiness model (source local instance) related to the accepted Lean definition"
+  ],
+  "coverage_for_inner_binders": [
+    "jobs (identity carrier)",
+    "Nats (both directions)"
+  ],
+  "lean_representation_note": "the section-local `#[local] Existing Instance basic_ready_instance` is passed explicitly to the accepted Lean definition; Booleans in Prop position are `= true`",
+  "export_diagnosis": "the accepted readiness export root reused so that the accepted certificate chain applies, plus the three statements, the basic readiness model and the work-bearing readiness definition"
+}

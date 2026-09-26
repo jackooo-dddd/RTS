@@ -1,0 +1,6 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedTransformPrefix.
+
+Check ImportedTransformPrefix.Prosa_Analysis_Transform_Prefix_prefix_map.
+Check ImportedTransformPrefix.Prosa_Analysis_Transform_Prefix_prefix_map_property_invariance.
+Check ImportedTransformPrefix.Prosa_Analysis_Transform_Prefix_prefix_map_pointwise_property.

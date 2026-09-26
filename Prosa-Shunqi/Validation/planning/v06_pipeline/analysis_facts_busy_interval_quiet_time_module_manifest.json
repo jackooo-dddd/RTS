@@ -1,0 +1,192 @@
+{
+  "slice": "TRANSLATION_ORDER_ANALYSIS_FACTS_BUSY_INTERVAL_QUIET_TIME",
+  "generated_at": "2026-09-26T22:06:13.549789+08:00",
+  "published_at": "2026-09-26T22:06:13.549789+08:00",
+  "rank": 174,
+  "layer": 17,
+  "source_file": "analysis/facts/busy_interval/quiet_time.v",
+  "source_commit": "414e66760333eaa4ef78c685bcf53291c527a548",
+  "source_tree": "7d7e94c731f7eefde4ca738310d4cafdd7bebdf0",
+  "source_file_sha256": "e0ffd70d9113a30f1cd4b8ba935abb831c902171f3a468a1d2a295df724c3ac6",
+  "pipeline": "Validation/scripts/translation_file_pipeline.py",
+  "spec": "Validation/tooling/file_specs/analysis_facts_busy_interval_quiet_time.json",
+  "spec_sha256": "2138f0f14a2ffde1dd0b7051923b81bfec71acbc1e9dbc3735fb62f9b1763358",
+  "source_compatibility": {
+    "mode": "extract",
+    "note": "theorem statements from the authoritative elaborated types (proofs omitted); the busy_interval/classical import is bound to the accepted extracted busy-interval source (BusyIntervalClassicalSemanticSource, .vo hash-checked as base); analysis/definitions/carry_in is the pinned source compiled from the pinned tree, as in its accepted pinned-mode run",
+    "extracted_sha256": "13e243f9375db5829ec907656f735656bd2d48adb1b3029d303fe65b7bc8d8de",
+    "extraction_metadata_sha256": "770d421b945f5be428380fc6ab4543d19378ffee9bac8f64fe0765a7abe04e2d"
+  },
+  "source_type_evidence": {
+    "prosa.analysis.facts.busy_interval.quiet_time.zero_is_quiet_time": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.busy_interval.quiet_time.no_carry_in_implies_quiet_time": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.busy_interval.quiet_time.busy_interval_prefix_no_quiet_time": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.busy_interval.quiet_time.busy_interval_no_quiet_time": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE"
+  },
+  "statement_only_export_boundary": [
+    "Prosa.Analysis.Facts.BusyInterval.QuietTime.zero_is_quiet_time",
+    "Prosa.Analysis.Facts.BusyInterval.QuietTime.no_carry_in_implies_quiet_time",
+    "Prosa.Analysis.Facts.BusyInterval.QuietTime.busy_interval_prefix_no_quiet_time",
+    "Prosa.Analysis.Facts.BusyInterval.QuietTime.busy_interval_no_quiet_time"
+  ],
+  "input_relations": [
+    "job_arrival by ArJobArrivalRel",
+    "job_cost by SvcJobCostRel",
+    "JLFP policy pointwise on Booleans",
+    "SvcProcessorStateRel (two-sided) + SvcScheduleRel",
+    "ArArrivalSequenceRel"
+  ],
+  "coverage_for_inner_binders": [
+    "jobs (identity carrier)",
+    "Nats (both directions)"
+  ],
+  "lean_representation_note": "a chained `a < b < c` is `(decide (a < b) && decide (b < c)) = true`; `~ P` is `\u00ac P`; `sched` precedes `arr_seq` as in the source section",
+  "export_size": {
+    "lines": 135500,
+    "soft_budget_flag": "OVER_100K_DIAGNOSED",
+    "diagnosis": "the accepted busy-interval export root (without its theorem targets) merged with the accepted carry-in export root (both over the Service closure, ~127k lines), reused so that both accepted certificate chains apply, plus the four statements"
+  },
+  "file_dependencies": {
+    "analysis/definitions/busy_interval/classical.v": "analysis_definitions_busy_interval_classical_module_status.json",
+    "analysis/definitions/carry_in.v": "analysis_definitions_carry_in_module_status.json"
+  },
+  "production_file": "Prosa/Analysis/Facts/BusyInterval/QuietTime.lean",
+  "production_source_sha256": "0ccc58789965cbbdafc5050105851899283e0c76cc6b84bfb76cac12a9fd3cc3",
+  "production_olean_sha256": "12ec6a642a2579fb300a1287d6c88cdf37f89716f6303d867eddde672d28d55c",
+  "export_config_sha256": "40bc26b5d18f4618575b21df5cf9085072c7b3e67694048dfd4b3a18d6b5596c",
+  "export_sha256": "dafdc8bf6abae3551b6d0d54087d86d0ac7df0f416eb3a6734b7190a26e3bf53",
+  "export_lines": 135500,
+  "export_bytes": 3029129,
+  "import_sha256": "ca4742103668d5149223b20d9cf6589f2714a3d6007db21ee90b587c1629da5d",
+  "source_vo_sha256": "91c225107efccec92c0bc133b838eb137cda69a6079b152c70a8146b9a1f3cb1",
+  "lean_axiom_summary_sha256": "cc09cd44270a1982568d781c42285fe4733dce2a1adb28a1d0940ee60315b7ee",
+  "rocq_assumption_summary_sha256": "7f0ea0191f63f7bc67cd4f2df2dd37c3dcba4a54bf2ac81d0433cf7243375d29",
+  "assumption_config_sha256": "8c10acd5db5b9fa5e02885d5b78516730dc663addbb4f962b06075b1296792f9",
+  "stage_timing_seconds": {
+    "source_acquisition": {
+      "mode": "FRESH",
+      "seconds": 8
+    },
+    "lean_build": {
+      "mode": "FRESH",
+      "seconds": 916
+    },
+    "export": {
+      "mode": "FRESH",
+      "seconds": 58
+    },
+    "rocq_import": {
+      "mode": "FRESH",
+      "seconds": 69
+    },
+    "certificate_compile": {
+      "mode": "FRESH",
+      "seconds": 26
+    },
+    "assumption_audit": {
+      "mode": "FRESH",
+      "seconds": 0
+    }
+  },
+  "certificates": {
+    "ArrivalsSeqBaseAdapter": {
+      "source_sha256": "d98531e7115e364b946a63583070d878d9eeb3fbf8fcb0a76cf7c73086c9d14e",
+      "vo_sha256": "94b7f26d0c129a283b38a2e1c9eebf798142315e36ba0aeddd524320cbf04f1a"
+    },
+    "ArrivalsSeqOperations": {
+      "source_sha256": "2cbb44e59d990ab39df7f841a97344a897075aaa78cf92b823d6a09869b84ea8",
+      "vo_sha256": "7fbaedc1ac7d11a0885a4e406d7e40b254124d367cf4bc8991408d69ca5fc342"
+    },
+    "ArrivalsSeqCorrespondence": {
+      "source_sha256": "f99291e7065508aa078a2c63c0a3bc7394d70393358108d37ebbe3cedf3e82d1",
+      "vo_sha256": "43beead3a17c01f02df78541be80d8f81b22a3c5f24c176072638e2a9544ad7a"
+    },
+    "JitterSvcBaseAdapter": {
+      "source_sha256": "eca79a53dabcb053e351a5fb22967077bb9329f0fab3b154c893ffe1b9cd5253",
+      "vo_sha256": "2aed17cbe655c666fe7cf873b35520ab92ba1927a31d4547a339b8ee6e30aa76"
+    },
+    "JitterSvcNatBoolOperations": {
+      "source_sha256": "a6ddc229a4467bad13f952cb08b9dc7aa731c78edd53f9cba2a73e178d0c898c",
+      "vo_sha256": "c250fef684d82ea24a89042bffe46e2e04b1be0ab0f704f49d7aca6457e81bb9"
+    },
+    "JitterSvcIntervalOperations": {
+      "source_sha256": "22f36b3db8588b569493fdd8aa17b64e46769a927e5f82c944536c50e53bbe2b",
+      "vo_sha256": "bf068993445880427c73bc06a0540399c7abeafa6cb5b0cf93eee4709d1a1df1"
+    },
+    "JitterSvcScheduleOperations": {
+      "source_sha256": "44ada61271ee4bff85ecc85ccba6b753b82db4ab845175974dafc99201870d52",
+      "vo_sha256": "1f30e8b1eeb079c650ae5fcabd9f888e186c0abf336e3755e9ecebb3b0741c94"
+    },
+    "JitterSvcJobOperations": {
+      "source_sha256": "c5311bc1a3292eeaa0fe585007d8c859c30cb0fe397ff72d7d061f4156632b67",
+      "vo_sha256": "20974e98e97b8dce3aef4e330fe02c92cc0c18f03d472b920e0659f8c54278f3"
+    },
+    "PreemptionParameterCorrespondence": {
+      "source_sha256": "54ed4838c4be794cecfb9bd2b0a41316750c7f00ee954e53ca4a0713051cbeaf",
+      "vo_sha256": "e4a817c08853f5feee33c6a3dd68d210b1f0a26208aa6125e1681a39f171e68b"
+    },
+    "CarryInCorrespondence": {
+      "source_sha256": "8c76485ae9c752a654b5935a85abc8f630ac95db88dc44819ac1f472534f9ed6",
+      "vo_sha256": "1743f387c4a4e91bfb0d12e751663e0a0597f3b04ed985001442f1d6a51aeece"
+    },
+    "FactsQuietTimeCorrespondence": {
+      "source_sha256": "d80ab89a59036cbf6f9f2435cc2a09357dca6067176872275b678d09a0c8196a",
+      "vo_sha256": "db0f9117d3488e6d38b73804edad3623e19d2f6dc6867064a4507b042fa630bf"
+    },
+    "FactsQuietTimeAssumptionAudit": {
+      "source_sha256": "a275033fa70e4067d19d0bf6aca530139db15f6f6d1a7f34105140b0849dca6e",
+      "vo_sha256": "e93f21e69478c85a79d966eb59240d69ea9245314b0531003f96f8dba73f36b9"
+    }
+  },
+  "declarations": [
+    {
+      "source_declaration": "prosa.analysis.facts.busy_interval.quiet_time.zero_is_quiet_time",
+      "lean_declaration": "Prosa.Analysis.Facts.BusyInterval.QuietTime.zero_is_quiet_time",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "zero_is_quiet_time_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.busy_interval.quiet_time.no_carry_in_implies_quiet_time",
+      "lean_declaration": "Prosa.Analysis.Facts.BusyInterval.QuietTime.no_carry_in_implies_quiet_time",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "no_carry_in_implies_quiet_time_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.busy_interval.quiet_time.busy_interval_prefix_no_quiet_time",
+      "lean_declaration": "Prosa.Analysis.Facts.BusyInterval.QuietTime.busy_interval_prefix_no_quiet_time",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "busy_interval_prefix_no_quiet_time_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.busy_interval.quiet_time.busy_interval_no_quiet_time",
+      "lean_declaration": "Prosa.Analysis.Facts.BusyInterval.QuietTime.busy_interval_no_quiet_time",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "busy_interval_no_quiet_time_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    }
+  ],
+  "acceptance": "ACCEPTED_V06_FILE"
+}

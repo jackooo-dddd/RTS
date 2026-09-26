@@ -1,0 +1,114 @@
+{
+  "rank": 157,
+  "layer": 16,
+  "tag": "TFN",
+  "slug": "model_task_preemption_floating_nonpreemptive",
+  "source": "model/task/preemption/floating_nonpreemptive.v",
+  "dependencies": [
+    "model/preemption/limited_preemptive.v",
+    "model/task/preemption/parameters.v"
+  ],
+  "declaration_count": 2,
+  "base_run": "model_task_preemption_limited_preemptive_final",
+  "base_checks": [
+    {
+      "manifest": "model_task_preemption_parameters",
+      "olean": "Prosa/Model/Task/Preemption/Parameters.olean",
+      "vo": "TaskPreemptionParametersSemanticSource.vo"
+    },
+    {
+      "manifest": "model_preemption_limited_preemptive",
+      "olean": "Prosa/Model/Preemption/LimitedPreemptive.olean",
+      "vo": "LimitedPreemptiveSemanticSource.vo"
+    }
+  ],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "TaskFloatingNonpreemptiveSemanticSource",
+    "helper_blocks": [
+      "floating_preemptive_rtc_threshold"
+    ],
+    "source_order": true,
+    "drop_imports": [
+      "Require Export prosa.model.preemption.limited_preemptive.",
+      "Require Export prosa.model.task.preemption.parameters."
+    ],
+    "add_imports": [
+      "Require Export prosa.TaskPreemptionParametersSemanticSource.",
+      "Export TaskPreemptionParametersSemanticSource.",
+      "Require Export prosa.LimitedPreemptiveSemanticSource.",
+      "Export LimitedPreemptiveSemanticSource.",
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq.",
+      "#[local] Existing Instance limited_preemptive_job_model."
+    ],
+    "local_bindings": [
+      "job_respects_task_max_np_segment=job_respects_task_max_np_segment arr_seq"
+    ],
+    "note": "the two definitions and the source-local instance floating_preemptive_rtc_threshold (helper block) are byte-identical computational blocks, emitted in source order; the model/task/preemption/parameters and model/preemption/limited_preemptive imports are bound to their accepted extracted sources (both .vo hash-checked by base_checks); the source's `#[local] Existing Instance limited_preemptive_job_model` is replayed after the imports; the Section variable arr_seq, implicit in the use of job_respects_task_max_np_segment inside the second definition, is reconnected by a recorded local notation"
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/TaskFloatingNonpreemptiveStatementProbe.v",
+  "production": "Prosa/Model/Task/Preemption/FloatingNonpreemptive.lean",
+  "production_olean": "Prosa/Model/Task/Preemption/FloatingNonpreemptive.olean",
+  "lean_namespace": "Prosa.Model.Task.Preemption.FloatingNonpreemptive",
+  "fixtures": [
+    "NondecreasingComputationInterface",
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "PreemptionParameterComputationInterface",
+    "TaskPreemptionParametersComputationInterface",
+    "LimitedPreemptiveComputationInterface",
+    "TaskLimitedPreemptiveComputationInterface",
+    "TaskFloatingNonpreemptiveComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/TaskFloatingNonpreemptiveLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/model_task_preemption_floating_nonpreemptive_export_config.json",
+  "export_name": "TaskFloatingNonpreemptive",
+  "cert_dir": "certificates/model_task_preemption_floating_nonpreemptive",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "JitterSvcBaseAdapter",
+    "JitterSvcNatBoolOperations",
+    "JitterSvcIntervalOperations",
+    "JitterSvcScheduleOperations",
+    "JitterSvcJobOperations",
+    "PreemptionParameterCorrespondence",
+    "LimitedPreemptiveCorrespondence",
+    "TaskPreemptionParametersCorrespondence",
+    "TaskFloatingNonpreemptiveCorrespondence"
+  ],
+  "audit_module": "TaskFloatingNonpreemptiveAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/TaskFloatingNonpreemptiveImportedTypeAudit.v",
+  "assumption_config": "certificates/model_task_preemption_floating_nonpreemptive/task_floating_nonpreemptive_assumption_config.json",
+  "lean_axiom_config": "certificates/model_task_preemption_floating_nonpreemptive/task_floating_nonpreemptive_lean_axiom_config.json",
+  "computational": [
+    "job_respects_task_max_np_segment",
+    "valid_model_with_floating_nonpreemptive_regions"
+  ],
+  "principal": {},
+  "helpers": [
+    "tfn_floating_preemptive_rtc_threshold_related",
+    "tfn_limited_model_related"
+  ],
+  "previous_status": "model_task_preemption_limited_preemptive_module_status.json",
+  "previous_files": 147,
+  "previous_decls": 1095,
+  "input_relations": [
+    "TaskMaxNonpreemptiveSegment (accepted TppMaxSegmentRel)",
+    "TaskCost pointwise by SubNatRel",
+    "JobPreemptionPoints (accepted LpJobPreemptionPointsRel; the job-level limited-preemptive model by the accepted lp_limited_preemptive_job_model_related)",
+    "job_cost by SvcJobCostRel",
+    "JobTask by Lean.eq",
+    "ArArrivalSequenceRel"
+  ],
+  "coverage_for_inner_binders": [
+    "jobs (identity carrier)"
+  ],
+  "lean_representation_note": "the source `#[local] Existing Instance limited_preemptive_job_model` is passed explicitly to the accepted Lean definition; the source-local run-to-completion threshold instance is a plain `@[reducible] def`",
+  "export_diagnosis": "the accepted task-level limited-preemptive export root (preemption-parameter closure, ~135k lines) without its own targets, so that the accepted certificate chain applies, plus the two definitions and the local instance",
+  "extra_artifacts": [],
+  "extra_lean": []
+}

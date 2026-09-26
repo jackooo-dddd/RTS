@@ -1,0 +1,99 @@
+{
+  "rank": 126,
+  "layer": 15,
+  "tag": "FWKL",
+  "slug": "analysis_facts_model_workload",
+  "source": "analysis/facts/model/workload.v",
+  "dependencies": [
+    "analysis/facts/behavior/arrivals.v",
+    "analysis/facts/model/task_arrivals.v",
+    "model/aggregate/workload.v"
+  ],
+  "declaration_count": 17,
+  "base_run": "model_aggregate_workload_final",
+  "base_checks": [
+    {
+      "manifest": "model_aggregate_workload",
+      "olean": "Prosa/Model/Aggregate/Workload.olean",
+      "vo": "model/aggregate/workload.vo"
+    }
+  ],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "FactsWorkloadSemanticSource",
+    "drop_imports": [
+      "Require Export prosa.analysis.facts.behavior.arrivals.",
+      "Require Export prosa.analysis.facts.model.task_arrivals."
+    ],
+    "add_imports": [
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq fintype bigop.",
+      "Require Import prosa.behavior.all prosa.model.task.concept prosa.model.priority.classes prosa.model.aggregate.workload."
+    ],
+    "note": "theorem statements from the authoritative elaborated types (proofs omitted); the proof-heavy facts/behavior/arrivals and facts/model/task_arrivals imports are dropped (the statements mention only behavior, the task concept, priority classes and the kept workload module)"
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/FactsWorkloadStatementProbe.v",
+  "production": "Prosa/Analysis/Facts/Model/Workload.lean",
+  "production_olean": "Prosa/Analysis/Facts/Model/Workload.olean",
+  "lean_namespace": "Prosa.Analysis.Facts.Model.Workload",
+  "fixtures": [
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ArrivalsComputationInterface",
+    "WorkloadComputationInterface",
+    "FactsWorkloadComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/FactsWorkloadLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/analysis_facts_model_workload_export_config.json",
+  "export_name": "FactsWorkload",
+  "cert_dir": "certificates/analysis_facts_model_workload",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "ArrivalsCorrespondence",
+    "WorkloadCorrespondence",
+    "FactsWorkloadCorrespondence"
+  ],
+  "audit_module": "FactsWorkloadAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/FactsWorkloadImportedTypeAudit.v",
+  "assumption_config": "certificates/analysis_facts_model_workload/facts_workload_assumption_config.json",
+  "lean_axiom_config": "certificates/analysis_facts_model_workload/facts_workload_lean_axiom_config.json",
+  "computational": [],
+  "principal": {},
+  "helpers": [
+    "fwk_forall_cover_sprop",
+    "fwk_lean_transport",
+    "fwk_pred_rel_canonical",
+    "fwk_pred_rel_surjective",
+    "fwk_list_rel_canonical",
+    "fwk_list_rel_surjective",
+    "fwk_bool_eq_correspondence",
+    "fwk_bool_not_related",
+    "fwk_cond_related",
+    "fwk_job_task_eq_related",
+    "fwk_job_task_mem_related",
+    "fwk_another_hep_job_related",
+    "fwk_another_task_hep_job_related",
+    "fwk_another_hep_job_of_same_task_related",
+    "fwk_mem_truth",
+    "fwk_part_pred_related",
+    "fwk_q_task_related"
+  ],
+  "previous_status": "analysis_facts_model_task_schedule_module_status.json",
+  "previous_files": 124,
+  "previous_decls": 978,
+  "input_relations": [
+    "job cost pointwise by SubNatRel",
+    "JobTask by Lean.eq on job_task",
+    "ArJobArrivalRel",
+    "JLFP policy pointwise on Booleans",
+    "ArArrivalSequenceRel"
+  ],
+  "coverage_for_inner_binders": [
+    "job and task predicates (both directions, pointwise Boolean maps)",
+    "job and task lists (both directions)",
+    "jobs and tasks (identity carriers)",
+    "instants (both directions)"
+  ],
+  "lean_representation_note": "a MathComp `pred T` is `T \u2192 Bool`; `predT`/`pred0` are constant predicates; `x \\in xs` in Prop position is `decide (x \u2208 xs) = true`; `uniq xs` is `xs.Nodup`; `{in xs, P}` is `\u2200 x, decide (x \u2208 xs) = true \u2192 P x`; `a != b` is `decide (a \u2260 b)`; `f^~ y` is `fun x => f x y`; a Boolean `if` is `bif`; `\\sum_(x <- xs | Q x) F x` is `sumFiltered xs Q F`"
+}

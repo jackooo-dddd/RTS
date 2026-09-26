@@ -1,0 +1,100 @@
+{
+  "rank": 192,
+  "layer": 21,
+  "tag": "FPAS",
+  "slug": "analysis_facts_periodic_arrival_separation",
+  "source": "analysis/facts/periodic/arrival_separation.v",
+  "dependencies": [
+    "analysis/facts/sporadic/arrival_times.v",
+    "model/task/arrival/periodic_as_sporadic.v"
+  ],
+  "declaration_count": 3,
+  "base_run": "model_task_arrival_periodic_as_sporadic_final",
+  "base_checks": [
+    {
+      "manifest": "model_task_arrival_periodic_as_sporadic",
+      "olean": "Prosa/Model/Task/Arrival/PeriodicAsSporadic.olean",
+      "vo": "PeriodicAsSporadicSemanticSource.vo"
+    },
+    {
+      "manifest": "model_task_arrival_periodic",
+      "olean": "Prosa/Model/Task/Arrival/Periodic.olean",
+      "vo": "PeriodicSemanticSource.vo"
+    }
+  ],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "FactsPeriodicArrivalSeparationSemanticSource",
+    "drop_imports": [
+      "Require Export prosa.model.task.arrival.periodic_as_sporadic.",
+      "Require Export prosa.analysis.facts.sporadic.arrival_times."
+    ],
+    "add_imports": [
+      "Require Export prosa.PeriodicAsSporadicSemanticSource.",
+      "Export PeriodicAsSporadicSemanticSource.",
+      "Require Export prosa.PeriodicSemanticSource.",
+      "Export PeriodicSemanticSource.",
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq.",
+      "Require Import prosa.behavior.all prosa.model.task.concept prosa.model.task.arrivals."
+    ],
+    "note": "theorem statements from the authoritative elaborated types (proofs omitted); the periodic_as_sporadic import is bound to its accepted extracted source (PeriodicAsSporadicSemanticSource, with PeriodicSemanticSource, hash-checked as base); model/task/arrivals is the compiled pinned source of the base run; the proof-only facts/sporadic/arrival_times import is dropped"
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/FactsPeriodicArrivalSeparationStatementProbe.v",
+  "production": "Prosa/Analysis/Facts/Periodic/ArrivalSeparation.lean",
+  "production_olean": "Prosa/Analysis/Facts/Periodic/ArrivalSeparation.olean",
+  "lean_namespace": "Prosa.Analysis.Facts.Periodic.ArrivalSeparation",
+  "fixtures": [
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ArrivalsComputationInterface",
+    "PeriodicComputationInterface",
+    "PeriodicAsSporadicComputationInterface",
+    "FactsPeriodicArrivalSeparationComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/FactsPeriodicArrivalSeparationLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/analysis_facts_periodic_arrival_separation_export_config.json",
+  "export_name": "FactsPeriodicArrivalSeparation",
+  "cert_dir": "certificates/analysis_facts_periodic_arrival_separation",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "ArrivalsCorrespondence",
+    "PeriodicCorrespondence",
+    "FactsPeriodicArrivalSeparationCorrespondence"
+  ],
+  "audit_module": "FactsPeriodicArrivalSeparationAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/FactsPeriodicArrivalSeparationImportedTypeAudit.v",
+  "assumption_config": "certificates/analysis_facts_periodic_arrival_separation/facts_periodic_arrival_separation_assumption_config.json",
+  "lean_axiom_config": "certificates/analysis_facts_periodic_arrival_separation/facts_periodic_arrival_separation_lean_axiom_config.json",
+  "computational": [],
+  "principal": {},
+  "helpers": [
+    "fpas_false_correspondence",
+    "fpas_neq_correspondence"
+  ],
+  "previous_status": "analysis_abstract_restricted_supply_search_space_fp_module_status.json",
+  "previous_files": 181,
+  "previous_decls": 1295,
+  "input_relations": [
+    "PeriodicModel pointwise by SubNatRel (the accepted PerRel)",
+    "JobTask by Lean.eq",
+    "job_arrival by ArJobArrivalRel",
+    "ArArrivalSequenceRel"
+  ],
+  "coverage_for_inner_binders": [
+    "jobs and tasks (identity carriers)",
+    "Nats (both directions)"
+  ],
+  "lean_representation_note": "a Boolean in `Prop` position is `= true`; `n > 0` is `0 < n`; the sporadic facts are used in the proofs through the accepted `periodic_as_sporadic` instance, as in the source",
+  "export_diagnosis": "the accepted periodic-as-sporadic export root (task-arrival / arrival-sequence interfaces) without its statements, reused so that the accepted certificate chain applies, plus the three statements",
+  "extra_pinned_sources": [],
+  "extra_olean_artifacts": [
+    {
+      "from": "analysis_facts_sporadic_arrival_times_final/olean/Prosa/Analysis/Facts/Sporadic/ArrivalTimes.olean",
+      "to": "Prosa/Analysis/Facts/Sporadic/ArrivalTimes.olean",
+      "manifest": "analysis_facts_sporadic_arrival_times",
+      "key": "production_olean_sha256"
+    }
+  ]
+}

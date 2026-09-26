@@ -1,0 +1,128 @@
+{
+  "rank": 125,
+  "layer": 15,
+  "tag": "FTSC",
+  "slug": "analysis_facts_model_task_schedule",
+  "source": "analysis/facts/model/task_schedule.v",
+  "dependencies": [
+    "analysis/definitions/task_schedule.v",
+    "analysis/facts/behavior/service.v",
+    "analysis/facts/model/scheduled.v",
+    "model/task/concept.v"
+  ],
+  "declaration_count": 10,
+  "base_run": "analysis_facts_model_ideal_service_of_jobs_final",
+  "base_checks": [
+    {
+      "manifest": "analysis_facts_model_ideal_service_of_jobs",
+      "olean": "Prosa/Analysis/Facts/Model/Ideal/ServiceOfJobs.olean",
+      "vo": "IdealServiceOfJobsSemanticSource.vo"
+    }
+  ],
+  "extra_pinned_sources": [
+    "analysis/definitions/service.v",
+    "analysis/definitions/task_schedule.v"
+  ],
+  "extra_lean": [
+    [
+      "Prosa/Analysis/Definitions/Service.lean",
+      "Prosa/Analysis/Definitions/Service.olean",
+      "analysis_service",
+      "production_olean_sha256"
+    ],
+    [
+      "Prosa/Analysis/Definitions/TaskSchedule.lean",
+      "Prosa/Analysis/Definitions/TaskSchedule.olean",
+      "analysis_definitions_task_schedule",
+      "production_olean_sha256"
+    ],
+    [
+      "Prosa/Analysis/Facts/Model/Scheduled.lean",
+      "Prosa/Analysis/Facts/Model/Scheduled.olean",
+      "analysis_facts_model_scheduled",
+      "production_olean_sha256"
+    ]
+  ],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "FactsTaskScheduleSemanticSource",
+    "drop_imports": [
+      "Require Export prosa.analysis.facts.behavior.service.",
+      "Require Export prosa.analysis.facts.model.scheduled."
+    ],
+    "add_imports": [
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq fintype bigop.",
+      "Require Import prosa.behavior.all prosa.model.processor.platform_properties prosa.model.processor.supply prosa.model.schedule.scheduled prosa.model.task.concept prosa.analysis.definitions.task_schedule."
+    ],
+    "note": "theorem statements from the authoritative elaborated types (proofs omitted); the proof-heavy facts/behavior/service and facts/model/scheduled imports are dropped (the statements mention only behavior, platform properties, supply, the task concept, model/schedule/scheduled and the task-schedule definitions); analysis/definitions/{service,task_schedule}.v are compiled from the pinned files"
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/FactsTaskScheduleStatementProbe.v",
+  "production": "Prosa/Analysis/Facts/Model/TaskSchedule.lean",
+  "production_olean": "Prosa/Analysis/Facts/Model/TaskSchedule.olean",
+  "lean_namespace": "Prosa.Analysis.Facts.Model.TaskSchedule",
+  "fixtures": [
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ArrivalsComputationInterface",
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "ServiceOfJobsComputationInterface",
+    "SupplyComputationInterface",
+    "ScheduledComputationInterface",
+    "ProcessorStateCoverInterface",
+    "FactsTaskScheduleComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/FactsTaskScheduleLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/analysis_facts_model_task_schedule_export_config.json",
+  "export_name": "FactsTaskSchedule",
+  "cert_dir": "certificates/analysis_facts_model_task_schedule",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "ArrivalsCorrespondence",
+    "JitterSvcBaseAdapter",
+    "JitterSvcNatBoolOperations",
+    "JitterSvcIntervalOperations",
+    "JitterSvcScheduleOperations",
+    "JitterSvcJobOperations",
+    "PStateCover",
+    "FactsTaskScheduleCorrespondence"
+  ],
+  "audit_module": "FactsTaskScheduleAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/FactsTaskScheduleImportedTypeAudit.v",
+  "assumption_config": "certificates/analysis_facts_model_task_schedule/facts_task_schedule_assumption_config.json",
+  "lean_axiom_config": "certificates/analysis_facts_model_task_schedule/facts_task_schedule_lean_axiom_config.json",
+  "computational": [],
+  "principal": {},
+  "helpers": [
+    "fts_decide_eq_related",
+    "fts_bool_eq_correspondence",
+    "fts_nil_eq_isEmpty_related",
+    "fts_job_of_task_related",
+    "fts_receives_service_related",
+    "fts_scheduled_jobs_of_task_related",
+    "fts_task_scheduled_at_related",
+    "fts_served_jobs_of_task_related",
+    "fts_task_served_at_related",
+    "fts_psr_supply_at_related",
+    "fts_psr_has_supply_related",
+    "fts_psr_fully_consuming_related"
+  ],
+  "previous_status": "analysis_facts_model_ideal_service_of_jobs_module_status.json",
+  "previous_files": 123,
+  "previous_decls": 968,
+  "input_relations": [
+    "JobTask by Lean.eq on job_task",
+    "ArJobArrivalRel",
+    "ArArrivalSequenceRel"
+  ],
+  "coverage_for_inner_binders": [
+    "processor models (both directions, IsjPSRel: Lean model from the Rocq enumeration, Rocq model from the Lean core enumeration)",
+    "schedules (both directions, functional through the state bijection)",
+    "tasks and jobs (identity carriers)",
+    "instants (both directions)"
+  ],
+  "lean_representation_note": "`~~ b` is `(!b) = true`; Booleans in Prop position are `= true`; `xs != [::]` is `!xs.isEmpty`; the processor model is an explicit binder as in the elaborated types",
+  "export_diagnosis": "the accepted Service/Schedule interface closure (~120k lines in earlier accepted files) plus service-of-jobs, supply, scheduled-job and task-schedule definitions and ten statement-only facts"
+}
