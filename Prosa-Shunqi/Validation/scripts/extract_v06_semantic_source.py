@@ -26,7 +26,8 @@ DECL_RE = re.compile(
     rf"({IDENTIFIER_RE}){IDENTIFIER_BOUNDARY_RE}.*?^[^\n]*(?:Qed|Defined)\.[ \t]*$"
 )
 BODY_RE = re.compile(
-    r"(?ms)^[ \t]*(?:Fixpoint|CoFixpoint|Definition|Class|Inductive|Variant)\s+"
+    r"(?ms)^[ \t]*(?:Fixpoint|CoFixpoint|Definition|Class|Inductive|Variant"
+    r"|(?:#\[[^\]\n]*\][ \t]*)?(?:(?:Global|Local)[ \t]+)?(?:Program[ \t]+)?Instance)\s+"
     rf"({IDENTIFIER_RE}){IDENTIFIER_BOUNDARY_RE}.*?\.[ \t]*$"
     r"(?:\n(?:[ \t]*\n)*[ \t]*Proof\.[ \t]*$.*?^[^\n]*Defined\.[ \t]*$)?"
 )
@@ -143,6 +144,13 @@ def main() -> None:
         help=("omit now-unnecessary open Section context around a theorem "
               "whose exact post-Section type comes from elaborated evidence"),
     )
+    parser.add_argument(
+        "--printer-repair", action="append", default=[],
+        help=("OLD=NEW textual repair of a Rocq printing artifact in elaborated "
+              "evidence that does not reparse (e.g. '{setTask}={set Task}'); "
+              "recorded in metadata.  The generated statement must still print "
+              "back to the unrepaired evidence text, which the caller verifies"),
+    )
     parser.add_argument("--output", required=True, type=Path)
     parser.add_argument("--metadata", required=True, type=Path)
     args = parser.parse_args()
@@ -212,6 +220,7 @@ def main() -> None:
             "local_bindings": bindings,
             "dropped_irrelevant_imports": sorted(requested_drop_imports),
             "added_validation_imports": args.add_import,
+            **({"printer_repairs": args.printer_repair} if args.printer_repair else {}),
         },
         "declarations": {},
     }
@@ -250,6 +259,9 @@ def main() -> None:
                 if not check or ":" not in check:
                     raise SystemExit(f"malformed elaborated type evidence: {key}")
                 elaborated_type = check.split(":", 1)[1].strip()
+                for repair in args.printer_repair:
+                    old, new = repair.split("=", 1)
+                    elaborated_type = elaborated_type.replace(old, new)
                 statement_sort = "Type" if name in type_valued else "Prop"
                 generated = (
                     f"Definition statement_{name} : {statement_sort} :=\n"

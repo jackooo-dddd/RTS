@@ -22,19 +22,27 @@ Definition tdma_arrival_sequence_to_target (Job : eqType)
       Job (ar_decidable_eq Job) :=
   fun tL => ar_list_to_imported (arrR (sub_nat_to_rocq tL)).
 
+(** Transport a Rocq equality into the imported SProp equality.  Used so the
+    nat roundtrip is rewritten in Prop instead of inside the SProp goal. *)
+Lemma tdma_logic_eq_to_lean_eq {A : Type} (x y : A) :
+  Logic.eq x y -> Lean.eq x y.
+Proof. intros []. exact (@Lean.eq_refl _ _). Qed.
+
 Lemma tdma_arrival_sequence_source_total (Job : eqType)
     (arrR : prosa.behavior.arrival_sequence.arrival_sequence Job) :
   TdmaArrivalSequenceRel Job arrR
     (tdma_arrival_sequence_to_target Job arrR).
 Proof.
-  intros tR tL Ht. unfold TdmaArrivalSequenceRel in *.
-  unfold ArListRel, tdma_arrival_sequence_to_target.
+  intros tR tL Ht. unfold ArListRel.
   destruct Ht.
-  cbn [ImportedTdmaProjectedFull.Prosa_Behavior_Arrival_sequence_arrivals_at].
-  pose proof (sub_nat_rocq_roundtrip tR) as Hround.
-  destruct Hround.
-  exact (@Lean.eq_refl _ _).
+  (* The imported [arrivals_at] body is [fun .. arr_seq t => arr_seq t]. *)
+  change (Lean.eq (ar_list_to_imported (arrR tR))
+    (ar_list_to_imported (arrR (sub_nat_to_rocq (sub_nat_to_imported tR))))).
+  apply tdma_logic_eq_to_lean_eq.
+  by rewrite sub_nat_rocq_roundtrip.
 Qed.
+
+Print Assumptions tdma_logic_eq_to_lean_eq.
 
 Lemma tdma_exists_nat_correspondence
     (PR : nat -> Prop) (PL : Lean.Nat -> SProp) :

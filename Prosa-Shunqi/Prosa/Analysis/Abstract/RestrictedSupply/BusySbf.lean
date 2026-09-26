@@ -18,22 +18,20 @@ open Prosa.Model.Task.Concept
 open Prosa.Analysis.Abstract.Definitions
 open Prosa.Analysis.Definitions.Sbf.Pred
 
-universe u v
-
 section BusySupplyBoundFunctions
 
 variable {Task : TaskType} [DecidableEq Task]
 variable {Job : JobType} [DecidableEq Job]
 variable [JobArrival Job] [JobCost Job] [JobTask Job Task]
 variable {PState : ProcessorState Job}
-variable [Interference Job] [InterferingWorkload Job]
 
 variable (arr_seq : arrival_sequence Job)
 variable (sched : schedule PState)
 variable (tsk : Task)
 
-def bi_prefix_of_tsk (j : Job) (t1 t2 : instant) : Prop :=
-  job_of_task tsk j = true ∧ busy_interval_prefix sched j t1 t2
+-- As in the source, Interference/InterferingWorkload follow arr_seq, sched
+-- and tsk; the source-local `bi_prefix_of_tsk` (a `Let`) is inlined.
+variable [Interference Job] [InterferingWorkload Job]
 
 def sbf_respected_in_busy_interval (SBF : duration → work) : Prop :=
   pred_sbf_respected arr_seq sched

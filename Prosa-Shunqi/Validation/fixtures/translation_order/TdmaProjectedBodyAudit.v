@@ -1,6 +1,10 @@
 From LeanImport Require Import Lean.
 From FoundationImported Require Import ImportedTdmaProjectedFull.
 
+Print ImportedTdmaProjectedFull.Prosa_Model_Schedule_Tdma_TDMA_slot.
+Print ImportedTdmaProjectedFull.Prosa_Model_Schedule_Tdma_TDMA_slot_order.
+Print ImportedTdmaProjectedFull.Prosa_Model_Schedule_Tdma_TDMAPolicy.
+
 Print ImportedTdmaProjectedFull.Prosa_Model_Schedule_Tdma_transitive_slot_order.
 Print ImportedTdmaProjectedFull.Prosa_Model_Schedule_Tdma_total_slot_order.
 Print ImportedTdmaProjectedFull.Prosa_Model_Schedule_Tdma_antisymmetric_slot_order.

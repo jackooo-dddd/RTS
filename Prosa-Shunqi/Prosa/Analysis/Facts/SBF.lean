@@ -19,7 +19,6 @@ open Prosa.Analysis.Definitions.Sbf
 open Prosa.Analysis.Definitions.Sbf.Pred
 open Prosa.Analysis.Facts.Behavior.Supply
 
-universe u v
 
 variable {Job : JobType} [DecidableEq Job]
 variable {PState : ProcessorState Job}
@@ -44,21 +43,17 @@ end SBFChangePred
 
 section BlackoutBound
 
-variable (arr_seq : arrival_sequence Job) (sched : schedule PState)
-variable (P : Job → instant → instant → Prop)
-variable {SBF : SupplyBoundFunction}
-variable (hunit : unit_supply_proc_model PState)
-variable (hvalid : valid_pred_sbf arr_seq sched P SBF.supply_bound_function)
-variable (j : Job)
-variable (t1 t2 : instant)
-variable (Δ : duration)
-
+/-- Binder order follows the elaborated source type: the unit-supply
+hypothesis, then `arr_seq sched P SBF`, validity, the job and its arrival,
+the interval and its predicate, `Δ`, and the subinterval hypothesis. -/
 theorem blackout_during_bound_SBF
     (hunit : unit_supply_proc_model PState)
+    (arr_seq : arrival_sequence Job) (sched : schedule PState)
+    (P : Job → instant → instant → Prop) {SBF : SupplyBoundFunction}
     (hvalid : valid_pred_sbf arr_seq sched P SBF.supply_bound_function)
-    (harr : arrives_in arr_seq j)
-    (hP : P j t1 t2)
-    (hsub : t1 + Δ ≤ t2) :
+    (j : Job) (harr : arrives_in arr_seq j)
+    (t1 t2 : instant) (hP : P j t1 t2)
+    (Δ : duration) (hsub : t1 + Δ ≤ t2) :
     blackout_during sched t1 (t1 + Δ) ≤ Δ - SBF.supply_bound_function Δ := by
   rw [blackout_during_complement sched hunit t1 Δ]
   apply Nat.sub_le_sub_left

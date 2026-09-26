@@ -6,7 +6,8 @@ From FoundationCertificates Require Import
   PropSPropFoundation LogicalRelation SubadditivityNatCorrespondence
   TdmaBaseAdapter TdmaSeqsetAdapter TdmaPolicyAdapter
   TdmaValidityCorrespondence TdmaNumericCorrespondence
-  TdmaArithmeticAdapter TdmaJobTaskAdapter TdmaProcessorOperations.
+  TdmaArithmeticAdapter TdmaJobTaskAdapter TdmaProcessorOperations
+  TdmaArrivalOperations.
 
 Lemma tdma_imp_correspondence (P Q : Prop) (PL QL : SProp) :
   PropSPropRel P PL -> PropSPropRel Q QL ->
@@ -273,7 +274,13 @@ Section TdmaSchedule.
           Job (ar_decidable_eq Job) PStateL costL arrivalL readyL
           schedL j tL).
 
-  Context (Harrives : TdmaArrivesInRel).
+  (** Input relation: the arrival sequences are pointwise related.  The
+      [arrives_in] correspondence is derived, not assumed. *)
+  Context (Harr : TdmaArrivalSequenceRel Job arrR arrL).
+
+  Lemma Harrives : TdmaArrivesInRel.
+  Proof. intro j. exact (tdma_arrives_in_related Job arrR arrL Harr j). Qed.
+
   Context (Hready : TdmaJobReadyRel).
 
   Lemma tdma_backlogged_related : TdmaBackloggedRel.
