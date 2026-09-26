@@ -1,0 +1,122 @@
+{
+  "rank": 122,
+  "layer": 15,
+  "tag": "FCMP",
+  "slug": "analysis_facts_behavior_completion",
+  "source": "analysis/facts/behavior/completion.v",
+  "dependencies": [
+    "analysis/definitions/schedule_prefix.v",
+    "analysis/facts/behavior/arrivals.v",
+    "analysis/facts/behavior/service.v",
+    "model/job/properties.v"
+  ],
+  "declaration_count": 30,
+  "base_run": "analysis_facts_behavior_service_final",
+  "base_checks": [
+    {
+      "manifest": "analysis_facts_behavior_service",
+      "olean": "Prosa/Analysis/Facts/Behavior/Service.olean",
+      "vo": "FactsServiceSemanticSource.vo"
+    }
+  ],
+  "extra_pinned_sources": [
+    "model/job/properties.v"
+  ],
+  "extra_lean": [
+    [
+      "Prosa/Model/Job/Properties.lean",
+      "Prosa/Model/Job/Properties.olean",
+      "model_job_properties",
+      "production_olean_sha256"
+    ]
+  ],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "FactsCompletionSemanticSource",
+    "drop_imports": [
+      "Require Export prosa.analysis.facts.behavior.service.",
+      "Require Export prosa.analysis.facts.behavior.arrivals."
+    ],
+    "add_imports": [
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq.",
+      "Require Import prosa.behavior.all prosa.model.processor.platform_properties."
+    ],
+    "note": "theorem statements from the authoritative elaborated types (proofs omitted); the proof-heavy facts/behavior/{service,arrivals} imports are dropped (only behavior, platform properties, job properties and schedule prefix are mentioned) and the MathComp notation modules are imported; model/job/properties.v is compiled from the pinned file"
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/FactsCompletionStatementProbe.v",
+  "production": "Prosa/Analysis/Facts/Behavior/Completion.lean",
+  "production_olean": "Prosa/Analysis/Facts/Behavior/Completion.olean",
+  "lean_namespace": "Prosa.Analysis.Facts.Behavior.Completion",
+  "fixtures": [
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "FactsCompletionComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/FactsCompletionLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/analysis_facts_behavior_completion_export_config.json",
+  "export_name": "FactsCompletion",
+  "cert_dir": "certificates/analysis_facts_behavior_completion",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "JitterSvcBaseAdapter",
+    "JitterSvcNatBoolOperations",
+    "JitterSvcIntervalOperations",
+    "JitterSvcScheduleOperations",
+    "JitterSvcJobOperations",
+    "FactsCompletionCorrespondence"
+  ],
+  "audit_module": "FactsCompletionAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/FactsCompletionImportedTypeAudit.v",
+  "assumption_config": "certificates/analysis_facts_behavior_completion/facts_completion_assumption_config.json",
+  "lean_axiom_config": "certificates/analysis_facts_behavior_completion/facts_completion_lean_axiom_config.json",
+  "computational": [],
+  "principal": {},
+  "helpers": [
+    "fc_forall_cover_sprop",
+    "fc_iff_correspondence",
+    "fc_lean_transport",
+    "fc_nat_input",
+    "fc_bool_eq_correspondence",
+    "fc_succ_related",
+    "fc_scheduled_at_related",
+    "fc_service_at_related",
+    "fc_service_during_related",
+    "fc_service_related",
+    "fc_completed_by_related",
+    "fc_remaining_cost_related",
+    "fc_completed_jobs_dont_execute_related",
+    "fc_has_arrived_related",
+    "fc_jobs_must_arrive_related",
+    "fc_pending_related",
+    "fc_pending_earlier_and_at_related",
+    "fc_ideal_progress_rel",
+    "fc_unit_service_rel",
+    "fc_jobs_must_be_ready_related",
+    "fc_arrival_sequence_to_source_rel",
+    "fc_schedule_fun_to_svc",
+    "fc_schedule_to_target_rel",
+    "fc_schedule_to_source_rel",
+    "fc_identical_prefix_correspondence"
+  ],
+  "previous_status": "analysis_definitions_readiness_module_status.json",
+  "previous_files": 120,
+  "previous_decls": 917,
+  "input_relations": [
+    "SvcJobCostRel, ArJobArrivalRel",
+    "SvcProcessorStateRel (two-sided); schedules functionally by the state conversion (two-way)",
+    "JobReady pointwise on Booleans over related schedules",
+    "ArArrivalSequenceRel"
+  ],
+  "coverage_for_inner_binders": [
+    "schedules (both directions, functional)",
+    "processor states (both directions)",
+    "jobs (identity carrier)",
+    "instants (both directions)"
+  ],
+  "lean_representation_note": "Booleans in Prop position are `= true`; `~~ b` is `!b`; single Nat comparisons are the Nat orders; `a <= b < c` is the Boolean conjunction of decides; `t.+1` is `t + 1`; `forall s : PState` ranges over `PState.State`",
+  "export_diagnosis": "the accepted Service/Schedule interface closure (~120k lines in earlier accepted files) plus thirty statement-only facts"
+}

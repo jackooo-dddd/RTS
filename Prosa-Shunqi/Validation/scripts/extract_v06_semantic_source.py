@@ -234,9 +234,12 @@ def main() -> None:
         if omitted_context:
             context = []
         output.extend([f"Section SourceContext_{index}.", *context, ""] if context else [])
+        # local bindings reconnect Section variables, so they only apply to
+        # blocks that are regenerated inside their Section context
         active_bindings = {
             binding_name: term for binding_name, term in bindings.items()
-            if name != binding_name and re.search(rf"\b{re.escape(binding_name)}\b", block)
+            if context and name != binding_name
+            and re.search(rf"\b{re.escape(binding_name)}\b", block)
         }
         for binding_name, term in active_bindings.items():
             output.append(f"Local Notation {binding_name} := ({term}).")

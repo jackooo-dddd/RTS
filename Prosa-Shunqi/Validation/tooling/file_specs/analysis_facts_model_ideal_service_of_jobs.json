@@ -1,0 +1,100 @@
+{
+  "rank": 124,
+  "layer": 15,
+  "tag": "IDSJ",
+  "slug": "analysis_facts_model_ideal_service_of_jobs",
+  "source": "analysis/facts/model/ideal/service_of_jobs.v",
+  "dependencies": [
+    "analysis/facts/behavior/service.v",
+    "model/aggregate/service_of_jobs.v",
+    "model/priority/classes.v"
+  ],
+  "declaration_count": 2,
+  "base_run": "model_aggregate_service_of_jobs_final",
+  "base_checks": [
+    {
+      "manifest": "model_aggregate_service_of_jobs",
+      "olean": "Prosa/Model/Aggregate/ServiceOfJobs.olean",
+      "vo": "model/aggregate/service_of_jobs.vo"
+    }
+  ],
+  "extra_pinned_sources": [
+    "model/schedule/scheduled.v"
+  ],
+  "extra_lean": [
+    [
+      "Prosa/Model/Schedule/Scheduled.lean",
+      "Prosa/Model/Schedule/Scheduled.olean",
+      "model_schedule_scheduled",
+      "production_olean_sha256"
+    ]
+  ],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "IdealServiceOfJobsSemanticSource",
+    "drop_imports": [
+      "Require Export prosa.analysis.facts.behavior.service."
+    ],
+    "add_imports": [
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq fintype bigop.",
+      "Require Import prosa.behavior.all prosa.model.processor.platform_properties prosa.model.processor.supply prosa.model.schedule.scheduled."
+    ],
+    "note": "theorem statements from the authoritative elaborated types (proofs omitted); the proof-heavy facts/behavior/service import is dropped (the statements mention only behavior, platform properties, supply, model/schedule/scheduled and the kept priority/service-of-jobs modules); model/schedule/scheduled.v is compiled from the pinned file"
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/IdealServiceOfJobsStatementProbe.v",
+  "production": "Prosa/Analysis/Facts/Model/Ideal/ServiceOfJobs.lean",
+  "production_olean": "Prosa/Analysis/Facts/Model/Ideal/ServiceOfJobs.olean",
+  "lean_namespace": "Prosa.Analysis.Facts.Model.Ideal.ServiceOfJobs",
+  "fixtures": [
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ArrivalsComputationInterface",
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "ServiceOfJobsComputationInterface",
+    "SupplyComputationInterface",
+    "ScheduledComputationInterface",
+    "ProcessorStateCoverInterface",
+    "IdealServiceOfJobsComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/IdealServiceOfJobsLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/analysis_facts_model_ideal_service_of_jobs_export_config.json",
+  "export_name": "IdealServiceOfJobs",
+  "cert_dir": "certificates/analysis_facts_model_ideal_service_of_jobs",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "ArrivalsCorrespondence",
+    "JitterSvcBaseAdapter",
+    "JitterSvcNatBoolOperations",
+    "JitterSvcIntervalOperations",
+    "JitterSvcScheduleOperations",
+    "JitterSvcJobOperations",
+    "IdealServiceOfJobsCorrespondence"
+  ],
+  "audit_module": "IdealServiceOfJobsAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/IdealServiceOfJobsImportedTypeAudit.v",
+  "assumption_config": "certificates/analysis_facts_model_ideal_service_of_jobs/ideal_service_of_jobs_assumption_config.json",
+  "lean_axiom_config": "certificates/analysis_facts_model_ideal_service_of_jobs/ideal_service_of_jobs_lean_axiom_config.json",
+  "computational": [],
+  "principal": {},
+  "helpers": [],
+  "previous_status": "analysis_facts_model_ideal_schedule_module_status.json",
+  "previous_files": 122,
+  "previous_decls": 966,
+  "input_relations": [
+    "SvcProcessorStateRel (two-sided), extended by its supply_on field (as in the accepted facts/behavior/service certificate) for the fully-consuming statement",
+    "ArJobArrivalRel",
+    "ArArrivalSequenceRel"
+  ],
+  "coverage_for_inner_binders": [
+    "processor states (both directions)",
+    "schedules (both directions, functional through the state conversion)",
+    "jobs (identity carrier)",
+    "instants (both directions)",
+    "arrival sequences (both directions)"
+  ],
+  "lean_representation_note": "`predT` is `fun _ => true`; `t1 <= t < t2` is the Boolean conjunction of decides; Booleans in Prop position are `= true`; the processor model is an explicit binder as in the elaborated types",
+  "export_diagnosis": "the accepted Service/Schedule interface closure (~120k lines in earlier accepted files) plus the service-of-jobs, supply and scheduled-job definitions and two statement-only facts"
+}

@@ -1,0 +1,327 @@
+{
+  "slice": "TRANSLATION_ORDER_ANALYSIS_DEFINITIONS_INTERFERENCE",
+  "generated_at": "2026-09-26T09:14:55.846236+08:00",
+  "published_at": "2026-09-26T09:14:55.846236+08:00",
+  "rank": 119,
+  "layer": 15,
+  "source_file": "analysis/definitions/interference.v",
+  "source_commit": "414e66760333eaa4ef78c685bcf53291c527a548",
+  "source_tree": "7d7e94c731f7eefde4ca738310d4cafdd7bebdf0",
+  "source_file_sha256": "563bda847ab938e633e32f6462c5bf3a8ed1aac048b77d0b289403e15474d4f6",
+  "pipeline": "Validation/scripts/translation_file_pipeline.py",
+  "spec": "Validation/tooling/file_specs/analysis_definitions_interference.json",
+  "spec_sha256": "fdc3fc15fa8054c1242882a91cf4728a6d0739c4ca780fb8dd5b0bdd47d37110",
+  "source_compatibility": {
+    "mode": "extract",
+    "note": "the fifteen definitions are byte-identical computational blocks; the source's `^~` (ssrfun) notation reaches the official file only through the full util/all, which the accepted utility closure reduces, so the MathComp notation modules are imported explicitly; the Section variables arr_seq/sched, implicit in the uses of five definitions inside later definitions of the same Section, are reconnected by recorded local notations; analysis/definitions/service.v is compiled from the pinned file",
+    "extracted_sha256": "2ea87e9d0a73a4f662826790be377c40bc7c4041e585d5f37b44c7ce3e4f9df0",
+    "extraction_metadata_sha256": "2e231aed1ffdb6eba13e4a7431169e00b8b30d7b8ca3a787f15ea69f56185f80"
+  },
+  "source_type_evidence": {
+    "prosa.analysis.definitions.interference.hp_task_interference": "EXACT_HASH",
+    "prosa.analysis.definitions.interference.ep_task_hep_job": "EXACT_HASH",
+    "prosa.analysis.definitions.interference.other_ep_task_hep_job": "EXACT_HASH",
+    "prosa.analysis.definitions.interference.hep_job_from_other_ep_task_interference": "EXACT_HASH",
+    "prosa.analysis.definitions.interference.hp_task_hep_job": "EXACT_HASH",
+    "prosa.analysis.definitions.interference.hep_job_from_hp_task_interference": "EXACT_HASH",
+    "prosa.analysis.definitions.interference.cumulative_interference_from_hep_jobs_from_hp_tasks": "EXACT_HASH",
+    "prosa.analysis.definitions.interference.cumulative_interference_from_hep_jobs_from_other_ep_tasks": "EXACT_HASH",
+    "prosa.analysis.definitions.interference.another_hep_job_interference": "EXACT_HASH",
+    "prosa.analysis.definitions.interference.another_task_hep_job_interference": "EXACT_HASH",
+    "prosa.analysis.definitions.interference.another_hep_job_of_same_task_interference": "EXACT_HASH",
+    "prosa.analysis.definitions.interference.other_hep_jobs_interfering_workload": "EXACT_HASH",
+    "prosa.analysis.definitions.interference.cumulative_another_hep_job_interference": "EXACT_HASH",
+    "prosa.analysis.definitions.interference.cumulative_another_task_hep_job_interference": "EXACT_HASH",
+    "prosa.analysis.definitions.interference.cumulative_other_hep_jobs_interfering_workload": "EXACT_HASH"
+  },
+  "statement_only_export_boundary": [],
+  "input_relations": [
+    "SvcProcessorStateRel + SvcScheduleRel (two-sided)",
+    "ArArrivalSequenceRel",
+    "FP policy pointwise on Booleans",
+    "JLFP policy pointwise on Booleans",
+    "Lean.eq on job_task",
+    "job_cost pointwise by SubNatRel",
+    "SubNatRel on instants"
+  ],
+  "coverage_for_inner_binders": [
+    "jobs and tasks (identity carriers)"
+  ],
+  "lean_representation_note": "`has p s` is `s.any p`; `p^~ j` is `fun x => p x j`; `a != b` is `decide (a \u2260 b)`; Boolean interval sums sum `Bool.toNat`; filtered sums are `sumFiltered`; the FP policy of `hp_task`/`ep_task` is passed by name",
+  "export_size": {
+    "lines": 126466,
+    "soft_budget_flag": "OVER_100K_DIAGNOSED",
+    "diagnosis": "the accepted Service/Schedule interface closure (~120k lines in earlier accepted files) plus the arrival-sequence/task-arrival interfaces and fifteen definitions"
+  },
+  "file_dependencies": {
+    "analysis/definitions/service.v": "analysis_service_module_status.json",
+    "model/aggregate/workload.v": "model_aggregate_workload_module_status.json"
+  },
+  "production_file": "Prosa/Analysis/Definitions/Interference.lean",
+  "production_source_sha256": "3716421865372ad5384701cca672d808988f6b5df0b2337155d41a2350a8c0f4",
+  "production_olean_sha256": "510812c676a6adcbe2323a24709c158f87761ff001d279f4a3837995c3a7d3c0",
+  "export_config_sha256": "f4eb9853ce61b4a7d81e3e514117d17071cdac5ab4db200a7984e249d26c530e",
+  "export_sha256": "5c823bd12c7f2c980bf85a882e5b21ca6a3118beb075a4adc5544fc425895efa",
+  "export_lines": 126466,
+  "export_bytes": 2815557,
+  "import_sha256": "e774a77399e7cdabb73c152487f09db918b6f0d28f252eb9a0f0262a0df489d6",
+  "source_vo_sha256": "8dc8cdbf61f408ec505ffdf1a697a3f95801c7f886a1be2ffb40d2a5b744762e",
+  "lean_axiom_summary_sha256": "ea98f73c71e2d3c639418dc3b07e164640482dc695ea62ec37802d1d07c165f2",
+  "rocq_assumption_summary_sha256": "6ca1098f12050a36368077734339f8a0eb90b961f00b51c83cc2f28abeab773c",
+  "assumption_config_sha256": "02dc6a290ce98b1a9233623ece5387bf6eceb2a429e099805ea8ca7f3be17920",
+  "stage_timing_seconds": {
+    "source_acquisition": {
+      "mode": "FRESH",
+      "seconds": 5
+    },
+    "lean_build": {
+      "mode": "FRESH",
+      "seconds": 516
+    },
+    "export": {
+      "mode": "FRESH",
+      "seconds": 42
+    },
+    "rocq_import": {
+      "mode": "FRESH",
+      "seconds": 61
+    },
+    "certificate_compile": {
+      "mode": "FRESH",
+      "seconds": 19
+    },
+    "assumption_audit": {
+      "mode": "FRESH",
+      "seconds": 0
+    }
+  },
+  "certificates": {
+    "ArrivalsSeqBaseAdapter": {
+      "source_sha256": "85ca0732bdbd4588e5fb30e652b62e5f6a5927d51d8e736fdcdf41c3a0658d85",
+      "vo_sha256": "7f7fecdced59e11c2992559f5319e09c50662046b3989eb29d433bdaa5715613"
+    },
+    "ArrivalsSeqOperations": {
+      "source_sha256": "6984fc9789726283675d0e2f08da86984d8ba8fddd783616cefd85decda607d1",
+      "vo_sha256": "329eeb4c849f2a9d16b95a3751b9fee7b0dcb99c5f1de9350af80ab59b9b3f65"
+    },
+    "ArrivalsSeqCorrespondence": {
+      "source_sha256": "b7d5804f3c5b5020720f83a5bfb0b071b78e207d9fc150af4dadb2b3b6644e48",
+      "vo_sha256": "fc1ecfb85cbdad0d9e5cf26f59ff4addc4a8b7ddf6b16ee1c4908a1705852477"
+    },
+    "ArrivalsCorrespondence": {
+      "source_sha256": "2b16a0292eb48972174436d60800fc239e0f7c088e668613244cf073a9c4b316",
+      "vo_sha256": "d60f4663a54e238030db097f6c9c986f54a68e50d335f9e826f2a384b9730e09"
+    },
+    "JitterSvcBaseAdapter": {
+      "source_sha256": "bc9d404476f148f2d140f2bf811a0717102b9045abe22472144e7e86daefb4fa",
+      "vo_sha256": "92d9efe4c3b68449c0265662d4a8580201cca095305c245dd391e41a4627793c"
+    },
+    "JitterSvcNatBoolOperations": {
+      "source_sha256": "5656f4a4075f9c04e8767f1ee738838baa72ae1a57c8e55918895881c835f01c",
+      "vo_sha256": "731dc49ea2e702c2fe8df66ab335b285f0d41dbd3d1e1e4bd05d416ec3d303aa"
+    },
+    "JitterSvcIntervalOperations": {
+      "source_sha256": "c06e75c81e73c24f0adc7fe336402338c8f331616de3ad71855338442a5c7660",
+      "vo_sha256": "857428d3592cee8774556ac25e331e9d150c72426bc7866a60111df15c2f7aba"
+    },
+    "JitterSvcScheduleOperations": {
+      "source_sha256": "2b5616882fe41fe434b97902c462936df1700faa1f5745c6912bd52e3fc0f2ff",
+      "vo_sha256": "2759b811766879dc6b45192ac17bf5440c341e8fed64060d0531ca1a40cb2cd3"
+    },
+    "JitterSvcJobOperations": {
+      "source_sha256": "43b247a955c410b190a45e874e1a5ee361d858a4c12bb4f20577816b5eb17590",
+      "vo_sha256": "e1c88e87795a8a7a59c67f187879d4724e503fbb3d409194665b54c3905dd480"
+    },
+    "InterferenceCorrespondence": {
+      "source_sha256": "11d09093abcb8291bf1627d589fb62db246a5477d11cef09c5c7dfac1c988ef6",
+      "vo_sha256": "b8f1030cd7c5b93ba385b474341da14a4bb67317a7317646650009790f89620f"
+    },
+    "InterferenceAssumptionAudit": {
+      "source_sha256": "087c2e653b26a7558ad8d7bad8a5bea2117c06af17d27839999b54ca4fc721fb",
+      "vo_sha256": "de692140fe5c62f1e6ff86df47539519d9c98464e4ef650448cbc2748e3690d5"
+    }
+  },
+  "declarations": [
+    {
+      "source_declaration": "prosa.analysis.definitions.interference.hp_task_interference",
+      "lean_declaration": "Prosa.Analysis.Definitions.Interference.hp_task_interference",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "hp_task_interference_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.definitions.interference.ep_task_hep_job",
+      "lean_declaration": "Prosa.Analysis.Definitions.Interference.ep_task_hep_job",
+      "semantic_status": "CERTIFIED",
+      "certificates": [
+        "ep_task_hep_job_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.definitions.interference.other_ep_task_hep_job",
+      "lean_declaration": "Prosa.Analysis.Definitions.Interference.other_ep_task_hep_job",
+      "semantic_status": "CERTIFIED",
+      "certificates": [
+        "other_ep_task_hep_job_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.definitions.interference.hep_job_from_other_ep_task_interference",
+      "lean_declaration": "Prosa.Analysis.Definitions.Interference.hep_job_from_other_ep_task_interference",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "hep_job_from_other_ep_task_interference_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.definitions.interference.hp_task_hep_job",
+      "lean_declaration": "Prosa.Analysis.Definitions.Interference.hp_task_hep_job",
+      "semantic_status": "CERTIFIED",
+      "certificates": [
+        "hp_task_hep_job_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.definitions.interference.hep_job_from_hp_task_interference",
+      "lean_declaration": "Prosa.Analysis.Definitions.Interference.hep_job_from_hp_task_interference",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "hep_job_from_hp_task_interference_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.definitions.interference.cumulative_interference_from_hep_jobs_from_hp_tasks",
+      "lean_declaration": "Prosa.Analysis.Definitions.Interference.cumulative_interference_from_hep_jobs_from_hp_tasks",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "cumulative_interference_from_hep_jobs_from_hp_tasks_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.definitions.interference.cumulative_interference_from_hep_jobs_from_other_ep_tasks",
+      "lean_declaration": "Prosa.Analysis.Definitions.Interference.cumulative_interference_from_hep_jobs_from_other_ep_tasks",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "cumulative_interference_from_hep_jobs_from_other_ep_tasks_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.definitions.interference.another_hep_job_interference",
+      "lean_declaration": "Prosa.Analysis.Definitions.Interference.another_hep_job_interference",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "another_hep_job_interference_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.definitions.interference.another_task_hep_job_interference",
+      "lean_declaration": "Prosa.Analysis.Definitions.Interference.another_task_hep_job_interference",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "another_task_hep_job_interference_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.definitions.interference.another_hep_job_of_same_task_interference",
+      "lean_declaration": "Prosa.Analysis.Definitions.Interference.another_hep_job_of_same_task_interference",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "another_hep_job_of_same_task_interference_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.definitions.interference.other_hep_jobs_interfering_workload",
+      "lean_declaration": "Prosa.Analysis.Definitions.Interference.other_hep_jobs_interfering_workload",
+      "semantic_status": "CERTIFIED",
+      "certificates": [
+        "other_hep_jobs_interfering_workload_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.definitions.interference.cumulative_another_hep_job_interference",
+      "lean_declaration": "Prosa.Analysis.Definitions.Interference.cumulative_another_hep_job_interference",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "cumulative_another_hep_job_interference_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.definitions.interference.cumulative_another_task_hep_job_interference",
+      "lean_declaration": "Prosa.Analysis.Definitions.Interference.cumulative_another_task_hep_job_interference",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "cumulative_another_task_hep_job_interference_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.definitions.interference.cumulative_other_hep_jobs_interfering_workload",
+      "lean_declaration": "Prosa.Analysis.Definitions.Interference.cumulative_other_hep_jobs_interfering_workload",
+      "semantic_status": "CERTIFIED",
+      "certificates": [
+        "cumulative_other_hep_jobs_interfering_workload_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    }
+  ],
+  "acceptance": "ACCEPTED_V06_FILE"
+}

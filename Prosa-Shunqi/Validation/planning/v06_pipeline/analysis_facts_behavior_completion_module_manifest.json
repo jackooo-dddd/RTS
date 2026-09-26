@@ -1,0 +1,551 @@
+{
+  "slice": "TRANSLATION_ORDER_ANALYSIS_FACTS_BEHAVIOR_COMPLETION",
+  "generated_at": "2026-09-26T10:09:19.312390+08:00",
+  "published_at": "2026-09-26T10:09:19.312390+08:00",
+  "rank": 122,
+  "layer": 15,
+  "source_file": "analysis/facts/behavior/completion.v",
+  "source_commit": "414e66760333eaa4ef78c685bcf53291c527a548",
+  "source_tree": "7d7e94c731f7eefde4ca738310d4cafdd7bebdf0",
+  "source_file_sha256": "b635c2ae4ef3ca1a2f289cad92472b8ca5ef3051325d2b9f5e4d6386722959da",
+  "pipeline": "Validation/scripts/translation_file_pipeline.py",
+  "spec": "Validation/tooling/file_specs/analysis_facts_behavior_completion.json",
+  "spec_sha256": "1884d52dbf8486a2930df1ec09d8006fe3dd0057374360c2acddce4dd49add70",
+  "source_compatibility": {
+    "mode": "extract",
+    "note": "theorem statements from the authoritative elaborated types (proofs omitted); the proof-heavy facts/behavior/{service,arrivals} imports are dropped (only behavior, platform properties, job properties and schedule prefix are mentioned) and the MathComp notation modules are imported; model/job/properties.v is compiled from the pinned file",
+    "extracted_sha256": "dcc7c0b022915129d7a78572695a97aa915eae0b991d4bd2f557c0cc4accd3cb",
+    "extraction_metadata_sha256": "81441b0c4dea687b24aa75a8b9ab201c75cf7495bb5465bda249244385414520"
+  },
+  "source_type_evidence": {
+    "prosa.analysis.facts.behavior.completion.completion_monotonic": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.behavior.completion.incompletion_monotonic": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.behavior.completion.less_service_than_cost_is_incomplete": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.behavior.completion.incomplete_is_positive_remaining_cost": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.behavior.completion.incomplete_implies_positive_cost": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.behavior.completion.scheduled_implies_positive_cost": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.behavior.completion.service_lt_cost": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.behavior.completion.completed_on_arrival_implies_zero_cost": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.behavior.completion.serviced_implies_positive_remaining_cost": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.behavior.completion.scheduled_implies_serviced": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.behavior.completion.scheduled_implies_positive_remaining_cost": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.behavior.completion.scheduled_implies_not_completed": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.behavior.completion.not_scheduled_remains_incomplete": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.behavior.completion.completed_implies_not_scheduled": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.behavior.completion.not_pending_earlier_and_at_0": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.behavior.completion.unit_service": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.behavior.completion.service_at_most_cost": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.behavior.completion.service_cost_invariant": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.behavior.completion.cumulative_service_le_job_cost": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.behavior.completion.job_doesnt_complete_before_remaining_cost": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.behavior.completion.has_arrived_scheduled": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.behavior.completion.scheduled_implies_pending": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.behavior.completion.completed_implies_scheduled_before": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.behavior.completion.job_pending_at_arrival": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.behavior.completion.ready_implies_incomplete": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.behavior.completion.completed_jobs_are_not_ready": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.behavior.completion.valid_schedule_implies_completed_jobs_dont_execute": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.behavior.completion.ideal_progress_completed_jobs": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.behavior.completion.identical_prefix_completed_by": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.behavior.completion.identical_prefix_pending": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE"
+  },
+  "statement_only_export_boundary": [
+    "Prosa.Analysis.Facts.Behavior.Completion.completion_monotonic",
+    "Prosa.Analysis.Facts.Behavior.Completion.incompletion_monotonic",
+    "Prosa.Analysis.Facts.Behavior.Completion.less_service_than_cost_is_incomplete",
+    "Prosa.Analysis.Facts.Behavior.Completion.incomplete_is_positive_remaining_cost",
+    "Prosa.Analysis.Facts.Behavior.Completion.incomplete_implies_positive_cost",
+    "Prosa.Analysis.Facts.Behavior.Completion.scheduled_implies_positive_cost",
+    "Prosa.Analysis.Facts.Behavior.Completion.service_lt_cost",
+    "Prosa.Analysis.Facts.Behavior.Completion.completed_on_arrival_implies_zero_cost",
+    "Prosa.Analysis.Facts.Behavior.Completion.serviced_implies_positive_remaining_cost",
+    "Prosa.Analysis.Facts.Behavior.Completion.scheduled_implies_serviced",
+    "Prosa.Analysis.Facts.Behavior.Completion.scheduled_implies_positive_remaining_cost",
+    "Prosa.Analysis.Facts.Behavior.Completion.scheduled_implies_not_completed",
+    "Prosa.Analysis.Facts.Behavior.Completion.not_scheduled_remains_incomplete",
+    "Prosa.Analysis.Facts.Behavior.Completion.completed_implies_not_scheduled",
+    "Prosa.Analysis.Facts.Behavior.Completion.not_pending_earlier_and_at_0",
+    "Prosa.Analysis.Facts.Behavior.Completion.unit_service",
+    "Prosa.Analysis.Facts.Behavior.Completion.service_at_most_cost",
+    "Prosa.Analysis.Facts.Behavior.Completion.service_cost_invariant",
+    "Prosa.Analysis.Facts.Behavior.Completion.cumulative_service_le_job_cost",
+    "Prosa.Analysis.Facts.Behavior.Completion.job_doesnt_complete_before_remaining_cost",
+    "Prosa.Analysis.Facts.Behavior.Completion.has_arrived_scheduled",
+    "Prosa.Analysis.Facts.Behavior.Completion.scheduled_implies_pending",
+    "Prosa.Analysis.Facts.Behavior.Completion.completed_implies_scheduled_before",
+    "Prosa.Analysis.Facts.Behavior.Completion.job_pending_at_arrival",
+    "Prosa.Analysis.Facts.Behavior.Completion.ready_implies_incomplete",
+    "Prosa.Analysis.Facts.Behavior.Completion.completed_jobs_are_not_ready",
+    "Prosa.Analysis.Facts.Behavior.Completion.valid_schedule_implies_completed_jobs_dont_execute",
+    "Prosa.Analysis.Facts.Behavior.Completion.ideal_progress_completed_jobs",
+    "Prosa.Analysis.Facts.Behavior.Completion.identical_prefix_completed_by",
+    "Prosa.Analysis.Facts.Behavior.Completion.identical_prefix_pending"
+  ],
+  "input_relations": [
+    "SvcJobCostRel, ArJobArrivalRel",
+    "SvcProcessorStateRel (two-sided); schedules functionally by the state conversion (two-way)",
+    "JobReady pointwise on Booleans over related schedules",
+    "ArArrivalSequenceRel"
+  ],
+  "coverage_for_inner_binders": [
+    "schedules (both directions, functional)",
+    "processor states (both directions)",
+    "jobs (identity carrier)",
+    "instants (both directions)"
+  ],
+  "lean_representation_note": "Booleans in Prop position are `= true`; `~~ b` is `!b`; single Nat comparisons are the Nat orders; `a <= b < c` is the Boolean conjunction of decides; `t.+1` is `t + 1`; `forall s : PState` ranges over `PState.State`",
+  "export_size": {
+    "lines": 126019,
+    "soft_budget_flag": "OVER_100K_DIAGNOSED",
+    "diagnosis": "the accepted Service/Schedule interface closure (~120k lines in earlier accepted files) plus thirty statement-only facts"
+  },
+  "file_dependencies": {
+    "analysis/definitions/schedule_prefix.v": "analysis_schedule_prefix_module_status.json",
+    "analysis/facts/behavior/arrivals.v": "analysis_facts_behavior_arrivals_module_status.json",
+    "analysis/facts/behavior/service.v": "analysis_facts_behavior_service_module_status.json",
+    "model/job/properties.v": "model_job_properties_module_status.json"
+  },
+  "production_file": "Prosa/Analysis/Facts/Behavior/Completion.lean",
+  "production_source_sha256": "113716da0894e8ad6d54a3929ec0c46ccba86fa37e03781fae237836ac705913",
+  "production_olean_sha256": "df2fcb662b2f8beebf2a26175297be4276181e891fed38e304db0612f5237728",
+  "export_config_sha256": "0ca55635c6251e85ede89920e982e8c8c3c4f521aa8612d38b98edc3db125026",
+  "export_sha256": "d53beabf00b925d7fd4d4e09b6d87792f710f2a2618fee13c2c1a584a945379c",
+  "export_lines": 126019,
+  "export_bytes": 2797633,
+  "import_sha256": "782b73c6b216471b2ab775f3705cde414e836b6d70e0b3b314d972f38987973b",
+  "source_vo_sha256": "29431c6132fcf9b7ca1e9f41c9af8bad05d61a96c69766ead68d574faee7c281",
+  "lean_axiom_summary_sha256": "27fcfeae30cbe94ec2a27858f8bcdbd4dcb33c497983969b7abe106aab7d0c4b",
+  "rocq_assumption_summary_sha256": "5645824ee9985476c1996e70dc5013d75a3076f41c5d0266c856718534e91e76",
+  "assumption_config_sha256": "ea3c3cdc959cabd263a44392edf33dbeabf10899863735117373c8b285405eb4",
+  "stage_timing_seconds": {
+    "source_acquisition": {
+      "mode": "FRESH",
+      "seconds": 4
+    },
+    "lean_build": {
+      "mode": "FRESH",
+      "seconds": 453
+    },
+    "export": {
+      "mode": "FRESH",
+      "seconds": 64
+    },
+    "rocq_import": {
+      "mode": "FRESH",
+      "seconds": 59
+    },
+    "certificate_compile": {
+      "mode": "FRESH",
+      "seconds": 30
+    },
+    "assumption_audit": {
+      "mode": "FRESH",
+      "seconds": 0
+    }
+  },
+  "certificates": {
+    "ArrivalsSeqBaseAdapter": {
+      "source_sha256": "b5da2f2b8dc417a59bff10847f3e39935947e9d39fa8d6a77aca5eb3b44d02bf",
+      "vo_sha256": "2cff625b18d2182f08f20646e86a3f66637a4ad9c5aeb8e2629097361becee59"
+    },
+    "ArrivalsSeqOperations": {
+      "source_sha256": "738f1f0f4a419c5e5f406936c1df219352e1689084728d93f06579c6217adcbd",
+      "vo_sha256": "f3927afb5438214255a7f2939fd232c0f7b743da5ea32fe5d1cf6d7ed299769b"
+    },
+    "ArrivalsSeqCorrespondence": {
+      "source_sha256": "c0e2ad28732313e41532ec5481adc9df889d5f18c4ad229d82999750fe34178f",
+      "vo_sha256": "1205257f0cc378a40f94b8426bcf9224d89d187f01b43d97e618fb18ef04cd72"
+    },
+    "JitterSvcBaseAdapter": {
+      "source_sha256": "dc743cdbd35480507965f00ac064a6b52d09bea6c3c46650aac3568f4f064498",
+      "vo_sha256": "f271aa606682fa04b61f9f660b7c88bf49bb9dd0d5f0f8c3014d7039b6ee555a"
+    },
+    "JitterSvcNatBoolOperations": {
+      "source_sha256": "029c21066d6dbc75ddecfaf5e7fdecfc664b88c7d638ed1b816365a3f97835ef",
+      "vo_sha256": "366a9ab966ad90d0531ad566e9134a83e608d14307a307ec07b1c15ac2341a7b"
+    },
+    "JitterSvcIntervalOperations": {
+      "source_sha256": "4b8b99f0d5881c810379cd6b1ea503c77c7d5e85a4ab9f5315bda1aa10f0dd69",
+      "vo_sha256": "83329bdca133350e238658e3117f629323fc6d401375b2d6b5aed21e12a41ff5"
+    },
+    "JitterSvcScheduleOperations": {
+      "source_sha256": "6808341cb2d56f5d4961f33d4ea03b036cd82b9cec789c7d5b1d16ce00733c2a",
+      "vo_sha256": "690ad7cf52f195f45f1e4d5633258c942ba4717a06bb4a71dc5fcb20a133ebf0"
+    },
+    "JitterSvcJobOperations": {
+      "source_sha256": "0deebe88364169fb80b3cac4441827a4480ebc6ba48df682decb2d7de7eb1233",
+      "vo_sha256": "161f271f0f4bfc56ede1a98a3c2e49da4a5678d65f2eae428b8b1b9915332771"
+    },
+    "FactsCompletionCorrespondence": {
+      "source_sha256": "bef13c3813c69daa764f38d10ebe637ce7b5c667ae7ecfd0da91c90329bb53f9",
+      "vo_sha256": "ffa78c8686caaec65ea6bd5c29eb7d7b98b969d5cd3232a0709d43689d6eab5d"
+    },
+    "FactsCompletionAssumptionAudit": {
+      "source_sha256": "2dc0492e551f1c8722324ff577e457a66996a5bd209463297a769b1f368b50ab",
+      "vo_sha256": "8c28cc84ae3a483f470178a731b310b735df09b1e4a208623a2eeaae4da9b3c3"
+    }
+  },
+  "declarations": [
+    {
+      "source_declaration": "prosa.analysis.facts.behavior.completion.completion_monotonic",
+      "lean_declaration": "Prosa.Analysis.Facts.Behavior.Completion.completion_monotonic",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "completion_monotonic_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.behavior.completion.incompletion_monotonic",
+      "lean_declaration": "Prosa.Analysis.Facts.Behavior.Completion.incompletion_monotonic",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "incompletion_monotonic_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.behavior.completion.less_service_than_cost_is_incomplete",
+      "lean_declaration": "Prosa.Analysis.Facts.Behavior.Completion.less_service_than_cost_is_incomplete",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "less_service_than_cost_is_incomplete_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.behavior.completion.incomplete_is_positive_remaining_cost",
+      "lean_declaration": "Prosa.Analysis.Facts.Behavior.Completion.incomplete_is_positive_remaining_cost",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "incomplete_is_positive_remaining_cost_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.behavior.completion.incomplete_implies_positive_cost",
+      "lean_declaration": "Prosa.Analysis.Facts.Behavior.Completion.incomplete_implies_positive_cost",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "incomplete_implies_positive_cost_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.behavior.completion.scheduled_implies_positive_cost",
+      "lean_declaration": "Prosa.Analysis.Facts.Behavior.Completion.scheduled_implies_positive_cost",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "scheduled_implies_positive_cost_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.behavior.completion.service_lt_cost",
+      "lean_declaration": "Prosa.Analysis.Facts.Behavior.Completion.service_lt_cost",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "service_lt_cost_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.behavior.completion.completed_on_arrival_implies_zero_cost",
+      "lean_declaration": "Prosa.Analysis.Facts.Behavior.Completion.completed_on_arrival_implies_zero_cost",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "completed_on_arrival_implies_zero_cost_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.behavior.completion.serviced_implies_positive_remaining_cost",
+      "lean_declaration": "Prosa.Analysis.Facts.Behavior.Completion.serviced_implies_positive_remaining_cost",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "serviced_implies_positive_remaining_cost_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.behavior.completion.scheduled_implies_serviced",
+      "lean_declaration": "Prosa.Analysis.Facts.Behavior.Completion.scheduled_implies_serviced",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "scheduled_implies_serviced_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.behavior.completion.scheduled_implies_positive_remaining_cost",
+      "lean_declaration": "Prosa.Analysis.Facts.Behavior.Completion.scheduled_implies_positive_remaining_cost",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "scheduled_implies_positive_remaining_cost_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.behavior.completion.scheduled_implies_not_completed",
+      "lean_declaration": "Prosa.Analysis.Facts.Behavior.Completion.scheduled_implies_not_completed",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "scheduled_implies_not_completed_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.behavior.completion.not_scheduled_remains_incomplete",
+      "lean_declaration": "Prosa.Analysis.Facts.Behavior.Completion.not_scheduled_remains_incomplete",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "not_scheduled_remains_incomplete_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.behavior.completion.completed_implies_not_scheduled",
+      "lean_declaration": "Prosa.Analysis.Facts.Behavior.Completion.completed_implies_not_scheduled",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "completed_implies_not_scheduled_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.behavior.completion.not_pending_earlier_and_at_0",
+      "lean_declaration": "Prosa.Analysis.Facts.Behavior.Completion.not_pending_earlier_and_at_0",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "not_pending_earlier_and_at_0_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.behavior.completion.unit_service",
+      "lean_declaration": "Prosa.Analysis.Facts.Behavior.Completion.unit_service",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "unit_service_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.behavior.completion.service_at_most_cost",
+      "lean_declaration": "Prosa.Analysis.Facts.Behavior.Completion.service_at_most_cost",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "service_at_most_cost_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.behavior.completion.service_cost_invariant",
+      "lean_declaration": "Prosa.Analysis.Facts.Behavior.Completion.service_cost_invariant",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "service_cost_invariant_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.behavior.completion.cumulative_service_le_job_cost",
+      "lean_declaration": "Prosa.Analysis.Facts.Behavior.Completion.cumulative_service_le_job_cost",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "cumulative_service_le_job_cost_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.behavior.completion.job_doesnt_complete_before_remaining_cost",
+      "lean_declaration": "Prosa.Analysis.Facts.Behavior.Completion.job_doesnt_complete_before_remaining_cost",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "job_doesnt_complete_before_remaining_cost_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.behavior.completion.has_arrived_scheduled",
+      "lean_declaration": "Prosa.Analysis.Facts.Behavior.Completion.has_arrived_scheduled",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "has_arrived_scheduled_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.behavior.completion.scheduled_implies_pending",
+      "lean_declaration": "Prosa.Analysis.Facts.Behavior.Completion.scheduled_implies_pending",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "scheduled_implies_pending_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.behavior.completion.completed_implies_scheduled_before",
+      "lean_declaration": "Prosa.Analysis.Facts.Behavior.Completion.completed_implies_scheduled_before",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "completed_implies_scheduled_before_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.behavior.completion.job_pending_at_arrival",
+      "lean_declaration": "Prosa.Analysis.Facts.Behavior.Completion.job_pending_at_arrival",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "job_pending_at_arrival_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.behavior.completion.ready_implies_incomplete",
+      "lean_declaration": "Prosa.Analysis.Facts.Behavior.Completion.ready_implies_incomplete",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "ready_implies_incomplete_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.behavior.completion.completed_jobs_are_not_ready",
+      "lean_declaration": "Prosa.Analysis.Facts.Behavior.Completion.completed_jobs_are_not_ready",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "completed_jobs_are_not_ready_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.behavior.completion.valid_schedule_implies_completed_jobs_dont_execute",
+      "lean_declaration": "Prosa.Analysis.Facts.Behavior.Completion.valid_schedule_implies_completed_jobs_dont_execute",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "valid_schedule_implies_completed_jobs_dont_execute_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.behavior.completion.ideal_progress_completed_jobs",
+      "lean_declaration": "Prosa.Analysis.Facts.Behavior.Completion.ideal_progress_completed_jobs",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "ideal_progress_completed_jobs_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.behavior.completion.identical_prefix_completed_by",
+      "lean_declaration": "Prosa.Analysis.Facts.Behavior.Completion.identical_prefix_completed_by",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "identical_prefix_completed_by_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.behavior.completion.identical_prefix_pending",
+      "lean_declaration": "Prosa.Analysis.Facts.Behavior.Completion.identical_prefix_pending",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "identical_prefix_pending_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    }
+  ],
+  "acceptance": "ACCEPTED_V06_FILE"
+}

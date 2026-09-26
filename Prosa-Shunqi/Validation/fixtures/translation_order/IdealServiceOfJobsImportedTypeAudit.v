@@ -1,0 +1,5 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedIdealServiceOfJobs.
+
+Check ImportedIdealServiceOfJobs.Prosa_Analysis_Facts_Model_Ideal_ServiceOfJobs_low_service_implies_existence_of_idle_time_rs.
+Check ImportedIdealServiceOfJobs.Prosa_Analysis_Facts_Model_Ideal_ServiceOfJobs_low_service_implies_existence_of_idle_time.

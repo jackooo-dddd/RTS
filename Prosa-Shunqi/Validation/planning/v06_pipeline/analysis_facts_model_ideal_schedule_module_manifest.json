@@ -1,0 +1,400 @@
+{
+  "slice": "TRANSLATION_ORDER_ANALYSIS_FACTS_MODEL_IDEAL_SCHEDULE",
+  "generated_at": "2026-09-26T11:39:40.046287+08:00",
+  "published_at": "2026-09-26T11:39:40.046287+08:00",
+  "rank": 123,
+  "layer": 15,
+  "source_file": "analysis/facts/model/ideal/schedule.v",
+  "source_commit": "414e66760333eaa4ef78c685bcf53291c527a548",
+  "source_tree": "7d7e94c731f7eefde4ca738310d4cafdd7bebdf0",
+  "source_file_sha256": "60ed3e5e01ca2a25c7712413df9941706d5408c65def0e98fabeef5ca4e802b5",
+  "pipeline": "Validation/scripts/translation_file_pipeline.py",
+  "spec": "Validation/tooling/file_specs/analysis_facts_model_ideal_schedule.json",
+  "spec_sha256": "01c40cf3c30f1976c6853e04d68d4ed425745308edc89e25ab13aada1f20a9c9",
+  "source_compatibility": {
+    "mode": "extract",
+    "note": "theorem statements from the authoritative elaborated types (proofs omitted); the proof-heavy facts/behavior/service and facts/model/scheduled imports are dropped (the statements mention only behavior, the ideal processor, platform properties, supply and model/schedule/scheduled); model/processor/ideal.v is compiled from the pinned file with its accepted proof-only Rocq 9.3 patch",
+    "extracted_sha256": "9d774c0b78f2ea0bf468b5a4846b185077102657624252aaf1e1ea18781969d4",
+    "extraction_metadata_sha256": "b6fe678e039672406db8b8444d863c0270ab276546c4e3f70648ef2d4bdc9add"
+  },
+  "source_type_evidence": {
+    "prosa.analysis.facts.model.ideal.schedule.ideal_proc_model_is_a_uniprocessor_model": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.model.ideal.schedule.service_in_service_on": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.model.ideal.schedule.service_in_def": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.model.ideal.schedule.ideal_proc_model_ensures_ideal_progress": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.model.ideal.schedule.ideal_proc_model_provides_unit_service": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.model.ideal.schedule.ideal_proc_model_provides_unit_supply": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.model.ideal.schedule.scheduled_in_def": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.model.ideal.schedule.scheduled_at_def": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.model.ideal.schedule.service_on_def": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.model.ideal.schedule.service_at_def": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.model.ideal.schedule.service_in_is_scheduled_in": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.model.ideal.schedule.service_at_is_scheduled_at": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.model.ideal.schedule.ideal_proc_model_fully_consuming": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.model.ideal.schedule.ideal_proc_has_supply": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.model.ideal.schedule.ideal_proc_model_sched_case_analysis": "TYPE_EQUAL_MODULO_EXISTS_PARENS",
+    "prosa.analysis.facts.model.ideal.schedule.ideal_sched_implies_not_idle": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.model.ideal.schedule.ideal_not_idle_implies_sched": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.model.ideal.schedule.scheduled_job_at_def": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.model.ideal.schedule.is_idle_def": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE"
+  },
+  "statement_only_export_boundary": [
+    "Prosa.Analysis.Facts.Model.Ideal.Schedule.ideal_proc_model_is_a_uniprocessor_model",
+    "Prosa.Analysis.Facts.Model.Ideal.Schedule.service_in_service_on",
+    "Prosa.Analysis.Facts.Model.Ideal.Schedule.service_in_def",
+    "Prosa.Analysis.Facts.Model.Ideal.Schedule.ideal_proc_model_ensures_ideal_progress",
+    "Prosa.Analysis.Facts.Model.Ideal.Schedule.ideal_proc_model_provides_unit_service",
+    "Prosa.Analysis.Facts.Model.Ideal.Schedule.ideal_proc_model_provides_unit_supply",
+    "Prosa.Analysis.Facts.Model.Ideal.Schedule.scheduled_in_def",
+    "Prosa.Analysis.Facts.Model.Ideal.Schedule.scheduled_at_def",
+    "Prosa.Analysis.Facts.Model.Ideal.Schedule.service_on_def",
+    "Prosa.Analysis.Facts.Model.Ideal.Schedule.service_at_def",
+    "Prosa.Analysis.Facts.Model.Ideal.Schedule.service_in_is_scheduled_in",
+    "Prosa.Analysis.Facts.Model.Ideal.Schedule.service_at_is_scheduled_at",
+    "Prosa.Analysis.Facts.Model.Ideal.Schedule.ideal_proc_model_fully_consuming",
+    "Prosa.Analysis.Facts.Model.Ideal.Schedule.ideal_proc_has_supply",
+    "Prosa.Analysis.Facts.Model.Ideal.Schedule.ideal_proc_model_sched_case_analysis",
+    "Prosa.Analysis.Facts.Model.Ideal.Schedule.ideal_sched_implies_not_idle",
+    "Prosa.Analysis.Facts.Model.Ideal.Schedule.ideal_not_idle_implies_sched",
+    "Prosa.Analysis.Facts.Model.Ideal.Schedule.scheduled_job_at_def",
+    "Prosa.Analysis.Facts.Model.Ideal.Schedule.is_idle_def"
+  ],
+  "input_relations": [
+    "the processor model is fixed to the ideal uniprocessor on both sides; states related by the constructor-preserving Option map",
+    "ArJobArrivalRel (as SvcJobArrivalRel)",
+    "ArArrivalSequenceRel"
+  ],
+  "coverage_for_inner_binders": [
+    "ideal schedules (both directions, functional through the Option map)",
+    "ideal states (both directions)",
+    "the unit core (both directions)",
+    "jobs (identity carrier)",
+    "instants (both directions)",
+    "job-arrival classes (accepted import/export totals)",
+    "arrival sequences (both directions)"
+  ],
+  "lean_representation_note": "Booleans in Prop position are `= true`; `s == Some j` is `decide (s = some j)` (decided as on `Option Job` through the named instance `idealStateDecidableEqSome`, since the ideal state carrier is not instance-reducible); `nat_of_bool b` is `b.toNat`; `tt` is `()`; `~ P` is `\u00ac P`",
+  "export_size": {
+    "lines": 131271,
+    "soft_budget_flag": "OVER_100K_DIAGNOSED",
+    "diagnosis": "the accepted Service/Schedule interface closure (~120k lines in earlier accepted files) plus the ideal processor, supply and scheduled-job definitions and nineteen statement-only facts"
+  },
+  "file_dependencies": {
+    "analysis/facts/behavior/service.v": "analysis_facts_behavior_service_module_status.json",
+    "analysis/facts/model/scheduled.v": "analysis_facts_model_scheduled_module_status.json",
+    "model/processor/ideal.v": "model_processor_ideal_module_status.json",
+    "model/processor/platform_properties.v": "model_processor_platform_properties_module_status.json",
+    "util/all.v": "util_all_module_status.json"
+  },
+  "production_file": "Prosa/Analysis/Facts/Model/Ideal/Schedule.lean",
+  "production_source_sha256": "8120c6c5d43735161995c9e579c6a74ed1cd2f5645607d3fd01b3b845593635f",
+  "production_olean_sha256": "7cd8f4a910b83c0dd87da9082568cb49897841477f4e9ef4668f82814a3843c4",
+  "export_config_sha256": "c6571463533382be67939af1634d0721e56cf801eb40773f604d12f05565085c",
+  "export_sha256": "a96b671f21819006db85084a481a0a4ec5bb9342e3b1efc45c0fc1f4675a7a14",
+  "export_lines": 131271,
+  "export_bytes": 2932810,
+  "import_sha256": "46c0207b2acc1df5cc9c270d445003bd03421a390e95fdef7eba878e5015feea",
+  "source_vo_sha256": "fc7a697fceff497632a6ce3f1dc395774bafee24d2951dd21a086ba25d60523b",
+  "lean_axiom_summary_sha256": "963319d80494afc5f66511a1322a4a311868a4180d40b370c387b348fdb12845",
+  "rocq_assumption_summary_sha256": "a08acd8ad27368661f81a594874fedb62d391ad4c1001e37910095b510f138f6",
+  "assumption_config_sha256": "7a721611e8c9e14bf26408d8c9dcfed9cb7e7884e568741b58effaa3c204ca05",
+  "stage_timing_seconds": {
+    "source_acquisition": {
+      "mode": "FRESH",
+      "seconds": 5
+    },
+    "lean_build": {
+      "mode": "FRESH",
+      "seconds": 561
+    },
+    "export": {
+      "mode": "FRESH",
+      "seconds": 64
+    },
+    "rocq_import": {
+      "mode": "FRESH",
+      "seconds": 63
+    },
+    "certificate_compile": {
+      "mode": "FRESH",
+      "seconds": 23
+    },
+    "assumption_audit": {
+      "mode": "FRESH",
+      "seconds": 0
+    }
+  },
+  "certificates": {
+    "ArrivalsSeqBaseAdapter": {
+      "source_sha256": "c5e39f80854711e62275570acf7a7cd7bd132d1374dfd6dd17a68d74448b896d",
+      "vo_sha256": "02a1b7a97d07a32b73bdcc64d04e2f5bdf1599e4fbbb864a147566a749abae85"
+    },
+    "ArrivalsSeqOperations": {
+      "source_sha256": "ee019c452c6342579afab38a135c8d3f37358e8f8be4373d6f3520f785477ba2",
+      "vo_sha256": "de74a73d7d4fb335504912a639906f3eb49cd0b254946176a878ab72b5d884c3"
+    },
+    "ArrivalsSeqCorrespondence": {
+      "source_sha256": "e814533ebe953000014b308f59f6a2312e024152c387a31939b4ee2ea7af60be",
+      "vo_sha256": "f4c386afab9ef3ebfe79b5bde21dd1fb8153a0b52a1406655695b7072b6f8814"
+    },
+    "JitterSvcBaseAdapter": {
+      "source_sha256": "32bb8be482ae9db15af07ea98b54dcbe634a0d751213f0728d33aaebc2d12fa9",
+      "vo_sha256": "cd722082fc17d93a44518ed14439220a3fbbb44eea46d522f23e93500554e95b"
+    },
+    "JitterSvcNatBoolOperations": {
+      "source_sha256": "18a109b825abcd46db1f6229f75a30c48c4bc726c78d5a8031ba872bd1075ac8",
+      "vo_sha256": "bf0fcf6120bbb83908d93da427d5babf8e06120bea45b62e80b5a80298477452"
+    },
+    "JitterSvcIntervalOperations": {
+      "source_sha256": "e937ab9f817420b266b76d6bcc74f14275bdd08b3bd7ad0efe4a2b07f1e510e4",
+      "vo_sha256": "383d678b5314b758495e12312613716e489ab8477d9523da5a97e52cd8bfc927"
+    },
+    "JitterSvcScheduleOperations": {
+      "source_sha256": "c970e0d260a5f91030c5324aee446025b34727953d820f105b5a39187dd06ce7",
+      "vo_sha256": "1d7313c1dcd71211b3880e055728802463a14c9a92da5e910ce93f6fbc9229c5"
+    },
+    "JitterSvcJobOperations": {
+      "source_sha256": "906fbfa57976d884eefa5cfeb16c0cac3673960814135b33e3a9cfbab03a6008",
+      "vo_sha256": "4469d39e41c05dd45b5031e4d7a7b3f20ce181d60272878433917362c39acae3"
+    },
+    "IdealScheduleCorrespondence": {
+      "source_sha256": "88d3dfffad0bd4e5bc20ac4df3c2b2d2bb158bc3562b117a975869a5918681de",
+      "vo_sha256": "c122ceb541adf8035b8545bcedfd92f2fba5efd485cc3cf1b3754d929afb57f3"
+    },
+    "IdealScheduleAssumptionAudit": {
+      "source_sha256": "0e0d956a7ddfd18d6228e73b04817105a2b58369029e152b72ebb89c13ffeca6",
+      "vo_sha256": "86fd8a166727ec43f8a3897304a4189c46743bd20e4b52847a221cc21f9ea518"
+    }
+  },
+  "declarations": [
+    {
+      "source_declaration": "prosa.analysis.facts.model.ideal.schedule.ideal_proc_model_is_a_uniprocessor_model",
+      "lean_declaration": "Prosa.Analysis.Facts.Model.Ideal.Schedule.ideal_proc_model_is_a_uniprocessor_model",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "ideal_proc_model_is_a_uniprocessor_model_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.model.ideal.schedule.service_in_service_on",
+      "lean_declaration": "Prosa.Analysis.Facts.Model.Ideal.Schedule.service_in_service_on",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "service_in_service_on_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.model.ideal.schedule.service_in_def",
+      "lean_declaration": "Prosa.Analysis.Facts.Model.Ideal.Schedule.service_in_def",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "service_in_def_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.model.ideal.schedule.ideal_proc_model_ensures_ideal_progress",
+      "lean_declaration": "Prosa.Analysis.Facts.Model.Ideal.Schedule.ideal_proc_model_ensures_ideal_progress",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "ideal_proc_model_ensures_ideal_progress_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.model.ideal.schedule.ideal_proc_model_provides_unit_service",
+      "lean_declaration": "Prosa.Analysis.Facts.Model.Ideal.Schedule.ideal_proc_model_provides_unit_service",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "ideal_proc_model_provides_unit_service_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.model.ideal.schedule.ideal_proc_model_provides_unit_supply",
+      "lean_declaration": "Prosa.Analysis.Facts.Model.Ideal.Schedule.ideal_proc_model_provides_unit_supply",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "ideal_proc_model_provides_unit_supply_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.model.ideal.schedule.scheduled_in_def",
+      "lean_declaration": "Prosa.Analysis.Facts.Model.Ideal.Schedule.scheduled_in_def",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "scheduled_in_def_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.model.ideal.schedule.scheduled_at_def",
+      "lean_declaration": "Prosa.Analysis.Facts.Model.Ideal.Schedule.scheduled_at_def",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "scheduled_at_def_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.model.ideal.schedule.service_on_def",
+      "lean_declaration": "Prosa.Analysis.Facts.Model.Ideal.Schedule.service_on_def",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "service_on_def_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.model.ideal.schedule.service_at_def",
+      "lean_declaration": "Prosa.Analysis.Facts.Model.Ideal.Schedule.service_at_def",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "service_at_def_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.model.ideal.schedule.service_in_is_scheduled_in",
+      "lean_declaration": "Prosa.Analysis.Facts.Model.Ideal.Schedule.service_in_is_scheduled_in",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "service_in_is_scheduled_in_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.model.ideal.schedule.service_at_is_scheduled_at",
+      "lean_declaration": "Prosa.Analysis.Facts.Model.Ideal.Schedule.service_at_is_scheduled_at",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "service_at_is_scheduled_at_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.model.ideal.schedule.ideal_proc_model_fully_consuming",
+      "lean_declaration": "Prosa.Analysis.Facts.Model.Ideal.Schedule.ideal_proc_model_fully_consuming",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "ideal_proc_model_fully_consuming_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.model.ideal.schedule.ideal_proc_has_supply",
+      "lean_declaration": "Prosa.Analysis.Facts.Model.Ideal.Schedule.ideal_proc_has_supply",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "ideal_proc_has_supply_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.model.ideal.schedule.ideal_proc_model_sched_case_analysis",
+      "lean_declaration": "Prosa.Analysis.Facts.Model.Ideal.Schedule.ideal_proc_model_sched_case_analysis",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "ideal_proc_model_sched_case_analysis_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.model.ideal.schedule.ideal_sched_implies_not_idle",
+      "lean_declaration": "Prosa.Analysis.Facts.Model.Ideal.Schedule.ideal_sched_implies_not_idle",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "ideal_sched_implies_not_idle_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.model.ideal.schedule.ideal_not_idle_implies_sched",
+      "lean_declaration": "Prosa.Analysis.Facts.Model.Ideal.Schedule.ideal_not_idle_implies_sched",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "ideal_not_idle_implies_sched_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.model.ideal.schedule.scheduled_job_at_def",
+      "lean_declaration": "Prosa.Analysis.Facts.Model.Ideal.Schedule.scheduled_job_at_def",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "scheduled_job_at_def_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.model.ideal.schedule.is_idle_def",
+      "lean_declaration": "Prosa.Analysis.Facts.Model.Ideal.Schedule.is_idle_def",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "is_idle_def_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    }
+  ],
+  "acceptance": "ACCEPTED_V06_FILE"
+}

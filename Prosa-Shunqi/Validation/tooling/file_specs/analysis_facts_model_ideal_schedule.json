@@ -1,0 +1,144 @@
+{
+  "rank": 123,
+  "layer": 15,
+  "tag": "IDSC",
+  "slug": "analysis_facts_model_ideal_schedule",
+  "source": "analysis/facts/model/ideal/schedule.v",
+  "dependencies": [
+    "analysis/facts/behavior/service.v",
+    "analysis/facts/model/scheduled.v",
+    "model/processor/ideal.v",
+    "model/processor/platform_properties.v",
+    "util/all.v"
+  ],
+  "declaration_count": 19,
+  "base_run": "analysis_facts_behavior_completion_final",
+  "base_checks": [
+    {
+      "manifest": "analysis_facts_behavior_completion",
+      "olean": "Prosa/Analysis/Facts/Behavior/Completion.olean",
+      "vo": "FactsCompletionSemanticSource.vo"
+    }
+  ],
+  "extra_pinned_sources": [
+    "model/processor/ideal.v"
+  ],
+  "extra_lean": [
+    [
+      "Prosa/Model/Processor/Ideal.lean",
+      "Prosa/Model/Processor/Ideal.olean",
+      "model_processor_ideal",
+      "production_olean_sha256"
+    ]
+  ],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "IdealScheduleSemanticSource",
+    "drop_imports": [
+      "Require Export prosa.analysis.facts.behavior.service.",
+      "Require Export prosa.analysis.facts.model.scheduled."
+    ],
+    "add_imports": [
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq fintype bigop.",
+      "Require Import prosa.behavior.all prosa.model.processor.platform_properties prosa.model.processor.supply prosa.model.processor.ideal prosa.model.schedule.scheduled."
+    ],
+    "note": "theorem statements from the authoritative elaborated types (proofs omitted); the proof-heavy facts/behavior/service and facts/model/scheduled imports are dropped (the statements mention only behavior, the ideal processor, platform properties, supply and model/schedule/scheduled); model/processor/ideal.v is compiled from the pinned file with its accepted proof-only Rocq 9.3 patch"
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/IdealScheduleStatementProbe.v",
+  "production": "Prosa/Analysis/Facts/Model/Ideal/Schedule.lean",
+  "production_olean": "Prosa/Analysis/Facts/Model/Ideal/Schedule.olean",
+  "lean_namespace": "Prosa.Analysis.Facts.Model.Ideal.Schedule",
+  "fixtures": [
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "ScheduledComputationInterface",
+    "IdealScheduleComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/IdealScheduleLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/analysis_facts_model_ideal_schedule_export_config.json",
+  "export_name": "IdealSchedule",
+  "cert_dir": "certificates/analysis_facts_model_ideal_schedule",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "JitterSvcBaseAdapter",
+    "JitterSvcNatBoolOperations",
+    "JitterSvcIntervalOperations",
+    "JitterSvcScheduleOperations",
+    "JitterSvcJobOperations",
+    "IdealScheduleCorrespondence"
+  ],
+  "audit_module": "IdealScheduleAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/IdealScheduleImportedTypeAudit.v",
+  "assumption_config": "certificates/analysis_facts_model_ideal_schedule/ideal_schedule_assumption_config.json",
+  "lean_axiom_config": "certificates/analysis_facts_model_ideal_schedule/ideal_schedule_lean_axiom_config.json",
+  "computational": [],
+  "principal": {},
+  "helpers": [
+    "id_forall_cover_sprop",
+    "id_lean_transport",
+    "id_nat_input",
+    "id_bool_eq_correspondence",
+    "id_nat_eq_correspondence",
+    "id_or_correspondence",
+    "id_not_correspondence",
+    "id_exists_identity_correspondence",
+    "id_eq_identity_correspondence",
+    "id_nat_of_bool_related",
+    "id_opt_source_roundtrip",
+    "id_opt_target_roundtrip",
+    "id_opt_rel_canonical",
+    "id_opt_rel_surjective",
+    "id_opt_eq_correspondence",
+    "id_option_some_eq_correspondence",
+    "id_option_none_eq_related",
+    "id_src_scheduled_on",
+    "id_src_scheduled_in",
+    "id_src_service_in",
+    "id_src_supply_in",
+    "id_scheduled_in_related",
+    "id_decide_state_related",
+    "id_service_on_related",
+    "id_service_in_related",
+    "id_supply_in_related",
+    "id_core_rel_surjective",
+    "id_schedule_to_target_rel",
+    "id_schedule_to_source_rel",
+    "id_scheduled_at_related",
+    "id_service_at_related",
+    "id_supply_at_related",
+    "id_ideal_is_idle_related",
+    "id_scheduled_at_state_related",
+    "id_scheduled_jobs_at_related",
+    "id_scheduled_job_at_related",
+    "id_is_idle_related",
+    "id_jobs_come_from_related",
+    "id_jobs_must_arrive_related",
+    "id_arrival_sequence_to_source_rel"
+  ],
+  "previous_status": "analysis_facts_behavior_completion_module_status.json",
+  "previous_files": 121,
+  "previous_decls": 947,
+  "input_relations": [
+    "the processor model is fixed to the ideal uniprocessor on both sides; states related by the constructor-preserving Option map",
+    "ArJobArrivalRel (as SvcJobArrivalRel)",
+    "ArArrivalSequenceRel"
+  ],
+  "coverage_for_inner_binders": [
+    "ideal schedules (both directions, functional through the Option map)",
+    "ideal states (both directions)",
+    "the unit core (both directions)",
+    "jobs (identity carrier)",
+    "instants (both directions)",
+    "job-arrival classes (accepted import/export totals)",
+    "arrival sequences (both directions)"
+  ],
+  "lean_representation_note": "Booleans in Prop position are `= true`; `s == Some j` is `decide (s = some j)` (decided as on `Option Job` through the named instance `idealStateDecidableEqSome`, since the ideal state carrier is not instance-reducible); `nat_of_bool b` is `b.toNat`; `tt` is `()`; `~ P` is `\u00ac P`",
+  "export_diagnosis": "the accepted Service/Schedule interface closure (~120k lines in earlier accepted files) plus the ideal processor, supply and scheduled-job definitions and nineteen statement-only facts",
+  "extra_source_patches": [
+    "patches/prosa-v06-rocq93-model-processor-ideal.patch"
+  ]
+}

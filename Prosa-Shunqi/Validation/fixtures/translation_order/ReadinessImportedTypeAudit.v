@@ -1,0 +1,6 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedReadiness.
+
+Check ImportedReadiness.Prosa_Analysis_Definitions_Readiness_nonclairvoyant_readiness.
+Check ImportedReadiness.Prosa_Analysis_Definitions_Readiness_valid_nonpreemptive_readiness.
+Check ImportedReadiness.Prosa_Analysis_Definitions_Readiness_sequential_readiness.

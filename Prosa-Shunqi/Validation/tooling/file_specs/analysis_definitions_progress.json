@@ -1,0 +1,85 @@
+{
+  "rank": 120,
+  "layer": 15,
+  "tag": "PROG",
+  "slug": "analysis_definitions_progress",
+  "source": "analysis/definitions/progress.v",
+  "dependencies": [
+    "analysis/facts/behavior/service.v"
+  ],
+  "declaration_count": 4,
+  "base_run": "analysis_facts_behavior_service_final",
+  "base_checks": [
+    {
+      "manifest": "analysis_facts_behavior_service",
+      "olean": "Prosa/Analysis/Facts/Behavior/Service.olean",
+      "vo": "FactsServiceSemanticSource.vo"
+    }
+  ],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "ProgressSemanticSource",
+    "drop_imports": [
+      "Require Export prosa.analysis.facts.behavior.service."
+    ],
+    "add_imports": [
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat.",
+      "Require Import prosa.behavior.service."
+    ],
+    "local_bindings": [
+      "no_progress=no_progress sched j"
+    ],
+    "note": "the three definitions are byte-identical computational blocks and the lemma statement is the authoritative elaborated type (proof omitted); the proof-heavy facts/behavior/service import is dropped (only behavior/service is mentioned) and the MathComp notation modules are imported; the Section variables sched/j, implicit in the use of no_progress inside no_progress_for, are reconnected by a recorded local notation"
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/ProgressStatementProbe.v",
+  "production": "Prosa/Analysis/Definitions/Progress.lean",
+  "production_olean": "Prosa/Analysis/Definitions/Progress.olean",
+  "lean_namespace": "Prosa.Analysis.Definitions.Progress",
+  "fixtures": [
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "ProgressComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/ProgressLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/analysis_definitions_progress_export_config.json",
+  "export_name": "Progress",
+  "cert_dir": "certificates/analysis_definitions_progress",
+  "chain": [
+    "JitterSvcBaseAdapter",
+    "JitterSvcNatBoolOperations",
+    "JitterSvcIntervalOperations",
+    "JitterSvcScheduleOperations",
+    "ProgressCorrespondence"
+  ],
+  "audit_module": "ProgressAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/ProgressImportedTypeAudit.v",
+  "assumption_config": "certificates/analysis_definitions_progress/progress_assumption_config.json",
+  "lean_axiom_config": "certificates/analysis_definitions_progress/progress_lean_axiom_config.json",
+  "computational": [
+    "job_has_progressed",
+    "no_progress",
+    "no_progress_for"
+  ],
+  "principal": {},
+  "helpers": [
+    "pg_imp_correspondence",
+    "pg_forall_nat_correspondence",
+    "pg_forall_identity_correspondence",
+    "pg_iff_correspondence",
+    "pg_service_at_related",
+    "pg_service_related"
+  ],
+  "previous_status": "analysis_definitions_interference_module_status.json",
+  "previous_files": 118,
+  "previous_decls": 910,
+  "input_relations": [
+    "SvcProcessorStateRel + SvcScheduleRel (two-sided)",
+    "SubNatRel on instants"
+  ],
+  "coverage_for_inner_binders": [
+    "jobs (identity carrier)",
+    "Nats (both directions)"
+  ],
+  "lean_representation_note": "`a < b`, `a == b` Booleans are `decide`; `~~ b` is `!b`; Booleans in Prop position are `= true`; the section's unused JobCost context is absent",
+  "export_diagnosis": "the accepted Service/Schedule interface closure (~120k lines in earlier accepted files) plus four declarations"
+}

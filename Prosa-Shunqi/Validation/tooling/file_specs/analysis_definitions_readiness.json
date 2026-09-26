@@ -1,0 +1,131 @@
+{
+  "rank": 121,
+  "layer": 15,
+  "tag": "RDNS",
+  "slug": "analysis_definitions_readiness",
+  "source": "analysis/definitions/readiness.v",
+  "dependencies": [
+    "analysis/definitions/schedule_prefix.v",
+    "behavior/ready.v",
+    "model/preemption/parameter.v",
+    "model/priority/classes.v",
+    "model/task/sequentiality.v"
+  ],
+  "declaration_count": 3,
+  "base_run": "model_preemption_parameter_final",
+  "base_checks": [
+    {
+      "manifest": "model_preemption_parameter",
+      "olean": "Prosa/Model/Preemption/Parameter.olean"
+    },
+    {
+      "manifest": "model_priority_classes",
+      "olean": "Prosa/Model/Priority/Classes.olean",
+      "vo": "model/priority/classes.vo",
+      "vo_key": "official_source_vo_sha256"
+    }
+  ],
+  "extra_pinned_sources": [
+    "analysis/definitions/schedule_prefix.v",
+    "model/task/sequentiality.v"
+  ],
+  "extra_lean": [
+    [
+      "Prosa/Analysis/Definitions/SchedulePrefix.lean",
+      "Prosa/Analysis/Definitions/SchedulePrefix.olean",
+      "analysis_schedule_prefix",
+      "production_olean_sha256"
+    ],
+    [
+      "Prosa/Model/Task/Sequentiality.lean",
+      "Prosa/Model/Task/Sequentiality.olean",
+      "model_task_sequentiality",
+      "production_olean_sha256"
+    ]
+  ],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "ReadinessSemanticSource",
+    "drop_imports": [
+      "Require Export prosa.model.preemption.parameter."
+    ],
+    "add_imports": [
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq.",
+      "Require Import prosa.PreemptionParameterSemanticSource.",
+      "Import PreemptionParameterSemanticSource."
+    ],
+    "note": "the three definitions are byte-identical computational blocks; model/preemption/parameter.v is accepted through its extracted semantic source (byte-identical JobPreemptable class), which is imported in place of the official module; analysis/definitions/schedule_prefix.v and model/task/sequentiality.v are compiled from the pinned files; schedule_prefix.v carries the accepted proof-only Rocq 9.3 compatibility patch"
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/ReadinessStatementProbe.v",
+  "production": "Prosa/Analysis/Definitions/Readiness.lean",
+  "production_olean": "Prosa/Analysis/Definitions/Readiness.olean",
+  "lean_namespace": "Prosa.Analysis.Definitions.Readiness",
+  "fixtures": [
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ArrivalsComputationInterface",
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "ReadinessComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/ReadinessLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/analysis_definitions_readiness_export_config.json",
+  "export_name": "Readiness",
+  "cert_dir": "certificates/analysis_definitions_readiness",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "ArrivalsCorrespondence",
+    "JitterSvcBaseAdapter",
+    "JitterSvcNatBoolOperations",
+    "JitterSvcIntervalOperations",
+    "JitterSvcScheduleOperations",
+    "JitterSvcJobOperations",
+    "SequentialityCorrespondence",
+    "ReadinessCorrespondence"
+  ],
+  "audit_module": "ReadinessAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/ReadinessImportedTypeAudit.v",
+  "assumption_config": "certificates/analysis_definitions_readiness/readiness_assumption_config.json",
+  "lean_axiom_config": "certificates/analysis_definitions_readiness/readiness_lean_axiom_config.json",
+  "computational": [
+    "nonclairvoyant_readiness",
+    "valid_nonpreemptive_readiness",
+    "sequential_readiness"
+  ],
+  "principal": {},
+  "helpers": [
+    "rd_forall_cover_sprop",
+    "rd_lean_transport",
+    "rd_nat_input",
+    "rd_bool_eq_correspondence",
+    "rd_schedule_fun_to_svc",
+    "rd_schedule_to_target_rel",
+    "rd_schedule_to_source_rel",
+    "rd_state_eq_correspondence",
+    "rd_identical_prefix_correspondence",
+    "rd_service_at_related",
+    "rd_service_related"
+  ],
+  "previous_status": "analysis_definitions_progress_module_status.json",
+  "previous_files": 119,
+  "previous_decls": 914,
+  "input_relations": [
+    "JobReady pointwise on Booleans over related schedules",
+    "JobPreemptable pointwise (as in the accepted parameter certificate)",
+    "SvcProcessorStateRel; schedules functionally by the state conversion (two-way)",
+    "ArArrivalSequenceRel",
+    "ArJobArrivalRel, SvcJobCostRel, Lean.eq on job_task"
+  ],
+  "coverage_for_inner_binders": [
+    "schedules (both directions, functional)",
+    "jobs (identity carrier)",
+    "instants (both directions)"
+  ],
+  "lean_representation_note": "the readiness model is passed explicitly; `~~ b` is `!b`; Booleans in Prop position are `= true`; the Boolean readiness equality is Bool equality",
+  "export_diagnosis": "the accepted Service/Schedule interface closure (~120k lines in earlier accepted files) plus the arrival-sequence/task-arrival interfaces and three definitions",
+  "extra_source_patches": [
+    "patches/prosa-v06-rocq93-analysis-schedule-prefix.patch"
+  ]
+}

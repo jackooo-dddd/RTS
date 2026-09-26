@@ -3,7 +3,7 @@
 ## 当前状态
 
 <!-- V06_STATUS_BEGIN -->
-截至 2026-09-26，正式 machine state 记录 **114/357 个文件、877/2439 个 public declarations 已验收**。依据：[最新累计 status](../Validation/planning/v06_pipeline/model_priority_fifo_module_status.json)。表中的“是”仅表示已有 `ACCEPTED_V06_FILE`；“否”可能是未开始、进行中或受阻，不能据此推断尚未翻译。零声明文件也只有通过模块接口验收才写“是”。
+截至 2026-09-26，正式 machine state 记录 **122/357 个文件、966/2439 个 public declarations 已验收**。依据：[最新累计 status](../Validation/planning/v06_pipeline/analysis_facts_model_ideal_schedule_module_status.json)。表中的“是”仅表示已有 `ACCEPTED_V06_FILE`；“否”可能是未开始、进行中或受阻，不能据此推断尚未翻译。零声明文件也只有通过模块接口验收才写“是”。
 <!-- V06_STATUS_END -->
 
 <!-- V06_NAV_BEGIN -->
@@ -12,7 +12,7 @@
 
 | Progress | Latest completed | Quick navigation |
 |---|---|---|
-| **114/357 files** · **877/2439 declarations** | **Rank 112** · `model/preemption/parameter.v` | [🎯 Jump to latest completed](#latest-completed) · [✅ Finished](#finished-files) · [⏳ Unfinished](#unfinished-files) |
+| **122/357 files** · **966/2439 declarations** | **Rank 123** · `analysis/facts/model/ideal/schedule.v` | [🎯 Jump to latest completed](#latest-completed) · [✅ Finished](#finished-files) · [⏳ Unfinished](#unfinished-files) |
 
 </details>
 <!-- V06_NAV_END -->
@@ -36,7 +36,7 @@
 
 <!-- V06_FILE_TABLE_BEGIN -->
 <details open>
-<summary><b>✅ Finished — 114 files</b></summary>
+<summary><b>✅ Finished — 122 files</b></summary>
 
 <a id="finished-files"></a>
 
@@ -152,29 +152,29 @@
 | 109 | 14 | [`implementation/facts/maximal_arrival_sequence.v`](files/implementation/facts/2026-09-27_050000_maximal_arrival_sequence.md) | 14 | ✅ 是 | 09:26:07:30 |
 | 110 | 14 | [`model/aggregate/service_of_jobs.v`](files/model/aggregate/2026-09-27_070000_service_of_jobs.md) | 8 | ✅ 是 | 09:26:07:49 |
 | 111 | 14 | [`model/aggregate/workload.v`](files/model/aggregate/2026-09-27_080000_workload.md) | 8 | ✅ 是 | 09:26:07:57 |
-| 112 | 14 | <a id="latest-completed"></a>[`model/preemption/parameter.v`](files/model/preemption/2026-09-27_100000_parameter.md) | 14 | ✅ 是 | 09:26:08:35 |
+| 112 | 14 | [`model/preemption/parameter.v`](files/model/preemption/2026-09-27_100000_parameter.md) | 14 | ✅ 是 | 09:26:08:35 |
 | 113 | 14 | [`model/priority/deadline_monotonic.v`](files/model/priority/2026-09-27_103000_deadline_monotonic.md) | 4 | ✅ 是 | 09:26:08:35 |
 | 114 | 14 | [`model/priority/edf.v`](files/model/priority/2026-09-27_103100_edf.md) | 4 | ✅ 是 | 09:26:08:35 |
 | 115 | 14 | [`model/priority/fifo.v`](files/model/priority/2026-09-27_103200_fifo.md) | 4 | ✅ 是 | 09:26:08:35 |
+| 116 | 14 | [`model/priority/gel.v`](files/model/priority/2026-09-27_120000_gel.md) | 7 | ✅ 是 | 09:26:09:06 |
+| 117 | 14 | [`model/priority/numeric_fixed_priority.v`](files/model/priority/2026-09-27_130000_numeric_fixed_priority.md) | 7 | ✅ 是 | 09:26:09:13 |
+| 118 | 14 | [`model/priority/rate_monotonic.v`](files/model/priority/2026-09-27_130100_rate_monotonic.md) | 4 | ✅ 是 | 09:26:09:13 |
+| 119 | 15 | [`analysis/definitions/interference.v`](files/analysis/definitions/2026-09-27_140000_interference.md) | 15 | ✅ 是 | 09:26:09:14 |
+| 120 | 15 | [`analysis/definitions/progress.v`](files/analysis/definitions/2026-09-27_150000_progress.md) | 4 | ✅ 是 | 09:26:09:28 |
+| 121 | 15 | [`analysis/definitions/readiness.v`](files/analysis/definitions/2026-09-27_170000_readiness.md) | 3 | ✅ 是 | 09:26:09:48 |
+| 122 | 15 | [`analysis/facts/behavior/completion.v`](files/analysis/facts/behavior/2026-09-27_180000_completion.md) | 30 | ✅ 是 | 09:26:10:09 |
+| 123 | 15 | <a id="latest-completed"></a>[`analysis/facts/model/ideal/schedule.v`](files/analysis/facts/model/ideal/2026-09-27_190000_schedule.md) | 19 | ✅ 是 | 09:26:11:39 |
 
 </details>
 
 <details open>
-<summary><b>⏳ Unfinished — 243 files</b></summary>
+<summary><b>⏳ Unfinished — 235 files</b></summary>
 
 <a id="unfinished-files"></a>
 
 | Rank | Layer | v0.6 source file | Public declarations | 验证完成 |
 | ---: | ---: | --- | ---: | :---: |
 | 30 | 1 | [`util/lcmseq.v`](files/util/2026-09-23_073256_lcmseq.md) | 5 | ○ 否 |
-| 116 | 14 | `model/priority/gel.v` | 7 | ○ 否 |
-| 117 | 14 | `model/priority/numeric_fixed_priority.v` | 7 | ○ 否 |
-| 118 | 14 | `model/priority/rate_monotonic.v` | 4 | ○ 否 |
-| 119 | 15 | `analysis/definitions/interference.v` | 15 | ○ 否 |
-| 120 | 15 | `analysis/definitions/progress.v` | 4 | ○ 否 |
-| 121 | 15 | `analysis/definitions/readiness.v` | 3 | ○ 否 |
-| 122 | 15 | `analysis/facts/behavior/completion.v` | 30 | ○ 否 |
-| 123 | 15 | `analysis/facts/model/ideal/schedule.v` | 19 | ○ 否 |
 | 124 | 15 | `analysis/facts/model/ideal/service_of_jobs.v` | 2 | ○ 否 |
 | 125 | 15 | `analysis/facts/model/task_schedule.v` | 10 | ○ 否 |
 | 126 | 15 | `analysis/facts/model/workload.v` | 17 | ○ 否 |

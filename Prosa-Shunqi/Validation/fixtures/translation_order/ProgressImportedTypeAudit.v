@@ -1,0 +1,7 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedProgress.
+
+Check ImportedProgress.Prosa_Analysis_Definitions_Progress_job_has_progressed.
+Check ImportedProgress.Prosa_Analysis_Definitions_Progress_no_progress.
+Check ImportedProgress.Prosa_Analysis_Definitions_Progress_no_progress_equiv.
+Check ImportedProgress.Prosa_Analysis_Definitions_Progress_no_progress_for.

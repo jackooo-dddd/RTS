@@ -356,6 +356,15 @@ def fingerprint_matches(spec: Spec, rows: list[dict]) -> dict:
         if hashlib.sha256(got.encode()).hexdigest() == item["sha256"]:
             result[name] = "EXACT_HASH"
             continue
+        # The official `Check @name` may print the declaration qualified by its
+        # own file module (`@readiness.x`) when another `x` was in scope there;
+        # accept exactly that display qualifier and nothing else.
+        own, short = name.split(".")[-2], name.split(".")[-1]
+        qualified = f"@{own}.{short} : "
+        if item["normalized_check"].startswith(qualified) and \
+                got == f"@{short} : " + item["normalized_check"][len(qualified):]:
+            result[name] = "EXACT_MODULO_OWN_MODULE_QUALIFIER"
+            continue
         m = re.match(r"statement_\S+ = (.*) : (Prop|Type)$", got)
         ref = item["normalized_check"].split(" : ", 1)[1]
         body = m.group(1) if m else None

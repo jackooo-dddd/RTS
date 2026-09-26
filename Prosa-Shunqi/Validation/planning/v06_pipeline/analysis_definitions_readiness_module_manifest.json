@@ -1,0 +1,178 @@
+{
+  "slice": "TRANSLATION_ORDER_ANALYSIS_DEFINITIONS_READINESS",
+  "generated_at": "2026-09-26T09:48:53.796170+08:00",
+  "published_at": "2026-09-26T09:48:53.796170+08:00",
+  "rank": 121,
+  "layer": 15,
+  "source_file": "analysis/definitions/readiness.v",
+  "source_commit": "414e66760333eaa4ef78c685bcf53291c527a548",
+  "source_tree": "7d7e94c731f7eefde4ca738310d4cafdd7bebdf0",
+  "source_file_sha256": "27846c69d53a1b42fa5b9ff5a2321c6e9081430c2daf799fa0c82a5bb3a3a05a",
+  "pipeline": "Validation/scripts/translation_file_pipeline.py",
+  "spec": "Validation/tooling/file_specs/analysis_definitions_readiness.json",
+  "spec_sha256": "c8d9243f8aa140718eed0aa805d4e0e4afbd797c47f6da03058d1bc3cff06415",
+  "source_compatibility": {
+    "mode": "extract",
+    "note": "the three definitions are byte-identical computational blocks; model/preemption/parameter.v is accepted through its extracted semantic source (byte-identical JobPreemptable class), which is imported in place of the official module; analysis/definitions/schedule_prefix.v and model/task/sequentiality.v are compiled from the pinned files; schedule_prefix.v carries the accepted proof-only Rocq 9.3 compatibility patch",
+    "extracted_sha256": "b17aeac8e62dae29e0413fbde2d367e6ae0e27233eb057d9c029f27a335e9ef3",
+    "extraction_metadata_sha256": "ace4113b6a7458acb45fe514dfe7cff51ef307c757c82e165e28f3a29c761020"
+  },
+  "source_type_evidence": {
+    "prosa.analysis.definitions.readiness.nonclairvoyant_readiness": "EXACT_HASH",
+    "prosa.analysis.definitions.readiness.valid_nonpreemptive_readiness": "EXACT_HASH",
+    "prosa.analysis.definitions.readiness.sequential_readiness": "EXACT_MODULO_OWN_MODULE_QUALIFIER"
+  },
+  "statement_only_export_boundary": [],
+  "input_relations": [
+    "JobReady pointwise on Booleans over related schedules",
+    "JobPreemptable pointwise (as in the accepted parameter certificate)",
+    "SvcProcessorStateRel; schedules functionally by the state conversion (two-way)",
+    "ArArrivalSequenceRel",
+    "ArJobArrivalRel, SvcJobCostRel, Lean.eq on job_task"
+  ],
+  "coverage_for_inner_binders": [
+    "schedules (both directions, functional)",
+    "jobs (identity carrier)",
+    "instants (both directions)"
+  ],
+  "lean_representation_note": "the readiness model is passed explicitly; `~~ b` is `!b`; Booleans in Prop position are `= true`; the Boolean readiness equality is Bool equality",
+  "export_size": {
+    "lines": 125939,
+    "soft_budget_flag": "OVER_100K_DIAGNOSED",
+    "diagnosis": "the accepted Service/Schedule interface closure (~120k lines in earlier accepted files) plus the arrival-sequence/task-arrival interfaces and three definitions"
+  },
+  "file_dependencies": {
+    "analysis/definitions/schedule_prefix.v": "analysis_schedule_prefix_module_status.json",
+    "behavior/ready.v": "behavior_ready_module_status.json",
+    "model/preemption/parameter.v": "model_preemption_parameter_module_status.json",
+    "model/priority/classes.v": "model_priority_classes_module_status.json",
+    "model/task/sequentiality.v": "model_task_sequentiality_module_status.json"
+  },
+  "production_file": "Prosa/Analysis/Definitions/Readiness.lean",
+  "production_source_sha256": "73aff65f3680638e08a0dd4bb089cf17f4d548117c8245e6a507ddd86f0bbac6",
+  "production_olean_sha256": "79356014210861d60e9d5e30af1b9c4cba1632101c27ab013aa70c343b239825",
+  "export_config_sha256": "7da98297400dcc84fce631d47b109a0d671ab7fcb47435f366f0f21f9db43424",
+  "export_sha256": "e23408c3e2d90b52268650c4ef300c841c718a1f2074b9aa69be86f93993264b",
+  "export_lines": 125939,
+  "export_bytes": 2795804,
+  "import_sha256": "5e231f21179d98c1742ac7af0a22633bfec55a819ae774dc37fc6896d3c39c14",
+  "source_vo_sha256": "e6c300972597c8af4e87860e67f5f3aa70224d98e71ba5bcbe4df5a5c6dfe79e",
+  "lean_axiom_summary_sha256": "ae95e805c512df75e1aa1a486c86bdc62e1a1198944394c3f6f29dd993b04131",
+  "rocq_assumption_summary_sha256": "cab128ecfdd9e8393823996d2eb4a841c713d84ad34fdd61efb03c18e94bc3a5",
+  "assumption_config_sha256": "eb07f0369a8e3b0bb30c40cbe9b681a5336de134327a82389240d52f10dac0df",
+  "stage_timing_seconds": {
+    "source_acquisition": {
+      "mode": "FRESH",
+      "seconds": 6
+    },
+    "lean_build": {
+      "mode": "FRESH",
+      "seconds": 558
+    },
+    "export": {
+      "mode": "FRESH",
+      "seconds": 47
+    },
+    "rocq_import": {
+      "mode": "FRESH",
+      "seconds": 55
+    },
+    "certificate_compile": {
+      "mode": "FRESH",
+      "seconds": 20
+    },
+    "assumption_audit": {
+      "mode": "FRESH",
+      "seconds": 0
+    }
+  },
+  "certificates": {
+    "ArrivalsSeqBaseAdapter": {
+      "source_sha256": "538bf8e642c836f56ec04f36d12134161e7ce08c571f1e5e655d1373f1383286",
+      "vo_sha256": "9c8b90efa2798cf73e3b6bbffe5421833fe551d4f59935e63c4fee74f2f50ae7"
+    },
+    "ArrivalsSeqOperations": {
+      "source_sha256": "f573fe700dd425389a8d2a89c62b86f3774f4019648fb19fee12be756e3633e7",
+      "vo_sha256": "5b7689a997af56084d1ece75d94f312d19e3fafcb44b7791e163098faa5d8873"
+    },
+    "ArrivalsSeqCorrespondence": {
+      "source_sha256": "8bf2e7b3ab0d89b20c8f913eefe0191ae11f88f121ab179417295cdbecb8eedf",
+      "vo_sha256": "c3a73f404680a2286b95f5bddc024f814a866c2bddeea3a5efcff77b29fb39dc"
+    },
+    "ArrivalsCorrespondence": {
+      "source_sha256": "56e6247628cae5568623bd0b5462c9b1b28bbb25d0ea35b054b06f75f170ebca",
+      "vo_sha256": "db4bbeadc21f3767cf69635d9da0ff0c14d53f923408d15662529d17a2ac4b0e"
+    },
+    "JitterSvcBaseAdapter": {
+      "source_sha256": "36ca92ad0643d665ff5e1077dc1e631db74724ded0cdc14e9e01def1b7a60305",
+      "vo_sha256": "84a781a9a43bbeac15e40ba77a5b47acdb24214f78a18a2fccf8f1580018c3d2"
+    },
+    "JitterSvcNatBoolOperations": {
+      "source_sha256": "a10f008bf5667692a8f29c9538595824beda1d490c711c429220b7d7fb94dedb",
+      "vo_sha256": "df5b4e0ecd03b858b5ebb03bceb5180903a3ddae40242177ec6a0f9b6b4d1f1f"
+    },
+    "JitterSvcIntervalOperations": {
+      "source_sha256": "b23543a0cabcb08062c205d24832ad268d2d2b423b77971212570ac7076ae8db",
+      "vo_sha256": "3988d00954b29838261cfb76c39d3704b58751e917289b67688e6b5e7fcda0b4"
+    },
+    "JitterSvcScheduleOperations": {
+      "source_sha256": "635696cb9aa639c16edac813ed98d0cb2a63b57a557f0edf42a473e7d6520bfa",
+      "vo_sha256": "2e877e4bcf5b74a8cd8ad41ba4ba2d56012ce9426d3a1c6057501a0f7f4d19aa"
+    },
+    "JitterSvcJobOperations": {
+      "source_sha256": "6f715957ecb2a73900ea3f0899d4fe877525223a70f7c0c9d61084ad62165407",
+      "vo_sha256": "fc07d370e21f082f86ea96f30437798bd35e939bcaf2ecfe69496b9d669834da"
+    },
+    "SequentialityCorrespondence": {
+      "source_sha256": "b57f899f02734d655a7c5501c943351e4640763864ce69f6719e05f69e659245",
+      "vo_sha256": "f4e739bcd4c4c504892a9a727a646b8106c934fa65e797fbe6dd36d7dfd2a743"
+    },
+    "ReadinessCorrespondence": {
+      "source_sha256": "09eaed84e3c23fec9c344ee92add27a117f0f6d0130d0f4b879c999bfeb1b4db",
+      "vo_sha256": "4082cdec285bead79bc6ce60107ac5f3be7c7d3f6707e99f6aefa2481a518446"
+    },
+    "ReadinessAssumptionAudit": {
+      "source_sha256": "3567ca842d8baa07588ab26c8ac8a9bbf4e59c03912f7312c8449014bab4e790",
+      "vo_sha256": "bd49c2ab9fbb4332350c010c0d463cb45a8994778666f7dce50be46d204211c9"
+    }
+  },
+  "declarations": [
+    {
+      "source_declaration": "prosa.analysis.definitions.readiness.nonclairvoyant_readiness",
+      "lean_declaration": "Prosa.Analysis.Definitions.Readiness.nonclairvoyant_readiness",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "nonclairvoyant_readiness_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.definitions.readiness.valid_nonpreemptive_readiness",
+      "lean_declaration": "Prosa.Analysis.Definitions.Readiness.valid_nonpreemptive_readiness",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "valid_nonpreemptive_readiness_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.definitions.readiness.sequential_readiness",
+      "lean_declaration": "Prosa.Analysis.Definitions.Readiness.sequential_readiness",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "sequential_readiness_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    }
+  ],
+  "acceptance": "ACCEPTED_V06_FILE"
+}
