@@ -1,0 +1,83 @@
+{
+  "rank": 98,
+  "layer": 14,
+  "tag": "CIN",
+  "slug": "analysis_definitions_carry_in",
+  "source": "analysis/definitions/carry_in.v",
+  "dependencies": [
+    "model/priority/classes.v"
+  ],
+  "declaration_count": 1,
+  "base_run": "model_priority_classes_final",
+  "base_checks": [
+    {
+      "manifest": "model_priority_classes",
+      "olean": "Prosa/Model/Priority/Classes.olean",
+      "vo": "model/priority/classes.vo",
+      "vo_key": "official_source_vo_sha256"
+    },
+    {
+      "manifest": "model_priority_coercion",
+      "olean": "Prosa/Model/Priority/Coercion.olean",
+      "vo": "model/priority/coercion.vo"
+    },
+    {
+      "manifest": "model_priority_definitions",
+      "olean": "Prosa/Model/Priority/Definitions.olean"
+    }
+  ],
+  "source_mode": "pinned",
+  "fingerprint_probe": "Validation/fixtures/translation_order/CarryInTypeFingerprintProbe.v",
+  "production": "Prosa/Analysis/Definitions/CarryIn.lean",
+  "production_olean": "Prosa/Analysis/Definitions/CarryIn.olean",
+  "lean_namespace": "Prosa.Analysis.Definitions.CarryIn",
+  "fixtures": [
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "CarryInComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/CarryInLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/analysis_definitions_carry_in_export_config.json",
+  "export_name": "CarryIn",
+  "cert_dir": "certificates/analysis_definitions_carry_in",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "JitterSvcBaseAdapter",
+    "JitterSvcNatBoolOperations",
+    "JitterSvcIntervalOperations",
+    "JitterSvcScheduleOperations",
+    "JitterSvcJobOperations",
+    "CarryInCorrespondence"
+  ],
+  "audit_module": "CarryInAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/CarryInImportedTypeAudit.v",
+  "assumption_config": "certificates/analysis_definitions_carry_in/carry_in_assumption_config.json",
+  "lean_axiom_config": "certificates/analysis_definitions_carry_in/carry_in_lean_axiom_config.json",
+  "computational": [
+    "no_carry_in"
+  ],
+  "principal": {},
+  "helpers": [
+    "ci_completed_by_related",
+    "ci_service_related"
+  ],
+  "previous_status": "analysis_definitions_always_higher_priority_module_status.json",
+  "previous_files": 96,
+  "previous_decls": 708,
+  "input_relations": [
+    "ArJobArrivalRel",
+    "SvcJobCostRel",
+    "SvcProcessorStateRel + SvcScheduleRel (two-sided)",
+    "ArArrivalSequenceRel",
+    "SubNatRel on the instant"
+  ],
+  "coverage_for_inner_binders": [
+    "jobs (identity carrier)"
+  ],
+  "lean_representation_note": "the source section's unused Task/TaskCost/JobTask context is absent from the elaborated definition and from the Lean one; Bool-valued observations in Prop position as `= true`",
+  "export_diagnosis": "the accepted Service/Schedule interface closure (~120k lines in earlier accepted files) plus one definition"
+}

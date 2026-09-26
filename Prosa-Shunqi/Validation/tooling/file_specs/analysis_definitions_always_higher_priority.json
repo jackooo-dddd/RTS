@@ -1,0 +1,71 @@
+{
+  "rank": 97,
+  "layer": 14,
+  "tag": "AHP",
+  "slug": "analysis_definitions_always_higher_priority",
+  "source": "analysis/definitions/always_higher_priority.v",
+  "dependencies": [
+    "model/priority/classes.v"
+  ],
+  "declaration_count": 2,
+  "base_run": "model_priority_classes_final",
+  "base_checks": [
+    {
+      "manifest": "model_priority_classes",
+      "olean": "Prosa/Model/Priority/Classes.olean",
+      "vo": "model/priority/classes.vo",
+      "vo_key": "official_source_vo_sha256"
+    },
+    {
+      "manifest": "model_priority_coercion",
+      "olean": "Prosa/Model/Priority/Coercion.olean",
+      "vo": "model/priority/coercion.vo"
+    },
+    {
+      "manifest": "model_priority_definitions",
+      "olean": "Prosa/Model/Priority/Definitions.olean"
+    }
+  ],
+  "source_mode": "pinned",
+  "fingerprint_probe": "Validation/fixtures/translation_order/AlwaysHigherPriorityTypeFingerprintProbe.v",
+  "production": "Prosa/Analysis/Definitions/AlwaysHigherPriority.lean",
+  "production_olean": "Prosa/Analysis/Definitions/AlwaysHigherPriority.olean",
+  "lean_namespace": "Prosa.Analysis.Definitions.AlwaysHigherPriority",
+  "fixtures": [],
+  "lean_type_audit": "Validation/fixtures/translation_order/AlwaysHigherPriorityLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/analysis_definitions_always_higher_priority_export_config.json",
+  "export_name": "AlwaysHigherPriority",
+  "cert_dir": "certificates/analysis_definitions_always_higher_priority",
+  "chain": [
+    "PcoBaseAdapter",
+    "PcoStaticOrder",
+    "PcoDynamicOrder",
+    "PriorityCoercionCorrespondence",
+    "AlwaysHigherPriorityCorrespondence"
+  ],
+  "audit_module": "AlwaysHigherPriorityAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/AlwaysHigherPriorityImportedTypeAudit.v",
+  "assumption_config": "certificates/analysis_definitions_always_higher_priority/always_higher_priority_assumption_config.json",
+  "lean_axiom_config": "certificates/analysis_definitions_always_higher_priority/always_higher_priority_lean_axiom_config.json",
+  "computational": [
+    "always_higher_priority"
+  ],
+  "principal": {},
+  "helpers": [
+    "ahp_iff_correspondence",
+    "JLFP_to_JLDP_correspondence",
+    "pco_forall_jlfp"
+  ],
+  "previous_status": "model_task_arrival_curve_as_rbf_module_status.json",
+  "previous_files": 95,
+  "previous_decls": 706,
+  "input_relations": [
+    "PdJLDPRel (definition)",
+    "PdJLFPRel (fact; two-way coverage via pco_forall_jlfp)"
+  ],
+  "coverage_for_inner_binders": [
+    "jobs (identity carrier)",
+    "instants (Nat, both directions)"
+  ],
+  "lean_representation_note": "MathComp `b1 && ~~ b2` in Prop position as `(b1 && !b2) = true`; the JLFP fact uses the accepted JLFP_to_JLDP coercion instance"
+}

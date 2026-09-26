@@ -1,0 +1,34 @@
+import Prosa.Analysis.Definitions.Interference
+set_option pp.fieldNotation false
+
+#check @Prosa.Analysis.Definitions.Interference.hp_task_interference
+#check @Prosa.Analysis.Definitions.Interference.ep_task_hep_job
+#check @Prosa.Analysis.Definitions.Interference.other_ep_task_hep_job
+#check @Prosa.Analysis.Definitions.Interference.hep_job_from_other_ep_task_interference
+#check @Prosa.Analysis.Definitions.Interference.hp_task_hep_job
+#check @Prosa.Analysis.Definitions.Interference.hep_job_from_hp_task_interference
+#check @Prosa.Analysis.Definitions.Interference.cumulative_interference_from_hep_jobs_from_hp_tasks
+#check @Prosa.Analysis.Definitions.Interference.cumulative_interference_from_hep_jobs_from_other_ep_tasks
+#check @Prosa.Analysis.Definitions.Interference.another_hep_job_interference
+#check @Prosa.Analysis.Definitions.Interference.another_task_hep_job_interference
+#check @Prosa.Analysis.Definitions.Interference.another_hep_job_of_same_task_interference
+#check @Prosa.Analysis.Definitions.Interference.other_hep_jobs_interfering_workload
+#check @Prosa.Analysis.Definitions.Interference.cumulative_another_hep_job_interference
+#check @Prosa.Analysis.Definitions.Interference.cumulative_another_task_hep_job_interference
+#check @Prosa.Analysis.Definitions.Interference.cumulative_other_hep_jobs_interfering_workload
+
+#print axioms Prosa.Analysis.Definitions.Interference.hp_task_interference
+#print axioms Prosa.Analysis.Definitions.Interference.ep_task_hep_job
+#print axioms Prosa.Analysis.Definitions.Interference.other_ep_task_hep_job
+#print axioms Prosa.Analysis.Definitions.Interference.hep_job_from_other_ep_task_interference
+#print axioms Prosa.Analysis.Definitions.Interference.hp_task_hep_job
+#print axioms Prosa.Analysis.Definitions.Interference.hep_job_from_hp_task_interference
+#print axioms Prosa.Analysis.Definitions.Interference.cumulative_interference_from_hep_jobs_from_hp_tasks
+#print axioms Prosa.Analysis.Definitions.Interference.cumulative_interference_from_hep_jobs_from_other_ep_tasks
+#print axioms Prosa.Analysis.Definitions.Interference.another_hep_job_interference
+#print axioms Prosa.Analysis.Definitions.Interference.another_task_hep_job_interference
+#print axioms Prosa.Analysis.Definitions.Interference.another_hep_job_of_same_task_interference
+#print axioms Prosa.Analysis.Definitions.Interference.other_hep_jobs_interfering_workload
+#print axioms Prosa.Analysis.Definitions.Interference.cumulative_another_hep_job_interference
+#print axioms Prosa.Analysis.Definitions.Interference.cumulative_another_task_hep_job_interference
+#print axioms Prosa.Analysis.Definitions.Interference.cumulative_other_hep_jobs_interfering_workload

@@ -1,0 +1,4 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedWorkBearingReadiness.
+
+Check ImportedWorkBearingReadiness.Prosa_Analysis_Definitions_WorkBearingReadiness_work_bearing_readiness.

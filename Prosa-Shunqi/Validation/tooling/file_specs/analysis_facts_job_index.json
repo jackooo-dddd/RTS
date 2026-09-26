@@ -1,0 +1,66 @@
+{
+  "rank": 104,
+  "layer": 14,
+  "tag": "FJI",
+  "slug": "analysis_facts_job_index",
+  "source": "analysis/facts/job_index.v",
+  "dependencies": [
+    "analysis/facts/model/task_arrivals.v"
+  ],
+  "declaration_count": 21,
+  "base_run": "analysis_facts_model_task_arrivals_final",
+  "base_checks": [
+    {
+      "manifest": "analysis_facts_model_task_arrivals",
+      "olean": "Prosa/Analysis/Facts/Model/TaskArrivals.olean",
+      "vo": "FactsTaskArrivalsSemanticSource.vo"
+    }
+  ],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "FactsJobIndexSemanticSource",
+    "drop_imports": [
+      "Require Export prosa.analysis.facts.model.task_arrivals."
+    ],
+    "add_imports": [
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq.",
+      "Require Import prosa.model.task.arrivals."
+    ],
+    "note": "theorem statements from the authoritative elaborated types (proofs omitted); the proof-heavy facts/model/task_arrivals import is dropped (its statements are not mentioned) and model/task/arrivals plus the MathComp notation modules are imported"
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/FactsJobIndexStatementProbe.v",
+  "production": "Prosa/Analysis/Facts/JobIndex.lean",
+  "production_olean": "Prosa/Analysis/Facts/JobIndex.olean",
+  "lean_namespace": "Prosa.Analysis.Facts.JobIndex",
+  "fixtures": [
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ArrivalsComputationInterface",
+    "FactsJobIndexComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/FactsJobIndexLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/analysis_facts_job_index_export_config.json",
+  "export_name": "FactsJobIndex",
+  "cert_dir": "certificates/analysis_facts_job_index",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "ArrivalsCorrespondence",
+    "FactsJobIndexCorrespondence"
+  ],
+  "audit_module": "FactsJobIndexAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/FactsJobIndexImportedTypeAudit.v",
+  "assumption_config": "certificates/analysis_facts_job_index/facts_job_index_assumption_config.json",
+  "lean_axiom_config": "certificates/analysis_facts_job_index/facts_job_index_lean_axiom_config.json",
+  "computational": [],
+  "principal": {},
+  "helpers": [
+    "fji_forall_pred",
+    "fji_not_correspondence",
+    "fji_task_eq"
+  ],
+  "previous_status": "analysis_facts_delay_propagation_module_status.json",
+  "previous_files": 102,
+  "previous_decls": 781
+}

@@ -1,0 +1,121 @@
+{
+  "rank": 119,
+  "layer": 15,
+  "tag": "INTF",
+  "slug": "analysis_definitions_interference",
+  "source": "analysis/definitions/interference.v",
+  "dependencies": [
+    "analysis/definitions/service.v",
+    "model/aggregate/workload.v"
+  ],
+  "declaration_count": 15,
+  "base_run": "model_aggregate_workload_final",
+  "base_checks": [
+    {
+      "manifest": "model_aggregate_workload",
+      "olean": "Prosa/Model/Aggregate/Workload.olean",
+      "vo": "model/aggregate/workload.vo"
+    },
+    {
+      "manifest": "model_priority_classes",
+      "olean": "Prosa/Model/Priority/Classes.olean",
+      "vo": "model/priority/classes.vo",
+      "vo_key": "official_source_vo_sha256"
+    }
+  ],
+  "extra_pinned_sources": [
+    "analysis/definitions/service.v"
+  ],
+  "extra_lean": [
+    [
+      "Prosa/Analysis/Definitions/Service.lean",
+      "Prosa/Analysis/Definitions/Service.olean",
+      "analysis_service",
+      "production_olean_sha256"
+    ]
+  ],
+  "source_mode": "extract",
+  "fingerprint_probe": "Validation/fixtures/translation_order/InterferenceStatementProbe.v",
+  "production": "Prosa/Analysis/Definitions/Interference.lean",
+  "production_olean": "Prosa/Analysis/Definitions/Interference.olean",
+  "lean_namespace": "Prosa.Analysis.Definitions.Interference",
+  "fixtures": [
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ArrivalsComputationInterface",
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "InterferenceComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/InterferenceLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/analysis_definitions_interference_export_config.json",
+  "export_name": "Interference",
+  "cert_dir": "certificates/analysis_definitions_interference",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "ArrivalsCorrespondence",
+    "JitterSvcBaseAdapter",
+    "JitterSvcNatBoolOperations",
+    "JitterSvcIntervalOperations",
+    "JitterSvcScheduleOperations",
+    "JitterSvcJobOperations",
+    "InterferenceCorrespondence"
+  ],
+  "audit_module": "InterferenceAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/InterferenceImportedTypeAudit.v",
+  "assumption_config": "certificates/analysis_definitions_interference/interference_assumption_config.json",
+  "lean_axiom_config": "certificates/analysis_definitions_interference/interference_lean_axiom_config.json",
+  "computational": [
+    "hp_task_interference",
+    "ep_task_hep_job",
+    "other_ep_task_hep_job",
+    "hep_job_from_other_ep_task_interference",
+    "hp_task_hep_job",
+    "hep_job_from_hp_task_interference",
+    "cumulative_interference_from_hep_jobs_from_hp_tasks",
+    "cumulative_interference_from_hep_jobs_from_other_ep_tasks",
+    "another_hep_job_interference",
+    "another_task_hep_job_interference",
+    "another_hep_job_of_same_task_interference",
+    "other_hep_jobs_interfering_workload",
+    "cumulative_another_hep_job_interference",
+    "cumulative_another_task_hep_job_interference",
+    "cumulative_other_hep_jobs_interfering_workload"
+  ],
+  "principal": {},
+  "helpers": [],
+  "previous_status": "TBD",
+  "previous_files": 0,
+  "previous_decls": 0,
+  "input_relations": [
+    "SvcProcessorStateRel + SvcScheduleRel (two-sided)",
+    "ArArrivalSequenceRel",
+    "FP policy pointwise on Booleans",
+    "JLFP policy pointwise on Booleans",
+    "Lean.eq on job_task",
+    "job_cost pointwise by SubNatRel",
+    "SubNatRel on instants"
+  ],
+  "coverage_for_inner_binders": [
+    "jobs and tasks (identity carriers)"
+  ],
+  "lean_representation_note": "`has p s` is `s.any p`; `p^~ j` is `fun x => p x j`; `a != b` is `decide (a \u2260 b)`; Boolean interval sums sum `Bool.toNat`; filtered sums are `sumFiltered`; the FP policy of `hp_task`/`ep_task` is passed by name",
+  "export_diagnosis": "the accepted Service/Schedule interface closure (~120k lines in earlier accepted files) plus the arrival-sequence/task-arrival interfaces and fifteen definitions",
+  "extraction": {
+    "module": "InterferenceSemanticSource",
+    "drop_imports": [],
+    "add_imports": [
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq bigop."
+    ],
+    "local_bindings": [
+      "hep_job_from_hp_task_interference=hep_job_from_hp_task_interference arr_seq sched",
+      "hep_job_from_other_ep_task_interference=hep_job_from_other_ep_task_interference arr_seq sched",
+      "another_hep_job_interference=another_hep_job_interference arr_seq sched",
+      "another_task_hep_job_interference=another_task_hep_job_interference arr_seq sched",
+      "other_hep_jobs_interfering_workload=other_hep_jobs_interfering_workload arr_seq"
+    ],
+    "note": "the fifteen definitions are byte-identical computational blocks; the source's `^~` (ssrfun) notation reaches the official file only through the full util/all, which the accepted utility closure reduces, so the MathComp notation modules are imported explicitly; the Section variables arr_seq/sched, implicit in the uses of five definitions inside later definitions of the same Section, are reconnected by recorded local notations; analysis/definitions/service.v is compiled from the pinned file"
+  }
+}

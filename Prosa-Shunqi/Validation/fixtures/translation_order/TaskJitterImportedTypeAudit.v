@@ -1,0 +1,6 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedTaskJitter.
+
+Print ImportedTaskJitter.Prosa_Model_Task_Jitter_TaskJitter.
+Print ImportedTaskJitter.Prosa_Model_Task_Jitter_valid_jitter.
+Print ImportedTaskJitter.Prosa_Model_Task_Jitter_valid_jitter_bounds.

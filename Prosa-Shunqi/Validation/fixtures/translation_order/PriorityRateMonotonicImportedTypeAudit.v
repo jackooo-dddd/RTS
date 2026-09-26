@@ -1,0 +1,7 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedPriorityRateMonotonic.
+
+Check ImportedPriorityRateMonotonic.Prosa_Model_Priority_RateMonotonic_RM.
+Check ImportedPriorityRateMonotonic.Prosa_Model_Priority_RateMonotonic_RM_is_reflexive.
+Check ImportedPriorityRateMonotonic.Prosa_Model_Priority_RateMonotonic_RM_is_transitive.
+Check ImportedPriorityRateMonotonic.Prosa_Model_Priority_RateMonotonic_RM_is_total.

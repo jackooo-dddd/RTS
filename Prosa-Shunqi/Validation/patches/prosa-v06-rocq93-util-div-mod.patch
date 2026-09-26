@@ -1,0 +1,11 @@
+--- a/util/div_mod.v	2026-09-26 07:07:23
++++ b/util/div_mod.v	2026-09-26 07:07:23
+@@ -154,7 +154,7 @@
+ Proof.
+   move=> Δ T POS LE. rewrite /div_ceil.
+   have lkc: (Δ - T) %/ T < Δ %/ T.
+-  { rewrite divnBr; last by auto.
++  { rewrite divnBr; first exact: dvdnn.
+     rewrite divnn POS.
+     rewrite ltn_psubCl //; lia.
+   }

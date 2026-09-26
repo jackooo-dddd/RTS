@@ -1,0 +1,7 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedPriorityEdf.
+
+Check ImportedPriorityEdf.Prosa_Model_Priority_Edf_EDF.
+Check ImportedPriorityEdf.Prosa_Model_Priority_Edf_EDF_is_reflexive.
+Check ImportedPriorityEdf.Prosa_Model_Priority_Edf_EDF_is_transitive.
+Check ImportedPriorityEdf.Prosa_Model_Priority_Edf_EDF_is_total.

@@ -1,0 +1,110 @@
+{
+  "rank": 108,
+  "layer": 14,
+  "tag": "FSB",
+  "slug": "analysis_facts_sporadic_arrival_bound",
+  "source": "analysis/facts/sporadic/arrival_bound.v",
+  "dependencies": [
+    "analysis/facts/model/task_arrivals.v",
+    "model/task/arrival/sporadic.v",
+    "util/all.v"
+  ],
+  "declaration_count": 4,
+  "base_run": "analysis_facts_model_arrival_curves_final",
+  "base_checks": [
+    {
+      "manifest": "analysis_facts_model_arrival_curves",
+      "olean": "Prosa/Analysis/Facts/Model/ArrivalCurves.olean",
+      "vo": "FactsArrivalCurvesSemanticSource.vo"
+    },
+    {
+      "manifest": "analysis_facts_model_task_arrivals",
+      "olean": "Prosa/Analysis/Facts/Model/TaskArrivals.olean",
+      "vo": "FactsTaskArrivalsSemanticSource.vo"
+    }
+  ],
+  "extra_pinned_sources": [
+    "util/nat.v",
+    "util/subadditivity.v",
+    "util/div_mod.v",
+    "model/task/arrival/sporadic.v"
+  ],
+  "extra_olean_artifacts": [
+    {
+      "from": "model_task_arrival_sporadic_main/olean/Prosa/Model/Task/Arrival/Sporadic.olean",
+      "to": "Prosa/Model/Task/Arrival/Sporadic.olean",
+      "manifest": "model_task_arrival_sporadic",
+      "key": "production_olean_sha256"
+    }
+  ],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "FactsSporadicArrivalBoundSemanticSource",
+    "drop_imports": [
+      "Require Import prosa.util.all.",
+      "Require Export prosa.analysis.facts.model.task_arrivals."
+    ],
+    "add_imports": [
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq div.",
+      "Require Import prosa.util.div_mod.",
+      "Require Import prosa.model.task.arrivals."
+    ],
+    "note": "the definition max_sporadic_arrivals is a byte-identical computational block; theorem statements from the authoritative elaborated types (proofs omitted); the util/all and proof-heavy facts/model/task_arrivals imports are dropped (only util/div_mod and model/task/arrivals are mentioned by the statements), and util/{nat,subadditivity,div_mod} and model/task/arrival/sporadic are compiled from the pinned files; util/div_mod.v carries one audited proof-only compatibility patch (the side condition of MathComp's divnBr is now the first generated goal)"
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/FactsSporadicArrivalBoundStatementProbe.v",
+  "production": "Prosa/Analysis/Facts/Sporadic/ArrivalBound.lean",
+  "production_olean": "Prosa/Analysis/Facts/Sporadic/ArrivalBound.olean",
+  "lean_namespace": "Prosa.Analysis.Facts.Sporadic.ArrivalBound",
+  "fixtures": [
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ArrivalsComputationInterface",
+    "DivModComputationInterface",
+    "FactsSporadicArrivalBoundComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/FactsSporadicArrivalBoundLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/analysis_facts_sporadic_arrival_bound_export_config.json",
+  "export_name": "FactsSporadicArrivalBound",
+  "cert_dir": "certificates/analysis_facts_sporadic_arrival_bound",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "ArrivalsCorrespondence",
+    "NatSubCorrespondence",
+    "DivModCorrespondence",
+    "FactsSporadicArrivalBoundCorrespondence"
+  ],
+  "audit_module": "FactsSporadicArrivalBoundAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/FactsSporadicArrivalBoundImportedTypeAudit.v",
+  "assumption_config": "certificates/analysis_facts_sporadic_arrival_bound/facts_sporadic_arrival_bound_assumption_config.json",
+  "lean_axiom_config": "certificates/analysis_facts_sporadic_arrival_bound/facts_sporadic_arrival_bound_lean_axiom_config.json",
+  "computational": [
+    "max_sporadic_arrivals"
+  ],
+  "principal": {},
+  "helpers": [
+    "fsb_eq_correspondence",
+    "fsb_false_correspondence",
+    "fsb_neq_correspondence",
+    "fsb_valid_min_inter_arrival_related",
+    "fsb_respects_sporadic_related"
+  ],
+  "previous_status": "analysis_facts_model_sbf_periodic_module_status.json",
+  "previous_files": 106,
+  "previous_decls": 817,
+  "input_relations": [
+    "SpSporadicModelRel (task_min_inter_arrival_time by SubNatRel)",
+    "Lean.eq on job_task",
+    "ArJobArrivalRel",
+    "ArArrivalSequenceRel"
+  ],
+  "coverage_for_inner_binders": [
+    "tasks and jobs (identity carriers)",
+    "instants / Nats (both directions)"
+  ],
+  "lean_representation_note": "`nth dummy s i` is `s.getD i dummy`; `n.-1` is `n - 1`; `n >= 2` is `1 < n`; the Boolean valid_task_min_inter_arrival_time hypothesis is `= true`",
+  "extra_source_patches": [
+    "patches/prosa-v06-rocq93-util-div-mod.patch"
+  ]
+}

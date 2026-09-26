@@ -1,0 +1,4 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedAnalysisPriorityClasses.
+
+Check ImportedAnalysisPriorityClasses.Prosa_Analysis_Definitions_Priority_Classes_JLFP_FP_compatible.

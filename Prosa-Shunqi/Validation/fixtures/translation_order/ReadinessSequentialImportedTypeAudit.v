@@ -1,0 +1,4 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedReadinessSequential.
+
+Check ImportedReadinessSequential.Prosa_Model_Readiness_Sequential_sequential_ready_instance.

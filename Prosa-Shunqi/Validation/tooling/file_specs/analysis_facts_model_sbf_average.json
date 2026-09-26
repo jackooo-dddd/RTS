@@ -1,0 +1,147 @@
+{
+  "rank": 106,
+  "layer": 14,
+  "tag": "FSA",
+  "slug": "analysis_facts_model_sbf_average",
+  "source": "analysis/facts/model/sbf/average.v",
+  "dependencies": [
+    "analysis/definitions/sbf/average.v",
+    "analysis/definitions/sbf/plain.v",
+    "model/priority/classes.v",
+    "model/processor/platform_properties.v",
+    "model/processor/supply.v"
+  ],
+  "declaration_count": 3,
+  "base_run": "model_priority_classes_final",
+  "base_checks": [
+    {
+      "manifest": "model_priority_classes",
+      "olean": "Prosa/Model/Priority/Classes.olean",
+      "vo": "model/priority/classes.vo",
+      "vo_key": "official_source_vo_sha256"
+    },
+    {
+      "manifest": "model_processor_supply",
+      "olean": "Prosa/Model/Processor/Supply.olean"
+    }
+  ],
+  "extra_pinned_sources": [
+    "util/setoid.v",
+    "analysis/definitions/sbf/sbf.v",
+    "analysis/definitions/sbf/pred.v",
+    "analysis/definitions/sbf/plain.v",
+    "analysis/definitions/sbf/average.v"
+  ],
+  "extra_source_patches": [
+    "patches/prosa-v06-rocq93-analysis-sbf-pred.patch",
+    "patches/prosa-v06-rocq93-analysis-sbf-plain.patch",
+    "patches/prosa-v06-rocq93-analysis-sbf-average.patch"
+  ],
+  "extra_source_vo_checks": {
+    "analysis/definitions/sbf/pred.v": [
+      "analysis_sbf_pred",
+      "artifact_hashes.source_copy_sha256"
+    ],
+    "analysis/definitions/sbf/plain.v": [
+      "analysis_sbf_plain",
+      "artifact_hashes.source_copy_sha256"
+    ],
+    "analysis/definitions/sbf/average.v": [
+      "analysis_sbf_average",
+      "artifact_hashes.source_copy_sha256"
+    ]
+  },
+  "extra_lean": [
+    [
+      "Prosa/Analysis/Definitions/Sbf/Sbf.lean",
+      "Prosa/Analysis/Definitions/Sbf/Sbf.olean",
+      "analysis_sbf_sbf",
+      "artifact_hashes.production_olean_sha256"
+    ],
+    [
+      "Prosa/Analysis/Definitions/Sbf/Pred.lean",
+      "Prosa/Analysis/Definitions/Sbf/Pred.olean",
+      "analysis_sbf_pred",
+      "production_olean_sha256"
+    ],
+    [
+      "Prosa/Analysis/Definitions/Sbf/Plain.lean",
+      "Prosa/Analysis/Definitions/Sbf/Plain.olean",
+      "analysis_sbf_plain",
+      "production_olean_sha256"
+    ],
+    [
+      "Prosa/Analysis/Definitions/Sbf/Average.lean",
+      "Prosa/Analysis/Definitions/Sbf/Average.olean",
+      "analysis_sbf_average",
+      "production_olean_sha256"
+    ]
+  ],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "FactsSbfAverageSemanticSource",
+    "drop_imports": [],
+    "add_imports": [
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat div."
+    ],
+    "note": "theorem statements from the authoritative elaborated types (proofs omitted; the pinned proofs use the unavailable interval_to_duration tactic under Rocq 9.3); the SBF definition closure (setoid, sbf, pred, plain, average) is compiled from the pinned sources with the accepted proof-only patches, each patched copy hash-checked against its manifest"
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/FactsSbfAverageStatementProbe.v",
+  "production": "Prosa/Analysis/Facts/Model/Sbf/Average.lean",
+  "production_olean": "Prosa/Analysis/Facts/Model/Sbf/Average.olean",
+  "lean_namespace": "Prosa.Analysis.Facts.Model.Sbf.Average",
+  "fixtures": [
+    "ScheduleComputationInterface",
+    "SupplyComputationInterface",
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "DivModComputationInterface",
+    "PredExportInterface",
+    "FactsSbfAverageComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/FactsSbfAverageLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/analysis_facts_model_sbf_average_export_config.json",
+  "export_name": "FactsSbfAverage",
+  "cert_dir": "certificates/analysis_facts_model_sbf_average",
+  "chain": [
+    "ArrivalSequenceBaseAdapter",
+    "ArrivalSequenceOperations",
+    "ArrivalSequenceCorrespondence",
+    "SupplyScheduleBaseAdapter",
+    "SupplyScheduleFiniteOperations",
+    "SupplyScheduleOperations",
+    "SupplyBaseAdapter",
+    "SupplyNatBoolOperations",
+    "SupplyIntervalOperations",
+    "SupplyCorrespondence",
+    "PredCorrespondence",
+    "PlainCorrespondence",
+    "NatSubCorrespondence",
+    "DivModCorrespondence",
+    "AverageCorrespondence",
+    "FactsSbfAverageCorrespondence"
+  ],
+  "audit_module": "FactsSbfAverageAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/FactsSbfAverageImportedTypeAudit.v",
+  "assumption_config": "certificates/analysis_facts_model_sbf_average/facts_sbf_average_assumption_config.json",
+  "lean_axiom_config": "certificates/analysis_facts_model_sbf_average/facts_sbf_average_lean_axiom_config.json",
+  "computational": [],
+  "principal": {},
+  "helpers": [
+    "fsa_arm_sbf_related"
+  ],
+  "previous_status": "analysis_facts_model_arrival_curves_module_status.json",
+  "previous_files": 104,
+  "previous_decls": 805,
+  "input_relations": [
+    "SubNatRel on the three model parameters",
+    "SupplyProcessorStateRel / SupplyScheduleRel",
+    "ArArrivalSequenceRel"
+  ],
+  "coverage_for_inner_binders": [
+    "jobs (identity carrier)",
+    "durations/instants (Nat, both directions)"
+  ],
+  "lean_representation_note": "binders \u03a0 \u0398 \u03bd are named period/alloc/delay (\u03a0 is reserved in Lean); `a <= b` Booleans of sbf_is_monotone use the accepted decide representation",
+  "export_diagnosis": "the accepted Schedule/Supply interface closure shared by the accepted SBF exports (sbf/average 116,055, sbf/pred 119,588, sbf/plain 119,687, facts/SBF 125,455 lines) plus the DivMod interface, the arrival-sequence interface and three statement-only facts"
+}

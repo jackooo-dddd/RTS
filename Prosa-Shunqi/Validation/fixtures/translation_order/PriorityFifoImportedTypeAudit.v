@@ -1,0 +1,7 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedPriorityFifo.
+
+Check ImportedPriorityFifo.Prosa_Model_Priority_Fifo_FIFO.
+Check ImportedPriorityFifo.Prosa_Model_Priority_Fifo_FIFO_is_reflexive.
+Check ImportedPriorityFifo.Prosa_Model_Priority_Fifo_FIFO_is_transitive.
+Check ImportedPriorityFifo.Prosa_Model_Priority_Fifo_FIFO_is_total.

@@ -1,0 +1,94 @@
+{
+  "rank": 110,
+  "layer": 14,
+  "tag": "SOJ",
+  "slug": "model_aggregate_service_of_jobs",
+  "source": "model/aggregate/service_of_jobs.v",
+  "dependencies": [
+    "model/priority/classes.v"
+  ],
+  "declaration_count": 8,
+  "base_run": "analysis_facts_model_arrival_curves_final",
+  "base_checks": [
+    {
+      "manifest": "model_priority_classes",
+      "olean": "Prosa/Model/Priority/Classes.olean",
+      "vo": "model/priority/classes.vo",
+      "vo_key": "official_source_vo_sha256"
+    },
+    {
+      "manifest": "model_priority_definitions",
+      "olean": "Prosa/Model/Priority/Definitions.olean"
+    }
+  ],
+  "source_mode": "pinned",
+  "fingerprint_probe": "Validation/fixtures/translation_order/ServiceOfJobsTypeFingerprintProbe.v",
+  "production": "Prosa/Model/Aggregate/ServiceOfJobs.lean",
+  "production_olean": "Prosa/Model/Aggregate/ServiceOfJobs.olean",
+  "lean_namespace": "Prosa.Model.Aggregate.ServiceOfJobs",
+  "fixtures": [
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ArrivalsComputationInterface",
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "ServiceOfJobsComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/ServiceOfJobsLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/model_aggregate_service_of_jobs_export_config.json",
+  "export_name": "ServiceOfJobs",
+  "cert_dir": "certificates/model_aggregate_service_of_jobs",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "ArrivalsCorrespondence",
+    "JitterSvcBaseAdapter",
+    "JitterSvcNatBoolOperations",
+    "JitterSvcIntervalOperations",
+    "JitterSvcScheduleOperations",
+    "JitterSvcJobOperations",
+    "ServiceOfJobsCorrespondence"
+  ],
+  "audit_module": "ServiceOfJobsAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/ServiceOfJobsImportedTypeAudit.v",
+  "assumption_config": "certificates/model_aggregate_service_of_jobs/service_of_jobs_assumption_config.json",
+  "lean_axiom_config": "certificates/model_aggregate_service_of_jobs/service_of_jobs_lean_axiom_config.json",
+  "computational": [
+    "service_of_jobs_at",
+    "service_of_jobs",
+    "service_of_higher_or_equal_priority_jobs",
+    "service_of_other_hep_jobs",
+    "service_of_other_task_hep_jobs",
+    "service_of_hep_jobs",
+    "task_service_of_jobs_in",
+    "total_service_of_jobs_in"
+  ],
+  "principal": {},
+  "helpers": [
+    "soj_sum_filter_related",
+    "soj_ne_observation",
+    "soj_ne_observation_transport",
+    "soj_another_hep_job_related",
+    "soj_another_task_hep_job_related",
+    "soj_service_at_related",
+    "soj_service_during_related"
+  ],
+  "previous_status": "implementation_facts_maximal_arrival_sequence_module_status.json",
+  "previous_files": 108,
+  "previous_decls": 835,
+  "input_relations": [
+    "SvcProcessorStateRel + SvcScheduleRel (two-sided)",
+    "ArArrivalSequenceRel",
+    "ArPredRel on job predicates",
+    "ArListRel on job lists",
+    "JLFP policy pointwise on Booleans",
+    "Lean.eq on job_task",
+    "SubNatRel on instants"
+  ],
+  "coverage_for_inner_binders": [
+    "jobs (identity carrier)"
+  ],
+  "lean_representation_note": "`\\sum_(j <- jobs | P j) F j` is `sumFiltered jobs P F`; `pred Job` is `Job \u2192 Bool`; `predT` is `fun _ => true`; the section's unused task context is absent where the elaborated definition does not use it",
+  "export_diagnosis": "the accepted Service/Schedule interface closure (~120k lines in earlier accepted files) plus eight definitions"
+}

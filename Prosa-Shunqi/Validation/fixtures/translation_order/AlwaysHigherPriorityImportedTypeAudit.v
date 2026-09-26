@@ -1,0 +1,5 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedAlwaysHigherPriority.
+
+Check ImportedAlwaysHigherPriority.Prosa_Analysis_Definitions_AlwaysHigherPriority_always_higher_priority.
+Check ImportedAlwaysHigherPriority.Prosa_Analysis_Definitions_AlwaysHigherPriority_always_higher_priority_jlfp.

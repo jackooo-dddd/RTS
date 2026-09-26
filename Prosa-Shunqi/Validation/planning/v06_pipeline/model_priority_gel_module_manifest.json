@@ -1,0 +1,206 @@
+{
+  "slice": "TRANSLATION_ORDER_MODEL_PRIORITY_GEL",
+  "generated_at": "2026-09-26T09:06:06.976680+08:00",
+  "published_at": "2026-09-26T09:06:06.976680+08:00",
+  "rank": 116,
+  "layer": 14,
+  "source_file": "model/priority/gel.v",
+  "source_commit": "414e66760333eaa4ef78c685bcf53291c527a548",
+  "source_tree": "7d7e94c731f7eefde4ca738310d4cafdd7bebdf0",
+  "source_file_sha256": "6c83d322e96fb19847c779d16d74b8d1a417c63c75c541742da8729a4d2e0af6",
+  "pipeline": "Validation/scripts/translation_file_pipeline.py",
+  "spec": "Validation/tooling/file_specs/model_priority_gel.json",
+  "spec_sha256": "1be794a222143c8e69bf162e67e0eed813df187de4e5833e794a78a983f939c2",
+  "source_compatibility": {
+    "mode": "pinned",
+    "note": "pinned source compiled byte-identically"
+  },
+  "source_type_evidence": {
+    "prosa.model.priority.gel.offset": "EXACT_HASH",
+    "prosa.model.priority.gel.PriorityPoint": "EXACT_HASH",
+    "prosa.model.priority.gel.job_priority_point": "EXACT_HASH",
+    "prosa.model.priority.gel.GEL": "EXACT_HASH",
+    "prosa.model.priority.gel.GEL_is_reflexive": "EXACT_HASH",
+    "prosa.model.priority.gel.GEL_is_transitive": "EXACT_HASH",
+    "prosa.model.priority.gel.GEL_is_total": "EXACT_HASH"
+  },
+  "statement_only_export_boundary": [
+    "Prosa.Model.Priority.Gel.GEL_is_reflexive",
+    "Prosa.Model.Priority.Gel.GEL_is_transitive",
+    "Prosa.Model.Priority.Gel.GEL_is_total"
+  ],
+  "input_relations": [
+    "MathComp int and Lean Int by constructor-wise encoding (two-way roundtrips)",
+    "PriorityPoint pointwise on integers (two-way totals)",
+    "job_arrival pointwise on Nat (two-way totals)",
+    "Lean.eq on job_task"
+  ],
+  "coverage_for_inner_binders": [],
+  "lean_representation_note": "MathComp `int` is Lean `Int` (Posz/Negz as ofNat/negSucc); `n%:R` into `int` is the coercion `(n : Int)`; `(a <= b)%R` on `int` is `decide (a \u2264 b)`; the source `#[export] Instance GEL` is a reducible definition (its Task parameter is not determined by the result type, so it cannot be a Lean global instance)",
+  "export_size": {
+    "lines": 86206,
+    "soft_budget_flag": "OVER_50K_FLAGGED",
+    "diagnosis": "the priority-coercion closure (~6k lines in the accepted EDF/DM/FIFO exports) plus the Lean Int closure pulled in by the kernel-checked Int constructor equations (their omega/Int.negSucc_eq proofs and Mathlib's ordered-ring Int instances)"
+  },
+  "file_dependencies": {
+    "model/priority/classes.v": "model_priority_classes_module_status.json",
+    "util/int.v": "util_int_module_status.json"
+  },
+  "production_file": "Prosa/Model/Priority/Gel.lean",
+  "production_source_sha256": "8d8daca48fa55b05e96cb784563c255f20d83e0bf494196fe60cb33621e11eee",
+  "production_olean_sha256": "a8411ec3f693c075b51a8c1ae994dc1e02911c85a71664e1b40f9a4a4691f4cc",
+  "export_config_sha256": "d0dc47200b9f2694661d694c35bfa55db5f7caeefd20202916d3526af09c99d4",
+  "export_sha256": "93b76ecfc0198c472553ac594de2aa3a534fa7bd5a7d1f2ce1b8dec80fdc9721",
+  "export_lines": 86206,
+  "export_bytes": 1865866,
+  "import_sha256": "ebded49e2a1e89e13fe66df16f533548a406e31a08992a7b20e1d13e7aa4d3ca",
+  "source_vo_sha256": "6438bb48160e90f9e339d0d4b97e1702385368df5ff3b19bffb22306904e6de7",
+  "lean_axiom_summary_sha256": "1cebce82a1e1121446cb29d4ae6c1a03486ec9d669c2f7af5b5d9b93264e987d",
+  "rocq_assumption_summary_sha256": "a53afc241afc53b2323514af6d75e91a8e3f78fb4b4eda03ea5a0cc19f46c988",
+  "assumption_config_sha256": "ac8ffb57f8feac1ba291e993133c7b21d977ef520c7a21891d5d45da5d684ea4",
+  "stage_timing_seconds": {
+    "source_acquisition": {
+      "mode": "FRESH",
+      "seconds": 11
+    },
+    "lean_build": {
+      "mode": "FRESH",
+      "seconds": 210
+    },
+    "export": {
+      "mode": "FRESH",
+      "seconds": 87
+    },
+    "rocq_import": {
+      "mode": "FRESH",
+      "seconds": 61
+    },
+    "certificate_compile": {
+      "mode": "FRESH",
+      "seconds": 20
+    },
+    "assumption_audit": {
+      "mode": "FRESH",
+      "seconds": 0
+    }
+  },
+  "certificates": {
+    "NatSubCorrespondence": {
+      "source_sha256": "a4b051c0cc9fbf1730d646b3eabba95d7595f24e6b0b69bd1a2921d354997b61",
+      "vo_sha256": "37d0403ecdfd4c06667b4e2d04dbab491c404f91c4a2fac012e399dac72041d1"
+    },
+    "PcoBaseAdapter": {
+      "source_sha256": "7b58a85a8bf99647b18e402c279658d5e188a63b5945fa79694420eb1e274ccf",
+      "vo_sha256": "bfd347ac1d451fc46da3272b5178ba84e49bf6e47a12061e7e430f27447dbf37"
+    },
+    "PcoStaticOrder": {
+      "source_sha256": "275e26848e9218c0b71daf97ec738407a2101062919a8cff26bc003a711142cb",
+      "vo_sha256": "e791abf414ededebb96adf0947dac7ab088fdce5c9613ebe9f102adb392c579d"
+    },
+    "PcoDynamicOrder": {
+      "source_sha256": "372870feac4567d01dfd0c78e7425fea0a867a54b9e06158bd828532cd50426a",
+      "vo_sha256": "c61657b5c7625b2c5a352451f3180ea971724ccb945eb0e400f1bc49727adf3c"
+    },
+    "PriorityCoercionCorrespondence": {
+      "source_sha256": "b4d5da9da6e112dcf169786f03c5a872d30c5319a55fc428d0f31a46c12e6a53",
+      "vo_sha256": "0d28b48fd2453ce9fcc6acc44335bf94e4a272b0ed1496cab70db2b28475bc9d"
+    },
+    "PriorityGelCorrespondence": {
+      "source_sha256": "c2a9d50c589618639063cd10b294133ca605c21dcc8588ee677c5e39afc89da8",
+      "vo_sha256": "db0b856feb2a9294ad61a4c79933d4a56e03b7c733ac96ec7b376003ef309847"
+    },
+    "PriorityGelAssumptionAudit": {
+      "source_sha256": "ca8295aae88912004d8f456f96d94a78eded72a2c493116a0af64794e1e0810c",
+      "vo_sha256": "88b505b58a8e4c40f0be116b0f95f34074fd0141469f07ae0ba82236a8e8492a"
+    }
+  },
+  "declarations": [
+    {
+      "source_declaration": "prosa.model.priority.gel.offset",
+      "lean_declaration": "Prosa.Model.Priority.Gel.offset",
+      "semantic_status": "CERTIFIED",
+      "certificates": [
+        "offset_rocq_roundtrip_certificate",
+        "offset_imported_roundtrip_certificate"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.model.priority.gel.PriorityPoint",
+      "lean_declaration": "Prosa.Model.Priority.Gel.PriorityPoint",
+      "semantic_status": "CERTIFIED",
+      "certificates": [
+        "PriorityPoint_source_total",
+        "PriorityPoint_target_total"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.model.priority.gel.job_priority_point",
+      "lean_declaration": "Prosa.Model.Priority.Gel.job_priority_point",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "job_priority_point_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.model.priority.gel.GEL",
+      "lean_declaration": "Prosa.Model.Priority.Gel.GEL",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "GEL_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.model.priority.gel.GEL_is_reflexive",
+      "lean_declaration": "Prosa.Model.Priority.Gel.GEL_is_reflexive",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "GEL_is_reflexive_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.model.priority.gel.GEL_is_transitive",
+      "lean_declaration": "Prosa.Model.Priority.Gel.GEL_is_transitive",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "GEL_is_transitive_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.model.priority.gel.GEL_is_total",
+      "lean_declaration": "Prosa.Model.Priority.Gel.GEL_is_total",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "GEL_is_total_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    }
+  ],
+  "acceptance": "ACCEPTED_V06_FILE"
+}

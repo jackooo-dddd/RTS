@@ -1,0 +1,6 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedFactsSbfAverage.
+
+Check ImportedFactsSbfAverage.Prosa_Analysis_Facts_Model_Sbf_Average_arm_sbf_monotone.
+Check ImportedFactsSbfAverage.Prosa_Analysis_Facts_Model_Sbf_Average_arm_sbf_unit.
+Check ImportedFactsSbfAverage.Prosa_Analysis_Facts_Model_Sbf_Average_arm_sbf_valid.

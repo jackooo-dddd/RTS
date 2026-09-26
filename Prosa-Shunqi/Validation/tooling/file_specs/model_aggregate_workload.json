@@ -1,0 +1,81 @@
+{
+  "rank": 111,
+  "layer": 14,
+  "tag": "WKL",
+  "slug": "model_aggregate_workload",
+  "source": "model/aggregate/workload.v",
+  "dependencies": [
+    "model/priority/classes.v"
+  ],
+  "declaration_count": 8,
+  "base_run": "analysis_facts_model_arrival_curves_final",
+  "base_checks": [
+    {
+      "manifest": "model_priority_classes",
+      "olean": "Prosa/Model/Priority/Classes.olean",
+      "vo": "model/priority/classes.vo",
+      "vo_key": "official_source_vo_sha256"
+    },
+    {
+      "manifest": "model_priority_definitions",
+      "olean": "Prosa/Model/Priority/Definitions.olean"
+    }
+  ],
+  "source_mode": "pinned",
+  "fingerprint_probe": "Validation/fixtures/translation_order/WorkloadTypeFingerprintProbe.v",
+  "production": "Prosa/Model/Aggregate/Workload.lean",
+  "production_olean": "Prosa/Model/Aggregate/Workload.olean",
+  "lean_namespace": "Prosa.Model.Aggregate.Workload",
+  "fixtures": [
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ArrivalsComputationInterface",
+    "WorkloadComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/WorkloadLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/model_aggregate_workload_export_config.json",
+  "export_name": "Workload",
+  "cert_dir": "certificates/model_aggregate_workload",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "ArrivalsCorrespondence",
+    "WorkloadCorrespondence"
+  ],
+  "audit_module": "WorkloadAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/WorkloadImportedTypeAudit.v",
+  "assumption_config": "certificates/model_aggregate_workload/workload_assumption_config.json",
+  "lean_axiom_config": "certificates/model_aggregate_workload/workload_lean_axiom_config.json",
+  "computational": [
+    "workload_of_jobs",
+    "task_workload",
+    "task_workload_between",
+    "workload_of_job",
+    "total_workload",
+    "total_workload_between",
+    "workload_of_hep_jobs",
+    "workload_of_other_hep_jobs"
+  ],
+  "principal": {},
+  "helpers": [
+    "wl_sum_filter_related",
+    "wl_ne_observation"
+  ],
+  "previous_status": "model_aggregate_service_of_jobs_module_status.json",
+  "previous_files": 109,
+  "previous_decls": 843,
+  "input_relations": [
+    "job_cost pointwise by SubNatRel",
+    "ArArrivalSequenceRel",
+    "ArPredRel on job predicates",
+    "ArListRel on job lists",
+    "JLFP policy pointwise on Booleans",
+    "Lean.eq on job_task",
+    "SubNatRel on instants"
+  ],
+  "coverage_for_inner_binders": [
+    "jobs (identity carrier)"
+  ],
+  "lean_representation_note": "`\\sum_(j <- jobs | P j) job_cost j` is `sumFiltered jobs P job_cost`; `pred Job` is `Job \u2192 Bool`; `predT` is `fun _ => true`; `xpred1 j` is `fun x => decide (x = j)`; the section's unused TaskCost/task context is absent where the elaborated definition does not use it"
+}

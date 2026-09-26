@@ -1,0 +1,329 @@
+{
+  "slice": "TRANSLATION_ORDER_IMPLEMENTATION_FACTS_MAXIMAL_ARRIVAL_SEQUENCE",
+  "generated_at": "2026-09-26T07:30:54.955542+08:00",
+  "published_at": "2026-09-26T07:30:54.955542+08:00",
+  "rank": 109,
+  "layer": 14,
+  "source_file": "implementation/facts/maximal_arrival_sequence.v",
+  "source_commit": "414e66760333eaa4ef78c685bcf53291c527a548",
+  "source_tree": "7d7e94c731f7eefde4ca738310d4cafdd7bebdf0",
+  "source_file_sha256": "0ec6cd4fd68ae3cbe9e4029bdbe7a00f53862459fd840561c850084d600db138",
+  "pipeline": "Validation/scripts/translation_file_pipeline.py",
+  "spec": "Validation/tooling/file_specs/implementation_facts_maximal_arrival_sequence.json",
+  "spec_sha256": "8cc59eb48acadd564bdef6997bbd785fb77fd927bc91eaf31c7159317abe8368",
+  "source_compatibility": {
+    "mode": "extract",
+    "note": "theorem statements from the authoritative elaborated types (proofs omitted); the proof-heavy facts/model/task_arrivals import is dropped (its statements are not mentioned) and model/task/arrivals plus the MathComp notation modules are imported; implementation/definitions/maximal_arrival_sequence.v is compiled from the pinned file",
+    "extracted_sha256": "039ed45d551edb6371a4804ca352d7a6ae3ab7e9bb4309e939e561bf8b710a2c",
+    "extraction_metadata_sha256": "89cbaa4ba21c07a53359ba54b68464f564fd9ce823bf97d14d4f6ebcc6797e6e"
+  },
+  "source_type_evidence": {
+    "prosa.implementation.facts.maximal_arrival_sequence.arr_seq_is_a_set": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.implementation.facts.maximal_arrival_sequence.concrete_all_jobs_from_taskset": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.implementation.facts.maximal_arrival_sequence.arrival_times_are_consistent": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.implementation.facts.maximal_arrival_sequence.concrete_valid_job_cost": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.implementation.facts.maximal_arrival_sequence.task_arrivals_at_eq_generate_jobs_at": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.implementation.facts.maximal_arrival_sequence.task_arrivals_at_eq": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.implementation.facts.maximal_arrival_sequence.number_of_task_arrivals_eq": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.implementation.facts.maximal_arrival_sequence.extend_horizon_size": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.implementation.facts.maximal_arrival_sequence.prefix_up_to_size": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.implementation.facts.maximal_arrival_sequence.n_arrivals_at_prefix_inclusion1": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.implementation.facts.maximal_arrival_sequence.n_arrivals_at_prefix_inclusion": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.implementation.facts.maximal_arrival_sequence.max_arrivals_at_next_max_arrivals_eq": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.implementation.facts.maximal_arrival_sequence.n_arrivals_at_leq": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.implementation.facts.maximal_arrival_sequence.concrete_is_arrival_curve": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE"
+  },
+  "statement_only_export_boundary": [
+    "Prosa.Implementation.Facts.MaximalArrivalSequence.arr_seq_is_a_set",
+    "Prosa.Implementation.Facts.MaximalArrivalSequence.concrete_all_jobs_from_taskset",
+    "Prosa.Implementation.Facts.MaximalArrivalSequence.arrival_times_are_consistent",
+    "Prosa.Implementation.Facts.MaximalArrivalSequence.concrete_valid_job_cost",
+    "Prosa.Implementation.Facts.MaximalArrivalSequence.task_arrivals_at_eq_generate_jobs_at",
+    "Prosa.Implementation.Facts.MaximalArrivalSequence.task_arrivals_at_eq",
+    "Prosa.Implementation.Facts.MaximalArrivalSequence.number_of_task_arrivals_eq",
+    "Prosa.Implementation.Facts.MaximalArrivalSequence.extend_horizon_size",
+    "Prosa.Implementation.Facts.MaximalArrivalSequence.prefix_up_to_size",
+    "Prosa.Implementation.Facts.MaximalArrivalSequence.n_arrivals_at_prefix_inclusion1",
+    "Prosa.Implementation.Facts.MaximalArrivalSequence.n_arrivals_at_prefix_inclusion",
+    "Prosa.Implementation.Facts.MaximalArrivalSequence.max_arrivals_at_next_max_arrivals_eq",
+    "Prosa.Implementation.Facts.MaximalArrivalSequence.n_arrivals_at_leq",
+    "Prosa.Implementation.Facts.MaximalArrivalSequence.concrete_is_arrival_curve"
+  ],
+  "input_relations": [
+    "TaskCost / JobCost pointwise by SubNatRel",
+    "Lean.eq on job_task",
+    "ArJobArrivalRel",
+    "MsMaxArrivalsRel (accepted two-way totals)",
+    "MsGeneratorRel (accepted two-way totals)",
+    "task lists by ArListRel (two-way)"
+  ],
+  "coverage_for_inner_binders": [
+    "tasks and jobs (identity carriers)",
+    "Nats (both directions)",
+    "MaxArrivals classes, generators and task lists (both directions)"
+  ],
+  "lean_representation_note": "`uniq` is `Nodup`; `x \\in s` is `decide (x \u2208 s) = true`; `nth 0 s i` is `s.getD i 0`; `iter t f [::]` is `Nat.repeat f t []`; `\\sum_(a <= i < b) F` is `sumSeq (List.range' a (b - a)) F`; `t <= h1 <= h2` is the Boolean conjunction of decides; `t.-1` is `t - 1`, `\u0394.+1` is `\u0394 + 1`",
+  "export_size": {
+    "lines": 31626,
+    "soft_budget_flag": "WITHIN_50K"
+  },
+  "file_dependencies": {
+    "analysis/facts/model/task_arrivals.v": "analysis_facts_model_task_arrivals_module_status.json",
+    "implementation/definitions/maximal_arrival_sequence.v": "implementation_definitions_maximal_arrival_sequence_module_status.json"
+  },
+  "production_file": "Prosa/Implementation/Facts/MaximalArrivalSequence.lean",
+  "production_source_sha256": "be89e404c40c19a9ca8f43721005b1c5ed924ec224ea347ef32d541cc642a0b9",
+  "production_olean_sha256": "705d80b4bedaf3f4f427fdf96185028f6736e9d5949dab074bc509631e37d98c",
+  "export_config_sha256": "3fba80c0f30b808f014f3e97a803fe3389d4c32be7e67b02162c03db0e7aeaea",
+  "export_sha256": "5fd486ba1a3f421e69fe8cdb838487228ccb2de1347c8cb7be1116d83ec1068b",
+  "export_lines": 31626,
+  "export_bytes": 675636,
+  "import_sha256": "54619bcd388e4259cf2977151129c14cbbfbb2997cc9669e6bf9dfaa3face122",
+  "source_vo_sha256": "39ad8de4eb01861bb63639d448aa6db093bd74528dcb9ddc49dae6ed780a205a",
+  "lean_axiom_summary_sha256": "cef74992da18c7b5afacb0670661a352c42dcefe6226afb00c690c17b7c6e404",
+  "rocq_assumption_summary_sha256": "999637d2e7941675e7906ea5aa8b400c2d026a387a4bf6523fb4908ce93eefd3",
+  "assumption_config_sha256": "2b1b6b21f28445894b02fa5ab6909a4c94252b0fc9a4854c53e27da698834602",
+  "stage_timing_seconds": {
+    "source_acquisition": {
+      "mode": "FRESH",
+      "seconds": 4
+    },
+    "lean_build": {
+      "mode": "FRESH",
+      "seconds": 256
+    },
+    "export": {
+      "mode": "FRESH",
+      "seconds": 37
+    },
+    "rocq_import": {
+      "mode": "FRESH",
+      "seconds": 33
+    },
+    "certificate_compile": {
+      "mode": "FRESH",
+      "seconds": 15
+    },
+    "assumption_audit": {
+      "mode": "FRESH",
+      "seconds": 0
+    }
+  },
+  "certificates": {
+    "ArrivalsSeqBaseAdapter": {
+      "source_sha256": "dca15ce232f445e5c2b905c367ea4dd25b86de29922afa15fb0d425ffb2db083",
+      "vo_sha256": "4af19ee8a33dbc01af7b5fe2e985a321bdb6ef69d48e9de610a65bf622fef283"
+    },
+    "ArrivalsSeqOperations": {
+      "source_sha256": "85ca62eba5d2f64a2002259ee7f5dd6504c0114d45db0263231b151a97e80838",
+      "vo_sha256": "13c7fe1091b5499818a5edf5f71a6291d4f15d0661a31d68b6b90594750c0917"
+    },
+    "ArrivalsSeqCorrespondence": {
+      "source_sha256": "99256e6e5b4466d2986dba72a29cbcdb245c5eb0c6dc17a29c6dbd333de6ce5b",
+      "vo_sha256": "5b081749aa7dc10ad5c9cad5a73462eb9eb103746b1bfb9a2ff5cac239dfc17e"
+    },
+    "ArrivalsCorrespondence": {
+      "source_sha256": "b40ca0d11094191f10d403db98088b28b59af26275b647c8345fc16d628e18da",
+      "vo_sha256": "7d44de8a853af97a78ed3f73ad88036c9714ebe2cf6d72dabb3eec59e91431fc"
+    },
+    "CurvesCorrespondence": {
+      "source_sha256": "f9c84883047fbf9fac751806dd2521a69c946f74587e9fb40b8f5a403507ff70",
+      "vo_sha256": "878d509848a02370c2fcea18b52d61ca124301060d72f17b4d7c555308bab768"
+    },
+    "JitterSvcBaseAdapter": {
+      "source_sha256": "e18f7a05121d54855845a46e672384be1edcc9d439fce37d7f3f4c3f7ac85361",
+      "vo_sha256": "fd9cd6e6b227acc531ef8de6f6b72e28f5decb3b68320638803fd44f699bcab5"
+    },
+    "JitterSvcNatBoolOperations": {
+      "source_sha256": "59c161ad62ecae3ad99b27c7eacb441fa5d136447834bd9255bea1237bef5f0e",
+      "vo_sha256": "709d73dc13e77c386d5d65c3a4496f203f800d062d2aee00988903b713cb54a0"
+    },
+    "JitterSvcIntervalOperations": {
+      "source_sha256": "f235a84956476c5f75f93c172d511901276dfc190f2722d72b9b7ce45a0fbb3e",
+      "vo_sha256": "9a5cda78c82fe583030e1182336f9b28c0102b062c4d1a4d60877bf930a8b82d"
+    },
+    "MaximalArrivalSequenceCorrespondence": {
+      "source_sha256": "3c19ca4a7a735cd9164a09ad2a6b64b2807907c94cfe6310b5cbbba7f0ae0a74",
+      "vo_sha256": "673a90358e3ae9f21d1fba26b282e633b6db218ea78c566094570597ae2061d9"
+    },
+    "FactsMaximalArrivalSequenceCorrespondence": {
+      "source_sha256": "556363b4f03f8a6a6e23fe812689c13ffe84b6c0355ffb4af7d7229657669e74",
+      "vo_sha256": "170a7aa468f17a5547e7a4d15b94f942a7363dafcba55fd72dd2201c9761adad"
+    },
+    "FactsMaximalArrivalSequenceAssumptionAudit": {
+      "source_sha256": "bb313184215e7d660537b4e1a7a222e09b85936993a327594fc537650c19a9b6",
+      "vo_sha256": "ce46a8d928235de6606c30e7b53cde7c2e8d6e05d9a474e95663e426b3dcff1b"
+    }
+  },
+  "declarations": [
+    {
+      "source_declaration": "prosa.implementation.facts.maximal_arrival_sequence.arr_seq_is_a_set",
+      "lean_declaration": "Prosa.Implementation.Facts.MaximalArrivalSequence.arr_seq_is_a_set",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "arr_seq_is_a_set_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.implementation.facts.maximal_arrival_sequence.concrete_all_jobs_from_taskset",
+      "lean_declaration": "Prosa.Implementation.Facts.MaximalArrivalSequence.concrete_all_jobs_from_taskset",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "concrete_all_jobs_from_taskset_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.implementation.facts.maximal_arrival_sequence.arrival_times_are_consistent",
+      "lean_declaration": "Prosa.Implementation.Facts.MaximalArrivalSequence.arrival_times_are_consistent",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "arrival_times_are_consistent_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.implementation.facts.maximal_arrival_sequence.concrete_valid_job_cost",
+      "lean_declaration": "Prosa.Implementation.Facts.MaximalArrivalSequence.concrete_valid_job_cost",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "concrete_valid_job_cost_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.implementation.facts.maximal_arrival_sequence.task_arrivals_at_eq_generate_jobs_at",
+      "lean_declaration": "Prosa.Implementation.Facts.MaximalArrivalSequence.task_arrivals_at_eq_generate_jobs_at",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "task_arrivals_at_eq_generate_jobs_at_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.implementation.facts.maximal_arrival_sequence.task_arrivals_at_eq",
+      "lean_declaration": "Prosa.Implementation.Facts.MaximalArrivalSequence.task_arrivals_at_eq",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "task_arrivals_at_eq_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.implementation.facts.maximal_arrival_sequence.number_of_task_arrivals_eq",
+      "lean_declaration": "Prosa.Implementation.Facts.MaximalArrivalSequence.number_of_task_arrivals_eq",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "number_of_task_arrivals_eq_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.implementation.facts.maximal_arrival_sequence.extend_horizon_size",
+      "lean_declaration": "Prosa.Implementation.Facts.MaximalArrivalSequence.extend_horizon_size",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "extend_horizon_size_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.implementation.facts.maximal_arrival_sequence.prefix_up_to_size",
+      "lean_declaration": "Prosa.Implementation.Facts.MaximalArrivalSequence.prefix_up_to_size",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "prefix_up_to_size_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.implementation.facts.maximal_arrival_sequence.n_arrivals_at_prefix_inclusion1",
+      "lean_declaration": "Prosa.Implementation.Facts.MaximalArrivalSequence.n_arrivals_at_prefix_inclusion1",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "n_arrivals_at_prefix_inclusion1_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.implementation.facts.maximal_arrival_sequence.n_arrivals_at_prefix_inclusion",
+      "lean_declaration": "Prosa.Implementation.Facts.MaximalArrivalSequence.n_arrivals_at_prefix_inclusion",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "n_arrivals_at_prefix_inclusion_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.implementation.facts.maximal_arrival_sequence.max_arrivals_at_next_max_arrivals_eq",
+      "lean_declaration": "Prosa.Implementation.Facts.MaximalArrivalSequence.max_arrivals_at_next_max_arrivals_eq",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "max_arrivals_at_next_max_arrivals_eq_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.implementation.facts.maximal_arrival_sequence.n_arrivals_at_leq",
+      "lean_declaration": "Prosa.Implementation.Facts.MaximalArrivalSequence.n_arrivals_at_leq",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "n_arrivals_at_leq_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.implementation.facts.maximal_arrival_sequence.concrete_is_arrival_curve",
+      "lean_declaration": "Prosa.Implementation.Facts.MaximalArrivalSequence.concrete_is_arrival_curve",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "concrete_is_arrival_curve_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    }
+  ],
+  "acceptance": "ACCEPTED_V06_FILE"
+}

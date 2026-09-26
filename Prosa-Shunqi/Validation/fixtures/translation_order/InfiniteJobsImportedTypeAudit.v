@@ -1,0 +1,4 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedInfiniteJobs.
+
+Print ImportedInfiniteJobs.Prosa_Analysis_Definitions_InfiniteJobs_infinite_jobs.

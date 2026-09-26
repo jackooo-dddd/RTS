@@ -1,0 +1,5 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedUniprocessor.
+
+Check ImportedUniprocessor.Prosa_Analysis_Facts_Model_Uniprocessor_scheduled_job_at_neq.
+Print ImportedUniprocessor.Prosa_Model_Processor_PlatformProperties_uniprocessor_model.

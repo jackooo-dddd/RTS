@@ -1,0 +1,5 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedSequentiality.
+
+Check ImportedSequentiality.Prosa_Model_Task_Sequentiality_sequential_tasks.
+Check ImportedSequentiality.Prosa_Model_Task_Sequentiality_prior_jobs_complete.

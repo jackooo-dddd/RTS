@@ -1,0 +1,111 @@
+{
+  "rank": 109,
+  "layer": 14,
+  "tag": "FMA",
+  "slug": "implementation_facts_maximal_arrival_sequence",
+  "source": "implementation/facts/maximal_arrival_sequence.v",
+  "dependencies": [
+    "analysis/facts/model/task_arrivals.v",
+    "implementation/definitions/maximal_arrival_sequence.v"
+  ],
+  "declaration_count": 14,
+  "base_run": "analysis_facts_model_arrival_curves_final",
+  "base_checks": [
+    {
+      "manifest": "analysis_facts_model_task_arrivals",
+      "olean": "Prosa/Analysis/Facts/Model/TaskArrivals.olean",
+      "vo": "FactsTaskArrivalsSemanticSource.vo"
+    },
+    {
+      "manifest": "model_task_arrival_curves",
+      "olean": "Prosa/Model/Task/Arrival/Curves.olean",
+      "vo": "model/task/arrival/curves.vo"
+    }
+  ],
+  "extra_pinned_sources": [
+    "implementation/definitions/maximal_arrival_sequence.v"
+  ],
+  "extra_lean": [
+    [
+      "Prosa/Implementation/Definitions/MaximalArrivalSequence.lean",
+      "Prosa/Implementation/Definitions/MaximalArrivalSequence.olean",
+      "implementation_definitions_maximal_arrival_sequence",
+      "production_olean_sha256"
+    ]
+  ],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "FactsMaximalArrivalSequenceSemanticSource",
+    "drop_imports": [
+      "Require Export prosa.analysis.facts.model.task_arrivals."
+    ],
+    "add_imports": [
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq bigop.",
+      "Require Import prosa.model.task.arrivals."
+    ],
+    "note": "theorem statements from the authoritative elaborated types (proofs omitted); the proof-heavy facts/model/task_arrivals import is dropped (its statements are not mentioned) and model/task/arrivals plus the MathComp notation modules are imported; implementation/definitions/maximal_arrival_sequence.v is compiled from the pinned file"
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/FactsMaximalArrivalSequenceStatementProbe.v",
+  "production": "Prosa/Implementation/Facts/MaximalArrivalSequence.lean",
+  "production_olean": "Prosa/Implementation/Facts/MaximalArrivalSequence.olean",
+  "lean_namespace": "Prosa.Implementation.Facts.MaximalArrivalSequence",
+  "fixtures": [
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ArrivalsComputationInterface",
+    "FactsMaximalArrivalSequenceComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/FactsMaximalArrivalSequenceLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/implementation_facts_maximal_arrival_sequence_export_config.json",
+  "export_name": "FactsMaximalArrivalSequence",
+  "cert_dir": "certificates/implementation_facts_maximal_arrival_sequence",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "ArrivalsCorrespondence",
+    "CurvesCorrespondence",
+    "JitterSvcBaseAdapter",
+    "JitterSvcNatBoolOperations",
+    "JitterSvcIntervalOperations",
+    "MaximalArrivalSequenceCorrespondence",
+    "FactsMaximalArrivalSequenceCorrespondence"
+  ],
+  "audit_module": "FactsMaximalArrivalSequenceAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/FactsMaximalArrivalSequenceImportedTypeAudit.v",
+  "assumption_config": "certificates/implementation_facts_maximal_arrival_sequence/facts_mas_assumption_config.json",
+  "lean_axiom_config": "certificates/implementation_facts_maximal_arrival_sequence/facts_mas_lean_axiom_config.json",
+  "computational": [],
+  "principal": {},
+  "helpers": [
+    "fma_forall_cover_sprop",
+    "fma_eq_correspondence",
+    "fma_list_bridge",
+    "fma_svc_to_ar",
+    "fma_ar_to_svc",
+    "fma_list_source_total",
+    "fma_list_target_total",
+    "fma_mem_task_related",
+    "fma_mem_task_transport",
+    "fma_concrete_related",
+    "fma_generator_valid_related",
+    "fma_generator_size_related"
+  ],
+  "previous_status": "analysis_facts_sporadic_arrival_bound_module_status.json",
+  "previous_files": 107,
+  "previous_decls": 821,
+  "input_relations": [
+    "TaskCost / JobCost pointwise by SubNatRel",
+    "Lean.eq on job_task",
+    "ArJobArrivalRel",
+    "MsMaxArrivalsRel (accepted two-way totals)",
+    "MsGeneratorRel (accepted two-way totals)",
+    "task lists by ArListRel (two-way)"
+  ],
+  "coverage_for_inner_binders": [
+    "tasks and jobs (identity carriers)",
+    "Nats (both directions)",
+    "MaxArrivals classes, generators and task lists (both directions)"
+  ],
+  "lean_representation_note": "`uniq` is `Nodup`; `x \\in s` is `decide (x \u2208 s) = true`; `nth 0 s i` is `s.getD i 0`; `iter t f [::]` is `Nat.repeat f t []`; `\\sum_(a <= i < b) F` is `sumSeq (List.range' a (b - a)) F`; `t <= h1 <= h2` is the Boolean conjunction of decides; `t.-1` is `t - 1`, `\u0394.+1` is `\u0394 + 1`"
+}

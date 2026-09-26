@@ -1,0 +1,6 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedSbfFacts.
+
+Check ImportedSbfFacts.Prosa_Analysis_Facts_SBF_valid_pred_sbf_switch_predicate.
+Check ImportedSbfFacts.Prosa_Analysis_Facts_SBF_blackout_during_bound_SBF.
+Check ImportedSbfFacts.Prosa_Analysis_Facts_SBF_complement_SBF_monotone.

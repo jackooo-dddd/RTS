@@ -1,0 +1,87 @@
+{
+  "rank": 101,
+  "layer": 14,
+  "tag": "WBR",
+  "slug": "analysis_definitions_work_bearing_readiness",
+  "source": "analysis/definitions/work_bearing_readiness.v",
+  "dependencies": [
+    "model/priority/classes.v"
+  ],
+  "declaration_count": 1,
+  "base_run": "model_priority_classes_final",
+  "base_checks": [
+    {
+      "manifest": "model_priority_classes",
+      "olean": "Prosa/Model/Priority/Classes.olean",
+      "vo": "model/priority/classes.vo",
+      "vo_key": "official_source_vo_sha256"
+    },
+    {
+      "manifest": "model_priority_coercion",
+      "olean": "Prosa/Model/Priority/Coercion.olean",
+      "vo": "model/priority/coercion.vo"
+    },
+    {
+      "manifest": "model_priority_definitions",
+      "olean": "Prosa/Model/Priority/Definitions.olean"
+    }
+  ],
+  "source_mode": "pinned",
+  "fingerprint_probe": "Validation/fixtures/translation_order/WorkBearingReadinessTypeFingerprintProbe.v",
+  "production": "Prosa/Analysis/Definitions/WorkBearingReadiness.lean",
+  "production_olean": "Prosa/Analysis/Definitions/WorkBearingReadiness.olean",
+  "lean_namespace": "Prosa.Analysis.Definitions.WorkBearingReadiness",
+  "fixtures": [
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "WorkBearingReadinessComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/WorkBearingReadinessLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/analysis_definitions_work_bearing_readiness_export_config.json",
+  "export_name": "WorkBearingReadiness",
+  "cert_dir": "certificates/analysis_definitions_work_bearing_readiness",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "JitterSvcBaseAdapter",
+    "JitterSvcNatBoolOperations",
+    "JitterSvcIntervalOperations",
+    "JitterSvcScheduleOperations",
+    "JitterSvcJobOperations",
+    "WorkBearingReadinessCorrespondence"
+  ],
+  "audit_module": "WorkBearingReadinessAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/WorkBearingReadinessImportedTypeAudit.v",
+  "assumption_config": "certificates/analysis_definitions_work_bearing_readiness/work_bearing_readiness_assumption_config.json",
+  "lean_axiom_config": "certificates/analysis_definitions_work_bearing_readiness/work_bearing_readiness_lean_axiom_config.json",
+  "computational": [
+    "work_bearing_readiness"
+  ],
+  "principal": {},
+  "helpers": [
+    "wb_pending_related",
+    "wb_exists_identity",
+    "JLFP_policy_source_total",
+    "JLFP_policy_target_total"
+  ],
+  "previous_status": "analysis_definitions_priority_classes_module_status.json",
+  "previous_files": 99,
+  "previous_decls": 711,
+  "input_relations": [
+    "ArJobArrivalRel",
+    "SvcJobCostRel",
+    "SvcProcessorStateRel + SvcScheduleRel (two-sided)",
+    "JobReady operation related for all related schedules (accepted behavior/ready RdyJobReadyRel design)",
+    "ArArrivalSequenceRel",
+    "WbJLFPRel (two-way totals)"
+  ],
+  "coverage_for_inner_binders": [
+    "jobs (identity carrier, including the existential witness)",
+    "instants (Nat, both directions)"
+  ],
+  "lean_representation_note": "Bool-valued observations in Prop position as `= true`; `exists j_hp, A /\\ B /\\ C` as `\u2203 j_hp, A \u2227 B \u2227 C`",
+  "export_diagnosis": "the accepted Service/Schedule interface closure (~120k lines in earlier accepted files) plus one definition"
+}

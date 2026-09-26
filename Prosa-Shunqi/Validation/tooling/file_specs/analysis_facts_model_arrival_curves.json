@@ -1,0 +1,140 @@
+{
+  "rank": 105,
+  "layer": 14,
+  "tag": "FAC",
+  "slug": "analysis_facts_model_arrival_curves",
+  "source": "analysis/facts/model/arrival_curves.v",
+  "dependencies": [
+    "analysis/facts/model/task_arrivals.v",
+    "model/priority/classes.v",
+    "model/task/arrival/curves.v",
+    "util/epsilon.v"
+  ],
+  "declaration_count": 3,
+  "base_run": "analysis_facts_model_task_arrivals_final",
+  "base_checks": [
+    {
+      "manifest": "analysis_facts_model_task_arrivals",
+      "olean": "Prosa/Analysis/Facts/Model/TaskArrivals.olean",
+      "vo": "FactsTaskArrivalsSemanticSource.vo"
+    }
+  ],
+  "extra_pinned_sources": [
+    "util/epsilon.v"
+  ],
+  "extra_artifacts": [
+    {
+      "from": "model_priority_classes_final/source/model/priority/definitions.vo",
+      "to": "source/model/priority/definitions.vo",
+      "manifest": "model_priority_definitions",
+      "key": "source_vo_sha256"
+    },
+    {
+      "from": "model_priority_classes_final/source/model/priority/coercion.vo",
+      "to": "source/model/priority/coercion.vo",
+      "manifest": "model_priority_coercion",
+      "key": "source_vo_sha256"
+    },
+    {
+      "from": "model_priority_classes_final/source/model/priority/classes.vo",
+      "to": "source/model/priority/classes.vo",
+      "manifest": "model_priority_classes",
+      "key": "official_source_vo_sha256"
+    },
+    {
+      "from": "model_task_arrival_curves_final/source/model/task/arrival/curves.vo",
+      "to": "source/model/task/arrival/curves.vo",
+      "manifest": "model_task_arrival_curves",
+      "key": "source_vo_sha256"
+    }
+  ],
+  "extra_olean_artifacts": [
+    {
+      "from": "model_priority_classes_final/olean/Prosa/Model/Priority/Definitions.olean",
+      "to": "Prosa/Model/Priority/Definitions.olean",
+      "manifest": "model_priority_definitions",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "model_priority_classes_final/olean/Prosa/Model/Priority/Coercion.olean",
+      "to": "Prosa/Model/Priority/Coercion.olean",
+      "manifest": "model_priority_coercion",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "model_priority_classes_final/olean/Prosa/Model/Priority/Classes.olean",
+      "to": "Prosa/Model/Priority/Classes.olean",
+      "manifest": "model_priority_classes",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "model_task_arrival_curves_final/olean/Prosa/Model/Task/Arrival/Curves.olean",
+      "to": "Prosa/Model/Task/Arrival/Curves.olean",
+      "manifest": "model_task_arrival_curves",
+      "key": "production_olean_sha256"
+    }
+  ],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "FactsArrivalCurvesSemanticSource",
+    "drop_imports": [
+      "Require Export prosa.analysis.facts.model.task_arrivals."
+    ],
+    "add_imports": [
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq bigop."
+    ],
+    "note": "theorem statements from the authoritative elaborated types (proofs omitted); the proof-heavy facts/model/task_arrivals import is dropped (not mentioned by the statements) and the MathComp modules are imported; accepted dependency artifacts (priority, curves) are reused with hash checks"
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/FactsArrivalCurvesStatementProbe.v",
+  "production": "Prosa/Analysis/Facts/Model/ArrivalCurves.lean",
+  "production_olean": "Prosa/Analysis/Facts/Model/ArrivalCurves.olean",
+  "lean_namespace": "Prosa.Analysis.Facts.Model.ArrivalCurves",
+  "fixtures": [
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ArrivalsComputationInterface",
+    "FactsArrivalCurvesComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/FactsArrivalCurvesLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/analysis_facts_model_arrival_curves_export_config.json",
+  "export_name": "FactsArrivalCurves",
+  "cert_dir": "certificates/analysis_facts_model_arrival_curves",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "ArrivalsCorrespondence",
+    "CurvesCorrespondence",
+    "FactsArrivalCurvesCorrespondence"
+  ],
+  "audit_module": "FactsArrivalCurvesAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/FactsArrivalCurvesImportedTypeAudit.v",
+  "assumption_config": "certificates/analysis_facts_model_arrival_curves/facts_arrival_curves_assumption_config.json",
+  "lean_axiom_config": "certificates/analysis_facts_model_arrival_curves/facts_arrival_curves_lean_axiom_config.json",
+  "computational": [],
+  "principal": {},
+  "helpers": [
+    "JLFP_policy_source_total",
+    "JLFP_policy_target_total",
+    "FP_policy_source_total",
+    "FP_policy_target_total",
+    "fac_sum_filter_related",
+    "fac_all_jobs_from_taskset_related",
+    "fac_fp_hep_job_related"
+  ],
+  "previous_status": "analysis_facts_job_index_module_status.json",
+  "previous_files": 103,
+  "previous_decls": 802,
+  "input_relations": [
+    "CvMaxArrivalsRel (accepted two-way totals)",
+    "Lean.eq on job_task",
+    "JLFP / FP policies pointwise on Booleans (two-way totals)",
+    "ArArrivalSequenceRel",
+    "ArListRel on task sets"
+  ],
+  "coverage_for_inner_binders": [
+    "jobs (identity carrier)",
+    "instants/durations (Nat, both directions)"
+  ],
+  "lean_representation_note": "`\u03b5` is the numeral 1; `\\sum_(tsk <- ts) F` is `sumSeq ts F`, `\\sum_(tsk <- ts | P) F` is `sumFiltered ts P F`; `size [seq x <- s | P x]` is `(s.filter P).length`; FP `hep_job` through the accepted `FP_to_JLFP` coercion"
+}

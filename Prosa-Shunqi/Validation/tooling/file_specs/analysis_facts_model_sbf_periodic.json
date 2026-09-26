@@ -1,0 +1,154 @@
+{
+  "rank": 107,
+  "layer": 14,
+  "tag": "FSP",
+  "slug": "analysis_facts_model_sbf_periodic",
+  "source": "analysis/facts/model/sbf/periodic.v",
+  "dependencies": [
+    "analysis/definitions/sbf/periodic.v",
+    "analysis/definitions/sbf/plain.v",
+    "model/priority/classes.v",
+    "model/processor/platform_properties.v",
+    "model/processor/supply.v"
+  ],
+  "declaration_count": 9,
+  "base_run": "model_priority_classes_final",
+  "base_checks": [
+    {
+      "manifest": "model_priority_classes",
+      "olean": "Prosa/Model/Priority/Classes.olean",
+      "vo": "model/priority/classes.vo",
+      "vo_key": "official_source_vo_sha256"
+    },
+    {
+      "manifest": "model_processor_supply",
+      "olean": "Prosa/Model/Processor/Supply.olean"
+    }
+  ],
+  "extra_pinned_sources": [
+    "util/setoid.v",
+    "analysis/definitions/sbf/sbf.v",
+    "analysis/definitions/sbf/pred.v",
+    "analysis/definitions/sbf/plain.v",
+    "analysis/definitions/sbf/periodic.v"
+  ],
+  "extra_source_patches": [
+    "patches/prosa-v06-rocq93-analysis-sbf-pred.patch",
+    "patches/prosa-v06-rocq93-analysis-sbf-plain.patch",
+    "patches/prosa-v06-rocq93-analysis-sbf-periodic.patch"
+  ],
+  "extra_source_vo_checks": {
+    "analysis/definitions/sbf/pred.v": [
+      "analysis_sbf_pred",
+      "artifact_hashes.source_copy_sha256"
+    ],
+    "analysis/definitions/sbf/plain.v": [
+      "analysis_sbf_plain",
+      "artifact_hashes.source_copy_sha256"
+    ],
+    "analysis/definitions/sbf/periodic.v": [
+      "analysis_sbf_periodic",
+      "artifact_hashes.source_copy_sha256"
+    ]
+  },
+  "extra_lean": [
+    [
+      "Prosa/Analysis/Definitions/Sbf/Sbf.lean",
+      "Prosa/Analysis/Definitions/Sbf/Sbf.olean",
+      "analysis_sbf_sbf",
+      "artifact_hashes.production_olean_sha256"
+    ],
+    [
+      "Prosa/Analysis/Definitions/Sbf/Pred.lean",
+      "Prosa/Analysis/Definitions/Sbf/Pred.olean",
+      "analysis_sbf_pred",
+      "production_olean_sha256"
+    ],
+    [
+      "Prosa/Analysis/Definitions/Sbf/Plain.lean",
+      "Prosa/Analysis/Definitions/Sbf/Plain.olean",
+      "analysis_sbf_plain",
+      "production_olean_sha256"
+    ],
+    [
+      "Prosa/Analysis/Definitions/Sbf/Periodic.lean",
+      "Prosa/Analysis/Definitions/Sbf/Periodic.olean",
+      "analysis_sbf_periodic",
+      "production_olean_sha256"
+    ]
+  ],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "FactsSbfPeriodicSemanticSource",
+    "drop_imports": [],
+    "add_imports": [
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat div."
+    ],
+    "note": "theorem statements from the authoritative elaborated types (proofs omitted; the pinned proofs use the unavailable interval_to_duration tactic under Rocq 9.3); the SBF definition closure (setoid, sbf, pred, plain, periodic) is compiled from the pinned sources with the accepted proof-only patches, each patched copy hash-checked against its manifest"
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/FactsSbfPeriodicStatementProbe.v",
+  "production": "Prosa/Analysis/Facts/Model/Sbf/Periodic.lean",
+  "production_olean": "Prosa/Analysis/Facts/Model/Sbf/Periodic.olean",
+  "lean_namespace": "Prosa.Analysis.Facts.Model.Sbf.Periodic",
+  "fixtures": [
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "SupplyComputationInterface",
+    "PlatformPropertiesComputationInterface",
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "DivModComputationInterface",
+    "PredExportInterface",
+    "FactsSbfPeriodicComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/FactsSbfPeriodicLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/analysis_facts_model_sbf_periodic_export_config.json",
+  "export_name": "FactsSbfPeriodic",
+  "cert_dir": "certificates/analysis_facts_model_sbf_periodic",
+  "chain": [
+    "ArrivalSequenceBaseAdapter",
+    "ArrivalSequenceOperations",
+    "ArrivalSequenceCorrespondence",
+    "SupplyScheduleBaseAdapter",
+    "SupplyScheduleFiniteOperations",
+    "SupplyScheduleOperations",
+    "SupplyBaseAdapter",
+    "SupplyNatBoolOperations",
+    "SupplyIntervalOperations",
+    "SupplyCorrespondence",
+    "PredCorrespondence",
+    "PlainCorrespondence",
+    "NatSubCorrespondence",
+    "DivModCorrespondence",
+    "PeriodicCorrespondence",
+    "FsScheduleBaseAdapter",
+    "FsScheduleFiniteOperations",
+    "FsScheduleCorrespondence",
+    "FsProcessorStateCorrespondence",
+    "FactsSupplyPlatformPropertiesCorrespondence",
+    "FactsSbfPeriodicCorrespondence"
+  ],
+  "audit_module": "FactsSbfPeriodicAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/FactsSbfPeriodicImportedTypeAudit.v",
+  "assumption_config": "certificates/analysis_facts_model_sbf_periodic/facts_sbf_periodic_assumption_config.json",
+  "lean_axiom_config": "certificates/analysis_facts_model_sbf_periodic/facts_sbf_periodic_lean_axiom_config.json",
+  "computational": [],
+  "principal": {},
+  "helpers": [
+    "fsp_prm_sbf_related"
+  ],
+  "previous_status": "analysis_facts_model_sbf_average_module_status.json",
+  "previous_files": 105,
+  "previous_decls": 808,
+  "input_relations": [
+    "SubNatRel on the model parameters and the Nat binders",
+    "SchProcessorStateRel (full observational processor-state relation) / SchScheduleRel",
+    "ArArrivalSequenceRel"
+  ],
+  "coverage_for_inner_binders": [
+    "jobs (identity carrier)",
+    "durations/instants (Nat, both directions)"
+  ],
+  "lean_representation_note": "binders \u03a0 \u03b3 are named period/alloc (\u03a0 is reserved in Lean); `a < b` / `a <= b` hypotheses are the Nat orders; the section-local prm_sbf_valid_aux_11 is not public and is inlined into a private pigeonhole lemma",
+  "export_diagnosis": "the accepted Schedule/Supply interface closure shared by the accepted SBF exports (sbf/periodic, sbf/pred, sbf/plain, facts/SBF ~116-125k lines) plus the DivMod, arrival-sequence and platform-properties interfaces"
+}

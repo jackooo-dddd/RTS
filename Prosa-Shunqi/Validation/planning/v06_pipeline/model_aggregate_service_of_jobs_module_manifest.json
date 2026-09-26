@@ -1,0 +1,233 @@
+{
+  "slice": "TRANSLATION_ORDER_MODEL_AGGREGATE_SERVICE_OF_JOBS",
+  "generated_at": "2026-09-26T07:49:23.825055+08:00",
+  "published_at": "2026-09-26T07:49:23.825055+08:00",
+  "rank": 110,
+  "layer": 14,
+  "source_file": "model/aggregate/service_of_jobs.v",
+  "source_commit": "414e66760333eaa4ef78c685bcf53291c527a548",
+  "source_tree": "7d7e94c731f7eefde4ca738310d4cafdd7bebdf0",
+  "source_file_sha256": "468ef1620c31f8fa49eafdde1fb3137b5e5373dd7398dc7469cbfb0ca0859ffa",
+  "pipeline": "Validation/scripts/translation_file_pipeline.py",
+  "spec": "Validation/tooling/file_specs/model_aggregate_service_of_jobs.json",
+  "spec_sha256": "1c0ffa4c4db8f195de5766efea6a8c3932cca92216323efcc1a76ba898f13f88",
+  "source_compatibility": {
+    "mode": "pinned",
+    "note": "pinned source compiled byte-identically"
+  },
+  "source_type_evidence": {
+    "prosa.model.aggregate.service_of_jobs.service_of_jobs_at": "EXACT_HASH",
+    "prosa.model.aggregate.service_of_jobs.service_of_jobs": "EXACT_HASH",
+    "prosa.model.aggregate.service_of_jobs.service_of_higher_or_equal_priority_jobs": "EXACT_HASH",
+    "prosa.model.aggregate.service_of_jobs.service_of_other_hep_jobs": "EXACT_HASH",
+    "prosa.model.aggregate.service_of_jobs.service_of_other_task_hep_jobs": "EXACT_HASH",
+    "prosa.model.aggregate.service_of_jobs.service_of_hep_jobs": "EXACT_HASH",
+    "prosa.model.aggregate.service_of_jobs.task_service_of_jobs_in": "EXACT_HASH",
+    "prosa.model.aggregate.service_of_jobs.total_service_of_jobs_in": "EXACT_HASH"
+  },
+  "statement_only_export_boundary": [],
+  "input_relations": [
+    "SvcProcessorStateRel + SvcScheduleRel (two-sided)",
+    "ArArrivalSequenceRel",
+    "ArPredRel on job predicates",
+    "ArListRel on job lists",
+    "JLFP policy pointwise on Booleans",
+    "Lean.eq on job_task",
+    "SubNatRel on instants"
+  ],
+  "coverage_for_inner_binders": [
+    "jobs (identity carrier)"
+  ],
+  "lean_representation_note": "`\\sum_(j <- jobs | P j) F j` is `sumFiltered jobs P F`; `pred Job` is `Job \u2192 Bool`; `predT` is `fun _ => true`; the section's unused task context is absent where the elaborated definition does not use it",
+  "export_size": {
+    "lines": 125884,
+    "soft_budget_flag": "OVER_100K_DIAGNOSED",
+    "diagnosis": "the accepted Service/Schedule interface closure (~120k lines in earlier accepted files) plus eight definitions"
+  },
+  "file_dependencies": {
+    "model/priority/classes.v": "model_priority_classes_module_status.json"
+  },
+  "production_file": "Prosa/Model/Aggregate/ServiceOfJobs.lean",
+  "production_source_sha256": "093966cf11b92300a623038a0339177f75d7c20e71fd9eb9d449287f89ab6624",
+  "production_olean_sha256": "b1a288f3887cb98dd5bba82c0466ae850fbbc356fc14d954a7a37608d79b35d0",
+  "export_config_sha256": "59d3f3a29543560ba4e81e655d51ff5444c019a00d3b68e9febd7bc5e7897160",
+  "export_sha256": "c2453122b2f6a44a9eceef9d44041bfd0b1845a639559e105eb6aa7fe3874aa0",
+  "export_lines": 125884,
+  "export_bytes": 2801849,
+  "import_sha256": "a3eab55ffe9c7855914aad9e7047ae3a3f7e2dce9b108917922af34a8c099465",
+  "source_vo_sha256": "4936b554cce77f080d1f68b81847ad563a84859efb8b3d1a57eab76220a3db07",
+  "lean_axiom_summary_sha256": "dd8f579f35971053d9c8aea9c377746fb5eba63b0188e65a3906edea9382a0d6",
+  "rocq_assumption_summary_sha256": "8ffde089ab8ca0f9cbd80ddd7806329001afd612224a750d56615cf837189aa1",
+  "assumption_config_sha256": "f2a8ce1be73fdaf83321e148e82370891d22961625b30d90f365fe5e01321f4c",
+  "stage_timing_seconds": {
+    "source_acquisition": {
+      "mode": "FRESH",
+      "seconds": 2
+    },
+    "lean_build": {
+      "mode": "FRESH",
+      "seconds": 286
+    },
+    "export": {
+      "mode": "FRESH",
+      "seconds": 34
+    },
+    "rocq_import": {
+      "mode": "FRESH",
+      "seconds": 42
+    },
+    "certificate_compile": {
+      "mode": "FRESH",
+      "seconds": 17
+    },
+    "assumption_audit": {
+      "mode": "FRESH",
+      "seconds": 0
+    }
+  },
+  "certificates": {
+    "ArrivalsSeqBaseAdapter": {
+      "source_sha256": "dcabbb9389e93533a4276b2c14bc55bab25dc1be61122bfd867e63f76ade0e01",
+      "vo_sha256": "0aa99ccbd53f0d908ebc42275f897813b55f930a579ab160c037fdbed9b9a5c7"
+    },
+    "ArrivalsSeqOperations": {
+      "source_sha256": "be83e26b769e0bac9d1d7c52c1efec22c3e6b2fdec063dee515f564602f4121f",
+      "vo_sha256": "97ce2c8a9bf8d2bc58596e8adcec7ac7522e1df94a2039b852ef0c00b15ece62"
+    },
+    "ArrivalsSeqCorrespondence": {
+      "source_sha256": "149a6d71010de8c03fbbb9bc6bc38dbfcad6721b5669796e4f890c54c74a3bf0",
+      "vo_sha256": "016e047d95143419680f48b15d84b11e863036a7c3fb2240feb1c263b275631f"
+    },
+    "ArrivalsCorrespondence": {
+      "source_sha256": "3f715f2daa694db849b1eba18cb4d9ecad759869ec7a964925413b28e22f5b38",
+      "vo_sha256": "65bf877c0fb0873edff75196bcf4ec63d2c2e75f936eb6382c8ab7cd5a0b13b3"
+    },
+    "JitterSvcBaseAdapter": {
+      "source_sha256": "aaef6df23ac27d274ccbbd3c4870867aba50e5fc00ed3588e94e018329495e0a",
+      "vo_sha256": "6de30402f8b2393653fa8c3548856db4654cadfb69ffa03bd420fea4ffe415ec"
+    },
+    "JitterSvcNatBoolOperations": {
+      "source_sha256": "7eab46f6a799e081031ddd44ca5c7c48a3b469dcf6137a8d112465d9f9b9c6c4",
+      "vo_sha256": "6d4d5395fcd78f0b7c0a510c758b67cc175259cfa68d313174484ff9442418d3"
+    },
+    "JitterSvcIntervalOperations": {
+      "source_sha256": "a0d2566bddb4b9fe96dd1780af290bc268ff6eb15dc7ae0747377b81f739d7d4",
+      "vo_sha256": "62cafa7503264204d30b097b77d3cc75755e4a833917e98649ee80ef31307331"
+    },
+    "JitterSvcScheduleOperations": {
+      "source_sha256": "1579a5e35264b2bbfc64ed7fc60b45f332913391619f27de131a7ae43d721713",
+      "vo_sha256": "1c1d888c4023bf5f7b46ffbb9db90397407b5de43178e9f22b5df4a338f4ac2f"
+    },
+    "JitterSvcJobOperations": {
+      "source_sha256": "2b42a3db9dcbb825c7240009bbede0bba268a54afa9fd047e8613aa13bbf5480",
+      "vo_sha256": "6d20cd1611268e39866ad2106f6f0b9aae1949ae36411f75e1a6be528b6cb02f"
+    },
+    "ServiceOfJobsCorrespondence": {
+      "source_sha256": "8b1e5f821228c634dd66e741b323c8f05983e0837957ff289ab39ca040dbe898",
+      "vo_sha256": "caf58a05530bff91635fde4cf1bd55661b40239fda7d3f6a6a4282251ef2824f"
+    },
+    "ServiceOfJobsAssumptionAudit": {
+      "source_sha256": "f334ecd9fc54e0922382fc53bd28936c5b49e70ff7a7039523b417dfcf999294",
+      "vo_sha256": "2228b2d116b8565ec2fd1f05c4efa975ab7ef6834033aabe432ceafe1d327d54"
+    }
+  },
+  "declarations": [
+    {
+      "source_declaration": "prosa.model.aggregate.service_of_jobs.service_of_jobs_at",
+      "lean_declaration": "Prosa.Model.Aggregate.ServiceOfJobs.service_of_jobs_at",
+      "semantic_status": "CERTIFIED",
+      "certificates": [
+        "service_of_jobs_at_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.model.aggregate.service_of_jobs.service_of_jobs",
+      "lean_declaration": "Prosa.Model.Aggregate.ServiceOfJobs.service_of_jobs",
+      "semantic_status": "CERTIFIED",
+      "certificates": [
+        "service_of_jobs_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.model.aggregate.service_of_jobs.service_of_higher_or_equal_priority_jobs",
+      "lean_declaration": "Prosa.Model.Aggregate.ServiceOfJobs.service_of_higher_or_equal_priority_jobs",
+      "semantic_status": "CERTIFIED",
+      "certificates": [
+        "service_of_higher_or_equal_priority_jobs_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.model.aggregate.service_of_jobs.service_of_other_hep_jobs",
+      "lean_declaration": "Prosa.Model.Aggregate.ServiceOfJobs.service_of_other_hep_jobs",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "service_of_other_hep_jobs_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.model.aggregate.service_of_jobs.service_of_other_task_hep_jobs",
+      "lean_declaration": "Prosa.Model.Aggregate.ServiceOfJobs.service_of_other_task_hep_jobs",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "service_of_other_task_hep_jobs_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.model.aggregate.service_of_jobs.service_of_hep_jobs",
+      "lean_declaration": "Prosa.Model.Aggregate.ServiceOfJobs.service_of_hep_jobs",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "service_of_hep_jobs_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.model.aggregate.service_of_jobs.task_service_of_jobs_in",
+      "lean_declaration": "Prosa.Model.Aggregate.ServiceOfJobs.task_service_of_jobs_in",
+      "semantic_status": "CERTIFIED",
+      "certificates": [
+        "task_service_of_jobs_in_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.model.aggregate.service_of_jobs.total_service_of_jobs_in",
+      "lean_declaration": "Prosa.Model.Aggregate.ServiceOfJobs.total_service_of_jobs_in",
+      "semantic_status": "CERTIFIED",
+      "certificates": [
+        "total_service_of_jobs_in_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    }
+  ],
+  "acceptance": "ACCEPTED_V06_FILE"
+}

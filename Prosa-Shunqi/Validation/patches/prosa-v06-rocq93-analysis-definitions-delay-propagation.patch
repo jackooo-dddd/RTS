@@ -1,0 +1,14 @@
+Rocq 9.3 / current MathComp compatibility for analysis/definitions/delay_propagation.v (proof-only).
+The intro pattern `split => [|->]` no longer rewrites `id j2`; the same goal is closed
+by rewriting `mem_seq1` first.  No statement or definition changes.
+--- a/analysis/definitions/delay_propagation.v	2026-09-26 01:50:03
++++ b/analysis/definitions/delay_propagation.v	2026-09-26 01:50:03
+@@ -195,7 +195,7 @@
+         id task_jitter arr_seq (fun j => [:: j]) job_jitter ts.
+   Proof.
+     move=> ts arr_seq VALJIT; split => //.
+-    - by move=> j1 j2; split => [|->]; rewrite mem_seq1 // => /eqP.
++    - by move=> j1 j2; rewrite mem_seq1; split => [/eqP ->|<-].
+     - by move=> j2 IN ARR; exact/VALJIT.
+   Qed.
+ 

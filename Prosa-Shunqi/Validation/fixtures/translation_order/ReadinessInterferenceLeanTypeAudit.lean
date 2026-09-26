@@ -1,0 +1,9 @@
+import Prosa.Analysis.Definitions.ReadinessInterference
+
+#check @Prosa.Analysis.Definitions.ReadinessInterference.some_hep_job_ready
+#check @Prosa.Analysis.Definitions.ReadinessInterference.cumulative_readiness_interference
+#check @Prosa.Analysis.Definitions.ReadinessInterference.readiness_interference_is_bounded
+
+#print axioms Prosa.Analysis.Definitions.ReadinessInterference.some_hep_job_ready
+#print axioms Prosa.Analysis.Definitions.ReadinessInterference.cumulative_readiness_interference
+#print axioms Prosa.Analysis.Definitions.ReadinessInterference.readiness_interference_is_bounded

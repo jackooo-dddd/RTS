@@ -1,0 +1,13 @@
+# `analysis/definitions/readiness_interference.v` — canonical file report
+
+2026-09-25 22:46 +08:00 — Rank 80，Layer 12；3 个 public declarations（`some_hep_job_ready`、`cumulative_readiness_interference`、`readiness_interference_is_bounded`）。直接依赖 `analysis/abstract/definitions.v`、`model/job/properties.v`、`model/priority/definitions.v` 均已验收。
+
+**状态：ACCEPTED_V06_FILE**（3/3）；正式累计 **79/357 文件、544/2439 声明**。
+
+**Translation。** 新写 `Prosa/Analysis/Definitions/ReadinessInterference.lean`：`some_hep_job_ready j t := ((arrivals_up_to arr_seq t).filter (hep_job · j)).any (job_ready sched · t)`（源 `has` + `[seq … | hep_job j' j]`，保持顺序）；`cumulative_readiness_interference` 采用已验收的 `∑ t ∈ Finset.Ico t1 t2, (b).toNat` 半开区间 Bool 求和表示；`readiness_interference_is_bounded` 逐项对应源（`t1 + Δ ≤ t2 → busy_interval_prefix … → … ≤ B (job_arrival j - t1) Δ`）。参数顺序与权威类型一致（源中未使用的 Task/JobTask 不出现，JLFP 在 arr_seq/sched 之后）；3 个 `Check` fingerprint 与权威 evidence hash 完全一致。Lean axioms `[propext, Classical.choice, Quot.sound]`。
+
+**语义证书。** 导出根 `ReadinessInterferenceComputationInterface.lean`（本文件 + ArrivalSequence 与 AbstractDefinitions 接口 + 带 `rfl` kernel guard 的 `cumulReadinessInterferenceProjection`），export config 为已验收 arrival_sequence、abstract/definitions、priority/definitions 三份配置的并集加本文件目标（86 targets，8 个 guarded body projection，statement-only 仅继承 `busy_interval_is_unique`，未进入证书闭包）。三条已验收证书链（Arrivals 的 ArrivalSequence 层、abstract/definitions 及其 Service replay、PriorityBaseAdapter）仅改导入模块名重新绑定，全部在本 artifact 上重编通过。新增 `ReadinessInterferenceCorrespondence.v`：`ri_has_related`（`has` ↔ `List.any`，归纳）；`some_hep_job_ready` 由 `arrivals_up_to`、filter、`hep_job`、`job_ready` 组合；累计量用已验收 Service 区间求和 + Bool 取反/`toNat`；有界性由 ∀/⇒、`sub_nat_le_correspondence`、加减法与已验收 `busy_interval_prefix` 证书组合。输入关系：Svc ProcessorState/schedule 观测关系、ArrivalSequence、JobArrival/JobCost、JobReady 的 `job_ready` 字段（相关 schedule 上）、JLFP 的 `hep_job`、Interference、InterferingWorkload、B 的函数关系。
+
+**Fresh 验证（`Validation/scripts/validate_analysis_definitions_readiness_interference.sh`，run `Validation/.work/experiments/analysis_definitions_readiness_interference_final`）。** source 3 s；Lean build 386 s；export 39 s，126,642 行 / 2,813,923 bytes（>100k 软预算，来源为 Service/Schedule/ArrivalSequence/Bigcat 接口闭包）；import 43 s。首次 prepare 因投影 fixture 的实例参数顺序与 production 不同而在 guard 处失败，修正后整轮重跑。6 项 fail-closed 审计：1 `CERTIFIED`、5 `CERTIFIED_WITH_PROP_SPROP_FOUNDATION`，semantic premises 为空，source/target theorem dependency=false，unexpected 为空。
+
+**证据。** manifest/status `Validation/planning/v06_pipeline/analysis_definitions_readiness_interference_module_{manifest,status}.json`；publication `Validation/imported/translation_order/analysis_definitions_readiness_interference/`；发布入口 `Validation/scripts/publish_analysis_definitions_readiness_interference.py`。

@@ -1,0 +1,92 @@
+{
+  "rank": 99,
+  "layer": 14,
+  "tag": "PBU",
+  "slug": "analysis_definitions_overheads_priority_bump",
+  "source": "analysis/definitions/overheads/priority_bump.v",
+  "dependencies": [
+    "model/priority/classes.v",
+    "model/processor/overheads.v"
+  ],
+  "declaration_count": 1,
+  "base_run": "model_priority_classes_final",
+  "base_checks": [
+    {
+      "manifest": "model_priority_classes",
+      "olean": "Prosa/Model/Priority/Classes.olean",
+      "vo": "model/priority/classes.vo",
+      "vo_key": "official_source_vo_sha256"
+    },
+    {
+      "manifest": "model_priority_coercion",
+      "olean": "Prosa/Model/Priority/Coercion.olean",
+      "vo": "model/priority/coercion.vo"
+    },
+    {
+      "manifest": "model_priority_definitions",
+      "olean": "Prosa/Model/Priority/Definitions.olean"
+    }
+  ],
+  "source_mode": "pinned",
+  "fingerprint_probe": "Validation/fixtures/translation_order/PriorityBumpTypeFingerprintProbe.v",
+  "production": "Prosa/Analysis/Definitions/Overheads/PriorityBump.lean",
+  "production_olean": "Prosa/Analysis/Definitions/Overheads/PriorityBump.olean",
+  "lean_namespace": "Prosa.Analysis.Definitions.Overheads.PriorityBump",
+  "fixtures": [],
+  "lean_type_audit": "Validation/fixtures/translation_order/PriorityBumpLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/analysis_definitions_overheads_priority_bump_export_config.json",
+  "export_name": "PriorityBump",
+  "cert_dir": "certificates/analysis_definitions_overheads_priority_bump",
+  "chain": [
+    "PriorityBumpCorrespondence"
+  ],
+  "audit_module": "PriorityBumpAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/PriorityBumpImportedTypeAudit.v",
+  "assumption_config": "certificates/analysis_definitions_overheads_priority_bump/priority_bump_assumption_config.json",
+  "lean_axiom_config": "certificates/analysis_definitions_overheads_priority_bump/priority_bump_lean_axiom_config.json",
+  "computational": [
+    "priority_bump"
+  ],
+  "principal": {},
+  "helpers": [
+    "pb_match_related",
+    "PbSchedule_source_total",
+    "PbSchedule_target_total",
+    "JLFP_policy_source_total",
+    "JLFP_policy_target_total",
+    "pb_scheduled_job_related"
+  ],
+  "previous_status": "analysis_definitions_carry_in_module_status.json",
+  "previous_files": 97,
+  "previous_decls": 709,
+  "input_relations": [
+    "PbJLFPRel (two-way totals)",
+    "PbScheduleRel over the Overheads proc_state (two-way totals)",
+    "SubNatRel on the instant"
+  ],
+  "coverage_for_inner_binders": [],
+  "lean_representation_note": "`t.-1` as `Nat.pred t`; the source pair match on scheduled_job is the same four-case Lean match",
+  "extra_artifacts": [
+    {
+      "from": "model_processor_overheads/source/model/processor/overheads.v",
+      "to": "source/model/processor/overheads.v",
+      "manifest": "model_processor_overheads",
+      "key": "artifact_hashes.validation_source"
+    },
+    {
+      "from": "model_processor_overheads/source/model/processor/overheads.vo",
+      "to": "source/model/processor/overheads.vo",
+      "manifest": "model_processor_overheads",
+      "key": "artifact_hashes.source_vo"
+    }
+  ],
+  "extra_olean_artifacts": [
+    {
+      "from": "model_processor_overheads/olean/Prosa/Model/Processor/Overheads.olean",
+      "to": "Prosa/Model/Processor/Overheads.olean",
+      "manifest": "model_processor_overheads",
+      "key": "artifact_hashes.production_olean"
+    }
+  ],
+  "export_diagnosis": "the accepted Overheads processor-state closure (Fintype cores, Finset sums); the accepted overheads/schedule_change export has the same closure"
+}

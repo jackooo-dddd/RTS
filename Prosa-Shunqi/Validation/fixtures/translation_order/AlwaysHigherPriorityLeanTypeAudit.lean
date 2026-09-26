@@ -1,0 +1,8 @@
+import Prosa.Analysis.Definitions.AlwaysHigherPriority
+set_option pp.fieldNotation false
+
+#check @Prosa.Analysis.Definitions.AlwaysHigherPriority.always_higher_priority
+#check @Prosa.Analysis.Definitions.AlwaysHigherPriority.always_higher_priority_jlfp
+
+#print axioms Prosa.Analysis.Definitions.AlwaysHigherPriority.always_higher_priority
+#print axioms Prosa.Analysis.Definitions.AlwaysHigherPriority.always_higher_priority_jlfp

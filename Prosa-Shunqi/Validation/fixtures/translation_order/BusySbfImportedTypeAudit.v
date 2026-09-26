@@ -1,0 +1,5 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedBusySbf.
+
+Print ImportedBusySbf.Prosa_Analysis_Abstract_RestrictedSupply_BusySbf_sbf_respected_in_busy_interval.
+Print ImportedBusySbf.Prosa_Analysis_Abstract_RestrictedSupply_BusySbf_valid_busy_sbf.

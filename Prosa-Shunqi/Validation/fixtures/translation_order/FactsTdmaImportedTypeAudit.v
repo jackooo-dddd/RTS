@@ -1,0 +1,9 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedFactsTdma.
+
+Check ImportedFactsTdma.Prosa_Analysis_Facts_Tdma_TDMA_cycle_ge_each_time_slot.
+Check ImportedFactsTdma.Prosa_Analysis_Facts_Tdma_TDMA_cycle_positive.
+Check ImportedFactsTdma.Prosa_Analysis_Facts_Tdma_Offset_lt_cycle.
+Check ImportedFactsTdma.Prosa_Analysis_Facts_Tdma_Offset_add_slot_leq_cycle.
+Check ImportedFactsTdma.Prosa_Analysis_Facts_Tdma_relation_offset.
+Check ImportedFactsTdma.Prosa_Analysis_Facts_Tdma_task_in_time_slot_uniq.

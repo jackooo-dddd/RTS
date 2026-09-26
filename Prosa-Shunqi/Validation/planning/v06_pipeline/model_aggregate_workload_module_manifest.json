@@ -1,0 +1,212 @@
+{
+  "slice": "TRANSLATION_ORDER_MODEL_AGGREGATE_WORKLOAD",
+  "generated_at": "2026-09-26T07:57:41.054848+08:00",
+  "published_at": "2026-09-26T07:57:41.054848+08:00",
+  "rank": 111,
+  "layer": 14,
+  "source_file": "model/aggregate/workload.v",
+  "source_commit": "414e66760333eaa4ef78c685bcf53291c527a548",
+  "source_tree": "7d7e94c731f7eefde4ca738310d4cafdd7bebdf0",
+  "source_file_sha256": "fdc6e0cd3239c91f906f578d2037a4742048e6432d175ad1e47c7c90c6ea60c2",
+  "pipeline": "Validation/scripts/translation_file_pipeline.py",
+  "spec": "Validation/tooling/file_specs/model_aggregate_workload.json",
+  "spec_sha256": "4e260ff72c27d2335c5b59daed74dbe2f91dac705cbde5b7828aa363cd772a23",
+  "source_compatibility": {
+    "mode": "pinned",
+    "note": "pinned source compiled byte-identically"
+  },
+  "source_type_evidence": {
+    "prosa.model.aggregate.workload.workload_of_jobs": "EXACT_HASH",
+    "prosa.model.aggregate.workload.task_workload": "EXACT_HASH",
+    "prosa.model.aggregate.workload.task_workload_between": "EXACT_HASH",
+    "prosa.model.aggregate.workload.workload_of_job": "EXACT_HASH",
+    "prosa.model.aggregate.workload.total_workload": "EXACT_HASH",
+    "prosa.model.aggregate.workload.total_workload_between": "EXACT_HASH",
+    "prosa.model.aggregate.workload.workload_of_hep_jobs": "EXACT_HASH",
+    "prosa.model.aggregate.workload.workload_of_other_hep_jobs": "EXACT_HASH"
+  },
+  "statement_only_export_boundary": [],
+  "input_relations": [
+    "job_cost pointwise by SubNatRel",
+    "ArArrivalSequenceRel",
+    "ArPredRel on job predicates",
+    "ArListRel on job lists",
+    "JLFP policy pointwise on Booleans",
+    "Lean.eq on job_task",
+    "SubNatRel on instants"
+  ],
+  "coverage_for_inner_binders": [
+    "jobs (identity carrier)"
+  ],
+  "lean_representation_note": "`\\sum_(j <- jobs | P j) job_cost j` is `sumFiltered jobs P job_cost`; `pred Job` is `Job \u2192 Bool`; `predT` is `fun _ => true`; `xpred1 j` is `fun x => decide (x = j)`; the section's unused TaskCost/task context is absent where the elaborated definition does not use it",
+  "export_size": {
+    "lines": 29868,
+    "soft_budget_flag": "WITHIN_50K"
+  },
+  "file_dependencies": {
+    "model/priority/classes.v": "model_priority_classes_module_status.json"
+  },
+  "production_file": "Prosa/Model/Aggregate/Workload.lean",
+  "production_source_sha256": "87393cd4ae67024ac81a8c8c1c16067326365e1975c8a799e4044ccb593770c3",
+  "production_olean_sha256": "ed91d76f1ee91c41e9e07dfcca6a37155d5c133f008536a15599f1c07b5e2572",
+  "export_config_sha256": "d8d97c3c45531b3aa53e70c2cfc1ae1bed1f14acad4ec6a3b0fed886c7177c2c",
+  "export_sha256": "b0e91b15a7d093640ddee61932edc58950f12de17c10b65cd91c4b0f5aab3470",
+  "export_lines": 29868,
+  "export_bytes": 634013,
+  "import_sha256": "9501f9aa01c78e4e5ee62568bd97183f0f7e7b4aa5057752865ec061a867ba52",
+  "source_vo_sha256": "6426992329870a5a68213870686cdb623399ea4123a327dd3bfbe6c582a724f2",
+  "lean_axiom_summary_sha256": "bf7c594d37305e71d7e8d7f6975aa7fe2213f2bc65e616dcdfc552646883ce53",
+  "rocq_assumption_summary_sha256": "f78292ade0713ecac658b8d474c0a52e96695aac2d8f5baad7f8895f089b3851",
+  "assumption_config_sha256": "a2a11dc936fe8e5fd5a8961bdef5449c15ada052b49f54d2e888dec0c0c62c10",
+  "stage_timing_seconds": {
+    "source_acquisition": {
+      "mode": "FRESH",
+      "seconds": 3
+    },
+    "lean_build": {
+      "mode": "FRESH",
+      "seconds": 260
+    },
+    "export": {
+      "mode": "FRESH",
+      "seconds": 48
+    },
+    "rocq_import": {
+      "mode": "FRESH",
+      "seconds": 33
+    },
+    "certificate_compile": {
+      "mode": "FRESH",
+      "seconds": 10
+    },
+    "assumption_audit": {
+      "mode": "FRESH",
+      "seconds": 0
+    }
+  },
+  "certificates": {
+    "ArrivalsSeqBaseAdapter": {
+      "source_sha256": "33d36595ce5a0e9a9a2508d85b6df7995eda7c19b9c77c19a47212a064653e81",
+      "vo_sha256": "be3e6223834693e8176cd035190cd016ddacff3e5445a69be6db87accba17282"
+    },
+    "ArrivalsSeqOperations": {
+      "source_sha256": "776b7b2f1b2edc564eca6cd86005318a2608e781e3e465e759b6391a294a7541",
+      "vo_sha256": "5f35b78113bd63cdd39befc85a3de79b7dc7c4e219ca3d7006df86536b6fc120"
+    },
+    "ArrivalsSeqCorrespondence": {
+      "source_sha256": "c19c2789d9abac344389fc456b2fa9534abfb649ac1f61e03ade90b5d493ddea",
+      "vo_sha256": "96af1a92d8466878ae8e8c344a0dcd0f7abbb8ecf8c5282de4db87d004a7e957"
+    },
+    "ArrivalsCorrespondence": {
+      "source_sha256": "1caf8c822335796781012298b3deb3ff05938135dfaa20d1f01fc013bfa06143",
+      "vo_sha256": "020d016da33ec6a97d1238fe04d9ffbc7a9cd280eb75b8d66e3001b0a2d5f60a"
+    },
+    "WorkloadCorrespondence": {
+      "source_sha256": "78b5f314bf1402f1095fe13279507684b4a9008a2440fb64b1383ff91f57e5f1",
+      "vo_sha256": "0715d4f5c411d28cd4c785b98928b32771eb29a92a8e883cb3639b0508685f3e"
+    },
+    "WorkloadAssumptionAudit": {
+      "source_sha256": "5d858bb2a63b142ad3021b025a6f751a064ecbac536cf4a01f5252b24130588c",
+      "vo_sha256": "c39b8ea7e8d282bbb25a3a1bbc4b47e2419a6beaa92608f2856a8ea9969f2e3e"
+    }
+  },
+  "declarations": [
+    {
+      "source_declaration": "prosa.model.aggregate.workload.workload_of_jobs",
+      "lean_declaration": "Prosa.Model.Aggregate.Workload.workload_of_jobs",
+      "semantic_status": "CERTIFIED",
+      "certificates": [
+        "workload_of_jobs_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.model.aggregate.workload.task_workload",
+      "lean_declaration": "Prosa.Model.Aggregate.Workload.task_workload",
+      "semantic_status": "CERTIFIED",
+      "certificates": [
+        "task_workload_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.model.aggregate.workload.task_workload_between",
+      "lean_declaration": "Prosa.Model.Aggregate.Workload.task_workload_between",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "task_workload_between_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.model.aggregate.workload.workload_of_job",
+      "lean_declaration": "Prosa.Model.Aggregate.Workload.workload_of_job",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "workload_of_job_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.model.aggregate.workload.total_workload",
+      "lean_declaration": "Prosa.Model.Aggregate.Workload.total_workload",
+      "semantic_status": "CERTIFIED",
+      "certificates": [
+        "total_workload_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.model.aggregate.workload.total_workload_between",
+      "lean_declaration": "Prosa.Model.Aggregate.Workload.total_workload_between",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "total_workload_between_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.model.aggregate.workload.workload_of_hep_jobs",
+      "lean_declaration": "Prosa.Model.Aggregate.Workload.workload_of_hep_jobs",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "workload_of_hep_jobs_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.model.aggregate.workload.workload_of_other_hep_jobs",
+      "lean_declaration": "Prosa.Model.Aggregate.Workload.workload_of_other_hep_jobs",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "workload_of_other_hep_jobs_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    }
+  ],
+  "acceptance": "ACCEPTED_V06_FILE"
+}

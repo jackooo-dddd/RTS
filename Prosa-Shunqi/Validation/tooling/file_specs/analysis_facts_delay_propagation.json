@@ -1,0 +1,84 @@
+{
+  "rank": 103,
+  "layer": 14,
+  "tag": "FDP",
+  "slug": "analysis_facts_delay_propagation",
+  "source": "analysis/facts/delay_propagation.v",
+  "dependencies": [
+    "analysis/definitions/delay_propagation.v",
+    "analysis/facts/behavior/arrivals.v"
+  ],
+  "declaration_count": 12,
+  "base_run": "analysis_definitions_delay_propagation_final",
+  "base_checks": [
+    {
+      "manifest": "analysis_definitions_delay_propagation",
+      "olean": "Prosa/Analysis/Definitions/DelayPropagation.olean",
+      "vo": "analysis/definitions/delay_propagation.vo"
+    }
+  ],
+  "extra_lean": [
+    [
+      "Prosa/Analysis/Facts/Behavior/Arrivals.lean",
+      "Prosa/Analysis/Facts/Behavior/Arrivals.olean",
+      "analysis_facts_behavior_arrivals",
+      "production_olean_sha256"
+    ]
+  ],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "FactsDelayPropagationSemanticSource",
+    "helper_blocks": [
+      "max_arrivals2"
+    ],
+    "drop_imports": [
+      "Require Export prosa.analysis.facts.behavior.arrivals."
+    ],
+    "add_imports": [
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq.",
+      "Require Import prosa.model.task.arrivals."
+    ],
+    "printer_repairs": [
+      "-> taskset_respects_max_arrivals (propagated_arrival_sequence JA1 job1_of arr_seq1 job2_of arrival_delay) ts2=-> @taskset_respects_max_arrivals Task2 Job2 H0 (propagated_arrival_sequence JA1 job1_of arr_seq1 job2_of arrival_delay) (@max_arrivals2 Task1 Task2 task1_of delay_bound max_arrivals1) ts2"
+    ],
+    "note": "theorem statements from the authoritative elaborated types (proofs omitted); the proof-heavy facts/behavior/arrivals import is dropped and model/task/arrivals plus the MathComp notation modules are imported; the source-local instance max_arrivals2 is a byte-identical helper block; the implicit MaxArrivals Task2 instance of the last statement (the local max_arrivals2, out of scope after its section) is made explicit by a recorded printer repair, and the statement prints back to the evidence text"
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/FactsDelayPropagationStatementProbe.v",
+  "production": "Prosa/Analysis/Facts/DelayPropagation.lean",
+  "production_olean": "Prosa/Analysis/Facts/DelayPropagation.olean",
+  "lean_namespace": "Prosa.Analysis.Facts.DelayPropagation",
+  "fixtures": [
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ArrivalsComputationInterface",
+    "DelayPropagationComputationInterface",
+    "FactsDelayPropagationComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/FactsDelayPropagationLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/analysis_facts_delay_propagation_export_config.json",
+  "export_name": "FactsDelayPropagation",
+  "cert_dir": "certificates/analysis_facts_delay_propagation",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "ArrivalsCorrespondence",
+    "DelayPropagationCorrespondence",
+    "CurvesCorrespondence",
+    "FactsDelayPropagationCorrespondence"
+  ],
+  "audit_module": "FactsDelayPropagationAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/FactsDelayPropagationImportedTypeAudit.v",
+  "assumption_config": "certificates/analysis_facts_delay_propagation/facts_delay_propagation_assumption_config.json",
+  "lean_axiom_config": "certificates/analysis_facts_delay_propagation/facts_delay_propagation_lean_axiom_config.json",
+  "computational": [],
+  "principal": {},
+  "helpers": [
+    "fdp_map_related",
+    "fdp_forall_family",
+    "fdp_max_arrivals2_related"
+  ],
+  "previous_status": "analysis_facts_behavior_service_module_status.json",
+  "previous_files": 101,
+  "previous_decls": 769
+}

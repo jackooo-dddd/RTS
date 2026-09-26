@@ -1,0 +1,18 @@
+Rocq 9.3 compatibility for model/readiness/sequential.v (proof-only).
+Rocq 9.3 Program already introduces sched/j/t and the conjunction hypothesis for the
+obligation, so the original `move=> sched j t /andP[]` intro pattern fails; the same
+goal is closed from that hypothesis. No statement or definition changes.
+--- a/model/readiness/sequential.v
++++ b/model/readiness/sequential.v
+@@ -32,6 +32,10 @@
+     job_ready sched j t := pending sched j t
+                            && prior_jobs_complete arr_seq sched j t;
+   }.
+-  Next Obligation. by move=> sched j t /andP[]. Qed.
++  Next Obligation.
++    lazymatch goal with
++    | H : is_true (_ && _) |- _ => exact: (proj1 (elimT andP H))
++    end.
++  Qed.
+ 
+ End SequentialTasksReadiness.

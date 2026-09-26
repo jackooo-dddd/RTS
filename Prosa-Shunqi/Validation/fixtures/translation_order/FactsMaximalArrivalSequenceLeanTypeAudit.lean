@@ -1,0 +1,32 @@
+import Prosa.Implementation.Facts.MaximalArrivalSequence
+set_option pp.fieldNotation false
+
+#check @Prosa.Implementation.Facts.MaximalArrivalSequence.arr_seq_is_a_set
+#check @Prosa.Implementation.Facts.MaximalArrivalSequence.concrete_all_jobs_from_taskset
+#check @Prosa.Implementation.Facts.MaximalArrivalSequence.arrival_times_are_consistent
+#check @Prosa.Implementation.Facts.MaximalArrivalSequence.concrete_valid_job_cost
+#check @Prosa.Implementation.Facts.MaximalArrivalSequence.task_arrivals_at_eq_generate_jobs_at
+#check @Prosa.Implementation.Facts.MaximalArrivalSequence.task_arrivals_at_eq
+#check @Prosa.Implementation.Facts.MaximalArrivalSequence.number_of_task_arrivals_eq
+#check @Prosa.Implementation.Facts.MaximalArrivalSequence.extend_horizon_size
+#check @Prosa.Implementation.Facts.MaximalArrivalSequence.prefix_up_to_size
+#check @Prosa.Implementation.Facts.MaximalArrivalSequence.n_arrivals_at_prefix_inclusion1
+#check @Prosa.Implementation.Facts.MaximalArrivalSequence.n_arrivals_at_prefix_inclusion
+#check @Prosa.Implementation.Facts.MaximalArrivalSequence.max_arrivals_at_next_max_arrivals_eq
+#check @Prosa.Implementation.Facts.MaximalArrivalSequence.n_arrivals_at_leq
+#check @Prosa.Implementation.Facts.MaximalArrivalSequence.concrete_is_arrival_curve
+
+#print axioms Prosa.Implementation.Facts.MaximalArrivalSequence.arr_seq_is_a_set
+#print axioms Prosa.Implementation.Facts.MaximalArrivalSequence.concrete_all_jobs_from_taskset
+#print axioms Prosa.Implementation.Facts.MaximalArrivalSequence.arrival_times_are_consistent
+#print axioms Prosa.Implementation.Facts.MaximalArrivalSequence.concrete_valid_job_cost
+#print axioms Prosa.Implementation.Facts.MaximalArrivalSequence.task_arrivals_at_eq_generate_jobs_at
+#print axioms Prosa.Implementation.Facts.MaximalArrivalSequence.task_arrivals_at_eq
+#print axioms Prosa.Implementation.Facts.MaximalArrivalSequence.number_of_task_arrivals_eq
+#print axioms Prosa.Implementation.Facts.MaximalArrivalSequence.extend_horizon_size
+#print axioms Prosa.Implementation.Facts.MaximalArrivalSequence.prefix_up_to_size
+#print axioms Prosa.Implementation.Facts.MaximalArrivalSequence.n_arrivals_at_prefix_inclusion1
+#print axioms Prosa.Implementation.Facts.MaximalArrivalSequence.n_arrivals_at_prefix_inclusion
+#print axioms Prosa.Implementation.Facts.MaximalArrivalSequence.max_arrivals_at_next_max_arrivals_eq
+#print axioms Prosa.Implementation.Facts.MaximalArrivalSequence.n_arrivals_at_leq
+#print axioms Prosa.Implementation.Facts.MaximalArrivalSequence.concrete_is_arrival_curve

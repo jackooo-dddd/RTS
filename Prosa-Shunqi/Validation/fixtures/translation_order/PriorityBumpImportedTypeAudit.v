@@ -1,0 +1,5 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedPriorityBump.
+
+Check ImportedPriorityBump.Prosa_Analysis_Definitions_Overheads_PriorityBump_priority_bump.
+Print ImportedPriorityBump.Prosa_Analysis_Definitions_Overheads_PriorityBump_priority_bump.

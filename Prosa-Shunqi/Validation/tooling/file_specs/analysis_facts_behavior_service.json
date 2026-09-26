@@ -1,0 +1,133 @@
+{
+  "rank": 102,
+  "layer": 14,
+  "tag": "FSV",
+  "slug": "analysis_facts_behavior_service",
+  "source": "analysis/facts/behavior/service.v",
+  "dependencies": [
+    "analysis/definitions/schedule_prefix.v",
+    "analysis/facts/behavior/supply.v",
+    "analysis/facts/model/scheduled.v",
+    "behavior/all.v",
+    "util/all.v"
+  ],
+  "declaration_count": 57,
+  "base_run": "analysis_facts_model_scheduled_final",
+  "base_checks": [
+    {
+      "manifest": "analysis_facts_model_scheduled",
+      "olean": "Prosa/Analysis/Facts/Model/Scheduled.olean",
+      "vo": "FactsScheduledSemanticSource.vo"
+    }
+  ],
+  "extra_pinned_sources": [
+    "analysis/definitions/schedule_prefix.v"
+  ],
+  "extra_source_patches": [
+    "patches/prosa-v06-rocq93-analysis-schedule-prefix.patch"
+  ],
+  "extra_source_vo_checks": {
+    "analysis/definitions/schedule_prefix.v": [
+      "analysis_schedule_prefix",
+      "artifact_hashes.source_copy_sha256"
+    ]
+  },
+  "extra_lean": [
+    [
+      "Prosa/Analysis/Definitions/SchedulePrefix.lean",
+      "Prosa/Analysis/Definitions/SchedulePrefix.olean",
+      "analysis_schedule_prefix",
+      "production_olean_sha256"
+    ],
+    [
+      "Prosa/Analysis/Facts/Behavior/Supply.lean",
+      "Prosa/Analysis/Facts/Behavior/Supply.olean",
+      "analysis_facts_behavior_supply",
+      "production_olean_sha256"
+    ]
+  ],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "FactsServiceSemanticSource",
+    "drop_imports": [
+      "Require Export prosa.analysis.facts.model.scheduled."
+    ],
+    "add_imports": [
+      "Require Import prosa.util.unit_growth prosa.model.schedule.scheduled prosa.analysis.definitions.service."
+    ],
+    "printer_repairs": [
+      "[exists t, 0 < service_at=[exists t : 'I_t1, 0 < service_at",
+      "[exists t', 0 < service_at=[exists t' : 'I_t2, 0 < service_at",
+      "[exists t, scheduled_at=[exists t : 'I_t1, scheduled_at",
+      "[exists t', scheduled_at=[exists t' : 'I_t2, scheduled_at"
+    ],
+    "note": "theorem statements from the authoritative elaborated types (proofs omitted); the proof-heavy facts/model/scheduled import is dropped (its statements are not used by these statements) and replaced by the modules it re-exports that the statements mention; the Rocq printer omits the ordinal types of [exists t : 'I_n, ...], restored by recorded printer repairs"
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/FactsServiceStatementProbe.v",
+  "production": "Prosa/Analysis/Facts/Behavior/Service.lean",
+  "production_olean": "Prosa/Analysis/Facts/Behavior/Service.olean",
+  "lean_namespace": "Prosa.Analysis.Facts.Behavior.Service",
+  "fixtures": [
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "SupplyComputationInterface",
+    "FactsServiceComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/FactsServiceLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/analysis_facts_behavior_service_export_config.json",
+  "export_name": "FactsService",
+  "cert_dir": "certificates/analysis_facts_behavior_service",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "JitterSvcBaseAdapter",
+    "JitterSvcNatBoolOperations",
+    "JitterSvcIntervalOperations",
+    "JitterSvcScheduleOperations",
+    "JitterSvcJobOperations",
+    "FsvcScheduledHelpers",
+    "FactsServiceCorrespondence"
+  ],
+  "audit_module": "FactsServiceAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/FactsServiceImportedTypeAudit.v",
+  "assumption_config": "certificates/analysis_facts_behavior_service/facts_service_assumption_config.json",
+  "lean_axiom_config": "certificates/analysis_facts_behavior_service/facts_service_lean_axiom_config.json",
+  "computational": [],
+  "principal": {},
+  "helpers": [
+    "fsv_supply_in_related",
+    "fsv_unit_service_related",
+    "fsv_fully_consuming_related",
+    "fsv_unit_growth_related",
+    "fsv_exists_nat",
+    "fsv_exists_ord_related",
+    "fsv_state_eq_correspondence",
+    "fsv_bool_eq_correspondence",
+    "fs_forall_schedule",
+    "fs_forall_state",
+    "fsv_service_during_related",
+    "fsv_is_blackout_related",
+    "fsv_any_nat_canonical",
+    "fsv_exists_ord_has"
+  ],
+  "previous_status": "analysis_definitions_work_bearing_readiness_module_status.json",
+  "previous_files": 100,
+  "previous_decls": 712,
+  "input_relations": [
+    "SvcProcessorStateRel (two-sided) extended by its supply_on field (FsvSupplyRel) for the four supply statements",
+    "SvcScheduleRel",
+    "ArJobArrivalRel",
+    "ArArrivalSequenceRel",
+    "state relation as the graph of its bijection (FsvStateGraph) for the two state-equality statements"
+  ],
+  "coverage_for_inner_binders": [
+    "schedules, processor states, arrival sequences (both directions)",
+    "instants/durations/indices (Nat, both directions)",
+    "jobs (identity carrier)"
+  ],
+  "lean_representation_note": "MathComp `a <= b < c` as `(decide (a \u2264 b) && decide (b < c)) = true`; `~~ b` as `(!b) = true`; `x \\in s` as `decide (x \u2208 s) = true`; `[exists t : 'I_n, p t]` as `(List.range' 0 n).any p`; `t.+1` as `t + 1`",
+  "export_diagnosis": "the accepted Service/Schedule/Supply interface closure (~120k lines in accepted files) plus 57 statement-only facts"
+}

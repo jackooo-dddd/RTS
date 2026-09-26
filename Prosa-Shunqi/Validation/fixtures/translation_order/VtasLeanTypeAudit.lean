@@ -1,0 +1,16 @@
+import Prosa.Model.Composite.ValidTaskArrivalSequence
+set_option pp.fieldNotation false
+
+#check @Prosa.Model.Composite.ValidTaskArrivalSequence.valid_task_arrival_sequence
+#check @Prosa.Model.Composite.ValidTaskArrivalSequence.valid_task_arrival_sequence_valid_arrivals
+#check @Prosa.Model.Composite.ValidTaskArrivalSequence.valid_task_arrival_sequence_valid_costs
+#check @Prosa.Model.Composite.ValidTaskArrivalSequence.valid_task_arrival_sequence_from_taskset
+#check @Prosa.Model.Composite.ValidTaskArrivalSequence.valid_task_arrival_sequence_respects_max
+#check @Prosa.Model.Composite.ValidTaskArrivalSequence.valid_task_arrival_sequence_valid_curve
+
+#print axioms Prosa.Model.Composite.ValidTaskArrivalSequence.valid_task_arrival_sequence
+#print axioms Prosa.Model.Composite.ValidTaskArrivalSequence.valid_task_arrival_sequence_valid_arrivals
+#print axioms Prosa.Model.Composite.ValidTaskArrivalSequence.valid_task_arrival_sequence_valid_costs
+#print axioms Prosa.Model.Composite.ValidTaskArrivalSequence.valid_task_arrival_sequence_from_taskset
+#print axioms Prosa.Model.Composite.ValidTaskArrivalSequence.valid_task_arrival_sequence_respects_max
+#print axioms Prosa.Model.Composite.ValidTaskArrivalSequence.valid_task_arrival_sequence_valid_curve

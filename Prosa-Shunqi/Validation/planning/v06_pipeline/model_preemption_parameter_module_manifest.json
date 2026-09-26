@@ -1,0 +1,314 @@
+{
+  "slice": "TRANSLATION_ORDER_MODEL_PREEMPTION_PARAMETER",
+  "generated_at": "2026-09-26T08:35:11.916255+08:00",
+  "published_at": "2026-09-26T08:35:11.916255+08:00",
+  "rank": 112,
+  "layer": 14,
+  "source_file": "model/preemption/parameter.v",
+  "source_commit": "414e66760333eaa4ef78c685bcf53291c527a548",
+  "source_tree": "7d7e94c731f7eefde4ca738310d4cafdd7bebdf0",
+  "source_file_sha256": "8dc80f0cfe6ab4c8f4183069f3a037ab6d819ae3b35590549b350cbb1531b14d",
+  "pipeline": "Validation/scripts/translation_file_pipeline.py",
+  "spec": "Validation/tooling/file_specs/model_preemption_parameter.json",
+  "spec_sha256": "e3f6b382d235958122a4d222a11fd4dd264d0535378a2cbc453d41567e43d3ea",
+  "source_compatibility": {
+    "mode": "extract",
+    "note": "the class and the twelve definitions are byte-identical computational blocks and the remark statement is the authoritative elaborated type (proof omitted); the util/all import resolves to the accepted reduced utility closure, so the accepted utility sources are imported explicitly: the accepted util/list semantic source (range, max0, last0; module ListSemanticSource), util/epsilon, util/nat (pinned) and the accepted generated source of util/nondecreasing.v (distances), whose .vo is hash-checked against the nondecreasing manifest (pinned util/list.v and util/nondecreasing.v overflow the Rocq 9.3 stack); the source Section variable sched, implicit in the uses of not_preemptive_implies_scheduled, execution_starts_with_preemption_point and preempted_at inside later definitions of the same Section, is reconnected by recorded local notations",
+    "extracted_sha256": "d3f00eb5dfe9b25c5fc23bf28685a31c39632fceacf4ccfb4745d78709de5324",
+    "extraction_metadata_sha256": "dc46e87bdf86167efffa6ed169827b8e174e7a3879f204c4af1d44dca6dfad81"
+  },
+  "source_type_evidence": {
+    "prosa.model.preemption.parameter.JobPreemptable": "EXACT_HASH",
+    "prosa.model.preemption.parameter.job_preemption_points": "EXACT_HASH",
+    "prosa.model.preemption.parameter.conversion_preserves_equivalence": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.model.preemption.parameter.lengths_of_segments": "EXACT_HASH",
+    "prosa.model.preemption.parameter.job_max_nonpreemptive_segment": "EXACT_HASH",
+    "prosa.model.preemption.parameter.job_last_nonpreemptive_segment": "EXACT_HASH",
+    "prosa.model.preemption.parameter.job_rtct": "EXACT_HASH",
+    "prosa.model.preemption.parameter.preempted_at": "EXACT_HASH",
+    "prosa.model.preemption.parameter.job_cannot_become_nonpreemptive_before_execution": "EXACT_HASH",
+    "prosa.model.preemption.parameter.job_cannot_be_nonpreemptive_after_completion": "EXACT_HASH",
+    "prosa.model.preemption.parameter.not_preemptive_implies_scheduled": "EXACT_HASH",
+    "prosa.model.preemption.parameter.execution_starts_with_preemption_point": "EXACT_HASH",
+    "prosa.model.preemption.parameter.valid_preemption_model": "EXACT_HASH",
+    "prosa.model.preemption.parameter.no_superfluous_preemptions": "EXACT_HASH"
+  },
+  "statement_only_export_boundary": [
+    "Prosa.Model.Preemption.Parameter.conversion_preserves_equivalence"
+  ],
+  "input_relations": [
+    "JobPreemptable pointwise (Nat progress by SubNatRel, Booleans) with two-way totals",
+    "job_cost pointwise by SubNatRel",
+    "SvcProcessorStateRel + SvcScheduleRel (two-sided)",
+    "ArArrivalSequenceRel",
+    "JLDP policy pointwise on Booleans",
+    "SubNatRel on instants"
+  ],
+  "coverage_for_inner_binders": [
+    "jobs (identity carrier)",
+    "Nats (both directions)"
+  ],
+  "lean_representation_note": "`[seq \u03c1 <- s | p \u03c1]` is `s.filter p`; `range`, `distances`, `max0`, `last0` are the accepted utilities; `\u03b5` is `1`; `~~ b` is `!b`; Booleans in Prop position are `= true`; `\u03c1 \\in s` is `decide (\u03c1 \u2208 s) = true`; `t.-1` is `t - 1`; unused section context (JobArrival) is absent",
+  "export_size": {
+    "lines": 127129,
+    "soft_budget_flag": "OVER_100K_DIAGNOSED",
+    "diagnosis": "the accepted Service/Schedule interface closure (~120k lines in earlier accepted files) plus the Nondecreasing interface and fourteen declarations"
+  },
+  "file_dependencies": {
+    "behavior/all.v": "behavior_all_module_status.json",
+    "model/priority/classes.v": "model_priority_classes_module_status.json",
+    "util/all.v": "util_all_module_status.json"
+  },
+  "production_file": "Prosa/Model/Preemption/Parameter.lean",
+  "production_source_sha256": "9e410896ed2bc3f6a4c31f4662a0cb0153b1dded4b5f6b5a080e6c7719e06151",
+  "production_olean_sha256": "39714241a75a4bbf7d83ceabf0b11be254674644daaf1fc87a1e8548eed2b3d3",
+  "export_config_sha256": "3e1a790df3ec3b8420bcf94a1fdc76b39d015c9cec28b75d1be7ca78f804dc80",
+  "export_sha256": "2cc1b93b4267b1756be02f9088b8ae5d6c1ea30cf51ef0a68e971c85fa217e12",
+  "export_lines": 127129,
+  "export_bytes": 2831244,
+  "import_sha256": "3cc886d43803df366ea64803eef56520bf60fb169537c7bcd2196b429fc8737e",
+  "source_vo_sha256": "0fe24f56f6ed47368835f52be3c661b7f43b22f8fd304455feb8034ef680ea34",
+  "lean_axiom_summary_sha256": "69924712c6f13bb836d886a276c7374d326fd42b1b3df905657b84dffef37d90",
+  "rocq_assumption_summary_sha256": "fce187def56f8fb90e02c8b50fabda135b5eeeb4245f2014d44914dfee74497b",
+  "assumption_config_sha256": "371643d6e9cf2fc21147a2ce8c3a5be9548d3effc0947e3abb6ad32c4add8ca2",
+  "stage_timing_seconds": {
+    "source_acquisition": {
+      "mode": "FRESH",
+      "seconds": 3
+    },
+    "lean_build": {
+      "mode": "FRESH",
+      "seconds": 383
+    },
+    "export": {
+      "mode": "FRESH",
+      "seconds": 39
+    },
+    "rocq_import": {
+      "mode": "FRESH",
+      "seconds": 41
+    },
+    "certificate_compile": {
+      "mode": "FRESH",
+      "seconds": 14
+    },
+    "assumption_audit": {
+      "mode": "FRESH",
+      "seconds": 0
+    }
+  },
+  "certificates": {
+    "ArrivalsSeqBaseAdapter": {
+      "source_sha256": "1b062890bd37fc0147b5b4c06988fbdcb143cb55d46c17e45448a438bd92786a",
+      "vo_sha256": "3b5534e8bea66af65ab8a9e35b4f65a7839d08f8c1d0ffd1b01d0e1b2a0d53d6"
+    },
+    "ArrivalsSeqOperations": {
+      "source_sha256": "2dd6d04ba95d36a1894f4034eb44d8b1f802e3f3e8d2f14054489d6035b788c6",
+      "vo_sha256": "8dd2369ad6106357af6703a71e4b8ef2fd1c2e6dc12de10df99caa00df82aafc"
+    },
+    "ArrivalsSeqCorrespondence": {
+      "source_sha256": "5269fb2712d0665bf0eb465b95da386f402229dfe5ad4f596afd1b8644ed091c",
+      "vo_sha256": "4de959de0cbf653517bb2ecb40cb64f537b9060e74efa47ed95152884f545c38"
+    },
+    "JitterSvcBaseAdapter": {
+      "source_sha256": "03ecf467100696ec8b4d5e472c7d16d0f1ffbf46ec4949a2a1db155857d17129",
+      "vo_sha256": "353a0bb7935c245e26606747373e535e070365307506a531aa555d52565d3a35"
+    },
+    "JitterSvcNatBoolOperations": {
+      "source_sha256": "dd10157ad7d9c485dbe0846137f1aefd15c6bf79f9135a1487b022bc786b2164",
+      "vo_sha256": "4ed91434055768f5719811c0b9f1f31a4a6bd47cdfbc9b16044072dff3677cc7"
+    },
+    "JitterSvcIntervalOperations": {
+      "source_sha256": "043898457f1de6fa6a3ad0f9a64a524da9134d41110d01d41e727bbff8cbe605",
+      "vo_sha256": "19613f46ac31e1578069a52523bc0c8e22bd74dc71b6facb56fd4dba1e38ef89"
+    },
+    "JitterSvcScheduleOperations": {
+      "source_sha256": "b7e67ddeb60fdf033f62cd1630787c2d06823f08fa10551ab94cdbe0f18b8975",
+      "vo_sha256": "4871cd30c6bc64059ff6cec9b80c5390dc5f2482bc8d34d9b42357fc71b52b4d"
+    },
+    "JitterSvcJobOperations": {
+      "source_sha256": "c0f2ed7c5475041e62e2197a716b4e86ce9f85f858d2134265d905f7e1d07e67",
+      "vo_sha256": "ba54343b0bbe4dff8d6715e414854fcf12308469c860d9ec3d77ebab23e6fa1e"
+    },
+    "PreemptionParameterCorrespondence": {
+      "source_sha256": "88fa4020d038b0fec7a7fb6b63dbe1245fb8d8905ab06ed29bf6014ea5fcf0ef",
+      "vo_sha256": "c800f95234c2a6d0c84e4befd2652428bb3e35466ebf93e3459af64884c99cae"
+    },
+    "PreemptionParameterAssumptionAudit": {
+      "source_sha256": "e58d69138447fcadc873a562063fa17bf3d9f27deca89e4ea2dc4b6daa952446",
+      "vo_sha256": "b4724cba2efe2e33c51a8281d3c3167e5539b767628d8c7d49ee6aef6abecd4a"
+    }
+  },
+  "declarations": [
+    {
+      "source_declaration": "prosa.model.preemption.parameter.JobPreemptable",
+      "lean_declaration": "Prosa.Model.Preemption.Parameter.JobPreemptable",
+      "semantic_status": "CERTIFIED",
+      "certificates": [
+        "JobPreemptable_source_total",
+        "JobPreemptable_target_total"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.model.preemption.parameter.job_preemption_points",
+      "lean_declaration": "Prosa.Model.Preemption.Parameter.job_preemption_points",
+      "semantic_status": "CERTIFIED",
+      "certificates": [
+        "job_preemption_points_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.model.preemption.parameter.conversion_preserves_equivalence",
+      "lean_declaration": "Prosa.Model.Preemption.Parameter.conversion_preserves_equivalence",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "conversion_preserves_equivalence_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.model.preemption.parameter.lengths_of_segments",
+      "lean_declaration": "Prosa.Model.Preemption.Parameter.lengths_of_segments",
+      "semantic_status": "CERTIFIED",
+      "certificates": [
+        "lengths_of_segments_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.model.preemption.parameter.job_max_nonpreemptive_segment",
+      "lean_declaration": "Prosa.Model.Preemption.Parameter.job_max_nonpreemptive_segment",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "job_max_nonpreemptive_segment_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.model.preemption.parameter.job_last_nonpreemptive_segment",
+      "lean_declaration": "Prosa.Model.Preemption.Parameter.job_last_nonpreemptive_segment",
+      "semantic_status": "CERTIFIED",
+      "certificates": [
+        "job_last_nonpreemptive_segment_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.model.preemption.parameter.job_rtct",
+      "lean_declaration": "Prosa.Model.Preemption.Parameter.job_rtct",
+      "semantic_status": "CERTIFIED",
+      "certificates": [
+        "job_rtct_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.model.preemption.parameter.preempted_at",
+      "lean_declaration": "Prosa.Model.Preemption.Parameter.preempted_at",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "preempted_at_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.model.preemption.parameter.job_cannot_become_nonpreemptive_before_execution",
+      "lean_declaration": "Prosa.Model.Preemption.Parameter.job_cannot_become_nonpreemptive_before_execution",
+      "semantic_status": "CERTIFIED",
+      "certificates": [
+        "job_cannot_become_nonpreemptive_before_execution_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.model.preemption.parameter.job_cannot_be_nonpreemptive_after_completion",
+      "lean_declaration": "Prosa.Model.Preemption.Parameter.job_cannot_be_nonpreemptive_after_completion",
+      "semantic_status": "CERTIFIED",
+      "certificates": [
+        "job_cannot_be_nonpreemptive_after_completion_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.model.preemption.parameter.not_preemptive_implies_scheduled",
+      "lean_declaration": "Prosa.Model.Preemption.Parameter.not_preemptive_implies_scheduled",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "not_preemptive_implies_scheduled_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.model.preemption.parameter.execution_starts_with_preemption_point",
+      "lean_declaration": "Prosa.Model.Preemption.Parameter.execution_starts_with_preemption_point",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "execution_starts_with_preemption_point_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.model.preemption.parameter.valid_preemption_model",
+      "lean_declaration": "Prosa.Model.Preemption.Parameter.valid_preemption_model",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "valid_preemption_model_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.model.preemption.parameter.no_superfluous_preemptions",
+      "lean_declaration": "Prosa.Model.Preemption.Parameter.no_superfluous_preemptions",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "no_superfluous_preemptions_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    }
+  ],
+  "acceptance": "ACCEPTED_V06_FILE"
+}

@@ -1,0 +1,18 @@
+import Prosa.Implementation.Definitions.MaximalArrivalSequence
+set_option pp.fieldNotation false
+
+#check @Prosa.Implementation.Definitions.MaximalArrivalSequence.suffix_sum
+#check @Prosa.Implementation.Definitions.MaximalArrivalSequence.jobs_remaining
+#check @Prosa.Implementation.Definitions.MaximalArrivalSequence.next_max_arrival
+#check @Prosa.Implementation.Definitions.MaximalArrivalSequence.extend_arrival_prefix
+#check @Prosa.Implementation.Definitions.MaximalArrivalSequence.maximal_arrival_prefix
+#check @Prosa.Implementation.Definitions.MaximalArrivalSequence.max_arrivals_at
+#check @Prosa.Implementation.Definitions.MaximalArrivalSequence.concrete_arrival_sequence
+
+#print axioms Prosa.Implementation.Definitions.MaximalArrivalSequence.suffix_sum
+#print axioms Prosa.Implementation.Definitions.MaximalArrivalSequence.jobs_remaining
+#print axioms Prosa.Implementation.Definitions.MaximalArrivalSequence.next_max_arrival
+#print axioms Prosa.Implementation.Definitions.MaximalArrivalSequence.extend_arrival_prefix
+#print axioms Prosa.Implementation.Definitions.MaximalArrivalSequence.maximal_arrival_prefix
+#print axioms Prosa.Implementation.Definitions.MaximalArrivalSequence.max_arrivals_at
+#print axioms Prosa.Implementation.Definitions.MaximalArrivalSequence.concrete_arrival_sequence

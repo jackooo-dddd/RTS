@@ -1,0 +1,30 @@
+--- a/analysis/facts/SBF.v	2026-09-25 22:53:11
++++ b/analysis/facts/SBF.v	2026-09-25 22:53:11
+@@ -1,6 +1,10 @@
+ Require Export prosa.analysis.definitions.sbf.pred.
+ Require Export prosa.analysis.facts.behavior.supply.
+ Require Export prosa.model.task.concept.
++Require Import prosa.util.setoid prosa.util.tactics.
++(* Rocq 9.3 compatibility: restore v0.6 util/tactics [done] (the shared
++   compatibility copy's [done] is self-recursive). *)
++Ltac done := solve [ ssreflect_rw.done | eauto 4 with basic_rt_facts ].
+ 
+ (** In this section, we prove some useful facts about SBF. *)
+ Section SupplyBoundFunctionLemmas.
+@@ -84,12 +88,10 @@
+     Lemma blackout_during_bound_SBF :
+       blackout_during sched t1 (t1 + Δ) <= Δ - SBF Δ.
+     Proof.
+-      rewrite blackout_during_complement // leq_sub => //.
+-      rewrite -(leqRW (snd H_valid_SBF _ _ _ _ _ _ _)).
+-      { by have -> : (t1 + Δ) - t1 = Δ by lia. }
+-      { by apply H_arrives_in. }
+-      { by eapply H_P_interval. }
+-      { lia. }
++      rewrite blackout_during_complement //; apply: leq_sub2l.
++      have LE := proj2 H_valid_SBF j t1 t2 H_arrives_in H_P_interval (t1 + Δ).
++      rewrite addKn in LE; apply: LE.
++      by apply/andP; split; [exact: leq_addr | exact: H_subinterval].
+     Qed.
+ 
+   End BlackoutBound.

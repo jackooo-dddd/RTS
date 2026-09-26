@@ -1,0 +1,165 @@
+(* Re-bound copy of the accepted platform_properties PlatformScheduleFiniteOperations.v for the
+   uniprocessor artifact; only module names differ. *)
+(** GENERATED ARTIFACT-LOCAL INSTANTIATION.
+    source: Validation/certificates/behavior_schedule/ScheduleFiniteOperations.v
+    source-sha256: 3ce4ecae129fe7a807498e674c943bd228712a1289987da90266af36d5d87525
+    imported-artifact-sha256: 88c14ae54c0f58e35177b0b34ee0bf1225dad3de38c66d7cf8e5494cf518bf91 *)
+From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq
+  fintype bigop.
+From prosa Require Import behavior.schedule.
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedUniprocessor ImportedSubadditivity.
+From FoundationCertificates Require Import PropSPropFoundation
+  LogicalRelation SubadditivityNatCorrespondence UniPlatformScheduleBaseAdapter.
+
+(** Operation-level correspondence for the actual compiled Schedule
+    artifact.  In particular, finite sums are reduced to ordered list folds
+    without importing Lean's theorem proof dependency graph. *)
+
+Definition sch_target_zero : Lean.Nat :=
+  ImportedUniprocessor.OfNat_ofNat_inst1 Lean.Nat Lean.Nat_zero
+    (ImportedUniprocessor.instOfNatNat Lean.Nat_zero).
+
+Definition sch_target_add (a b : Lean.Nat) : Lean.Nat :=
+  ImportedUniprocessor.HAdd_hAdd_inst7 Lean.Nat Lean.Nat Lean.Nat
+    (ImportedUniprocessor.instHAdd_inst1 Lean.Nat
+      ImportedUniprocessor.instAddNat) a b.
+
+Definition sch_target_list_sum
+    (xs : ImportedUniprocessor.List_inst1 Lean.Nat) : Lean.Nat :=
+  ImportedUniprocessor.List_sum_inst1 Lean.Nat
+    ImportedUniprocessor.instAddNat
+    (ImportedUniprocessor.MulZeroClass_toZero_inst1 Lean.Nat
+      ImportedUniprocessor.Nat_instMulZeroClass) xs.
+
+Fixpoint sch_nat_list_to_imported (xs : seq nat) :
+    ImportedUniprocessor.List_inst1 Lean.Nat :=
+  match xs with
+  | [::] => ImportedUniprocessor.List_nil_inst1 Lean.Nat
+  | x :: tail => ImportedUniprocessor.List_cons_inst1 Lean.Nat
+      (sub_nat_to_imported x) (sch_nat_list_to_imported tail)
+  end.
+
+Definition SchNatListRel (xsR : seq nat)
+    (xsL : ImportedUniprocessor.List_inst1 Lean.Nat) : SProp :=
+  Lean.eq (sch_nat_list_to_imported xsR) xsL.
+
+Lemma sch_target_add_related aR aL bR bL :
+  SubNatRel aR aL -> SubNatRel bR bL ->
+  SubNatRel (aR + bR) (sch_target_add aL bL).
+Proof. exact (sub_add_correspondence aR aL bR bL). Qed.
+
+Fixpoint sch_list_sum_canonical (xs : seq nat) :
+  SubNatRel (foldr addn O xs)
+    (sch_target_list_sum (sch_nat_list_to_imported xs)).
+Proof.
+  destruct xs as [|x xs].
+  - exact (sub_nat_rel_canonical O).
+  - exact (sch_target_add_related x (sub_nat_to_imported x)
+      (foldr addn O xs)
+      (sch_target_list_sum (sch_nat_list_to_imported xs))
+      (sub_nat_rel_canonical x) (sch_list_sum_canonical xs)).
+Defined.
+
+Lemma sch_list_sum_related (xsR : seq nat)
+    (xsL : ImportedUniprocessor.List_inst1 Lean.Nat) :
+  SchNatListRel xsR xsL ->
+  SubNatRel (foldr addn O xsR) (sch_target_list_sum xsL).
+Proof.
+  intro Hxs. unfold SchNatListRel in Hxs.
+  exact (sub_imported_eq_trans _ _ _ (sch_list_sum_canonical xsR)
+    (sub_imported_eq_congr sch_target_list_sum _ _ Hxs)).
+Qed.
+
+Definition SchCoreEnumerationRel (CoreR : finType) (CoreL : Type)
+    (toL : CoreR -> CoreL)
+    (enumL : ImportedUniprocessor.List CoreL) : SProp :=
+  Lean.eq (sch_list_to_imported (map toL (enum CoreR))) enumL.
+
+Definition SchCoreNatFunRel (CoreR : finType) (CoreL : Type)
+    (toL : CoreR -> CoreL) (fR : CoreR -> nat)
+    (fL : CoreL -> Lean.Nat) : SProp :=
+  forall cR, SubNatRel (fR cR) (fL (toL cR)).
+
+Fixpoint sch_map_core_values_canonical
+    (CoreR : finType) (CoreL : Type) (toL : CoreR -> CoreL)
+    (fR : CoreR -> nat) (fL : CoreL -> Lean.Nat)
+    (Hf : SchCoreNatFunRel CoreR CoreL toL fR fL)
+    (xs : seq CoreR) :
+  Lean.eq (sch_nat_list_to_imported (map fR xs))
+    (ImportedUniprocessor.List_map_inst2 CoreL Lean.Nat fL
+      (sch_list_to_imported (map toL xs))).
+Proof.
+  destruct xs as [|x xs].
+  - exact (@Lean.eq_refl _ _).
+  - cbn [map sch_nat_list_to_imported sch_list_to_imported].
+    exact (sub_imported_eq_congr2
+      (ImportedUniprocessor.List_cons_inst1 Lean.Nat) _ _ _ _
+      (Hf x) (sch_map_core_values_canonical CoreR CoreL toL
+        fR fL Hf xs)).
+Defined.
+
+Lemma sch_map_core_values_related
+    (CoreR : finType) (CoreL : Type) (toL : CoreR -> CoreL)
+    (fR : CoreR -> nat) (fL : CoreL -> Lean.Nat)
+    (enumL : ImportedUniprocessor.List CoreL) :
+  SchCoreNatFunRel CoreR CoreL toL fR fL ->
+  SchCoreEnumerationRel CoreR CoreL toL enumL ->
+  SchNatListRel (map fR (enum CoreR))
+    (ImportedUniprocessor.List_map_inst2 CoreL Lean.Nat fL enumL).
+Proof.
+  intros Hf Henum. unfold SchNatListRel, SchCoreEnumerationRel in *.
+  exact (sub_imported_eq_trans _ _ _
+    (sch_map_core_values_canonical CoreR CoreL toL fR fL Hf
+      (enum CoreR))
+    (sub_imported_eq_congr
+      (ImportedUniprocessor.List_map_inst2 CoreL Lean.Nat fL) _ _ Henum)).
+Qed.
+
+Lemma sch_mathcomp_big_seq_as_fold (CoreR : Type)
+    (xs : seq CoreR) (fR : CoreR -> nat) :
+  Logic.eq (\sum_(c <- xs) fR c)
+    (foldr addn O (map fR xs)).
+Proof.
+  elim: xs => [|x xs IH].
+  - rewrite big_nil. reflexivity.
+  - rewrite big_cons. cbn [map foldr]. now rewrite IH.
+Qed.
+
+Lemma sch_mathcomp_big_enum_as_fold (CoreR : finType)
+    (fR : CoreR -> nat) :
+  Logic.eq (\sum_(c : CoreR) fR c)
+    (foldr addn O (map fR (enum CoreR))).
+Proof.
+  rewrite -big_enum.
+  exact (sch_mathcomp_big_seq_as_fold CoreR (enum CoreR) fR).
+Qed.
+
+Lemma sch_finite_sum_related
+    (CoreR : finType) (CoreL : Type) (toL : CoreR -> CoreL)
+    (fR : CoreR -> nat) (fL : CoreL -> Lean.Nat)
+    (enumL : ImportedUniprocessor.List CoreL) :
+  SchCoreNatFunRel CoreR CoreL toL fR fL ->
+  SchCoreEnumerationRel CoreR CoreL toL enumL ->
+  SubNatRel (\sum_(c : CoreR) fR c)
+    (sch_target_list_sum
+      (ImportedUniprocessor.List_map_inst2 CoreL Lean.Nat fL enumL)).
+Proof.
+  intros Hf Henum.
+  rewrite (sch_mathcomp_big_enum_as_fold CoreR fR).
+  apply sch_list_sum_related.
+  exact (sch_map_core_values_related CoreR CoreL toL fR fL enumL
+    Hf Henum).
+Qed.
+
+Goal Logic.True.
+Proof. idtac "AUDIT_BEGIN sch_list_sum_related". exact I. Qed.
+Print Assumptions sch_list_sum_related.
+Goal Logic.True.
+Proof. idtac "AUDIT_END sch_list_sum_related". exact I. Qed.
+
+Goal Logic.True.
+Proof. idtac "AUDIT_BEGIN sch_finite_sum_related". exact I. Qed.
+Print Assumptions sch_finite_sum_related.
+Goal Logic.True.
+Proof. idtac "AUDIT_END sch_finite_sum_related". exact I. Qed.

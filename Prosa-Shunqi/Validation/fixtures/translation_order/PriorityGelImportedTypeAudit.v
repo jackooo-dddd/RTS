@@ -1,0 +1,10 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedPriorityGel.
+
+Check ImportedPriorityGel.Prosa_Model_Priority_Gel_offset.
+Check ImportedPriorityGel.Prosa_Model_Priority_Gel_PriorityPoint.
+Check ImportedPriorityGel.Prosa_Model_Priority_Gel_job_priority_point.
+Check ImportedPriorityGel.Prosa_Model_Priority_Gel_GEL.
+Check ImportedPriorityGel.Prosa_Model_Priority_Gel_GEL_is_reflexive.
+Check ImportedPriorityGel.Prosa_Model_Priority_Gel_GEL_is_transitive.
+Check ImportedPriorityGel.Prosa_Model_Priority_Gel_GEL_is_total.

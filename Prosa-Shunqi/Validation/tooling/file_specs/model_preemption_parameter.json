@@ -1,0 +1,154 @@
+{
+  "rank": 112,
+  "layer": 14,
+  "tag": "PPM",
+  "slug": "model_preemption_parameter",
+  "source": "model/preemption/parameter.v",
+  "dependencies": [
+    "behavior/all.v",
+    "model/priority/classes.v",
+    "util/all.v"
+  ],
+  "declaration_count": 14,
+  "base_run": "analysis_facts_model_arrival_curves_final",
+  "base_checks": [
+    {
+      "manifest": "model_priority_classes",
+      "olean": "Prosa/Model/Priority/Classes.olean",
+      "vo": "model/priority/classes.vo",
+      "vo_key": "official_source_vo_sha256"
+    },
+    {
+      "manifest": "model_priority_definitions",
+      "olean": "Prosa/Model/Priority/Definitions.olean"
+    },
+    {
+      "manifest": "nondecreasing",
+      "olean": "Prosa/Util/Nondecreasing.olean"
+    }
+  ],
+  "extra_pinned_sources": [
+    "util/nat.v"
+  ],
+  "extra_artifacts": [
+    {
+      "from": "../nondecreasing_semantic/source/GeneratedNondecreasingSource.vo",
+      "to": "source/GeneratedNondecreasingSource.vo",
+      "manifest": "nondecreasing",
+      "key": "declarations.0.source_validation_vo_sha256"
+    }
+  ],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "PreemptionParameterSemanticSource",
+    "drop_imports": [],
+    "add_imports": [
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq.",
+      "Require Import prosa.util.list.",
+      "Import ListSemanticSource.",
+      "Require Import prosa.util.epsilon.",
+      "Require Import prosa.GeneratedNondecreasingSource.",
+      "Import GeneratedNondecreasingSource."
+    ],
+    "note": "the class and the twelve definitions are byte-identical computational blocks and the remark statement is the authoritative elaborated type (proof omitted); the util/all import resolves to the accepted reduced utility closure, so the accepted utility sources are imported explicitly: the accepted util/list semantic source (range, max0, last0; module ListSemanticSource), util/epsilon, util/nat (pinned) and the accepted generated source of util/nondecreasing.v (distances), whose .vo is hash-checked against the nondecreasing manifest (pinned util/list.v and util/nondecreasing.v overflow the Rocq 9.3 stack); the source Section variable sched, implicit in the uses of not_preemptive_implies_scheduled, execution_starts_with_preemption_point and preempted_at inside later definitions of the same Section, is reconnected by recorded local notations",
+    "local_bindings": [
+      "not_preemptive_implies_scheduled=not_preemptive_implies_scheduled sched",
+      "execution_starts_with_preemption_point=execution_starts_with_preemption_point sched",
+      "preempted_at=preempted_at sched"
+    ]
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/PreemptionParameterStatementProbe.v",
+  "production": "Prosa/Model/Preemption/Parameter.lean",
+  "production_olean": "Prosa/Model/Preemption/Parameter.olean",
+  "lean_namespace": "Prosa.Model.Preemption.Parameter",
+  "fixtures": [
+    "NondecreasingComputationInterface",
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "PreemptionParameterComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/PreemptionParameterLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/model_preemption_parameter_export_config.json",
+  "export_name": "PreemptionParameter",
+  "cert_dir": "certificates/model_preemption_parameter",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "JitterSvcBaseAdapter",
+    "JitterSvcNatBoolOperations",
+    "JitterSvcIntervalOperations",
+    "JitterSvcScheduleOperations",
+    "JitterSvcJobOperations",
+    "PreemptionParameterCorrespondence"
+  ],
+  "audit_module": "PreemptionParameterAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/PreemptionParameterImportedTypeAudit.v",
+  "assumption_config": "certificates/model_preemption_parameter/preemption_parameter_assumption_config.json",
+  "lean_axiom_config": "certificates/model_preemption_parameter/preemption_parameter_lean_axiom_config.json",
+  "computational": [
+    "JobPreemptable",
+    "job_preemption_points",
+    "lengths_of_segments",
+    "job_max_nonpreemptive_segment",
+    "job_last_nonpreemptive_segment",
+    "job_rtct",
+    "preempted_at",
+    "job_cannot_become_nonpreemptive_before_execution",
+    "job_cannot_be_nonpreemptive_after_completion",
+    "not_preemptive_implies_scheduled",
+    "execution_starts_with_preemption_point",
+    "valid_preemption_model",
+    "no_superfluous_preemptions"
+  ],
+  "principal": {
+    "JobPreemptable": [
+      "JobPreemptable_source_total",
+      "JobPreemptable_target_total"
+    ]
+  },
+  "helpers": [
+    "pp_nat_input",
+    "pp_succ_related",
+    "pp_iff_correspondence",
+    "pp_filter_canonical",
+    "pp_filter_related",
+    "pp_range_related",
+    "pp_nat_eq_transport",
+    "pp_nat_eqb_related",
+    "pp_bool_or_canonical",
+    "pp_bool_or_related",
+    "pp_mem_canonical",
+    "pp_mem_related",
+    "pp_distances_canonical",
+    "pp_distances_related",
+    "pp_max_canonical",
+    "pp_foldmax_canonical",
+    "pp_max0_related",
+    "pp_last0_canonical",
+    "pp_last0_related",
+    "pp_scheduled_at_related",
+    "pp_service_at_related",
+    "pp_service_related",
+    "pp_completed_by_related"
+  ],
+  "previous_status": "model_aggregate_workload_module_status.json",
+  "previous_files": 110,
+  "previous_decls": 851,
+  "input_relations": [
+    "JobPreemptable pointwise (Nat progress by SubNatRel, Booleans) with two-way totals",
+    "job_cost pointwise by SubNatRel",
+    "SvcProcessorStateRel + SvcScheduleRel (two-sided)",
+    "ArArrivalSequenceRel",
+    "JLDP policy pointwise on Booleans",
+    "SubNatRel on instants"
+  ],
+  "coverage_for_inner_binders": [
+    "jobs (identity carrier)",
+    "Nats (both directions)"
+  ],
+  "lean_representation_note": "`[seq \u03c1 <- s | p \u03c1]` is `s.filter p`; `range`, `distances`, `max0`, `last0` are the accepted utilities; `\u03b5` is `1`; `~~ b` is `!b`; Booleans in Prop position are `= true`; `\u03c1 \\in s` is `decide (\u03c1 \u2208 s) = true`; `t.-1` is `t - 1`; unused section context (JobArrival) is absent",
+  "export_diagnosis": "the accepted Service/Schedule interface closure (~120k lines in earlier accepted files) plus the Nondecreasing interface and fourteen declarations"
+}

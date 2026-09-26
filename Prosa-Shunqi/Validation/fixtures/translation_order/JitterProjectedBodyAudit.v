@@ -1,0 +1,7 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedReadinessJitterProjection.
+
+Print ImportedReadinessJitterProjection.Prosa_Model_Readiness_Jitter_JobJitter.
+Print ImportedReadinessJitterProjection.Prosa_Model_Readiness_Jitter_is_released.
+Print ImportedReadinessJitterProjection.Prosa_Model_Readiness_Jitter_jitter_ready_instance.
+Print ImportedReadinessJitterProjection.Prosa_Behavior_Service_completed_by.

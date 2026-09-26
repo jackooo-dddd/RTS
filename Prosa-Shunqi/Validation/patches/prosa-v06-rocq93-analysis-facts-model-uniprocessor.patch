@@ -1,0 +1,11 @@
+--- a/analysis/facts/model/uniprocessor.v	2026-09-25 20:59:53
++++ b/analysis/facts/model/uniprocessor.v	2026-09-25 20:59:53
+@@ -23,7 +23,7 @@
+         ~~ scheduled_at sched j' t.
+   Proof.
+     move=> j j' t /eqP NEQ SCHED; apply/negP => SCHED'.
+-    by have: j = j' by apply: H_uni.
++    exact: NEQ (H_uni j j' sched t SCHED SCHED').
+   Qed.
+ 
+ End UniquenessOfTheScheduledJob.

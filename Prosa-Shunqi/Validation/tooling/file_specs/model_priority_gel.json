@@ -1,0 +1,113 @@
+{
+  "rank": 116,
+  "layer": 14,
+  "tag": "PPGEL",
+  "slug": "model_priority_gel",
+  "source": "model/priority/gel.v",
+  "dependencies": [
+    "model/priority/classes.v",
+    "util/int.v"
+  ],
+  "declaration_count": 7,
+  "base_run": "model_priority_classes_final",
+  "base_checks": [
+    {
+      "manifest": "model_priority_classes",
+      "olean": "Prosa/Model/Priority/Classes.olean",
+      "vo": "model/priority/classes.vo",
+      "vo_key": "official_source_vo_sha256"
+    },
+    {
+      "manifest": "model_priority_coercion",
+      "olean": "Prosa/Model/Priority/Coercion.olean",
+      "vo": "model/priority/coercion.vo"
+    },
+    {
+      "manifest": "model_priority_definitions",
+      "olean": "Prosa/Model/Priority/Definitions.olean"
+    }
+  ],
+  "source_mode": "pinned",
+  "fingerprint_probe": "Validation/fixtures/translation_order/PriorityGelTypeFingerprintProbe.v",
+  "production": "Prosa/Model/Priority/Gel.lean",
+  "production_olean": "Prosa/Model/Priority/Gel.olean",
+  "lean_namespace": "Prosa.Model.Priority.Gel",
+  "fixtures": [
+    "PriorityGelComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/PriorityGelLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/model_priority_gel_export_config.json",
+  "export_name": "PriorityGel",
+  "cert_dir": "certificates/model_priority_gel",
+  "chain": [
+    "NatSubCorrespondence",
+    "PcoBaseAdapter",
+    "PcoStaticOrder",
+    "PcoDynamicOrder",
+    "PriorityCoercionCorrespondence",
+    "PriorityGelCorrespondence"
+  ],
+  "audit_module": "PriorityGelAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/PriorityGelImportedTypeAudit.v",
+  "assumption_config": "certificates/model_priority_gel/model_priority_gel_assumption_config.json",
+  "lean_axiom_config": "certificates/model_priority_gel/model_priority_gel_lean_axiom_config.json",
+  "computational": [
+    "offset",
+    "PriorityPoint",
+    "job_priority_point",
+    "GEL"
+  ],
+  "principal": {
+    "offset": [
+      "offset_rocq_roundtrip_certificate",
+      "offset_imported_roundtrip_certificate"
+    ],
+    "PriorityPoint": [
+      "PriorityPoint_source_total",
+      "PriorityPoint_target_total"
+    ]
+  },
+  "helpers": [
+    "gel_lez_pp",
+    "gel_lez_nn",
+    "gel_lez_pn",
+    "gel_lez_np",
+    "gel_le_canonical",
+    "gel_le_related",
+    "gel_addz_pp",
+    "gel_addz_pn",
+    "gel_target_add_cast",
+    "gel_succ_related",
+    "gel_add_canonical",
+    "gel_add_related"
+  ],
+  "previous_status": "model_priority_fifo_module_status.json",
+  "previous_files": 114,
+  "previous_decls": 877,
+  "input_relations": [
+    "MathComp int and Lean Int by constructor-wise encoding (two-way roundtrips)",
+    "PriorityPoint pointwise on integers (two-way totals)",
+    "job_arrival pointwise on Nat (two-way totals)",
+    "Lean.eq on job_task"
+  ],
+  "coverage_for_inner_binders": [],
+  "lean_representation_note": "MathComp `int` is Lean `Int` (Posz/Negz as ofNat/negSucc); `n%:R` into `int` is the coercion `(n : Int)`; `(a <= b)%R` on `int` is `decide (a \u2264 b)`; the source `#[export] Instance GEL` is a reducible definition (its Task parameter is not determined by the result type, so it cannot be a Lean global instance)",
+  "extra_pinned_sources": [
+    "util/int.v"
+  ],
+  "extra_source_vo_checks": {
+    "util/int.vo": [
+      "util_int",
+      "official_rocq_vo_sha256"
+    ]
+  },
+  "extra_lean": [
+    [
+      "Prosa/Util/Int.lean",
+      "Prosa/Util/Int.olean",
+      "util_int",
+      "production_olean_sha256"
+    ]
+  ],
+  "export_diagnosis": "the priority-coercion closure (~6k lines in the accepted EDF/DM/FIFO exports) plus the Lean Int closure pulled in by the kernel-checked Int constructor equations (their omega/Int.negSucc_eq proofs and Mathlib's ordered-ring Int instances)"
+}
