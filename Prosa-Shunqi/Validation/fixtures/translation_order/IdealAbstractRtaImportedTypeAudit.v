@@ -1,0 +1,5 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedIdealAbstractRta.
+
+Check ImportedIdealAbstractRta.Prosa_Analysis_Abstract_Ideal_AbstractRta_nonpreemptive_interference_is_bounded.
+Check ImportedIdealAbstractRta.Prosa_Analysis_Abstract_Ideal_AbstractRta_uniprocessor_response_time_bound_ideal.

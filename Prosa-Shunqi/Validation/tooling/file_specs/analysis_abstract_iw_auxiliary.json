@@ -1,0 +1,180 @@
+{
+  "rank": 208,
+  "layer": 19,
+  "tag": "IWA",
+  "slug": "analysis_abstract_iw_auxiliary",
+  "source": "analysis/abstract/iw_auxiliary.v",
+  "dependencies": [
+    "analysis/abstract/restricted_supply/busy_prefix.v",
+    "analysis/definitions/interference.v",
+    "analysis/definitions/task_schedule.v",
+    "analysis/facts/model/service_of_jobs.v",
+    "analysis/facts/priority/classes.v",
+    "model/aggregate/service_of_jobs.v"
+  ],
+  "declaration_count": 6,
+  "base_run": "analysis_abstract_restricted_supply_busy_prefix_final",
+  "base_checks": [
+    {
+      "manifest": "analysis_abstract_restricted_supply_busy_prefix",
+      "olean": "Prosa/Analysis/Abstract/RestrictedSupply/BusyPrefix.olean",
+      "vo": "BusyPrefixSemanticSource.vo"
+    }
+  ],
+  "extra_pinned_sources": [],
+  "extra_lean": [],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "IwAuxiliarySemanticSource",
+    "drop_imports": [
+      "Require Export prosa.analysis.definitions.interference.",
+      "Require Export prosa.analysis.definitions.task_schedule.",
+      "Require Export prosa.analysis.facts.priority.classes.",
+      "Require Export prosa.analysis.abstract.restricted_supply.busy_prefix.",
+      "Require Export prosa.model.aggregate.service_of_jobs.",
+      "Require Export prosa.analysis.facts.model.service_of_jobs."
+    ],
+    "add_imports": [
+      "Require Export prosa.analysis.abstract.definitions.",
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq bigop.",
+      "Require Import prosa.behavior.all."
+    ],
+    "note": "theorem statements from the authoritative elaborated types (proofs omitted); they mention only the abstract Interference class and cumul_cond_interference / cumulative_interference / interference of analysis/abstract/definitions, the pinned source of the base closure; the other imports are proof-only or unused by the statements and are dropped"
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/IwAuxiliaryStatementProbe.v",
+  "production": "Prosa/Analysis/Abstract/IwAuxiliary.lean",
+  "production_olean": "Prosa/Analysis/Abstract/IwAuxiliary.olean",
+  "lean_namespace": "Prosa.Analysis.Abstract.IwAuxiliary",
+  "fixtures": [
+    "NondecreasingComputationInterface",
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "PreemptionParameterComputationInterface",
+    "ServiceInversionPredComputationInterface",
+    "AbstractDefinitionsComputationInterface",
+    "BusyPrefixComputationInterface",
+    "IwAuxiliaryComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/IwAuxiliaryLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/analysis_abstract_iw_auxiliary_export_config.json",
+  "export_name": "IwAuxiliary",
+  "cert_dir": "certificates/analysis_abstract_iw_auxiliary",
+  "chain": [
+    "AbstractDefinitionsBaseAdapter",
+    "ServiceBaseAdapter",
+    "ServiceNatBoolOperations",
+    "AbstractDefinitionsArrivalOperations",
+    "AbstractDefinitionsClasses",
+    "AbstractDefinitionsNatBoolOperations",
+    "AbstractDefinitionsIntervalOperations",
+    "AbstractDefinitionsOperations",
+    "AbstractDefinitionsSums",
+    "AbstractDefinitionsLogical",
+    "IwAuxiliaryCorrespondence"
+  ],
+  "audit_module": "IwAuxiliaryAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/IwAuxiliaryImportedTypeAudit.v",
+  "assumption_config": "certificates/analysis_abstract_iw_auxiliary/iw_auxiliary_assumption_config.json",
+  "lean_axiom_config": "certificates/analysis_abstract_iw_auxiliary/iw_auxiliary_lean_axiom_config.json",
+  "computational": [],
+  "principal": {},
+  "helpers": [
+    "iwa_lean_transport",
+    "iwa_imp_correspondence",
+    "iwa_iff_correspondence",
+    "iwa_pred_at",
+    "iwa_true_pred",
+    "iwa_filtered_sum_related",
+    "iwa_and_pred",
+    "iwa_and_not_pred"
+  ],
+  "previous_status": "analysis_abstract_restricted_supply_busy_prefix_module_status.json",
+  "previous_files": 197,
+  "previous_decls": 1371,
+  "input_relations": [
+    "Interference by the accepted abstract-definitions relation (AdInterferenceRel)",
+    "the Boolean predicates P, P1, P2 pointwise (AdBoolPredRel)",
+    "jobs identity, instants by SubNatRel"
+  ],
+  "coverage_for_inner_binders": [
+    "jobs and instants (identity / SubNatRel)"
+  ],
+  "lean_representation_note": "the filtered half-open sum `\\sum_(t1 <= t < t2 | P j t) F t` is `\u2211 t \u2208 Finset.Ico t1 t2, bif P j t then F t else 0` (the filtered big operator's own conditional body), normalized during export to the accepted list-fold interval sum under a kernel rfl guard; Boolean summands through `Bool.toNat`; `a <= b <= c` is `(decide (a \u2264 b) && decide (b \u2264 c)) = true`; `fun=> xpredT` is `fun _ _ => true`",
+  "export_diagnosis": "the accepted abstract restricted-supply busy-prefix export root (abstract definitions with their kernel-guarded interference projections) plus the six statements, the filtered-sum statement type normalized to the accepted list-fold interval-sum form",
+  "extra_source_patches": [],
+  "extra_artifacts": [],
+  "extra_olean_artifacts": [
+    {
+      "from": "model_aggregate_workload_final/olean/Prosa/Model/Aggregate/Workload.olean",
+      "to": "Prosa/Model/Aggregate/Workload.olean",
+      "manifest": "model_aggregate_workload",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_interference_final/olean/Prosa/Analysis/Definitions/Interference.olean",
+      "to": "Prosa/Analysis/Definitions/Interference.olean",
+      "manifest": "analysis_definitions_interference",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_model_task_schedule_final/olean/Prosa/Analysis/Definitions/TaskSchedule.olean",
+      "to": "Prosa/Analysis/Definitions/TaskSchedule.olean",
+      "manifest": "analysis_definitions_task_schedule",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_interference_final/olean/Prosa/Analysis/Definitions/Priority/Classes.olean",
+      "to": "Prosa/Analysis/Definitions/Priority/Classes.olean",
+      "manifest": "analysis_definitions_priority_classes",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_interference_final/olean/Prosa/Analysis/Facts/Priority/Classes.olean",
+      "to": "Prosa/Analysis/Facts/Priority/Classes.olean",
+      "manifest": "analysis_facts_priority_classes",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_model_rbf_final/olean/Prosa/Model/Aggregate/ServiceOfJobs.olean",
+      "to": "Prosa/Model/Aggregate/ServiceOfJobs.olean",
+      "manifest": "model_aggregate_service_of_jobs",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_model_rbf_final/olean/Prosa/Analysis/Definitions/BusyInterval/Classical.olean",
+      "to": "Prosa/Analysis/Definitions/BusyInterval/Classical.olean",
+      "manifest": "analysis_definitions_busy_interval_classical",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_model_rbf_final/olean/Prosa/Analysis/Definitions/CarryIn.olean",
+      "to": "Prosa/Analysis/Definitions/CarryIn.olean",
+      "manifest": "analysis_definitions_carry_in",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_model_rbf_final/olean/Prosa/Analysis/Facts/BusyInterval/QuietTime.olean",
+      "to": "Prosa/Analysis/Facts/BusyInterval/QuietTime.olean",
+      "manifest": "analysis_facts_busy_interval_quiet_time",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_model_rbf_final/olean/Prosa/Analysis/Facts/Model/Uniprocessor.olean",
+      "to": "Prosa/Analysis/Facts/Model/Uniprocessor.olean",
+      "manifest": "analysis_facts_model_uniprocessor",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_model_rbf_final/olean/Prosa/Analysis/Facts/Model/ServiceOfJobs.olean",
+      "to": "Prosa/Analysis/Facts/Model/ServiceOfJobs.olean",
+      "manifest": "analysis_facts_model_service_of_jobs",
+      "key": "production_olean_sha256"
+    }
+  ],
+  "extra_generated_sources": [],
+  "export_env": {
+    "LEAN4EXPORT_PRESERVE_REDUCIBLE_THEOREM_TYPES": "1"
+  }
+}

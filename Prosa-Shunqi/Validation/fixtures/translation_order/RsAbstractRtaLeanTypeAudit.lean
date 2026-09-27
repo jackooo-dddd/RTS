@@ -1,0 +1,24 @@
+import Prosa.Analysis.Abstract.RestrictedSupply.AbstractRta
+set_option pp.fieldNotation false
+
+#check @Prosa.Analysis.Abstract.RestrictedSupply.AbstractRta.blackout_impl_interference
+#check @Prosa.Analysis.Abstract.RestrictedSupply.AbstractRta.blackout_plus_local_is_interference
+#check @Prosa.Analysis.Abstract.RestrictedSupply.AbstractRta.blackout_plus_local_is_interference_cumul
+#check @Prosa.Analysis.Abstract.RestrictedSupply.AbstractRta.cumulative_job_interference_bound
+#check @Prosa.Analysis.Abstract.RestrictedSupply.AbstractRta.no_intra_interference_after_F
+#check @Prosa.Analysis.Abstract.RestrictedSupply.AbstractRta.IBF_P_bounds_interference
+#check @Prosa.Analysis.Abstract.RestrictedSupply.AbstractRta.IBF_NP_bounds_interference
+#check @Prosa.Analysis.Abstract.RestrictedSupply.AbstractRta.IBF_P_sol_le_IBF_NP
+#check @Prosa.Analysis.Abstract.RestrictedSupply.AbstractRta.max_in_rs_hypothesis_impl_max_in_arta_hypothesis
+#check @Prosa.Analysis.Abstract.RestrictedSupply.AbstractRta.uniprocessor_response_time_bound_restricted_supply
+
+#print axioms Prosa.Analysis.Abstract.RestrictedSupply.AbstractRta.blackout_impl_interference
+#print axioms Prosa.Analysis.Abstract.RestrictedSupply.AbstractRta.blackout_plus_local_is_interference
+#print axioms Prosa.Analysis.Abstract.RestrictedSupply.AbstractRta.blackout_plus_local_is_interference_cumul
+#print axioms Prosa.Analysis.Abstract.RestrictedSupply.AbstractRta.cumulative_job_interference_bound
+#print axioms Prosa.Analysis.Abstract.RestrictedSupply.AbstractRta.no_intra_interference_after_F
+#print axioms Prosa.Analysis.Abstract.RestrictedSupply.AbstractRta.IBF_P_bounds_interference
+#print axioms Prosa.Analysis.Abstract.RestrictedSupply.AbstractRta.IBF_NP_bounds_interference
+#print axioms Prosa.Analysis.Abstract.RestrictedSupply.AbstractRta.IBF_P_sol_le_IBF_NP
+#print axioms Prosa.Analysis.Abstract.RestrictedSupply.AbstractRta.max_in_rs_hypothesis_impl_max_in_arta_hypothesis
+#print axioms Prosa.Analysis.Abstract.RestrictedSupply.AbstractRta.uniprocessor_response_time_bound_restricted_supply

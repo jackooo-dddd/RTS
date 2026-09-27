@@ -1,0 +1,10 @@
+import Prosa.Analysis.Abstract.LowerBoundOnService
+set_option pp.fieldNotation false
+
+#check @Prosa.Analysis.Abstract.LowerBoundOnService.interference_is_complement_to_schedule
+#check @Prosa.Analysis.Abstract.LowerBoundOnService.service_and_interference_bounded
+#check @Prosa.Analysis.Abstract.LowerBoundOnService.j_receives_enough_service
+
+#print axioms Prosa.Analysis.Abstract.LowerBoundOnService.interference_is_complement_to_schedule
+#print axioms Prosa.Analysis.Abstract.LowerBoundOnService.service_and_interference_bounded
+#print axioms Prosa.Analysis.Abstract.LowerBoundOnService.j_receives_enough_service

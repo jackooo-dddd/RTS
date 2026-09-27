@@ -1,0 +1,155 @@
+{
+  "rank": 209,
+  "layer": 20,
+  "tag": "ABI",
+  "slug": "analysis_abstract_busy_interval",
+  "source": "analysis/abstract/busy_interval.v",
+  "dependencies": [
+    "analysis/abstract/definitions.v",
+    "analysis/abstract/iw_auxiliary.v",
+    "analysis/facts/model/workload.v"
+  ],
+  "declaration_count": 15,
+  "base_run": "analysis_abstract_iw_auxiliary_final",
+  "base_checks": [
+    {
+      "manifest": "analysis_abstract_iw_auxiliary",
+      "olean": "Prosa/Analysis/Abstract/IwAuxiliary.olean",
+      "vo": "IwAuxiliarySemanticSource.vo"
+    }
+  ],
+  "extra_pinned_sources": [
+    "model/job/properties.v",
+    "model/aggregate/workload.v"
+  ],
+  "extra_lean": [],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "BusyIntervalAbstractSemanticSource",
+    "drop_imports": [
+      "Require Export prosa.analysis.abstract.iw_auxiliary.",
+      "Require Export prosa.analysis.facts.model.workload.",
+      "Require Export prosa.analysis.abstract.definitions."
+    ],
+    "add_imports": [
+      "Require Export prosa.analysis.abstract.definitions.",
+      "Require Export prosa.model.aggregate.workload.",
+      "Require Export prosa.model.job.properties.",
+      "Require Export prosa.model.processor.platform_properties.",
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq bigop.",
+      "Require Import prosa.behavior.all."
+    ],
+    "note": "theorem statements from the authoritative elaborated types (proofs omitted); the statements mention the abstract definitions (pinned source of the base closure), workload_of_job (model/aggregate/workload) and job_cost_positive (model/job/properties), both compiled from the pinned tree, and platform_properties (pinned source of the base closure); the proof-only iw_auxiliary and workload-facts imports are dropped"
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/BusyIntervalAbstractStatementProbe.v",
+  "production": "Prosa/Analysis/Abstract/BusyInterval.lean",
+  "production_olean": "Prosa/Analysis/Abstract/BusyInterval.olean",
+  "lean_namespace": "Prosa.Analysis.Abstract.BusyInterval",
+  "fixtures": [
+    "NondecreasingComputationInterface",
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "PreemptionParameterComputationInterface",
+    "ServiceInversionPredComputationInterface",
+    "AbstractDefinitionsComputationInterface",
+    "BusyPrefixComputationInterface",
+    "ArrivalsComputationInterface",
+    "WorkloadComputationInterface",
+    "BusyIntervalAbstractComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/BusyIntervalAbstractLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/analysis_abstract_busy_interval_export_config.json",
+  "export_name": "BusyIntervalAbstract",
+  "cert_dir": "certificates/analysis_abstract_busy_interval",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "ArrivalsCorrespondence",
+    "WorkloadCorrespondence",
+    "AbstractDefinitionsBaseAdapter",
+    "ServiceBaseAdapter",
+    "ServiceNatBoolOperations",
+    "AbstractDefinitionsArrivalOperations",
+    "AbstractDefinitionsClasses",
+    "AbstractDefinitionsNatBoolOperations",
+    "AbstractDefinitionsIntervalOperations",
+    "AbstractDefinitionsOperations",
+    "AbstractDefinitionsSums",
+    "AbstractDefinitionsLogical",
+    "ServiceIntervalOperations",
+    "ServiceScheduleOperations",
+    "AbstractDefinitionsPendingOperations",
+    "AbstractDefinitionsTaskOperations",
+    "AbstractDefinitionsBusyIntervalHelpers",
+    "BusyIntervalAbstractCorrespondence"
+  ],
+  "audit_module": "BusyIntervalAbstractAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/BusyIntervalAbstractImportedTypeAudit.v",
+  "assumption_config": "certificates/analysis_abstract_busy_interval/busy_interval_abstract_assumption_config.json",
+  "lean_axiom_config": "certificates/analysis_abstract_busy_interval/busy_interval_abstract_lean_axiom_config.json",
+  "computational": [],
+  "principal": {},
+  "helpers": [
+    "bia_forall_cover",
+    "ad_false_correspondence",
+    "bia_or_correspondence",
+    "bia_lean_transport",
+    "bia_nat_input",
+    "bia_succ_related",
+    "bia_add_related",
+    "bia_sched_to_target_rel",
+    "bia_sched_to_source_rel",
+    "bia_forall_sched",
+    "bia_arr_to_source_rel",
+    "bia_forall_arr",
+    "bia_forall_inter",
+    "bia_forall_iw",
+    "bia_scheduled_at_related",
+    "bia_pending_related",
+    "bia_must_arrive_rel",
+    "bia_completed_dont_execute_rel",
+    "bia_cost_positive_related",
+    "bia_unit_service_rel",
+    "bia_bip_rel",
+    "bia_bi_rel",
+    "bia_not_quiet_rel",
+    "bia_open_closed_related",
+    "bia_arr_ad",
+    "bia_no_quiet_rel"
+  ],
+  "previous_status": "analysis_abstract_iw_auxiliary_module_status.json",
+  "previous_files": 198,
+  "previous_decls": 1377,
+  "input_relations": [
+    "processor states by the accepted two-sided SvcProcessorStateRel of the abstract-definitions family, schedules through it (covered in both directions)",
+    "job_arrival and job_cost pointwise by SubNatRel",
+    "JobTask by the accepted field relation",
+    "arrival sequences by ArArrivalSequenceRel (the abstract family's AdArrivalSequenceRel is the same relation, obtained by conversion; covered in both directions)",
+    "Interference and InterferingWorkload by the accepted abstract relations (covered in both directions)",
+    "tasks and jobs identity, instants/durations by SubNatRel"
+  ],
+  "coverage_for_inner_binders": [
+    "Interference",
+    "InterferingWorkload",
+    "arrival sequences",
+    "schedules",
+    "tasks/jobs identity",
+    "instants"
+  ],
+  "lean_representation_note": "a Boolean in `Prop` position is `= true`; `a < b <= c` is `(decide (a < b) && decide (b \u2264 c)) = true`; `t.+1` is `t + 1`; `j \\in s` is `decide (j \u2208 s) = true`; instance inputs quantified after a hypothesis are `\u2200 [..]`-free explicit class variables as in the elaborated types",
+  "export_diagnosis": "the accepted abstract restricted-supply busy-prefix export root merged with the accepted workload export root plus the abstract busy-interval, validity, pending, workload and platform definitions and the fifteen statements",
+  "extra_source_patches": [],
+  "extra_artifacts": [],
+  "extra_olean_artifacts": [
+    {
+      "from": "analysis_facts_model_rbf_final/olean/Prosa/Analysis/Facts/Model/Workload.olean",
+      "to": "Prosa/Analysis/Facts/Model/Workload.olean",
+      "manifest": "analysis_facts_model_workload",
+      "key": "production_olean_sha256"
+    }
+  ],
+  "extra_generated_sources": []
+}

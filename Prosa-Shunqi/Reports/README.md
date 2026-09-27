@@ -3,7 +3,7 @@
 ## 当前状态
 
 <!-- V06_STATUS_BEGIN -->
-截至 2026-09-27，正式 machine state 记录 **197/357 个文件、1371/2439 个 public declarations 已验收**。依据：[最新累计 status](../Validation/planning/v06_pipeline/analysis_abstract_restricted_supply_busy_prefix_module_status.json)。表中的“是”仅表示已有 `ACCEPTED_V06_FILE`；“否”可能是未开始、进行中或受阻，不能据此推断尚未翻译。零声明文件也只有通过模块接口验收才写“是”。
+截至 2026-09-27，正式 machine state 记录 **207/357 个文件、1444/2439 个 public declarations 已验收**。依据：[最新累计 status](../Validation/planning/v06_pipeline/analysis_facts_completes_at_module_status.json)。表中的“是”仅表示已有 `ACCEPTED_V06_FILE`；“否”可能是未开始、进行中或受阻，不能据此推断尚未翻译。零声明文件也只有通过模块接口验收才写“是”。
 <!-- V06_STATUS_END -->
 
 <!-- V06_NAV_BEGIN -->
@@ -12,7 +12,7 @@
 
 | Progress | Latest completed | Quick navigation |
 |---|---|---|
-| **197/357 files** · **1371/2439 declarations** | **Rank 161** · `analysis/abstract/restricted_supply/busy_prefix.v` | [🎯 Jump to latest completed](#latest-completed) · [✅ Finished](#finished-files) · [⏳ Unfinished](#unfinished-files) |
+| **207/357 files** · **1444/2439 declarations** | **Rank 184** · `analysis/facts/completes_at.v` | [🎯 Jump to latest completed](#latest-completed) · [✅ Finished](#finished-files) · [⏳ Unfinished](#unfinished-files) |
 
 </details>
 <!-- V06_NAV_END -->
@@ -36,7 +36,7 @@
 
 <!-- V06_FILE_TABLE_BEGIN -->
 <details open>
-<summary><b>✅ Finished — 197 files</b></summary>
+<summary><b>✅ Finished — 207 files</b></summary>
 
 <a id="finished-files"></a>
 
@@ -196,7 +196,7 @@
 | 158 | 16 | [`model/task/preemption/fully_nonpreemptive.v`](files/model/task/preemption/2026-09-28_180000_fully_nonpreemptive.md) | 1 | ✅ 是 | 09:26:18:20 |
 | 159 | 16 | [`model/task/preemption/fully_preemptive.v`](files/model/task/preemption/2026-09-28_190000_fully_preemptive.md) | 1 | ✅ 是 | 09:26:18:21 |
 | 160 | 16 | [`model/task/preemption/limited_preemptive.v`](files/model/task/preemption/2026-09-28_200000_limited_preemptive.md) | 8 | ✅ 是 | 09:26:18:33 |
-| 161 | 17 | <a id="latest-completed"></a>[`analysis/abstract/restricted_supply/busy_prefix.v`](files/analysis/abstract/restricted_supply/2026-09-30_220000_busy_prefix.md) | 2 | ✅ 是 | 09:27:07:55 |
+| 161 | 17 | [`analysis/abstract/restricted_supply/busy_prefix.v`](files/analysis/abstract/restricted_supply/2026-09-30_220000_busy_prefix.md) | 2 | ✅ 是 | 09:27:07:55 |
 | 162 | 17 | [`analysis/definitions/busy_interval/edf_pi_bound.v`](files/analysis/definitions/busy_interval/2026-09-29_110000_edf_pi_bound.md) | 1 | ✅ 是 | 09:26:22:03 |
 | 163 | 17 | [`analysis/definitions/demand_bound_function.v`](files/analysis/definitions/2026-09-29_040000_demand_bound_function.md) | 2 | ✅ 是 | 09:26:20:27 |
 | 164 | 17 | [`analysis/definitions/priority_inversion.v`](files/analysis/definitions/2026-09-29_060000_priority_inversion.md) | 8 | ✅ 是 | 09:26:20:58 |
@@ -208,18 +208,22 @@
 | 172 | 17 | [`analysis/facts/behavior/all.v`](files/analysis/facts/behavior/2026-09-29_070000_all.md) | 0 | ✅ 是 | 09:26:21:14 |
 | 173 | 17 | [`analysis/facts/busy_interval/quiet_time.v`](files/analysis/facts/busy_interval/2026-09-29_130000_quiet_time.md) | 4 | ✅ 是 | 09:26:22:06 |
 | 174 | 17 | [`analysis/facts/edf_definitions.v`](files/analysis/facts/2026-09-30_200000_edf_definitions.md) | 3 | ✅ 是 | 09:27:07:07 |
+| 176 | 17 | [`analysis/facts/model/preemption.v`](files/analysis/facts/model/2026-10-01_060000_preemption.md) | 14 | ✅ 是 | 09:27:12:19 |
 | 177 | 17 | [`analysis/facts/preemption/task/preemptive.v`](files/analysis/facts/preemption/task/2026-09-29_120000_preemptive.md) | 2 | ✅ 是 | 09:26:22:04 |
 | 179 | 17 | [`analysis/facts/transform/swaps.v`](files/analysis/facts/transform/2026-09-30_040000_swaps.md) | 22 | ✅ 是 | 09:27:01:35 |
 | 180 | 17 | [`implementation/definitions/ideal_uni_scheduler.v`](files/implementation/definitions/2026-09-30_160000_ideal_uni_scheduler.md) | 5 | ✅ 是 | 09:27:05:23 |
 | 181 | 17 | [`implementation/facts/generic_schedule.v`](files/implementation/facts/2026-09-30_150000_generic_schedule.md) | 6 | ✅ 是 | 09:27:04:56 |
+| 184 | 18 | <a id="latest-completed"></a>[`analysis/facts/completes_at.v`](files/analysis/facts/2026-10-01_080000_completes_at.md) | 5 | ✅ 是 | 09:27:13:04 |
 | 187 | 18 | [`analysis/facts/model/rbf.v`](files/analysis/facts/model/2026-09-30_030000_rbf.md) | 27 | ✅ 是 | 09:27:01:34 |
 | 189 | 18 | [`analysis/facts/model/service_of_jobs.v`](files/analysis/facts/model/2026-09-29_230000_service_of_jobs.md) | 22 | ✅ 是 | 09:27:00:28 |
 | 190 | 18 | [`analysis/facts/preemption/job/nonpreemptive.v`](files/analysis/facts/preemption/job/2026-09-29_140000_nonpreemptive.md) | 4 | ✅ 是 | 09:26:22:23 |
 | 191 | 18 | [`analysis/facts/preemption/rtc_threshold/job_preemptable.v`](files/analysis/facts/preemption/rtc_threshold/2026-09-29_180000_job_preemptable.md) | 14 | ✅ 是 | 09:26:23:41 |
 | 192 | 18 | [`analysis/facts/priority/inversion.v`](files/analysis/facts/priority/2026-09-29_170000_inversion.md) | 7 | ✅ 是 | 09:26:22:53 |
+| 193 | 18 | [`analysis/facts/priority/sequential.v`](files/analysis/facts/priority/2026-10-01_070000_sequential.md) | 1 | ✅ 是 | 09:27:12:41 |
 | 194 | 18 | [`analysis/transform/prefix.v`](files/analysis/transform/2026-09-29_160000_prefix.md) | 3 | ✅ 是 | 09:26:22:38 |
 | 195 | 18 | [`implementation/facts/ideal_uni/preemption_aware.v`](files/implementation/facts/ideal_uni/2026-09-30_170000_preemption_aware.md) | 10 | ✅ 是 | 09:27:05:59 |
 | 196 | 18 | [`model/task/offset.v`](files/model/task/2026-09-29_150000_offset.md) | 7 | ✅ 是 | 09:26:22:36 |
+| 197 | 19 | [`analysis/abstract/iw_auxiliary.v`](files/analysis/abstract/2026-09-30_230000_iw_auxiliary.md) | 6 | ✅ 是 | 09:27:08:10 |
 | 198 | 19 | [`analysis/abstract/restricted_supply/search_space/fp.v`](files/analysis/abstract/restricted_supply/search_space/2026-09-30_060000_fp.md) | 2 | ✅ 是 | 09:27:02:22 |
 | 200 | 19 | [`analysis/facts/interference.v`](files/analysis/facts/2026-09-30_020000_interference.md) | 17 | ✅ 是 | 09:27:01:30 |
 | 201 | 19 | [`analysis/facts/model/dbf.v`](files/analysis/facts/model/2026-09-30_120000_dbf.md) | 8 | ✅ 是 | 09:27:03:57 |
@@ -233,17 +237,23 @@
 | 213 | 19 | [`analysis/transform/wc_trans.v`](files/analysis/transform/2026-09-30_140000_wc_trans.md) | 6 | ✅ 是 | 09:27:04:40 |
 | 214 | 19 | [`implementation/facts/ideal_uni/prio_aware.v`](files/implementation/facts/ideal_uni/2026-09-30_180000_prio_aware.md) | 5 | ✅ 是 | 09:27:06:18 |
 | 215 | 19 | [`model/task/arrival/periodic.v`](files/model/task/arrival/2026-09-29_220000_periodic.md) | 5 | ✅ 是 | 09:27:00:19 |
+| 217 | 20 | [`analysis/abstract/busy_interval.v`](files/analysis/abstract/2026-10-01_000000_busy_interval.md) | 15 | ✅ 是 | 09:27:09:08 |
 | 218 | 20 | [`analysis/abstract/restricted_supply/search_space/edf.v`](files/analysis/abstract/restricted_supply/search_space/2026-09-30_080000_edf.md) | 2 | ✅ 是 | 09:27:02:53 |
 | 229 | 20 | [`model/task/arrival/periodic_as_sporadic.v`](files/model/task/arrival/2026-09-30_010000_periodic_as_sporadic.md) | 5 | ✅ 是 | 09:27:00:56 |
+| 231 | 21 | [`analysis/abstract/lower_bound_on_service.v`](files/analysis/abstract/2026-10-01_010000_lower_bound_on_service.md) | 3 | ✅ 是 | 09:27:09:32 |
 | 234 | 21 | [`analysis/facts/periodic/arrival_separation.v`](files/analysis/facts/periodic/2026-09-30_070000_arrival_separation.md) | 3 | ✅ 是 | 09:27:02:30 |
+| 240 | 22 | [`analysis/abstract/abstract_rta.v`](files/analysis/abstract/2026-10-01_020000_abstract_rta.md) | 14 | ✅ 是 | 09:27:10:04 |
 | 248 | 22 | [`analysis/facts/periodic/max_inter_arrival.v`](files/analysis/facts/periodic/2026-09-30_090000_max_inter_arrival.md) | 3 | ✅ 是 | 09:27:03:05 |
+| 250 | 23 | [`analysis/abstract/IBF/supply.v`](files/analysis/abstract/IBF/2026-10-01_030000_supply.md) | 3 | ✅ 是 | 09:27:10:24 |
+| 252 | 23 | [`analysis/abstract/ideal/abstract_rta.v`](files/analysis/abstract/ideal/2026-10-01_040000_abstract_rta.md) | 2 | ✅ 是 | 09:27:10:51 |
 | 256 | 23 | [`analysis/facts/periodic/arrival_times.v`](files/analysis/facts/periodic/2026-09-30_100000_arrival_times.md) | 3 | ✅ 是 | 09:27:03:19 |
+| 260 | 24 | [`analysis/abstract/restricted_supply/abstract_rta.v`](files/analysis/abstract/restricted_supply/2026-10-01_050000_abstract_rta.md) | 10 | ✅ 是 | 09:27:11:28 |
 | 262 | 24 | [`analysis/facts/periodic/task_arrivals_size.v`](files/analysis/facts/periodic/2026-09-30_110000_task_arrivals_size.md) | 8 | ✅ 是 | 09:27:03:36 |
 
 </details>
 
 <details open>
-<summary><b>⏳ Unfinished — 160 files</b></summary>
+<summary><b>⏳ Unfinished — 150 files</b></summary>
 
 <a id="unfinished-files"></a>
 
@@ -258,23 +268,18 @@
 | 167 | 17 | `analysis/definitions/service_inversion/readiness_aware.v` | 3 | ○ 否 |
 | 171 | 17 | `analysis/definitions/workload/elf_athep_bound.v` | 4 | ○ 否 |
 | 175 | 17 | `analysis/facts/jitter.v` | 14 | ○ 否 |
-| 176 | 17 | `analysis/facts/model/preemption.v` | 14 | ○ 否 |
 | 178 | 17 | `analysis/facts/suspension.v` | 11 | ○ 否 |
 | 182 | 17 | `implementation/facts/job_constructor.v` | 6 | ○ 否 |
 | 183 | 17 | `model/task/suspension/dynamic.v` | 2 | ○ 否 |
-| 184 | 18 | `analysis/facts/completes_at.v` | 5 | ○ 否 |
 | 185 | 18 | `analysis/facts/model/dynamic_suspension.v` | 2 | ○ 否 |
 | 186 | 18 | `analysis/facts/model/exceedance/SBF.v` | 4 | ○ 否 |
 | 188 | 18 | `analysis/facts/model/sequential.v` | 3 | ○ 否 |
-| 193 | 18 | `analysis/facts/priority/sequential.v` | 1 | ○ 否 |
-| 197 | 19 | `analysis/abstract/iw_auxiliary.v` | 6 | ○ 否 |
 | 199 | 19 | `analysis/facts/busy_interval/existence.v` | 14 | ○ 否 |
 | 204 | 19 | `analysis/facts/preemption/job/limited.v` | 10 | ○ 否 |
 | 208 | 19 | `analysis/facts/priority/edf.v` | 5 | ○ 否 |
 | 209 | 19 | `analysis/facts/priority/gel.v` | 6 | ○ 否 |
 | 211 | 19 | `analysis/facts/workload/elf_athep_bound.v` | 6 | ○ 否 |
 | 216 | 19 | `results/transfer_schedulability/criterion.v` | 40 | ○ 否 |
-| 217 | 20 | `analysis/abstract/busy_interval.v` | 15 | ○ 否 |
 | 219 | 20 | `analysis/abstract/restricted_supply/search_space/elf.v` | 2 | ○ 否 |
 | 220 | 20 | `analysis/definitions/hyperperiod.v` | 7 | ○ 否 |
 | 221 | 20 | `analysis/facts/busy_interval/carry_in.v` | 9 | ○ 否 |
@@ -286,7 +291,6 @@
 | 227 | 20 | `analysis/facts/transform/edf_opt.v` | 43 | ○ 否 |
 | 228 | 20 | `analysis/facts/transform/wc_correctness.v` | 33 | ○ 否 |
 | 230 | 20 | `results/transfer_schedulability/paper_model.v` | 19 | ○ 否 |
-| 231 | 21 | `analysis/abstract/lower_bound_on_service.v` | 3 | ○ 否 |
 | 232 | 21 | `analysis/facts/busy_interval/arrival.v` | 3 | ○ 否 |
 | 233 | 21 | `analysis/facts/busy_interval/pi.v` | 24 | ○ 否 |
 | 235 | 21 | `analysis/facts/preemption/rtc_threshold/floating.v` | 1 | ○ 否 |
@@ -294,7 +298,6 @@
 | 237 | 21 | `analysis/facts/transform/edf_wc.v` | 11 | ○ 否 |
 | 238 | 21 | `model/task/arrival/example.v` | 0 | ○ 否 |
 | 239 | 21 | `results/generality/elf.v` | 3 | ○ 否 |
-| 240 | 22 | `analysis/abstract/abstract_rta.v` | 14 | ○ 否 |
 | 241 | 22 | `analysis/facts/blocking_bound/edf.v` | 1 | ○ 否 |
 | 242 | 22 | `analysis/facts/blocking_bound/elf.v` | 1 | ○ 否 |
 | 243 | 22 | `analysis/facts/blocking_bound/fp.v` | 1 | ○ 否 |
@@ -303,16 +306,13 @@
 | 246 | 22 | `analysis/facts/busy_interval/service_inversion.v` | 12 | ○ 否 |
 | 247 | 22 | `analysis/facts/model/overheads/schedule.v` | 6 | ○ 否 |
 | 249 | 22 | `results/optimality/edf.v` | 4 | ○ 否 |
-| 250 | 23 | `analysis/abstract/IBF/supply.v` | 3 | ○ 否 |
 | 251 | 23 | `analysis/abstract/IBF/task.v` | 18 | ○ 否 |
-| 252 | 23 | `analysis/abstract/ideal/abstract_rta.v` | 2 | ○ 否 |
 | 253 | 23 | `analysis/facts/busy_interval/all.v` | 0 | ○ 否 |
 | 254 | 23 | `analysis/facts/model/overheads/priority_bump.v` | 3 | ○ 否 |
 | 255 | 23 | `analysis/facts/model/overheads/schedule_change.v` | 6 | ○ 否 |
 | 257 | 24 | `analysis/abstract/IBF/supply_task.v` | 3 | ○ 否 |
 | 258 | 24 | `analysis/abstract/ideal/abstract_seq_rta.v` | 2 | ○ 否 |
 | 259 | 24 | `analysis/abstract/ideal/iw_instantiation.v` | 20 | ○ 否 |
-| 260 | 24 | `analysis/abstract/restricted_supply/abstract_rta.v` | 10 | ○ 否 |
 | 261 | 24 | `analysis/facts/model/overheads/schedule_change_bound.v` | 3 | ○ 否 |
 | 263 | 24 | `analysis/facts/priority/fifo.v` | 12 | ○ 否 |
 | 264 | 24 | `model/processor/overhead_resource_model.v` | 10 | ○ 否 |

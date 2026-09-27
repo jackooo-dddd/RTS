@@ -1,0 +1,189 @@
+{
+  "rank": 215,
+  "layer": 15,
+  "tag": "FPRE",
+  "slug": "analysis_facts_model_preemption",
+  "source": "analysis/facts/model/preemption.v",
+  "dependencies": [
+    "model/schedule/priority_driven.v",
+    "analysis/facts/behavior/completion.v",
+    "analysis/facts/model/scheduled.v"
+  ],
+  "declaration_count": 14,
+  "base_run": "model_schedule_priority_driven_final",
+  "base_checks": [
+    {
+      "manifest": "model_schedule_priority_driven",
+      "olean": "Prosa/Model/Schedule/PriorityDriven.olean",
+      "vo": "PriorityDrivenSemanticSource.vo"
+    }
+  ],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "FactsPreemptionSemanticSource",
+    "drop_imports": [
+      "Require Export prosa.model.schedule.priority_driven.",
+      "Require Export prosa.analysis.facts.behavior.completion.",
+      "Require Export prosa.analysis.facts.model.scheduled."
+    ],
+    "add_imports": [
+      "Require Export prosa.PriorityDrivenSemanticSource.",
+      "Export PriorityDrivenSemanticSource.",
+      "Require Export prosa.PreemptionTimeSemanticSource.",
+      "Export PreemptionTimeSemanticSource.",
+      "Require Export prosa.PreemptionParameterSemanticSource.",
+      "Export PreemptionParameterSemanticSource.",
+      "Require Export prosa.model.schedule.scheduled.",
+      "Require Export prosa.model.processor.platform_properties.",
+      "Require Export prosa.model.priority.classes.",
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq.",
+      "Require Import prosa.behavior.all."
+    ],
+    "note": "theorem statements from the authoritative elaborated types (proofs omitted); respects_JLFP_policy_at_preemption_point is bound to the accepted extracted PriorityDrivenSemanticSource of the base run, preemption_time to the accepted extracted PreemptionTimeSemanticSource, valid_preemption_model and JobPreemptable to the accepted extracted PreemptionParameterSemanticSource; model/schedule/scheduled, platform properties and priority classes are pinned sources of the base closure; the proof-only completion and scheduled-facts imports are dropped"
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/FactsPreemptionStatementProbe.v",
+  "production": "Prosa/Analysis/Facts/Model/Preemption.lean",
+  "production_olean": "Prosa/Analysis/Facts/Model/Preemption.olean",
+  "lean_namespace": "Prosa.Analysis.Facts.Model.Preemption",
+  "fixtures": [
+    "NondecreasingComputationInterface",
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "PreemptionParameterComputationInterface",
+    "PreemptionTimeComputationInterface",
+    "PriorityDrivenComputationInterface",
+    "ScheduledComputationInterface",
+    "ProcessorStateCoverInterface",
+    "FactsPreemptionComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/FactsPreemptionLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/analysis_facts_model_preemption_export_config.json",
+  "export_name": "FactsPreemption",
+  "cert_dir": "certificates/analysis_facts_model_preemption",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "JitterSvcBaseAdapter",
+    "JitterSvcNatBoolOperations",
+    "JitterSvcIntervalOperations",
+    "JitterSvcScheduleOperations",
+    "JitterSvcJobOperations",
+    "PreemptionParameterCorrespondence",
+    "PreemptionTimeCorrespondence",
+    "PriorityDrivenCorrespondence",
+    "PStateCoverHelpers",
+    "FactsPreemptionCorrespondence"
+  ],
+  "audit_module": "FactsPreemptionAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/FactsPreemptionImportedTypeAudit.v",
+  "assumption_config": "certificates/analysis_facts_model_preemption/facts_preemption_assumption_config.json",
+  "lean_axiom_config": "certificates/analysis_facts_model_preemption/facts_preemption_lean_axiom_config.json",
+  "computational": [],
+  "principal": {},
+  "helpers": [
+    "fpre_or_correspondence",
+    "fpre_exists2_correspondence",
+    "fpre_and_true_right",
+    "fpre_neq_related",
+    "fpre_and_absorb_target",
+    "fpre_and_absorb_source",
+    "fpre_bool_true_of_rel",
+    "fpre_reorder_jr",
+    "fpre_forall_arr",
+    "fpre_forall_jp",
+    "fpre_forall_jlfp",
+    "fpre_reflexive_rel",
+    "fpre_forall_sched",
+    "fpre_scheduled_at_related",
+    "fpre_service_related",
+    "fpre_completed_by_related",
+    "fpre_pending_related",
+    "fpre_come_from_rel",
+    "fpre_must_arrive_rel",
+    "fpre_is_idle_related",
+    "fpre_pt_case",
+    "fpre_preemption_time_related",
+    "fpre_valid_preemption_model_rel",
+    "fpre_jr_to_target_rel",
+    "fpre_jr_to_source_rel",
+    "fpre_forall_jr",
+    "fpre_valid_schedule_rel",
+    "fpre_backlogged_related",
+    "fpre_respects_jlfp_rel"
+  ],
+  "previous_status": "analysis_abstract_restricted_supply_abstract_rta_module_status.json",
+  "previous_files": 204,
+  "previous_decls": 1424,
+  "input_relations": [
+    "processor states by the accepted two-sided SvcProcessorStateRel of the preemption-parameter family, schedules through it",
+    "job_arrival and job_cost pointwise by SubNatRel",
+    "JobPreemptable by the accepted PpJobPreemptableRel (covered where quantified inside a statement)",
+    "arrival sequences by ArArrivalSequenceRel",
+    "JobReady instances quantified inside a statement: related on the statement's schedule pair only (readiness is used only at that schedule), covered in both directions by conversions whose readiness is the related readiness at that pair conjoined with pendency (so the class law holds); the statement's binders are reordered, by a proved equivalence, so that the schedule pair is fixed before the readiness instance",
+    "JLFP policies pointwise on Booleans (covered)",
+    "jobs identity, instants by SubNatRel"
+  ],
+  "coverage_for_inner_binders": [
+    "processor states",
+    "arrival sequences",
+    "schedules",
+    "JobReady (at the statement's schedule pair)",
+    "JobPreemptable",
+    "JLFP policies",
+    "jobs identity",
+    "instants"
+  ],
+  "lean_representation_note": "Booleans in Prop position are `= true`; the canonical conversions JLFP\u2192JLDP and FP\u2192JLFP are the accepted `JLFP_to_JLDP`/`FP_to_JLFP`, passed explicitly",
+  "export_diagnosis": "the accepted priority-driven export root plus the readiness, validity, idleness and priority-reflexivity definitions and the fourteen statements",
+  "extra_pinned_sources": [],
+  "extra_lean": [],
+  "extra_source_patches": [],
+  "extra_artifacts": [],
+  "extra_olean_artifacts": [
+    {
+      "from": "analysis_facts_model_rbf_final/olean/Prosa/Model/Job/Properties.olean",
+      "to": "Prosa/Model/Job/Properties.olean",
+      "manifest": "model_job_properties",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_model_rbf_final/olean/Prosa/Analysis/Definitions/SchedulePrefix.olean",
+      "to": "Prosa/Analysis/Definitions/SchedulePrefix.olean",
+      "manifest": "analysis_schedule_prefix",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_sbf_final/olean/Prosa/Analysis/Facts/Behavior/Supply.olean",
+      "to": "Prosa/Analysis/Facts/Behavior/Supply.olean",
+      "manifest": "analysis_facts_behavior_supply",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_model_rbf_final/olean/Prosa/Analysis/Definitions/Service.olean",
+      "to": "Prosa/Analysis/Definitions/Service.olean",
+      "manifest": "analysis_service",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_model_rbf_final/olean/Prosa/Analysis/Facts/Model/Scheduled.olean",
+      "to": "Prosa/Analysis/Facts/Model/Scheduled.olean",
+      "manifest": "analysis_facts_model_scheduled",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_model_rbf_final/olean/Prosa/Analysis/Facts/Behavior/Service.olean",
+      "to": "Prosa/Analysis/Facts/Behavior/Service.olean",
+      "manifest": "analysis_facts_behavior_service",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_model_rbf_final/olean/Prosa/Analysis/Facts/Behavior/Completion.olean",
+      "to": "Prosa/Analysis/Facts/Behavior/Completion.olean",
+      "manifest": "analysis_facts_behavior_completion",
+      "key": "production_olean_sha256"
+    }
+  ]
+}

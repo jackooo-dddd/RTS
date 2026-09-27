@@ -1,0 +1,227 @@
+{
+  "rank": 211,
+  "layer": 20,
+  "tag": "ARTA",
+  "slug": "analysis_abstract_abstract_rta",
+  "source": "analysis/abstract/abstract_rta.v",
+  "dependencies": [
+    "analysis/definitions/schedulability.v",
+    "analysis/abstract/search_space.v",
+    "analysis/abstract/lower_bound_on_service.v"
+  ],
+  "declaration_count": 14,
+  "base_run": "analysis_abstract_lower_bound_on_service_final",
+  "base_checks": [
+    {
+      "manifest": "analysis_abstract_lower_bound_on_service",
+      "olean": "Prosa/Analysis/Abstract/LowerBoundOnService.olean",
+      "vo": "LowerBoundOnServiceSemanticSource.vo"
+    }
+  ],
+  "extra_pinned_sources": [
+    "analysis/abstract/search_space.v",
+    "model/task/absolute_deadline.v"
+  ],
+  "extra_lean": [],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "AbstractRtaSemanticSource",
+    "drop_imports": [
+      "Require Export prosa.analysis.definitions.schedulability.",
+      "Require Export prosa.analysis.abstract.search_space.",
+      "Require Export prosa.analysis.abstract.lower_bound_on_service."
+    ],
+    "add_imports": [
+      "Require Export prosa.analysis.abstract.definitions.",
+      "Require Export prosa.TaskPreemptionParametersSemanticSource.",
+      "Export TaskPreemptionParametersSemanticSource.",
+      "Require Export prosa.SchedulabilitySemanticSource.",
+      "Export SchedulabilitySemanticSource.",
+      "Require Export prosa.analysis.abstract.search_space.",
+      "Require Export prosa.model.job.properties.",
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq bigop.",
+      "Require Import prosa.behavior.all."
+    ],
+    "note": "the two definitions are byte-identical blocks with their section context and the twelve theorem statements are the authoritative elaborated types (proofs omitted); task_response_time_bound is bound to the accepted extracted SchedulabilitySemanticSource and task_rtct to the accepted extracted TaskPreemptionParametersSemanticSource (.vo copied from their accepted runs and hash-checked against their manifests); analysis/abstract/search_space and model/task/absolute_deadline are pinned sources compiled from the pinned tree (search_space with its accepted proof-only Rocq 9.3 compatibility patch); the abstract definitions and job properties are the pinned sources of the base closure; the proof-only lower_bound_on_service import is dropped; the section hypothesis on IBF_P that names relative_arrival_time_of_job_is_A before the second definition is reconnected by the recorded local binding (relative_arrival_time_of_job_is_A sched), as in the source section",
+    "local_bindings": [
+      "relative_arrival_time_of_job_is_A=relative_arrival_time_of_job_is_A sched"
+    ]
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/AbstractRtaStatementProbe.v",
+  "production": "Prosa/Analysis/Abstract/AbstractRta.lean",
+  "production_olean": "Prosa/Analysis/Abstract/AbstractRta.olean",
+  "lean_namespace": "Prosa.Analysis.Abstract.AbstractRta",
+  "fixtures": [
+    "NondecreasingComputationInterface",
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "PreemptionParameterComputationInterface",
+    "ServiceInversionPredComputationInterface",
+    "AbstractDefinitionsComputationInterface",
+    "BusyPrefixComputationInterface",
+    "ArrivalsComputationInterface",
+    "WorkloadComputationInterface",
+    "BusyIntervalAbstractComputationInterface",
+    "LowerBoundOnServiceComputationInterface",
+    "AbstractRtaComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/AbstractRtaLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/analysis_abstract_abstract_rta_export_config.json",
+  "export_name": "AbstractRta",
+  "cert_dir": "certificates/analysis_abstract_abstract_rta",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "ArrivalsCorrespondence",
+    "WorkloadCorrespondence",
+    "AbstractDefinitionsBaseAdapter",
+    "ServiceBaseAdapter",
+    "ServiceNatBoolOperations",
+    "AbstractDefinitionsArrivalOperations",
+    "AbstractDefinitionsClasses",
+    "AbstractDefinitionsNatBoolOperations",
+    "AbstractDefinitionsIntervalOperations",
+    "AbstractDefinitionsOperations",
+    "AbstractDefinitionsSums",
+    "AbstractDefinitionsLogical",
+    "ServiceIntervalOperations",
+    "ServiceScheduleOperations",
+    "AbstractDefinitionsPendingOperations",
+    "AbstractDefinitionsTaskOperations",
+    "AbstractDefinitionsBusyIntervalHelpers",
+    "AbstractRtaCorrespondence"
+  ],
+  "audit_module": "AbstractRtaAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/AbstractRtaImportedTypeAudit.v",
+  "assumption_config": "certificates/analysis_abstract_abstract_rta/abstract_rta_assumption_config.json",
+  "lean_axiom_config": "certificates/analysis_abstract_abstract_rta/abstract_rta_lean_axiom_config.json",
+  "computational": [
+    "relative_arrival_time_of_job_is_A",
+    "relative_time_to_reach_rtct"
+  ],
+  "principal": {},
+  "helpers": [
+    "arta_forall_cover",
+    "arta_false_correspondence",
+    "arta_or_correspondence",
+    "arta_and3_correspondence",
+    "arta_nat_neq_correspondence",
+    "arta_lean_transport",
+    "arta_nat_input",
+    "arta_add_related",
+    "arta_sub_related",
+    "arta_fun_to_target_rel",
+    "arta_fun_to_source_rel",
+    "arta_forall_fun",
+    "arta_forall_list",
+    "arta_equivalent_rel",
+    "arta_search_space_rel",
+    "arta_arr_ad",
+    "arta_forall_inter",
+    "arta_forall_iw",
+    "arta_cost_positive_related",
+    "arta_task_cost_of_job_related",
+    "arta_valid_job_costs_rel",
+    "arta_response_time_bound_rel",
+    "arta_bi_rel",
+    "arta_wc_rel",
+    "arta_bounded_rel",
+    "arta_job_interference_bounded_rel",
+    "arta_ibfp_bounded_rel",
+    "arta_ibfnp_bounded_rel",
+    "arta_ge_param_rel"
+  ],
+  "previous_status": "analysis_abstract_lower_bound_on_service_module_status.json",
+  "previous_files": 200,
+  "previous_decls": 1395,
+  "input_relations": [
+    "processor states by the accepted two-sided SvcProcessorStateRel of the abstract-definitions family, schedules through it",
+    "job_arrival and job_cost pointwise by SubNatRel",
+    "JobTask by the accepted field relation",
+    "arrival sequences by ArArrivalSequenceRel (the abstract family's AdArrivalSequenceRel is the same relation, obtained by conversion)",
+    "Interference and InterferingWorkload by the accepted abstract relations",
+    "tasks and jobs identity, instants/durations by SubNatRel",
+    "task_cost and task_rtct pointwise by SubNatRel",
+    "IBF_P / IBF_NP pointwise on related Nats",
+    "task sets by ArListRel"
+  ],
+  "coverage_for_inner_binders": [
+    "task sets",
+    "instants/durations",
+    "jobs identity",
+    "interference-bound functions (explicit conversions)"
+  ],
+  "lean_representation_note": "a Boolean in `Prop` position is `= true`; `a < b <= c` is `(decide (a < b) && decide (b \u2264 c)) = true`; `t.+1` is `t + 1`; `j \\in s` is `decide (j \u2208 s) = true`; instance inputs quantified after a hypothesis are `\u2200 [..]`-free explicit class variables as in the elaborated types",
+  "export_diagnosis": "the accepted abstract lower-bound-on-service export root plus the schedulability, search-space, task-cost and run-to-completion-threshold definitions, the two definitions and the twelve statements",
+  "extra_source_patches": [
+    "patches/prosa-v06-rocq93-analysis-abstract-search-space.patch"
+  ],
+  "extra_artifacts": [
+    {
+      "from": "model_task_preemption_parameters_final/source/TaskPreemptionParametersSemanticSource.vo",
+      "to": "source/TaskPreemptionParametersSemanticSource.vo",
+      "manifest": "model_task_preemption_parameters",
+      "key": "source_vo_sha256"
+    },
+    {
+      "from": "analysis_definitions_schedulability_final/source/SchedulabilitySemanticSource.vo",
+      "to": "source/SchedulabilitySemanticSource.vo",
+      "manifest": "analysis_definitions_schedulability",
+      "key": "source_vo_sha256"
+    }
+  ],
+  "extra_olean_artifacts": [
+    {
+      "from": "analysis_facts_model_rbf_final/olean/Prosa/Analysis/Facts/Model/Workload.olean",
+      "to": "Prosa/Analysis/Facts/Model/Workload.olean",
+      "manifest": "analysis_facts_model_workload",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_behavior_all_final/olean/Prosa/Analysis/Facts/Behavior/Deadlines.olean",
+      "to": "Prosa/Analysis/Facts/Behavior/Deadlines.olean",
+      "manifest": "analysis_facts_behavior_deadlines",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_behavior_all_final/olean/Prosa/Analysis/Facts/Behavior/All.olean",
+      "to": "Prosa/Analysis/Facts/Behavior/All.olean",
+      "manifest": "analysis_facts_behavior_all",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "model_task_preemption_parameters_final/olean/Prosa/Model/Task/Preemption/Parameters.olean",
+      "to": "Prosa/Model/Task/Preemption/Parameters.olean",
+      "manifest": "model_task_preemption_parameters",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_preemption_rtc_threshold_preemptive_final/olean/Prosa/Analysis/Facts/Preemption/RtcThreshold/JobPreemptable.olean",
+      "to": "Prosa/Analysis/Facts/Preemption/RtcThreshold/JobPreemptable.olean",
+      "manifest": "analysis_facts_preemption_rtc_threshold_job_preemptable",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_model_rbf_final/olean/Prosa/Model/Task/AbsoluteDeadline.olean",
+      "to": "Prosa/Model/Task/AbsoluteDeadline.olean",
+      "manifest": "model_task_absolute_deadline",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_model_rbf_final/olean/Prosa/Analysis/Definitions/Schedulability.olean",
+      "to": "Prosa/Analysis/Definitions/Schedulability.olean",
+      "manifest": "analysis_definitions_schedulability",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_abstract_restricted_supply_search_space_fp_final/olean/Prosa/Analysis/Abstract/SearchSpace.olean",
+      "to": "Prosa/Analysis/Abstract/SearchSpace.olean",
+      "manifest": "analysis_abstract_search_space",
+      "key": "production_olean_sha256"
+    }
+  ],
+  "extra_generated_sources": []
+}

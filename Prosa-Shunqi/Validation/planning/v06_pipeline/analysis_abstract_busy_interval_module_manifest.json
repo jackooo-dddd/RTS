@@ -1,0 +1,392 @@
+{
+  "slice": "TRANSLATION_ORDER_ANALYSIS_ABSTRACT_BUSY_INTERVAL",
+  "generated_at": "2026-09-27T09:08:05.804263+08:00",
+  "published_at": "2026-09-27T09:08:05.804263+08:00",
+  "rank": 209,
+  "layer": 20,
+  "source_file": "analysis/abstract/busy_interval.v",
+  "source_commit": "414e66760333eaa4ef78c685bcf53291c527a548",
+  "source_tree": "7d7e94c731f7eefde4ca738310d4cafdd7bebdf0",
+  "source_file_sha256": "e5be5714ed30bf5e83a40b8db563ebc2d7bde8dacb6a3204777667fa43c61f79",
+  "pipeline": "Validation/scripts/translation_file_pipeline.py",
+  "spec": "Validation/tooling/file_specs/analysis_abstract_busy_interval.json",
+  "spec_sha256": "20355b82c9e25647e4dff0d5e5e7251789e481b755a2f2c4f69a457a92d1c3b2",
+  "source_compatibility": {
+    "mode": "extract",
+    "note": "theorem statements from the authoritative elaborated types (proofs omitted); the statements mention the abstract definitions (pinned source of the base closure), workload_of_job (model/aggregate/workload) and job_cost_positive (model/job/properties), both compiled from the pinned tree, and platform_properties (pinned source of the base closure); the proof-only iw_auxiliary and workload-facts imports are dropped",
+    "extracted_sha256": "6b1ae343872a4fd3a7c8febb502ee083ab5797135fedc710dfd5716b394025f8",
+    "extraction_metadata_sha256": "278a9576b3768e3287248f7e9d4083a0c645e09fb5fb5ee9250a30b7c0d304f6"
+  },
+  "source_type_evidence": {
+    "prosa.analysis.abstract.busy_interval.busy_interval_prefix_case": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.abstract.busy_interval.terminating_busy_prefix_is_busy_interval": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.abstract.busy_interval.job_completes_within_busy_interval": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.abstract.busy_interval.no_service_before_busy_interval": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.abstract.busy_interval.service_within_busy_interval_ge_job_cost": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.abstract.busy_interval.abstract_busy_interval_arrivals_before": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.abstract.busy_interval.abstract_busy_interval_prefix_job_arrival": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.abstract.busy_interval.abstract_busy_interval_job_arrival": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.abstract.busy_interval.service_and_interference_bound": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.abstract.busy_interval.exists_busy_interval_prefix": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.abstract.busy_interval.busy_interval_has_uninterrupted_service": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.abstract.busy_interval.busy_interval_too_much_workload": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.abstract.busy_interval.t1\u03b4_is_quiet": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.abstract.busy_interval.t1\u03b4_is_quiet_contra": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.abstract.busy_interval.busy_interval_is_bounded": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE"
+  },
+  "statement_only_export_boundary": [
+    "Prosa.Analysis.Abstract.BusyInterval.busy_interval_prefix_case",
+    "Prosa.Analysis.Abstract.BusyInterval.terminating_busy_prefix_is_busy_interval",
+    "Prosa.Analysis.Abstract.BusyInterval.job_completes_within_busy_interval",
+    "Prosa.Analysis.Abstract.BusyInterval.no_service_before_busy_interval",
+    "Prosa.Analysis.Abstract.BusyInterval.service_within_busy_interval_ge_job_cost",
+    "Prosa.Analysis.Abstract.BusyInterval.abstract_busy_interval_arrivals_before",
+    "Prosa.Analysis.Abstract.BusyInterval.abstract_busy_interval_prefix_job_arrival",
+    "Prosa.Analysis.Abstract.BusyInterval.abstract_busy_interval_job_arrival",
+    "Prosa.Analysis.Abstract.BusyInterval.service_and_interference_bound",
+    "Prosa.Analysis.Abstract.BusyInterval.exists_busy_interval_prefix",
+    "Prosa.Analysis.Abstract.BusyInterval.busy_interval_has_uninterrupted_service",
+    "Prosa.Analysis.Abstract.BusyInterval.busy_interval_too_much_workload",
+    "Prosa.Analysis.Abstract.BusyInterval.t1\u03b4_is_quiet",
+    "Prosa.Analysis.Abstract.BusyInterval.t1\u03b4_is_quiet_contra",
+    "Prosa.Analysis.Abstract.BusyInterval.busy_interval_is_bounded"
+  ],
+  "input_relations": [
+    "processor states by the accepted two-sided SvcProcessorStateRel of the abstract-definitions family, schedules through it (covered in both directions)",
+    "job_arrival and job_cost pointwise by SubNatRel",
+    "JobTask by the accepted field relation",
+    "arrival sequences by ArArrivalSequenceRel (the abstract family's AdArrivalSequenceRel is the same relation, obtained by conversion; covered in both directions)",
+    "Interference and InterferingWorkload by the accepted abstract relations (covered in both directions)",
+    "tasks and jobs identity, instants/durations by SubNatRel"
+  ],
+  "coverage_for_inner_binders": [
+    "Interference",
+    "InterferingWorkload",
+    "arrival sequences",
+    "schedules",
+    "tasks/jobs identity",
+    "instants"
+  ],
+  "lean_representation_note": "a Boolean in `Prop` position is `= true`; `a < b <= c` is `(decide (a < b) && decide (b \u2264 c)) = true`; `t.+1` is `t + 1`; `j \\in s` is `decide (j \u2208 s) = true`; instance inputs quantified after a hypothesis are `\u2200 [..]`-free explicit class variables as in the elaborated types",
+  "export_size": {
+    "lines": 138672,
+    "soft_budget_flag": "OVER_100K_DIAGNOSED",
+    "diagnosis": "the accepted abstract restricted-supply busy-prefix export root merged with the accepted workload export root plus the abstract busy-interval, validity, pending, workload and platform definitions and the fifteen statements"
+  },
+  "file_dependencies": {
+    "analysis/abstract/definitions.v": "analysis_abstract_definitions_module_status.json",
+    "analysis/abstract/iw_auxiliary.v": "analysis_abstract_iw_auxiliary_module_status.json",
+    "analysis/facts/model/workload.v": "analysis_facts_model_workload_module_status.json"
+  },
+  "production_file": "Prosa/Analysis/Abstract/BusyInterval.lean",
+  "production_source_sha256": "7140c83e99ed4c8436f8c505192cd552960cb64ac99c54761eb913dc4d18af7d",
+  "production_olean_sha256": "bc0759547c2f6589b57e3c1de3819f596cdfd3ae8a6766b995780f20b821fce3",
+  "export_config_sha256": "e0e64e671840a3b2913b7c3b19a75542843409e898b296617e9f6d49f246c5c3",
+  "export_sha256": "1e8e539e6fd537579bc3865a694682fabf246163ff46052982aeba649c97bdb7",
+  "export_lines": 138672,
+  "export_bytes": 3119692,
+  "import_sha256": "8826dd7c4a058ef268e82723e2dee9b1a94d4bcd3c697fbcfae130d839c77d27",
+  "source_vo_sha256": "88038c7b294f7062e2e28ba047b09dbb2eccc0b33eb8fb2c4138dac8d5ceeba8",
+  "lean_axiom_summary_sha256": "e1cde175452bbf1c85dd3117ca1bddbdf01d84052a089b39ab57fc9d699e74ca",
+  "rocq_assumption_summary_sha256": "fd34f78ae10a65edf67baedbe55a8d6016d85046afe11a760c5bf41c3e045ade",
+  "assumption_config_sha256": "d38470659bfc5b825bfc654ce9216a99f9c66d363342b016aa605e454459ce9c",
+  "stage_timing_seconds": {
+    "source_acquisition": {
+      "mode": "FRESH",
+      "seconds": 5
+    },
+    "lean_build": {
+      "mode": "FRESH",
+      "seconds": 441
+    },
+    "export": {
+      "mode": "FRESH",
+      "seconds": 36
+    },
+    "rocq_import": {
+      "mode": "FRESH",
+      "seconds": 43
+    },
+    "certificate_compile": {
+      "mode": "FRESH",
+      "seconds": 35
+    },
+    "assumption_audit": {
+      "mode": "FRESH",
+      "seconds": 0
+    }
+  },
+  "certificates": {
+    "ArrivalsSeqBaseAdapter": {
+      "source_sha256": "99a5a322628d47aeebea82bed118d9964af18f71a6796216124ef1abbd9a3204",
+      "vo_sha256": "a2c4efd723b2b9315be8b018f6613aee95fe8c3670f10f1f7a23f6d43d2741b7"
+    },
+    "ArrivalsSeqOperations": {
+      "source_sha256": "104c03bb0e256b705152f7f2107dba2d11ea3da8843e8c474f915451ec7b7e52",
+      "vo_sha256": "edd60610f0d2b1daa4bbffeb8242ea32cf31bc3c46615eab788c12d577b24086"
+    },
+    "ArrivalsSeqCorrespondence": {
+      "source_sha256": "28b8323fcbf3ef0f1625d4e2e15ab272ad085b0b68017e19d327a6e475e9672e",
+      "vo_sha256": "a8a4b315f995c146e45ee93b1984418ba2aaa0e0ff86c50b09b3d4150d41f399"
+    },
+    "ArrivalsCorrespondence": {
+      "source_sha256": "3d60cd6b06dc4ad5fac65785018219651fbc6f13184517028f290d1fcfdfad79",
+      "vo_sha256": "c039604138c2b8efa9ad72c520477144aaa47838cdb5ed61e83026f087527921"
+    },
+    "WorkloadCorrespondence": {
+      "source_sha256": "0a81cc5e4113649d2b5ef057da90b1c02401c2abe88d650eb42ca85a2f13cd1c",
+      "vo_sha256": "0919bfcdac6942109da803ae83500035199b6d3274c8620e56ebda5cf9990f65"
+    },
+    "AbstractDefinitionsBaseAdapter": {
+      "source_sha256": "627fdc930235d5d901cdf130d79dc2af02cabc95c2cf6310ae089e095861bceb",
+      "vo_sha256": "3613422742c9c406b2e02c173eecce25a1cf16905adaef7e6ba5e74cd1afc511"
+    },
+    "ServiceBaseAdapter": {
+      "source_sha256": "60eb79883de24cf2be828930d72495181222926f31b3e2c6102796d725b83669",
+      "vo_sha256": "4606fd755c5cce2941cfd67f15306ca4786a7499e0c000c8848a4f82a8ea0774"
+    },
+    "ServiceNatBoolOperations": {
+      "source_sha256": "a8b2bdf9bd89a0da5d386a8fc1cade266491750d2771131ac104278b9fc68e5c",
+      "vo_sha256": "f06a8e5b78e826aba1ac0b39bf9da2a4206d624f649ef2c4ee353e25348df07f"
+    },
+    "AbstractDefinitionsArrivalOperations": {
+      "source_sha256": "ff44eb13678492c28f4b60560efd34b57af414936aee77bc379d942f1672baf5",
+      "vo_sha256": "0f3a8a8fa4853968ca77b7880bb99a099bb446f4cc88650cca61779f3e3949b5"
+    },
+    "AbstractDefinitionsClasses": {
+      "source_sha256": "b6bc1dc556a95dbf6e9766be813276047a523f098624a901ee2351ba0b5462ba",
+      "vo_sha256": "4f0a7e39649c65e25f59941c58a9824cc0ee08d284a9952a7e9e05b9403e0174"
+    },
+    "AbstractDefinitionsNatBoolOperations": {
+      "source_sha256": "6969f5753056f36aacbd1c2a321ef7f7d3a00315657d488c63432792ca89311c",
+      "vo_sha256": "8bc617c6a345e0e38fbfd15bf4aaad9f7cf329277196b05a693a9c9d346700ba"
+    },
+    "AbstractDefinitionsIntervalOperations": {
+      "source_sha256": "a9fc5f0109534d307b7bd350d72c9c5bfc65feda3ed17b4db14bb43f2b513fb5",
+      "vo_sha256": "c92f1ec71db1d7a78c2342dded483287bdcccc75ab43e99b64e247b5264e814c"
+    },
+    "AbstractDefinitionsOperations": {
+      "source_sha256": "e64c6ce560fce86678663af7d2d1506550607abf38107e03fcb2955a86fb6e28",
+      "vo_sha256": "1b7824a63b8695c09e8011a1d787bf400359f543bb2070f5d49e9213f64635f3"
+    },
+    "AbstractDefinitionsSums": {
+      "source_sha256": "1c5a288b4d2253aa3d6b5cda0e81beb23d895b9eacc2bdc45433c6bf8649a54b",
+      "vo_sha256": "15cb9c095bca1e31244c652655f5249b9d690f89ea49edd08ac4c76e252ae37e"
+    },
+    "AbstractDefinitionsLogical": {
+      "source_sha256": "c902c2f69fe75d04bd0dd3f8035cc1f652933bc147d33fbd8c4505283e18bbb3",
+      "vo_sha256": "6b15e71265ce8f60f90868c4ed927a781c710276cbcf183fde8dffc76e8fd67e"
+    },
+    "ServiceIntervalOperations": {
+      "source_sha256": "509d72f5248be8cc15f7be77c4494ebeed77e445153dc3bb9719d274866d0066",
+      "vo_sha256": "55028ddc8e47d9bb54a1a07f9cbe35199ead9cc72de8da104e746636b91c9d00"
+    },
+    "ServiceScheduleOperations": {
+      "source_sha256": "cc7b3d093f703d990db3f371bec0bc71560b199091202135e14a2c1f5e2eb892",
+      "vo_sha256": "6a3081442cf1088322b4f400936bcf128dc83aaa5dc1cf07a543c1f14648c412"
+    },
+    "AbstractDefinitionsPendingOperations": {
+      "source_sha256": "72f0aac480e6b7937bd32679b72c056de0260882767f2171098de0ee5619d896",
+      "vo_sha256": "c24fb566817b200088316d0f29bcfee21741fff4ae0ab51cf84087c25e054a43"
+    },
+    "AbstractDefinitionsTaskOperations": {
+      "source_sha256": "ee6c9dc54118ff99408d91060d185ddf3d9200aca785d3c5a594858cd0935b88",
+      "vo_sha256": "c037c871257c4b03818a9155f6bfa2c84be96f04a404ccd76f1cc4ab56f5aa78"
+    },
+    "AbstractDefinitionsBusyIntervalHelpers": {
+      "source_sha256": "6da5e3ed206e15d14b9764a9e837b9392c2fd001b0e68644839a69e058c37a01",
+      "vo_sha256": "7ef5d578a038971f071517c5dcfe334f6f336e0f6a327310b4c4628765d76853"
+    },
+    "BusyIntervalAbstractCorrespondence": {
+      "source_sha256": "3fd307f77acc4e154c1d045847916cc031374116a1daa1a5f818b1345fceadbd",
+      "vo_sha256": "adec4fb1072771f54112db59c1a3ff1d3169c9bcff7b1d3896f738997ed58e4b"
+    },
+    "BusyIntervalAbstractAssumptionAudit": {
+      "source_sha256": "78179c438e1826dc437e968d157050dcb7264d5c15bed9e539ade9fe82a293a3",
+      "vo_sha256": "84230fa3bab186b8210217c5103b664a488e61f20789b0db90efaacf1a2607e0"
+    }
+  },
+  "declarations": [
+    {
+      "source_declaration": "prosa.analysis.abstract.busy_interval.busy_interval_prefix_case",
+      "lean_declaration": "Prosa.Analysis.Abstract.BusyInterval.busy_interval_prefix_case",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "busy_interval_prefix_case_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.abstract.busy_interval.terminating_busy_prefix_is_busy_interval",
+      "lean_declaration": "Prosa.Analysis.Abstract.BusyInterval.terminating_busy_prefix_is_busy_interval",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "terminating_busy_prefix_is_busy_interval_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.abstract.busy_interval.job_completes_within_busy_interval",
+      "lean_declaration": "Prosa.Analysis.Abstract.BusyInterval.job_completes_within_busy_interval",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "job_completes_within_busy_interval_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.abstract.busy_interval.no_service_before_busy_interval",
+      "lean_declaration": "Prosa.Analysis.Abstract.BusyInterval.no_service_before_busy_interval",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "no_service_before_busy_interval_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.abstract.busy_interval.service_within_busy_interval_ge_job_cost",
+      "lean_declaration": "Prosa.Analysis.Abstract.BusyInterval.service_within_busy_interval_ge_job_cost",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "service_within_busy_interval_ge_job_cost_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.abstract.busy_interval.abstract_busy_interval_arrivals_before",
+      "lean_declaration": "Prosa.Analysis.Abstract.BusyInterval.abstract_busy_interval_arrivals_before",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "abstract_busy_interval_arrivals_before_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.abstract.busy_interval.abstract_busy_interval_prefix_job_arrival",
+      "lean_declaration": "Prosa.Analysis.Abstract.BusyInterval.abstract_busy_interval_prefix_job_arrival",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "abstract_busy_interval_prefix_job_arrival_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.abstract.busy_interval.abstract_busy_interval_job_arrival",
+      "lean_declaration": "Prosa.Analysis.Abstract.BusyInterval.abstract_busy_interval_job_arrival",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "abstract_busy_interval_job_arrival_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.abstract.busy_interval.service_and_interference_bound",
+      "lean_declaration": "Prosa.Analysis.Abstract.BusyInterval.service_and_interference_bound",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "service_and_interference_bound_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.abstract.busy_interval.exists_busy_interval_prefix",
+      "lean_declaration": "Prosa.Analysis.Abstract.BusyInterval.exists_busy_interval_prefix",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "exists_busy_interval_prefix_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.abstract.busy_interval.busy_interval_has_uninterrupted_service",
+      "lean_declaration": "Prosa.Analysis.Abstract.BusyInterval.busy_interval_has_uninterrupted_service",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "busy_interval_has_uninterrupted_service_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.abstract.busy_interval.busy_interval_too_much_workload",
+      "lean_declaration": "Prosa.Analysis.Abstract.BusyInterval.busy_interval_too_much_workload",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "busy_interval_too_much_workload_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.abstract.busy_interval.t1\u03b4_is_quiet",
+      "lean_declaration": "Prosa.Analysis.Abstract.BusyInterval.t1\u03b4_is_quiet",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "t1\u03b4_is_quiet_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.abstract.busy_interval.t1\u03b4_is_quiet_contra",
+      "lean_declaration": "Prosa.Analysis.Abstract.BusyInterval.t1\u03b4_is_quiet_contra",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "t1\u03b4_is_quiet_contra_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.abstract.busy_interval.busy_interval_is_bounded",
+      "lean_declaration": "Prosa.Analysis.Abstract.BusyInterval.busy_interval_is_bounded",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "busy_interval_is_bounded_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    }
+  ],
+  "acceptance": "ACCEPTED_V06_FILE"
+}

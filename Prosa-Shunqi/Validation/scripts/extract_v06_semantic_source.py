@@ -241,18 +241,41 @@ def main() -> None:
         )
         if omitted_context:
             context = []
-        output.extend([f"Section SourceContext_{index}.", *context, ""] if context else [])
         # local bindings reconnect Section variables, so they only apply to
-        # blocks that are regenerated inside their Section context
-        active_bindings = {
+        # blocks that are regenerated inside their Section context; a binding
+        # that a copied context line (e.g. a hypothesis naming an earlier
+        # closed-section definition) mentions is placed just before that line
+        context_bindings = {
             binding_name: term for binding_name, term in bindings.items()
             if context and name != binding_name
+            and any(re.search(rf"\b{re.escape(binding_name)}\b", line) for line in context)
+        }
+        if context:
+            # regroup the copied lines into whole commands (each ends with '.')
+            commands: list[list[str]] = []
+            for line in context:
+                if not commands or commands[-1][-1].rstrip().endswith("."):
+                    commands.append([])
+                commands[-1].append(line)
+            emitted_context = []
+            pending = dict(context_bindings)
+            for command in commands:
+                for binding_name in list(pending):
+                    if any(re.search(rf"\b{re.escape(binding_name)}\b", line) for line in command):
+                        emitted_context.append(
+                            f"  Local Notation {binding_name} := ({pending.pop(binding_name)}).")
+                emitted_context.extend(command)
+            output.extend([f"Section SourceContext_{index}.", *emitted_context, ""])
+        active_bindings = {
+            binding_name: term for binding_name, term in bindings.items()
+            if context and name != binding_name and binding_name not in context_bindings
             and re.search(rf"\b{re.escape(binding_name)}\b", block)
         }
         for binding_name, term in active_bindings.items():
             output.append(f"Local Notation {binding_name} := ({term}).")
         if active_bindings:
             output.append("")
+        active_bindings = {**context_bindings, **active_bindings}
         if name in computational:
             generated = block.rstrip()
             output.extend([generated, ""])

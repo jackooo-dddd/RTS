@@ -1,0 +1,6 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedIbfSupply.
+
+Check ImportedIbfSupply.Prosa_Analysis_Abstract_IBF_Supply_intra_interference.
+Check ImportedIbfSupply.Prosa_Analysis_Abstract_IBF_Supply_cumul_intra_interference.
+Check ImportedIbfSupply.Prosa_Analysis_Abstract_IBF_Supply_intra_interference_is_bounded_by.

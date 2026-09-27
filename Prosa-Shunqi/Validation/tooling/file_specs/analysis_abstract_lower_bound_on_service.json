@@ -1,0 +1,155 @@
+{
+  "rank": 210,
+  "layer": 20,
+  "tag": "LBS",
+  "slug": "analysis_abstract_lower_bound_on_service",
+  "source": "analysis/abstract/lower_bound_on_service.v",
+  "dependencies": [
+    "analysis/abstract/busy_interval.v",
+    "analysis/abstract/definitions.v",
+    "analysis/facts/model/service_of_jobs.v",
+    "analysis/facts/preemption/rtc_threshold/job_preemptable.v"
+  ],
+  "declaration_count": 3,
+  "base_run": "analysis_abstract_busy_interval_final",
+  "base_checks": [
+    {
+      "manifest": "analysis_abstract_busy_interval",
+      "olean": "Prosa/Analysis/Abstract/BusyInterval.olean",
+      "vo": "BusyIntervalAbstractSemanticSource.vo"
+    }
+  ],
+  "extra_pinned_sources": [
+    "model/job/properties.v",
+    "model/aggregate/workload.v"
+  ],
+  "extra_lean": [],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "LowerBoundOnServiceSemanticSource",
+    "drop_imports": [
+      "Require Export prosa.analysis.facts.model.service_of_jobs.",
+      "Require Export prosa.analysis.facts.preemption.rtc_threshold.job_preemptable.",
+      "Require Export prosa.analysis.abstract.definitions.",
+      "Require Export prosa.analysis.abstract.busy_interval."
+    ],
+    "add_imports": [
+      "Require Export prosa.analysis.abstract.definitions.",
+      "Require Export prosa.model.job.properties.",
+      "Require Export prosa.model.processor.platform_properties.",
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq bigop.",
+      "Require Import prosa.behavior.all."
+    ],
+    "note": "theorem statements from the authoritative elaborated types (proofs omitted); the statements mention the abstract definitions, job_cost_positive (model/job/properties) and unit_service_proc_model (platform_properties), all compiled from the pinned tree of the base closure; the proof-only service-of-jobs, job-preemptable and abstract busy-interval imports are dropped"
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/LowerBoundOnServiceStatementProbe.v",
+  "production": "Prosa/Analysis/Abstract/LowerBoundOnService.lean",
+  "production_olean": "Prosa/Analysis/Abstract/LowerBoundOnService.olean",
+  "lean_namespace": "Prosa.Analysis.Abstract.LowerBoundOnService",
+  "fixtures": [
+    "NondecreasingComputationInterface",
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "PreemptionParameterComputationInterface",
+    "ServiceInversionPredComputationInterface",
+    "AbstractDefinitionsComputationInterface",
+    "BusyPrefixComputationInterface",
+    "ArrivalsComputationInterface",
+    "WorkloadComputationInterface",
+    "BusyIntervalAbstractComputationInterface",
+    "LowerBoundOnServiceComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/LowerBoundOnServiceLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/analysis_abstract_lower_bound_on_service_export_config.json",
+  "export_name": "LowerBoundOnService",
+  "cert_dir": "certificates/analysis_abstract_lower_bound_on_service",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "ArrivalsCorrespondence",
+    "WorkloadCorrespondence",
+    "AbstractDefinitionsBaseAdapter",
+    "ServiceBaseAdapter",
+    "ServiceNatBoolOperations",
+    "AbstractDefinitionsArrivalOperations",
+    "AbstractDefinitionsClasses",
+    "AbstractDefinitionsNatBoolOperations",
+    "AbstractDefinitionsIntervalOperations",
+    "AbstractDefinitionsOperations",
+    "AbstractDefinitionsSums",
+    "AbstractDefinitionsLogical",
+    "ServiceIntervalOperations",
+    "ServiceScheduleOperations",
+    "AbstractDefinitionsPendingOperations",
+    "AbstractDefinitionsTaskOperations",
+    "AbstractDefinitionsBusyIntervalHelpers",
+    "LowerBoundOnServiceCorrespondence"
+  ],
+  "audit_module": "LowerBoundOnServiceAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/LowerBoundOnServiceImportedTypeAudit.v",
+  "assumption_config": "certificates/analysis_abstract_lower_bound_on_service/lower_bound_on_service_assumption_config.json",
+  "lean_axiom_config": "certificates/analysis_abstract_lower_bound_on_service/lower_bound_on_service_lean_axiom_config.json",
+  "computational": [],
+  "principal": {},
+  "helpers": [
+    "lbs_add_related",
+    "lbs_cost_positive_related",
+    "lbs_unit_service_rel",
+    "lbs_arr_ad"
+  ],
+  "previous_status": "analysis_abstract_busy_interval_module_status.json",
+  "previous_files": 199,
+  "previous_decls": 1392,
+  "input_relations": [
+    "processor states by the accepted two-sided SvcProcessorStateRel of the abstract-definitions family, schedules through it",
+    "job_arrival and job_cost pointwise by SubNatRel",
+    "JobTask by the accepted field relation",
+    "arrival sequences by ArArrivalSequenceRel (the abstract family's AdArrivalSequenceRel is the same relation, obtained by conversion)",
+    "Interference and InterferingWorkload by the accepted abstract relations",
+    "tasks and jobs identity, instants/durations by SubNatRel"
+  ],
+  "coverage_for_inner_binders": [
+    "jobs identity",
+    "instants/durations"
+  ],
+  "lean_representation_note": "a Boolean in `Prop` position is `= true`; `a < b <= c` is `(decide (a < b) && decide (b \u2264 c)) = true`; `t.+1` is `t + 1`; `j \\in s` is `decide (j \u2208 s) = true`; instance inputs quantified after a hypothesis are `\u2200 [..]`-free explicit class variables as in the elaborated types",
+  "export_diagnosis": "the accepted abstract busy-interval export root (abstract restricted-supply busy-prefix root merged with the workload root) plus the three statements",
+  "extra_source_patches": [],
+  "extra_artifacts": [],
+  "extra_olean_artifacts": [
+    {
+      "from": "analysis_facts_model_rbf_final/olean/Prosa/Analysis/Facts/Model/Workload.olean",
+      "to": "Prosa/Analysis/Facts/Model/Workload.olean",
+      "manifest": "analysis_facts_model_workload",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_behavior_all_final/olean/Prosa/Analysis/Facts/Behavior/Deadlines.olean",
+      "to": "Prosa/Analysis/Facts/Behavior/Deadlines.olean",
+      "manifest": "analysis_facts_behavior_deadlines",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_behavior_all_final/olean/Prosa/Analysis/Facts/Behavior/All.olean",
+      "to": "Prosa/Analysis/Facts/Behavior/All.olean",
+      "manifest": "analysis_facts_behavior_all",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "model_task_preemption_parameters_final/olean/Prosa/Model/Task/Preemption/Parameters.olean",
+      "to": "Prosa/Model/Task/Preemption/Parameters.olean",
+      "manifest": "model_task_preemption_parameters",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_preemption_rtc_threshold_preemptive_final/olean/Prosa/Analysis/Facts/Preemption/RtcThreshold/JobPreemptable.olean",
+      "to": "Prosa/Analysis/Facts/Preemption/RtcThreshold/JobPreemptable.olean",
+      "manifest": "analysis_facts_preemption_rtc_threshold_job_preemptable",
+      "key": "production_olean_sha256"
+    }
+  ],
+  "extra_generated_sources": []
+}

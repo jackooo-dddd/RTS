@@ -1,0 +1,201 @@
+{
+  "rank": 213,
+  "layer": 20,
+  "tag": "IARTA",
+  "slug": "analysis_abstract_ideal_abstract_rta",
+  "source": "analysis/abstract/ideal/abstract_rta.v",
+  "dependencies": [
+    "analysis/facts/model/ideal/schedule.v",
+    "analysis/definitions/schedulability.v",
+    "analysis/abstract/search_space.v",
+    "analysis/abstract/abstract_rta.v",
+    "analysis/abstract/iw_auxiliary.v"
+  ],
+  "declaration_count": 2,
+  "base_run": "analysis_abstract_abstract_rta_final",
+  "base_checks": [
+    {
+      "manifest": "analysis_abstract_abstract_rta",
+      "olean": "Prosa/Analysis/Abstract/AbstractRta.olean",
+      "vo": "AbstractRtaSemanticSource.vo"
+    }
+  ],
+  "extra_pinned_sources": [],
+  "extra_lean": [],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "IdealAbstractRtaSemanticSource",
+    "drop_imports": [
+      "Require Export prosa.analysis.facts.model.ideal.schedule.",
+      "Require Export prosa.analysis.definitions.schedulability.",
+      "Require Export prosa.analysis.abstract.search_space.",
+      "Require Export prosa.analysis.abstract.abstract_rta.",
+      "Require Export prosa.analysis.abstract.iw_auxiliary."
+    ],
+    "add_imports": [
+      "Require Export prosa.AbstractRtaSemanticSource.",
+      "Export AbstractRtaSemanticSource.",
+      "Require Export prosa.PreemptionParameterSemanticSource.",
+      "Export PreemptionParameterSemanticSource.",
+      "Require Export prosa.analysis.abstract.definitions.",
+      "Require Export prosa.analysis.abstract.search_space.",
+      "Require Export prosa.model.job.properties.",
+      "Require Export prosa.model.processor.platform_properties.",
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq bigop.",
+      "Require Import prosa.behavior.all."
+    ],
+    "note": "theorem statements from the authoritative elaborated types (proofs omitted); relative_time_to_reach_rtct, relative_arrival_time_of_job_is_A, task_response_time_bound and valid_task_run_to_completion_threshold are bound to the accepted extracted AbstractRtaSemanticSource of the base run (which exports the accepted SchedulabilitySemanticSource and TaskPreemptionParametersSemanticSource), valid_preemption_model and JobPreemptable to the accepted extracted PreemptionParameterSemanticSource of the base closure; the abstract definitions, search space, job properties and platform properties are pinned sources of the base closure; the proof-only ideal-schedule facts, schedulability, iw_auxiliary imports are dropped"
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/IdealAbstractRtaStatementProbe.v",
+  "production": "Prosa/Analysis/Abstract/Ideal/AbstractRta.lean",
+  "production_olean": "Prosa/Analysis/Abstract/Ideal/AbstractRta.olean",
+  "lean_namespace": "Prosa.Analysis.Abstract.Ideal.AbstractRta",
+  "fixtures": [
+    "NondecreasingComputationInterface",
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "PreemptionParameterComputationInterface",
+    "ServiceInversionPredComputationInterface",
+    "AbstractDefinitionsComputationInterface",
+    "BusyPrefixComputationInterface",
+    "ArrivalsComputationInterface",
+    "WorkloadComputationInterface",
+    "BusyIntervalAbstractComputationInterface",
+    "LowerBoundOnServiceComputationInterface",
+    "TaskPreemptionParametersComputationInterface",
+    "AbstractRtaComputationInterface",
+    "IdealAbstractRtaComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/IdealAbstractRtaLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/analysis_abstract_ideal_abstract_rta_export_config.json",
+  "export_name": "IdealAbstractRta",
+  "cert_dir": "certificates/analysis_abstract_ideal_abstract_rta",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "ArrivalsCorrespondence",
+    "WorkloadCorrespondence",
+    "AbstractDefinitionsBaseAdapter",
+    "ServiceBaseAdapter",
+    "ServiceNatBoolOperations",
+    "AbstractDefinitionsArrivalOperations",
+    "AbstractDefinitionsClasses",
+    "AbstractDefinitionsNatBoolOperations",
+    "AbstractDefinitionsIntervalOperations",
+    "AbstractDefinitionsOperations",
+    "AbstractDefinitionsSums",
+    "AbstractDefinitionsLogical",
+    "ServiceIntervalOperations",
+    "ServiceScheduleOperations",
+    "AbstractDefinitionsPendingOperations",
+    "AbstractDefinitionsTaskOperations",
+    "AbstractDefinitionsBusyIntervalHelpers",
+    "AbstractRtaHelpers",
+    "JitterSvcBaseAdapter",
+    "JitterSvcNatBoolOperations",
+    "JitterSvcIntervalOperations",
+    "JitterSvcScheduleOperations",
+    "JitterSvcJobOperations",
+    "PreemptionParameterCorrespondence",
+    "TaskPreemptionParametersCorrespondence",
+    "IdealAbstractRtaCorrespondence"
+  ],
+  "audit_module": "IdealAbstractRtaAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/IdealAbstractRtaImportedTypeAudit.v",
+  "assumption_config": "certificates/analysis_abstract_ideal_abstract_rta/ideal_abstract_rta_assumption_config.json",
+  "lean_axiom_config": "certificates/analysis_abstract_ideal_abstract_rta/ideal_abstract_rta_lean_axiom_config.json",
+  "computational": [],
+  "principal": {},
+  "helpers": [
+    "iarta_forall_sched",
+    "iarta_forall_arr",
+    "iarta_forall_state",
+    "iarta_ideal_progress_rel",
+    "iarta_unit_service_rel",
+    "iarta_scheduled_at_related",
+    "iarta_must_arrive_rel",
+    "iarta_completed_dont_execute_rel",
+    "iarta_np_fun_rel"
+  ],
+  "previous_status": "analysis_abstract_ibf_supply_module_status.json",
+  "previous_files": 202,
+  "previous_decls": 1412,
+  "input_relations": [
+    "processor states by the accepted two-sided SvcProcessorStateRel of the abstract-definitions family and by the accepted two-sided SvcProcessorStateRel of the preemption-parameter family (scheduled/service observations of the same state pair), schedules through each; processor states and schedules quantified inside a statement are covered through the abstract-family relation",
+    "job_arrival and job_cost pointwise by SubNatRel",
+    "JobTask by the accepted field relation",
+    "JobPreemptable by the accepted PpJobPreemptableRel",
+    "task_cost and task_rtct pointwise by SubNatRel",
+    "arrival sequences by ArArrivalSequenceRel",
+    "task sets by ArListRel, Interference/InterferingWorkload by the accepted abstract relations, interference-bound functions pointwise (all covered)",
+    "tasks and jobs identity, instants and durations by SubNatRel"
+  ],
+  "coverage_for_inner_binders": [
+    "arrival sequences",
+    "schedules",
+    "task sets",
+    "Interference",
+    "InterferingWorkload",
+    "interference-bound functions",
+    "tasks/jobs identity",
+    "instants/durations"
+  ],
+  "lean_representation_note": "a Boolean in `Prop` position is `= true`; `a < b <= c` is `(decide (a < b) && decide (b \u2264 c)) = true`; `t.+1` is `t + 1`; `j \\in s` is `decide (j \u2208 s) = true`; instance inputs quantified after a hypothesis are `\u2200 [..]`-free explicit class variables as in the elaborated types",
+  "export_diagnosis": "the accepted abstract-RTA export root merged with the accepted task-preemption-parameters export root plus the platform definitions and the two statements",
+  "extra_source_patches": [],
+  "extra_artifacts": [],
+  "extra_olean_artifacts": [
+    {
+      "from": "analysis_facts_model_rbf_final/olean/Prosa/Analysis/Facts/Model/Workload.olean",
+      "to": "Prosa/Analysis/Facts/Model/Workload.olean",
+      "manifest": "analysis_facts_model_workload",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_behavior_all_final/olean/Prosa/Analysis/Facts/Behavior/Deadlines.olean",
+      "to": "Prosa/Analysis/Facts/Behavior/Deadlines.olean",
+      "manifest": "analysis_facts_behavior_deadlines",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_behavior_all_final/olean/Prosa/Analysis/Facts/Behavior/All.olean",
+      "to": "Prosa/Analysis/Facts/Behavior/All.olean",
+      "manifest": "analysis_facts_behavior_all",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "model_task_preemption_parameters_final/olean/Prosa/Model/Task/Preemption/Parameters.olean",
+      "to": "Prosa/Model/Task/Preemption/Parameters.olean",
+      "manifest": "model_task_preemption_parameters",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_preemption_rtc_threshold_preemptive_final/olean/Prosa/Analysis/Facts/Preemption/RtcThreshold/JobPreemptable.olean",
+      "to": "Prosa/Analysis/Facts/Preemption/RtcThreshold/JobPreemptable.olean",
+      "manifest": "analysis_facts_preemption_rtc_threshold_job_preemptable",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_model_rbf_final/olean/Prosa/Model/Task/AbsoluteDeadline.olean",
+      "to": "Prosa/Model/Task/AbsoluteDeadline.olean",
+      "manifest": "model_task_absolute_deadline",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_model_rbf_final/olean/Prosa/Analysis/Definitions/Schedulability.olean",
+      "to": "Prosa/Analysis/Definitions/Schedulability.olean",
+      "manifest": "analysis_definitions_schedulability",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_abstract_restricted_supply_search_space_fp_final/olean/Prosa/Analysis/Abstract/SearchSpace.olean",
+      "to": "Prosa/Analysis/Abstract/SearchSpace.olean",
+      "manifest": "analysis_abstract_search_space",
+      "key": "production_olean_sha256"
+    }
+  ],
+  "extra_generated_sources": []
+}

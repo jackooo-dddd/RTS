@@ -1,0 +1,4 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedFactsPrioritySequential.
+
+Check ImportedFactsPrioritySequential.Prosa_Analysis_Facts_Priority_Sequential_early_hep_job_is_scheduled.

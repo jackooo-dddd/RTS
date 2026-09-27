@@ -1,0 +1,377 @@
+{
+  "slice": "TRANSLATION_ORDER_ANALYSIS_ABSTRACT_ABSTRACT_RTA",
+  "generated_at": "2026-09-27T10:04:25.762020+08:00",
+  "published_at": "2026-09-27T10:04:25.762020+08:00",
+  "rank": 211,
+  "layer": 20,
+  "source_file": "analysis/abstract/abstract_rta.v",
+  "source_commit": "414e66760333eaa4ef78c685bcf53291c527a548",
+  "source_tree": "7d7e94c731f7eefde4ca738310d4cafdd7bebdf0",
+  "source_file_sha256": "5e8d0fc902e67dab8abd45a90409090d2667dd7797136bd82f8e8ca3069a2fc3",
+  "pipeline": "Validation/scripts/translation_file_pipeline.py",
+  "spec": "Validation/tooling/file_specs/analysis_abstract_abstract_rta.json",
+  "spec_sha256": "3a434e200c8dd5d8bf4a589818ecefa94ba45350847e380952e5c3d5e90f4227",
+  "source_compatibility": {
+    "mode": "extract",
+    "note": "the two definitions are byte-identical blocks with their section context and the twelve theorem statements are the authoritative elaborated types (proofs omitted); task_response_time_bound is bound to the accepted extracted SchedulabilitySemanticSource and task_rtct to the accepted extracted TaskPreemptionParametersSemanticSource (.vo copied from their accepted runs and hash-checked against their manifests); analysis/abstract/search_space and model/task/absolute_deadline are pinned sources compiled from the pinned tree (search_space with its accepted proof-only Rocq 9.3 compatibility patch); the abstract definitions and job properties are the pinned sources of the base closure; the proof-only lower_bound_on_service import is dropped; the section hypothesis on IBF_P that names relative_arrival_time_of_job_is_A before the second definition is reconnected by the recorded local binding (relative_arrival_time_of_job_is_A sched), as in the source section",
+    "extracted_sha256": "89792685734bb94bcb1a57d55fd584f54747b42147845758c6afe8b6806f6d9e",
+    "extraction_metadata_sha256": "9ad73cadc39a7b4740e729f917f61a5e4969f07eccd6e4aacb907841030c1906"
+  },
+  "source_type_evidence": {
+    "prosa.analysis.abstract.abstract_rta.relative_arrival_time_of_job_is_A": "EXACT_HASH",
+    "prosa.analysis.abstract.abstract_rta.relative_time_to_reach_rtct": "EXACT_HASH",
+    "prosa.analysis.abstract.abstract_rta.job_arrival_eq_t1_plus_A": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.abstract.abstract_rta.relative_arrival_is_bounded": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.abstract.abstract_rta.t2_le_arrival_plus_R_1": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.abstract.abstract_rta.job_completed_by_arrival_plus_R_1": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.abstract.abstract_rta.t2_le_arrival_plus_R_2": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.abstract.abstract_rta.job_completed_by_arrival_plus_R_2": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.abstract.abstract_rta.relative_rtc_time_is_bounded": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.abstract.abstract_rta.job_receives_enough_service_1": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.abstract.abstract_rta.job_receives_enough_service_2": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.abstract.abstract_rta.job_receives_enough_service_3": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.abstract.abstract_rta.job_is_completed_by_arrival_plus_R": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.abstract.abstract_rta.uniprocessor_response_time_bound": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE"
+  },
+  "statement_only_export_boundary": [
+    "Prosa.Analysis.Abstract.AbstractRta.job_arrival_eq_t1_plus_A",
+    "Prosa.Analysis.Abstract.AbstractRta.relative_arrival_is_bounded",
+    "Prosa.Analysis.Abstract.AbstractRta.t2_le_arrival_plus_R_1",
+    "Prosa.Analysis.Abstract.AbstractRta.job_completed_by_arrival_plus_R_1",
+    "Prosa.Analysis.Abstract.AbstractRta.t2_le_arrival_plus_R_2",
+    "Prosa.Analysis.Abstract.AbstractRta.job_completed_by_arrival_plus_R_2",
+    "Prosa.Analysis.Abstract.AbstractRta.relative_rtc_time_is_bounded",
+    "Prosa.Analysis.Abstract.AbstractRta.job_receives_enough_service_1",
+    "Prosa.Analysis.Abstract.AbstractRta.job_receives_enough_service_2",
+    "Prosa.Analysis.Abstract.AbstractRta.job_receives_enough_service_3",
+    "Prosa.Analysis.Abstract.AbstractRta.job_is_completed_by_arrival_plus_R",
+    "Prosa.Analysis.Abstract.AbstractRta.uniprocessor_response_time_bound"
+  ],
+  "input_relations": [
+    "processor states by the accepted two-sided SvcProcessorStateRel of the abstract-definitions family, schedules through it",
+    "job_arrival and job_cost pointwise by SubNatRel",
+    "JobTask by the accepted field relation",
+    "arrival sequences by ArArrivalSequenceRel (the abstract family's AdArrivalSequenceRel is the same relation, obtained by conversion)",
+    "Interference and InterferingWorkload by the accepted abstract relations",
+    "tasks and jobs identity, instants/durations by SubNatRel",
+    "task_cost and task_rtct pointwise by SubNatRel",
+    "IBF_P / IBF_NP pointwise on related Nats",
+    "task sets by ArListRel"
+  ],
+  "coverage_for_inner_binders": [
+    "task sets",
+    "instants/durations",
+    "jobs identity",
+    "interference-bound functions (explicit conversions)"
+  ],
+  "lean_representation_note": "a Boolean in `Prop` position is `= true`; `a < b <= c` is `(decide (a < b) && decide (b \u2264 c)) = true`; `t.+1` is `t + 1`; `j \\in s` is `decide (j \u2208 s) = true`; instance inputs quantified after a hypothesis are `\u2200 [..]`-free explicit class variables as in the elaborated types",
+  "export_size": {
+    "lines": 139218,
+    "soft_budget_flag": "OVER_100K_DIAGNOSED",
+    "diagnosis": "the accepted abstract lower-bound-on-service export root plus the schedulability, search-space, task-cost and run-to-completion-threshold definitions, the two definitions and the twelve statements"
+  },
+  "file_dependencies": {
+    "analysis/abstract/lower_bound_on_service.v": "analysis_abstract_lower_bound_on_service_module_status.json",
+    "analysis/abstract/search_space.v": "analysis_abstract_search_space_module_status.json",
+    "analysis/definitions/schedulability.v": "analysis_definitions_schedulability_module_status.json"
+  },
+  "production_file": "Prosa/Analysis/Abstract/AbstractRta.lean",
+  "production_source_sha256": "4e16b034f3a3d4241dd6519a3f83bdad55bcf8071e2245e3a78b3f26b6324b91",
+  "production_olean_sha256": "76335a239b58f2f7863b7d1e33f4b2a03746006120bdef49b26271d53b3d4bda",
+  "export_config_sha256": "7e7f946ec07f77c11d387db377b3363970eadb255704eb4b07696db835ee97e6",
+  "export_sha256": "0239523b2a5807d892da0337ee0a19803279036019591b2b987d44db7d735679",
+  "export_lines": 139218,
+  "export_bytes": 3134848,
+  "import_sha256": "ed2a32b22bc17c727a06df3edf3f652cb6e7a4b4435721c55cf29714a7949a4a",
+  "source_vo_sha256": "5bd6c98e1dca92b4d7c718fb8e158fddd38c07940c9d05a6ab43d42b37c6f69c",
+  "lean_axiom_summary_sha256": "3d836e17de5998bed162ad0a93212a38807407f0d7122b855fd3a93a4005e8ef",
+  "rocq_assumption_summary_sha256": "18af8762c9904e20baa796e331daa925206b3ac28f57f875246ddb67299a21aa",
+  "assumption_config_sha256": "b01fed6d2394ea3554456e19742b0f38d48ec2e27c57d908906be63af820b845",
+  "stage_timing_seconds": {
+    "source_acquisition": {
+      "mode": "FRESH",
+      "seconds": 5
+    },
+    "lean_build": {
+      "mode": "FRESH",
+      "seconds": 368
+    },
+    "export": {
+      "mode": "FRESH",
+      "seconds": 20
+    },
+    "rocq_import": {
+      "mode": "FRESH",
+      "seconds": 44
+    },
+    "certificate_compile": {
+      "mode": "FRESH",
+      "seconds": 35
+    },
+    "assumption_audit": {
+      "mode": "FRESH",
+      "seconds": 0
+    }
+  },
+  "certificates": {
+    "ArrivalsSeqBaseAdapter": {
+      "source_sha256": "84c4c5d6be55f51f495322ed342b3d546f9ac3045a22410a9ed5b6114e0962e0",
+      "vo_sha256": "04022343ddaf53445064ada275458e0b079f0c3f984e0ebb2ee150cd8dd567cf"
+    },
+    "ArrivalsSeqOperations": {
+      "source_sha256": "1a256ec50cbc8143d84f4177ae5fefac054e73b819be46929133d044c76b848e",
+      "vo_sha256": "4c36b21c2475c63efd1e7687ae5b7e1b279698df6c1a7298ff41f87eebba0894"
+    },
+    "ArrivalsSeqCorrespondence": {
+      "source_sha256": "1c16b354dc1f22c3fe9616a8437fc6d8fed40b8e92abf2500e39be84a1d41e9b",
+      "vo_sha256": "a459249c3452d95d734be6f67438068d081e0186a69b2afff6cadd4adb5187c1"
+    },
+    "ArrivalsCorrespondence": {
+      "source_sha256": "a3e8cf8a10323a032050edb8fc8416d100771ddf651f4554cfb56afc9dc4b7a3",
+      "vo_sha256": "1cb2f3ecc11eb973357b54e7d1b355bdaa1276e270f6f38d94a7ea6b002dae62"
+    },
+    "WorkloadCorrespondence": {
+      "source_sha256": "ec153911bc9204fc8a768a71005a50edb4e7052debff70ea7ca8cd0dc02ae2e4",
+      "vo_sha256": "2ffbb206270638bbb0edbecd305adb346649cb1da94e0ddfc34402c1f6fb111b"
+    },
+    "AbstractDefinitionsBaseAdapter": {
+      "source_sha256": "d06d20b9862ed154ae9761cb8be02409acf06582c360e3a38626fd3177dba587",
+      "vo_sha256": "3e54a7e801ffa9267025b067f983c129e6f5a11639f60fdbba5e53a2509c56af"
+    },
+    "ServiceBaseAdapter": {
+      "source_sha256": "072acd563353f8cd77e47e59f3a300f7e5e2367158fea79cf0322ea16a635629",
+      "vo_sha256": "020649c6131728e734bc00f47f7c44c124c49bc74839b516fcc2ed586ea8dc7b"
+    },
+    "ServiceNatBoolOperations": {
+      "source_sha256": "1172d76075376754a4ed698cf138deff4a08b4743525f12f14d95ac5af2f5bdf",
+      "vo_sha256": "85c50de469d56eadae995c7a573fe33bdb23a68d7df3f1d35c078832ada6c067"
+    },
+    "AbstractDefinitionsArrivalOperations": {
+      "source_sha256": "c4c1dc7a9087a9bfd18d460d2096572bb5e26df792c492b44b2a47017f68ed84",
+      "vo_sha256": "b4d358b5e3fe371a72f11eac14a200e336cbb602a0aa489270ed594c4d5ea12b"
+    },
+    "AbstractDefinitionsClasses": {
+      "source_sha256": "069c0980716c93615b0455e9c5feb0bda9b7ee4346927726a5907ee16a48db66",
+      "vo_sha256": "de67dd5372cd79b9306f91d9d63e31d6e5e7f0b7462683786c6fe7f72c48cf9c"
+    },
+    "AbstractDefinitionsNatBoolOperations": {
+      "source_sha256": "831ef282c1a284e89286545773e4d4b779357e019e22ea5bb9f8ede85bc5f511",
+      "vo_sha256": "f9b4268a92da14c7760ec35630a2735db72ebf48b101477a86e68cf8e04884ed"
+    },
+    "AbstractDefinitionsIntervalOperations": {
+      "source_sha256": "de915bc3b588d924e5270169cc4b7bc67c4498b96acfe5ce90b959faeff8ac0f",
+      "vo_sha256": "082c470a10fda0ac5ed58afa0e3bf34b5639c58e31ea799151fcea2af603fdcb"
+    },
+    "AbstractDefinitionsOperations": {
+      "source_sha256": "b7d48407817a45efc9b5fc1d1658664fbf097a4485794f22b7949eee6b2b8254",
+      "vo_sha256": "1d7473afdb0923e4a76977ce746b3a5446372aa2f1768df85579149d0eee9925"
+    },
+    "AbstractDefinitionsSums": {
+      "source_sha256": "dda81e9c7210782e12aee46202c06ca2016b408c3cc9262e6456b91af25867d5",
+      "vo_sha256": "ad15b8a98de811bb38085d514f7d85136e02ad64dfb745327f2f4ac0dd4df4fb"
+    },
+    "AbstractDefinitionsLogical": {
+      "source_sha256": "f1602b6390887a403d1f3fbeba01052d1317b31dfc4780880a9195478c222146",
+      "vo_sha256": "17527bdea9e49878f7e170e290375fbdd88637eaef146d6aa66a7a31a82ae3c2"
+    },
+    "ServiceIntervalOperations": {
+      "source_sha256": "2299e534c29cce10a6e8e45875dea4978856c5bfab8327bb956b0b3f10fc7965",
+      "vo_sha256": "5502379488437d774991ce450d2e9db60c2c96da196e2d9e5a354672c7de6341"
+    },
+    "ServiceScheduleOperations": {
+      "source_sha256": "b92774cf04b9d76b68c651d65d73d730685f9843b2573f9ff87b6faeed7e5e45",
+      "vo_sha256": "8473783d4142e01c0fc4976b2d2c78c6c3bcfe681f012fa12dbe5fea28ebf105"
+    },
+    "AbstractDefinitionsPendingOperations": {
+      "source_sha256": "cb7097fd311c915462f0cc43135411610213222c97fc379aa5fba74997f5bdaa",
+      "vo_sha256": "8f129beb102deaa7e4e3f036ce4c2cb2f3ecee6e249ec75c00dd22101b590f46"
+    },
+    "AbstractDefinitionsTaskOperations": {
+      "source_sha256": "de7663141a2b2cbdaac8fc4c051e214d2257ac995b73bbddf200545b41356bf0",
+      "vo_sha256": "a91ff9a0ee0de372e24a611c4041afde9dd98fec5061709362d9a3d88e72264f"
+    },
+    "AbstractDefinitionsBusyIntervalHelpers": {
+      "source_sha256": "8eea45a4d7810664dccb10262ca0d1e3356381ee2b9254fb46535013c0d99ccd",
+      "vo_sha256": "4875532ed2aa9b3058f10387802e823b402f516a8668101a104a56010731ff39"
+    },
+    "AbstractRtaCorrespondence": {
+      "source_sha256": "40fb7a54c8c20b266d6ebf22bcb927c0360d426d0ea20321631b9b20e391d00d",
+      "vo_sha256": "ea4b1a75fbb944ea94ff40b543cc2153fb2983bdaf01c379902478af29d63c9e"
+    },
+    "AbstractRtaAssumptionAudit": {
+      "source_sha256": "5b3238f28e1502154ce546e4673f48c598f28a84f2ad1c3a5cd5ed3ce607af73",
+      "vo_sha256": "de044256a4288791bc37aa3875ca5d0015df7c9ca921041183183104eeef0d46"
+    }
+  },
+  "declarations": [
+    {
+      "source_declaration": "prosa.analysis.abstract.abstract_rta.relative_arrival_time_of_job_is_A",
+      "lean_declaration": "Prosa.Analysis.Abstract.AbstractRta.relative_arrival_time_of_job_is_A",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "relative_arrival_time_of_job_is_A_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.abstract.abstract_rta.relative_time_to_reach_rtct",
+      "lean_declaration": "Prosa.Analysis.Abstract.AbstractRta.relative_time_to_reach_rtct",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "relative_time_to_reach_rtct_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.abstract.abstract_rta.job_arrival_eq_t1_plus_A",
+      "lean_declaration": "Prosa.Analysis.Abstract.AbstractRta.job_arrival_eq_t1_plus_A",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "job_arrival_eq_t1_plus_A_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.abstract.abstract_rta.relative_arrival_is_bounded",
+      "lean_declaration": "Prosa.Analysis.Abstract.AbstractRta.relative_arrival_is_bounded",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "relative_arrival_is_bounded_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.abstract.abstract_rta.t2_le_arrival_plus_R_1",
+      "lean_declaration": "Prosa.Analysis.Abstract.AbstractRta.t2_le_arrival_plus_R_1",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "t2_le_arrival_plus_R_1_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.abstract.abstract_rta.job_completed_by_arrival_plus_R_1",
+      "lean_declaration": "Prosa.Analysis.Abstract.AbstractRta.job_completed_by_arrival_plus_R_1",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "job_completed_by_arrival_plus_R_1_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.abstract.abstract_rta.t2_le_arrival_plus_R_2",
+      "lean_declaration": "Prosa.Analysis.Abstract.AbstractRta.t2_le_arrival_plus_R_2",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "t2_le_arrival_plus_R_2_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.abstract.abstract_rta.job_completed_by_arrival_plus_R_2",
+      "lean_declaration": "Prosa.Analysis.Abstract.AbstractRta.job_completed_by_arrival_plus_R_2",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "job_completed_by_arrival_plus_R_2_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.abstract.abstract_rta.relative_rtc_time_is_bounded",
+      "lean_declaration": "Prosa.Analysis.Abstract.AbstractRta.relative_rtc_time_is_bounded",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "relative_rtc_time_is_bounded_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.abstract.abstract_rta.job_receives_enough_service_1",
+      "lean_declaration": "Prosa.Analysis.Abstract.AbstractRta.job_receives_enough_service_1",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "job_receives_enough_service_1_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.abstract.abstract_rta.job_receives_enough_service_2",
+      "lean_declaration": "Prosa.Analysis.Abstract.AbstractRta.job_receives_enough_service_2",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "job_receives_enough_service_2_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.abstract.abstract_rta.job_receives_enough_service_3",
+      "lean_declaration": "Prosa.Analysis.Abstract.AbstractRta.job_receives_enough_service_3",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "job_receives_enough_service_3_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.abstract.abstract_rta.job_is_completed_by_arrival_plus_R",
+      "lean_declaration": "Prosa.Analysis.Abstract.AbstractRta.job_is_completed_by_arrival_plus_R",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "job_is_completed_by_arrival_plus_R_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.abstract.abstract_rta.uniprocessor_response_time_bound",
+      "lean_declaration": "Prosa.Analysis.Abstract.AbstractRta.uniprocessor_response_time_bound",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "uniprocessor_response_time_bound_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    }
+  ],
+  "acceptance": "ACCEPTED_V06_FILE"
+}
