@@ -1,0 +1,220 @@
+{
+  "rank": 214,
+  "layer": 19,
+  "tag": "FEAB",
+  "slug": "analysis_facts_workload_elf_athep_bound",
+  "source": "analysis/facts/workload/elf_athep_bound.v",
+  "dependencies": [
+    "analysis/definitions/workload/bounded.v",
+    "analysis/definitions/workload/elf_athep_bound.v",
+    "analysis/facts/model/rbf.v",
+    "analysis/facts/model/workload.v",
+    "model/priority/elf.v",
+    "model/task/absolute_deadline.v"
+  ],
+  "declaration_count": 6,
+  "base_run": "analysis_facts_workload_edf_athep_bound_final",
+  "base_checks": [
+    {
+      "manifest": "analysis_facts_workload_edf_athep_bound",
+      "olean": "Prosa/Analysis/Facts/Workload/EdfAthepBound.olean",
+      "vo": "FactsEdfAthepBoundSemanticSource.vo"
+    }
+  ],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "FactsElfAthepBoundSemanticSource",
+    "drop_imports": [
+      "Require Export prosa.analysis.definitions.workload.bounded.",
+      "Require Export prosa.analysis.facts.model.workload.",
+      "Require Export prosa.analysis.definitions.workload.elf_athep_bound.",
+      "Require Export prosa.analysis.facts.model.rbf."
+    ],
+    "add_imports": [
+      "Require Export prosa.WorkloadBoundedSemanticSource.",
+      "Export WorkloadBoundedSemanticSource.",
+      "Require Export prosa.RequestBoundFunctionSemanticSource.",
+      "Export RequestBoundFunctionSemanticSource.",
+      "Require Export prosa.ElfAthepBoundSemanticSource.",
+      "Export ElfAthepBoundSemanticSource.",
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq bigop.",
+      "Require Import prosa.util.epsilon prosa.util.rel prosa.behavior.all prosa.model.task.concept prosa.model.task.arrival.curves.",
+      "Require Import prosa.model.priority.classes prosa.model.job.properties prosa.model.aggregate.workload."
+    ],
+    "note": "theorem statements from the authoritative elaborated types (proofs omitted); the workload/bounded and definitions/workload/elf_athep_bound imports are bound to their accepted extracted sources (WorkloadBoundedSemanticSource of the base closure; ElfAthepBoundSemanticSource and RequestBoundFunctionSemanticSource .vo copied from their accepted runs and hash-checked against their manifests); model/priority/elf (with util/int and model/priority/gel, carrying the exported ELF instance) is the accepted compiled pinned source (.vo manifest-hash-checked artifacts, byte-identical dependencies with this closure); model/task/absolute_deadline, model/job/properties and model/aggregate/workload are pinned sources compiled from the pinned tree as in the base; the proof-only facts/model/workload and facts/model/rbf imports are dropped"
+  },
+  "extra_artifacts": [
+    {
+      "from": "analysis_definitions_request_bound_function_final/source/RequestBoundFunctionSemanticSource.vo",
+      "to": "source/RequestBoundFunctionSemanticSource.vo",
+      "manifest": "analysis_definitions_request_bound_function",
+      "key": "source_vo_sha256"
+    },
+    {
+      "from": "analysis_definitions_workload_elf_athep_bound_final/source/ElfAthepBoundSemanticSource.vo",
+      "to": "source/ElfAthepBoundSemanticSource.vo",
+      "manifest": "analysis_definitions_workload_elf_athep_bound",
+      "key": "source_vo_sha256"
+    },
+    {
+      "from": "model_priority_elf_final/source/util/int.vo",
+      "to": "source/util/int.vo",
+      "manifest": "util_int",
+      "key": "official_rocq_vo_sha256"
+    },
+    {
+      "from": "model_priority_elf_final/source/model/priority/gel.vo",
+      "to": "source/model/priority/gel.vo",
+      "manifest": "model_priority_gel",
+      "key": "source_vo_sha256"
+    },
+    {
+      "from": "model_priority_elf_final/source/model/priority/elf.vo",
+      "to": "source/model/priority/elf.vo",
+      "manifest": "model_priority_elf",
+      "key": "source_vo_sha256"
+    }
+  ],
+  "extra_pinned_sources": [
+    "model/job/properties.v",
+    "model/aggregate/workload.v",
+    "model/task/absolute_deadline.v"
+  ],
+  "extra_olean_artifacts": [
+    {
+      "from": "analysis_definitions_workload_edf_athep_bound_final/olean/Prosa/Analysis/Definitions/Workload/EdfAthepBound.olean",
+      "to": "Prosa/Analysis/Definitions/Workload/EdfAthepBound.olean",
+      "manifest": "analysis_definitions_workload_edf_athep_bound",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "model_priority_edf_final/olean/Prosa/Model/Priority/Edf.olean",
+      "to": "Prosa/Model/Priority/Edf.olean",
+      "manifest": "model_priority_edf",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "model_priority_elf_final/olean/Prosa/Util/Int.olean",
+      "to": "Prosa/Util/Int.olean",
+      "manifest": "util_int",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "model_priority_elf_final/olean/Prosa/Model/Priority/Gel.olean",
+      "to": "Prosa/Model/Priority/Gel.olean",
+      "manifest": "model_priority_gel",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "model_priority_elf_final/olean/Prosa/Model/Priority/Elf.olean",
+      "to": "Prosa/Model/Priority/Elf.olean",
+      "manifest": "model_priority_elf",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_definitions_workload_elf_athep_bound_final/olean/Prosa/Analysis/Definitions/Workload/ElfAthepBound.olean",
+      "to": "Prosa/Analysis/Definitions/Workload/ElfAthepBound.olean",
+      "manifest": "analysis_definitions_workload_elf_athep_bound",
+      "key": "production_olean_sha256"
+    }
+  ],
+  "fingerprint_probe": "Validation/fixtures/translation_order/FactsElfAthepBoundStatementProbe.v",
+  "production": "Prosa/Analysis/Facts/Workload/ElfAthepBound.lean",
+  "production_olean": "Prosa/Analysis/Facts/Workload/ElfAthepBound.olean",
+  "lean_namespace": "Prosa.Analysis.Facts.Workload.ElfAthepBound",
+  "fixtures": [
+    "NondecreasingComputationInterface",
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "PreemptionParameterComputationInterface",
+    "BusyIntervalClassicalComputationInterface",
+    "ArrivalsComputationInterface",
+    "WorkloadComputationInterface",
+    "WorkloadBoundedComputationInterface",
+    "RequestBoundFunctionComputationInterface",
+    "CurvesComputationInterface",
+    "ProcessorStateCoverInterface",
+    "EdfAthepBoundComputationInterface",
+    "FactsEdfAthepBoundComputationInterface",
+    "PriorityGelComputationInterface",
+    "PriorityElfComputationInterface",
+    "ElfAthepBoundComputationInterface",
+    "FactsElfAthepBoundComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/FactsElfAthepBoundLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/analysis_facts_workload_elf_athep_bound_export_config.json",
+  "export_name": "FactsElfAthepBound",
+  "cert_dir": "certificates/analysis_facts_workload_elf_athep_bound",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "ArrivalsCorrespondence",
+    "JitterSvcBaseAdapter",
+    "JitterSvcNatBoolOperations",
+    "JitterSvcIntervalOperations",
+    "JitterSvcScheduleOperations",
+    "JitterSvcJobOperations",
+    "PreemptionParameterCorrespondence",
+    "WorkloadCorrespondence",
+    "CurvesCorrespondence",
+    "RequestBoundFunctionCorrespondence",
+    "WorkloadBoundedCorrespondence",
+    "EdfAthepBoundCorrespondence",
+    "NatSubCorrespondence",
+    "PcoBaseAdapter",
+    "PcoStaticOrder",
+    "PcoDynamicOrder",
+    "PriorityCoercionCorrespondence",
+    "PriorityGelHelpers",
+    "PriorityElfHelpers",
+    "ElfAthepBoundCorrespondence",
+    "FactsElfAthepBoundCorrespondence"
+  ],
+  "audit_module": "FactsElfAthepBoundAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/FactsElfAthepBoundImportedTypeAudit.v",
+  "assumption_config": "certificates/analysis_facts_workload_elf_athep_bound/facts_elf_athep_bound_assumption_config.json",
+  "lean_axiom_config": "certificates/analysis_facts_workload_elf_athep_bound/facts_elf_athep_bound_lean_axiom_config.json",
+  "computational": [],
+  "principal": {},
+  "helpers": [
+    "felab_forall_cover_sprop",
+    "felab_lean_transport",
+    "felab_nat_input",
+    "felab_decide_eq_related",
+    "felab_cast_related",
+    "felab_ep_task_related",
+    "felab_hp_task_related",
+    "felab_elf_related",
+    "felab_job_task_eq_related",
+    "felab_hep_from_related",
+    "felab_job_of_task_related",
+    "felab_job_cost_positive_related",
+    "felab_list_to_target_rel",
+    "felab_list_to_source_rel",
+    "felab_task_cost_of_job_related",
+    "felab_valid_job_costs_related",
+    "felab_all_jobs_from_taskset_related",
+    "felab_sched_to_target_rel",
+    "felab_sched_to_source_rel"
+  ],
+  "previous_status": "analysis_definitions_workload_elf_athep_bound_module_status.json",
+  "previous_files": 239,
+  "previous_decls": 1676,
+  "input_relations": [
+    "task costs pointwise by SubNatRel, maximum arrivals by the accepted CvMaxArrivalsRel, priority points by the accepted GelPriorityPointRel, job_task by Lean.eq, job_arrival by ArJobArrivalRel, job_cost by SvcJobCostRel, the leading processor state by SvcProcessorStateRel, the leading arrival sequence by ArArrivalSequenceRel",
+    "task sets, schedules, FP policies (pointwise on Booleans), tasks and jobs (identity) and Nats covered in both directions"
+  ],
+  "coverage_for_inner_binders": [
+    "task sets",
+    "schedules",
+    "FP policies",
+    "tasks",
+    "jobs",
+    "instants"
+  ],
+  "lean_representation_note": "the EDF policy is the accepted `EDF` instance over the accepted `job_deadline_from_task_deadline` instance, named explicitly; the section-local `EDF_from tsk_o` is inlined; `A` is `job_arrival j - t1`; `\u03b5` is `1`; `\\sum_(x <- xs | P x) F x` is `sumFiltered xs P F`; `monotone leq f` is `Prosa.Util.Rel.monotone (fun x y => decide (x \u2264 y)) f`",
+  "export_diagnosis": "the accepted EDF workload-bound facts export root (without statements) merged with the accepted ELF workload-bound export root plus the six statements"
+}

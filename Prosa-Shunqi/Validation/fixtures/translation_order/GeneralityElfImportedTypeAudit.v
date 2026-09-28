@@ -1,0 +1,6 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedGeneralityElf.
+
+Check ImportedGeneralityElf.Prosa_Results_Generality_Elf_elf_generalizes_gel.
+Check ImportedGeneralityElf.Prosa_Results_Generality_Elf_elf_is_fixed_priority.
+Check ImportedGeneralityElf.Prosa_Results_Generality_Elf_elf_generalizes_fixed_priority.

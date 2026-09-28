@@ -1,0 +1,385 @@
+{
+  "slice": "TRANSLATION_ORDER_ANALYSIS_FACTS_PRIORITY_FIFO",
+  "generated_at": "2026-09-28T06:13:51.239154+08:00",
+  "published_at": "2026-09-28T06:13:51.239154+08:00",
+  "rank": 263,
+  "layer": 24,
+  "source_file": "analysis/facts/priority/fifo.v",
+  "source_commit": "414e66760333eaa4ef78c685bcf53291c527a548",
+  "source_tree": "7d7e94c731f7eefde4ca738310d4cafdd7bebdf0",
+  "source_file_sha256": "d8e4ee5403dcf4c9a50199bc2c2121cedfaf7614603c2085f9f61b2f36603038",
+  "pipeline": "Validation/scripts/translation_file_pipeline.py",
+  "spec": "Validation/tooling/file_specs/analysis_facts_priority_fifo.json",
+  "spec_sha256": "f6b3503644f086182cf2fa031b9479b90735c5c1d83ae1cea0bdb7cc8354b2ee",
+  "source_compatibility": {
+    "mode": "extract",
+    "note": "theorem statements from the authoritative elaborated types (proofs omitted); model/priority/fifo (with its exported FIFO instance) and model/task/sequentiality are the accepted compiled pinned sources (.vo manifest-hash-checked artifacts, byte-identical dependencies with this closure), model/schedule/nonpreemptive and analysis/definitions/always_higher_priority are compiled from the pinned tree, model/readiness/basic and model/schedule/work_conserving are the pinned sources of the base closure; priority inversion, the service-inversion busy prefix and priority-driven schedules are bound to the accepted extracted PriorityInversionSemanticSource, ServiceInversionBusyPrefixSemanticSource and PriorityDrivenSemanticSource of the base closure; the proof-only facts imports are dropped; the section-local readiness instance basic_ready_instance, implicit in the elaborated statements, is made explicit by recorded printer repairs (the statements print back to the evidence text)",
+    "extracted_sha256": "8e113d1199025fbbf708160cccd942115cc94624be28793db24962d59037e2b3",
+    "extraction_metadata_sha256": "544db949c8be0415c7e287b4965b7713a7b41511dced6aa0a14e475aa04942a8"
+  },
+  "source_type_evidence": {
+    "prosa.analysis.facts.priority.fifo.hep_job_arrival_FIFO": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.priority.fifo.not_hep_job_arrival_FIFO": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.priority.fifo.not_hep_job_FIFO": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.priority.fifo.not_hep_job_always_higher_priority_FIFO": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.priority.fifo.FIFO_implies_no_priority_inversion": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.priority.fifo.scheduled_implies_higher_priority_completed": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.priority.fifo.FIFO_implies_no_pi": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.priority.fifo.FIFO_implies_no_service_inversion": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.priority.fifo.tasks_execute_sequentially": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.priority.fifo.fifo_respects_sequential_tasks": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.priority.fifo.no_preemptions_under_FIFO": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.priority.fifo.FIFO_is_nonpreemptive": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE"
+  },
+  "statement_only_export_boundary": [
+    "Prosa.Analysis.Facts.Priority.Fifo.hep_job_arrival_FIFO",
+    "Prosa.Analysis.Facts.Priority.Fifo.not_hep_job_arrival_FIFO",
+    "Prosa.Analysis.Facts.Priority.Fifo.not_hep_job_FIFO",
+    "Prosa.Analysis.Facts.Priority.Fifo.not_hep_job_always_higher_priority_FIFO",
+    "Prosa.Analysis.Facts.Priority.Fifo.FIFO_implies_no_priority_inversion",
+    "Prosa.Analysis.Facts.Priority.Fifo.scheduled_implies_higher_priority_completed",
+    "Prosa.Analysis.Facts.Priority.Fifo.FIFO_implies_no_pi",
+    "Prosa.Analysis.Facts.Priority.Fifo.FIFO_implies_no_service_inversion",
+    "Prosa.Analysis.Facts.Priority.Fifo.tasks_execute_sequentially",
+    "Prosa.Analysis.Facts.Priority.Fifo.fifo_respects_sequential_tasks",
+    "Prosa.Analysis.Facts.Priority.Fifo.no_preemptions_under_FIFO",
+    "Prosa.Analysis.Facts.Priority.Fifo.FIFO_is_nonpreemptive"
+  ],
+  "input_relations": [
+    "job_arrival pointwise, job_cost by SvcJobCostRel",
+    "arrival sequences, processor models (isj_cover_pstate), schedules, JobPreemptable instances, task types with their DecidableEq and JobTask instances (type cover through Lean funext), tasks, jobs and instants covered in both directions"
+  ],
+  "coverage_for_inner_binders": [
+    "arrival sequences",
+    "processor models",
+    "schedules",
+    "JobPreemptable",
+    "task types",
+    "JobTask",
+    "tasks",
+    "jobs",
+    "instants"
+  ],
+  "lean_representation_note": "Booleans in Prop position are `= true`; the canonical conversions JLFP\u2192JLDP and FP\u2192JLFP are the accepted `JLFP_to_JLDP`/`FP_to_JLFP`, passed explicitly",
+  "export_size": {
+    "lines": 141786,
+    "soft_budget_flag": "OVER_100K_DIAGNOSED",
+    "diagnosis": "the accepted busy-interval service-inversion export root (without statements) merged with the accepted FIFO export root plus Lean funext (with its proof) and the twelve statements"
+  },
+  "file_dependencies": {
+    "analysis/definitions/priority_inversion.v": "analysis_definitions_priority_inversion_module_status.json",
+    "analysis/facts/busy_interval/all.v": "analysis_facts_busy_interval_all_module_status.json",
+    "analysis/facts/busy_interval/service_inversion.v": "analysis_facts_busy_interval_service_inversion_module_status.json",
+    "analysis/facts/preemption/job/nonpreemptive.v": "analysis_facts_preemption_job_nonpreemptive_module_status.json",
+    "analysis/facts/priority/inversion.v": "analysis_facts_priority_inversion_module_status.json",
+    "analysis/facts/priority/sequential.v": "analysis_facts_priority_sequential_module_status.json",
+    "analysis/facts/readiness/basic.v": "analysis_facts_readiness_basic_module_status.json",
+    "model/priority/fifo.v": "model_priority_fifo_module_status.json",
+    "model/readiness/basic.v": "model_readiness_basic_module_status.json",
+    "model/schedule/work_conserving.v": "model_schedule_work_conserving_module_status.json",
+    "model/task/sequentiality.v": "model_task_sequentiality_module_status.json"
+  },
+  "production_file": "Prosa/Analysis/Facts/Priority/Fifo.lean",
+  "production_source_sha256": "06e4b4f33d2794c3fa088e08f523f5cea4681205f3d0689e77b92e54b0462346",
+  "production_olean_sha256": "4ca89bb43b55a41c7b575282155e5785b68dc8f384fdc5aa8bf4b746823bef5a",
+  "export_config_sha256": "f610539ea2c60a0e08f57736b0dac924364ca91fd1225cfb066edc0c3d70cdce",
+  "export_sha256": "f58ec7b1d81912b36e87ffb60c9339b4005b76c778eafc028d03a2642ed0193b",
+  "export_lines": 141786,
+  "export_bytes": 3192070,
+  "import_sha256": "aa5ae0420ec23ad6bb169000f83937b183f7a2735fabcf2355cb1440d0563911",
+  "source_vo_sha256": "9d37ec0d23167e04357a267572f7d38d535a1c60ec3e9318b5343b8cec386753",
+  "lean_axiom_summary_sha256": "b1210e62f9f794ee11095dba64877f6c9c7f0ecd8bb2d9d11f7f40f93048ca26",
+  "rocq_assumption_summary_sha256": "9fb743159b6b1e22a4289d5a57a6a64d8b58ba081d00770afc703df837612f76",
+  "assumption_config_sha256": "0d655c69f6f54408df7db63d700b43407570cd24a83d620086f5e99a83f8a966",
+  "stage_timing_seconds": {
+    "source_acquisition": {
+      "mode": "FRESH",
+      "seconds": 6
+    },
+    "lean_build": {
+      "mode": "FRESH",
+      "seconds": 1628
+    },
+    "export": {
+      "mode": "FRESH",
+      "seconds": 43
+    },
+    "rocq_import": {
+      "mode": "FRESH",
+      "seconds": 43
+    },
+    "certificate_compile": {
+      "mode": "FRESH",
+      "seconds": 66
+    },
+    "assumption_audit": {
+      "mode": "FRESH",
+      "seconds": 0
+    }
+  },
+  "certificates": {
+    "ArrivalsSeqBaseAdapter": {
+      "source_sha256": "2cd79c638b2e7b8fa85a51d39fec4aca580b482d19b078d6cf2c5e6da6bc3368",
+      "vo_sha256": "7394a793145498b54833429badd18c55f09e8b6b2408ca1b5456de12b3a69076"
+    },
+    "ArrivalsSeqOperations": {
+      "source_sha256": "7505e194932868acd8208e53955372fe740c5b22449c9fcd8d7575bcbc5e3a43",
+      "vo_sha256": "7c644cca38bc1d596a8e084d1f4e0c16da567c724085d7256fbe19472152bfeb"
+    },
+    "ArrivalsSeqCorrespondence": {
+      "source_sha256": "fe1ecde20aca934e57761331c1962ba0c5ef17f38a108fb92d1ed6c7f4ed7b3b",
+      "vo_sha256": "c4710e1715770a72f5ab79bb0ce958a9a429a0bfe4fb5186149d54b10502cf28"
+    },
+    "ArrivalsCorrespondence": {
+      "source_sha256": "b546f6ee1e51426a42cebc639e85c1c7a6afce9d6aeb7b9ffd8b4343356ac06c",
+      "vo_sha256": "e1a0689395b2c07ffdacf9e621b42dc7f9890090cce8fa01ec1f686187cab1f8"
+    },
+    "JitterSvcBaseAdapter": {
+      "source_sha256": "45158200d3ca8caad6565df0c71c729b45fcb2ed06fd14c9330618b08d628725",
+      "vo_sha256": "1943a28fd585e1c7d556bc9e52c6fc5d9af0a6a93c738cb3bde0879f2b9c3c0d"
+    },
+    "JitterSvcNatBoolOperations": {
+      "source_sha256": "53b889f76c98de730b00a0eb50258298fd5a38f27ae6920a8e4343f372e53ed2",
+      "vo_sha256": "63356f2d88d831fbea3a2c3097b1c9e72c51f1212173578ced999a11b58c0fa1"
+    },
+    "JitterSvcIntervalOperations": {
+      "source_sha256": "17e45727870708b41d16821d5e582ee4e4d9260778d14506a1d4140689eb7179",
+      "vo_sha256": "f2bb17cde9905c40bdbf01787b8096129a5a381b11afbd71d01d6e57012c5b71"
+    },
+    "JitterSvcScheduleOperations": {
+      "source_sha256": "6882058b41ae7d09c0f8610ddd612735bd89d524579964fe2562146661435c3c",
+      "vo_sha256": "ec2ea25f4c9aea1ebcad1c7ad3c0166addd83d989a7318b31c8fa6efa8eccd6f"
+    },
+    "JitterSvcJobOperations": {
+      "source_sha256": "4108d9658ea440dd483d82ca8215ca8fdf0ae1f1a54b6e2a0dcb48529661ee1b",
+      "vo_sha256": "22299938d7465b92d1e630e46818b7821596d57f05afde7070ba1d4726242cfa"
+    },
+    "PreemptionParameterCorrespondence": {
+      "source_sha256": "5de01d7150ed5cc3811356c121abb099614df8c279e131aac4cca1516c1d39e1",
+      "vo_sha256": "ba0b892b022c539305cc28ea209ac71f6ba46668a45e68a8a43b9db5d92f314f"
+    },
+    "PreemptionTimeCorrespondence": {
+      "source_sha256": "8614edcc38955d1768e26c3bf81255427524cce34fffa8bca65749f910ab390f",
+      "vo_sha256": "18ad1505db259bbb2618ce70ea811fdf28297b3ad33b8012b26bcd6cd5ba7e90"
+    },
+    "PriorityDrivenCorrespondence": {
+      "source_sha256": "944d86a5fd7b80ee96d9c20403916c6c2b7e372105ff0e7c1e0da8fcb776c79c",
+      "vo_sha256": "3a4fbe1c3e86ea83fb4827f76d7d6c703152043dae9d374a59661231ef5286d0"
+    },
+    "PStateCoverHelpers": {
+      "source_sha256": "efa7cec8e9f4f07ceb091ac94765262545f5ad860ea26b1aec9a75f04ff26f27",
+      "vo_sha256": "e17659644981d2b6ecdc5e65682db256fda6fae8d00d2fb2b9ce54e0f131b148"
+    },
+    "FactsPreemptionHelpers": {
+      "source_sha256": "af9adf63dc63628b3656304dc2219e6353fe96230c4d4d3f9fa8cc4ac2d23c7e",
+      "vo_sha256": "45193ce749066975f22a4b528a4980dd768c17363854dc4b2b6617430625e73f"
+    },
+    "WorkloadCorrespondence": {
+      "source_sha256": "8adf29da8c35712de918a88e066c22135fe0e1e092e824f39df6fd24aa936ba1",
+      "vo_sha256": "3121d79ad866dcc50b26ed490e3b7b82a95579dc6687c60395f125cafc0dbb43"
+    },
+    "PriorityInversionCorrespondence": {
+      "source_sha256": "41e80b2936abb903cd9e51fa70f764a5a143ef99cd7a7cb60aaef18298ea469a",
+      "vo_sha256": "f119aaf7587a9e8a7ea6b41d1f9ac11014635c0eb681547360d9b662e48418f9"
+    },
+    "ExistenceHelpers": {
+      "source_sha256": "74d193bedd97ac1eb17a2ce13590cbb00c4de9f885cbd55438bca31de6064fe5",
+      "vo_sha256": "fca4655b99bdf49c2ec1b9ce87ae8fe5e409abad8c05aa1d16cbd95208fb9fe1"
+    },
+    "HepAtPtHelpers": {
+      "source_sha256": "519e1f5ad5cc455b2ec3e905b78c3c4eef4b7ffd2a188771db3dc431627f3afd",
+      "vo_sha256": "4590ae78ba87a85a39debe5b0b325509cc986ec54470f7e97072be79dddf76ef"
+    },
+    "TaskPreemptionParametersCorrespondence": {
+      "source_sha256": "b21ad7bf20f3b78193f5212eaeaaa514b2cfe8b4f3ce2663bdb0983fff97fd48",
+      "vo_sha256": "e988c5b59578f9ff7c008fae0dc717501f8ff39f2cbd3cc00e9e03f04008383e"
+    },
+    "BusyIntervalPiHelpers": {
+      "source_sha256": "0fd8ca9f0b7d4df4637f8391b2b61ffea950bb99a3aaf8daf50d3587684efeeb",
+      "vo_sha256": "a0b3f91156c08e334243623c983e783ecde6ad06ceb46bb518da589b0204f008"
+    },
+    "ServiceInversionPredCorrespondence": {
+      "source_sha256": "10258134e638f97841619a1d6ff2613697608926097b4388487eb1e5c9e3bccf",
+      "vo_sha256": "ce621f21e80356e820a6692c21c3db3485eaadd8fcb463c740ff2d8bc3b54aae"
+    },
+    "BsiHelpers": {
+      "source_sha256": "d6de5a5758cc48afd087111476a16ea80d411e6538f3865767fb949c6b0c3cf4",
+      "vo_sha256": "d4db905e2b196b098aca6ba770a0120ee7196fa73713fac7c587b6ee0f467518"
+    },
+    "PcoBaseAdapter": {
+      "source_sha256": "61b4e9899c63238b2e5371ebdb4acd030cd38ee0be11c436143f2cdd407359e0",
+      "vo_sha256": "efb7ad50beca3c24db85f3c7d3e8ee90aa6ca94bf1a848417513372ee47db5a7"
+    },
+    "PcoStaticOrder": {
+      "source_sha256": "16b35e39a96985791aa1170a8f478e44ccfff1d3fceb67e57c792b736adba1ea",
+      "vo_sha256": "6ccf9a4ce773811c79f7254118d21d30bb77f989a90985177aca3bf0478e5baf"
+    },
+    "PcoDynamicOrder": {
+      "source_sha256": "88d254d1ce20766000a91e17c859be0b99da7d88fc6246a04f3a3b5888b2e722",
+      "vo_sha256": "e243a61bbe9afab1fd71f16c9c44b8057b28055002bab6b608896d4f082870bb"
+    },
+    "PriorityCoercionCorrespondence": {
+      "source_sha256": "ecb56e208f945d70f99143ae6c90a2b590cda8898d7be7cdc90e8f1d09c850ea",
+      "vo_sha256": "2696e54fe3399d05bcaf86a84eec5efd05334b29f8987b68f1f3325d9f0892c8"
+    },
+    "FifoHelpers": {
+      "source_sha256": "a490c04fc0e6aa22b517796351c3ffbd3192876c9e9adb8b5affdf48c2aa64f5",
+      "vo_sha256": "bd7778b201c8332d2244a6fd5988c804ec12de3a7b31f6375a51b2003adadb51"
+    },
+    "FactsPriorityFifoCorrespondence": {
+      "source_sha256": "ab49f4036481d8f1694d6769373d9711561a20404bc2f2d77d0a75a48fc583c3",
+      "vo_sha256": "a34eb14780c84e075a2d11f61bd9b34247122902b4ab3604b944c33a3f4176f9"
+    },
+    "FactsPriorityFifoAssumptionAudit": {
+      "source_sha256": "cdbd91f1da27a8d66a6737d314ca68c1f4b122a4c27d9df4e6686f06b2e02796",
+      "vo_sha256": "11a08611bb586a06c99607648d051a96d8704826f876600564113381221f5f6c"
+    }
+  },
+  "declarations": [
+    {
+      "source_declaration": "prosa.analysis.facts.priority.fifo.hep_job_arrival_FIFO",
+      "lean_declaration": "Prosa.Analysis.Facts.Priority.Fifo.hep_job_arrival_FIFO",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "hep_job_arrival_FIFO_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.priority.fifo.not_hep_job_arrival_FIFO",
+      "lean_declaration": "Prosa.Analysis.Facts.Priority.Fifo.not_hep_job_arrival_FIFO",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "not_hep_job_arrival_FIFO_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.priority.fifo.not_hep_job_FIFO",
+      "lean_declaration": "Prosa.Analysis.Facts.Priority.Fifo.not_hep_job_FIFO",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "not_hep_job_FIFO_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.priority.fifo.not_hep_job_always_higher_priority_FIFO",
+      "lean_declaration": "Prosa.Analysis.Facts.Priority.Fifo.not_hep_job_always_higher_priority_FIFO",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "not_hep_job_always_higher_priority_FIFO_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.priority.fifo.FIFO_implies_no_priority_inversion",
+      "lean_declaration": "Prosa.Analysis.Facts.Priority.Fifo.FIFO_implies_no_priority_inversion",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "FIFO_implies_no_priority_inversion_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.priority.fifo.scheduled_implies_higher_priority_completed",
+      "lean_declaration": "Prosa.Analysis.Facts.Priority.Fifo.scheduled_implies_higher_priority_completed",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "scheduled_implies_higher_priority_completed_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.priority.fifo.FIFO_implies_no_pi",
+      "lean_declaration": "Prosa.Analysis.Facts.Priority.Fifo.FIFO_implies_no_pi",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "FIFO_implies_no_pi_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.priority.fifo.FIFO_implies_no_service_inversion",
+      "lean_declaration": "Prosa.Analysis.Facts.Priority.Fifo.FIFO_implies_no_service_inversion",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "FIFO_implies_no_service_inversion_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.priority.fifo.tasks_execute_sequentially",
+      "lean_declaration": "Prosa.Analysis.Facts.Priority.Fifo.tasks_execute_sequentially",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "tasks_execute_sequentially_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.priority.fifo.fifo_respects_sequential_tasks",
+      "lean_declaration": "Prosa.Analysis.Facts.Priority.Fifo.fifo_respects_sequential_tasks",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "fifo_respects_sequential_tasks_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.priority.fifo.no_preemptions_under_FIFO",
+      "lean_declaration": "Prosa.Analysis.Facts.Priority.Fifo.no_preemptions_under_FIFO",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "no_preemptions_under_FIFO_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.priority.fifo.FIFO_is_nonpreemptive",
+      "lean_declaration": "Prosa.Analysis.Facts.Priority.Fifo.FIFO_is_nonpreemptive",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "FIFO_is_nonpreemptive_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    }
+  ],
+  "acceptance": "ACCEPTED_V06_FILE"
+}

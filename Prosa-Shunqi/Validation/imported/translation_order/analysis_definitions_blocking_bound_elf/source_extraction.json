@@ -1,0 +1,53 @@
+{
+  "mode": "proof_independent_semantic_source_signature",
+  "source_file": "analysis/definitions/blocking_bound/elf.v",
+  "source_file_sha256": "8ea9f8a1924d89a5a2c2b28cc14474359af8e109ae2f67149c203db2f235e285",
+  "source_commit": "414e66760333eaa4ef78c685bcf53291c527a548",
+  "generated_file": "/Users/shunqiwang/CityuHK/Research/Lean/TranslationProof/Prosa-Shunqi/Validation/.work/experiments/analysis_definitions_blocking_bound_elf_final/source/BlockingBoundElfSemanticSource.v",
+  "transformations": {
+    "computational": "byte-identical declaration block",
+    "theorem": "verified post-Section Check type converted to a definition with its declared Prop/Type sort preserved; exact source header retained as provenance; opaque proof omitted",
+    "local_bindings": {},
+    "dropped_irrelevant_imports": [
+      "Require Export prosa.model.task.preemption.parameters."
+    ],
+    "added_validation_imports": [
+      "Require Export prosa.TaskPreemptionParametersSemanticSource.",
+      "Export TaskPreemptionParametersSemanticSource.",
+      "Require Import prosa.util.int.",
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq bigop.",
+      "Require Import prosa.util.epsilon."
+    ]
+  },
+  "declarations": {
+    "blocking_bound": {
+      "source_kind": "computational",
+      "acquisition_mode": "BODY_EXACT",
+      "source_block_sha256": "d3c2be66fd44f159d3295824dfb78dd729aedbab4a1304f924d0b553fd536549",
+      "generated_text_sha256": "d3c2be66fd44f159d3295824dfb78dd729aedbab4a1304f924d0b553fd536549",
+      "source_statement_sha256": null,
+      "normalized_statement_sha256": null,
+      "elaborated_type_sha256": null,
+      "elaborated_type_evidence": null,
+      "statement_sort": null,
+      "context": [
+        "  Context {Job : JobType}{Task : TaskType}.",
+        "  Context `{TaskCost Task}.",
+        "  Context `{TaskMaxNonpreemptiveSegment Task}.",
+        "  Context `{PriorityPoint Task}.",
+        "  Variable ts : list Task.",
+        "  Context `{MaxArrivals Task}.",
+        "  Context {FP : FP_policy Task}.",
+        "  Let blocking_relevant (tsk_o : Task) :=",
+        "    (max_arrivals tsk_o \u03b5 > 0) && (task_cost tsk_o > 0).",
+        "  Let lp_tsk_blocking_relevant (tsk : Task) (tsk_o : Task) :=",
+        "    (hp_task tsk tsk_o) && (blocking_relevant tsk_o).",
+        "  Let ep_tsk_blocking_relevant (tsk : Task) (tsk_o : Task) (A : duration) :=",
+        "    let ep_tsk_j_blocking_relevant :=  (task_priority_point tsk_o > A%:R +  task_priority_point tsk)%R in",
+        "      (ep_task tsk tsk_o) && ep_tsk_j_blocking_relevant && (blocking_relevant tsk_o)."
+      ],
+      "omitted_context_for_elaborated_theorem": false,
+      "local_bindings": {}
+    }
+  }
+}

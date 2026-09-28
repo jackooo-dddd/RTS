@@ -179,6 +179,19 @@ def main() -> None:
 
     # Lean: verified dependency oleans + fresh aggregator and interface probe.
     shutil.copytree(V / ".work/experiments" / spec["olean_closure_run"] / "olean", work / "olean")
+    # Accepted dependency oleans missing from the chosen olean closure (a dependency
+    # accepted in a sibling run) are copied from their accepted run; each is
+    # hash-checked against its own manifest below (dependency_olean) or here.
+    extra_oleans = []
+    for item in spec.get("extra_oleans", []):
+        dest = work / "olean" / item["olean"]
+        require(not dest.exists(), f"extra olean already present: {item['olean']}")
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(V / ".work/experiments" / item["run"] / "olean" / item["olean"], dest)
+        man = read(PIPE / f"{item['manifest']}_module_manifest.json")
+        want = man.get("production_olean_sha256") or man.get("artifact_hashes", {}).get("production_olean")
+        require(sha(dest) == want, f"extra olean changed: {item['olean']}")
+        extra_oleans.append({**item, "sha256": sha(dest)})
     for dep, (stem, rel_olean) in spec["dependency_olean"].items():
         man = read(PIPE / f"{stem}_module_manifest.json")
         want = man.get("production_olean_sha256") or man.get("artifact_hashes", {}).get("production_olean")
@@ -227,6 +240,7 @@ def main() -> None:
         **({"local_instances": spec["local_instances"]} if spec.get("local_instances") else {}),
         **({"dependency_shims": shim_evidence} if shim_evidence else {}),
         **({"extra_closure": extra_closure} if extra_closure else {}),
+        **({"extra_oleans": extra_oleans} if extra_oleans else {}),
         "production_file": spec["production"], "production_source_sha256": sha(production),
         "production_olean_sha256": sha(prod_olean),
         "interface_fixture": spec["fixture"], "interface_fixture_source_sha256": sha(PROJECT / spec["fixture"]),

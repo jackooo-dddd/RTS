@@ -1,0 +1,268 @@
+{
+  "rank": 257,
+  "layer": 24,
+  "tag": "IBST",
+  "slug": "analysis_abstract_ibf_supply_task",
+  "source": "analysis/abstract/IBF/supply_task.v",
+  "dependencies": [
+    "analysis/abstract/IBF/supply.v",
+    "analysis/abstract/IBF/task.v",
+    "analysis/abstract/abstract_rta.v"
+  ],
+  "declaration_count": 3,
+  "base_run": "analysis_abstract_ibf_task_final",
+  "base_checks": [
+    {
+      "manifest": "analysis_abstract_ibf_task",
+      "olean": "Prosa/Analysis/Abstract/IBF/Task.olean",
+      "vo": "IbfTaskSemanticSource.vo"
+    }
+  ],
+  "extra_pinned_sources": [],
+  "extra_lean": [],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "IbfSupplyTaskSemanticSource",
+    "drop_imports": [
+      "Require Export prosa.analysis.abstract.abstract_rta.",
+      "Require Export prosa.analysis.abstract.IBF.supply.",
+      "Require Export prosa.analysis.abstract.IBF.task."
+    ],
+    "add_imports": [
+      "Require Export prosa.IbfTaskSemanticSource.",
+      "Export IbfTaskSemanticSource.",
+      "Require Export prosa.IbfSupplySemanticSource.",
+      "Export IbfSupplySemanticSource.",
+      "Require Export prosa.analysis.abstract.definitions.",
+      "Require Export prosa.model.processor.supply.",
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq bigop.",
+      "Require Import prosa.behavior.all."
+    ],
+    "local_bindings": [
+      "nonself_intra=nonself_intra arr_seq sched"
+    ],
+    "note": "definitions byte-identical (proofs omitted: none); IBF/task is bound to its accepted extracted IbfTaskSemanticSource of the base closure (which also carries the abstract-RTA definitions) and IBF/supply to its accepted extracted IbfSupplySemanticSource (manifest-hash-checked artifact); the Section variables arr_seq and sched, implicit in the uses of nonself_intra inside later definitions of the same Section, are reconnected by a recorded local notation"
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/IbfSupplyTaskStatementProbe.v",
+  "production": "Prosa/Analysis/Abstract/IBF/SupplyTask.lean",
+  "production_olean": "Prosa/Analysis/Abstract/IBF/SupplyTask.olean",
+  "lean_namespace": "Prosa.Analysis.Abstract.IBF.SupplyTask",
+  "fixtures": [
+    "NondecreasingComputationInterface",
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "PreemptionParameterComputationInterface",
+    "ServiceInversionPredComputationInterface",
+    "AbstractDefinitionsComputationInterface",
+    "BusyPrefixComputationInterface",
+    "ArrivalsComputationInterface",
+    "WorkloadComputationInterface",
+    "BusyIntervalAbstractComputationInterface",
+    "LowerBoundOnServiceComputationInterface",
+    "TaskPreemptionParametersComputationInterface",
+    "AbstractRtaComputationInterface",
+    "IdealAbstractRtaComputationInterface",
+    "RequestBoundFunctionComputationInterface",
+    "TaskScheduleComputationInterface",
+    "SequentialityComputationInterface",
+    "ServiceOfJobsComputationInterface",
+    "CurvesComputationInterface",
+    "IbfTaskComputationInterface",
+    "SupplyComputationInterface",
+    "IbfSupplyComputationInterface",
+    "IbfSupplyTaskComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/IbfSupplyTaskLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/analysis_abstract_ibf_supply_task_export_config.json",
+  "export_name": "IbfSupplyTask",
+  "cert_dir": "certificates/analysis_abstract_ibf_supply_task",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "ArrivalsCorrespondence",
+    "WorkloadCorrespondence",
+    "AbstractDefinitionsBaseAdapter",
+    "ServiceBaseAdapter",
+    "ServiceNatBoolOperations",
+    "AbstractDefinitionsArrivalOperations",
+    "AbstractDefinitionsClasses",
+    "AbstractDefinitionsNatBoolOperations",
+    "AbstractDefinitionsIntervalOperations",
+    "AbstractDefinitionsOperations",
+    "AbstractDefinitionsSums",
+    "AbstractDefinitionsLogical",
+    "ServiceIntervalOperations",
+    "ServiceScheduleOperations",
+    "AbstractDefinitionsPendingOperations",
+    "AbstractDefinitionsTaskOperations",
+    "AbstractDefinitionsBusyIntervalHelpers",
+    "AbstractRtaHelpers",
+    "JitterSvcBaseAdapter",
+    "JitterSvcNatBoolOperations",
+    "JitterSvcIntervalOperations",
+    "JitterSvcScheduleOperations",
+    "JitterSvcJobOperations",
+    "PreemptionParameterCorrespondence",
+    "TaskPreemptionParametersCorrespondence",
+    "IdealAbstractRtaHelpers",
+    "ArrivalSequenceBaseAdapter",
+    "ArrivalSequenceOperations",
+    "TaskScheduleCorrespondence",
+    "CurvesCorrespondence",
+    "RequestBoundFunctionCorrespondence",
+    "SequentialityCorrespondence",
+    "ServiceOfJobsCorrespondence",
+    "SupplyScheduleBaseAdapter",
+    "SupplyScheduleFiniteOperations",
+    "SupplyScheduleOperations",
+    "SupplyBaseAdapter",
+    "SupplyNatBoolOperations",
+    "SupplyIntervalOperations",
+    "SupplyCorrespondence",
+    "IbfTaskHelpers",
+    "IbfSupplyTaskCorrespondence"
+  ],
+  "audit_module": "IbfSupplyTaskAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/IbfSupplyTaskImportedTypeAudit.v",
+  "assumption_config": "certificates/analysis_abstract_ibf_supply_task/ibf_supply_task_assumption_config.json",
+  "lean_axiom_config": "certificates/analysis_abstract_ibf_supply_task/ibf_supply_task_lean_axiom_config.json",
+  "computational": [
+    "nonself_intra",
+    "task_intra_interference",
+    "task_intra_interference_is_bounded_by"
+  ],
+  "principal": {},
+  "helpers": [
+    "ibst_nonself_intra_pred"
+  ],
+  "previous_status": "results_transfer_schedulability_criterion_module_status.json",
+  "previous_files": 227,
+  "previous_decls": 1602,
+  "input_relations": [
+    "processor states by both accepted two-sided relations (the abstract-definitions family's SvcProcessorStateRel and the supply family's SupplyProcessorStateRel), schedules through each",
+    "JobTask by AdJobTaskRel, job_arrival and job_cost pointwise",
+    "arrival sequences by ArArrivalSequenceRel, Interference/InterferingWorkload by the accepted abstract-definitions relations, the IBF pointwise"
+  ],
+  "coverage_for_inner_binders": [
+    "none (definitions only)"
+  ],
+  "lean_representation_note": "a Boolean in `Prop` position is `= true`; `a < b <= c` is `(decide (a < b) && decide (b \u2264 c)) = true`; `t.+1` is `t + 1`; `j \\in s` is `decide (j \u2208 s) = true`; instance inputs quantified after a hypothesis are `\u2200 [..]`-free explicit class variables as in the elaborated types",
+  "export_diagnosis": "the accepted IBF/task export root without its statements merged with the accepted IBF/supply export root (same abstract-RTA closure) plus the three definitions",
+  "extra_source_patches": [],
+  "extra_artifacts": [
+    {
+      "from": "analysis_abstract_ibf_supply_final/source/IbfSupplySemanticSource.vo",
+      "to": "source/IbfSupplySemanticSource.vo",
+      "manifest": "analysis_abstract_ibf_supply",
+      "key": "source_vo_sha256"
+    }
+  ],
+  "extra_olean_artifacts": [
+    {
+      "from": "analysis_facts_model_rbf_final/olean/Prosa/Analysis/Facts/Model/Workload.olean",
+      "to": "Prosa/Analysis/Facts/Model/Workload.olean",
+      "manifest": "analysis_facts_model_workload",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_behavior_all_final/olean/Prosa/Analysis/Facts/Behavior/Deadlines.olean",
+      "to": "Prosa/Analysis/Facts/Behavior/Deadlines.olean",
+      "manifest": "analysis_facts_behavior_deadlines",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_behavior_all_final/olean/Prosa/Analysis/Facts/Behavior/All.olean",
+      "to": "Prosa/Analysis/Facts/Behavior/All.olean",
+      "manifest": "analysis_facts_behavior_all",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "model_task_preemption_parameters_final/olean/Prosa/Model/Task/Preemption/Parameters.olean",
+      "to": "Prosa/Model/Task/Preemption/Parameters.olean",
+      "manifest": "model_task_preemption_parameters",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_preemption_rtc_threshold_preemptive_final/olean/Prosa/Analysis/Facts/Preemption/RtcThreshold/JobPreemptable.olean",
+      "to": "Prosa/Analysis/Facts/Preemption/RtcThreshold/JobPreemptable.olean",
+      "manifest": "analysis_facts_preemption_rtc_threshold_job_preemptable",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_model_rbf_final/olean/Prosa/Model/Task/AbsoluteDeadline.olean",
+      "to": "Prosa/Model/Task/AbsoluteDeadline.olean",
+      "manifest": "model_task_absolute_deadline",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_model_rbf_final/olean/Prosa/Analysis/Definitions/Schedulability.olean",
+      "to": "Prosa/Analysis/Definitions/Schedulability.olean",
+      "manifest": "analysis_definitions_schedulability",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_abstract_restricted_supply_search_space_fp_final/olean/Prosa/Analysis/Abstract/SearchSpace.olean",
+      "to": "Prosa/Analysis/Abstract/SearchSpace.olean",
+      "manifest": "analysis_abstract_search_space",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_readiness_basic_final/olean/Prosa/Analysis/Definitions/Readiness.olean",
+      "to": "Prosa/Analysis/Definitions/Readiness.olean",
+      "manifest": "analysis_definitions_readiness",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_model_rbf_final/olean/Prosa/Analysis/Definitions/RequestBoundFunction.olean",
+      "to": "Prosa/Analysis/Definitions/RequestBoundFunction.olean",
+      "manifest": "analysis_definitions_request_bound_function",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_model_rbf_final/olean/Prosa/Analysis/Definitions/Workload/Bounded.olean",
+      "to": "Prosa/Analysis/Definitions/Workload/Bounded.olean",
+      "manifest": "analysis_definitions_workload_bounded",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_model_rbf_final/olean/Prosa/Analysis/Facts/Model/Rbf.olean",
+      "to": "Prosa/Analysis/Facts/Model/Rbf.olean",
+      "manifest": "analysis_facts_model_rbf",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_model_sequential_final/olean/Prosa/Analysis/Facts/Model/Sequential.olean",
+      "to": "Prosa/Analysis/Facts/Model/Sequential.olean",
+      "manifest": "analysis_facts_model_sequential",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_model_rbf_final/olean/Prosa/Analysis/Facts/Model/TaskCost.olean",
+      "to": "Prosa/Analysis/Facts/Model/TaskCost.olean",
+      "manifest": "analysis_facts_model_task_cost",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_model_task_schedule_final/olean/Prosa/Analysis/Facts/Model/TaskSchedule.olean",
+      "to": "Prosa/Analysis/Facts/Model/TaskSchedule.olean",
+      "manifest": "analysis_facts_model_task_schedule",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "model_task_sequentiality_final/olean/Prosa/Model/Task/Sequentiality.olean",
+      "to": "Prosa/Model/Task/Sequentiality.olean",
+      "manifest": "model_task_sequentiality",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_abstract_ibf_supply_final/olean/Prosa/Analysis/Abstract/IBF/Supply.olean",
+      "to": "Prosa/Analysis/Abstract/IBF/Supply.olean",
+      "manifest": "analysis_abstract_ibf_supply",
+      "key": "production_olean_sha256"
+    }
+  ],
+  "extra_generated_sources": []
+}

@@ -1,0 +1,7 @@
+From FoundationCertificates Require Import
+  ArrivalsSeqBaseAdapter ArrivalsSeqOperations ArrivalsSeqCorrespondence ArrivalsCorrespondence JitterSvcBaseAdapter JitterSvcNatBoolOperations JitterSvcIntervalOperations JitterSvcScheduleOperations JitterSvcJobOperations PreemptionParameterCorrespondence PreemptionTimeCorrespondence PriorityDrivenCorrespondence PStateCoverHelpers FactsPreemptionHelpers WorkloadCorrespondence PriorityInversionCorrespondence ExistenceHelpers HepAtPtHelpers TaskPreemptionParametersCorrespondence BusyIntervalPiHelpers PiBoundCorrespondence.
+Set Printing Width 1000.
+
+Goal Logic.True. idtac "AUDIT_BEGIN priority_inversion_is_bounded_correspondence". exact Logic.I. Qed.
+Print Assumptions priority_inversion_is_bounded_correspondence.
+Goal Logic.True. idtac "AUDIT_END priority_inversion_is_bounded_correspondence". exact Logic.I. Qed.

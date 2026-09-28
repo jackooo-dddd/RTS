@@ -1,0 +1,279 @@
+{
+  "rank": 175,
+  "layer": 17,
+  "tag": "FJIT",
+  "slug": "analysis_facts_jitter",
+  "source": "analysis/facts/jitter.v",
+  "dependencies": [
+    "analysis/facts/delay_propagation.v",
+    "model/schedule/work_conserving.v",
+    "model/readiness/basic.v",
+    "model/schedule/priority_driven.v",
+    "analysis/definitions/schedulability.v"
+  ],
+  "declaration_count": 14,
+  "base_run": "analysis_facts_model_preemption_final",
+  "base_checks": [
+    {
+      "manifest": "analysis_facts_model_preemption",
+      "olean": "Prosa/Analysis/Facts/Model/Preemption.olean",
+      "vo": "FactsPreemptionSemanticSource.vo"
+    }
+  ],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "FactsJitterSemanticSource",
+    "drop_imports": [
+      "Require Export prosa.analysis.facts.delay_propagation.",
+      "Require Export prosa.model.schedule.priority_driven.",
+      "Require Export prosa.analysis.definitions.schedulability."
+    ],
+    "add_imports": [
+      "Require Export prosa.analysis.definitions.delay_propagation.",
+      "Require Export prosa.model.readiness.jitter.",
+      "Require Export prosa.model.task.jitter.",
+      "Require Export prosa.PriorityDrivenSemanticSource.",
+      "Export PriorityDrivenSemanticSource.",
+      "Require Export prosa.SchedulabilitySemanticSource.",
+      "Export SchedulabilitySemanticSource.",
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq.",
+      "Require Import prosa.behavior.all prosa.model.schedule.scheduled prosa.model.processor.platform_properties."
+    ],
+    "printer_repairs": [
+      "-> valid_arrival_sequence (release_sequence arr_seq)=-> @valid_arrival_sequence Job (@release_as_arrival Job original_arrival H1) (release_sequence arr_seq)",
+      "taskset_respects_max_arrivals (release_sequence arr_seq) ts=@taskset_respects_max_arrivals Task Job H (release_sequence arr_seq) (@release_curve Task arrival_curve H0) ts",
+      "jobs_must_be_ready_to_execute sched -> jobs_must_be_ready_to_execute sched=@jobs_must_be_ready_to_execute Job original_arrival PState sched H2 (@jitter_ready_instance Job PState original_arrival H2 H1) -> @jobs_must_be_ready_to_execute Job (@release_as_arrival Job original_arrival H1) PState sched H2 (@basic_ready_instance Job PState (@release_as_arrival Job original_arrival H1) H2)",
+      "work_conserving arr_seq sched ->=@work_conserving Job original_arrival H2 PState (@jitter_ready_instance Job PState original_arrival H2 H1) arr_seq sched ->",
+      "work_conserving (release_sequence arr_seq) sched=@work_conserving Job (@release_as_arrival Job original_arrival H1) H2 PState (@basic_ready_instance Job PState (@release_as_arrival Job original_arrival H1) H2) (release_sequence arr_seq) sched",
+      "valid_schedule sched arr_seq=@valid_schedule Job original_arrival PState sched H2 (@jitter_ready_instance Job PState original_arrival H2 H1) arr_seq",
+      "valid_schedule sched (release_sequence arr_seq)=@valid_schedule Job (@release_as_arrival Job original_arrival H1) PState sched H2 (@basic_ready_instance Job PState (@release_as_arrival Job original_arrival H1) H2) (release_sequence arr_seq)",
+      "respects_FP_policy_at_preemption_point arr_seq sched FP=@respects_FP_policy_at_preemption_point Task Job H original_arrival H2 PState H4 (@jitter_ready_instance Job PState original_arrival H2 H1) arr_seq sched FP",
+      "respects_FP_policy_at_preemption_point (release_sequence arr_seq) sched FP=@respects_FP_policy_at_preemption_point Task Job H (@release_as_arrival Job original_arrival H1) H2 PState H4 (@basic_ready_instance Job PState (@release_as_arrival Job original_arrival H1) H2) (release_sequence arr_seq) sched FP",
+      "task_response_time_bound (release_sequence arr_seq) sched tsk R=@task_response_time_bound Task Job (@release_as_arrival Job original_arrival H1) H2 H PState (release_sequence arr_seq) sched tsk R"
+    ],
+    "note": "theorem statements from the authoritative elaborated types (proofs omitted); the delay-propagation definitions (with their source-local instances release_as_arrival and release_curve), the readiness and task jitter models and model/schedule/work_conserving are the accepted compiled pinned sources (.vo manifest-hash-checked artifacts, byte-identical dependencies with this closure), priority-driven schedules the accepted extracted PriorityDrivenSemanticSource of the base closure and schedulability the accepted extracted SchedulabilitySemanticSource (over the pinned model/task/absolute_deadline); the proof-only facts/delay_propagation import is dropped; the source-local instances release_as_arrival, release_curve, jitter_ready_instance and basic_ready_instance, implicit in the elaborated statements, are made explicit by recorded printer repairs (the statements print back to the evidence text)"
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/FactsJitterStatementProbe.v",
+  "production": "Prosa/Analysis/Facts/Jitter.lean",
+  "production_olean": "Prosa/Analysis/Facts/Jitter.olean",
+  "lean_namespace": "Prosa.Analysis.Facts.Jitter",
+  "fixtures": [
+    "NondecreasingComputationInterface",
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "PreemptionParameterComputationInterface",
+    "PreemptionTimeComputationInterface",
+    "PriorityDrivenComputationInterface",
+    "ScheduledComputationInterface",
+    "ProcessorStateCoverInterface",
+    "FactsPreemptionComputationInterface",
+    "ArrivalsComputationInterface",
+    "DelayPropagationComputationInterface",
+    "FactsDelayPropagationComputationInterface",
+    "FactsCompletionComputationInterface",
+    "SchedulabilityComputationInterface",
+    "FactsJitterComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/FactsJitterLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/analysis_facts_jitter_export_config.json",
+  "export_name": "FactsJitter",
+  "cert_dir": "certificates/analysis_facts_jitter",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "JitterSvcBaseAdapter",
+    "JitterSvcNatBoolOperations",
+    "JitterSvcIntervalOperations",
+    "JitterSvcScheduleOperations",
+    "JitterSvcJobOperations",
+    "PreemptionParameterCorrespondence",
+    "PreemptionTimeCorrespondence",
+    "PriorityDrivenCorrespondence",
+    "PStateCoverHelpers",
+    "FactsPreemptionHelpers",
+    "ArrivalsCorrespondence",
+    "CurvesCorrespondence",
+    "DelayPropagationCorrespondence",
+    "JitterCorrespondence"
+  ],
+  "audit_module": "FactsJitterAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/FactsJitterImportedTypeAudit.v",
+  "assumption_config": "certificates/analysis_facts_jitter/facts_jitter_assumption_config.json",
+  "lean_axiom_config": "certificates/analysis_facts_jitter/facts_jitter_lean_axiom_config.json",
+  "computational": [],
+  "principal": {},
+  "helpers": [
+    "jit_exists_identity",
+    "jit_ohead_related",
+    "jit_opt_eq_correspondence",
+    "jit_release_rel",
+    "jit_release_sequence_rel",
+    "jit_release_curve_rel",
+    "jit_job_task_eq_rel",
+    "jit_valid_jitter_bounds_rel",
+    "jit_task_mem_related",
+    "jit_all_jobs_from_taskset_rel",
+    "jit_job_of_task_related",
+    "jit_forall_task_cost",
+    "jit_forall_job_cost",
+    "jit_valid_job_costs_rel",
+    "jit_forall_fp",
+    "jit_forall_list",
+    "jit_jitter_ready_rel",
+    "jit_basic_ready_rel",
+    "jit_must_be_ready_rel",
+    "jit_backlogged_related",
+    "jit_valid_schedule_rel",
+    "jit_work_conserving_rel",
+    "jit_respects_fp_rel",
+    "jit_scheduled_jobs_at_related",
+    "jit_scheduled_job_at_related",
+    "jit_response_time_bound_rel"
+  ],
+  "previous_status": "analysis_abstract_restricted_supply_iw_instantiation_module_status.json",
+  "previous_files": 231,
+  "previous_decls": 1627,
+  "input_relations": [
+    "job_arrival by ArJobArrivalRel, job_task by Lean.eq, task_jitter and job_jitter pointwise",
+    "arrival sequences, task sets, arrival curves, processor models (isj_cover_pstate), schedules, job costs, task costs, FP policies, JobPreemptable instances, tasks, jobs, instants and durations covered in both directions"
+  ],
+  "coverage_for_inner_binders": [
+    "arrival sequences",
+    "task sets",
+    "arrival curves",
+    "processor models",
+    "schedules",
+    "JobCost / TaskCost",
+    "FP policies",
+    "JobPreemptable",
+    "durations"
+  ],
+  "lean_representation_note": "Booleans in Prop position are `= true`; the canonical conversions JLFP\u2192JLDP and FP\u2192JLFP are the accepted `JLFP_to_JLDP`/`FP_to_JLFP`, passed explicitly",
+  "export_diagnosis": "the accepted preemption-facts export root (without statements) merged with the accepted delay-propagation facts and schedulability export roots plus the two local helpers and the fourteen statements",
+  "extra_pinned_sources": [
+    "model/task/absolute_deadline.v"
+  ],
+  "extra_lean": [],
+  "extra_source_patches": [],
+  "extra_artifacts": [
+    {
+      "from": "analysis_facts_delay_propagation_final/source/analysis/definitions/delay_propagation.vo",
+      "to": "source/analysis/definitions/delay_propagation.vo",
+      "manifest": "analysis_definitions_delay_propagation",
+      "key": "source_vo_sha256"
+    },
+    {
+      "from": "analysis_facts_delay_propagation_final/source/model/readiness/jitter.vo",
+      "to": "source/model/readiness/jitter.vo",
+      "manifest": "model_readiness_jitter",
+      "key": "source_vo_sha256"
+    },
+    {
+      "from": "analysis_facts_delay_propagation_final/source/model/task/jitter.vo",
+      "to": "source/model/task/jitter.vo",
+      "manifest": "model_task_jitter",
+      "key": "source_vo_sha256"
+    },
+    {
+      "from": "analysis_facts_edf_definitions_final/source/model/schedule/work_conserving.vo",
+      "to": "source/model/schedule/work_conserving.vo",
+      "manifest": "model_schedule_work_conserving",
+      "key": "artifact_hashes.source_vo_sha256"
+    },
+    {
+      "from": "analysis_definitions_schedulability_final/source/SchedulabilitySemanticSource.vo",
+      "to": "source/SchedulabilitySemanticSource.vo",
+      "manifest": "analysis_definitions_schedulability",
+      "key": "source_vo_sha256"
+    }
+  ],
+  "extra_olean_artifacts": [
+    {
+      "from": "analysis_facts_model_rbf_final/olean/Prosa/Model/Job/Properties.olean",
+      "to": "Prosa/Model/Job/Properties.olean",
+      "manifest": "model_job_properties",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_model_rbf_final/olean/Prosa/Analysis/Definitions/SchedulePrefix.olean",
+      "to": "Prosa/Analysis/Definitions/SchedulePrefix.olean",
+      "manifest": "analysis_schedule_prefix",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_sbf_final/olean/Prosa/Analysis/Facts/Behavior/Supply.olean",
+      "to": "Prosa/Analysis/Facts/Behavior/Supply.olean",
+      "manifest": "analysis_facts_behavior_supply",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_model_rbf_final/olean/Prosa/Analysis/Definitions/Service.olean",
+      "to": "Prosa/Analysis/Definitions/Service.olean",
+      "manifest": "analysis_service",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_model_rbf_final/olean/Prosa/Analysis/Facts/Model/Scheduled.olean",
+      "to": "Prosa/Analysis/Facts/Model/Scheduled.olean",
+      "manifest": "analysis_facts_model_scheduled",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_model_rbf_final/olean/Prosa/Analysis/Facts/Behavior/Service.olean",
+      "to": "Prosa/Analysis/Facts/Behavior/Service.olean",
+      "manifest": "analysis_facts_behavior_service",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_model_rbf_final/olean/Prosa/Analysis/Facts/Behavior/Completion.olean",
+      "to": "Prosa/Analysis/Facts/Behavior/Completion.olean",
+      "manifest": "analysis_facts_behavior_completion",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "model_task_jitter_final/olean/Prosa/Model/Readiness/Jitter.olean",
+      "to": "Prosa/Model/Readiness/Jitter.olean",
+      "manifest": "model_readiness_jitter",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "model_task_jitter_final/olean/Prosa/Model/Task/Jitter.olean",
+      "to": "Prosa/Model/Task/Jitter.olean",
+      "manifest": "model_task_jitter",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_delay_propagation_final/olean/Prosa/Analysis/Definitions/DelayPropagation.olean",
+      "to": "Prosa/Analysis/Definitions/DelayPropagation.olean",
+      "manifest": "analysis_definitions_delay_propagation",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_delay_propagation_final/olean/Prosa/Analysis/Facts/DelayPropagation.olean",
+      "to": "Prosa/Analysis/Facts/DelayPropagation.olean",
+      "manifest": "analysis_facts_delay_propagation",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_readiness_basic_final/olean/Prosa/Model/Readiness/Basic.olean",
+      "to": "Prosa/Model/Readiness/Basic.olean",
+      "manifest": "model_readiness_basic",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_model_rbf_final/olean/Prosa/Model/Task/AbsoluteDeadline.olean",
+      "to": "Prosa/Model/Task/AbsoluteDeadline.olean",
+      "manifest": "model_task_absolute_deadline",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_model_rbf_final/olean/Prosa/Analysis/Definitions/Schedulability.olean",
+      "to": "Prosa/Analysis/Definitions/Schedulability.olean",
+      "manifest": "analysis_definitions_schedulability",
+      "key": "production_olean_sha256"
+    }
+  ]
+}

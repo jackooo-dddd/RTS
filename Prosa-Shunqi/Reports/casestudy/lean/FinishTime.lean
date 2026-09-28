@@ -32,6 +32,7 @@ private theorem completion_witness :
 providing an existence witness. -/
 noncomputable def finish_time : instant :=
   Nat.find (completion_witness sched j R H_response_time_bounded)
+#check finish_time
 
 theorem finished_at_finish_time :
     completed_by sched j

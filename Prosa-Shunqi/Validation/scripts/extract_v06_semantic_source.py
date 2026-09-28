@@ -26,7 +26,7 @@ DECL_RE = re.compile(
     rf"({IDENTIFIER_RE}){IDENTIFIER_BOUNDARY_RE}.*?^[^\n]*(?:Qed|Defined)\.[ \t]*$"
 )
 BODY_RE = re.compile(
-    r"(?ms)^[ \t]*(?:Fixpoint|CoFixpoint|Definition|Class|Inductive|Variant"
+    r"(?ms)^[ \t]*(?:Fixpoint|CoFixpoint|(?:Local[ \t]+)?Definition|Class|Inductive|Variant"
     r"|(?:#\[[^\]\n]*\][ \t]*)?(?:(?:Global|Local)[ \t]+)?(?:Program[ \t]+)?Instance)\s+"
     rf"({IDENTIFIER_RE}){IDENTIFIER_BOUNDARY_RE}.*?\.[ \t]*$"
     r"(?:\n(?:[ \t]*\n)*[ \t]*Proof\.[ \t]*$.*?^[^\n]*Defined\.[ \t]*$)?"
@@ -49,9 +49,28 @@ def blocks(text: str) -> dict[str, tuple[int, str, str]]:
     return {name: (position, kind, block) for position, name, kind, block in sorted(found)}
 
 
+def blank_comments(text: str) -> str:
+    """Replace (nested) Rocq comments by spaces, keeping line breaks, so that
+    comment prose such as "Notation hint: ..." is never read as a command."""
+    out, depth, i = [], 0, 0
+    while i < len(text):
+        if text.startswith("(*", i):
+            depth += 1
+            out.append("  ")
+            i += 2
+        elif depth and text.startswith("*)", i):
+            depth -= 1
+            out.append("  ")
+            i += 2
+        else:
+            out.append(text[i] if not depth or text[i] == "\n" else " ")
+            i += 1
+    return "".join(out)
+
+
 def active_context(text: str, stop: int) -> list[str]:
     frames: list[list[str]] = [[]]
-    lines = text[:stop].splitlines()
+    lines = blank_comments(text[:stop]).splitlines()
     i = 0
     while i < len(lines):
         stripped = lines[i].strip()
@@ -71,6 +90,20 @@ def active_context(text: str, stop: int) -> list[str]:
                 i += 1
                 command.append(lines[i])
             frames[-1].extend(command)
+        elif m := re.match(rf"^#\[local\]\s*Instance\s+({IDENTIFIER_RE})\b(.*)$", stripped):
+            # a source-local instance *definition* (e.g. a section-local readiness
+            # model) that later section hypotheses rely on implicitly: in a copied
+            # context it becomes a section-local `Let` declared as a local instance,
+            # so that it is in scope for the copied hypotheses without being
+            # discharged as a (clashing) module-level constant.  The instance itself,
+            # when extracted, is a separate byte-identical helper block.
+            command = [lines[i]]
+            while not command[-1].rstrip().endswith("."):
+                i += 1
+                command.append(lines[i])
+            indent = lines[i - len(command) + 1][: len(lines[i - len(command) + 1]) - len(stripped)]
+            first = re.sub(r"#\[local\]\s*Instance\s+", "Let ", command[0], count=1)
+            frames[-1].extend([first, *command[1:], f"{indent}#[local] Existing Instance {m.group(1)}."])
         i += 1
     return [line for frame in frames for line in frame]
 
@@ -153,6 +186,14 @@ def main() -> None:
               "back to the unrepaired evidence text, which the caller verifies"),
     )
     parser.add_argument(
+        "--body-parenthesization", action="append", default=[],
+        help=("NAME<TAB>OLD<TAB>NEW: insert parentheses into the body of computational "
+              "declaration NAME so that the validation toolchain reproduces the "
+              "authoritative parse; OLD must occur exactly once in the block and NEW "
+              "may differ from OLD only by added '(' / ')' characters (checked); "
+              "recorded in metadata with acquisition mode BODY_PARENTHESIZED"),
+    )
+    parser.add_argument(
         "--source-order", action="store_true",
         help="emit the requested blocks in source-file order rather than request order "
              "(needed when a helper block depends on a later-requested declaration)",
@@ -170,6 +211,15 @@ def main() -> None:
             raise SystemExit(f"invalid --local-binding: {item}")
         name, term = item.split("=", 1)
         bindings[name] = term
+    parenthesizations: dict[str, tuple[str, str]] = {}
+    for item in args.body_parenthesization:
+        parts = item.split("\t")
+        if len(parts) != 3:
+            raise SystemExit(f"invalid --body-parenthesization: {item!r}")
+        name, old, new = parts
+        if re.sub(r"[()]", "", old) != re.sub(r"[()]", "", new) or old == new:
+            raise SystemExit(f"--body-parenthesization may only add parentheses: {name}")
+        parenthesizations[name] = (old, new)
     source = args.source_root / args.source_file
     source_bytes = source.read_bytes()
     text = source_bytes.decode()
@@ -185,18 +235,22 @@ def main() -> None:
     for name in computational:
         if declarations[name][1] != "computational":
             raise SystemExit(f"not a computational declaration: {name}")
+    for name in parenthesizations:
+        if name not in computational or declarations[name][1] != "computational":
+            raise SystemExit(f"--body-parenthesization needs a requested computational block: {name}")
     for name in type_valued:
         if declarations[name][1] != "theorem":
             raise SystemExit(f"not a theorem declaration: {name}")
 
     requested_drop_imports = set(args.drop_import)
+    command_lines = blank_comments(text).splitlines()
     imports = [
-        line for line in text.splitlines()
+        line for line in command_lines
         if line.strip().startswith(("From ", "Require "))
         and line.strip() not in requested_drop_imports
     ]
     source_imports = {
-        line.strip() for line in text.splitlines()
+        line.strip() for line in command_lines
         if line.strip().startswith(("From ", "Require "))
     }
     unknown_drop_imports = requested_drop_imports - source_imports
@@ -227,6 +281,8 @@ def main() -> None:
             "dropped_irrelevant_imports": sorted(requested_drop_imports),
             "added_validation_imports": args.add_import,
             **({"printer_repairs": args.printer_repair} if args.printer_repair else {}),
+            **({"body_parenthesizations": {n: {"old": o, "new": w} for n, (o, w) in parenthesizations.items()}}
+               if parenthesizations else {}),
         },
         "declarations": {},
     }
@@ -278,9 +334,17 @@ def main() -> None:
         active_bindings = {**context_bindings, **active_bindings}
         if name in computational:
             generated = block.rstrip()
+            mode = "BODY_EXACT"
+            if name in parenthesizations:
+                old, new = parenthesizations[name]
+                if generated.count(old) != 1:
+                    raise SystemExit(f"--body-parenthesization text must occur once: {name}")
+                generated = generated.replace(old, new)
+                if re.sub(r"[()]", "", generated) != re.sub(r"[()]", "", block.rstrip()):
+                    raise SystemExit(f"--body-parenthesization changed more than parentheses: {name}")
+                mode = "BODY_PARENTHESIZED"
             output.extend([generated, ""])
             statement = None
-            mode = "BODY_EXACT"
         else:
             statement = theorem_statement(name, block)
             elaborated_type = None

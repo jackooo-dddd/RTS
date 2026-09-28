@@ -1,0 +1,6 @@
+import Prosa.Analysis.Abstract.RestrictedSupply.SearchSpace.FifoFixpoint
+set_option pp.fieldNotation false
+
+#check @Prosa.Analysis.Abstract.RestrictedSupply.SearchSpace.FifoFixpoint.soln_abstract_response_time_recurrence
+
+#print axioms Prosa.Analysis.Abstract.RestrictedSupply.SearchSpace.FifoFixpoint.soln_abstract_response_time_recurrence

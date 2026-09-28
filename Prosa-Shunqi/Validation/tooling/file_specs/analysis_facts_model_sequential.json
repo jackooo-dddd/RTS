@@ -1,0 +1,126 @@
+{
+  "rank": 229,
+  "layer": 18,
+  "tag": "FMSQ",
+  "slug": "analysis_facts_model_sequential",
+  "source": "analysis/facts/model/sequential.v",
+  "dependencies": [
+    "analysis/definitions/readiness.v",
+    "analysis/facts/behavior/all.v",
+    "analysis/facts/model/task_arrivals.v",
+    "model/task/sequentiality.v"
+  ],
+  "declaration_count": 3,
+  "base_run": "analysis_facts_readiness_sequential_final",
+  "base_checks": [
+    {
+      "manifest": "analysis_facts_readiness_sequential",
+      "olean": "Prosa/Analysis/Facts/Readiness/Sequential.olean",
+      "vo": "FactsReadinessSequentialSemanticSource.vo"
+    }
+  ],
+  "extra_pinned_sources": [],
+  "extra_lean": [
+    [
+      "Prosa/Model/Readiness/Sequential.lean",
+      "Prosa/Model/Readiness/Sequential.olean",
+      "model_readiness_sequential",
+      "production_olean_sha256"
+    ],
+    [
+      "Prosa/Analysis/Definitions/WorkBearingReadiness.lean",
+      "Prosa/Analysis/Definitions/WorkBearingReadiness.olean",
+      "analysis_definitions_work_bearing_readiness",
+      "production_olean_sha256"
+    ]
+  ],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "FactsModelSequentialSemanticSource",
+    "drop_imports": [
+      "Require Export prosa.analysis.facts.behavior.all.",
+      "Require Export prosa.analysis.facts.model.task_arrivals."
+    ],
+    "add_imports": [
+      "Require Export prosa.FactsReadinessSequentialSemanticSource.",
+      "Export FactsReadinessSequentialSemanticSource.",
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq.",
+      "Require Import prosa.behavior.all."
+    ],
+    "note": "theorem statements from the authoritative elaborated types (proofs omitted); the proof-heavy analysis/facts imports are dropped; model/task/sequentiality.v and analysis/definitions/readiness.v are the accepted compiled pinned sources of the base closure; the accepted extracted readiness-sequential source (with its canonical readiness instance) is re-exported"
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/FactsModelSequentialStatementProbe.v",
+  "production": "Prosa/Analysis/Facts/Model/Sequential.lean",
+  "production_olean": "Prosa/Analysis/Facts/Model/Sequential.olean",
+  "lean_namespace": "Prosa.Analysis.Facts.Model.Sequential",
+  "fixtures": [
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ArrivalsComputationInterface",
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "ReadinessComputationInterface",
+    "FactsReadinessSequentialComputationInterface",
+    "FactsModelSequentialComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/FactsModelSequentialLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/analysis_facts_model_sequential_export_config.json",
+  "export_name": "FactsModelSequential",
+  "cert_dir": "certificates/analysis_facts_model_sequential",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "ArrivalsCorrespondence",
+    "JitterSvcBaseAdapter",
+    "JitterSvcNatBoolOperations",
+    "JitterSvcIntervalOperations",
+    "JitterSvcScheduleOperations",
+    "JitterSvcJobOperations",
+    "SequentialityCorrespondence",
+    "ReadinessCorrespondence",
+    "FactsReadinessSequentialHelpers",
+    "FactsModelSequentialCorrespondence"
+  ],
+  "audit_module": "FactsModelSequentialAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/FactsModelSequentialImportedTypeAudit.v",
+  "assumption_config": "certificates/analysis_facts_model_sequential/facts_model_sequential_assumption_config.json",
+  "lean_axiom_config": "certificates/analysis_facts_model_sequential/facts_model_sequential_lean_axiom_config.json",
+  "computational": [],
+  "principal": {},
+  "helpers": [
+    "fms_and_true_intro",
+    "fms_and_true_right",
+    "fms_canonical_rel"
+  ],
+  "previous_status": "analysis_facts_busy_interval_service_inversion_module_status.json",
+  "previous_files": 218,
+  "previous_decls": 1518,
+  "input_relations": [
+    "job_task by Lean.eq",
+    "job_arrival by ArJobArrivalRel, job_cost by the accepted SvcJobCostRel",
+    "processor states by the accepted two-sided SvcProcessorStateRel, schedules by SvcScheduleRel",
+    "arrival sequences by ArArrivalSequenceRel",
+    "JobReady quantified inside sequential_tasks_from_readiness: related through the canonical sequential readiness instances (see the report)",
+    "schedules quantified inside: covered (accepted RdScheduleFunRel conversions)",
+    "jobs identity, instants by SubNatRel"
+  ],
+  "coverage_for_inner_binders": [
+    "JobReady (through the canonical instance)",
+    "schedules",
+    "jobs identity",
+    "instants"
+  ],
+  "lean_representation_note": "Booleans in Prop position are `= true`, `~~ b` is `(!b) = true`; the readiness binder of `sequential_tasks_from_readiness` is an explicit instance argument, used by `valid_schedule` through instance resolution",
+  "export_diagnosis": "the accepted analysis/facts/readiness/sequential.v export root reused (so that its accepted certificate chain applies), plus the statements",
+  "extra_source_patches": [],
+  "extra_source_vo_checks": {
+    "model/readiness/sequential.vo": [
+      "model_readiness_sequential",
+      "source_vo_sha256"
+    ]
+  },
+  "dependency_shims": {},
+  "extra_artifacts": [],
+  "extra_olean_artifacts": []
+}

@@ -1,0 +1,129 @@
+{
+  "rank": 228,
+  "layer": 23,
+  "source": "analysis/facts/busy_interval/all.v",
+  "slug": "analysis_facts_busy_interval_all",
+  "dependencies": [
+    "analysis/facts/busy_interval/arrival.v",
+    "analysis/facts/busy_interval/carry_in.v",
+    "analysis/facts/busy_interval/quiet_time.v",
+    "analysis/facts/busy_interval/existence.v",
+    "analysis/facts/busy_interval/hep_at_pt.v",
+    "analysis/facts/busy_interval/pi_bound.v"
+  ],
+  "export_map": {
+    "prosa.analysis.facts.busy_interval.arrival": "Prosa.Analysis.Facts.BusyInterval.Arrival",
+    "prosa.analysis.facts.busy_interval.carry_in": "Prosa.Analysis.Facts.BusyInterval.CarryIn",
+    "prosa.analysis.facts.busy_interval.quiet_time": "Prosa.Analysis.Facts.BusyInterval.QuietTime",
+    "prosa.analysis.facts.busy_interval.existence": "Prosa.Analysis.Facts.BusyInterval.Existence",
+    "prosa.analysis.facts.busy_interval.hep_at_pt": "Prosa.Analysis.Facts.BusyInterval.HepAtPt",
+    "prosa.analysis.facts.busy_interval.pi_bound": "Prosa.Analysis.Facts.BusyInterval.PiBound"
+  },
+  "production": "Prosa/Analysis/Facts/BusyInterval/All.lean",
+  "production_olean": "Prosa/Analysis/Facts/BusyInterval/All.olean",
+  "fixture": "Validation/fixtures/translation_order/FactsBusyIntervalAllInterface.lean",
+  "fixture_module": "Validation.fixtures.translation_order.FactsBusyIntervalAllInterface",
+  "probe_decl": "Prosa.Validation.FactsBusyIntervalAllInterface.facts_busy_interval_all_exposes_modules",
+  "probe_allowed_axioms": [
+    "propext",
+    "Classical.choice",
+    "Quot.sound"
+  ],
+  "source_closure_run": "analysis_facts_busy_interval_pi_bound_final",
+  "dependency_source_vo": {},
+  "dependency_shims": {
+    "analysis/facts/busy_interval/arrival.v": {
+      "module": "BusyIntervalArrivalSemanticSource",
+      "manifest": "analysis_facts_busy_interval_arrival",
+      "vo": "BusyIntervalArrivalSemanticSource.vo",
+      "from_run": "analysis_facts_busy_interval_arrival_final"
+    },
+    "analysis/facts/busy_interval/carry_in.v": {
+      "module": "FactsCarryInSemanticSource",
+      "manifest": "analysis_facts_busy_interval_carry_in",
+      "vo": "FactsCarryInSemanticSource.vo",
+      "from_run": "analysis_facts_busy_interval_carry_in_final"
+    },
+    "analysis/facts/busy_interval/quiet_time.v": {
+      "module": "FactsQuietTimeSemanticSource",
+      "manifest": "analysis_facts_busy_interval_quiet_time",
+      "vo": "FactsQuietTimeSemanticSource.vo",
+      "from_run": "analysis_facts_busy_interval_quiet_time_final"
+    },
+    "analysis/facts/busy_interval/existence.v": {
+      "module": "ExistenceSemanticSource",
+      "manifest": "analysis_facts_busy_interval_existence",
+      "vo": "ExistenceSemanticSource.vo"
+    },
+    "analysis/facts/busy_interval/hep_at_pt.v": {
+      "module": "HepAtPtSemanticSource",
+      "manifest": "analysis_facts_busy_interval_hep_at_pt",
+      "vo": "HepAtPtSemanticSource.vo"
+    },
+    "analysis/facts/busy_interval/pi_bound.v": {
+      "module": "PiBoundSemanticSource",
+      "manifest": "analysis_facts_busy_interval_pi_bound",
+      "vo": "PiBoundSemanticSource.vo"
+    }
+  },
+  "olean_closure_run": "analysis_facts_busy_interval_pi_bound_final",
+  "dependency_olean": {
+    "analysis/facts/busy_interval/arrival.v": [
+      "analysis_facts_busy_interval_arrival",
+      "Prosa/Analysis/Facts/BusyInterval/Arrival.olean"
+    ],
+    "analysis/facts/busy_interval/carry_in.v": [
+      "analysis_facts_busy_interval_carry_in",
+      "Prosa/Analysis/Facts/BusyInterval/CarryIn.olean"
+    ],
+    "analysis/facts/busy_interval/quiet_time.v": [
+      "analysis_facts_busy_interval_quiet_time",
+      "Prosa/Analysis/Facts/BusyInterval/QuietTime.olean"
+    ],
+    "analysis/facts/busy_interval/existence.v": [
+      "analysis_facts_busy_interval_existence",
+      "Prosa/Analysis/Facts/BusyInterval/Existence.olean"
+    ],
+    "analysis/facts/busy_interval/hep_at_pt.v": [
+      "analysis_facts_busy_interval_hep_at_pt",
+      "Prosa/Analysis/Facts/BusyInterval/HepAtPt.olean"
+    ],
+    "analysis/facts/busy_interval/pi_bound.v": [
+      "analysis_facts_busy_interval_pi_bound",
+      "Prosa/Analysis/Facts/BusyInterval/PiBound.olean"
+    ]
+  },
+  "extra_oleans": [
+    {
+      "run": "analysis_facts_busy_interval_arrival_final",
+      "olean": "Prosa/Analysis/Facts/BusyInterval/Arrival.olean",
+      "manifest": "analysis_facts_busy_interval_arrival"
+    },
+    {
+      "run": "analysis_facts_busy_interval_carry_in_final",
+      "olean": "Prosa/Analysis/Facts/BusyInterval/CarryIn.olean",
+      "manifest": "analysis_facts_busy_interval_carry_in"
+    },
+    {
+      "run": "analysis_facts_model_rbf_final",
+      "olean": "Prosa/Analysis/Facts/Model/Workload.olean",
+      "manifest": "analysis_facts_model_workload"
+    },
+    {
+      "run": "analysis_facts_model_task_schedule_final",
+      "olean": "Prosa/Analysis/Facts/Model/Ideal/ServiceOfJobs.olean",
+      "manifest": "analysis_facts_model_ideal_service_of_jobs"
+    }
+  ],
+  "previous_status": "analysis_facts_blocking_bound_fp_module_status.json",
+  "previous_files": 215,
+  "previous_decls": 1505,
+  "notes": "no public declaration; the six proof-bearing busy-interval facts modules were accepted through their extracted semantic sources, so each is bound by a one-line re-export shim at its logical path (the arrival, carry-in and quiet-time semantic modules, absent from the pi_bound closure, are taken from their accepted runs and hash-checked against their manifests; Rocq's library-consistency check guards their dependencies); the pinned analysis/definitions/carry_in.vo they require is copied from the carry-in run and hash-checked against its own manifest; the arrival and carry-in oleans, absent from the pi_bound olean closure, are copied from their accepted runs and hash-checked against their manifests, as are the two accepted facts oleans the carry-in module imports (model workload and ideal service of jobs); the interface probe uses one theorem of each re-exported module and depends only on the standard Lean axioms",
+  "extra_closure": [
+    {
+      "run": "analysis_facts_busy_interval_carry_in_final",
+      "vo": "analysis/definitions/carry_in.vo",
+      "manifest": "analysis_definitions_carry_in"
+    }
+  ]
+}

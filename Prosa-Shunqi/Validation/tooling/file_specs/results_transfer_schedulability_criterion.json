@@ -1,0 +1,209 @@
+{
+  "rank": 216,
+  "layer": 19,
+  "tag": "TSC",
+  "slug": "results_transfer_schedulability_criterion",
+  "source": "results/transfer_schedulability/criterion.v",
+  "dependencies": [
+    "analysis/definitions/schedulability.v",
+    "analysis/facts/model/ideal/schedule.v",
+    "analysis/facts/model/service_of_jobs.v",
+    "analysis/facts/model/uniprocessor.v",
+    "util/all.v"
+  ],
+  "declaration_count": 40,
+  "base_run": "analysis_facts_model_rbf_final",
+  "base_checks": [
+    {
+      "manifest": "analysis_facts_model_rbf",
+      "olean": "Prosa/Analysis/Facts/Model/Rbf.olean",
+      "vo": "FactsRbfSemanticSource.vo"
+    }
+  ],
+  "extra_pinned_sources": [
+    "model/processor/ideal.v"
+  ],
+  "extra_source_patches": [
+    "patches/prosa-v06-rocq93-model-processor-ideal.patch"
+  ],
+  "extra_lean": [],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "CriterionSemanticSource",
+    "drop_imports": [
+      "Require Export prosa.analysis.facts.model.service_of_jobs.",
+      "Require Export prosa.analysis.definitions.schedulability.",
+      "Require Export prosa.analysis.facts.model.ideal.schedule.",
+      "Require Export prosa.analysis.facts.model.uniprocessor."
+    ],
+    "add_imports": [
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq fintype bigop.",
+      "Require Export prosa.behavior.all.",
+      "Require Export prosa.model.processor.ideal.",
+      "Require Export prosa.model.aggregate.service_of_jobs."
+    ],
+    "local_bindings": [
+      "critical_jobs=critical_jobs ref_sched online_sched ref_job_cost online_job_cost arr_seq",
+      "remaining_cost_bound=remaining_cost_bound online_sched job_cost_bound",
+      "slackless_interval=slackless_interval ref_sched online_sched ref_job_cost online_job_cost arr_seq job_cost_bound",
+      "nonpositive_slack=nonpositive_slack ref_sched online_sched ref_job_cost online_job_cost arr_seq job_cost_bound",
+      "transfer_schedulability_criterion=transfer_schedulability_criterion ref_sched online_sched ref_job_cost online_job_cost arr_seq job_cost_bound"
+    ],
+    "note": "definitions byte-identical and theorem statements from the authoritative elaborated types (proofs omitted); model/processor/ideal is compiled from the pinned tree under its accepted proof-only Rocq 9.3 compatibility patch, model/aggregate/service_of_jobs and behavior are the pinned modules of the base closure; the proof-heavy facts imports (service_of_jobs facts, ideal-schedule facts, uniprocessor facts) and the definitions/schedulability import (unused by every extracted declaration) are dropped; the Section variables implicit in the uses of critical_jobs, remaining_cost_bound, slackless_interval, nonpositive_slack and transfer_schedulability_criterion inside later definitions and copied section hypotheses of the same Section are reconnected by recorded local notations; the body of slackless_interval carries the parentheses of the official-toolchain parse (Rocq 9.0.1 / MathComp 2.4.0 read `(t1 < t2) && (\\sum .. == t2 - t1)`, recorded in CriterionOfficialParse.log from the installed official rocq-prosa 0.6), since Rocq 9.3 / MathComp 2.6 would read `((t1 < t2) && \\sum ..) == t2 - t1`; the extractor checks that only parentheses were added; the job-cost parameter of completed_by / job_meets_deadline / completed_jobs_dont_execute / remaining_cost is implicit in the elaborated evidence (the source's section Lets fix it to ref_job_cost or online_job_cost), so recorded printer repairs make it explicit (re-elaborating the printed text would otherwise resolve the instance to the most recently bound JobCost); the statements print back to the evidence text",
+    "body_parenthesizations": [
+      {
+        "name": "slackless_interval",
+        "old": "&& \\sum_(j <- critical_jobs t1 t2) remaining_cost_bound j t1 == t2 - t1.",
+        "new": "&& (\\sum_(j <- critical_jobs t1 t2) remaining_cost_bound j t1 == t2 - t1).",
+        "evidence": "Validation/fixtures/translation_order/CriterionOfficialParse.log"
+      }
+    ],
+    "printer_repairs": [
+      "[forall delta, slackless_interval=[forall delta : 'I_(t2 - t1), slackless_interval",
+      "completed_jobs_dont_execute ref_sched=@completed_jobs_dont_execute _ _ ref_sched ref_job_cost",
+      "completed_jobs_dont_execute online_sched=@completed_jobs_dont_execute _ _ online_sched online_job_cost",
+      "job_meets_deadline ref_sched j=@job_meets_deadline _ _ ref_sched ref_job_cost _ j",
+      "job_meets_deadline online_sched j=@job_meets_deadline _ _ online_sched online_job_cost _ j",
+      "remaining_cost online_sched j=@remaining_cost _ _ online_sched online_job_cost j",
+      "completed_by ref_sched j=@completed_by _ _ ref_sched ref_job_cost j",
+      "completed_by online_sched j=@completed_by _ _ online_sched online_job_cost j"
+    ]
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/CriterionStatementProbe.v",
+  "production": "Prosa/Results/TransferSchedulability/Criterion.lean",
+  "production_olean": "Prosa/Results/TransferSchedulability/Criterion.olean",
+  "lean_namespace": "Prosa.Results.TransferSchedulability.Criterion",
+  "fixtures": [
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "ArrivalsComputationInterface",
+    "ServiceOfJobsComputationInterface",
+    "ScheduledComputationInterface",
+    "IdealScheduleComputationInterface",
+    "CriterionComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/CriterionLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/results_transfer_schedulability_criterion_export_config.json",
+  "export_name": "Criterion",
+  "cert_dir": "certificates/results_transfer_schedulability_criterion",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "JitterSvcBaseAdapter",
+    "JitterSvcNatBoolOperations",
+    "JitterSvcIntervalOperations",
+    "JitterSvcScheduleOperations",
+    "JitterSvcJobOperations",
+    "CriterionCorrespondence"
+  ],
+  "audit_module": "CriterionAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/CriterionImportedTypeAudit.v",
+  "assumption_config": "certificates/results_transfer_schedulability_criterion/criterion_assumption_config.json",
+  "lean_axiom_config": "certificates/results_transfer_schedulability_criterion/criterion_lean_axiom_config.json",
+  "computational": [
+    "schedulability_transferred",
+    "remaining_cost_bound",
+    "critical_jobs",
+    "slackless_interval",
+    "contiguously_slackless_interval",
+    "transfer_schedulability_criterion",
+    "nonpositive_slack",
+    "contiguously_nps"
+  ],
+  "principal": {},
+  "helpers": [
+    "id_forall_cover_sprop",
+    "id_lean_transport",
+    "id_nat_input",
+    "id_bool_eq_correspondence",
+    "id_nat_eq_correspondence",
+    "id_or_correspondence",
+    "id_not_correspondence",
+    "id_exists_identity_correspondence",
+    "id_eq_identity_correspondence",
+    "id_opt_source_roundtrip",
+    "id_opt_target_roundtrip",
+    "id_opt_rel_canonical",
+    "id_opt_rel_surjective",
+    "id_opt_eq_correspondence",
+    "id_option_some_eq_correspondence",
+    "id_option_none_eq_related",
+    "id_src_scheduled_on",
+    "id_src_scheduled_in",
+    "id_src_service_in",
+    "id_src_supply_in",
+    "id_scheduled_in_related",
+    "id_decide_state_related",
+    "id_service_on_related",
+    "id_service_in_related",
+    "id_supply_in_related",
+    "id_core_rel_surjective",
+    "id_schedule_to_target_rel",
+    "id_schedule_to_source_rel",
+    "id_scheduled_at_related",
+    "id_service_at_related",
+    "id_ideal_is_idle_related",
+    "id_scheduled_at_state_related",
+    "cr_service_at_fun",
+    "cr_service_during_related",
+    "cr_service_related",
+    "cr_completed_by_related",
+    "cr_remaining_cost_related",
+    "cr_cde_rel",
+    "cr_big_seq_as_fold",
+    "cr_sumseq_canonical",
+    "cr_sumseq_related",
+    "cr_sumtrue_canonical",
+    "cr_sumtrue_related",
+    "cr_forall_ord_all",
+    "cr_all_nat_canonical",
+    "cr_forall_ord_related",
+    "cr_list_eq_correspondence",
+    "cr_forall_list",
+    "cr_forall_cost",
+    "cr_cost_le_rel",
+    "cr_jobs_come_from_rel",
+    "cr_jobs_must_arrive_rel",
+    "cr_job_meets_deadline_related",
+    "cr_succ_related",
+    "cr_pred_related",
+    "cr_sum_rcb_related",
+    "cr_service_of_jobs_true_related"
+  ],
+  "previous_status": "analysis_abstract_ibf_task_module_status.json",
+  "previous_files": 226,
+  "previous_decls": 1562,
+  "input_relations": [
+    "the processor model is fixed to the ideal uniprocessor on both sides; states related by the constructor-preserving Option map, schedules pointwise (covered in both directions)",
+    "job costs (reference, online and the generic bound) by SvcJobCostRel",
+    "job_arrival by ArJobArrivalRel, job_deadline pointwise",
+    "arrival sequences by ArArrivalSequenceRel"
+  ],
+  "coverage_for_inner_binders": [
+    "schedules",
+    "job costs",
+    "job lists",
+    "jobs and instants"
+  ],
+  "lean_representation_note": "`\\\\sum_(j <- js) F j` is `sumSeq js F`; `[seq j <- xs | p j]` is `xs.filter p`; `[forall delta : 'I_n, p delta]` is `(List.range' 0 n).all p`; a Boolean in `Prop` is `= true`; `~~ b` is `!b`; `uniq` is `List.Nodup`; the section Lets are inlined with explicit cost parameters",
+  "export_diagnosis": "the accepted ideal-schedule export root without its statements plus service_of_jobs, sumSeq/sumFiltered, job_meets_deadline, the eight definitions and the thirty-two statements",
+  "extra_artifacts": [],
+  "extra_olean_artifacts": [
+    {
+      "from": "analysis_facts_model_ideal_schedule_final/olean/Prosa/Model/Processor/Ideal.olean",
+      "to": "Prosa/Model/Processor/Ideal.olean",
+      "manifest": "model_processor_ideal",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_transform_edf_trans_final/olean/Prosa/Analysis/Facts/Model/Ideal/Schedule.olean",
+      "to": "Prosa/Analysis/Facts/Model/Ideal/Schedule.olean",
+      "manifest": "analysis_facts_model_ideal_schedule",
+      "key": "production_olean_sha256"
+    }
+  ],
+  "extra_generated_sources": []
+}

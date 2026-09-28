@@ -1,0 +1,4 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedPiCond.
+
+Check ImportedPiCond.Prosa_Analysis_Facts_BusyInterval_PiCond_cum_task_pi_eq.

@@ -1,0 +1,19 @@
+From FoundationCertificates Require Import
+  ArrivalsSeqBaseAdapter ArrivalsSeqOperations ArrivalsSeqCorrespondence ArrivalsCorrespondence WorkloadCorrespondence AbstractDefinitionsBaseAdapter ServiceBaseAdapter ServiceNatBoolOperations AbstractDefinitionsArrivalOperations AbstractDefinitionsClasses AbstractDefinitionsNatBoolOperations AbstractDefinitionsIntervalOperations AbstractDefinitionsOperations AbstractDefinitionsSums AbstractDefinitionsLogical ServiceIntervalOperations ServiceScheduleOperations AbstractDefinitionsPendingOperations AbstractDefinitionsTaskOperations AbstractDefinitionsBusyIntervalHelpers AbstractRtaHelpers JitterSvcBaseAdapter JitterSvcNatBoolOperations JitterSvcIntervalOperations JitterSvcScheduleOperations JitterSvcJobOperations PreemptionParameterCorrespondence TaskPreemptionParametersCorrespondence IdealAbstractRtaHelpers ArrivalSequenceBaseAdapter ArrivalSequenceOperations TaskScheduleCorrespondence CurvesCorrespondence RequestBoundFunctionCorrespondence SequentialityCorrespondence ServiceOfJobsCorrespondence SupplyScheduleBaseAdapter SupplyScheduleFiniteOperations SupplyScheduleOperations SupplyBaseAdapter SupplyNatBoolOperations SupplyIntervalOperations SupplyCorrespondence IbfTaskHelpers IbfSupplyTaskCorrespondence.
+Set Printing Width 1000.
+
+Goal Logic.True. idtac "AUDIT_BEGIN nonself_intra_correspondence". exact Logic.I. Qed.
+Print Assumptions nonself_intra_correspondence.
+Goal Logic.True. idtac "AUDIT_END nonself_intra_correspondence". exact Logic.I. Qed.
+
+Goal Logic.True. idtac "AUDIT_BEGIN task_intra_interference_correspondence". exact Logic.I. Qed.
+Print Assumptions task_intra_interference_correspondence.
+Goal Logic.True. idtac "AUDIT_END task_intra_interference_correspondence". exact Logic.I. Qed.
+
+Goal Logic.True. idtac "AUDIT_BEGIN task_intra_interference_is_bounded_by_correspondence". exact Logic.I. Qed.
+Print Assumptions task_intra_interference_is_bounded_by_correspondence.
+Goal Logic.True. idtac "AUDIT_END task_intra_interference_is_bounded_by_correspondence". exact Logic.I. Qed.
+
+Goal Logic.True. idtac "AUDIT_BEGIN ibst_nonself_intra_pred". exact Logic.I. Qed.
+Print Assumptions ibst_nonself_intra_pred.
+Goal Logic.True. idtac "AUDIT_END ibst_nonself_intra_pred". exact Logic.I. Qed.

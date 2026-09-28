@@ -1,0 +1,10 @@
+import Prosa.Analysis.Facts.Preemption.RtcThreshold.Limited
+set_option pp.fieldNotation false
+
+#check @Prosa.Analysis.Facts.Preemption.RtcThreshold.Limited.number_of_preemption_points_in_task_at_least_two
+#check @Prosa.Analysis.Facts.Preemption.RtcThreshold.Limited.limited_valid_task_run_to_completion_threshold
+#check @Prosa.Analysis.Facts.Preemption.RtcThreshold.Limited.last_segment_eq_cost_minus_rtct
+
+#print axioms Prosa.Analysis.Facts.Preemption.RtcThreshold.Limited.number_of_preemption_points_in_task_at_least_two
+#print axioms Prosa.Analysis.Facts.Preemption.RtcThreshold.Limited.limited_valid_task_run_to_completion_threshold
+#print axioms Prosa.Analysis.Facts.Preemption.RtcThreshold.Limited.last_segment_eq_cost_minus_rtct

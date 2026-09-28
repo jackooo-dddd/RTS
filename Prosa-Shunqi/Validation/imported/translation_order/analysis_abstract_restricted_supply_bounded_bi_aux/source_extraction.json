@@ -1,0 +1,137 @@
+{
+  "mode": "proof_independent_semantic_source_signature",
+  "source_file": "analysis/abstract/restricted_supply/bounded_bi/aux.v",
+  "source_file_sha256": "b980b154877eef728a36d63885904e4be34af14e5a2555a92d1d75c25fd62671",
+  "source_commit": "414e66760333eaa4ef78c685bcf53291c527a548",
+  "generated_file": "/Users/shunqiwang/CityuHK/Research/Lean/TranslationProof/Prosa-Shunqi/Validation/.work/experiments/analysis_abstract_restricted_supply_bounded_bi_aux_final/source/BoundedBiAuxSemanticSource.v",
+  "transformations": {
+    "computational": "byte-identical declaration block",
+    "theorem": "verified post-Section Check type converted to a definition with its declared Prop/Type sort preserved; exact source header retained as provenance; opaque proof omitted",
+    "local_bindings": {},
+    "dropped_irrelevant_imports": [
+      "Require Export prosa.analysis.abstract.restricted_supply.iw_instantiation."
+    ],
+    "added_validation_imports": [
+      "Require Export prosa.RsIwInstantiationSemanticSource.",
+      "Export RsIwInstantiationSemanticSource.",
+      "Require Export prosa.model.schedule.work_conserving.",
+      "Require Export prosa.analysis.definitions.work_bearing_readiness.",
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq bigop.",
+      "Require Import prosa.behavior.all."
+    ],
+    "printer_repairs": [
+      "definitions.work_conserving arr_seq sched=@prosa.analysis.abstract.definitions.work_conserving Job H1 H2 PState arr_seq sched (@rs_jlfp_interference Job PState JLFP arr_seq sched) (@rs_jlfp_interfering_workload Job H2 PState JLFP arr_seq sched)",
+      "cumulative_interfering_workload j t1 (t1 + \u0394)=@cumulative_interfering_workload Job (@rs_jlfp_interfering_workload Job H2 PState JLFP arr_seq sched) j t1 (t1 + \u0394)"
+    ]
+  },
+  "declarations": {
+    "rs_jlfp_interference": {
+      "source_kind": "computational",
+      "acquisition_mode": "BODY_EXACT",
+      "source_block_sha256": "aade2990c18409c7c4e550e5be9f83524c2a4fe6f597f22c45e2c1c4ff3460d1",
+      "generated_text_sha256": "aade2990c18409c7c4e550e5be9f83524c2a4fe6f597f22c45e2c1c4ff3460d1",
+      "source_statement_sha256": null,
+      "normalized_statement_sha256": null,
+      "elaborated_type_sha256": null,
+      "elaborated_type_evidence": null,
+      "statement_sort": null,
+      "context": [
+        "  Context {Task : TaskType}.",
+        "  Context `{TaskCost Task}.",
+        "  Context {Job : JobType}.",
+        "  Context `{JobTask Job Task}.",
+        "  Context `{JobArrival Job}.",
+        "  Context `{JobCost Job}.",
+        "  Context `{PState : ProcessorState Job}.",
+        "  Hypothesis H_uniprocessor_proc_model : uniprocessor_model PState.",
+        "  Hypothesis H_unit_supply_proc_model : unit_supply_proc_model PState.",
+        "  Hypothesis H_consumed_supply_proc_model : fully_consuming_proc_model PState.",
+        "  Context {JLFP : JLFP_policy Job}.",
+        "  Hypothesis H_priority_is_reflexive : reflexive_job_priorities JLFP.",
+        "  Variable arr_seq : arrival_sequence Job.",
+        "  Hypothesis H_valid_arrival_sequence : valid_arrival_sequence arr_seq.",
+        "  Variable sched : schedule PState.",
+        "  Context `{!JobReady Job PState}.",
+        "  Hypothesis H_job_ready : work_bearing_readiness arr_seq sched.",
+        "  Hypothesis H_sched_valid : valid_schedule sched arr_seq."
+      ],
+      "omitted_context_for_elaborated_theorem": false,
+      "local_bindings": {}
+    },
+    "rs_jlfp_interfering_workload": {
+      "source_kind": "computational",
+      "acquisition_mode": "BODY_EXACT",
+      "source_block_sha256": "28a7168199ee046e199c191e2299fd37f2e9d411d5308c507b783b513f9cffe2",
+      "generated_text_sha256": "28a7168199ee046e199c191e2299fd37f2e9d411d5308c507b783b513f9cffe2",
+      "source_statement_sha256": null,
+      "normalized_statement_sha256": null,
+      "elaborated_type_sha256": null,
+      "elaborated_type_evidence": null,
+      "statement_sort": null,
+      "context": [
+        "  Context {Task : TaskType}.",
+        "  Context `{TaskCost Task}.",
+        "  Context {Job : JobType}.",
+        "  Context `{JobTask Job Task}.",
+        "  Context `{JobArrival Job}.",
+        "  Context `{JobCost Job}.",
+        "  Context `{PState : ProcessorState Job}.",
+        "  Hypothesis H_uniprocessor_proc_model : uniprocessor_model PState.",
+        "  Hypothesis H_unit_supply_proc_model : unit_supply_proc_model PState.",
+        "  Hypothesis H_consumed_supply_proc_model : fully_consuming_proc_model PState.",
+        "  Context {JLFP : JLFP_policy Job}.",
+        "  Hypothesis H_priority_is_reflexive : reflexive_job_priorities JLFP.",
+        "  Variable arr_seq : arrival_sequence Job.",
+        "  Hypothesis H_valid_arrival_sequence : valid_arrival_sequence arr_seq.",
+        "  Variable sched : schedule PState.",
+        "  Context `{!JobReady Job PState}.",
+        "  Hypothesis H_job_ready : work_bearing_readiness arr_seq sched.",
+        "  Hypothesis H_sched_valid : valid_schedule sched arr_seq."
+      ],
+      "omitted_context_for_elaborated_theorem": false,
+      "local_bindings": {}
+    },
+    "busy_interval_prefix_exists": {
+      "source_kind": "theorem",
+      "acquisition_mode": "STATEMENT_EXACT_PROOF_OMITTED",
+      "source_block_sha256": "9bec271b7f7a3ccc59794e1403e261c696fdf5eb203e08ba33513e9e88d23a00",
+      "generated_text_sha256": "d2b471c46f9e8c9b1053efbc7e7f11bb833de86bb4e767e8d25a4f8d1206282d",
+      "source_statement_sha256": "6e38ff5d4dc36530b947b804927b6e9ac3de9f1c6e1713c0e68194ebf3092027",
+      "normalized_statement_sha256": "71b27cf8e080aebeb97a0a950e0570b9c2f24d14b8a39dcf512c933b43749add",
+      "elaborated_type_sha256": "b13b4a843bc4e9868b493e885fc10a2e3c9b1e39ccf4e0aac78a3ddb819aec94",
+      "elaborated_type_evidence": "ELABORATED_ROCQ_CHECK",
+      "statement_sort": "Prop",
+      "context": [],
+      "omitted_context_for_elaborated_theorem": true,
+      "local_bindings": {}
+    },
+    "service_lt_workload_in_busy": {
+      "source_kind": "theorem",
+      "acquisition_mode": "STATEMENT_EXACT_PROOF_OMITTED",
+      "source_block_sha256": "db5963afc96e7722c34f9e850fc872e3660abcea044a92fc59108210a9001465",
+      "generated_text_sha256": "5e788bf8a2599a858a1b97c7095963a0f406900894a33d56ee441552bed7f065",
+      "source_statement_sha256": "52c2cf52bc0ebbfb014bff444b53a61dc807dd2e0a51c45c7e71dd41df756e5f",
+      "normalized_statement_sha256": "f6c1671435a84bdfd34a9a1a35a5673bbb8a09c39453d2ee1283e4705a03261a",
+      "elaborated_type_sha256": "4d3b0f4c780d61b127da64593b9830e2fcde5441620443983e13f6ea819ea777",
+      "elaborated_type_evidence": "ELABORATED_ROCQ_CHECK",
+      "statement_sort": "Prop",
+      "context": [],
+      "omitted_context_for_elaborated_theorem": true,
+      "local_bindings": {}
+    },
+    "workload_exceeds_interval": {
+      "source_kind": "theorem",
+      "acquisition_mode": "STATEMENT_EXACT_PROOF_OMITTED",
+      "source_block_sha256": "817203ddb2227298c773af15cf12dc66627520ab0d288f542faba76e99e50ae6",
+      "generated_text_sha256": "965f9543d1b53e3cbb52958b470faab65561bf3fce3773ef29f969f0d88ff156",
+      "source_statement_sha256": "1cf4ad22b4251cc6f315e3dc53886ec5179f7c03b2552fdee9158cf06a310d69",
+      "normalized_statement_sha256": "2aa9ecad605ef61737335c0f5ab95205c8995c3f415a43bb485830d4a9277e16",
+      "elaborated_type_sha256": "538f239a5f4407b25b92176a31741fdbfef4d45503fecf97d90daf0be3c3fe7b",
+      "elaborated_type_evidence": "ELABORATED_ROCQ_CHECK",
+      "statement_sort": "Prop",
+      "context": [],
+      "omitted_context_for_elaborated_theorem": true,
+      "local_bindings": {}
+    }
+  }
+}

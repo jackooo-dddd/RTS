@@ -1,0 +1,23 @@
+From FoundationCertificates Require Import
+  ArrivalsSeqBaseAdapter ArrivalsSeqOperations ArrivalsSeqCorrespondence ArrivalsCorrespondence WorkloadCorrespondence AbstractDefinitionsBaseAdapter ServiceBaseAdapter ServiceNatBoolOperations AbstractDefinitionsArrivalOperations AbstractDefinitionsClasses AbstractDefinitionsNatBoolOperations AbstractDefinitionsIntervalOperations AbstractDefinitionsOperations AbstractDefinitionsSums AbstractDefinitionsLogical ServiceIntervalOperations ServiceScheduleOperations AbstractDefinitionsPendingOperations AbstractDefinitionsTaskOperations AbstractDefinitionsBusyIntervalHelpers AbstractRtaHelpers JitterSvcBaseAdapter JitterSvcNatBoolOperations JitterSvcIntervalOperations JitterSvcScheduleOperations JitterSvcJobOperations PreemptionParameterCorrespondence TaskPreemptionParametersCorrespondence IdealAbstractRtaHelpers ArrivalSequenceBaseAdapter ArrivalSequenceOperations TaskScheduleCorrespondence CurvesCorrespondence RequestBoundFunctionCorrespondence SequentialityCorrespondence ServiceOfJobsCorrespondence SupplyScheduleBaseAdapter SupplyScheduleFiniteOperations SupplyScheduleOperations SupplyBaseAdapter SupplyNatBoolOperations SupplyIntervalOperations SupplyCorrespondence IbfTaskHelpers IbfSupplyTaskCorrespondence IbfTaskFullHelpers ServiceInversionPredCorrespondence InterferenceCorrespondence RsIwHelpers BoundedBiAuxCorrespondence.
+Set Printing Width 1000.
+
+Goal Logic.True. idtac "AUDIT_BEGIN busy_interval_prefix_exists_correspondence". exact Logic.I. Qed.
+Print Assumptions busy_interval_prefix_exists_correspondence.
+Goal Logic.True. idtac "AUDIT_END busy_interval_prefix_exists_correspondence". exact Logic.I. Qed.
+
+Goal Logic.True. idtac "AUDIT_BEGIN service_lt_workload_in_busy_correspondence". exact Logic.I. Qed.
+Print Assumptions service_lt_workload_in_busy_correspondence.
+Goal Logic.True. idtac "AUDIT_END service_lt_workload_in_busy_correspondence". exact Logic.I. Qed.
+
+Goal Logic.True. idtac "AUDIT_BEGIN workload_exceeds_interval_correspondence". exact Logic.I. Qed.
+Print Assumptions workload_exceeds_interval_correspondence.
+Goal Logic.True. idtac "AUDIT_END workload_exceeds_interval_correspondence". exact Logic.I. Qed.
+
+Goal Logic.True. idtac "AUDIT_BEGIN bbaux_cost_positive_related". exact Logic.I. Qed.
+Print Assumptions bbaux_cost_positive_related.
+Goal Logic.True. idtac "AUDIT_END bbaux_cost_positive_related". exact Logic.I. Qed.
+
+Goal Logic.True. idtac "AUDIT_BEGIN bbaux_succ_related". exact Logic.I. Qed.
+Print Assumptions bbaux_succ_related.
+Goal Logic.True. idtac "AUDIT_END bbaux_succ_related". exact Logic.I. Qed.

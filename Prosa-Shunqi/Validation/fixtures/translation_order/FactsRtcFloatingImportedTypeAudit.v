@@ -1,0 +1,4 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedFactsRtcFloating.
+
+Check ImportedFactsRtcFloating.Prosa_Analysis_Facts_Preemption_RtcThreshold_Floating_floating_preemptive_valid_task_run_to_completion_threshold.

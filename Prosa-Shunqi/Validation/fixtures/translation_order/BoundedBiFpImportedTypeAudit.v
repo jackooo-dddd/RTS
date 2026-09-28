@@ -1,0 +1,4 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedBoundedBiFp.
+
+Check ImportedBoundedBiFp.Prosa_Analysis_Abstract_RestrictedSupply_BoundedBi_Fp_busy_intervals_are_bounded_rs_fp.

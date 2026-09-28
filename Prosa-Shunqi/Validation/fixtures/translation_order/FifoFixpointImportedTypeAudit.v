@@ -1,0 +1,4 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedFifoFixpoint.
+
+Check ImportedFifoFixpoint.Prosa_Analysis_Abstract_RestrictedSupply_SearchSpace_FifoFixpoint_soln_abstract_response_time_recurrence.

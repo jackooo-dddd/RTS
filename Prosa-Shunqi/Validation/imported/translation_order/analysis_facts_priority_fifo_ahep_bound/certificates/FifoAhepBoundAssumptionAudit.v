@@ -1,0 +1,23 @@
+From FoundationCertificates Require Import
+  ArrivalsSeqBaseAdapter ArrivalsSeqOperations ArrivalsSeqCorrespondence ArrivalsCorrespondence WorkloadCorrespondence AbstractDefinitionsBaseAdapter ServiceBaseAdapter ServiceNatBoolOperations AbstractDefinitionsArrivalOperations AbstractDefinitionsClasses AbstractDefinitionsNatBoolOperations AbstractDefinitionsIntervalOperations AbstractDefinitionsOperations AbstractDefinitionsSums AbstractDefinitionsLogical ServiceIntervalOperations ServiceScheduleOperations AbstractDefinitionsPendingOperations AbstractDefinitionsTaskOperations AbstractDefinitionsBusyIntervalHelpers AbstractRtaHelpers JitterSvcBaseAdapter JitterSvcNatBoolOperations JitterSvcIntervalOperations JitterSvcScheduleOperations JitterSvcJobOperations PreemptionParameterCorrespondence TaskPreemptionParametersCorrespondence IdealAbstractRtaHelpers ArrivalSequenceBaseAdapter ArrivalSequenceOperations TaskScheduleCorrespondence CurvesCorrespondence RequestBoundFunctionCorrespondence SequentialityCorrespondence ServiceOfJobsCorrespondence SupplyScheduleBaseAdapter SupplyScheduleFiniteOperations SupplyScheduleOperations SupplyBaseAdapter SupplyNatBoolOperations SupplyIntervalOperations SupplyCorrespondence IbfTaskHelpers IbfSupplyTaskCorrespondence IbfTaskFullHelpers ServiceInversionPredCorrespondence InterferenceCorrespondence RsIwHelpers WorkloadBoundedCorrespondence ServiceInversionBusyPrefixCorrespondence FifoAhepBoundCorrespondence.
+Set Printing Width 1000.
+
+Goal Logic.True. idtac "AUDIT_BEGIN bound_on_hep_workload_correspondence". exact Logic.I. Qed.
+Print Assumptions bound_on_hep_workload_correspondence.
+Goal Logic.True. idtac "AUDIT_END bound_on_hep_workload_correspondence". exact Logic.I. Qed.
+
+Goal Logic.True. idtac "AUDIT_BEGIN fah_fifo_rel". exact Logic.I. Qed.
+Print Assumptions fah_fifo_rel.
+Goal Logic.True. idtac "AUDIT_END fah_fifo_rel". exact Logic.I. Qed.
+
+Goal Logic.True. idtac "AUDIT_BEGIN fah_task_cost_of_job_related". exact Logic.I. Qed.
+Print Assumptions fah_task_cost_of_job_related.
+Goal Logic.True. idtac "AUDIT_END fah_task_cost_of_job_related". exact Logic.I. Qed.
+
+Goal Logic.True. idtac "AUDIT_BEGIN fah_valid_job_costs_rel". exact Logic.I. Qed.
+Print Assumptions fah_valid_job_costs_rel.
+Goal Logic.True. idtac "AUDIT_END fah_valid_job_costs_rel". exact Logic.I. Qed.
+
+Goal Logic.True. idtac "AUDIT_BEGIN fah_all_jobs_from_taskset_rel". exact Logic.I. Qed.
+Print Assumptions fah_all_jobs_from_taskset_rel.
+Goal Logic.True. idtac "AUDIT_END fah_all_jobs_from_taskset_rel". exact Logic.I. Qed.

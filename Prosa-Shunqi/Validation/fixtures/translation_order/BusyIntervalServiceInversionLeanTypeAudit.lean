@@ -1,0 +1,28 @@
+import Prosa.Analysis.Facts.BusyInterval.ServiceInversion
+set_option pp.fieldNotation false
+
+#check @Prosa.Analysis.Facts.BusyInterval.ServiceInversion.blackout_implies_no_service_inversion
+#check @Prosa.Analysis.Facts.BusyInterval.ServiceInversion.idle_implies_no_service_inversion
+#check @Prosa.Analysis.Facts.BusyInterval.ServiceInversion.receives_service_implies_no_service_inversion
+#check @Prosa.Analysis.Facts.BusyInterval.ServiceInversion.service_inversion_cat
+#check @Prosa.Analysis.Facts.BusyInterval.ServiceInversion.service_inversion_widen
+#check @Prosa.Analysis.Facts.BusyInterval.ServiceInversion.service_inversion_supply_sched
+#check @Prosa.Analysis.Facts.BusyInterval.ServiceInversion.service_inv_implies_priority_inv
+#check @Prosa.Analysis.Facts.BusyInterval.ServiceInversion.cumul_service_inv_le_cumul_priority_inv
+#check @Prosa.Analysis.Facts.BusyInterval.ServiceInversion.cumulative_service_inversion_from_one_job
+#check @Prosa.Analysis.Facts.BusyInterval.ServiceInversion.lp_job_bounded_service
+#check @Prosa.Analysis.Facts.BusyInterval.ServiceInversion.lp_job_bounded_service_max
+#check @Prosa.Analysis.Facts.BusyInterval.ServiceInversion.service_inversion_is_bounded
+
+#print axioms Prosa.Analysis.Facts.BusyInterval.ServiceInversion.blackout_implies_no_service_inversion
+#print axioms Prosa.Analysis.Facts.BusyInterval.ServiceInversion.idle_implies_no_service_inversion
+#print axioms Prosa.Analysis.Facts.BusyInterval.ServiceInversion.receives_service_implies_no_service_inversion
+#print axioms Prosa.Analysis.Facts.BusyInterval.ServiceInversion.service_inversion_cat
+#print axioms Prosa.Analysis.Facts.BusyInterval.ServiceInversion.service_inversion_widen
+#print axioms Prosa.Analysis.Facts.BusyInterval.ServiceInversion.service_inversion_supply_sched
+#print axioms Prosa.Analysis.Facts.BusyInterval.ServiceInversion.service_inv_implies_priority_inv
+#print axioms Prosa.Analysis.Facts.BusyInterval.ServiceInversion.cumul_service_inv_le_cumul_priority_inv
+#print axioms Prosa.Analysis.Facts.BusyInterval.ServiceInversion.cumulative_service_inversion_from_one_job
+#print axioms Prosa.Analysis.Facts.BusyInterval.ServiceInversion.lp_job_bounded_service
+#print axioms Prosa.Analysis.Facts.BusyInterval.ServiceInversion.lp_job_bounded_service_max
+#print axioms Prosa.Analysis.Facts.BusyInterval.ServiceInversion.service_inversion_is_bounded

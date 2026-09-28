@@ -1,0 +1,363 @@
+{
+  "slice": "TRANSLATION_ORDER_ANALYSIS_FACTS_JITTER",
+  "generated_at": "2026-09-28T04:12:02.657611+08:00",
+  "published_at": "2026-09-28T04:12:02.657611+08:00",
+  "rank": 175,
+  "layer": 17,
+  "source_file": "analysis/facts/jitter.v",
+  "source_commit": "414e66760333eaa4ef78c685bcf53291c527a548",
+  "source_tree": "7d7e94c731f7eefde4ca738310d4cafdd7bebdf0",
+  "source_file_sha256": "392af12ce4631915a1d7adaad08cbdd55f9a458725718d00c46ac3dabe3260cf",
+  "pipeline": "Validation/scripts/translation_file_pipeline.py",
+  "spec": "Validation/tooling/file_specs/analysis_facts_jitter.json",
+  "spec_sha256": "e7237fb0c5f5890333efcfbc40c27c05635a3d60ea50a1f403946368e2acb34d",
+  "source_compatibility": {
+    "mode": "extract",
+    "note": "theorem statements from the authoritative elaborated types (proofs omitted); the delay-propagation definitions (with their source-local instances release_as_arrival and release_curve), the readiness and task jitter models and model/schedule/work_conserving are the accepted compiled pinned sources (.vo manifest-hash-checked artifacts, byte-identical dependencies with this closure), priority-driven schedules the accepted extracted PriorityDrivenSemanticSource of the base closure and schedulability the accepted extracted SchedulabilitySemanticSource (over the pinned model/task/absolute_deadline); the proof-only facts/delay_propagation import is dropped; the source-local instances release_as_arrival, release_curve, jitter_ready_instance and basic_ready_instance, implicit in the elaborated statements, are made explicit by recorded printer repairs (the statements print back to the evidence text)",
+    "extracted_sha256": "9d0d8956c8eede476b9f99a2e143c96bd3c2c17e1a6851da3ab2a391bfaf0122",
+    "extraction_metadata_sha256": "ba0d7f04f56f1ae58c7637a7e6ebef2affc8aa97cadbd7339ca15bcf6d03db07"
+  },
+  "source_type_evidence": {
+    "prosa.analysis.facts.jitter.jitter_arrives_in_iff": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.jitter.valid_release_sequence": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.jitter.valid_release_curve": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.jitter.release_curve_respected": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.jitter.jitter_prop_same_jobs": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.jitter.jitter_prop_same_jobs'": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.jitter.jitter_prop_valid_costs": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.jitter.jitter_ready_to_execute": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.jitter.jitter_work_conservation": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.jitter.jitter_valid_schedule": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.jitter.jitter_scheduled_jobs_at_equiv": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.jitter.jitter_scheduled_job_at_eq": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.jitter.jitter_FP_compliance": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.jitter.jitter_response_time_bound": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE"
+  },
+  "statement_only_export_boundary": [
+    "Prosa.Analysis.Facts.Jitter.jitter_arrives_in_iff",
+    "Prosa.Analysis.Facts.Jitter.valid_release_sequence",
+    "Prosa.Analysis.Facts.Jitter.valid_release_curve",
+    "Prosa.Analysis.Facts.Jitter.release_curve_respected",
+    "Prosa.Analysis.Facts.Jitter.jitter_prop_same_jobs",
+    "Prosa.Analysis.Facts.Jitter.jitter_prop_same_jobs'",
+    "Prosa.Analysis.Facts.Jitter.jitter_prop_valid_costs",
+    "Prosa.Analysis.Facts.Jitter.jitter_ready_to_execute",
+    "Prosa.Analysis.Facts.Jitter.jitter_work_conservation",
+    "Prosa.Analysis.Facts.Jitter.jitter_valid_schedule",
+    "Prosa.Analysis.Facts.Jitter.jitter_scheduled_jobs_at_equiv",
+    "Prosa.Analysis.Facts.Jitter.jitter_scheduled_job_at_eq",
+    "Prosa.Analysis.Facts.Jitter.jitter_FP_compliance",
+    "Prosa.Analysis.Facts.Jitter.jitter_response_time_bound"
+  ],
+  "input_relations": [
+    "job_arrival by ArJobArrivalRel, job_task by Lean.eq, task_jitter and job_jitter pointwise",
+    "arrival sequences, task sets, arrival curves, processor models (isj_cover_pstate), schedules, job costs, task costs, FP policies, JobPreemptable instances, tasks, jobs, instants and durations covered in both directions"
+  ],
+  "coverage_for_inner_binders": [
+    "arrival sequences",
+    "task sets",
+    "arrival curves",
+    "processor models",
+    "schedules",
+    "JobCost / TaskCost",
+    "FP policies",
+    "JobPreemptable",
+    "durations"
+  ],
+  "lean_representation_note": "Booleans in Prop position are `= true`; the canonical conversions JLFP\u2192JLDP and FP\u2192JLFP are the accepted `JLFP_to_JLDP`/`FP_to_JLFP`, passed explicitly",
+  "export_size": {
+    "lines": 140348,
+    "soft_budget_flag": "OVER_100K_DIAGNOSED",
+    "diagnosis": "the accepted preemption-facts export root (without statements) merged with the accepted delay-propagation facts and schedulability export roots plus the two local helpers and the fourteen statements"
+  },
+  "file_dependencies": {
+    "analysis/definitions/schedulability.v": "analysis_definitions_schedulability_module_status.json",
+    "analysis/facts/delay_propagation.v": "analysis_facts_delay_propagation_module_status.json",
+    "model/readiness/basic.v": "model_readiness_basic_module_status.json",
+    "model/schedule/priority_driven.v": "model_schedule_priority_driven_module_status.json",
+    "model/schedule/work_conserving.v": "model_schedule_work_conserving_module_status.json"
+  },
+  "production_file": "Prosa/Analysis/Facts/Jitter.lean",
+  "production_source_sha256": "783f40fb40d8a43a38efe1f6196acf75d5578d200991af87b6dca76ce7f83687",
+  "production_olean_sha256": "9976cc5e6812c3851ef6b5139ec8e6f560af681d605cc7cb5a23572a269c5ab9",
+  "export_config_sha256": "78ce4057b4fa618792b89d238796430606c760718c18f1f84826382a0b393ef8",
+  "export_sha256": "7149b846f99e20133e63133651c6029a8a21f08f59697269031f9f109b0e455f",
+  "export_lines": 140348,
+  "export_bytes": 3153404,
+  "import_sha256": "ff807697a6f63cadc120e6791824ad56709ba02becbfac9f50e5f24146660bed",
+  "source_vo_sha256": "b33ce3a29da378d6c44598ea951497cd819d3fa2e68ecae3195eb757a42ae06d",
+  "lean_axiom_summary_sha256": "0c2e70485e7477da2ea9efc6dd5f1f341cd87abf6bf1103348aa84eb734a7420",
+  "rocq_assumption_summary_sha256": "c6a01fb7898c22233bf98b63d8b606395fca0b436b0d6188fb6721c6a3150ee9",
+  "assumption_config_sha256": "108907a3c86ff5e72d3b49960c4385eba61dd1bce52d969fdfd8ee8ac3567ac2",
+  "stage_timing_seconds": {
+    "source_acquisition": {
+      "mode": "FRESH",
+      "seconds": 5
+    },
+    "lean_build": {
+      "mode": "FRESH",
+      "seconds": 968
+    },
+    "export": {
+      "mode": "FRESH",
+      "seconds": 42
+    },
+    "rocq_import": {
+      "mode": "FRESH",
+      "seconds": 42
+    },
+    "certificate_compile": {
+      "mode": "FRESH",
+      "seconds": 39
+    },
+    "assumption_audit": {
+      "mode": "FRESH",
+      "seconds": 0
+    }
+  },
+  "certificates": {
+    "ArrivalsSeqBaseAdapter": {
+      "source_sha256": "be03651631f716d73722880f015b18cc14abdc59b4f890ffec07cdb65ee66d9e",
+      "vo_sha256": "abbc05cf81a276acf23849c12d975aaebeeaf675c151abab1728e2722e701cd1"
+    },
+    "ArrivalsSeqOperations": {
+      "source_sha256": "dd3661ce79302fc2d0596b19f99b20cf6b4b61c0e95a3c088febc81c57551fa5",
+      "vo_sha256": "a856c46f15164926ba7a2567e0084fcee352d90c3600fe056b88956e344e1a05"
+    },
+    "ArrivalsSeqCorrespondence": {
+      "source_sha256": "4db96b65411861352d7a389de59bd327e54c01ce5b3557f07c797d4a1ef49a32",
+      "vo_sha256": "3822cb227ff90a6f08f362fe58171ad3273e7e25a624f891c330d0845c06a555"
+    },
+    "JitterSvcBaseAdapter": {
+      "source_sha256": "b35f85fe1a863ca1b3c069835fd991b2e61786dbc1cf0b6b92ec8e0218b4dab9",
+      "vo_sha256": "7305a9cd0656e2e67861fd09295797b4a22d8ed7b8509dcea7a33bd21b247552"
+    },
+    "JitterSvcNatBoolOperations": {
+      "source_sha256": "96de60ff67b6115b05d7199988a1a8ff42343851731437d93e692965c3ad3936",
+      "vo_sha256": "15f33bd38b8569067b0a9c059bce092e274332995dd954a67c70e3f6f209415f"
+    },
+    "JitterSvcIntervalOperations": {
+      "source_sha256": "7a35510e96bb5563cdb0231f976be082795a61d7dc817e05aa6bf9cbf41ef435",
+      "vo_sha256": "8e286b7f1d13a96f09d486300031e9dda6e5bc276d6f879e4acb3da27b862ac2"
+    },
+    "JitterSvcScheduleOperations": {
+      "source_sha256": "28f331f7e38c71ee0501706fab5cab64cbe392f37ea5e6d78690b7a7598d307a",
+      "vo_sha256": "d66ee66ff76c4c2b2fef54e3059536b7fc30c3dc0151d45c0bf5f3b17b28f7b7"
+    },
+    "JitterSvcJobOperations": {
+      "source_sha256": "7bd89e198a7a5f1307bd13eff6cf4a8edb7c1c84d0e4b4a6a199e9d975b22d75",
+      "vo_sha256": "aa9093d0980edee640e2c1d0ad322539c31e99eb161e4ccf9dcf9ddc05d13983"
+    },
+    "PreemptionParameterCorrespondence": {
+      "source_sha256": "a28f64b39c2af0dfca940a117c45fc1cfa5b9cff213f186e456211e29f4e21e0",
+      "vo_sha256": "8468dd6f5642a173092e565c0f084f6606b9f417d90298868d091c3efa4ec924"
+    },
+    "PreemptionTimeCorrespondence": {
+      "source_sha256": "ab2b484f36cb647a347b3e629e84632aa3adc059c0ae59211de9cd652c443249",
+      "vo_sha256": "7775a0ee3fec5f28d3a4f190eda81c8fbc61ce4ee91b943fa89dd4ee8ee32a35"
+    },
+    "PriorityDrivenCorrespondence": {
+      "source_sha256": "7aaefc1f6bd8608bd16b906365483a62476e5025c9f71b38f96d9c933bff9304",
+      "vo_sha256": "006639e932d0c443d39e177affe3f05bb6b204081d4657fbeb7ac2d8ddeded02"
+    },
+    "PStateCoverHelpers": {
+      "source_sha256": "cd0da48b5bf968295f2fd7a1f7214dc22fb3b760331e8abbca41b3aef0fa85aa",
+      "vo_sha256": "bc33a9b63547f15435986c807250c1d41111a99edddb8ba587da9ac6f191bf50"
+    },
+    "FactsPreemptionHelpers": {
+      "source_sha256": "de326e53b81a9cb792b553a231b3d25478fdce400d2515771b86c1b0fb24d74a",
+      "vo_sha256": "26e7bde9a88e79dbdc966bf3389cb967073d0e910bea31a3f85fb520bb7bdb7a"
+    },
+    "ArrivalsCorrespondence": {
+      "source_sha256": "13cc8141fc451867b37b4bdf515258e714292f31163c9e579b0a185413612dd0",
+      "vo_sha256": "0bb486f85a829bfbe3ffc93a33e057c906b5a31f353d56943cbb4bd6ecbbcc5e"
+    },
+    "CurvesCorrespondence": {
+      "source_sha256": "bb428bd275eca89519d1a19adae89ddb0cd7f5d8a02d311cdba2f54beca06e7f",
+      "vo_sha256": "bccd41567e08a94e8ce3bec8539b2daaaabcbf7ee96d5d9d18812b29aba15d2c"
+    },
+    "DelayPropagationCorrespondence": {
+      "source_sha256": "4b0a2c7ca7ec86e66f649fa1c235a87eb55f45b0b5ee5d11d8f5fa309ef9e25b",
+      "vo_sha256": "688c53284cd8798a6699e5d1da6969437164352e7e1243ccb8441f922e6a2e20"
+    },
+    "JitterCorrespondence": {
+      "source_sha256": "d13b3f6ea82122cbf5ed1838b399612dd618f3230be618033f505c70cd8da5ac",
+      "vo_sha256": "6bd328e12e28c50ce161241796150cebeaf7285537a91ec7056ade7c9c3b4259"
+    },
+    "FactsJitterAssumptionAudit": {
+      "source_sha256": "53b8cda4920a10156c6a862215774c347ad5644d0c961714ae8ec70f6de89435",
+      "vo_sha256": "95cf6eeee3375d3814212bae0cdba197d94fdfabb743dcad86fa24a8b68e13ff"
+    }
+  },
+  "declarations": [
+    {
+      "source_declaration": "prosa.analysis.facts.jitter.jitter_arrives_in_iff",
+      "lean_declaration": "Prosa.Analysis.Facts.Jitter.jitter_arrives_in_iff",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "jitter_arrives_in_iff_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.jitter.valid_release_sequence",
+      "lean_declaration": "Prosa.Analysis.Facts.Jitter.valid_release_sequence",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "valid_release_sequence_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.jitter.valid_release_curve",
+      "lean_declaration": "Prosa.Analysis.Facts.Jitter.valid_release_curve",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "valid_release_curve_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.jitter.release_curve_respected",
+      "lean_declaration": "Prosa.Analysis.Facts.Jitter.release_curve_respected",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "release_curve_respected_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.jitter.jitter_prop_same_jobs",
+      "lean_declaration": "Prosa.Analysis.Facts.Jitter.jitter_prop_same_jobs",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "jitter_prop_same_jobs_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.jitter.jitter_prop_same_jobs'",
+      "lean_declaration": "Prosa.Analysis.Facts.Jitter.jitter_prop_same_jobs'",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "jitter_prop_same_jobs'_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.jitter.jitter_prop_valid_costs",
+      "lean_declaration": "Prosa.Analysis.Facts.Jitter.jitter_prop_valid_costs",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "jitter_prop_valid_costs_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.jitter.jitter_ready_to_execute",
+      "lean_declaration": "Prosa.Analysis.Facts.Jitter.jitter_ready_to_execute",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "jitter_ready_to_execute_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.jitter.jitter_work_conservation",
+      "lean_declaration": "Prosa.Analysis.Facts.Jitter.jitter_work_conservation",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "jitter_work_conservation_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.jitter.jitter_valid_schedule",
+      "lean_declaration": "Prosa.Analysis.Facts.Jitter.jitter_valid_schedule",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "jitter_valid_schedule_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.jitter.jitter_scheduled_jobs_at_equiv",
+      "lean_declaration": "Prosa.Analysis.Facts.Jitter.jitter_scheduled_jobs_at_equiv",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "jitter_scheduled_jobs_at_equiv_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.jitter.jitter_scheduled_job_at_eq",
+      "lean_declaration": "Prosa.Analysis.Facts.Jitter.jitter_scheduled_job_at_eq",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "jitter_scheduled_job_at_eq_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.jitter.jitter_FP_compliance",
+      "lean_declaration": "Prosa.Analysis.Facts.Jitter.jitter_FP_compliance",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "jitter_FP_compliance_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.jitter.jitter_response_time_bound",
+      "lean_declaration": "Prosa.Analysis.Facts.Jitter.jitter_response_time_bound",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "jitter_response_time_bound_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    }
+  ],
+  "acceptance": "ACCEPTED_V06_FILE"
+}

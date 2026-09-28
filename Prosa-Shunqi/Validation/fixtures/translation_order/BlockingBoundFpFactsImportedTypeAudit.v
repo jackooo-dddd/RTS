@@ -1,0 +1,4 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedBlockingBoundFpFacts.
+
+Check ImportedBlockingBoundFpFacts.Prosa_Analysis_Facts_BlockingBound_Fp_nonpreemptive_segments_bounded_by_blocking.

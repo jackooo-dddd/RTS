@@ -1,0 +1,137 @@
+From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq.
+From prosa Require Import PriorityDrivenSemanticSource.
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedExistence ImportedSubadditivity.
+From FoundationCertificates Require Import PropSPropFoundation LogicalRelation
+  SubadditivityNatCorrespondence
+  ArrivalsSeqBaseAdapter ArrivalsSeqOperations ArrivalsSeqCorrespondence
+  JitterSvcBaseAdapter JitterSvcNatBoolOperations JitterSvcIntervalOperations
+  JitterSvcScheduleOperations JitterSvcJobOperations PreemptionParameterCorrespondence
+  PreemptionTimeCorrespondence.
+
+Module I := ImportedExistence.
+Module S := PriorityDrivenSemanticSource.PriorityDrivenSemanticSource.
+Module P := prosa.PreemptionParameterSemanticSource.PreemptionParameterSemanticSource.
+
+(** Definition certificates for [model/schedule/priority_driven.v].
+
+    Source side: the extracted byte-identical definition blocks; target side:
+    the compiled Lean definitions.  Inputs: [JobPreemptable] by the accepted
+    [PpJobPreemptableRel], the readiness model pointwise on Booleans for
+    related schedules, processor states and schedules by the accepted
+    two-sided [SvcProcessorStateRel]/[SvcScheduleRel], arrival sequences by
+    [ArArrivalSequenceRel], the JLDP/JLFP/FP policies pointwise on Booleans,
+    [job_task] by [Lean.eq].  [preemption_time] is closed by the accepted
+    [PreemptionTimeCorrespondence]; the JLFP→JLDP and FP→JLFP conversions are
+    related from the policy inputs. *)
+
+Section Priority.
+  Context (Job : eqType).
+  Let dJ := ar_decidable_eq Job.
+  Variable jaR : prosa.behavior.job.JobArrival Job.
+  Variable jaL : I.Prosa_Behavior_Job_JobArrival Job dJ.
+  Variable costR : prosa.behavior.job.JobCost Job.
+  Variable costL : I.Prosa_Behavior_Job_JobCost Job dJ.
+  Context (PStateR : prosa.behavior.schedule.ProcessorState Job).
+  Variable PStateL : I.Prosa_Behavior_Schedule_ProcessorState Job dJ.
+  Variable R : SvcProcessorStateRel Job PStateR PStateL.
+  Variable jpR : P.JobPreemptable Job.
+  Variable jpL : I.Prosa_Model_Preemption_Parameter_JobPreemptable Job dJ.
+  Hypothesis Hjp : PpJobPreemptableRel Job jpR jpL.
+  Variable jrR : @prosa.behavior.ready.JobReady Job PStateR costR jaR.
+  Variable jrL : I.Prosa_Behavior_Ready_JobReady Job dJ PStateL costL jaL.
+  Hypothesis Hjr : forall schedR schedL, SvcScheduleRel Job PStateR PStateL R schedR schedL ->
+    forall (j : Job) (tR : nat) (tL : Lean.Nat), SubNatRel tR tL ->
+      ArBoolRel (@prosa.behavior.ready.job_ready Job PStateR costR jaR jrR schedR j tR)
+        (I.Prosa_Behavior_Ready_JobReady_job_ready Job dJ PStateL costL jaL jrL schedL j tL).
+  Variable arrR : prosa.behavior.arrival_sequence.arrival_sequence Job.
+  Variable arrL : I.Prosa_Behavior_Arrival_sequence_arrival_sequence Job dJ.
+  Hypothesis Harr : ArArrivalSequenceRel Job arrR arrL.
+  Variable schedR : @prosa.behavior.schedule.schedule Job PStateR.
+  Variable schedL : I.Prosa_Behavior_Schedule_schedule Job dJ PStateL.
+  Hypothesis Hsched : SvcScheduleRel Job PStateR PStateL R schedR schedL.
+
+  Lemma pdrv_backlogged_related (j : Job) (tR : nat) (tL : Lean.Nat) :
+    SubNatRel tR tL ->
+    ArBoolRel (@prosa.behavior.ready.backlogged Job PStateR costR jaR jrR schedR j tR)
+      (I.Prosa_Behavior_Ready_backlogged Job dJ PStateL costL jaL jrL schedL j tL).
+  Proof.
+    intro Ht. unfold prosa.behavior.ready.backlogged.
+    cbn [I.Prosa_Behavior_Ready_backlogged].
+    apply ar_bool_and_related.
+    - exact (Hjr schedR schedL Hsched j tR tL Ht).
+    - exact (svc_bool_not_related _ _ (pp_scheduled_at_related Job PStateR PStateL R schedR schedL Hsched j tR tL Ht)).
+  Qed.
+
+  Definition PdrvJLDPRel (pR : prosa.model.priority.definitions.JLDP_policy Job)
+      (pL : I.Prosa_Model_Priority_Definitions_JLDP_policy Job dJ) : SProp :=
+    forall tR tL, SubNatRel tR tL -> forall x y : Job,
+      ArBoolRel (@prosa.model.priority.definitions.hep_job_at Job pR tR x y)
+        (I.Prosa_Model_Priority_Definitions_JLDP_policy_hep_job_at Job dJ pL tL x y).
+
+  Theorem respects_JLDP_policy_at_preemption_point_correspondence pR pL :
+    PdrvJLDPRel pR pL ->
+    PropSPropRel
+      (@S.respects_JLDP_policy_at_preemption_point Job jaR costR PStateR jpR jrR arrR schedR pR)
+      (I.Prosa_Model_Schedule_PriorityDriven_respects_JLDP_policy_at_preemption_point
+        Job dJ jaL costL PStateL jpL jrL arrL schedL pL).
+  Proof.
+    intro Hp. unfold S.respects_JLDP_policy_at_preemption_point.
+    cbn [I.Prosa_Model_Schedule_PriorityDriven_respects_JLDP_policy_at_preemption_point].
+    apply ar_forall_identity_correspondence. intro j.
+    apply ar_forall_identity_correspondence. intro j_hp.
+    apply ar_forall_nat_correspondence. intros tR tL Ht.
+    apply ar_imp_correspondence; [exact (arrives_in_correspondence_certificate Job arrR arrL j Harr)|].
+    apply ar_imp_correspondence;
+      [exact (ar_bool_truth_correspondence _ _
+        (preemption_time_correspondence Job jpR jpL Hjp PStateR PStateL R schedR schedL Hsched
+          arrR arrL Harr tR tL Ht))|].
+    apply ar_imp_correspondence;
+      [exact (ar_bool_truth_correspondence _ _ (pdrv_backlogged_related j tR tL Ht))|].
+    apply ar_imp_correspondence;
+      [exact (ar_bool_truth_correspondence _ _
+        (pp_scheduled_at_related Job PStateR PStateL R schedR schedL Hsched j_hp tR tL Ht))|].
+    exact (ar_bool_truth_correspondence _ _ (Hp tR tL Ht j_hp j)).
+  Qed.
+
+  Theorem respects_JLFP_policy_at_preemption_point_correspondence pR pL :
+    (forall x y : Job,
+      ArBoolRel (@prosa.model.priority.definitions.hep_job Job pR x y)
+        (I.Prosa_Model_Priority_Definitions_JLFP_policy_hep_job Job dJ pL x y)) ->
+    PropSPropRel
+      (@S.respects_JLFP_policy_at_preemption_point Job jaR costR PStateR jpR jrR arrR schedR pR)
+      (I.Prosa_Model_Schedule_PriorityDriven_respects_JLFP_policy_at_preemption_point
+        Job dJ jaL costL PStateL jpL jrL arrL schedL pL).
+  Proof.
+    intro Hp. unfold S.respects_JLFP_policy_at_preemption_point.
+    cbn [I.Prosa_Model_Schedule_PriorityDriven_respects_JLFP_policy_at_preemption_point].
+    apply respects_JLDP_policy_at_preemption_point_correspondence.
+    intros tR tL Ht x y. exact (Hp x y).
+  Qed.
+
+  Context (Task : eqType).
+  Let dT := ar_decidable_eq Task.
+  Variable jtR : prosa.model.task.concept.JobTask Job Task.
+  Variable jtL : I.Prosa_Model_Task_Concept_JobTask Job dJ Task dT.
+  Hypothesis Hjt : forall j : Job,
+    Lean.eq (@prosa.model.task.concept.job_task Job Task jtR j)
+      (I.Prosa_Model_Task_Concept_JobTask_job_task Job dJ Task dT jtL j).
+
+  Theorem respects_FP_policy_at_preemption_point_correspondence fpR fpL :
+    (forall x y : Task,
+      ArBoolRel (@prosa.model.priority.definitions.hep_task Task fpR x y)
+        (I.Prosa_Model_Priority_Definitions_FP_policy_hep_task Task dT fpL x y)) ->
+    PropSPropRel
+      (@S.respects_FP_policy_at_preemption_point Task Job jtR jaR costR PStateR jpR jrR arrR schedR fpR)
+      (I.Prosa_Model_Schedule_PriorityDriven_respects_FP_policy_at_preemption_point
+        Task dT Job dJ jtL jaL costL PStateL jpL jrL arrL schedL fpL).
+  Proof.
+    intro Hfp. unfold S.respects_FP_policy_at_preemption_point.
+    cbn [I.Prosa_Model_Schedule_PriorityDriven_respects_FP_policy_at_preemption_point].
+    apply respects_JLDP_policy_at_preemption_point_correspondence.
+    intros tR tL Ht x y. cbn.
+    exact (sub_imported_eq_trans _ _ _ (Hfp _ _)
+      (sub_imported_eq_congr2 (I.Prosa_Model_Priority_Definitions_FP_policy_hep_task Task dT fpL)
+        _ _ _ _ (Hjt x) (Hjt y))).
+  Qed.
+End Priority.

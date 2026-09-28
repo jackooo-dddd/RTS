@@ -1,0 +1,89 @@
+{
+  "mode": "proof_independent_semantic_source_signature",
+  "source_file": "analysis/abstract/restricted_supply/search_space/elf.v",
+  "source_file_sha256": "a380d0d53410e868494213df316de102ec7ac5ac253d8815879e5bee45a4bca5",
+  "source_commit": "414e66760333eaa4ef78c685bcf53291c527a548",
+  "generated_file": "/Users/shunqiwang/CityuHK/Research/Lean/TranslationProof/Prosa-Shunqi/Validation/.work/experiments/analysis_abstract_restricted_supply_search_space_elf_final/source/SearchSpaceElfSemanticSource.v",
+  "transformations": {
+    "computational": "byte-identical declaration block",
+    "theorem": "verified post-Section Check type converted to a definition with its declared Prop/Type sort preserved; exact source header retained as provenance; opaque proof omitted",
+    "local_bindings": {},
+    "dropped_irrelevant_imports": [
+      "Require Export prosa.analysis.abstract.search_space.",
+      "Require Export prosa.analysis.definitions.blocking_bound.elf.",
+      "Require Export prosa.analysis.facts.model.rbf.",
+      "Require Export prosa.analysis.facts.workload.elf_athep_bound."
+    ],
+    "added_validation_imports": [
+      "Require Export prosa.RequestBoundFunctionSemanticSource.",
+      "Export RequestBoundFunctionSemanticSource.",
+      "Require Export prosa.BlockingBoundElfSemanticSource.",
+      "Export BlockingBoundElfSemanticSource.",
+      "Require Export prosa.ElfAthepBoundSemanticSource.",
+      "Export ElfAthepBoundSemanticSource.",
+      "Require Export prosa.analysis.abstract.search_space.",
+      "Require Export prosa.util.int prosa.model.priority.gel prosa.model.priority.elf.",
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq bigop.",
+      "Require Import prosa.util.epsilon prosa.util.rel prosa.model.task.concept prosa.model.task.arrival.curves.",
+      "Module elf := prosa.BlockingBoundElfSemanticSource.BlockingBoundElfSemanticSource."
+    ],
+    "printer_repairs": [
+      "elf.is_in_search_space=is_in_search_space"
+    ]
+  },
+  "declarations": {
+    "is_in_search_space": {
+      "source_kind": "computational",
+      "acquisition_mode": "BODY_EXACT",
+      "source_block_sha256": "535769eba5d51c4bafec1dd8db960eb02b908ea2c4083b522e7b13fa1012eb9c",
+      "generated_text_sha256": "535769eba5d51c4bafec1dd8db960eb02b908ea2c4083b522e7b13fa1012eb9c",
+      "source_statement_sha256": null,
+      "normalized_statement_sha256": null,
+      "elaborated_type_sha256": null,
+      "elaborated_type_evidence": null,
+      "statement_sort": null,
+      "context": [
+        "  Context {Task : TaskType}.",
+        "  Context `{TaskCost Task}.",
+        "  Context `{TaskDeadline Task}.",
+        "  Context `{TaskMaxNonpreemptiveSegment Task}.",
+        "  Context `{PriorityPoint Task}.",
+        "  Variable ts : seq Task.",
+        "  Context `{MaxArrivals Task}.",
+        "  Hypothesis H_valid_arrival_curve :",
+        "    valid_taskset_arrival_curve ts max_arrivals.",
+        "  Context {FP : FP_policy Task}.",
+        "  Variable tsk : Task.",
+        "  Hypothesis H_tsk_in_ts : tsk \\in ts.",
+        "  Variable L : duration.",
+        "  Hypothesis H_L_positive : 0 < L.",
+        "  Let task_rbf := task_request_bound_function tsk.",
+        "  Let task_rbf_changes_at (A : duration) :=",
+        "    task_rbf A != task_rbf (A + \u03b5).",
+        "  Let bound_on_ep_task_workload_changes_at (A : duration) :=",
+        "    let new_hep_job_released_by tsko :=",
+        "      (ep_task tsk tsko) && (tsko != tsk)",
+        "      && (ep_task_interfering_interval_length tsk tsko (A - \u03b5) != ep_task_interfering_interval_length tsk tsko A)",
+        "    in has new_hep_job_released_by ts.",
+        "  Let blocking_bound_changes_at (A : duration) :=",
+        "    blocking_bound ts tsk (A - \u03b5) != blocking_bound ts tsk A."
+      ],
+      "omitted_context_for_elaborated_theorem": false,
+      "local_bindings": {}
+    },
+    "search_space_sub": {
+      "source_kind": "theorem",
+      "acquisition_mode": "STATEMENT_EXACT_PROOF_OMITTED",
+      "source_block_sha256": "17163c8d42b868fd091e35b28a0295a9169fb6af17b8366dab3427867615ff54",
+      "generated_text_sha256": "57a1525083c88f2f13538e9b93ea01e3ae74c749ac14a841546bb656da54dda8",
+      "source_statement_sha256": "c3ef5670adb241da120bd2be03a5c688405095cf9f6476571248b4ce8dbd2fae",
+      "normalized_statement_sha256": "8603bf96cea0b16ad4d256be582d79d6031e4ab56491aa87abac8f5c91a289e8",
+      "elaborated_type_sha256": "58fef4583dc437f55c6aba788b75d084160d65f847061e141acc631399cbda17",
+      "elaborated_type_evidence": "ELABORATED_ROCQ_CHECK",
+      "statement_sort": "Prop",
+      "context": [],
+      "omitted_context_for_elaborated_theorem": true,
+      "local_bindings": {}
+    }
+  }
+}

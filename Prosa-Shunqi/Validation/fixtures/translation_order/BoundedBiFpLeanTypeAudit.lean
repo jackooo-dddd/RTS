@@ -1,0 +1,6 @@
+import Prosa.Analysis.Abstract.RestrictedSupply.BoundedBi.Fp
+set_option pp.fieldNotation false
+
+#check @Prosa.Analysis.Abstract.RestrictedSupply.BoundedBi.Fp.busy_intervals_are_bounded_rs_fp
+
+#print axioms Prosa.Analysis.Abstract.RestrictedSupply.BoundedBi.Fp.busy_intervals_are_bounded_rs_fp

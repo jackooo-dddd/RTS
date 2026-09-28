@@ -1,0 +1,5 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedBoundedBiEdf.
+
+Check ImportedBoundedBiEdf.Prosa_Analysis_Abstract_RestrictedSupply_BoundedBi_Edf_longest_bi_with_pi_bound_is_valid.
+Check ImportedBoundedBiEdf.Prosa_Analysis_Abstract_RestrictedSupply_BoundedBi_Edf_busy_intervals_are_bounded_rs_edf.

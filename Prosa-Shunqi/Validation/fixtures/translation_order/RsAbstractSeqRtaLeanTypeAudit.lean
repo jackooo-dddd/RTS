@@ -1,0 +1,10 @@
+import Prosa.Analysis.Abstract.RestrictedSupply.AbstractSeqRta
+set_option pp.fieldNotation false
+
+#check @Prosa.Analysis.Abstract.RestrictedSupply.AbstractSeqRta.IBF_P_bounds_interference
+#check @Prosa.Analysis.Abstract.RestrictedSupply.AbstractSeqRta.sol_seq_rs_equation_impl_sol_rs_equation
+#check @Prosa.Analysis.Abstract.RestrictedSupply.AbstractSeqRta.uniprocessor_response_time_bound_restricted_supply_seq
+
+#print axioms Prosa.Analysis.Abstract.RestrictedSupply.AbstractSeqRta.IBF_P_bounds_interference
+#print axioms Prosa.Analysis.Abstract.RestrictedSupply.AbstractSeqRta.sol_seq_rs_equation_impl_sol_rs_equation
+#print axioms Prosa.Analysis.Abstract.RestrictedSupply.AbstractSeqRta.uniprocessor_response_time_bound_restricted_supply_seq

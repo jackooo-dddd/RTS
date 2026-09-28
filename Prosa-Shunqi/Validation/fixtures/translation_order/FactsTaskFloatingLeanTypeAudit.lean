@@ -1,0 +1,8 @@
+import Prosa.Analysis.Facts.Preemption.Task.Floating
+set_option pp.fieldNotation false
+
+#check @Prosa.Analysis.Facts.Preemption.Task.Floating.floating_preemption_points_model_is_model_with_bounded_nonpreemptive_regions
+#check @Prosa.Analysis.Facts.Preemption.Task.Floating.floating_preemption_points_model_is_valid_model_with_bounded_nonpreemptive_regions
+
+#print axioms Prosa.Analysis.Facts.Preemption.Task.Floating.floating_preemption_points_model_is_model_with_bounded_nonpreemptive_regions
+#print axioms Prosa.Analysis.Facts.Preemption.Task.Floating.floating_preemption_points_model_is_valid_model_with_bounded_nonpreemptive_regions

@@ -1,0 +1,5 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedSearchSpaceElf.
+
+Check ImportedSearchSpaceElf.Prosa_Analysis_Abstract_RestrictedSupply_SearchSpace_Elf_is_in_search_space.
+Check ImportedSearchSpaceElf.Prosa_Analysis_Abstract_RestrictedSupply_SearchSpace_Elf_search_space_sub.

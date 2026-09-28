@@ -1,0 +1,116 @@
+{
+  "mode": "proof_independent_semantic_source_signature",
+  "source_file": "results/generality/gel.v",
+  "source_file_sha256": "b71c4314d29464d04634ee12276a85794b114b393437bc51c804dce7c0455132",
+  "source_commit": "414e66760333eaa4ef78c685bcf53291c527a548",
+  "generated_file": "/Users/shunqiwang/CityuHK/Research/Lean/TranslationProof/Prosa-Shunqi/Validation/.work/experiments/results_generality_gel_final/source/GeneralityGelSemanticSource.v",
+  "transformations": {
+    "computational": "byte-identical declaration block",
+    "theorem": "verified post-Section Check type converted to a definition with its declared Prop/Type sort preserved; exact source header retained as provenance; opaque proof omitted",
+    "local_bindings": {},
+    "dropped_irrelevant_imports": [
+      "Require Export prosa.analysis.facts.model.sequential.",
+      "Require Export prosa.analysis.facts.priority.classes.",
+      "Require Export prosa.analysis.facts.priority.edf.",
+      "Require Export prosa.analysis.facts.priority.fifo.",
+      "Require Export prosa.analysis.facts.priority.gel.",
+      "Require Export prosa.model.schedule.priority_driven.",
+      "Require Import prosa.model.task.absolute_deadline."
+    ],
+    "added_validation_imports": [
+      "Require Export prosa.PriorityDrivenSemanticSource.",
+      "Export PriorityDrivenSemanticSource.",
+      "Require Export prosa.model.task.absolute_deadline.",
+      "Require Export prosa.model.task.sequentiality.",
+      "Require Export prosa.model.processor.platform_properties.",
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq.",
+      "Require Import prosa.behavior.all."
+    ],
+    "printer_repairs": [
+      "backlogged sched j' t -> hep_job j j'=backlogged sched j' t -> @hep_job Job (@GEL Job Task H Arrival H0) j j'"
+    ]
+  },
+  "declarations": {
+    "gel_generalizes_edf": {
+      "source_kind": "theorem",
+      "acquisition_mode": "STATEMENT_EXACT_PROOF_OMITTED",
+      "source_block_sha256": "38ae44efd57f5916f6fe73fbe4adf21ff6ca417aa60308c43ca2b4c35188b3f2",
+      "generated_text_sha256": "2c6fe11e71c5f5bc171f530e5bca28b4e1168eeeb36ab8e8f437eeb7b02b59c1",
+      "source_statement_sha256": "081fb5cfe8c9d5a17abd97ddc23f692d3d4376ae0120c014c83d39573b413199",
+      "normalized_statement_sha256": "5efd27c33c8aacec3f2ff8ec970bdfdcb55a30b2cd7e6ed8b5e5244244bb7188",
+      "elaborated_type_sha256": "d5080346446bf8518756e84a0c954483f959415db563ab9a23de4c54ee3521de",
+      "elaborated_type_evidence": "ELABORATED_ROCQ_CHECK",
+      "statement_sort": "Prop",
+      "context": [],
+      "omitted_context_for_elaborated_theorem": true,
+      "local_bindings": {}
+    },
+    "gel_generalizes_fifo": {
+      "source_kind": "theorem",
+      "acquisition_mode": "STATEMENT_EXACT_PROOF_OMITTED",
+      "source_block_sha256": "56e85fc569bbab5864d2c62e5a6b16a8c2aa51a6afc37e4c847ce833394254b3",
+      "generated_text_sha256": "4a5642c89708d5f6ca1d53ab5ffec8146682246f901b545567297381d0dc22bd",
+      "source_statement_sha256": "15e1772c307eabe7d6c83c078fd3c7cfbce666404d585b589f84c6a3f293d19a",
+      "normalized_statement_sha256": "09e8e57a58a95c0000baa4bb4c558ae0d2c6897e27805586f6ae42fc19c123e9",
+      "elaborated_type_sha256": "b89b18bf6df6dabd3b2d7317218d6e29d91027ef9d6a488ce0c15cbe588d89b8",
+      "elaborated_type_evidence": "ELABORATED_ROCQ_CHECK",
+      "statement_sort": "Prop",
+      "context": [],
+      "omitted_context_for_elaborated_theorem": true,
+      "local_bindings": {}
+    },
+    "pp_delta": {
+      "source_kind": "computational",
+      "acquisition_mode": "BODY_EXACT",
+      "source_block_sha256": "4a878be1917e5a06137ed2da80a062017084a9460dbe37c3cc76b9bb97995a4a",
+      "generated_text_sha256": "4a878be1917e5a06137ed2da80a062017084a9460dbe37c3cc76b9bb97995a4a",
+      "source_statement_sha256": null,
+      "normalized_statement_sha256": null,
+      "elaborated_type_sha256": null,
+      "elaborated_type_evidence": null,
+      "statement_sort": null,
+      "context": [
+        "  Context  {Task : TaskType} `{PriorityPoint Task}.",
+        "  Context  {Job : JobType} `{JobTask Job Task}.",
+        "  Context {PState : ProcessorState Job}.",
+        "  Context {Arrival : JobArrival Job} {Cost : JobCost Job}",
+        "    `{JobPreemptable Job} {JR : @JobReady Job PState Cost Arrival}.",
+        "    Variable fp : FP_policy Task.",
+        "    Hypothesis H_reflexive : reflexive_task_priorities fp.",
+        "    Hypothesis H_total : total_task_priorities fp.",
+        "    Variable arr_seq : arrival_sequence Job.",
+        "    Hypothesis H_valid_arrival_sequence : valid_arrival_sequence arr_seq."
+      ],
+      "omitted_context_for_elaborated_theorem": false,
+      "local_bindings": {}
+    },
+    "backlogged_job_has_lower_gel_prio": {
+      "source_kind": "theorem",
+      "acquisition_mode": "STATEMENT_EXACT_PROOF_OMITTED",
+      "source_block_sha256": "a7dc24815aef350af539e7c267bf261228dd8a4c09a705da9fa0cb6ec87f9649",
+      "generated_text_sha256": "4c1db929bb27ecd7c34465e6afbbda5a2103cd87c0b8b2bc99ee3a38922b264c",
+      "source_statement_sha256": "b6b5819cf87381840ae468ade0f01a833da0c1de71107d9ff56ae4e6896b1f3f",
+      "normalized_statement_sha256": "829741bc48576e36f5c165aff60368401a643c19770e1eed67d657166743a72b",
+      "elaborated_type_sha256": "93266be870681fafe7209c0c684f8f5992ad613904126f8fa1f1822f8c2de801",
+      "elaborated_type_evidence": "ELABORATED_ROCQ_CHECK",
+      "statement_sort": "Prop",
+      "context": [],
+      "omitted_context_for_elaborated_theorem": true,
+      "local_bindings": {}
+    },
+    "gel_conditionally_generalizes_fp": {
+      "source_kind": "theorem",
+      "acquisition_mode": "STATEMENT_EXACT_PROOF_OMITTED",
+      "source_block_sha256": "1a39e56e00155876eac593ff4e5b5e57b64ea3d5e6f8045db9fa713649987d9b",
+      "generated_text_sha256": "5dc7d3c09a65003d877ceb73a9740e320efa6af8707065706c756012df6ecd77",
+      "source_statement_sha256": "8f81a58b9cbf4fa10188db2a97f7c23235ead010e8a3e64d5f7d236b16fcfa06",
+      "normalized_statement_sha256": "7dd34d571577896aa48d3b61d4698eef61a10103c6ec61b899ea65323121f85f",
+      "elaborated_type_sha256": "5cd76ebb8da1f79f76e6e40d647eb96c00b6bb846331f0b777d3b4db413456c2",
+      "elaborated_type_evidence": "ELABORATED_ROCQ_CHECK",
+      "statement_sort": "Prop",
+      "context": [],
+      "omitted_context_for_elaborated_theorem": true,
+      "local_bindings": {}
+    }
+  }
+}

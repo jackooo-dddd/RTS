@@ -1,0 +1,15 @@
+From FoundationCertificates Require Import
+  ArrivalsSeqBaseAdapter ArrivalsSeqOperations ArrivalsSeqCorrespondence JitterSvcBaseAdapter JitterSvcNatBoolOperations JitterSvcIntervalOperations JitterSvcScheduleOperations JitterSvcJobOperations PreemptionParameterCorrespondence LimitedPreemptiveCorrespondence ScheduleLimitedPreemptiveCorrespondence TaskPreemptionParametersCorrespondence TaskLimitedPreemptiveCorrespondence FactsTaskLimitedCorrespondence.
+Set Printing Width 1000.
+
+Goal Logic.True. idtac "AUDIT_BEGIN fixed_preemption_points_model_is_model_with_bounded_nonpreemptive_regions_correspondence". exact Logic.I. Qed.
+Print Assumptions fixed_preemption_points_model_is_model_with_bounded_nonpreemptive_regions_correspondence.
+Goal Logic.True. idtac "AUDIT_END fixed_preemption_points_model_is_model_with_bounded_nonpreemptive_regions_correspondence". exact Logic.I. Qed.
+
+Goal Logic.True. idtac "AUDIT_BEGIN fixed_preemption_points_model_is_valid_model_with_bounded_nonpreemptive_regions_correspondence". exact Logic.I. Qed.
+Print Assumptions fixed_preemption_points_model_is_valid_model_with_bounded_nonpreemptive_regions_correspondence.
+Goal Logic.True. idtac "AUDIT_END fixed_preemption_points_model_is_valid_model_with_bounded_nonpreemptive_regions_correspondence". exact Logic.I. Qed.
+
+Goal Logic.True. idtac "AUDIT_BEGIN ftl_forall_list". exact Logic.I. Qed.
+Print Assumptions ftl_forall_list.
+Goal Logic.True. idtac "AUDIT_END ftl_forall_list". exact Logic.I. Qed.

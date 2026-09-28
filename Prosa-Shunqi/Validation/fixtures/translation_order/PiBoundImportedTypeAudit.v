@@ -1,0 +1,4 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedPiBound.
+
+Check ImportedPiBound.Prosa_Analysis_Facts_BusyInterval_PiBound_priority_inversion_is_bounded.

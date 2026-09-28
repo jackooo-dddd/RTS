@@ -1,0 +1,323 @@
+{
+  "rank": 278,
+  "layer": 25,
+  "tag": "SSFIFO",
+  "slug": "analysis_abstract_restricted_supply_search_space_fifo",
+  "source": "analysis/abstract/restricted_supply/search_space/fifo.v",
+  "dependencies": [
+    "analysis/abstract/search_space.v",
+    "analysis/definitions/sbf/pred.v",
+    "analysis/facts/model/rbf.v",
+    "analysis/facts/priority/fifo.v"
+  ],
+  "declaration_count": 2,
+  "base_run": "analysis_abstract_restricted_supply_search_space_fp_final",
+  "base_checks": [
+    {
+      "manifest": "analysis_abstract_restricted_supply_search_space_fp",
+      "olean": "Prosa/Analysis/Abstract/RestrictedSupply/SearchSpace/Fp.olean",
+      "vo": "SearchSpaceFpSemanticSource.vo"
+    }
+  ],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "SearchSpaceFifoSemanticSource",
+    "drop_imports": [
+      "Require Export prosa.analysis.facts.model.rbf.",
+      "Require Export prosa.analysis.abstract.search_space.",
+      "Require Import prosa.analysis.facts.priority.fifo.",
+      "Require Import prosa.analysis.definitions.sbf.pred."
+    ],
+    "add_imports": [
+      "Require Export prosa.RequestBoundFunctionSemanticSource.",
+      "Export RequestBoundFunctionSemanticSource.",
+      "Require Export prosa.analysis.abstract.search_space.",
+      "Require Import prosa.analysis.definitions.sbf.pred.",
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq bigop.",
+      "Require Import prosa.util.epsilon prosa.util.rel prosa.model.task.concept prosa.model.task.arrival.curves."
+    ],
+    "printer_repairs": [
+      "fifo.is_in_search_space=is_in_search_space",
+      "fifo.IBF=IBF"
+    ],
+    "note": "the definition is a byte-identical computational block (its section-local Let included), the source's section-local `Local Definition IBF` (named `fifo.IBF ts tsk` by the elaborated statement) is a byte-identical helper block with its section context, and the lemma statement is the authoritative elaborated type (proof omitted); the request-bound-function import is bound to its accepted extracted source (RequestBoundFunctionSemanticSource, hash-checked against its manifest); analysis/abstract/search_space is the pinned source compiled with its accepted proof-only Rocq 9.3 compatibility patch (as in the accepted FP, EDF and ELF search spaces); analysis/definitions/sbf/sbf and analysis/definitions/sbf/pred are compiled from the pinned tree, pred under its accepted Rocq 9.3 compatibility patch (as in the accepted sbf/busy run); the proof-only facts/model/rbf and facts/priority/fifo imports are dropped; the statement names this file's `is_in_search_space` and `IBF` qualified by the file's own module (`fifo.`), repaired to the local names by two recorded printer repairs (as in the accepted EDF and ELF search spaces); the probe reproduces the official display `fifo.IBF` with a display-only abbreviation module (the helper is a source-local definition, so its short name is not imported)",
+    "helper_blocks": [
+      "IBF"
+    ]
+  },
+  "extra_artifacts": [
+    {
+      "from": "analysis_definitions_request_bound_function_final/source/RequestBoundFunctionSemanticSource.vo",
+      "to": "source/RequestBoundFunctionSemanticSource.vo",
+      "manifest": "analysis_definitions_request_bound_function",
+      "key": "source_vo_sha256"
+    }
+  ],
+  "extra_pinned_sources": [
+    "analysis/abstract/search_space.v",
+    "util/setoid.v",
+    "analysis/definitions/sbf/sbf.v",
+    "analysis/definitions/sbf/pred.v"
+  ],
+  "extra_olean_artifacts": [
+    {
+      "from": "model_task_preemption_parameters_final/olean/Prosa/Model/Task/Preemption/Parameters.olean",
+      "to": "Prosa/Model/Task/Preemption/Parameters.olean",
+      "manifest": "model_task_preemption_parameters",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_definitions_blocking_bound_edf_final/olean/Prosa/Analysis/Definitions/BlockingBound/Edf.olean",
+      "to": "Prosa/Analysis/Definitions/BlockingBound/Edf.olean",
+      "manifest": "analysis_definitions_blocking_bound_edf",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_definitions_blocking_bound_fp_final/olean/Prosa/Analysis/Definitions/BlockingBound/Fp.olean",
+      "to": "Prosa/Analysis/Definitions/BlockingBound/Fp.olean",
+      "manifest": "analysis_definitions_blocking_bound_fp",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_abstract_search_space/olean/Prosa/Analysis/Abstract/SearchSpace.olean",
+      "to": "Prosa/Analysis/Abstract/SearchSpace.olean",
+      "manifest": "analysis_abstract_search_space",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_jitter_final/olean/Prosa/Model/Readiness/Basic.olean",
+      "to": "Prosa/Model/Readiness/Basic.olean",
+      "manifest": "model_readiness_basic",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "results_generality_elf_final/olean/Prosa/Model/Task/Sequentiality.olean",
+      "to": "Prosa/Model/Task/Sequentiality.olean",
+      "manifest": "model_task_sequentiality",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "model_priority_fifo_final/olean/Prosa/Model/Priority/Fifo.olean",
+      "to": "Prosa/Model/Priority/Fifo.olean",
+      "manifest": "model_priority_fifo",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_priority_fifo_final/olean/Prosa/Analysis/Definitions/PriorityInversion.olean",
+      "to": "Prosa/Analysis/Definitions/PriorityInversion.olean",
+      "manifest": "analysis_definitions_priority_inversion",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "results_generality_elf_final/olean/Prosa/Analysis/Definitions/AlwaysHigherPriority.olean",
+      "to": "Prosa/Analysis/Definitions/AlwaysHigherPriority.olean",
+      "manifest": "analysis_definitions_always_higher_priority",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "results_generality_elf_final/olean/Prosa/Analysis/Definitions/WorkBearingReadiness.olean",
+      "to": "Prosa/Analysis/Definitions/WorkBearingReadiness.olean",
+      "manifest": "analysis_definitions_work_bearing_readiness",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_jitter_final/olean/Prosa/Model/Schedule/PreemptionTime.olean",
+      "to": "Prosa/Model/Schedule/PreemptionTime.olean",
+      "manifest": "model_schedule_preemption_time",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_jitter_final/olean/Prosa/Model/Schedule/PriorityDriven.olean",
+      "to": "Prosa/Model/Schedule/PriorityDriven.olean",
+      "manifest": "model_schedule_priority_driven",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_jitter_final/olean/Prosa/Analysis/Facts/Model/Preemption.olean",
+      "to": "Prosa/Analysis/Facts/Model/Preemption.olean",
+      "manifest": "analysis_facts_model_preemption",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "results_generality_elf_final/olean/Prosa/Analysis/Facts/Priority/Sequential.olean",
+      "to": "Prosa/Analysis/Facts/Priority/Sequential.olean",
+      "manifest": "analysis_facts_priority_sequential",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "results_generality_elf_final/olean/Prosa/Analysis/Definitions/Readiness.olean",
+      "to": "Prosa/Analysis/Definitions/Readiness.olean",
+      "manifest": "analysis_definitions_readiness",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_priority_fifo_final/olean/Prosa/Analysis/Facts/Readiness/Basic.olean",
+      "to": "Prosa/Analysis/Facts/Readiness/Basic.olean",
+      "manifest": "analysis_facts_readiness_basic",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_priority_fifo_final/olean/Prosa/Model/Preemption/FullyNonpreemptive.olean",
+      "to": "Prosa/Model/Preemption/FullyNonpreemptive.olean",
+      "manifest": "model_preemption_fully_nonpreemptive",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_abstract_ibf_task_final/olean/Prosa/Analysis/Facts/Behavior/Deadlines.olean",
+      "to": "Prosa/Analysis/Facts/Behavior/Deadlines.olean",
+      "manifest": "analysis_facts_behavior_deadlines",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_abstract_ibf_task_final/olean/Prosa/Analysis/Facts/Behavior/All.olean",
+      "to": "Prosa/Analysis/Facts/Behavior/All.olean",
+      "manifest": "analysis_facts_behavior_all",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_priority_fifo_final/olean/Prosa/Analysis/Facts/Preemption/Job/Nonpreemptive.olean",
+      "to": "Prosa/Analysis/Facts/Preemption/Job/Nonpreemptive.olean",
+      "manifest": "analysis_facts_preemption_job_nonpreemptive",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_priority_fifo_final/olean/Prosa/Analysis/Facts/Priority/Inversion.olean",
+      "to": "Prosa/Analysis/Facts/Priority/Inversion.olean",
+      "manifest": "analysis_facts_priority_inversion",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_abstract_ibf_task_final/olean/Prosa/Analysis/Definitions/ServiceInversion/Pred.olean",
+      "to": "Prosa/Analysis/Definitions/ServiceInversion/Pred.olean",
+      "manifest": "analysis_definitions_service_inversion_pred",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_priority_fifo_final/olean/Prosa/Analysis/Definitions/ServiceInversion/BusyPrefix.olean",
+      "to": "Prosa/Analysis/Definitions/ServiceInversion/BusyPrefix.olean",
+      "manifest": "analysis_definitions_service_inversion_busy_prefix",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_priority_fifo_final/olean/Prosa/Analysis/Facts/BusyInterval/Existence.olean",
+      "to": "Prosa/Analysis/Facts/BusyInterval/Existence.olean",
+      "manifest": "analysis_facts_busy_interval_existence",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_priority_fifo_final/olean/Prosa/Analysis/Facts/BusyInterval/HepAtPt.olean",
+      "to": "Prosa/Analysis/Facts/BusyInterval/HepAtPt.olean",
+      "manifest": "analysis_facts_busy_interval_hep_at_pt",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_priority_fifo_final/olean/Prosa/Analysis/Facts/BusyInterval/Pi.olean",
+      "to": "Prosa/Analysis/Facts/BusyInterval/Pi.olean",
+      "manifest": "analysis_facts_busy_interval_pi",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_priority_fifo_final/olean/Prosa/Analysis/Facts/BusyInterval/ServiceInversion.olean",
+      "to": "Prosa/Analysis/Facts/BusyInterval/ServiceInversion.olean",
+      "manifest": "analysis_facts_busy_interval_service_inversion",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_priority_fifo_final/olean/Prosa/Analysis/Facts/Priority/Fifo.olean",
+      "to": "Prosa/Analysis/Facts/Priority/Fifo.olean",
+      "manifest": "analysis_facts_priority_fifo",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_sbf_final/olean/Prosa/Analysis/Definitions/Sbf/Sbf.olean",
+      "to": "Prosa/Analysis/Definitions/Sbf/Sbf.olean",
+      "manifest": "analysis_sbf_sbf",
+      "key": "artifact_hashes.production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_sbf_final/olean/Prosa/Analysis/Definitions/Sbf/Pred.olean",
+      "to": "Prosa/Analysis/Definitions/Sbf/Pred.olean",
+      "manifest": "analysis_sbf_pred",
+      "key": "production_olean_sha256"
+    }
+  ],
+  "fingerprint_probe": "Validation/fixtures/translation_order/SearchSpaceFifoStatementProbe.v",
+  "production": "Prosa/Analysis/Abstract/RestrictedSupply/SearchSpace/Fifo.lean",
+  "production_olean": "Prosa/Analysis/Abstract/RestrictedSupply/SearchSpace/Fifo.olean",
+  "lean_namespace": "Prosa.Analysis.Abstract.RestrictedSupply.SearchSpace.Fifo",
+  "fixtures": [
+    "NondecreasingComputationInterface",
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "PreemptionParameterComputationInterface",
+    "BusyIntervalClassicalComputationInterface",
+    "ArrivalsComputationInterface",
+    "WorkloadComputationInterface",
+    "WorkloadBoundedComputationInterface",
+    "RequestBoundFunctionComputationInterface",
+    "CurvesComputationInterface",
+    "ProcessorStateCoverInterface",
+    "TaskPreemptionParametersComputationInterface",
+    "BlockingBoundEdfComputationInterface",
+    "BlockingBoundFpComputationInterface",
+    "FactsSearchSpaceFpComputationInterface",
+    "FactsSearchSpaceFifoComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/SearchSpaceFifoLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/analysis_abstract_restricted_supply_search_space_fifo_export_config.json",
+  "export_name": "SearchSpaceFifo",
+  "cert_dir": "certificates/analysis_abstract_restricted_supply_search_space_fifo",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "ArrivalsCorrespondence",
+    "JitterSvcBaseAdapter",
+    "JitterSvcNatBoolOperations",
+    "JitterSvcIntervalOperations",
+    "JitterSvcScheduleOperations",
+    "JitterSvcJobOperations",
+    "PreemptionParameterCorrespondence",
+    "WorkloadCorrespondence",
+    "CurvesCorrespondence",
+    "RequestBoundFunctionCorrespondence",
+    "WorkloadBoundedCorrespondence",
+    "SearchSpaceFifoCorrespondence"
+  ],
+  "audit_module": "SearchSpaceFifoAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/SearchSpaceFifoImportedTypeAudit.v",
+  "assumption_config": "certificates/analysis_abstract_restricted_supply_search_space_fifo/search_space_fifo_assumption_config.json",
+  "lean_axiom_config": "certificates/analysis_abstract_restricted_supply_search_space_fifo/search_space_fifo_lean_axiom_config.json",
+  "computational": [
+    "is_in_search_space"
+  ],
+  "principal": {},
+  "helpers": [
+    "ssfi_false_correspondence",
+    "ssfi_nat_neq_correspondence",
+    "ssfi_or_correspondence",
+    "ssfi_and3_correspondence",
+    "ssfi_decide_not",
+    "ssfi_nat_neqb_related",
+    "ssfi_has_canonical",
+    "ssfi_has_related"
+  ],
+  "previous_status": "analysis_abstract_restricted_supply_search_space_elf_module_status.json",
+  "previous_files": 243,
+  "previous_decls": 1689,
+  "input_relations": [
+    "the supply bound function pointwise on Nats (SubNatRel), task costs pointwise by SubNatRel, maximum arrivals by the accepted CvMaxArrivalsRel, task sets by ArListRel"
+  ],
+  "coverage_for_inner_binders": [
+    "tasks (identity carriers)",
+    "Nats (both directions)"
+  ],
+  "lean_representation_note": "`\u03b5` is `1`; the section-local `task_rbf`, `total_ohep_rbf` and `intra_IBF` are inlined; the section's FP policy is an explicit binder acting as a local instance; `a != b` is `decide (a \u2260 b)`; `x \\in xs` in `Prop` position is `decide (x \u2208 xs) = true`; `search_space.is_in_search_space` is the accepted abstract search-space predicate",
+  "export_diagnosis": "the accepted FP search-space export root (without statements) with the supply-bound-function class reached through the statement, kernel-checked List.any equations, the definition and the statement",
+  "extra_source_patches": [
+    "patches/prosa-v06-rocq93-analysis-abstract-search-space.patch",
+    "patches/prosa-v06-rocq93-analysis-sbf-pred.patch"
+  ]
+}

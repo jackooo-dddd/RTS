@@ -1,0 +1,84 @@
+import Prosa.Results.TransferSchedulability.Criterion
+set_option pp.fieldNotation false
+
+#check @Prosa.Results.TransferSchedulability.Criterion.schedulability_transferred
+#check @Prosa.Results.TransferSchedulability.Criterion.deadlines_met
+#check @Prosa.Results.TransferSchedulability.Criterion.ref_cost_bounds_online_cost
+#check @Prosa.Results.TransferSchedulability.Criterion.remaining_cost_bound
+#check @Prosa.Results.TransferSchedulability.Criterion.remcost_service
+#check @Prosa.Results.TransferSchedulability.Criterion.remcost_service_during
+#check @Prosa.Results.TransferSchedulability.Criterion.remcost_total_service_during
+#check @Prosa.Results.TransferSchedulability.Criterion.remaining_cost_invariant
+#check @Prosa.Results.TransferSchedulability.Criterion.online_remaining_cost_bounded
+#check @Prosa.Results.TransferSchedulability.Criterion.remaining_cost_positive
+#check @Prosa.Results.TransferSchedulability.Criterion.remaining_cost_zero
+#check @Prosa.Results.TransferSchedulability.Criterion.critical_jobs
+#check @Prosa.Results.TransferSchedulability.Criterion.critical_jobs_monotonicity
+#check @Prosa.Results.TransferSchedulability.Criterion.critical_jobs_dropout
+#check @Prosa.Results.TransferSchedulability.Criterion.critical_jobs_filter_complete
+#check @Prosa.Results.TransferSchedulability.Criterion.critical_jobs_uniq
+#check @Prosa.Results.TransferSchedulability.Criterion.critical_jobs_min_completion_time
+#check @Prosa.Results.TransferSchedulability.Criterion.critical_jobs_remaining_cost_monotonic
+#check @Prosa.Results.TransferSchedulability.Criterion.slackless_interval
+#check @Prosa.Results.TransferSchedulability.Criterion.contiguously_slackless_interval
+#check @Prosa.Results.TransferSchedulability.Criterion.transfer_schedulability_criterion
+#check @Prosa.Results.TransferSchedulability.Criterion.late_in_critical_jobs
+#check @Prosa.Results.TransferSchedulability.Criterion.late_not_at_start
+#check @Prosa.Results.TransferSchedulability.Criterion.nonpositive_slack
+#check @Prosa.Results.TransferSchedulability.Criterion.contiguously_nps
+#check @Prosa.Results.TransferSchedulability.Criterion.contiguously_nps_start
+#check @Prosa.Results.TransferSchedulability.Criterion.contiguously_nps_existence
+#check @Prosa.Results.TransferSchedulability.Criterion.slackless_interval_step_case_completed_job_rem
+#check @Prosa.Results.TransferSchedulability.Criterion.slackless_interval_step_case_completed_job
+#check @Prosa.Results.TransferSchedulability.Criterion.slackless_interval_step_case_incomplete_job
+#check @Prosa.Results.TransferSchedulability.Criterion.slackless_interval_step
+#check @Prosa.Results.TransferSchedulability.Criterion.slackless_interval_continuation
+#check @Prosa.Results.TransferSchedulability.Criterion.slackless_interval_existence
+#check @Prosa.Results.TransferSchedulability.Criterion.slackless_interval_completion
+#check @Prosa.Results.TransferSchedulability.Criterion.online_transfer_schedulability_criterion_sufficiency
+#check @Prosa.Results.TransferSchedulability.Criterion.online_transfer_schedulability_criterion_ensures_schedulability
+#check @Prosa.Results.TransferSchedulability.Criterion.delay_if_no_critical_job_is_scheduled
+#check @Prosa.Results.TransferSchedulability.Criterion.online_transfer_schedulability_criterion_necessity
+#check @Prosa.Results.TransferSchedulability.Criterion.ref_transfer_schedulability_criterion_sufficiency
+#check @Prosa.Results.TransferSchedulability.Criterion.ref_transfer_schedulability_criterion_ensures_schedulability
+
+#print axioms Prosa.Results.TransferSchedulability.Criterion.schedulability_transferred
+#print axioms Prosa.Results.TransferSchedulability.Criterion.deadlines_met
+#print axioms Prosa.Results.TransferSchedulability.Criterion.ref_cost_bounds_online_cost
+#print axioms Prosa.Results.TransferSchedulability.Criterion.remaining_cost_bound
+#print axioms Prosa.Results.TransferSchedulability.Criterion.remcost_service
+#print axioms Prosa.Results.TransferSchedulability.Criterion.remcost_service_during
+#print axioms Prosa.Results.TransferSchedulability.Criterion.remcost_total_service_during
+#print axioms Prosa.Results.TransferSchedulability.Criterion.remaining_cost_invariant
+#print axioms Prosa.Results.TransferSchedulability.Criterion.online_remaining_cost_bounded
+#print axioms Prosa.Results.TransferSchedulability.Criterion.remaining_cost_positive
+#print axioms Prosa.Results.TransferSchedulability.Criterion.remaining_cost_zero
+#print axioms Prosa.Results.TransferSchedulability.Criterion.critical_jobs
+#print axioms Prosa.Results.TransferSchedulability.Criterion.critical_jobs_monotonicity
+#print axioms Prosa.Results.TransferSchedulability.Criterion.critical_jobs_dropout
+#print axioms Prosa.Results.TransferSchedulability.Criterion.critical_jobs_filter_complete
+#print axioms Prosa.Results.TransferSchedulability.Criterion.critical_jobs_uniq
+#print axioms Prosa.Results.TransferSchedulability.Criterion.critical_jobs_min_completion_time
+#print axioms Prosa.Results.TransferSchedulability.Criterion.critical_jobs_remaining_cost_monotonic
+#print axioms Prosa.Results.TransferSchedulability.Criterion.slackless_interval
+#print axioms Prosa.Results.TransferSchedulability.Criterion.contiguously_slackless_interval
+#print axioms Prosa.Results.TransferSchedulability.Criterion.transfer_schedulability_criterion
+#print axioms Prosa.Results.TransferSchedulability.Criterion.late_in_critical_jobs
+#print axioms Prosa.Results.TransferSchedulability.Criterion.late_not_at_start
+#print axioms Prosa.Results.TransferSchedulability.Criterion.nonpositive_slack
+#print axioms Prosa.Results.TransferSchedulability.Criterion.contiguously_nps
+#print axioms Prosa.Results.TransferSchedulability.Criterion.contiguously_nps_start
+#print axioms Prosa.Results.TransferSchedulability.Criterion.contiguously_nps_existence
+#print axioms Prosa.Results.TransferSchedulability.Criterion.slackless_interval_step_case_completed_job_rem
+#print axioms Prosa.Results.TransferSchedulability.Criterion.slackless_interval_step_case_completed_job
+#print axioms Prosa.Results.TransferSchedulability.Criterion.slackless_interval_step_case_incomplete_job
+#print axioms Prosa.Results.TransferSchedulability.Criterion.slackless_interval_step
+#print axioms Prosa.Results.TransferSchedulability.Criterion.slackless_interval_continuation
+#print axioms Prosa.Results.TransferSchedulability.Criterion.slackless_interval_existence
+#print axioms Prosa.Results.TransferSchedulability.Criterion.slackless_interval_completion
+#print axioms Prosa.Results.TransferSchedulability.Criterion.online_transfer_schedulability_criterion_sufficiency
+#print axioms Prosa.Results.TransferSchedulability.Criterion.online_transfer_schedulability_criterion_ensures_schedulability
+#print axioms Prosa.Results.TransferSchedulability.Criterion.delay_if_no_critical_job_is_scheduled
+#print axioms Prosa.Results.TransferSchedulability.Criterion.online_transfer_schedulability_criterion_necessity
+#print axioms Prosa.Results.TransferSchedulability.Criterion.ref_transfer_schedulability_criterion_sufficiency
+#print axioms Prosa.Results.TransferSchedulability.Criterion.ref_transfer_schedulability_criterion_ensures_schedulability

@@ -1,0 +1,5 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedAbstractSeqRta.
+
+Check ImportedAbstractSeqRta.Prosa_Analysis_Abstract_Ideal_AbstractSeqRta_max_in_seq_hypothesis_implies_max_in_nonseq_hypothesis.
+Check ImportedAbstractSeqRta.Prosa_Analysis_Abstract_Ideal_AbstractSeqRta_uniprocessor_response_time_bound_seq.

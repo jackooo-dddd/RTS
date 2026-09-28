@@ -1,0 +1,4 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedBlockingBoundElf.
+
+Check ImportedBlockingBoundElf.Prosa_Analysis_Definitions_BlockingBound_Elf_blocking_bound.

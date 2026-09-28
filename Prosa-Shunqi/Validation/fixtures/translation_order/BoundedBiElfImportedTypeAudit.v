@@ -1,0 +1,4 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedBoundedBiElf.
+
+Check ImportedBoundedBiElf.Prosa_Analysis_Abstract_RestrictedSupply_BoundedBi_Elf_busy_intervals_are_bounded_rs_elf.

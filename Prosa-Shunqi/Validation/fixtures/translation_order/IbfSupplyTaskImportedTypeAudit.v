@@ -1,0 +1,6 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedIbfSupplyTask.
+
+Check ImportedIbfSupplyTask.Prosa_Analysis_Abstract_IBF_SupplyTask_nonself_intra.
+Check ImportedIbfSupplyTask.Prosa_Analysis_Abstract_IBF_SupplyTask_task_intra_interference.
+Check ImportedIbfSupplyTask.Prosa_Analysis_Abstract_IBF_SupplyTask_task_intra_interference_is_bounded_by.

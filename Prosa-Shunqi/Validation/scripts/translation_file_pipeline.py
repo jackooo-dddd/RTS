@@ -263,6 +263,8 @@ def prepare(spec: Spec) -> None:
                 cmd += [flag, item]
         if x.get("source_order"):
             cmd.append("--source-order")
+        for item in x.get("body_parenthesizations", []):
+            cmd += ["--body-parenthesization", "\t".join((item["name"], item["old"], item["new"]))]
         if x.get("omit_theorem_context", True):
             cmd.append("--omit-theorem-context-when-elaborated")
         require(run(cmd, work / "source_extraction.log", PROJECT) == 0, "extraction failed", tag)
@@ -423,10 +425,30 @@ def fingerprint_matches(spec: Spec, rows: list[dict]) -> dict:
         if matched_qualifier:
             result[name] = "EXACT_MODULO_OWN_MODULE_QUALIFIER"
             continue
+        # MathComp 2.4 (official evidence) displays the carrier of the canonical
+        # integer structure that types `(x - y)%R` as
+        # `ssrint_int__canonical__GRing_Nmodule`; MathComp 2.6 (the validation
+        # toolchain) displays the same carrier as
+        # `ssrint_int__canonical__Algebra_BaseAddMagma` (both have `sort := int`).
+        # Accept exactly that display difference in a declaration type (optionally
+        # with the own-module display qualifier), nothing else.
+        mc_int = re.sub(r"(?<![\w.'])ssrint_int__canonical__GRing_Nmodule(?![\w'])",
+                        "ssrint_int__canonical__Algebra_BaseAddMagma", item["normalized_check"])
+        if mc_int != item["normalized_check"] and any(
+                mc_int.startswith(q) and got == f"@{short} : " + mc_int[len(q):]
+                for q in [f"@{short} : "] + [f"@{qual}.{short} : " for qual in own_qualifiers]):
+            result[name] = "TYPE_EQUAL_MODULO_MATHCOMP_INT_CARRIER_DISPLAY"
+            continue
         m = re.match(r"statement_\S+ = (.*) : (Prop|Type)$", got)
         ref = item["normalized_check"].split(" : ", 1)[1]
         body = m.group(1) if m else None
         unparen = re.sub(r"(\\/|<->|~) \((exists .*)\)$", r"\1 \2", ref)
+        # MathComp 2.4 (official evidence) prints `@Order.max`/`@Order.min`
+        # through the abbreviations `Order.Def.max := @Order.max` and
+        # `Order.Def.min := @Order.min`; MathComp 2.6 (the validation toolchain)
+        # prints the same constants unabbreviated.  Accept exactly that display
+        # difference, nothing else.
+        mc_order = re.sub(r"(?<![\w.'])Order\.Def\.(max|min)(?![\w'])", r"Order.\1", ref)
         # A statement may name a declaration of this same file qualified by the
         # file's own module (`edf.x`) when another `x` was in scope in the
         # official environment; the extraction repairs exactly that qualifier
@@ -443,6 +465,8 @@ def fingerprint_matches(spec: Spec, rows: list[dict]) -> dict:
         result[name] = ("STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE" if body == ref
                         else "TYPE_EQUAL_MODULO_EXISTS_PARENS" if body is not None and body == unparen
                         and unparen != ref
+                        else "TYPE_EQUAL_MODULO_MATHCOMP_ORDER_DEF_ABBREVIATION"
+                        if body is not None and body == mc_order and mc_order != ref
                         else "STATEMENT_BODY_EQUAL_MODULO_OWN_MODULE_QUALIFIER"
                         if own_repairs and body is not None and body == repaired and repaired != ref
                         else "MISMATCH")
@@ -504,8 +528,21 @@ def publish(spec: Spec) -> None:
         require(not ESCAPE_ROCQ.search(extracted.read_text()), "extracted source escape", tag)
         helper_blocks = set(x.get("helper_blocks", []))
         require(set(meta["declarations"]) == set(targets) | helper_blocks, "extraction declaration set changed", tag)
+        # a body may differ from the pinned block only by parentheses that make the
+        # validation toolchain reproduce the authoritative (official-toolchain) parse;
+        # the extractor checks that only parentheses were added, and the spec must
+        # carry the official-toolchain print of the body as evidence
+        parens = {i["name"]: i for i in x.get("body_parenthesizations", [])}
+        require(meta["transformations"].get("body_parenthesizations", {})
+                == {n: {"old": i["old"], "new": i["new"]} for n, i in parens.items()},
+                "unexpected body parenthesizations", tag)
+        for i in parens.values():
+            require((PROJECT / i["evidence"]).is_file(), f"missing parse evidence: {i['name']}", tag)
         for name, item in meta["declarations"].items():
-            if name in computational or name in helper_blocks:
+            if name in parens:
+                require(item["acquisition_mode"] == "BODY_PARENTHESIZED",
+                        f"parenthesized body mode changed: {name}", tag)
+            elif name in computational or name in helper_blocks:
                 require(item["acquisition_mode"] == "BODY_EXACT"
                         and item["generated_text_sha256"] == item["source_block_sha256"],
                         f"computational body not byte-identical: {name}", tag)
@@ -513,6 +550,10 @@ def publish(spec: Spec) -> None:
                 require(item["acquisition_mode"] == "STATEMENT_EXACT_PROOF_OMITTED",
                         f"statement extraction mode changed: {name}", tag)
         source_vo = extracted.with_suffix(".vo")
+        if parens:
+            compat["body_parenthesizations"] = {
+                n: {"old": i["old"], "new": i["new"], "evidence": i["evidence"],
+                    "evidence_sha256": sha(PROJECT / i["evidence"])} for n, i in parens.items()}
         compat.update(note=x.get("note", "proof-independent semantic extraction"),
                       extracted_sha256=sha(extracted),
                       extraction_metadata_sha256=sha(work / "source_extraction.json"))
@@ -716,9 +757,22 @@ def publish(spec: Spec) -> None:
 
 
 def reprobe(spec: Spec) -> None:
-    """Recompile only the source fingerprint probe in the existing run (pinned/patched)."""
-    require(spec["source_mode"] in ("pinned", "patched"), "reprobe is for pinned sources", spec.tag)
+    """Recompile only the source fingerprint probe in the existing run.
+
+    For extracted sources the (display-only) probe is re-copied next to the
+    unchanged extracted module, whose compiled .vo is reused as is."""
+    require(spec["source_mode"] in ("pinned", "patched", "extract"), "reprobe: unknown source mode", spec.tag)
     src = spec.work / "source"
+    if spec["source_mode"] == "extract":
+        require((src / f"{spec['extraction']['module']}.vo").is_file(), "reprobe: extracted module not built",
+                spec.tag)
+        shutil.copy2(PROJECT / spec["fingerprint_probe"], src)
+        (spec.work / "source_type_fingerprint.log").write_text("")
+        require(rocq(["-R", str(src), "prosa", Path(spec["fingerprint_probe"]).name],
+                     spec.work / "source_type_fingerprint.log", src, append=True) == 0,
+                "fingerprint probe failed", spec.tag)
+        print(f"{spec.tag}_REPROBE_PASS")
+        return
     require(rocq(["-R", str(src), "prosa", str(PROJECT / spec["fingerprint_probe"])],
                  spec.work / "source_type_fingerprint.log", src) == 0, "fingerprint probe failed", spec.tag)
     print(f"{spec.tag}_REPROBE_PASS")

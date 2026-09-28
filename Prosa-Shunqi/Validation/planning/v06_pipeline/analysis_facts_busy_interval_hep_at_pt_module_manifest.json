@@ -1,0 +1,286 @@
+{
+  "slice": "TRANSLATION_ORDER_ANALYSIS_FACTS_BUSY_INTERVAL_HEP_AT_PT",
+  "generated_at": "2026-09-27T17:40:30.599046+08:00",
+  "published_at": "2026-09-27T17:40:30.599046+08:00",
+  "rank": 219,
+  "layer": 20,
+  "source_file": "analysis/facts/busy_interval/hep_at_pt.v",
+  "source_commit": "414e66760333eaa4ef78c685bcf53291c527a548",
+  "source_tree": "7d7e94c731f7eefde4ca738310d4cafdd7bebdf0",
+  "source_file_sha256": "96ac8ee0e854d3d34b76de88cf31d3cc7c52ddc26fe916a22d3667468ac2fca8",
+  "pipeline": "Validation/scripts/translation_file_pipeline.py",
+  "spec": "Validation/tooling/file_specs/analysis_facts_busy_interval_hep_at_pt.json",
+  "spec_sha256": "eb4899238cde8774eea79d621b178bdf7e9b66482a0072c9a1b957ecb83d3e5a",
+  "source_compatibility": {
+    "mode": "extract",
+    "note": "theorem statements from the authoritative elaborated types (proofs omitted); the classical busy interval, respects_JLFP_policy_at_preemption_point, preemption times and preemption parameters are bound to the accepted extracted BusyIntervalClassical / PriorityDriven / PreemptionTime / PreemptionParameter sources of the base closure; model/job/properties, model/schedule/work_conserving, analysis/definitions/work_bearing_readiness and model/schedule/scheduled are the compiled pinned sources of the base closure; the proof-only busy-interval-existence, preemption-facts and util/tactics imports and the model/task/preemption/parameters import (whose TaskMaxNonpreemptiveSegment context is used by no statement) are dropped",
+    "extracted_sha256": "8cc1596167d8144342acdd69214bc99c6a3286abeac68525e3d4db187a63c115",
+    "extraction_metadata_sha256": "aa3520d00d2608f4d3dc76723ceee21a9f3a77ea5e1dda0e7d36ce56ad1af64c"
+  },
+  "source_type_evidence": {
+    "prosa.analysis.facts.busy_interval.hep_at_pt.instant_t_is_not_idle": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.busy_interval.hep_at_pt.scheduled_at_preemption_time_implies_higher_or_equal_priority_lt": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.busy_interval.hep_at_pt.scheduled_at_preemption_time_implies_higher_or_equal_priority_eq": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.busy_interval.hep_at_pt.scheduled_at_preemption_time_implies_higher_or_equal_priority": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.busy_interval.hep_at_pt.scheduled_at_preemption_time_implies_arrived_between_within_busy_interval": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.busy_interval.hep_at_pt.not_quiet_implies_exists_scheduled_hp_job_at_preemption_point": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.busy_interval.hep_at_pt.not_quiet_implies_exists_scheduled_hp_job_after_preemption_point": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.busy_interval.hep_at_pt.not_quiet_implies_exists_scheduled_hp_job": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE"
+  },
+  "statement_only_export_boundary": [
+    "Prosa.Analysis.Facts.BusyInterval.HepAtPt.instant_t_is_not_idle",
+    "Prosa.Analysis.Facts.BusyInterval.HepAtPt.scheduled_at_preemption_time_implies_higher_or_equal_priority_lt",
+    "Prosa.Analysis.Facts.BusyInterval.HepAtPt.scheduled_at_preemption_time_implies_higher_or_equal_priority_eq",
+    "Prosa.Analysis.Facts.BusyInterval.HepAtPt.scheduled_at_preemption_time_implies_higher_or_equal_priority",
+    "Prosa.Analysis.Facts.BusyInterval.HepAtPt.scheduled_at_preemption_time_implies_arrived_between_within_busy_interval",
+    "Prosa.Analysis.Facts.BusyInterval.HepAtPt.not_quiet_implies_exists_scheduled_hp_job_at_preemption_point",
+    "Prosa.Analysis.Facts.BusyInterval.HepAtPt.not_quiet_implies_exists_scheduled_hp_job_after_preemption_point",
+    "Prosa.Analysis.Facts.BusyInterval.HepAtPt.not_quiet_implies_exists_scheduled_hp_job"
+  ],
+  "input_relations": [
+    "processor states by the accepted processor-model relation IsjPSRel (covered), schedules through it (covered)",
+    "job_arrival by ArJobArrivalRel, job_cost by the accepted SvcJobCostRel",
+    "the JLFP policy pointwise on Booleans (covered)",
+    "JobPreemptable by the accepted PpJobPreemptableRel (covered)",
+    "JobReady on the statement's schedule pair (covered)",
+    "arrival sequences by ArArrivalSequenceRel",
+    "jobs identity, instants by SubNatRel"
+  ],
+  "coverage_for_inner_binders": [
+    "processor states",
+    "schedules",
+    "JLFP policies",
+    "JobPreemptable",
+    "JobReady",
+    "jobs identity",
+    "instants"
+  ],
+  "lean_representation_note": "Booleans in Prop position are `= true`; the canonical conversions JLFP\u2192JLDP and FP\u2192JLFP are the accepted `JLFP_to_JLDP`/`FP_to_JLFP`, passed explicitly",
+  "export_size": {
+    "lines": 140010,
+    "soft_budget_flag": "OVER_100K_DIAGNOSED",
+    "diagnosis": "the accepted busy-interval-existence export root reused (so that the accepted certificate chain applies), plus transitive_job_priorities and the eight statements"
+  },
+  "file_dependencies": {
+    "analysis/facts/busy_interval/existence.v": "analysis_facts_busy_interval_existence_module_status.json",
+    "analysis/facts/model/preemption.v": "analysis_facts_model_preemption_module_status.json",
+    "model/schedule/priority_driven.v": "model_schedule_priority_driven_module_status.json",
+    "model/task/preemption/parameters.v": "model_task_preemption_parameters_module_status.json",
+    "util/tactics.v": "foundation_slice_2_closure_status.json"
+  },
+  "production_file": "Prosa/Analysis/Facts/BusyInterval/HepAtPt.lean",
+  "production_source_sha256": "aedc85c57072243ad82fee7c37541bb3bb9240c3fdd438d56e3665651823a6d6",
+  "production_olean_sha256": "4fc8e5a513e99a07a043a1d7f023dc77593d2dcea00063438d409f23ba278a4f",
+  "export_config_sha256": "7f5646a8c3b388b2b83944bfc260b4d88706b1feba617dded05ec9ee4f74040d",
+  "export_sha256": "f3b82d4dbc6a346d7a955d894858923d4428485440fd8f7370ed705a3d853823",
+  "export_lines": 140010,
+  "export_bytes": 3145123,
+  "import_sha256": "bc7884aa0c9950d901d3c9ca67980168cf22c2ab2a844f8774b1d30fb9491a29",
+  "source_vo_sha256": "37690fd7b94a54c3a480edfc264447f8ac65746615dba2113e350a0630c73df3",
+  "lean_axiom_summary_sha256": "a656330ccfb1610d78b6d3099fa201e6804959da17582a6b4e5c5bbab43d6afb",
+  "rocq_assumption_summary_sha256": "25997e8a43b6370f61ff8ab50bc51e48c647502e922374e3b2b618ca08f66390",
+  "assumption_config_sha256": "024837b7ef76d5f4c06e7e9a15d710729ba36d42b991cd00ac700ffdae0b9879",
+  "stage_timing_seconds": {
+    "source_acquisition": {
+      "mode": "FRESH",
+      "seconds": 3
+    },
+    "lean_build": {
+      "mode": "FRESH",
+      "seconds": 1578
+    },
+    "export": {
+      "mode": "FRESH",
+      "seconds": 61
+    },
+    "rocq_import": {
+      "mode": "FRESH",
+      "seconds": 69
+    },
+    "certificate_compile": {
+      "mode": "FRESH",
+      "seconds": 63
+    },
+    "assumption_audit": {
+      "mode": "FRESH",
+      "seconds": 0
+    }
+  },
+  "certificates": {
+    "ArrivalsSeqBaseAdapter": {
+      "source_sha256": "a72b47aaba7c6ed2a32708b1f6d78d456b33dc487b1b981e15c09386ed8c9ee3",
+      "vo_sha256": "1d9981a8a69139b51ca250235cfd5c2441f3737ef10f275e392a9ddc0b0a71cd"
+    },
+    "ArrivalsSeqOperations": {
+      "source_sha256": "0d062141deb2cb08b86d33726b455cc2d6f7a1db86e89b8315e26ec44b8ee3f0",
+      "vo_sha256": "811c7f8a8af41446c6ca2b4496bed8c48458e858a1cb37ea79ade9a41471e056"
+    },
+    "ArrivalsSeqCorrespondence": {
+      "source_sha256": "5f7b6452c758b7fecb8d12d8d545a75a27fec751326d038409892a277241de05",
+      "vo_sha256": "313c443012b99a7d510007816a06b01a87f8d8d7f2db4e86937893cc9c2c6f6b"
+    },
+    "ArrivalsCorrespondence": {
+      "source_sha256": "21dc4fa426c869c51c9dda819544b320f1d27b6c16d8e3eaad667bf77578566c",
+      "vo_sha256": "38045b039c92cc4342d0652e6d477706afd862cb40b77df934f6f0c528074bbc"
+    },
+    "JitterSvcBaseAdapter": {
+      "source_sha256": "3d8697b868cb94f93153169bedd3df24916d92bb1d22855577334b9522186e08",
+      "vo_sha256": "1088a728b07a32be4745ce27ae6d325faa0dfa865bd1c12fe3fc086e613f235a"
+    },
+    "JitterSvcNatBoolOperations": {
+      "source_sha256": "04b7792eaf2561fb09bab67737c085cf2df367f127fc5daa0583e257ab593370",
+      "vo_sha256": "5ed14c84cb2efea92daa201f51761231dec848e6a318be3c4cdca76b65d94008"
+    },
+    "JitterSvcIntervalOperations": {
+      "source_sha256": "87575c2d5aa31d9ab8ef76a851d7e0c30cdc5e46748edb16aea2d3eae2297264",
+      "vo_sha256": "b034f4ee5e8ba60eb534063380bcf5629dba4c2da0fabcfa6f2af8afa03ff046"
+    },
+    "JitterSvcScheduleOperations": {
+      "source_sha256": "83c54c3a69f0699b720ff560ea466a3527bbff2b206cdf42da5b7fc303926b22",
+      "vo_sha256": "6fdde926bb3f8e6f39d935319b8937b2fed1f71787c939f11291a12dbe94f8c5"
+    },
+    "JitterSvcJobOperations": {
+      "source_sha256": "262549496c449c20c3bd63a4c1532c01a3250df942444d8d63de52af7f756932",
+      "vo_sha256": "603793591492a4e74f31cfc55b9faedc9355899014cf50a745e99a24061b468f"
+    },
+    "PreemptionParameterCorrespondence": {
+      "source_sha256": "ec73a2d941d47c1cc5625595d611e9760bf06f8b0a0cc8b8caa022400ab33505",
+      "vo_sha256": "420f27dc34a88db27bf9030afae7d0b5a8b6edc962dd2a96041ef683932b07e5"
+    },
+    "PreemptionTimeCorrespondence": {
+      "source_sha256": "0d66308a629c25112e8aa49000d05ac1472b1a8cd5417ef57d5ac84d09dc6583",
+      "vo_sha256": "3b6fc064b958f62f7b95439be27c3310aa3bb61985a66f5c5e01b9cffc847067"
+    },
+    "PriorityDrivenCorrespondence": {
+      "source_sha256": "3a9e7fd70c12e59d36143686463063e90365a72a9f67bb0fe25e60b0a6aea5f9",
+      "vo_sha256": "cf5411f10c30b16c88bb1b95946df011b7bfd2bae42d1245516afeacfd5d100c"
+    },
+    "PStateCoverHelpers": {
+      "source_sha256": "d3aa53ecfee651e7d417bf03968e85438ebef80274330f34880b89ac09dac4fa",
+      "vo_sha256": "eb5bd9b4babdbad505f2e15572b950ce2c89f2d5b7bdc206737db355fec62829"
+    },
+    "FactsPreemptionHelpers": {
+      "source_sha256": "d16288b2ea32894477cb3908dcf1918294556d8a959f76c3ffada8438a862455",
+      "vo_sha256": "cd30af2f3dc21bde84bbb51180dd0e28c2a3f34591c10877a9c526420d4989ab"
+    },
+    "WorkloadCorrespondence": {
+      "source_sha256": "696b121d9b3a20f7b80563b72576624ef3251881d7a895987ba622a589dd2ea9",
+      "vo_sha256": "bc2d4580c27993f9dfd5a3c9908946aa08c18fa5bc7686250283deebef9a32d1"
+    },
+    "PriorityInversionCorrespondence": {
+      "source_sha256": "2420a178d9dc7279470c570fa345108822fbd1251a6f5f76857c3738e3f3892d",
+      "vo_sha256": "c8c3536eb8553ff2984a776d6765f468fc2f4b2f3a65c5bcc0f662d16eacf433"
+    },
+    "ExistenceHelpers": {
+      "source_sha256": "f30262ddc049de75851675de49f8f98053f63ad91a007f025242d71837c01f78",
+      "vo_sha256": "312b0e5b324211691f344025b9146258b0df4c662f67dacec1a3706b66995b5a"
+    },
+    "HepAtPtCorrespondence": {
+      "source_sha256": "eaf6e504b035d0160d072fd9d6a0e0f09d307d7ad32b7d37a6e4780007e4f05d",
+      "vo_sha256": "9ca3461f8e86a5881da207ffebaba8c4bd10a27f738b43c7bdf457d9eef91244"
+    },
+    "HepAtPtAssumptionAudit": {
+      "source_sha256": "41102becc4119c22867aef1ff01b18b797f2688ad3598bbcb03b1ce387ba77c0",
+      "vo_sha256": "ce4a0cfdcc42108e17345c45acf1ed6317bc2066aaf815f8a0c7ac1e2f563764"
+    }
+  },
+  "declarations": [
+    {
+      "source_declaration": "prosa.analysis.facts.busy_interval.hep_at_pt.instant_t_is_not_idle",
+      "lean_declaration": "Prosa.Analysis.Facts.BusyInterval.HepAtPt.instant_t_is_not_idle",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "instant_t_is_not_idle_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.busy_interval.hep_at_pt.scheduled_at_preemption_time_implies_higher_or_equal_priority_lt",
+      "lean_declaration": "Prosa.Analysis.Facts.BusyInterval.HepAtPt.scheduled_at_preemption_time_implies_higher_or_equal_priority_lt",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "scheduled_at_preemption_time_implies_higher_or_equal_priority_lt_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.busy_interval.hep_at_pt.scheduled_at_preemption_time_implies_higher_or_equal_priority_eq",
+      "lean_declaration": "Prosa.Analysis.Facts.BusyInterval.HepAtPt.scheduled_at_preemption_time_implies_higher_or_equal_priority_eq",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "scheduled_at_preemption_time_implies_higher_or_equal_priority_eq_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.busy_interval.hep_at_pt.scheduled_at_preemption_time_implies_higher_or_equal_priority",
+      "lean_declaration": "Prosa.Analysis.Facts.BusyInterval.HepAtPt.scheduled_at_preemption_time_implies_higher_or_equal_priority",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "scheduled_at_preemption_time_implies_higher_or_equal_priority_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.busy_interval.hep_at_pt.scheduled_at_preemption_time_implies_arrived_between_within_busy_interval",
+      "lean_declaration": "Prosa.Analysis.Facts.BusyInterval.HepAtPt.scheduled_at_preemption_time_implies_arrived_between_within_busy_interval",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "scheduled_at_preemption_time_implies_arrived_between_within_busy_interval_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.busy_interval.hep_at_pt.not_quiet_implies_exists_scheduled_hp_job_at_preemption_point",
+      "lean_declaration": "Prosa.Analysis.Facts.BusyInterval.HepAtPt.not_quiet_implies_exists_scheduled_hp_job_at_preemption_point",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "not_quiet_implies_exists_scheduled_hp_job_at_preemption_point_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.busy_interval.hep_at_pt.not_quiet_implies_exists_scheduled_hp_job_after_preemption_point",
+      "lean_declaration": "Prosa.Analysis.Facts.BusyInterval.HepAtPt.not_quiet_implies_exists_scheduled_hp_job_after_preemption_point",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "not_quiet_implies_exists_scheduled_hp_job_after_preemption_point_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.busy_interval.hep_at_pt.not_quiet_implies_exists_scheduled_hp_job",
+      "lean_declaration": "Prosa.Analysis.Facts.BusyInterval.HepAtPt.not_quiet_implies_exists_scheduled_hp_job",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "not_quiet_implies_exists_scheduled_hp_job_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    }
+  ],
+  "acceptance": "ACCEPTED_V06_FILE"
+}

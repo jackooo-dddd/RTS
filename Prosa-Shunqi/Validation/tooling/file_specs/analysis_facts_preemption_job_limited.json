@@ -1,0 +1,183 @@
+{
+  "rank": 230,
+  "layer": 19,
+  "tag": "FLJ",
+  "slug": "analysis_facts_preemption_job_limited",
+  "source": "analysis/facts/preemption/job/limited.v",
+  "dependencies": [
+    "analysis/facts/behavior/all.v",
+    "analysis/facts/model/sequential.v",
+    "model/job/properties.v",
+    "model/preemption/limited_preemptive.v",
+    "model/schedule/limited_preemptive.v"
+  ],
+  "declaration_count": 10,
+  "base_run": "model_task_preemption_limited_preemptive_final",
+  "base_checks": [
+    {
+      "manifest": "model_task_preemption_limited_preemptive",
+      "olean": "Prosa/Model/Task/Preemption/LimitedPreemptive.olean",
+      "vo": "TaskLimitedPreemptiveSemanticSource.vo"
+    }
+  ],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "FactsLimitedJobSemanticSource",
+    "drop_imports": [
+      "Require Export prosa.model.job.properties.",
+      "Require Export prosa.model.schedule.limited_preemptive.",
+      "Require Export prosa.analysis.facts.behavior.all.",
+      "Require Export prosa.analysis.facts.model.sequential.",
+      "Require Export prosa.model.preemption.limited_preemptive."
+    ],
+    "add_imports": [
+      "Require Export prosa.LimitedPreemptiveSemanticSource.",
+      "Export LimitedPreemptiveSemanticSource.",
+      "Require Export prosa.ScheduleLimitedPreemptiveSemanticSource.",
+      "Export ScheduleLimitedPreemptiveSemanticSource.",
+      "Require Export prosa.model.job.properties.",
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq.",
+      "Require Import prosa.util.list.",
+      "Import ListSemanticSource.",
+      "Require Import prosa.GeneratedNondecreasingSource.",
+      "Import GeneratedNondecreasingSource."
+    ],
+    "note": "theorem statements from the authoritative elaborated types (proofs omitted); model/preemption/limited_preemptive (with its section-local instance) and model/schedule/limited_preemptive are bound to their accepted extracted sources (manifest-hash-checked artifacts, over the same accepted parameter source), model/job/properties is compiled from the pinned tree, the accepted utility sources are imported explicitly; the proof-heavy facts imports are dropped; the section-local limited_preemptive_job_model instance, implicit in the elaborated statements, is made explicit by recorded printer repairs (the statements print back to the evidence text)",
+    "printer_repairs": [
+      "job_preemption_points j=@job_preemption_points Job H2 (@limited_preemptive_job_model Job H3) j",
+      "schedule_respects_preemption_model arr_seq sched=@schedule_respects_preemption_model Job PState (@limited_preemptive_job_model Job H3) arr_seq sched",
+      "valid_preemption_model arr_seq sched=@valid_preemption_model Job H2 (@limited_preemptive_job_model Job H3) PState arr_seq sched"
+    ]
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/FactsLimitedJobStatementProbe.v",
+  "production": "Prosa/Analysis/Facts/Preemption/Job/Limited.lean",
+  "production_olean": "Prosa/Analysis/Facts/Preemption/Job/Limited.olean",
+  "lean_namespace": "Prosa.Analysis.Facts.Preemption.Job.Limited",
+  "fixtures": [
+    "NondecreasingComputationInterface",
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "PreemptionParameterComputationInterface",
+    "TaskPreemptionParametersComputationInterface",
+    "LimitedPreemptiveComputationInterface",
+    "TaskLimitedPreemptiveComputationInterface",
+    "ScheduleLimitedPreemptiveComputationInterface",
+    "FactsLimitedJobComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/FactsLimitedJobLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/analysis_facts_preemption_job_limited_export_config.json",
+  "export_name": "FactsLimitedJob",
+  "cert_dir": "certificates/analysis_facts_preemption_job_limited",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "JitterSvcBaseAdapter",
+    "JitterSvcNatBoolOperations",
+    "JitterSvcIntervalOperations",
+    "JitterSvcScheduleOperations",
+    "JitterSvcJobOperations",
+    "PreemptionParameterCorrespondence",
+    "LimitedPreemptiveCorrespondence",
+    "ScheduleLimitedPreemptiveCorrespondence",
+    "FactsLimitedJobCorrespondence"
+  ],
+  "audit_module": "FactsLimitedJobAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/FactsLimitedJobImportedTypeAudit.v",
+  "assumption_config": "certificates/analysis_facts_preemption_job_limited/facts_limited_job_assumption_config.json",
+  "lean_axiom_config": "certificates/analysis_facts_preemption_job_limited/facts_limited_job_lean_axiom_config.json",
+  "computational": [],
+  "principal": {},
+  "helpers": [
+    "flj_first0_canonical",
+    "flj_first0_related",
+    "flj_job_cost_positive_related"
+  ],
+  "previous_status": "analysis_facts_model_sequential_module_status.json",
+  "previous_files": 219,
+  "previous_decls": 1521,
+  "input_relations": [
+    "job_cost by the accepted SvcJobCostRel",
+    "JobPreemptionPoints by the accepted LpJobPreemptionPointsRel",
+    "arrival sequences by ArArrivalSequenceRel",
+    "processor states by the accepted two-sided SvcProcessorStateRel, schedules by SvcScheduleRel",
+    "jobs identity, instants/work by SubNatRel"
+  ],
+  "coverage_for_inner_binders": [
+    "jobs identity",
+    "Nats"
+  ],
+  "lean_representation_note": "`tsk \\in ts` is `decide (tsk \u2208 ts) = true`; `size s` is `s.length`; `nth 0 s n` is `s.getD n 0`; `\u03b5` is `1`; the source-local run-to-completion threshold instance is a plain `@[reducible] def`",
+  "export_diagnosis": "the accepted limited-preemptive task-model export root merged with the accepted limited-preemptive schedule export root (both over the preemption-parameter closure), plus the statements",
+  "extra_artifacts": [
+    {
+      "from": "model_schedule_limited_preemptive_final/source/ScheduleLimitedPreemptiveSemanticSource.vo",
+      "to": "source/ScheduleLimitedPreemptiveSemanticSource.vo",
+      "manifest": "model_schedule_limited_preemptive",
+      "key": "source_vo_sha256"
+    }
+  ],
+  "extra_lean": [
+    [
+      "Prosa/Model/Preemption/LimitedPreemptive.lean",
+      "Prosa/Model/Preemption/LimitedPreemptive.olean",
+      "model_preemption_limited_preemptive",
+      "production_olean_sha256"
+    ]
+  ],
+  "extra_pinned_sources": [
+    "model/job/properties.v"
+  ],
+  "extra_olean_artifacts": [
+    {
+      "from": "analysis_facts_edf_definitions_final/olean/Prosa/Model/Schedule/LimitedPreemptive.olean",
+      "to": "Prosa/Model/Schedule/LimitedPreemptive.olean",
+      "manifest": "model_schedule_limited_preemptive",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_model_rbf_final/olean/Prosa/Model/Job/Properties.olean",
+      "to": "Prosa/Model/Job/Properties.olean",
+      "manifest": "model_job_properties",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_model_rbf_final/olean/Prosa/Analysis/Facts/Behavior/Service.olean",
+      "to": "Prosa/Analysis/Facts/Behavior/Service.olean",
+      "manifest": "analysis_facts_behavior_service",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_model_rbf_final/olean/Prosa/Analysis/Definitions/SchedulePrefix.olean",
+      "to": "Prosa/Analysis/Definitions/SchedulePrefix.olean",
+      "manifest": "analysis_schedule_prefix",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_sbf_final/olean/Prosa/Analysis/Facts/Behavior/Supply.olean",
+      "to": "Prosa/Analysis/Facts/Behavior/Supply.olean",
+      "manifest": "analysis_facts_behavior_supply",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_model_rbf_final/olean/Prosa/Model/Schedule/Scheduled.olean",
+      "to": "Prosa/Model/Schedule/Scheduled.olean",
+      "manifest": "model_schedule_scheduled",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_model_rbf_final/olean/Prosa/Analysis/Definitions/Service.olean",
+      "to": "Prosa/Analysis/Definitions/Service.olean",
+      "manifest": "analysis_service",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_model_rbf_final/olean/Prosa/Analysis/Facts/Model/Scheduled.olean",
+      "to": "Prosa/Analysis/Facts/Model/Scheduled.olean",
+      "manifest": "analysis_facts_model_scheduled",
+      "key": "production_olean_sha256"
+    }
+  ]
+}

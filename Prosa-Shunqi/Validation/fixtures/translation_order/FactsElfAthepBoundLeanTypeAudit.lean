@@ -1,0 +1,16 @@
+import Prosa.Analysis.Facts.Workload.ElfAthepBound
+set_option pp.fieldNotation false
+
+#check @Prosa.Analysis.Facts.Workload.ElfAthepBound.total_ep_tsk_workload_shorten_range
+#check @Prosa.Analysis.Facts.Workload.ElfAthepBound.sum_of_ep_tsk_workloads_is_at_most_bound_on_ep_task_workload
+#check @Prosa.Analysis.Facts.Workload.ElfAthepBound.sum_of_hp_tsk_workloads_is_at_most_bound_on_hp_task_workload
+#check @Prosa.Analysis.Facts.Workload.ElfAthepBound.sum_of_hep_workloads_partitioned
+#check @Prosa.Analysis.Facts.Workload.ElfAthepBound.sum_of_workloads_is_at_most_bound_on_total_hep_workload
+#check @Prosa.Analysis.Facts.Workload.ElfAthepBound.bound_on_athep_workload_is_valid
+
+#print axioms Prosa.Analysis.Facts.Workload.ElfAthepBound.total_ep_tsk_workload_shorten_range
+#print axioms Prosa.Analysis.Facts.Workload.ElfAthepBound.sum_of_ep_tsk_workloads_is_at_most_bound_on_ep_task_workload
+#print axioms Prosa.Analysis.Facts.Workload.ElfAthepBound.sum_of_hp_tsk_workloads_is_at_most_bound_on_hp_task_workload
+#print axioms Prosa.Analysis.Facts.Workload.ElfAthepBound.sum_of_hep_workloads_partitioned
+#print axioms Prosa.Analysis.Facts.Workload.ElfAthepBound.sum_of_workloads_is_at_most_bound_on_total_hep_workload
+#print axioms Prosa.Analysis.Facts.Workload.ElfAthepBound.bound_on_athep_workload_is_valid

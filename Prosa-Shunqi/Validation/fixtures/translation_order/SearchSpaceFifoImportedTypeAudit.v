@@ -1,0 +1,5 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedSearchSpaceFifo.
+
+Check ImportedSearchSpaceFifo.Prosa_Analysis_Abstract_RestrictedSupply_SearchSpace_Fifo_is_in_search_space.
+Check ImportedSearchSpaceFifo.Prosa_Analysis_Abstract_RestrictedSupply_SearchSpace_Fifo_search_space_sub.

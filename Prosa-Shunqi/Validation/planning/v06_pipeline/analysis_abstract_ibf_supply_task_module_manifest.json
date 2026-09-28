@@ -1,0 +1,308 @@
+{
+  "slice": "TRANSLATION_ORDER_ANALYSIS_ABSTRACT_IBF_SUPPLY_TASK",
+  "generated_at": "2026-09-28T01:23:36.865620+08:00",
+  "published_at": "2026-09-28T01:23:36.865620+08:00",
+  "rank": 257,
+  "layer": 24,
+  "source_file": "analysis/abstract/IBF/supply_task.v",
+  "source_commit": "414e66760333eaa4ef78c685bcf53291c527a548",
+  "source_tree": "7d7e94c731f7eefde4ca738310d4cafdd7bebdf0",
+  "source_file_sha256": "9e9dbe0f5874c0c77e0c1d2067834b0a47d88e98ffa9fd3659019c80bf286c66",
+  "pipeline": "Validation/scripts/translation_file_pipeline.py",
+  "spec": "Validation/tooling/file_specs/analysis_abstract_ibf_supply_task.json",
+  "spec_sha256": "3dac442fd39367572053fa9904ccbbd53b9b60b6cd54a14364460c33c68d89f1",
+  "source_compatibility": {
+    "mode": "extract",
+    "note": "definitions byte-identical (proofs omitted: none); IBF/task is bound to its accepted extracted IbfTaskSemanticSource of the base closure (which also carries the abstract-RTA definitions) and IBF/supply to its accepted extracted IbfSupplySemanticSource (manifest-hash-checked artifact); the Section variables arr_seq and sched, implicit in the uses of nonself_intra inside later definitions of the same Section, are reconnected by a recorded local notation",
+    "extracted_sha256": "b4362d82817b08259d39ddd359640ec5589d474d278785561d78159aa32c150d",
+    "extraction_metadata_sha256": "7ad955f2c97ce1de3ba3df1edc3cec4bdddea91e0d0ca064d0919007fd58bce6"
+  },
+  "source_type_evidence": {
+    "prosa.analysis.abstract.IBF.supply_task.nonself_intra": "EXACT_HASH",
+    "prosa.analysis.abstract.IBF.supply_task.task_intra_interference": "EXACT_HASH",
+    "prosa.analysis.abstract.IBF.supply_task.task_intra_interference_is_bounded_by": "EXACT_HASH"
+  },
+  "statement_only_export_boundary": [],
+  "input_relations": [
+    "processor states by both accepted two-sided relations (the abstract-definitions family's SvcProcessorStateRel and the supply family's SupplyProcessorStateRel), schedules through each",
+    "JobTask by AdJobTaskRel, job_arrival and job_cost pointwise",
+    "arrival sequences by ArArrivalSequenceRel, Interference/InterferingWorkload by the accepted abstract-definitions relations, the IBF pointwise"
+  ],
+  "coverage_for_inner_binders": [
+    "none (definitions only)"
+  ],
+  "lean_representation_note": "a Boolean in `Prop` position is `= true`; `a < b <= c` is `(decide (a < b) && decide (b \u2264 c)) = true`; `t.+1` is `t + 1`; `j \\in s` is `decide (j \u2208 s) = true`; instance inputs quantified after a hypothesis are `\u2200 [..]`-free explicit class variables as in the elaborated types",
+  "export_size": {
+    "lines": 141402,
+    "soft_budget_flag": "OVER_100K_DIAGNOSED",
+    "diagnosis": "the accepted IBF/task export root without its statements merged with the accepted IBF/supply export root (same abstract-RTA closure) plus the three definitions"
+  },
+  "file_dependencies": {
+    "analysis/abstract/IBF/supply.v": "analysis_abstract_ibf_supply_module_status.json",
+    "analysis/abstract/IBF/task.v": "analysis_abstract_ibf_task_module_status.json",
+    "analysis/abstract/abstract_rta.v": "analysis_abstract_abstract_rta_module_status.json"
+  },
+  "production_file": "Prosa/Analysis/Abstract/IBF/SupplyTask.lean",
+  "production_source_sha256": "6146b38186348c0cb0c7adb9dcf5da010e3b4426a8491cd8ac5a975e5eb03631",
+  "production_olean_sha256": "c4eddb4afc83207316c535e98818d8080df549b4a76e0a75fa89af09f363156c",
+  "export_config_sha256": "febdf81d7a48dbbe99c0b0a44ed4ec9cd37edca23d0cfa68b9e5524f059d8001",
+  "export_sha256": "11f5ecebeb6bf316593e513acded1688d7c3974106474685e3e3a4143425d92f",
+  "export_lines": 141402,
+  "export_bytes": 3194730,
+  "import_sha256": "093e8f333f4bc80c7b71a0ac3b8a93eecde0df22df8d8afeadb32e87d1eca4fd",
+  "source_vo_sha256": "70d5456b0cae9836e2a59c9f935fa3d686f33f98fa39c881dadbeafc0e3f00a2",
+  "lean_axiom_summary_sha256": "754debf766efa38aa85e09fd06043720f86b890265e1932ce723d1677025bff2",
+  "rocq_assumption_summary_sha256": "6ed83d61b95f89e4fdcb6ea6da68aefb34740abb64b78e4fc551e425a3aecd84",
+  "assumption_config_sha256": "d70dc5099e1ef658ba94ea941ae700880302a30fe7792a3806affdfcf2673b94",
+  "stage_timing_seconds": {
+    "source_acquisition": {
+      "mode": "FRESH",
+      "seconds": 3
+    },
+    "lean_build": {
+      "mode": "FRESH",
+      "seconds": 1788
+    },
+    "export": {
+      "mode": "FRESH",
+      "seconds": 63
+    },
+    "rocq_import": {
+      "mode": "FRESH",
+      "seconds": 72
+    },
+    "certificate_compile": {
+      "mode": "FRESH",
+      "seconds": 103
+    },
+    "assumption_audit": {
+      "mode": "FRESH",
+      "seconds": 0
+    }
+  },
+  "certificates": {
+    "ArrivalsSeqBaseAdapter": {
+      "source_sha256": "e58e8b911783d7f45920e5c21f594a35d22a611e59b21c00eae6c3fad3b70655",
+      "vo_sha256": "cc766629061dc4feb4880770f30a040de99a601813613d29182b6e623764b720"
+    },
+    "ArrivalsSeqOperations": {
+      "source_sha256": "2d6e9258306a43760f2a6e53861e53a60128901514bff3bacbc62eaa7a494f89",
+      "vo_sha256": "e74936571a074155e9cf9155e65ba43219b5c1b3f23d3834b1c3962fff26c189"
+    },
+    "ArrivalsSeqCorrespondence": {
+      "source_sha256": "4df300688db72b0f8767ce1104ceb93afce39628599b3aa3082724c673a0a676",
+      "vo_sha256": "99def29505c2379370bd44a7a8a4a99816895593124cce139120eb7ebd68c306"
+    },
+    "ArrivalsCorrespondence": {
+      "source_sha256": "4cee967a0d724591ccda12a5355c7375a489b859851df7e50cd45629557f8bfe",
+      "vo_sha256": "eb7202e4010593ce4501f2591c53e4c1a7330282863e42f89476488b72c53d32"
+    },
+    "WorkloadCorrespondence": {
+      "source_sha256": "9344981d031555fe316185450d79cfe789e06153b3052fa22e459943081e4cce",
+      "vo_sha256": "5ac85aff5b6ada8c11b94a6d2c26db9bd8858dc8cde796f4a3abea320a73d37f"
+    },
+    "AbstractDefinitionsBaseAdapter": {
+      "source_sha256": "69f85ea2cddee7e6bf70551a74a640b2377b3a4817b7b570d85e3f95945b827a",
+      "vo_sha256": "94fb8794c950f831a0064a7c7eeaa11495bb09ef0a6ba5a84a9f4fa5e34fb755"
+    },
+    "ServiceBaseAdapter": {
+      "source_sha256": "c82a89e35c0445e594f1e65278734711c70f38fbdb78b54cb5e1e8c0193e16c2",
+      "vo_sha256": "1f6eed73b38bbc40d38775c0271819cc6dc9246aa60d4b63d33312f5f4ab3e84"
+    },
+    "ServiceNatBoolOperations": {
+      "source_sha256": "7259da151658f28e0bee04d9479a5c90674bbee09c20a6ff36a791de55d40134",
+      "vo_sha256": "8b2539920c9e3cd5ab0dea211640a456db519401bf673e18e99348b0071d46f3"
+    },
+    "AbstractDefinitionsArrivalOperations": {
+      "source_sha256": "74f70dfd546fe03da87437646adb3ead1bbd03c437058de3b6b3f2c8eb31b56b",
+      "vo_sha256": "b75bb4a0346eadad39a000ffe03985f717f4d8a14baa847e1fa41f7a8c774592"
+    },
+    "AbstractDefinitionsClasses": {
+      "source_sha256": "226d8d24d8bcb9fa8a45f4ead4338fb5a724138a06067bdae0f09411b54d94fd",
+      "vo_sha256": "a2d45e3dd748229cf20dab19f9a89e15f68181d576d39883ca57eea86d9faefb"
+    },
+    "AbstractDefinitionsNatBoolOperations": {
+      "source_sha256": "38a5e70f9888c527d59f02f72ca1dc9e5ddb440494c8f995080073c786f3002e",
+      "vo_sha256": "a455874330b4e281e77e83f9bd66dbe0b1e7dc1b704c97f3c431a920700e74f8"
+    },
+    "AbstractDefinitionsIntervalOperations": {
+      "source_sha256": "a2c08a20f2f70f0984edc82d96d51b452f35146867016f6adb9d87915dd70157",
+      "vo_sha256": "6423d62b8c04cf0b08f51f5df44ab005582a90c39f8de4bb64f6ec59191bafe1"
+    },
+    "AbstractDefinitionsOperations": {
+      "source_sha256": "1482600fdf44e5335935777450ac4baf70ad2159b0fba1f6ce07be307328cf22",
+      "vo_sha256": "9314a26d593e99f8f75eef88c0de0158d9ada7bf0e9781da38df8b9da9d51597"
+    },
+    "AbstractDefinitionsSums": {
+      "source_sha256": "eb5f12e58bcf5e6a791480bec83989c7f86adb17abf4b5eddae443031e3405e2",
+      "vo_sha256": "665d0141d5921140005f077881651c6ac7ca6411fa571db096f42104894e492f"
+    },
+    "AbstractDefinitionsLogical": {
+      "source_sha256": "8acaba2a85ebdb908847e2e4c09f429929c5e4e438b0c0b1a2c788cc23150125",
+      "vo_sha256": "2ab2a460107702b49b856e7f3e22d0146494ffffe25eb76c147915d319600fa2"
+    },
+    "ServiceIntervalOperations": {
+      "source_sha256": "fbb6e4184d7cbd4557f5e1fbbced95b39a828961f6150965df44219d2b9cfa4f",
+      "vo_sha256": "ad335b053c1439b147d04267de26761f247282074ab9f262b8e85ab60c5f0293"
+    },
+    "ServiceScheduleOperations": {
+      "source_sha256": "79c80b5c531a885248998a600319fd1e837132ddc972c77a771144623466d249",
+      "vo_sha256": "e1e9ccf64edf0fe44e03eb67fdaa91fc2669ff626ee092d5228cff0ac211cbf9"
+    },
+    "AbstractDefinitionsPendingOperations": {
+      "source_sha256": "e49d8459f4ac2c13889bdfecf7bd5f25bdc248fc48d4c0e6c5b01d00ce8b2514",
+      "vo_sha256": "7aa99d36b7a14244bb1844bafe2004823e43778defec79dd505a450b3ab772b1"
+    },
+    "AbstractDefinitionsTaskOperations": {
+      "source_sha256": "206502446f6f43452bf80982c83233c7dfe701b6e561887dee6456ceb054f4e6",
+      "vo_sha256": "9e399041dac2a2d59653c7d148b6412fc8ed9d87ffe690a5a5c7dce8f3c1ebd1"
+    },
+    "AbstractDefinitionsBusyIntervalHelpers": {
+      "source_sha256": "4af1dacb78b6987bba3614ef151991d54baefae30bb189f0ee3a619fe064e8d4",
+      "vo_sha256": "e176163e5c7a59b5150c66955de866a2d03cc823f82fa30d397df917c6bdd5ca"
+    },
+    "AbstractRtaHelpers": {
+      "source_sha256": "d782f466a0abd59ffaeca9013523df7e882d233a8b84a51f9d42e22de6bb3b6f",
+      "vo_sha256": "7db2e53a55c98489062d0172d793a144442aa75d660fde5a00821825995017ee"
+    },
+    "JitterSvcBaseAdapter": {
+      "source_sha256": "f5f3d769f454c2bd5c2a07d370f5683e9adbb9b06a6f35899bc173d3ffc9a78a",
+      "vo_sha256": "2f927abdebeb525e7fa5c5158dced18e34ddb35c2fad19817a092eeaeb56d441"
+    },
+    "JitterSvcNatBoolOperations": {
+      "source_sha256": "5e66e9e5daa948f38ade8fe7f33f70d924ef77bbfaf0afd211a050285466f085",
+      "vo_sha256": "dfebef060ffcbcb3942ad88512017695bc65964be6e73284acfac51db5d5a2cc"
+    },
+    "JitterSvcIntervalOperations": {
+      "source_sha256": "40d8168ba3df2ba4c2167c6f0aa4b6e024cd023e49ecb5bf94ed3d49989544ea",
+      "vo_sha256": "a0c521a64e80d9ae6b4d4f49fb2600e82783f7777b3526c0587040a64ac93b95"
+    },
+    "JitterSvcScheduleOperations": {
+      "source_sha256": "476678921373bea0579bf6b56acfaa15b00a683d0c3f2989161faf21e990a42f",
+      "vo_sha256": "a6ee6b4d6cdd0b76a016e774c34b48bc33a508500daccd53e5fc029b87b08c7b"
+    },
+    "JitterSvcJobOperations": {
+      "source_sha256": "624415b3e79d5ef8086f79aa8203afc85b44d5e9172bec0ad73639f9bff51168",
+      "vo_sha256": "a1f97814637868524151d01acdaf362eba68ed3b5ff0966a34a4fdaade05d177"
+    },
+    "PreemptionParameterCorrespondence": {
+      "source_sha256": "089d706e10a35305abc2334a3376a1aa7241cae050f6b55ef61183db89150104",
+      "vo_sha256": "a6e8cfecd556e67cd43231ca40e324821026f2446258c3de6dd86cdf571567f8"
+    },
+    "TaskPreemptionParametersCorrespondence": {
+      "source_sha256": "3ec98e5499abdecc11cbcc1ae27a4766eb4734282bb848d17dc492af40d6da8c",
+      "vo_sha256": "89500539d41d1a3d1a71b0ed054da16e944e35c2b1a87bd0fec4a4321266106e"
+    },
+    "IdealAbstractRtaHelpers": {
+      "source_sha256": "e04460c2d80c599e8569c9067fdf7a0f84a0f5c7c177777ade934134f0975f8b",
+      "vo_sha256": "6f4a610610e280f216da86101ed61f51ddcd688ca105897c99ca5d9907727b00"
+    },
+    "ArrivalSequenceBaseAdapter": {
+      "source_sha256": "f433c13aa38c178371658e9c9f9bc9f82e968aba8cc8871871993e8f8b9eca3f",
+      "vo_sha256": "ba7a5d1f35a88208f18e7a6f9d40548afde952659b9a35f617b30891f1872bee"
+    },
+    "ArrivalSequenceOperations": {
+      "source_sha256": "d43860d901efe9a3f8b82084e4ca3b0245a7f562e82e9853e9e80f8ab45e6736",
+      "vo_sha256": "1a331c52a7377c22de21556ade5a824fd7f2c980539d1e425bec99209b83a37f"
+    },
+    "TaskScheduleCorrespondence": {
+      "source_sha256": "0a300753f50c5890703a6fc120355e2b6ae1db3c47f95b7f8ce72f1354a3354a",
+      "vo_sha256": "239e232ae9a962b769032389812c32b7d22d19afb5d4cd072b9f7a86829f0f4b"
+    },
+    "CurvesCorrespondence": {
+      "source_sha256": "f885992e759c2eb5918810da382ab8d0a32ab7d51dbe98077e3a8973f88a8e7d",
+      "vo_sha256": "b6e80bc63e8c2c82fc70f49ea356de5219a592fbd447031f00ec735c7693bb68"
+    },
+    "RequestBoundFunctionCorrespondence": {
+      "source_sha256": "0525f021f69307517d50c3e5f4d88ac094b25e9f8b902ae7f6faafe4a1445757",
+      "vo_sha256": "2ed03b25261c34b4a745c099bbf6994ecd926ce404c3f5ae4d191e4e1e35291c"
+    },
+    "SequentialityCorrespondence": {
+      "source_sha256": "26ca0ad1e424d4e7073b17f124e0f1151e1e2bb39703ea1e9d3e645fcdf71270",
+      "vo_sha256": "e5dedd77c651e9d4cce8ff979b2fb8898faca63b6bebb56a2bea39a6253e758f"
+    },
+    "ServiceOfJobsCorrespondence": {
+      "source_sha256": "2ddc8345246dd62365f554b62a629f30051969b41558c247cb426ca914a1d3eb",
+      "vo_sha256": "7e422a7ab0454004a86a59fb9059b4eeafb5e784692d31f0a35ab7d608f3d403"
+    },
+    "SupplyScheduleBaseAdapter": {
+      "source_sha256": "06fe1d5040d582de0452841bc18db0a93bbf3e385efba5c37e6f8c873fb87da1",
+      "vo_sha256": "7c45e0b4ca91982ab89dca7130addbb6a9604c8160eca77949fd89fb478650bb"
+    },
+    "SupplyScheduleFiniteOperations": {
+      "source_sha256": "dfec426ecdd2bff937efbc36d5a9b9ac81086a1933bce87dfdbb82d4712b39a3",
+      "vo_sha256": "7ec8a461bd4493dc2564fd4a47ec186f5833c01df7dcc7e3f745954e269d9240"
+    },
+    "SupplyScheduleOperations": {
+      "source_sha256": "ea1522a7e6f874640a009a841e100a64f8d582adb4d45b6c2e344bac5e888cd1",
+      "vo_sha256": "86212dda65c822599f160922153170bf18037f447db9cf88f60851cbf42a324b"
+    },
+    "SupplyBaseAdapter": {
+      "source_sha256": "3391e903fe110c575469b5677a50a40b8b4ef32d7725aaf6b2e06ea61ee82c21",
+      "vo_sha256": "4785d1c62e953e1ee63b744615b8e1b957f2fac3a5389465dbf9d7624ffe23b8"
+    },
+    "SupplyNatBoolOperations": {
+      "source_sha256": "6be63578fcaa45a6e3e57df0eda5d35be2bec3e7ddb96ca2979dcf261f005c87",
+      "vo_sha256": "6bb6d8ec95e23b320d79e306cb5e624c14931f742d4d37dd2f461339735df46e"
+    },
+    "SupplyIntervalOperations": {
+      "source_sha256": "ca3293f0f4bb55c989a9161fdb6ed8a9f829c18eeee54eb3b0fce47302c8a2d0",
+      "vo_sha256": "c1c0e0f37ee68eab79d0e93b03af6ff21799c358ba635d44ecbfdab962d9f1ae"
+    },
+    "SupplyCorrespondence": {
+      "source_sha256": "523fdf69deb838a76018eb4aa5e2b92cd83f7be923af94e1275abae64574295a",
+      "vo_sha256": "9ee412d9a6c77dde5f031363cebd0dfd5fa5fc6ef997233b26e57d1443992a73"
+    },
+    "IbfTaskHelpers": {
+      "source_sha256": "5369bb17f43964098809eb9249e966d5dc5c4bb5bab4cd08745c4f9a8561b80c",
+      "vo_sha256": "7462c90efe661a411d082c4a60e78df08e6acc3c225fa05a5f08d721a449b45d"
+    },
+    "IbfSupplyTaskCorrespondence": {
+      "source_sha256": "b5033f69bdcd688fada9a1576157b0141633be496328a7d3f320ab61a44a6971",
+      "vo_sha256": "cf27c5bad03d7f95d9577d3046b6dab3298d0b9ae799b29138c4eef7f5536a29"
+    },
+    "IbfSupplyTaskAssumptionAudit": {
+      "source_sha256": "cf82c7e226a748254f49a77f7ca29106476769d6128c44c46a3ccf1e2d640680",
+      "vo_sha256": "45f99782b4b04964a2c73b8ab0bdc03353e80d60799051e2bbb5d0468e152c1b"
+    }
+  },
+  "declarations": [
+    {
+      "source_declaration": "prosa.analysis.abstract.IBF.supply_task.nonself_intra",
+      "lean_declaration": "Prosa.Analysis.Abstract.IBF.SupplyTask.nonself_intra",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "nonself_intra_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.abstract.IBF.supply_task.task_intra_interference",
+      "lean_declaration": "Prosa.Analysis.Abstract.IBF.SupplyTask.task_intra_interference",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "task_intra_interference_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.abstract.IBF.supply_task.task_intra_interference_is_bounded_by",
+      "lean_declaration": "Prosa.Analysis.Abstract.IBF.SupplyTask.task_intra_interference_is_bounded_by",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "task_intra_interference_is_bounded_by_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    }
+  ],
+  "acceptance": "ACCEPTED_V06_FILE"
+}

@@ -1,0 +1,277 @@
+{
+  "slice": "TRANSLATION_ORDER_ANALYSIS_FACTS_WORKLOAD_ELF_ATHEP_BOUND",
+  "generated_at": "2026-09-28T09:17:19.739716+08:00",
+  "published_at": "2026-09-28T09:17:19.739716+08:00",
+  "rank": 214,
+  "layer": 19,
+  "source_file": "analysis/facts/workload/elf_athep_bound.v",
+  "source_commit": "414e66760333eaa4ef78c685bcf53291c527a548",
+  "source_tree": "7d7e94c731f7eefde4ca738310d4cafdd7bebdf0",
+  "source_file_sha256": "4cf319ce0783f5f1ed7c096f6de96e6124a7b60c97b872e45415f8c6d4e0cc6a",
+  "pipeline": "Validation/scripts/translation_file_pipeline.py",
+  "spec": "Validation/tooling/file_specs/analysis_facts_workload_elf_athep_bound.json",
+  "spec_sha256": "6f3e68f8507f181fa5bd1a89ec96cd95340544256031c0709486b69bbc9d5777",
+  "source_compatibility": {
+    "mode": "extract",
+    "note": "theorem statements from the authoritative elaborated types (proofs omitted); the workload/bounded and definitions/workload/elf_athep_bound imports are bound to their accepted extracted sources (WorkloadBoundedSemanticSource of the base closure; ElfAthepBoundSemanticSource and RequestBoundFunctionSemanticSource .vo copied from their accepted runs and hash-checked against their manifests); model/priority/elf (with util/int and model/priority/gel, carrying the exported ELF instance) is the accepted compiled pinned source (.vo manifest-hash-checked artifacts, byte-identical dependencies with this closure); model/task/absolute_deadline, model/job/properties and model/aggregate/workload are pinned sources compiled from the pinned tree as in the base; the proof-only facts/model/workload and facts/model/rbf imports are dropped",
+    "extracted_sha256": "0bb3b2b1c23457e44ec43357c112bdac0615d7da74fe45675ae161dcd279511f",
+    "extraction_metadata_sha256": "30de38d17945e3f1df61b49d79fe891a01e2caeba2a9576c4a9b7c8c3b3f42c6"
+  },
+  "source_type_evidence": {
+    "prosa.analysis.facts.workload.elf_athep_bound.total_ep_tsk_workload_shorten_range": "TYPE_EQUAL_MODULO_MATHCOMP_ORDER_DEF_ABBREVIATION",
+    "prosa.analysis.facts.workload.elf_athep_bound.sum_of_ep_tsk_workloads_is_at_most_bound_on_ep_task_workload": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.workload.elf_athep_bound.sum_of_hp_tsk_workloads_is_at_most_bound_on_hp_task_workload": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.workload.elf_athep_bound.sum_of_hep_workloads_partitioned": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.workload.elf_athep_bound.sum_of_workloads_is_at_most_bound_on_total_hep_workload": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.workload.elf_athep_bound.bound_on_athep_workload_is_valid": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE"
+  },
+  "statement_only_export_boundary": [
+    "Prosa.Analysis.Facts.Workload.ElfAthepBound.total_ep_tsk_workload_shorten_range",
+    "Prosa.Analysis.Facts.Workload.ElfAthepBound.sum_of_ep_tsk_workloads_is_at_most_bound_on_ep_task_workload",
+    "Prosa.Analysis.Facts.Workload.ElfAthepBound.sum_of_hp_tsk_workloads_is_at_most_bound_on_hp_task_workload",
+    "Prosa.Analysis.Facts.Workload.ElfAthepBound.sum_of_hep_workloads_partitioned",
+    "Prosa.Analysis.Facts.Workload.ElfAthepBound.sum_of_workloads_is_at_most_bound_on_total_hep_workload",
+    "Prosa.Analysis.Facts.Workload.ElfAthepBound.bound_on_athep_workload_is_valid"
+  ],
+  "input_relations": [
+    "task costs pointwise by SubNatRel, maximum arrivals by the accepted CvMaxArrivalsRel, priority points by the accepted GelPriorityPointRel, job_task by Lean.eq, job_arrival by ArJobArrivalRel, job_cost by SvcJobCostRel, the leading processor state by SvcProcessorStateRel, the leading arrival sequence by ArArrivalSequenceRel",
+    "task sets, schedules, FP policies (pointwise on Booleans), tasks and jobs (identity) and Nats covered in both directions"
+  ],
+  "coverage_for_inner_binders": [
+    "task sets",
+    "schedules",
+    "FP policies",
+    "tasks",
+    "jobs",
+    "instants"
+  ],
+  "lean_representation_note": "the EDF policy is the accepted `EDF` instance over the accepted `job_deadline_from_task_deadline` instance, named explicitly; the section-local `EDF_from tsk_o` is inlined; `A` is `job_arrival j - t1`; `\u03b5` is `1`; `\\sum_(x <- xs | P x) F x` is `sumFiltered xs P F`; `monotone leq f` is `Prosa.Util.Rel.monotone (fun x y => decide (x \u2264 y)) f`",
+  "export_size": {
+    "lines": 147950,
+    "soft_budget_flag": "OVER_100K_DIAGNOSED",
+    "diagnosis": "the accepted EDF workload-bound facts export root (without statements) merged with the accepted ELF workload-bound export root plus the six statements"
+  },
+  "file_dependencies": {
+    "analysis/definitions/workload/bounded.v": "analysis_definitions_workload_bounded_module_status.json",
+    "analysis/definitions/workload/elf_athep_bound.v": "analysis_definitions_workload_elf_athep_bound_module_status.json",
+    "analysis/facts/model/rbf.v": "analysis_facts_model_rbf_module_status.json",
+    "analysis/facts/model/workload.v": "analysis_facts_model_workload_module_status.json",
+    "model/priority/elf.v": "model_priority_elf_module_status.json",
+    "model/task/absolute_deadline.v": "model_task_absolute_deadline_module_status.json"
+  },
+  "production_file": "Prosa/Analysis/Facts/Workload/ElfAthepBound.lean",
+  "production_source_sha256": "2fed8e8e78322df15ebd7c4cbe4287ce365aeb7026212984ea1be2d28b8c4364",
+  "production_olean_sha256": "b89d992c79913064b463dbcdbcb105cce4fd25952e36d64bda805a52e12b27c7",
+  "export_config_sha256": "b652b347c41646d5940e744e5d7a5cdbb60351b64d796c201c7d139c25eb5d40",
+  "export_sha256": "5b37a36ccfce82099c92330153e128849da02a94f5146a19c284fa27d77a55ff",
+  "export_lines": 147950,
+  "export_bytes": 3341947,
+  "import_sha256": "ce1e2fb96e49f0682d25eac09f72774de4801a0d16f775de2043e26fe090d474",
+  "source_vo_sha256": "af48fbf9ff4a92a2e299136ce79251dbccb8078c8f92a0b6859d15adf8d9b2f8",
+  "lean_axiom_summary_sha256": "0fe2ea0f9885d3f409b8d61bcc253ad3bcb5357e887d7ed2b4fb44508893ab16",
+  "rocq_assumption_summary_sha256": "c5f39239d6435da7b0417857e846f6b6a90d45212917b3a7019c31d5caf16b58",
+  "assumption_config_sha256": "87043ff1324c6460f55dcb11ab90d44db860c32ffa395c6991c49f603d922627",
+  "stage_timing_seconds": {
+    "source_acquisition": {
+      "mode": "FRESH",
+      "seconds": 15
+    },
+    "lean_build": {
+      "mode": "FRESH",
+      "seconds": 1769
+    },
+    "export": {
+      "mode": "FRESH",
+      "seconds": 67
+    },
+    "rocq_import": {
+      "mode": "FRESH",
+      "seconds": 47
+    },
+    "certificate_compile": {
+      "mode": "FRESH",
+      "seconds": 70
+    },
+    "assumption_audit": {
+      "mode": "FRESH",
+      "seconds": 0
+    }
+  },
+  "certificates": {
+    "ArrivalsSeqBaseAdapter": {
+      "source_sha256": "dfba907744a1d0a164008fa7a0b00fde37d3859cf88deb16e180761656745f01",
+      "vo_sha256": "5d9e076511d37f59e753d659a0ea67d7ab4cb896f6384f2fd16e54e8279fad0d"
+    },
+    "ArrivalsSeqOperations": {
+      "source_sha256": "4eab6146c7198503d2e96c93436474929d29ebc7b0331a50920b3812b13deafb",
+      "vo_sha256": "896b7d9f582dcd7fb6aabe966c5c44fd0312ab59d1fb898913ff26ad0d893b2b"
+    },
+    "ArrivalsSeqCorrespondence": {
+      "source_sha256": "045ffad625fbda020a554af06c21f8dd81bc39a775b7663e0393f621c40246c8",
+      "vo_sha256": "4f9ceaf7c651868d71eb788b1ebf966fe3c8cf6d5a2f9a8c39d5ce545616cbde"
+    },
+    "ArrivalsCorrespondence": {
+      "source_sha256": "25fe1756e624c74b926a5a39f0b2b75c02a14ad8d8eedde9698ce578c0883f2b",
+      "vo_sha256": "4f6ce4d31d0576651d6dc151ec1fe340d3b9a27487b80c7619f9998b7b2c427c"
+    },
+    "JitterSvcBaseAdapter": {
+      "source_sha256": "e03a3acf10646453e0585dff27525df75076116957f37f20c29e97ed72b42445",
+      "vo_sha256": "8269a777086f0aba0b7272f51521f4081da1d642289e72ef0660d57c5f5ee2b8"
+    },
+    "JitterSvcNatBoolOperations": {
+      "source_sha256": "39c466bb8651d654224f0660f66f1ff72aec8058503f92d52eef50f8b043c9d6",
+      "vo_sha256": "77a696714656f61248f99792fe3112d3e3426581f36f64b8234a3f2ac895096c"
+    },
+    "JitterSvcIntervalOperations": {
+      "source_sha256": "1e3b3a2fff38cec43f585f00ac39a36e82e19cb5cbaa2fe09ec816a695102405",
+      "vo_sha256": "1071798cffaca1921e0cda60da44a7eff898a9fa0c45a34d7a894ce4ee6d5b60"
+    },
+    "JitterSvcScheduleOperations": {
+      "source_sha256": "c43a84282ee96820f52322fc79aab2dbb424aa7efa1fe029dfc17c489f94922d",
+      "vo_sha256": "64c8971e773fe9db5c6357b1aa8370438b36a927812acc07059c003a91003293"
+    },
+    "JitterSvcJobOperations": {
+      "source_sha256": "7ae68c873a6395edb489d18e3e8590ddf910f16d9df804262d4b54b6da2ad159",
+      "vo_sha256": "e5ef70f9be67edfb344d7364cea53eb007aed2c08b9a8276c68b01ec4692ef80"
+    },
+    "PreemptionParameterCorrespondence": {
+      "source_sha256": "53a337a4aed8d08f5d0017b8e08f0ee0ae744d218257388920c02f989188b0d5",
+      "vo_sha256": "c8e8ee766a2bdb6a0a74a5ce70981425add25e54c7dfc14d8fcca46905b4dfe2"
+    },
+    "WorkloadCorrespondence": {
+      "source_sha256": "ec42a3ae08756bc7f7345db4f8c2ce93459df956379425f9e3b19a96abccd458",
+      "vo_sha256": "3c011f7663b1fa3536249adb3f5916e0d60ef9a30dc886dbd67750a73332ce0c"
+    },
+    "CurvesCorrespondence": {
+      "source_sha256": "df6a8b2ce23b2c951f4e9d51f7aea613a9dd8ac421ed923dfb7b350599c83498",
+      "vo_sha256": "cafa1013267e05cc2d2561af623bba2fff732cc40d82499128178ff518897f78"
+    },
+    "RequestBoundFunctionCorrespondence": {
+      "source_sha256": "9a8f2db3ed117bd40e0ce7d457c9050417479bb6e9ed8b8a5dff766dbc7a90fb",
+      "vo_sha256": "6c605322f063fcb1ff0ebaeb629ddcde4e08b12ee5faacd7e8a49ab593f07f95"
+    },
+    "WorkloadBoundedCorrespondence": {
+      "source_sha256": "f3255b8c319c663a1180cc70a1efd63a42becceb77517b5d6d1302644db8ba0d",
+      "vo_sha256": "c3c2031f9d35ad79745437e9afef202afbe4be1458c63f895a1b36c8a0e3f172"
+    },
+    "EdfAthepBoundCorrespondence": {
+      "source_sha256": "89cd47bba2633a8ba1684e50a30d7ff82b100f194e0172deda1a6128f7993ab7",
+      "vo_sha256": "f5cb10ce71b0a5d798bff697d5da72f1f16eb05fab91b381616e3ff2fbc79977"
+    },
+    "NatSubCorrespondence": {
+      "source_sha256": "2cdbdcb983c4fb4fe6ba7e4934ae4955cc1cb43c009728cfb7b710fe2abc3f8c",
+      "vo_sha256": "17714bd45686ec728334e9ab0c2fc907cff261b13495466084b4494a90ce1e14"
+    },
+    "PcoBaseAdapter": {
+      "source_sha256": "5c548386a6a708d2d312dc926c039ffad89e706c8a62051cd643ac470259c73d",
+      "vo_sha256": "4a188ef1e0d3c1ff9f003ea02b0487c0e20304362cbba539976203c320edf94a"
+    },
+    "PcoStaticOrder": {
+      "source_sha256": "ea287213a14657c61c97dc5b7af16234b4f968868abe6d7559463384a5f5e97f",
+      "vo_sha256": "31263d5e1f0de35e57a9c7a96a45cda888d9b1419fcd4b58b4353926d7862218"
+    },
+    "PcoDynamicOrder": {
+      "source_sha256": "b0f6e6f68b400b0231b6c4d7208c7f6c1ba2255469fa8ef978c50a6f7c0b64a9",
+      "vo_sha256": "e95351b14eb0377aa7af01e4d9cad1d9c288159819dce36ae0a826b1761c903e"
+    },
+    "PriorityCoercionCorrespondence": {
+      "source_sha256": "434d6aded54e3f82f45f0ea54c3f3bfa480254e17ed89cf01fb49101442748ce",
+      "vo_sha256": "fe4df6e0bc418d6f98ef778d315d038c73169190181ce08a8d86dc8f3c99c581"
+    },
+    "PriorityGelHelpers": {
+      "source_sha256": "ed06feb73f4bb614ae720e2febfba40b604f849887dac470f20cb501da2390e1",
+      "vo_sha256": "eb967d6ff09cd1beae4dc37893651c7310542823c901d3a97b91570f6cdbc960"
+    },
+    "PriorityElfHelpers": {
+      "source_sha256": "f78141330f1a290f5a99d8ab80ccaddee13ab9626f5d5959df9c59a055a2dbab",
+      "vo_sha256": "8256c4489a4bccde2b107faeb2ca7c572543ce907ac410d82ddd6e713954cf4c"
+    },
+    "ElfAthepBoundCorrespondence": {
+      "source_sha256": "d310395587bac24ac36af92cacd0aeaacdc06906a3e2670ff2cfb6c2851b4f4a",
+      "vo_sha256": "212b5d58f495e06d0d44ebe0b3f0a28ce4ad5418d6a47e3cc61db6313a608ab3"
+    },
+    "FactsElfAthepBoundCorrespondence": {
+      "source_sha256": "479a9a3a4afbe64737a648ec77297d5dcf494dc30a03c1f5ce63dfc5f42c8686",
+      "vo_sha256": "943615de9cb339543d5de2e0e2d1ce3d42de948dc303f1d04bf706f4da62cf1c"
+    },
+    "FactsElfAthepBoundAssumptionAudit": {
+      "source_sha256": "549690b05b24d424841cb63a095909b65b876ed87f8dfe21e642e09aadbcf4ca",
+      "vo_sha256": "7ecd7147897ed07502735b8c835a66ced65280011f7e7024e12c61b9935956b5"
+    }
+  },
+  "declarations": [
+    {
+      "source_declaration": "prosa.analysis.facts.workload.elf_athep_bound.total_ep_tsk_workload_shorten_range",
+      "lean_declaration": "Prosa.Analysis.Facts.Workload.ElfAthepBound.total_ep_tsk_workload_shorten_range",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "total_ep_tsk_workload_shorten_range_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.workload.elf_athep_bound.sum_of_ep_tsk_workloads_is_at_most_bound_on_ep_task_workload",
+      "lean_declaration": "Prosa.Analysis.Facts.Workload.ElfAthepBound.sum_of_ep_tsk_workloads_is_at_most_bound_on_ep_task_workload",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "sum_of_ep_tsk_workloads_is_at_most_bound_on_ep_task_workload_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.workload.elf_athep_bound.sum_of_hp_tsk_workloads_is_at_most_bound_on_hp_task_workload",
+      "lean_declaration": "Prosa.Analysis.Facts.Workload.ElfAthepBound.sum_of_hp_tsk_workloads_is_at_most_bound_on_hp_task_workload",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "sum_of_hp_tsk_workloads_is_at_most_bound_on_hp_task_workload_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.workload.elf_athep_bound.sum_of_hep_workloads_partitioned",
+      "lean_declaration": "Prosa.Analysis.Facts.Workload.ElfAthepBound.sum_of_hep_workloads_partitioned",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "sum_of_hep_workloads_partitioned_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.workload.elf_athep_bound.sum_of_workloads_is_at_most_bound_on_total_hep_workload",
+      "lean_declaration": "Prosa.Analysis.Facts.Workload.ElfAthepBound.sum_of_workloads_is_at_most_bound_on_total_hep_workload",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "sum_of_workloads_is_at_most_bound_on_total_hep_workload_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.workload.elf_athep_bound.bound_on_athep_workload_is_valid",
+      "lean_declaration": "Prosa.Analysis.Facts.Workload.ElfAthepBound.bound_on_athep_workload_is_valid",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "bound_on_athep_workload_is_valid_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    }
+  ],
+  "acceptance": "ACCEPTED_V06_FILE"
+}

@@ -1,0 +1,160 @@
+{
+  "rank": 172,
+  "layer": 17,
+  "tag": "EAB",
+  "slug": "analysis_definitions_workload_elf_athep_bound",
+  "source": "analysis/definitions/workload/elf_athep_bound.v",
+  "dependencies": [
+    "analysis/definitions/request_bound_function.v",
+    "model/priority/elf.v"
+  ],
+  "declaration_count": 4,
+  "base_run": "analysis_definitions_workload_edf_athep_bound_final",
+  "base_checks": [
+    {
+      "manifest": "analysis_definitions_workload_edf_athep_bound",
+      "olean": "Prosa/Analysis/Definitions/Workload/EdfAthepBound.olean",
+      "vo": "EdfAthepBoundSemanticSource.vo"
+    }
+  ],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "ElfAthepBoundSemanticSource",
+    "drop_imports": [
+      "Require Export prosa.analysis.definitions.request_bound_function."
+    ],
+    "add_imports": [
+      "Require Export prosa.RequestBoundFunctionSemanticSource.",
+      "Export RequestBoundFunctionSemanticSource.",
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq bigop.",
+      "Require Import prosa.util.epsilon."
+    ],
+    "note": "the four definitions are a byte-identical computational block; the analysis/definitions/request_bound_function import is bound to the accepted extracted RequestBoundFunctionSemanticSource of the base closure; model/priority/elf (with util/int and model/priority/gel) is the accepted compiled pinned source (.vo manifest-hash-checked artifacts, byte-identical dependencies with this closure); the epsilon notation is imported from the compiled pinned util/epsilon; the extractor regenerates each definition in its own copy of the section context, so bound_on_athep_workload reaches the two earlier (closed-section) definitions through recorded local bindings re-applying the section variable ts",
+    "local_bindings": [
+      "bound_on_hp_task_workload=bound_on_hp_task_workload ts",
+      "bound_on_ep_task_workload=bound_on_ep_task_workload ts"
+    ]
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/ElfAthepBoundStatementProbe.v",
+  "production": "Prosa/Analysis/Definitions/Workload/ElfAthepBound.lean",
+  "production_olean": "Prosa/Analysis/Definitions/Workload/ElfAthepBound.olean",
+  "lean_namespace": "Prosa.Analysis.Definitions.Workload.ElfAthepBound",
+  "fixtures": [
+    "NondecreasingComputationInterface",
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "PreemptionParameterComputationInterface",
+    "RequestBoundFunctionComputationInterface",
+    "EdfAthepBoundComputationInterface",
+    "PriorityGelComputationInterface",
+    "PriorityElfComputationInterface",
+    "ElfAthepBoundComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/ElfAthepBoundLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/analysis_definitions_workload_elf_athep_bound_export_config.json",
+  "export_name": "ElfAthepBound",
+  "cert_dir": "certificates/analysis_definitions_workload_elf_athep_bound",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "JitterSvcBaseAdapter",
+    "JitterSvcNatBoolOperations",
+    "JitterSvcIntervalOperations",
+    "JitterSvcScheduleOperations",
+    "JitterSvcJobOperations",
+    "PreemptionParameterCorrespondence",
+    "RequestBoundFunctionCorrespondence",
+    "EdfAthepBoundCorrespondence",
+    "NatSubCorrespondence",
+    "PcoBaseAdapter",
+    "PcoStaticOrder",
+    "PcoDynamicOrder",
+    "PriorityCoercionCorrespondence",
+    "PriorityGelHelpers",
+    "ElfAthepBoundCorrespondence"
+  ],
+  "audit_module": "ElfAthepBoundAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/ElfAthepBoundImportedTypeAudit.v",
+  "assumption_config": "certificates/analysis_definitions_workload_elf_athep_bound/elf_athep_bound_assumption_config.json",
+  "lean_axiom_config": "certificates/analysis_definitions_workload_elf_athep_bound/elf_athep_bound_lean_axiom_config.json",
+  "computational": [
+    "ep_task_interfering_interval_length",
+    "bound_on_ep_task_workload",
+    "bound_on_hp_task_workload",
+    "bound_on_athep_workload"
+  ],
+  "principal": {},
+  "helpers": [
+    "eab_subz_pp_le",
+    "eab_subz_pp_gt",
+    "eab_subz_pn",
+    "eab_subz_np",
+    "eab_subz_nn_le",
+    "eab_subz_nn_gt",
+    "eab_absmax_p",
+    "eab_absmax_n",
+    "eab_sub1_related",
+    "eab_add1_related",
+    "eab_sub_canonical",
+    "eab_sub_related",
+    "eab_absmax_canonical",
+    "eab_absmax_related",
+    "eab_ep_task_related"
+  ],
+  "previous_status": "analysis_facts_blocking_bound_elf_module_status.json",
+  "previous_files": 238,
+  "previous_decls": 1672,
+  "input_relations": [
+    "task costs and maximum arrivals pointwise by SubNatRel, priority points by the accepted GelPriorityPointRel, the FP policy pointwise on Booleans (PdFPRel); task sets by ArListRel; tasks by identity; durations by SubNatRel; the integer result by GelIntRel"
+  ],
+  "coverage_for_inner_binders": [
+    "task sets",
+    "durations"
+  ],
+  "lean_representation_note": "`\\sum_(x <- xs | P x) F x` is the accepted `sumFiltered xs P F`; `a != b` is `decide (a \u2260 b)`; `minn` is `min`; `\u03b5` is `1`; the section-local `Let D`/`Let rbf` are inlined",
+  "export_diagnosis": "the accepted EDF workload-bound export root merged with the accepted ELF/GEL export root plus eight kernel-checked Int equations and the four definitions",
+  "extra_pinned_sources": [],
+  "extra_artifacts": [
+    {
+      "from": "model_priority_elf_final/source/util/int.vo",
+      "to": "source/util/int.vo",
+      "manifest": "util_int",
+      "key": "official_rocq_vo_sha256"
+    },
+    {
+      "from": "model_priority_elf_final/source/model/priority/gel.vo",
+      "to": "source/model/priority/gel.vo",
+      "manifest": "model_priority_gel",
+      "key": "source_vo_sha256"
+    },
+    {
+      "from": "model_priority_elf_final/source/model/priority/elf.vo",
+      "to": "source/model/priority/elf.vo",
+      "manifest": "model_priority_elf",
+      "key": "source_vo_sha256"
+    }
+  ],
+  "extra_olean_artifacts": [
+    {
+      "from": "model_priority_elf_final/olean/Prosa/Util/Int.olean",
+      "to": "Prosa/Util/Int.olean",
+      "manifest": "util_int",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "model_priority_elf_final/olean/Prosa/Model/Priority/Gel.olean",
+      "to": "Prosa/Model/Priority/Gel.olean",
+      "manifest": "model_priority_gel",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "model_priority_elf_final/olean/Prosa/Model/Priority/Elf.olean",
+      "to": "Prosa/Model/Priority/Elf.olean",
+      "manifest": "model_priority_elf",
+      "key": "production_olean_sha256"
+    }
+  ]
+}

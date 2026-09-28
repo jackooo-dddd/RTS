@@ -1,0 +1,8 @@
+import Prosa.Analysis.Abstract.Ideal.AbstractSeqRta
+set_option pp.fieldNotation false
+
+#check @Prosa.Analysis.Abstract.Ideal.AbstractSeqRta.max_in_seq_hypothesis_implies_max_in_nonseq_hypothesis
+#check @Prosa.Analysis.Abstract.Ideal.AbstractSeqRta.uniprocessor_response_time_bound_seq
+
+#print axioms Prosa.Analysis.Abstract.Ideal.AbstractSeqRta.max_in_seq_hypothesis_implies_max_in_nonseq_hypothesis
+#print axioms Prosa.Analysis.Abstract.Ideal.AbstractSeqRta.uniprocessor_response_time_bound_seq

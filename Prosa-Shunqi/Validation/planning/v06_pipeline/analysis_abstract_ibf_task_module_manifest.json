@@ -1,0 +1,497 @@
+{
+  "slice": "TRANSLATION_ORDER_ANALYSIS_ABSTRACT_IBF_TASK",
+  "generated_at": "2026-09-27T23:55:02.345881+08:00",
+  "published_at": "2026-09-27T23:55:02.345881+08:00",
+  "rank": 234,
+  "layer": 25,
+  "source_file": "analysis/abstract/IBF/task.v",
+  "source_commit": "414e66760333eaa4ef78c685bcf53291c527a548",
+  "source_tree": "7d7e94c731f7eefde4ca738310d4cafdd7bebdf0",
+  "source_file_sha256": "482bc1c6f062a3f42894440d9c208eee8dc6f3d5eb3829f4e528a21ad8fb1fc7",
+  "pipeline": "Validation/scripts/translation_file_pipeline.py",
+  "spec": "Validation/tooling/file_specs/analysis_abstract_ibf_task.json",
+  "spec_sha256": "470013efc7a295a7aed5d9138ee17099743f4dacfe45019cb872a5ed0eb5f75b",
+  "source_compatibility": {
+    "mode": "extract",
+    "note": "definitions and theorem statements from the authoritative elaborated types (proofs omitted); the abstract RTA definitions are bound to the accepted extracted AbstractRtaSemanticSource of the base closure, the request-bound function to the accepted extracted RequestBoundFunctionSemanticSource (manifest-hash-checked artifact), analysis/definitions/task_schedule, model/task/sequentiality, model/aggregate/service_of_jobs and model/schedule/scheduled are compiled from the pinned tree (byte-identical to the accepted closures that use them); the proof-heavy facts imports are dropped; the source Section variables arr_seq and sched, implicit in the uses of nonself inside later definitions of the same Section, are reconnected by a recorded local notation",
+    "extracted_sha256": "36ed59654eb7ef0dce882aaa042b9fbd0c7cb273e22e688b1f9f75c2bdd83dc1",
+    "extraction_metadata_sha256": "29c4372459f9c7bacdc542b6b7c475ec753bad4bba21bc9df4db5f0c437482b7"
+  },
+  "source_type_evidence": {
+    "prosa.analysis.abstract.IBF.task.nonself": "EXACT_HASH",
+    "prosa.analysis.abstract.IBF.task.task_interference": "EXACT_HASH",
+    "prosa.analysis.abstract.IBF.task.cumul_task_interference": "EXACT_HASH",
+    "prosa.analysis.abstract.IBF.task.task_interference_is_bounded_by": "EXACT_HASH",
+    "prosa.analysis.abstract.IBF.task.interference_and_workload_consistent_with_sequential_tasks": "EXACT_HASH",
+    "prosa.analysis.abstract.IBF.task.completed_before_beginning_of_busy_interval": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.abstract.IBF.task.arrives_after_beginning_of_busy_interval": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.abstract.IBF.task.interference_plus_sched_le_serv_of_task_plus_task_interference_idle": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.abstract.IBF.task.interference_plus_sched_le_serv_of_task_plus_task_interference_task": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.abstract.IBF.task.interference_plus_sched_le_serv_of_task_plus_task_interference_job": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.abstract.IBF.task.interference_and_service_eq_1": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.abstract.IBF.task.interference_plus_sched_le_serv_of_task_plus_task_interference_j": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.abstract.IBF.task.interference_plus_sched_le_serv_of_task_plus_task_interference": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.abstract.IBF.task.cumul_interference_plus_sched_le_serv_of_task_plus_cumul_task_interference": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.abstract.IBF.task.serv_of_task_le_workload_of_task_plus": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.abstract.IBF.task.cumulative_job_interference_le_task_interference_bound": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.abstract.IBF.task.cumulative_job_interference_bound": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.abstract.IBF.task.task_IBF_implies_job_IBF": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE"
+  },
+  "statement_only_export_boundary": [
+    "Prosa.Analysis.Abstract.IBF.Task.completed_before_beginning_of_busy_interval",
+    "Prosa.Analysis.Abstract.IBF.Task.arrives_after_beginning_of_busy_interval",
+    "Prosa.Analysis.Abstract.IBF.Task.interference_plus_sched_le_serv_of_task_plus_task_interference_idle",
+    "Prosa.Analysis.Abstract.IBF.Task.interference_plus_sched_le_serv_of_task_plus_task_interference_task",
+    "Prosa.Analysis.Abstract.IBF.Task.interference_plus_sched_le_serv_of_task_plus_task_interference_job",
+    "Prosa.Analysis.Abstract.IBF.Task.interference_and_service_eq_1",
+    "Prosa.Analysis.Abstract.IBF.Task.interference_plus_sched_le_serv_of_task_plus_task_interference_j",
+    "Prosa.Analysis.Abstract.IBF.Task.interference_plus_sched_le_serv_of_task_plus_task_interference",
+    "Prosa.Analysis.Abstract.IBF.Task.cumul_interference_plus_sched_le_serv_of_task_plus_cumul_task_interference",
+    "Prosa.Analysis.Abstract.IBF.Task.serv_of_task_le_workload_of_task_plus",
+    "Prosa.Analysis.Abstract.IBF.Task.cumulative_job_interference_le_task_interference_bound",
+    "Prosa.Analysis.Abstract.IBF.Task.cumulative_job_interference_bound",
+    "Prosa.Analysis.Abstract.IBF.Task.task_IBF_implies_job_IBF"
+  ],
+  "input_relations": [
+    "processor states by the accepted two-sided SvcProcessorStateRel (the preemption-parameter family's relation built from it field by field), schedules by SvcScheduleRel (covered)",
+    "job_arrival, job_cost, task_cost pointwise by SubNatRel, JobTask by the accepted AdJobTaskRel",
+    "arrival sequences (covered), task sets (covered), Interference and InterferingWorkload (covered), MaxArrivals (covered), interference-bound functions (covered)",
+    "tasks and jobs identity, instants by SubNatRel"
+  ],
+  "coverage_for_inner_binders": [
+    "arrival sequences",
+    "schedules",
+    "task sets",
+    "Interference",
+    "InterferingWorkload",
+    "MaxArrivals",
+    "interference-bound functions",
+    "tasks",
+    "jobs identity",
+    "instants"
+  ],
+  "lean_representation_note": "a Boolean in `Prop` position is `= true`; `a < b <= c` is `(decide (a < b) && decide (b \u2264 c)) = true`; `t.+1` is `t + 1`; `j \\in s` is `decide (j \u2208 s) = true`; instance inputs quantified after a hypothesis are `\u2200 [..]`-free explicit class variables as in the elaborated types",
+  "export_size": {
+    "lines": 142786,
+    "soft_budget_flag": "OVER_100K_DIAGNOSED",
+    "diagnosis": "the accepted ideal abstract-RTA export root merged with the accepted request-bound-function, task-schedule, sequentiality, service-of-jobs and arrival-curve export roots (all over the same preemption-parameter and arrival-sequence closure; the source .vo files of the merged closures are byte-identical), plus the definitions and statements"
+  },
+  "file_dependencies": {
+    "analysis/abstract/abstract_rta.v": "analysis_abstract_abstract_rta_module_status.json",
+    "analysis/definitions/task_schedule.v": "analysis_definitions_task_schedule_module_status.json",
+    "analysis/facts/model/rbf.v": "analysis_facts_model_rbf_module_status.json",
+    "analysis/facts/model/sequential.v": "analysis_facts_model_sequential_module_status.json",
+    "analysis/facts/model/task_schedule.v": "analysis_facts_model_task_schedule_module_status.json"
+  },
+  "production_file": "Prosa/Analysis/Abstract/IBF/Task.lean",
+  "production_source_sha256": "041e14497ccd4b1559bb9cbc5935268e445440bde9f887a49862a2c2410a3f30",
+  "production_olean_sha256": "9c1e156429802a48d689757bbfbc4bdecc828b6ddb0789b0319bd653cb3aa8fc",
+  "export_config_sha256": "2e83b19a783558df23b8a9b68ac07d15e9f8cae3c67696381822478ee89eb72f",
+  "export_sha256": "f5c531faae6f6bcb0264f6e95ed5f1396db92c0196b0e4b2998be55188ab417c",
+  "export_lines": 142786,
+  "export_bytes": 3228952,
+  "import_sha256": "1c844936043d71fbf26ac71c83bbd39a1a856be4a08cf912a1f374a065765717",
+  "source_vo_sha256": "0bab7af1ce3cdc76a5236d94cf1810d0e8c64ff40204ce4af63f5e5441e17740",
+  "lean_axiom_summary_sha256": "f1c6b6a4b665486070b1c64b5e855090492b99e98ff997a52902798e1aab056a",
+  "rocq_assumption_summary_sha256": "a36227e8322a87a75192ac1240024df44db64043281520087b3fb19be8f6d4d9",
+  "assumption_config_sha256": "aa6256332a69b2f29c853f23f867af12799edaf61dd5045a1eddec739bfbf574",
+  "stage_timing_seconds": {
+    "source_acquisition": {
+      "mode": "FRESH",
+      "seconds": 8
+    },
+    "lean_build": {
+      "mode": "FRESH",
+      "seconds": 1099
+    },
+    "export": {
+      "mode": "FRESH",
+      "seconds": 64
+    },
+    "rocq_import": {
+      "mode": "FRESH",
+      "seconds": 47
+    },
+    "certificate_compile": {
+      "mode": "FRESH",
+      "seconds": 83
+    },
+    "assumption_audit": {
+      "mode": "FRESH",
+      "seconds": 0
+    }
+  },
+  "certificates": {
+    "ArrivalsSeqBaseAdapter": {
+      "source_sha256": "5e5adcad59f63cf0112a5ce0f0c5ca80b83361a4085b8577983242933e11efd9",
+      "vo_sha256": "ca863e33575a2910f259cf73e05e5dd20cee2a2cf4acf6fe40013c2a07480728"
+    },
+    "ArrivalsSeqOperations": {
+      "source_sha256": "036dcf881d7454e541150e26ad79e9912b8652d6d55762e0e915d53f6009ecc9",
+      "vo_sha256": "7842b91b86853c548810577c891e068d455fda03f30c122c4471d1cc11b0a982"
+    },
+    "ArrivalsSeqCorrespondence": {
+      "source_sha256": "4479b890b40fa59c0457d1f8d383edb8c679c520d53c84fb08d0a7351bed8c47",
+      "vo_sha256": "63d763534e9b1dee455c2f6d6fb27ad4cd79fa83845a65fbf796b9180d2ebf37"
+    },
+    "ArrivalsCorrespondence": {
+      "source_sha256": "46e67be17d38f49c7296220325f3e28b8ffb7187f66047f0a925acad45ddcf4a",
+      "vo_sha256": "8e11b85630bf162d5c880759874e0e14448ab104184d951c30db32185e7654cf"
+    },
+    "WorkloadCorrespondence": {
+      "source_sha256": "694b37baba7c7ab07c777520763153a268663c59ea0e8c30617982157c3fa113",
+      "vo_sha256": "6de2905a61a386b2d5b9eb88de6f2724ffa6398ff31f34083607121bdd974409"
+    },
+    "AbstractDefinitionsBaseAdapter": {
+      "source_sha256": "ab6ef63ddfa5465ac538f406c3b6d4f2400eef8633cd959fc9d8370241ab7026",
+      "vo_sha256": "6cde28307c5fece747b362b19be72139d597f18cfd8a496c799f6507930c457c"
+    },
+    "ServiceBaseAdapter": {
+      "source_sha256": "a885beba6f9d14e51e411e7bd1f362577d74ba5ca2656ba48e9487e45ce26446",
+      "vo_sha256": "452b4a489dd9edfc2ae17b786e89cc019bf8110beb308e35de88ebc091636423"
+    },
+    "ServiceNatBoolOperations": {
+      "source_sha256": "a732f6844c27cc95deebcda50d327ea3fc2f8ffd27f185b8822b04808d5f7166",
+      "vo_sha256": "3164336890fbd6abbb64821caa3eeb93ae8464df44e77a67578e596d78ebea13"
+    },
+    "AbstractDefinitionsArrivalOperations": {
+      "source_sha256": "408c3572727cf25dacc2ac1dc99a703e28e574b38f159cd8936a32067203528d",
+      "vo_sha256": "c82e7999a334076516516f1b46d2c843dde07dbabe9dbdb737b8dc15f7e1d4d8"
+    },
+    "AbstractDefinitionsClasses": {
+      "source_sha256": "4421a00835ca5e0ab5f381d044de4007939bd7d036ed54a4d0a4abdce700e6ee",
+      "vo_sha256": "a4ac43e49e2289737a78ff6796f3afb1cc0f6ee45e475ac3fed7df9957b83db5"
+    },
+    "AbstractDefinitionsNatBoolOperations": {
+      "source_sha256": "daf33ded563ffb013f1387b06a40403d7f1986c27ea2c54518b667801c231af9",
+      "vo_sha256": "872decb76024937af1e60a881e5e0347521551c6d484ae11e3cab301e70fd96d"
+    },
+    "AbstractDefinitionsIntervalOperations": {
+      "source_sha256": "7e281f46cdaf5ec8c5fc2de711f9836eccd042e5db450b6b2b64d261c0a49c60",
+      "vo_sha256": "56335248e8d249f2891bc175173d378db30e2f8f98d949190bcd2fea760487f0"
+    },
+    "AbstractDefinitionsOperations": {
+      "source_sha256": "adfbfbac4aaf501763695f5a83d82f1a99d2e4ae3ef84917a4898a24a448225e",
+      "vo_sha256": "a022db7a90ccd2fab42fd8ee57b4e7b07adb365ab31463f8723ab838639e6a27"
+    },
+    "AbstractDefinitionsSums": {
+      "source_sha256": "20c62c39f29fa2da675cdd2c5f4a6ab41816d5c9be4a266fabdbb3f554d9203a",
+      "vo_sha256": "0c967c85dd444bd2d19df500291d47aa0af17965db4512425a21f393ca9e8a48"
+    },
+    "AbstractDefinitionsLogical": {
+      "source_sha256": "152159cb02b7c98d751f335a05b2ff0f1815619e389a4ed3beef507e6e23d3af",
+      "vo_sha256": "80d45f951c09673f0c3135f6d5bdd65b608104b5acbff0be599f51366a5adba3"
+    },
+    "ServiceIntervalOperations": {
+      "source_sha256": "e72e0407a9c1854e30d0baa6694ef91021f3bbb7c36611bf5388b2b8310a90b5",
+      "vo_sha256": "85926f68df553bbf03f4819e928c5178e2db6b76e9815c35d8f6300282d2f2d3"
+    },
+    "ServiceScheduleOperations": {
+      "source_sha256": "ccf43d6e7a3bb0b5095b91b33cc24b21ba17019f3ca14b52848347b65a8a11f6",
+      "vo_sha256": "0ee3de9a1a135db5c55713912a93b9fe26e44ae094d37589393a0da699a662dc"
+    },
+    "AbstractDefinitionsPendingOperations": {
+      "source_sha256": "4a302ff20e159d6dbac21a6ef505d714f0e8f0f77cee8e9ba95da737dca7c0cc",
+      "vo_sha256": "2b6e9fe7bc1d281e01d38143858746cb4877cb11c2cca08ff12bc5a15f30c5d1"
+    },
+    "AbstractDefinitionsTaskOperations": {
+      "source_sha256": "0124ae0bd34b360c5527ce656553f2e9fb656a5ab3a48b1534e4f88d0f67ea1c",
+      "vo_sha256": "fb6eaaf8956dcb4c56852d0d5824e6157a3d26f64662e2c2d9e818a59233a691"
+    },
+    "AbstractDefinitionsBusyIntervalHelpers": {
+      "source_sha256": "9eb82c2b85983d4384b4cff434d677f79aea00728dafbdfc23dca52a94e70243",
+      "vo_sha256": "747301dd2fbb3a794c14d08b15087d61d250557815c4c65b94c455de08bab90e"
+    },
+    "AbstractRtaHelpers": {
+      "source_sha256": "2f4472464a72077252e792a1e67bb556664356891ac6bfa2b3c640cfd5738622",
+      "vo_sha256": "018cc49c14531833fa697196a4aa30ce6d3d883484219b3fbe2c769ba0aa1711"
+    },
+    "JitterSvcBaseAdapter": {
+      "source_sha256": "12bb23097ad4fd0dade73f02c5ae54cf6e561f85d5c27269a0cddf3124ce3f22",
+      "vo_sha256": "77b6bcca7a112397e333931d106cb482648cdb2ac978e90439ec7cbc6e449351"
+    },
+    "JitterSvcNatBoolOperations": {
+      "source_sha256": "8b31d50b703a4d3b64160651db6673fe36bc2144f3043a48ef32490a843f03c6",
+      "vo_sha256": "fa8de87a59ac90ee1978221b4e485e4bc1919dcf97d4925ddff755138295e1a4"
+    },
+    "JitterSvcIntervalOperations": {
+      "source_sha256": "988fd9c775783f657186c2a18d4865b67a699fbe1f27b4e10516fdd56b9e7928",
+      "vo_sha256": "73fcdbba2248b3b79e0ca579e59cdc809876fa2ef7d4dfb02112821ed58df2fb"
+    },
+    "JitterSvcScheduleOperations": {
+      "source_sha256": "b77b4eb7c13476ac9c58e8afb902cf87a2e5ba3b7815d1a2fac5e2834e708ad5",
+      "vo_sha256": "59d35a17214f9c657b953920881fb63db37240bf38085deca182988418b7ac41"
+    },
+    "JitterSvcJobOperations": {
+      "source_sha256": "2cdf5a2f2d10096d0034c93c8ae8aef4127568db567d26ed700e9ef71a8248d2",
+      "vo_sha256": "01d28f728b36b2c121f84433d2f15a986e2264662b19fb165f849b29ceacabb1"
+    },
+    "PreemptionParameterCorrespondence": {
+      "source_sha256": "791739637302d73b2fac4310b85c28c11e70bbcae88ef04884b89a223c0e102f",
+      "vo_sha256": "3c1b1a339e9eada6748dfebe821beb8f8a0635356d7215f4b6d3d257c8b665d3"
+    },
+    "TaskPreemptionParametersCorrespondence": {
+      "source_sha256": "1d018de2ea3e6e0fdd6f588717df59bb37822eccd90f17816e195b3f943b1a84",
+      "vo_sha256": "7f2dbc3258d31f350ed3b7cabcf4d0764780f5ba7f873b30a0d67a8728065206"
+    },
+    "IdealAbstractRtaHelpers": {
+      "source_sha256": "d20f165404ca51ad8139aa11733620aa8c32831d06678403643b50ee67e3dcc4",
+      "vo_sha256": "924c353a2a9717796c554fd114c8a92838a57a4e2c308a90eb176d0e12e9518a"
+    },
+    "ArrivalSequenceBaseAdapter": {
+      "source_sha256": "757500a59ef8d8b45579a491051b565405ce4e80ec61a3e85b9a97009bb82260",
+      "vo_sha256": "ff6cfc832f5ceeefd7250f2228de1d67d5629dfc728c4041a4062f3abedea0ba"
+    },
+    "ArrivalSequenceOperations": {
+      "source_sha256": "92bab2bbfe48790e87fdfc3fdecd57b7af14ac5c882390c70cc37ab8063f666a",
+      "vo_sha256": "7cf2a1fa534c40e3f7327e89b3544a1eb4fa7e0159ac570516245fc263cbc9a9"
+    },
+    "TaskScheduleCorrespondence": {
+      "source_sha256": "916462405992554d5f0f113ba21083f787d8154a9e58884a1b816a7b34562503",
+      "vo_sha256": "a0d95bfc641c30810886da1ab26a7a6a0a6408b97860e09210ab554188b11ec8"
+    },
+    "CurvesCorrespondence": {
+      "source_sha256": "b6a3a6195fd7cd11b620307d0ce4a9bb8b9f16ed7914140756c4c13eae606c8c",
+      "vo_sha256": "213ce59c014f72127fa11bb7b767dd4597bc8a05d9400f19f8a88e3242d92ce1"
+    },
+    "RequestBoundFunctionCorrespondence": {
+      "source_sha256": "4eb4df4194af19d3a24e9709a4ec182549c3a7e563df72083ba934c5ed1534a9",
+      "vo_sha256": "c57783dd45060fddbfe71784a75267f683f729e7db00d20448ab4fef68aa035b"
+    },
+    "SequentialityCorrespondence": {
+      "source_sha256": "277dce5d3aaf8ae9e6878ba08bcad907c2d1f54617d8cc3a028ffc2127633981",
+      "vo_sha256": "b14b703518c857c59ec254cc742a503b1ff65bae7c7b0076a1c80853a5fe4879"
+    },
+    "ServiceOfJobsCorrespondence": {
+      "source_sha256": "f436aa844c5870ce660b0cb2b0e18a8c028d2fdc2cf3f5b5a1864fb62bc0b1df",
+      "vo_sha256": "f1892ab236542a97ebe9e0714b6fa0d1450ceb9357bb8535c7546f38baaf3ab2"
+    },
+    "IbfTaskCorrespondence": {
+      "source_sha256": "55663d62ba60caf395d4d2a7ebae62d1847153f06e314fe88b5b36d527ebf5b2",
+      "vo_sha256": "3f61a7880261b093c28d116bd86020e61486c00d3bea1a52d10ad5e46cbb0e99"
+    },
+    "IbfTaskAssumptionAudit": {
+      "source_sha256": "f0d4ab79f46e7bba28d61d616b5ff3ca3cc9c00436a109e431483c7e0c986e5e",
+      "vo_sha256": "66c66e7f9f7f2a85bd974b6bae379da1ec96cd2d5f8432396fa500486c96c722"
+    }
+  },
+  "declarations": [
+    {
+      "source_declaration": "prosa.analysis.abstract.IBF.task.nonself",
+      "lean_declaration": "Prosa.Analysis.Abstract.IBF.Task.nonself",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "nonself_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.abstract.IBF.task.task_interference",
+      "lean_declaration": "Prosa.Analysis.Abstract.IBF.Task.task_interference",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "task_interference_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.abstract.IBF.task.cumul_task_interference",
+      "lean_declaration": "Prosa.Analysis.Abstract.IBF.Task.cumul_task_interference",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "cumul_task_interference_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.abstract.IBF.task.task_interference_is_bounded_by",
+      "lean_declaration": "Prosa.Analysis.Abstract.IBF.Task.task_interference_is_bounded_by",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "task_interference_is_bounded_by_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.abstract.IBF.task.interference_and_workload_consistent_with_sequential_tasks",
+      "lean_declaration": "Prosa.Analysis.Abstract.IBF.Task.interference_and_workload_consistent_with_sequential_tasks",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "interference_and_workload_consistent_with_sequential_tasks_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.abstract.IBF.task.completed_before_beginning_of_busy_interval",
+      "lean_declaration": "Prosa.Analysis.Abstract.IBF.Task.completed_before_beginning_of_busy_interval",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "completed_before_beginning_of_busy_interval_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.abstract.IBF.task.arrives_after_beginning_of_busy_interval",
+      "lean_declaration": "Prosa.Analysis.Abstract.IBF.Task.arrives_after_beginning_of_busy_interval",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "arrives_after_beginning_of_busy_interval_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.abstract.IBF.task.interference_plus_sched_le_serv_of_task_plus_task_interference_idle",
+      "lean_declaration": "Prosa.Analysis.Abstract.IBF.Task.interference_plus_sched_le_serv_of_task_plus_task_interference_idle",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "interference_plus_sched_le_serv_of_task_plus_task_interference_idle_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.abstract.IBF.task.interference_plus_sched_le_serv_of_task_plus_task_interference_task",
+      "lean_declaration": "Prosa.Analysis.Abstract.IBF.Task.interference_plus_sched_le_serv_of_task_plus_task_interference_task",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "interference_plus_sched_le_serv_of_task_plus_task_interference_task_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.abstract.IBF.task.interference_plus_sched_le_serv_of_task_plus_task_interference_job",
+      "lean_declaration": "Prosa.Analysis.Abstract.IBF.Task.interference_plus_sched_le_serv_of_task_plus_task_interference_job",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "interference_plus_sched_le_serv_of_task_plus_task_interference_job_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.abstract.IBF.task.interference_and_service_eq_1",
+      "lean_declaration": "Prosa.Analysis.Abstract.IBF.Task.interference_and_service_eq_1",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "interference_and_service_eq_1_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.abstract.IBF.task.interference_plus_sched_le_serv_of_task_plus_task_interference_j",
+      "lean_declaration": "Prosa.Analysis.Abstract.IBF.Task.interference_plus_sched_le_serv_of_task_plus_task_interference_j",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "interference_plus_sched_le_serv_of_task_plus_task_interference_j_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.abstract.IBF.task.interference_plus_sched_le_serv_of_task_plus_task_interference",
+      "lean_declaration": "Prosa.Analysis.Abstract.IBF.Task.interference_plus_sched_le_serv_of_task_plus_task_interference",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "interference_plus_sched_le_serv_of_task_plus_task_interference_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.abstract.IBF.task.cumul_interference_plus_sched_le_serv_of_task_plus_cumul_task_interference",
+      "lean_declaration": "Prosa.Analysis.Abstract.IBF.Task.cumul_interference_plus_sched_le_serv_of_task_plus_cumul_task_interference",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "cumul_interference_plus_sched_le_serv_of_task_plus_cumul_task_interference_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.abstract.IBF.task.serv_of_task_le_workload_of_task_plus",
+      "lean_declaration": "Prosa.Analysis.Abstract.IBF.Task.serv_of_task_le_workload_of_task_plus",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "serv_of_task_le_workload_of_task_plus_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.abstract.IBF.task.cumulative_job_interference_le_task_interference_bound",
+      "lean_declaration": "Prosa.Analysis.Abstract.IBF.Task.cumulative_job_interference_le_task_interference_bound",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "cumulative_job_interference_le_task_interference_bound_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.abstract.IBF.task.cumulative_job_interference_bound",
+      "lean_declaration": "Prosa.Analysis.Abstract.IBF.Task.cumulative_job_interference_bound",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "cumulative_job_interference_bound_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.abstract.IBF.task.task_IBF_implies_job_IBF",
+      "lean_declaration": "Prosa.Analysis.Abstract.IBF.Task.task_IBF_implies_job_IBF",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "task_IBF_implies_job_IBF_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    }
+  ],
+  "acceptance": "ACCEPTED_V06_FILE"
+}

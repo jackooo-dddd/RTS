@@ -1,0 +1,692 @@
+{
+  "slice": "TRANSLATION_ORDER_RESULTS_TRANSFER_SCHEDULABILITY_CRITERION",
+  "generated_at": "2026-09-28T00:38:20.303955+08:00",
+  "published_at": "2026-09-28T00:38:20.303955+08:00",
+  "rank": 216,
+  "layer": 19,
+  "source_file": "results/transfer_schedulability/criterion.v",
+  "source_commit": "414e66760333eaa4ef78c685bcf53291c527a548",
+  "source_tree": "7d7e94c731f7eefde4ca738310d4cafdd7bebdf0",
+  "source_file_sha256": "7ff05eadafeb4cee8c7e319f21d8db3a0ca82a18ffe33411e52ec6a63de47476",
+  "pipeline": "Validation/scripts/translation_file_pipeline.py",
+  "spec": "Validation/tooling/file_specs/results_transfer_schedulability_criterion.json",
+  "spec_sha256": "3992325502a541ea0817b2df99e7d2d43fba1df0ffa51f0aace2bb36c6bf43cc",
+  "source_compatibility": {
+    "mode": "extract",
+    "body_parenthesizations": {
+      "slackless_interval": {
+        "old": "&& \\sum_(j <- critical_jobs t1 t2) remaining_cost_bound j t1 == t2 - t1.",
+        "new": "&& (\\sum_(j <- critical_jobs t1 t2) remaining_cost_bound j t1 == t2 - t1).",
+        "evidence": "Validation/fixtures/translation_order/CriterionOfficialParse.log",
+        "evidence_sha256": "c2e1c90447e9f9c61033f48ab5d39be6c1aa1fd39d0150bf3e0fe21d7c3c9f2c"
+      }
+    },
+    "note": "definitions byte-identical and theorem statements from the authoritative elaborated types (proofs omitted); model/processor/ideal is compiled from the pinned tree under its accepted proof-only Rocq 9.3 compatibility patch, model/aggregate/service_of_jobs and behavior are the pinned modules of the base closure; the proof-heavy facts imports (service_of_jobs facts, ideal-schedule facts, uniprocessor facts) and the definitions/schedulability import (unused by every extracted declaration) are dropped; the Section variables implicit in the uses of critical_jobs, remaining_cost_bound, slackless_interval, nonpositive_slack and transfer_schedulability_criterion inside later definitions and copied section hypotheses of the same Section are reconnected by recorded local notations; the body of slackless_interval carries the parentheses of the official-toolchain parse (Rocq 9.0.1 / MathComp 2.4.0 read `(t1 < t2) && (\\sum .. == t2 - t1)`, recorded in CriterionOfficialParse.log from the installed official rocq-prosa 0.6), since Rocq 9.3 / MathComp 2.6 would read `((t1 < t2) && \\sum ..) == t2 - t1`; the extractor checks that only parentheses were added; the job-cost parameter of completed_by / job_meets_deadline / completed_jobs_dont_execute / remaining_cost is implicit in the elaborated evidence (the source's section Lets fix it to ref_job_cost or online_job_cost), so recorded printer repairs make it explicit (re-elaborating the printed text would otherwise resolve the instance to the most recently bound JobCost); the statements print back to the evidence text",
+    "extracted_sha256": "a488f851b128591d3c15960cc1d4fcd6488a63f20f404b418c80d61d7cd06c27",
+    "extraction_metadata_sha256": "3a030ae288c8374b6c55df8ead87025cbddd7b9c362b1b9a0badb891ff4fb932"
+  },
+  "source_type_evidence": {
+    "prosa.results.transfer_schedulability.criterion.schedulability_transferred": "EXACT_HASH",
+    "prosa.results.transfer_schedulability.criterion.deadlines_met": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.results.transfer_schedulability.criterion.ref_cost_bounds_online_cost": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.results.transfer_schedulability.criterion.remaining_cost_bound": "EXACT_HASH",
+    "prosa.results.transfer_schedulability.criterion.remcost_service": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.results.transfer_schedulability.criterion.remcost_service_during": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.results.transfer_schedulability.criterion.remcost_total_service_during": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.results.transfer_schedulability.criterion.remaining_cost_invariant": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.results.transfer_schedulability.criterion.online_remaining_cost_bounded": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.results.transfer_schedulability.criterion.remaining_cost_positive": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.results.transfer_schedulability.criterion.remaining_cost_zero": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.results.transfer_schedulability.criterion.critical_jobs": "EXACT_HASH",
+    "prosa.results.transfer_schedulability.criterion.critical_jobs_monotonicity": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.results.transfer_schedulability.criterion.critical_jobs_dropout": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.results.transfer_schedulability.criterion.critical_jobs_filter_complete": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.results.transfer_schedulability.criterion.critical_jobs_uniq": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.results.transfer_schedulability.criterion.critical_jobs_min_completion_time": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.results.transfer_schedulability.criterion.critical_jobs_remaining_cost_monotonic": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.results.transfer_schedulability.criterion.slackless_interval": "EXACT_HASH",
+    "prosa.results.transfer_schedulability.criterion.contiguously_slackless_interval": "EXACT_HASH",
+    "prosa.results.transfer_schedulability.criterion.transfer_schedulability_criterion": "EXACT_HASH",
+    "prosa.results.transfer_schedulability.criterion.late_in_critical_jobs": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.results.transfer_schedulability.criterion.late_not_at_start": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.results.transfer_schedulability.criterion.nonpositive_slack": "EXACT_HASH",
+    "prosa.results.transfer_schedulability.criterion.contiguously_nps": "EXACT_HASH",
+    "prosa.results.transfer_schedulability.criterion.contiguously_nps_start": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.results.transfer_schedulability.criterion.contiguously_nps_existence": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.results.transfer_schedulability.criterion.slackless_interval_step_case_completed_job_rem": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.results.transfer_schedulability.criterion.slackless_interval_step_case_completed_job": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.results.transfer_schedulability.criterion.slackless_interval_step_case_incomplete_job": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.results.transfer_schedulability.criterion.slackless_interval_step": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.results.transfer_schedulability.criterion.slackless_interval_continuation": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.results.transfer_schedulability.criterion.slackless_interval_existence": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.results.transfer_schedulability.criterion.slackless_interval_completion": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.results.transfer_schedulability.criterion.online_transfer_schedulability_criterion_sufficiency": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.results.transfer_schedulability.criterion.online_transfer_schedulability_criterion_ensures_schedulability": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.results.transfer_schedulability.criterion.delay_if_no_critical_job_is_scheduled": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.results.transfer_schedulability.criterion.online_transfer_schedulability_criterion_necessity": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.results.transfer_schedulability.criterion.ref_transfer_schedulability_criterion_sufficiency": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.results.transfer_schedulability.criterion.ref_transfer_schedulability_criterion_ensures_schedulability": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE"
+  },
+  "statement_only_export_boundary": [
+    "Prosa.Results.TransferSchedulability.Criterion.deadlines_met",
+    "Prosa.Results.TransferSchedulability.Criterion.ref_cost_bounds_online_cost",
+    "Prosa.Results.TransferSchedulability.Criterion.remcost_service",
+    "Prosa.Results.TransferSchedulability.Criterion.remcost_service_during",
+    "Prosa.Results.TransferSchedulability.Criterion.remcost_total_service_during",
+    "Prosa.Results.TransferSchedulability.Criterion.remaining_cost_invariant",
+    "Prosa.Results.TransferSchedulability.Criterion.online_remaining_cost_bounded",
+    "Prosa.Results.TransferSchedulability.Criterion.remaining_cost_positive",
+    "Prosa.Results.TransferSchedulability.Criterion.remaining_cost_zero",
+    "Prosa.Results.TransferSchedulability.Criterion.critical_jobs_monotonicity",
+    "Prosa.Results.TransferSchedulability.Criterion.critical_jobs_dropout",
+    "Prosa.Results.TransferSchedulability.Criterion.critical_jobs_filter_complete",
+    "Prosa.Results.TransferSchedulability.Criterion.critical_jobs_uniq",
+    "Prosa.Results.TransferSchedulability.Criterion.critical_jobs_min_completion_time",
+    "Prosa.Results.TransferSchedulability.Criterion.critical_jobs_remaining_cost_monotonic",
+    "Prosa.Results.TransferSchedulability.Criterion.late_in_critical_jobs",
+    "Prosa.Results.TransferSchedulability.Criterion.late_not_at_start",
+    "Prosa.Results.TransferSchedulability.Criterion.contiguously_nps_start",
+    "Prosa.Results.TransferSchedulability.Criterion.contiguously_nps_existence",
+    "Prosa.Results.TransferSchedulability.Criterion.slackless_interval_step_case_completed_job_rem",
+    "Prosa.Results.TransferSchedulability.Criterion.slackless_interval_step_case_completed_job",
+    "Prosa.Results.TransferSchedulability.Criterion.slackless_interval_step_case_incomplete_job",
+    "Prosa.Results.TransferSchedulability.Criterion.slackless_interval_step",
+    "Prosa.Results.TransferSchedulability.Criterion.slackless_interval_continuation",
+    "Prosa.Results.TransferSchedulability.Criterion.slackless_interval_existence",
+    "Prosa.Results.TransferSchedulability.Criterion.slackless_interval_completion",
+    "Prosa.Results.TransferSchedulability.Criterion.online_transfer_schedulability_criterion_sufficiency",
+    "Prosa.Results.TransferSchedulability.Criterion.online_transfer_schedulability_criterion_ensures_schedulability",
+    "Prosa.Results.TransferSchedulability.Criterion.delay_if_no_critical_job_is_scheduled",
+    "Prosa.Results.TransferSchedulability.Criterion.online_transfer_schedulability_criterion_necessity",
+    "Prosa.Results.TransferSchedulability.Criterion.ref_transfer_schedulability_criterion_sufficiency",
+    "Prosa.Results.TransferSchedulability.Criterion.ref_transfer_schedulability_criterion_ensures_schedulability"
+  ],
+  "input_relations": [
+    "the processor model is fixed to the ideal uniprocessor on both sides; states related by the constructor-preserving Option map, schedules pointwise (covered in both directions)",
+    "job costs (reference, online and the generic bound) by SvcJobCostRel",
+    "job_arrival by ArJobArrivalRel, job_deadline pointwise",
+    "arrival sequences by ArArrivalSequenceRel"
+  ],
+  "coverage_for_inner_binders": [
+    "schedules",
+    "job costs",
+    "job lists",
+    "jobs and instants"
+  ],
+  "lean_representation_note": "`\\\\sum_(j <- js) F j` is `sumSeq js F`; `[seq j <- xs | p j]` is `xs.filter p`; `[forall delta : 'I_n, p delta]` is `(List.range' 0 n).all p`; a Boolean in `Prop` is `= true`; `~~ b` is `!b`; `uniq` is `List.Nodup`; the section Lets are inlined with explicit cost parameters",
+  "export_size": {
+    "lines": 133284,
+    "soft_budget_flag": "OVER_100K_DIAGNOSED",
+    "diagnosis": "the accepted ideal-schedule export root without its statements plus service_of_jobs, sumSeq/sumFiltered, job_meets_deadline, the eight definitions and the thirty-two statements"
+  },
+  "file_dependencies": {
+    "analysis/definitions/schedulability.v": "analysis_definitions_schedulability_module_status.json",
+    "analysis/facts/model/ideal/schedule.v": "analysis_facts_model_ideal_schedule_module_status.json",
+    "analysis/facts/model/service_of_jobs.v": "analysis_facts_model_service_of_jobs_module_status.json",
+    "analysis/facts/model/uniprocessor.v": "analysis_facts_model_uniprocessor_module_status.json",
+    "util/all.v": "util_all_module_status.json"
+  },
+  "production_file": "Prosa/Results/TransferSchedulability/Criterion.lean",
+  "production_source_sha256": "94be9739c933b73301d59ce2378352d99fdedfef983b1583cbee440e42cddcaf",
+  "production_olean_sha256": "e9b3f4b369d73314c7e7ffebfbf87b356f69e833bcd25678e257a408f0ef2436",
+  "export_config_sha256": "6c65daba0da264dda6c0d7550527e0032452df5bb2e6cf22857e328ba399687c",
+  "export_sha256": "dbc0d8aa6de919eb579d176f8992a217b51e4b17b52c90cd15e8b640d4684f16",
+  "export_lines": 133284,
+  "export_bytes": 2985330,
+  "import_sha256": "f7f0552a00f8ce66ea87db30a5a88d1f2a22f085ae7162a63d0d49ef72c3c631",
+  "source_vo_sha256": "de25c4cddd962968d21e4e8615dd01f36d865fb7f897f7a1756f31c3a09adf43",
+  "lean_axiom_summary_sha256": "5aab1d060e8e92345f996636e2eb06e1a312a3b560e92bf499202525fa146c31",
+  "rocq_assumption_summary_sha256": "82a5e67aa9217f050c25eab19f45e69b5cb585ed754ef0e0018f2d649ac6dc2a",
+  "assumption_config_sha256": "132d3f09ebd74c0145cd3d422234f102e845478e5e9bc253e458db87e31fe22c",
+  "stage_timing_seconds": {
+    "source_acquisition": {
+      "mode": "FRESH",
+      "seconds": 4
+    },
+    "lean_build": {
+      "mode": "FRESH",
+      "seconds": 563
+    },
+    "export": {
+      "mode": "FRESH",
+      "seconds": 41
+    },
+    "rocq_import": {
+      "mode": "FRESH",
+      "seconds": 43
+    },
+    "certificate_compile": {
+      "mode": "FRESH",
+      "seconds": 22
+    },
+    "assumption_audit": {
+      "mode": "FRESH",
+      "seconds": 0
+    }
+  },
+  "certificates": {
+    "ArrivalsSeqBaseAdapter": {
+      "source_sha256": "4c65459c8c87610e43d7a71bf59b558f171da4f4ef9682519500ae1b9904e5e3",
+      "vo_sha256": "28534f56b98ee3e00aa610ae3e9a0a8da460686ddf9277752e54b572eaa9cdf7"
+    },
+    "ArrivalsSeqOperations": {
+      "source_sha256": "881e45934eab8625fc7022ece5700e7300c3c36826fd3e835f602a80386256cf",
+      "vo_sha256": "75707bf754123350c2f9aa96bc76fce6b0399f4f2719cb691f2dca666068c63e"
+    },
+    "ArrivalsSeqCorrespondence": {
+      "source_sha256": "fc9f5d09c8cffbcaf57021eeef16f81952e31e740cfa4864514118660c178ddd",
+      "vo_sha256": "d410155f2318baaceaead3ac99aae75d8dd7b4821eb39a9d916cd6d1df86eb7b"
+    },
+    "JitterSvcBaseAdapter": {
+      "source_sha256": "03e31c5d9fc67af22be189cf0ffb1452f6dd229b744a17c415b3f02079434e41",
+      "vo_sha256": "3e6e739ee00dc02cb518511b858e797439c3e0ea0c79635cff0ac65282010e21"
+    },
+    "JitterSvcNatBoolOperations": {
+      "source_sha256": "bf69bb2fc93d504380ada3d842e4907a9765030aff10ddfc90f570e1df709b86",
+      "vo_sha256": "c46b335e74f31b524ea9908dc20777eb2caabe20b804bbf7c201f2b9407f5cd0"
+    },
+    "JitterSvcIntervalOperations": {
+      "source_sha256": "4737213438b656c7df04323ec9e2707252070eea4099bf534dbba43316b2ed04",
+      "vo_sha256": "ab7eb73500cd1ee8be4e63801d6fdd721eac8a2ea6e486be62b52dfbd3949f49"
+    },
+    "JitterSvcScheduleOperations": {
+      "source_sha256": "95591ea721a44048e59f91e9d7001b8e18fd32df18624543fadb179aefcf3a77",
+      "vo_sha256": "55c8da2b1265f8c4493365115b5a511b6ddb4fd3f7efdfe821bc774ffda8af38"
+    },
+    "JitterSvcJobOperations": {
+      "source_sha256": "f522bb5cf41ed5c96ced4c2e2e101990c15e0ccb16ce951135be2a2fa252540b",
+      "vo_sha256": "b5ef134cae255a6be8ddb46f71bd0b42ab1d575f39e7ee21fd64d9c68f06448c"
+    },
+    "CriterionCorrespondence": {
+      "source_sha256": "ac5aa94badf81e6b1ec8f0aa2d0c653ccc0c2c3b54c22a4f0cfcfbe7380b83c2",
+      "vo_sha256": "74b05f38d0e44d591f90c98650f2b6d87bc21c48c18f038505bc08f382b31aea"
+    },
+    "CriterionAssumptionAudit": {
+      "source_sha256": "db7d3393de8964e2d1f97fbb81dd52e8ebbb5868d3fe919b536e50d75f439824",
+      "vo_sha256": "ce7c332ae2d9b0ced80ca37ba2d2fee70331b1e42357aab25b7673fa69921de4"
+    }
+  },
+  "declarations": [
+    {
+      "source_declaration": "prosa.results.transfer_schedulability.criterion.schedulability_transferred",
+      "lean_declaration": "Prosa.Results.TransferSchedulability.Criterion.schedulability_transferred",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "schedulability_transferred_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.results.transfer_schedulability.criterion.deadlines_met",
+      "lean_declaration": "Prosa.Results.TransferSchedulability.Criterion.deadlines_met",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "deadlines_met_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.results.transfer_schedulability.criterion.ref_cost_bounds_online_cost",
+      "lean_declaration": "Prosa.Results.TransferSchedulability.Criterion.ref_cost_bounds_online_cost",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "ref_cost_bounds_online_cost_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.results.transfer_schedulability.criterion.remaining_cost_bound",
+      "lean_declaration": "Prosa.Results.TransferSchedulability.Criterion.remaining_cost_bound",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "remaining_cost_bound_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.results.transfer_schedulability.criterion.remcost_service",
+      "lean_declaration": "Prosa.Results.TransferSchedulability.Criterion.remcost_service",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "remcost_service_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.results.transfer_schedulability.criterion.remcost_service_during",
+      "lean_declaration": "Prosa.Results.TransferSchedulability.Criterion.remcost_service_during",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "remcost_service_during_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.results.transfer_schedulability.criterion.remcost_total_service_during",
+      "lean_declaration": "Prosa.Results.TransferSchedulability.Criterion.remcost_total_service_during",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "remcost_total_service_during_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.results.transfer_schedulability.criterion.remaining_cost_invariant",
+      "lean_declaration": "Prosa.Results.TransferSchedulability.Criterion.remaining_cost_invariant",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "remaining_cost_invariant_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.results.transfer_schedulability.criterion.online_remaining_cost_bounded",
+      "lean_declaration": "Prosa.Results.TransferSchedulability.Criterion.online_remaining_cost_bounded",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "online_remaining_cost_bounded_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.results.transfer_schedulability.criterion.remaining_cost_positive",
+      "lean_declaration": "Prosa.Results.TransferSchedulability.Criterion.remaining_cost_positive",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "remaining_cost_positive_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.results.transfer_schedulability.criterion.remaining_cost_zero",
+      "lean_declaration": "Prosa.Results.TransferSchedulability.Criterion.remaining_cost_zero",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "remaining_cost_zero_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.results.transfer_schedulability.criterion.critical_jobs",
+      "lean_declaration": "Prosa.Results.TransferSchedulability.Criterion.critical_jobs",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "critical_jobs_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.results.transfer_schedulability.criterion.critical_jobs_monotonicity",
+      "lean_declaration": "Prosa.Results.TransferSchedulability.Criterion.critical_jobs_monotonicity",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "critical_jobs_monotonicity_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.results.transfer_schedulability.criterion.critical_jobs_dropout",
+      "lean_declaration": "Prosa.Results.TransferSchedulability.Criterion.critical_jobs_dropout",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "critical_jobs_dropout_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.results.transfer_schedulability.criterion.critical_jobs_filter_complete",
+      "lean_declaration": "Prosa.Results.TransferSchedulability.Criterion.critical_jobs_filter_complete",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "critical_jobs_filter_complete_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.results.transfer_schedulability.criterion.critical_jobs_uniq",
+      "lean_declaration": "Prosa.Results.TransferSchedulability.Criterion.critical_jobs_uniq",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "critical_jobs_uniq_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.results.transfer_schedulability.criterion.critical_jobs_min_completion_time",
+      "lean_declaration": "Prosa.Results.TransferSchedulability.Criterion.critical_jobs_min_completion_time",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "critical_jobs_min_completion_time_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.results.transfer_schedulability.criterion.critical_jobs_remaining_cost_monotonic",
+      "lean_declaration": "Prosa.Results.TransferSchedulability.Criterion.critical_jobs_remaining_cost_monotonic",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "critical_jobs_remaining_cost_monotonic_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.results.transfer_schedulability.criterion.slackless_interval",
+      "lean_declaration": "Prosa.Results.TransferSchedulability.Criterion.slackless_interval",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "slackless_interval_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.results.transfer_schedulability.criterion.contiguously_slackless_interval",
+      "lean_declaration": "Prosa.Results.TransferSchedulability.Criterion.contiguously_slackless_interval",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "contiguously_slackless_interval_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.results.transfer_schedulability.criterion.transfer_schedulability_criterion",
+      "lean_declaration": "Prosa.Results.TransferSchedulability.Criterion.transfer_schedulability_criterion",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "transfer_schedulability_criterion_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.results.transfer_schedulability.criterion.late_in_critical_jobs",
+      "lean_declaration": "Prosa.Results.TransferSchedulability.Criterion.late_in_critical_jobs",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "late_in_critical_jobs_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.results.transfer_schedulability.criterion.late_not_at_start",
+      "lean_declaration": "Prosa.Results.TransferSchedulability.Criterion.late_not_at_start",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "late_not_at_start_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.results.transfer_schedulability.criterion.nonpositive_slack",
+      "lean_declaration": "Prosa.Results.TransferSchedulability.Criterion.nonpositive_slack",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "nonpositive_slack_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.results.transfer_schedulability.criterion.contiguously_nps",
+      "lean_declaration": "Prosa.Results.TransferSchedulability.Criterion.contiguously_nps",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "contiguously_nps_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.results.transfer_schedulability.criterion.contiguously_nps_start",
+      "lean_declaration": "Prosa.Results.TransferSchedulability.Criterion.contiguously_nps_start",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "contiguously_nps_start_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.results.transfer_schedulability.criterion.contiguously_nps_existence",
+      "lean_declaration": "Prosa.Results.TransferSchedulability.Criterion.contiguously_nps_existence",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "contiguously_nps_existence_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.results.transfer_schedulability.criterion.slackless_interval_step_case_completed_job_rem",
+      "lean_declaration": "Prosa.Results.TransferSchedulability.Criterion.slackless_interval_step_case_completed_job_rem",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "slackless_interval_step_case_completed_job_rem_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.results.transfer_schedulability.criterion.slackless_interval_step_case_completed_job",
+      "lean_declaration": "Prosa.Results.TransferSchedulability.Criterion.slackless_interval_step_case_completed_job",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "slackless_interval_step_case_completed_job_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.results.transfer_schedulability.criterion.slackless_interval_step_case_incomplete_job",
+      "lean_declaration": "Prosa.Results.TransferSchedulability.Criterion.slackless_interval_step_case_incomplete_job",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "slackless_interval_step_case_incomplete_job_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.results.transfer_schedulability.criterion.slackless_interval_step",
+      "lean_declaration": "Prosa.Results.TransferSchedulability.Criterion.slackless_interval_step",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "slackless_interval_step_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.results.transfer_schedulability.criterion.slackless_interval_continuation",
+      "lean_declaration": "Prosa.Results.TransferSchedulability.Criterion.slackless_interval_continuation",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "slackless_interval_continuation_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.results.transfer_schedulability.criterion.slackless_interval_existence",
+      "lean_declaration": "Prosa.Results.TransferSchedulability.Criterion.slackless_interval_existence",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "slackless_interval_existence_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.results.transfer_schedulability.criterion.slackless_interval_completion",
+      "lean_declaration": "Prosa.Results.TransferSchedulability.Criterion.slackless_interval_completion",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "slackless_interval_completion_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.results.transfer_schedulability.criterion.online_transfer_schedulability_criterion_sufficiency",
+      "lean_declaration": "Prosa.Results.TransferSchedulability.Criterion.online_transfer_schedulability_criterion_sufficiency",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "online_transfer_schedulability_criterion_sufficiency_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.results.transfer_schedulability.criterion.online_transfer_schedulability_criterion_ensures_schedulability",
+      "lean_declaration": "Prosa.Results.TransferSchedulability.Criterion.online_transfer_schedulability_criterion_ensures_schedulability",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "online_transfer_schedulability_criterion_ensures_schedulability_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.results.transfer_schedulability.criterion.delay_if_no_critical_job_is_scheduled",
+      "lean_declaration": "Prosa.Results.TransferSchedulability.Criterion.delay_if_no_critical_job_is_scheduled",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "delay_if_no_critical_job_is_scheduled_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.results.transfer_schedulability.criterion.online_transfer_schedulability_criterion_necessity",
+      "lean_declaration": "Prosa.Results.TransferSchedulability.Criterion.online_transfer_schedulability_criterion_necessity",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "online_transfer_schedulability_criterion_necessity_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.results.transfer_schedulability.criterion.ref_transfer_schedulability_criterion_sufficiency",
+      "lean_declaration": "Prosa.Results.TransferSchedulability.Criterion.ref_transfer_schedulability_criterion_sufficiency",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "ref_transfer_schedulability_criterion_sufficiency_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.results.transfer_schedulability.criterion.ref_transfer_schedulability_criterion_ensures_schedulability",
+      "lean_declaration": "Prosa.Results.TransferSchedulability.Criterion.ref_transfer_schedulability_criterion_ensures_schedulability",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "ref_transfer_schedulability_criterion_ensures_schedulability_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    }
+  ],
+  "acceptance": "ACCEPTED_V06_FILE"
+}

@@ -1,0 +1,243 @@
+{
+  "rank": 209,
+  "layer": 19,
+  "tag": "FGEL",
+  "slug": "analysis_facts_priority_gel",
+  "source": "analysis/facts/priority/gel.v",
+  "dependencies": [
+    "util/int.v",
+    "model/priority/gel.v",
+    "model/schedule/priority_driven.v",
+    "analysis/facts/model/sequential.v",
+    "analysis/facts/priority/sequential.v"
+  ],
+  "declaration_count": 6,
+  "base_run": "analysis_facts_model_preemption_final",
+  "base_checks": [
+    {
+      "manifest": "analysis_facts_model_preemption",
+      "olean": "Prosa/Analysis/Facts/Model/Preemption.olean",
+      "vo": "FactsPreemptionSemanticSource.vo"
+    }
+  ],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "FactsPriorityGelSemanticSource",
+    "drop_imports": [
+      "Require Import prosa.model.schedule.priority_driven.",
+      "Require Import prosa.analysis.facts.model.sequential.",
+      "Require Import prosa.analysis.facts.priority.sequential."
+    ],
+    "add_imports": [
+      "Require Export prosa.PriorityDrivenSemanticSource.",
+      "Export PriorityDrivenSemanticSource.",
+      "Require Export prosa.model.task.sequentiality.",
+      "Require Export prosa.analysis.definitions.work_bearing_readiness.",
+      "Require Export prosa.model.processor.platform_properties.",
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq.",
+      "Require Import prosa.behavior.all."
+    ],
+    "note": "theorem statements from the authoritative elaborated types (proofs omitted); util/int and model/priority/gel (with its exported GEL instance) are the accepted compiled pinned sources, model/task/sequentiality and analysis/definitions/work_bearing_readiness the accepted compiled pinned sources (all .vo manifest-hash-checked artifacts, byte-identical dependencies with this closure), priority-driven schedules and preemption models the accepted extracted PriorityDrivenSemanticSource of the base closure; the proof-only facts imports (facts/model/sequential, facts/priority/sequential) are dropped"
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/FactsPriorityGelStatementProbe.v",
+  "production": "Prosa/Analysis/Facts/Priority/Gel.lean",
+  "production_olean": "Prosa/Analysis/Facts/Priority/Gel.olean",
+  "lean_namespace": "Prosa.Analysis.Facts.Priority.Gel",
+  "fixtures": [
+    "NondecreasingComputationInterface",
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "PreemptionParameterComputationInterface",
+    "PreemptionTimeComputationInterface",
+    "PriorityDrivenComputationInterface",
+    "ScheduledComputationInterface",
+    "ProcessorStateCoverInterface",
+    "FactsPreemptionComputationInterface",
+    "PriorityGelComputationInterface",
+    "FactsPriorityGelComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/FactsPriorityGelLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/analysis_facts_priority_gel_export_config.json",
+  "export_name": "FactsPriorityGel",
+  "cert_dir": "certificates/analysis_facts_priority_gel",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "JitterSvcBaseAdapter",
+    "JitterSvcNatBoolOperations",
+    "JitterSvcIntervalOperations",
+    "JitterSvcScheduleOperations",
+    "JitterSvcJobOperations",
+    "PreemptionParameterCorrespondence",
+    "PreemptionTimeCorrespondence",
+    "PriorityDrivenCorrespondence",
+    "PStateCoverHelpers",
+    "FactsPreemptionHelpers",
+    "NatSubCorrespondence",
+    "PcoBaseAdapter",
+    "PcoStaticOrder",
+    "PcoDynamicOrder",
+    "PriorityCoercionCorrespondence",
+    "PriorityGelHelpers",
+    "FactsPriorityGelCorrespondence"
+  ],
+  "audit_module": "FactsPriorityGelAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/FactsPriorityGelImportedTypeAudit.v",
+  "assumption_config": "certificates/analysis_facts_priority_gel/facts_priority_gel_assumption_config.json",
+  "lean_axiom_config": "certificates/analysis_facts_priority_gel/facts_priority_gel_lean_axiom_config.json",
+  "computational": [],
+  "principal": {},
+  "helpers": [
+    "fgel_exists_identity",
+    "fgel_hep_related",
+    "fgel_jpp_related",
+    "fgel_pp_related",
+    "fgel_same_task_related",
+    "fgel_forall_job_cost",
+    "fgel_sequential_tasks_rel",
+    "fgel_work_bearing_rel"
+  ],
+  "previous_status": "analysis_facts_jitter_module_status.json",
+  "previous_files": 232,
+  "previous_decls": 1641,
+  "input_relations": [
+    "job_task by Lean.eq, job_arrival by ArJobArrivalRel, task priority points pointwise by the accepted GelIntRel (constructor-wise Int relation)",
+    "arrival sequences, processor models (isj_cover_pstate), schedules, readiness instances (pair cover), JobPreemptable instances, job costs, jobs and instants covered in both directions"
+  ],
+  "coverage_for_inner_binders": [
+    "arrival sequences",
+    "processor models",
+    "schedules",
+    "JobReady",
+    "JobPreemptable",
+    "JobCost",
+    "jobs",
+    "instants"
+  ],
+  "lean_representation_note": "Booleans in Prop position are `= true`; the canonical conversions JLFP\u2192JLDP and FP\u2192JLFP are the accepted `JLFP_to_JLDP`/`FP_to_JLFP`, passed explicitly",
+  "export_diagnosis": "the accepted preemption-facts export root (without statements) merged with the accepted GEL export root plus two kernel-checked Int order equations and the six statements",
+  "extra_pinned_sources": [],
+  "extra_lean": [],
+  "extra_source_patches": [],
+  "extra_artifacts": [
+    {
+      "from": "model_priority_gel_final/source/util/int.vo",
+      "to": "source/util/int.vo",
+      "manifest": "util_int",
+      "key": "official_rocq_vo_sha256"
+    },
+    {
+      "from": "model_priority_gel_final/source/model/priority/gel.vo",
+      "to": "source/model/priority/gel.vo",
+      "manifest": "model_priority_gel",
+      "key": "source_vo_sha256"
+    },
+    {
+      "from": "analysis_facts_edf_definitions_final/source/model/task/sequentiality.vo",
+      "to": "source/model/task/sequentiality.vo",
+      "manifest": "model_task_sequentiality",
+      "key": "source_vo_sha256"
+    },
+    {
+      "from": "analysis_facts_busy_interval_service_inversion_final/source/analysis/definitions/work_bearing_readiness.vo",
+      "to": "source/analysis/definitions/work_bearing_readiness.vo",
+      "manifest": "analysis_definitions_work_bearing_readiness",
+      "key": "source_vo_sha256"
+    }
+  ],
+  "extra_olean_artifacts": [
+    {
+      "from": "analysis_facts_model_rbf_final/olean/Prosa/Model/Job/Properties.olean",
+      "to": "Prosa/Model/Job/Properties.olean",
+      "manifest": "model_job_properties",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_model_rbf_final/olean/Prosa/Analysis/Definitions/SchedulePrefix.olean",
+      "to": "Prosa/Analysis/Definitions/SchedulePrefix.olean",
+      "manifest": "analysis_schedule_prefix",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_sbf_final/olean/Prosa/Analysis/Facts/Behavior/Supply.olean",
+      "to": "Prosa/Analysis/Facts/Behavior/Supply.olean",
+      "manifest": "analysis_facts_behavior_supply",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_model_rbf_final/olean/Prosa/Analysis/Definitions/Service.olean",
+      "to": "Prosa/Analysis/Definitions/Service.olean",
+      "manifest": "analysis_service",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_model_rbf_final/olean/Prosa/Analysis/Facts/Model/Scheduled.olean",
+      "to": "Prosa/Analysis/Facts/Model/Scheduled.olean",
+      "manifest": "analysis_facts_model_scheduled",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_model_rbf_final/olean/Prosa/Analysis/Facts/Behavior/Service.olean",
+      "to": "Prosa/Analysis/Facts/Behavior/Service.olean",
+      "manifest": "analysis_facts_behavior_service",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_model_rbf_final/olean/Prosa/Analysis/Facts/Behavior/Completion.olean",
+      "to": "Prosa/Analysis/Facts/Behavior/Completion.olean",
+      "manifest": "analysis_facts_behavior_completion",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "model_priority_elf_final/olean/Prosa/Util/Int.olean",
+      "to": "Prosa/Util/Int.olean",
+      "manifest": "util_int",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "model_task_sequentiality_final/olean/Prosa/Model/Task/Sequentiality.olean",
+      "to": "Prosa/Model/Task/Sequentiality.olean",
+      "manifest": "model_task_sequentiality",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_abstract_ibf_task_final/olean/Prosa/Analysis/Definitions/Readiness.olean",
+      "to": "Prosa/Analysis/Definitions/Readiness.olean",
+      "manifest": "analysis_definitions_readiness",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_abstract_ibf_task_final/olean/Prosa/Analysis/Facts/Model/Sequential.olean",
+      "to": "Prosa/Analysis/Facts/Model/Sequential.olean",
+      "manifest": "analysis_facts_model_sequential",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_priority_edf_final/olean/Prosa/Analysis/Definitions/AlwaysHigherPriority.olean",
+      "to": "Prosa/Analysis/Definitions/AlwaysHigherPriority.olean",
+      "manifest": "analysis_definitions_always_higher_priority",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_priority_edf_final/olean/Prosa/Analysis/Definitions/WorkBearingReadiness.olean",
+      "to": "Prosa/Analysis/Definitions/WorkBearingReadiness.olean",
+      "manifest": "analysis_definitions_work_bearing_readiness",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_priority_edf_final/olean/Prosa/Analysis/Facts/Priority/Sequential.olean",
+      "to": "Prosa/Analysis/Facts/Priority/Sequential.olean",
+      "manifest": "analysis_facts_priority_sequential",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "model_priority_elf_final/olean/Prosa/Model/Priority/Gel.olean",
+      "to": "Prosa/Model/Priority/Gel.olean",
+      "manifest": "model_priority_gel",
+      "key": "production_olean_sha256"
+    }
+  ]
+}

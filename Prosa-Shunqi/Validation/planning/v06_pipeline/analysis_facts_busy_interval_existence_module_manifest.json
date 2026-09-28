@@ -1,0 +1,366 @@
+{
+  "slice": "TRANSLATION_ORDER_ANALYSIS_FACTS_BUSY_INTERVAL_EXISTENCE",
+  "generated_at": "2026-09-27T16:51:25.430783+08:00",
+  "published_at": "2026-09-27T16:51:25.430783+08:00",
+  "rank": 218,
+  "layer": 19,
+  "source_file": "analysis/facts/busy_interval/existence.v",
+  "source_commit": "414e66760333eaa4ef78c685bcf53291c527a548",
+  "source_tree": "7d7e94c731f7eefde4ca738310d4cafdd7bebdf0",
+  "source_file_sha256": "49d31034fdfffdd24da846fee5089a9d53e889fe5d232fc311b66d880f7b8c8e",
+  "pipeline": "Validation/scripts/translation_file_pipeline.py",
+  "spec": "Validation/tooling/file_specs/analysis_facts_busy_interval_existence.json",
+  "spec_sha256": "0c0b5cb111e7f3279bf42ae8fd1eb90f520d2ad4d9b71abc4f1a17a8b950513a",
+  "source_compatibility": {
+    "mode": "extract",
+    "note": "theorem statements from the authoritative elaborated types (proofs omitted); the classical busy interval and the priority-inversion definitions are bound to their accepted extracted sources (BusyIntervalClassicalSemanticSource of the base closure, PriorityInversionSemanticSource .vo copied from its accepted run and hash-checked against its manifest); model/job/properties, model/schedule/work_conserving, model/aggregate/service_of_jobs, model/aggregate/workload, analysis/definitions/service and analysis/definitions/work_bearing_readiness are pinned sources compiled from the pinned tree; is_idle is the pinned model/schedule/scheduled of the base closure; the proof-only analysis/facts/model/service_of_jobs and analysis/facts/priority/inversion imports are dropped",
+    "extracted_sha256": "23424f30bb7c07dffaa7dacd6db9d0e87d1fe0ebc00de6f40b82a6c5b98c27f8",
+    "extraction_metadata_sha256": "741381eebea1d361f9b6f4996136d207c5b4f34e04831d28e69556de5a06eb00"
+  },
+  "source_type_evidence": {
+    "prosa.analysis.facts.busy_interval.existence.job_completes_within_busy_interval": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.busy_interval.existence.not_quiet_implies_exists_pending_job": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.busy_interval.existence.idle_time_implies_quiet_time_at_the_next_time_instant": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.busy_interval.existence.pending_hp_job_exists": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.busy_interval.existence.not_quiet_implies_not_idle": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.busy_interval.existence.hep_jobs_receive_no_service_before_quiet_time": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.busy_interval.existence.no_idle_time_within_non_quiet_time_interval": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.busy_interval.existence.exists_busy_interval_prefix": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.busy_interval.existence.busy_interval_has_uninterrupted_service": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.busy_interval.existence.busy_interval_too_much_workload": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.busy_interval.existence.busy_interval_workload_larger_than_interval": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.busy_interval.existence.busy_interval_is_bounded": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.busy_interval.existence.exists_busy_interval": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.busy_interval.existence.busy_interval_bounds_response_time": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE"
+  },
+  "statement_only_export_boundary": [
+    "Prosa.Analysis.Facts.BusyInterval.Existence.job_completes_within_busy_interval",
+    "Prosa.Analysis.Facts.BusyInterval.Existence.not_quiet_implies_exists_pending_job",
+    "Prosa.Analysis.Facts.BusyInterval.Existence.idle_time_implies_quiet_time_at_the_next_time_instant",
+    "Prosa.Analysis.Facts.BusyInterval.Existence.pending_hp_job_exists",
+    "Prosa.Analysis.Facts.BusyInterval.Existence.not_quiet_implies_not_idle",
+    "Prosa.Analysis.Facts.BusyInterval.Existence.hep_jobs_receive_no_service_before_quiet_time",
+    "Prosa.Analysis.Facts.BusyInterval.Existence.no_idle_time_within_non_quiet_time_interval",
+    "Prosa.Analysis.Facts.BusyInterval.Existence.exists_busy_interval_prefix",
+    "Prosa.Analysis.Facts.BusyInterval.Existence.busy_interval_has_uninterrupted_service",
+    "Prosa.Analysis.Facts.BusyInterval.Existence.busy_interval_too_much_workload",
+    "Prosa.Analysis.Facts.BusyInterval.Existence.busy_interval_workload_larger_than_interval",
+    "Prosa.Analysis.Facts.BusyInterval.Existence.busy_interval_is_bounded",
+    "Prosa.Analysis.Facts.BusyInterval.Existence.exists_busy_interval",
+    "Prosa.Analysis.Facts.BusyInterval.Existence.busy_interval_bounds_response_time"
+  ],
+  "input_relations": [
+    "processor states by the accepted two-sided SvcProcessorStateRel, schedules through it (both covered where quantified inside a statement)",
+    "job_arrival by ArJobArrivalRel, job_cost by the accepted SvcJobCostRel, job_task by the accepted task relation",
+    "the JLFP policy pointwise on Booleans (covered)",
+    "JobReady on the statement's schedule pair (covered)",
+    "arrival sequences by ArArrivalSequenceRel",
+    "tasks and jobs identity, instants by SubNatRel, instant functions pointwise (covered)"
+  ],
+  "coverage_for_inner_binders": [
+    "processor states",
+    "schedules",
+    "JLFP policies",
+    "JobReady",
+    "tasks",
+    "jobs identity",
+    "instants",
+    "instant functions"
+  ],
+  "lean_representation_note": "Booleans in Prop position are `= true`; the canonical conversions JLFP\u2192JLDP and FP\u2192JLFP are the accepted `JLFP_to_JLDP`/`FP_to_JLFP`, passed explicitly",
+  "export_size": {
+    "lines": 140414,
+    "soft_budget_flag": "OVER_100K_DIAGNOSED",
+    "diagnosis": "the accepted completes-at export root (preemption facts + classical busy interval) merged with the accepted service-of-jobs/workload, priority-inversion, work-bearing-readiness and job-properties export roots plus work_conserving, and the fourteen statements"
+  },
+  "file_dependencies": {
+    "analysis/definitions/work_bearing_readiness.v": "analysis_definitions_work_bearing_readiness_module_status.json",
+    "analysis/facts/model/service_of_jobs.v": "analysis_facts_model_service_of_jobs_module_status.json",
+    "analysis/facts/priority/inversion.v": "analysis_facts_priority_inversion_module_status.json",
+    "model/job/properties.v": "model_job_properties_module_status.json",
+    "model/schedule/work_conserving.v": "model_schedule_work_conserving_module_status.json"
+  },
+  "production_file": "Prosa/Analysis/Facts/BusyInterval/Existence.lean",
+  "production_source_sha256": "7f2047dc0cc9471dd86565354a5b688bbd91a5465d80f3f99bab9903f6d8b9e6",
+  "production_olean_sha256": "cab821bb8bd92bb2f91d28e320bcfd046d3030a229ea1247a241240d7bed3e95",
+  "export_config_sha256": "136303ccf66d14d33172611af2bfee33122f2863a3c08333e42ef1fe86777da2",
+  "export_sha256": "6a849cc8ac2337a9db17ad1da1efafb348c1d75a20da9fefef763e7881a811ea",
+  "export_lines": 140414,
+  "export_bytes": 3155698,
+  "import_sha256": "837d3736bb27b0ced1763b0c94921dc6c44fede2544a2bed1691a90a1b365c64",
+  "source_vo_sha256": "5cca130eafc6df392fe7f161445d62b32c614f35d7c2953ba952cc9aeaa9be91",
+  "lean_axiom_summary_sha256": "ccab89af4f403fb6657ddb0921d705c11217572090ec5307b6d80f5ed6e92de6",
+  "rocq_assumption_summary_sha256": "1112336a7cb9ac0ca1a63b5ad275c4abd3ec0733f47dfd355e739dc5e1b7ca0a",
+  "assumption_config_sha256": "b7a980f6c8ab3430c7080e923ccfdd429f77e0fcb50a45118957ac165e7977eb",
+  "stage_timing_seconds": {
+    "source_acquisition": {
+      "mode": "FRESH",
+      "seconds": 11
+    },
+    "lean_build": {
+      "mode": "FRESH",
+      "seconds": 1214
+    },
+    "export": {
+      "mode": "FRESH",
+      "seconds": 50
+    },
+    "rocq_import": {
+      "mode": "FRESH",
+      "seconds": 44
+    },
+    "certificate_compile": {
+      "mode": "FRESH",
+      "seconds": 46
+    },
+    "assumption_audit": {
+      "mode": "FRESH",
+      "seconds": 0
+    }
+  },
+  "certificates": {
+    "ArrivalsSeqBaseAdapter": {
+      "source_sha256": "d0d73b506aef632dd308469062f1a8e928fb54a64606ea17f4e2d25affa92afd",
+      "vo_sha256": "9f5151a7ec27995115551c60ece36f81ab3183cc17bbb9ca33caa5d5b38f1520"
+    },
+    "ArrivalsSeqOperations": {
+      "source_sha256": "d88eb7a8a9e1b5a1cc2b47e1292854c4baed5650f59b879cdc4caa7349f41e14",
+      "vo_sha256": "959f84f0fe3ea455387c270b5f704e95548ad0962524e37c58d9af2218030e48"
+    },
+    "ArrivalsSeqCorrespondence": {
+      "source_sha256": "a87af2fbb169b9597921de7e3c4c5d9f6d4fe2d2ae64fe8021a201e57d489a21",
+      "vo_sha256": "78d2c3abbf78397858377e618dffa832dceea5af2e81e80abbcfac1bfce29496"
+    },
+    "ArrivalsCorrespondence": {
+      "source_sha256": "612c1ccfea0bf8a5ff720f01bce22be0b7295c61db682c0692b61f7e090f1064",
+      "vo_sha256": "9eee53731b15992777a2f3abd56308355c34a353eea0b33bad000674b3299927"
+    },
+    "JitterSvcBaseAdapter": {
+      "source_sha256": "911fee1073368538d670ce8e6425217bf8c779d3bc0069d39b38eca976a0729f",
+      "vo_sha256": "e79e873dc0bf0886e7c38026ecd9551e817cf38f3916c8493aaabfd0593174bf"
+    },
+    "JitterSvcNatBoolOperations": {
+      "source_sha256": "abae5ed00123a70429043d2469adb1cb84bc469170b1e564f8d74345e21b3b68",
+      "vo_sha256": "feb9cbf44e6968eb162a44cfd74f9d79946bede8704c7d3697f7f14c8ce4fe08"
+    },
+    "JitterSvcIntervalOperations": {
+      "source_sha256": "94ac4e840b201f2b27f0f194cb640f1ed03c9be9a2b7a960f780594edc7c10d2",
+      "vo_sha256": "46f4a3bc9274c7d986edf2bbc0d748b155b0cdf1d6d1a350a0614fd93d745295"
+    },
+    "JitterSvcScheduleOperations": {
+      "source_sha256": "21f90358e26b6fa2cf72710c47ccb9b71eec53e767568114f15a3aef2cf20e1f",
+      "vo_sha256": "b9f9301e5a8402566ac0badf2aeb78cfba5833ceaf7c40979bc089f819bb654a"
+    },
+    "JitterSvcJobOperations": {
+      "source_sha256": "0ab2efcf745efa8dcbb5a22ae16a3268a50c9acfca55682dcb905337d1c71d69",
+      "vo_sha256": "594920d19e54e12608f870a68cc2dbf3454b6b8e8505c6686965b3fdbfa708a9"
+    },
+    "PreemptionParameterCorrespondence": {
+      "source_sha256": "a94f9d0ffe45803d4f74d6afff19317bd4d6868295696a2c95d410d19a0708f1",
+      "vo_sha256": "6bd27c102d79568eea8c25832179c01d2186b6eabcfde6d4fa7bd0b510900da5"
+    },
+    "PreemptionTimeCorrespondence": {
+      "source_sha256": "84f9ad156349f490ba415f60311590efe183291f2acf367d7e24a20312308423",
+      "vo_sha256": "d7aaa8884cec5084e9960c16b6b12ae9ca946705a734c0cb07077c14e88f7364"
+    },
+    "PriorityDrivenCorrespondence": {
+      "source_sha256": "76e9ba475df083427794c67e2b7fad67f03e53e522e02e6ecb1661a54378d310",
+      "vo_sha256": "8feb4af8b7370150c8f2f027a270c71328a0cde7fe626f4ce1435258dcfe1fe8"
+    },
+    "PStateCoverHelpers": {
+      "source_sha256": "f9d77ad7d7bf282e035b45e5a9422c8abd3e807e4d09e7d03072e45a96552fc2",
+      "vo_sha256": "056d7c1813c2db152d8767a3553e01a35fa3cd37e389c54e58e2532acada1371"
+    },
+    "FactsPreemptionHelpers": {
+      "source_sha256": "a2a07195121ab8fab14989abf1e6407d2091a853faf3c6be0762a0292c83539e",
+      "vo_sha256": "399c1d5efddaa39e1fa90d6699e2ab6148d45c8b86810346b5f823c4616447f4"
+    },
+    "WorkloadCorrespondence": {
+      "source_sha256": "6f956109fe21e68b438c50f19c9fed78d22ced9e3523aa7cc4482ab0e05fa746",
+      "vo_sha256": "0c044bbd99e85a7ffefc9a28c122b53b3f81bcbd1b372292b3b297beabca5d09"
+    },
+    "PriorityInversionCorrespondence": {
+      "source_sha256": "7ae02a7604b43d161ae8ff72d979b9275d00b11467da83d19f5ac65f93119226",
+      "vo_sha256": "d447f3185c770640ab4edf762d81fb37c8f85d742181070662d57aa36c1834b0"
+    },
+    "ExistenceCorrespondence": {
+      "source_sha256": "86a4a8a87772791b81f41c34542427f34636199f4879b3cccb0037bcf058dd0a",
+      "vo_sha256": "6b931ba31486a014a2a6a650b6323f3f659c5db0a2a90aa49dc278538931d597"
+    },
+    "ExistenceAssumptionAudit": {
+      "source_sha256": "5134c5cc7d959571533b1b6f49c40b786e9b165738711cb67cde95aa83beb707",
+      "vo_sha256": "ea2eaabb789779ce71dac108330d4bdc476c85a3d3d55c77071bc855a2af3175"
+    }
+  },
+  "declarations": [
+    {
+      "source_declaration": "prosa.analysis.facts.busy_interval.existence.job_completes_within_busy_interval",
+      "lean_declaration": "Prosa.Analysis.Facts.BusyInterval.Existence.job_completes_within_busy_interval",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "job_completes_within_busy_interval_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.busy_interval.existence.not_quiet_implies_exists_pending_job",
+      "lean_declaration": "Prosa.Analysis.Facts.BusyInterval.Existence.not_quiet_implies_exists_pending_job",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "not_quiet_implies_exists_pending_job_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.busy_interval.existence.idle_time_implies_quiet_time_at_the_next_time_instant",
+      "lean_declaration": "Prosa.Analysis.Facts.BusyInterval.Existence.idle_time_implies_quiet_time_at_the_next_time_instant",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "idle_time_implies_quiet_time_at_the_next_time_instant_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.busy_interval.existence.pending_hp_job_exists",
+      "lean_declaration": "Prosa.Analysis.Facts.BusyInterval.Existence.pending_hp_job_exists",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "pending_hp_job_exists_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.busy_interval.existence.not_quiet_implies_not_idle",
+      "lean_declaration": "Prosa.Analysis.Facts.BusyInterval.Existence.not_quiet_implies_not_idle",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "not_quiet_implies_not_idle_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.busy_interval.existence.hep_jobs_receive_no_service_before_quiet_time",
+      "lean_declaration": "Prosa.Analysis.Facts.BusyInterval.Existence.hep_jobs_receive_no_service_before_quiet_time",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "hep_jobs_receive_no_service_before_quiet_time_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.busy_interval.existence.no_idle_time_within_non_quiet_time_interval",
+      "lean_declaration": "Prosa.Analysis.Facts.BusyInterval.Existence.no_idle_time_within_non_quiet_time_interval",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "no_idle_time_within_non_quiet_time_interval_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.busy_interval.existence.exists_busy_interval_prefix",
+      "lean_declaration": "Prosa.Analysis.Facts.BusyInterval.Existence.exists_busy_interval_prefix",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "exists_busy_interval_prefix_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.busy_interval.existence.busy_interval_has_uninterrupted_service",
+      "lean_declaration": "Prosa.Analysis.Facts.BusyInterval.Existence.busy_interval_has_uninterrupted_service",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "busy_interval_has_uninterrupted_service_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.busy_interval.existence.busy_interval_too_much_workload",
+      "lean_declaration": "Prosa.Analysis.Facts.BusyInterval.Existence.busy_interval_too_much_workload",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "busy_interval_too_much_workload_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.busy_interval.existence.busy_interval_workload_larger_than_interval",
+      "lean_declaration": "Prosa.Analysis.Facts.BusyInterval.Existence.busy_interval_workload_larger_than_interval",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "busy_interval_workload_larger_than_interval_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.busy_interval.existence.busy_interval_is_bounded",
+      "lean_declaration": "Prosa.Analysis.Facts.BusyInterval.Existence.busy_interval_is_bounded",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "busy_interval_is_bounded_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.busy_interval.existence.exists_busy_interval",
+      "lean_declaration": "Prosa.Analysis.Facts.BusyInterval.Existence.exists_busy_interval",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "exists_busy_interval_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.busy_interval.existence.busy_interval_bounds_response_time",
+      "lean_declaration": "Prosa.Analysis.Facts.BusyInterval.Existence.busy_interval_bounds_response_time",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "busy_interval_bounds_response_time_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    }
+  ],
+  "acceptance": "ACCEPTED_V06_FILE"
+}

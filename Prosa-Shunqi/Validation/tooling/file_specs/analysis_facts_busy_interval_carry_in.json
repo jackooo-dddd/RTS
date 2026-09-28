@@ -1,0 +1,265 @@
+{
+  "rank": 220,
+  "layer": 20,
+  "tag": "FCI",
+  "slug": "analysis_facts_busy_interval_carry_in",
+  "source": "analysis/facts/busy_interval/carry_in.v",
+  "dependencies": [
+    "analysis/facts/model/workload.v",
+    "analysis/facts/model/ideal/service_of_jobs.v",
+    "analysis/facts/busy_interval/quiet_time.v",
+    "analysis/facts/busy_interval/existence.v",
+    "analysis/definitions/work_bearing_readiness.v",
+    "model/schedule/work_conserving.v",
+    "util/tactics.v"
+  ],
+  "declaration_count": 9,
+  "base_run": "analysis_facts_busy_interval_existence_final",
+  "base_checks": [
+    {
+      "manifest": "analysis_facts_busy_interval_existence",
+      "olean": "Prosa/Analysis/Facts/BusyInterval/Existence.olean",
+      "vo": "ExistenceSemanticSource.vo"
+    }
+  ],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "FactsCarryInSemanticSource",
+    "drop_imports": [
+      "Require Export prosa.analysis.facts.model.workload.",
+      "Require Export prosa.analysis.facts.model.ideal.service_of_jobs.",
+      "Require Export prosa.analysis.facts.busy_interval.quiet_time.",
+      "Require Export prosa.analysis.facts.busy_interval.existence.",
+      "Require Export prosa.analysis.definitions.work_bearing_readiness.",
+      "Require Export prosa.model.schedule.work_conserving.",
+      "Require Export prosa.util.tactics."
+    ],
+    "add_imports": [
+      "Require Export prosa.BusyIntervalClassicalSemanticSource.",
+      "Export BusyIntervalClassicalSemanticSource.",
+      "Require Export prosa.analysis.definitions.carry_in.",
+      "Require Export prosa.model.processor.supply.",
+      "Require Export prosa.model.aggregate.workload.",
+      "Require Export prosa.model.aggregate.service_of_jobs.",
+      "Require Export prosa.model.job.properties.",
+      "Require Export prosa.model.schedule.work_conserving.",
+      "Require Export prosa.analysis.definitions.work_bearing_readiness.",
+      "Require Export prosa.model.processor.platform_properties.",
+      "Require Export prosa.model.priority.classes.",
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq bigop.",
+      "Require Import prosa.behavior.all.",
+      "Require Import prosa.model.schedule.scheduled."
+    ],
+    "note": "theorem statements from the authoritative elaborated types (proofs omitted); the classical busy interval is bound to the accepted extracted BusyIntervalClassicalSemanticSource of the base closure; analysis/definitions/carry_in is a pinned source compiled from the pinned tree; model/processor/supply, model/aggregate/workload, model/aggregate/service_of_jobs, model/job/properties, model/schedule/work_conserving, analysis/definitions/work_bearing_readiness and model/schedule/scheduled are the compiled pinned sources of the base closure; the proof-only facts imports (workload, ideal service of jobs, quiet time, busy-interval existence, util/tactics) are dropped"
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/FactsCarryInStatementProbe.v",
+  "production": "Prosa/Analysis/Facts/BusyInterval/CarryIn.lean",
+  "production_olean": "Prosa/Analysis/Facts/BusyInterval/CarryIn.olean",
+  "lean_namespace": "Prosa.Analysis.Facts.BusyInterval.CarryIn",
+  "fixtures": [
+    "NondecreasingComputationInterface",
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "PreemptionParameterComputationInterface",
+    "PreemptionTimeComputationInterface",
+    "PriorityDrivenComputationInterface",
+    "ScheduledComputationInterface",
+    "ProcessorStateCoverInterface",
+    "FactsPreemptionComputationInterface",
+    "BusyIntervalClassicalComputationInterface",
+    "ArrivalsComputationInterface",
+    "WorkloadComputationInterface",
+    "ServiceOfJobsComputationInterface",
+    "FactsServiceOfJobsComputationInterface",
+    "PriorityInversionComputationInterface",
+    "WorkBearingReadinessComputationInterface",
+    "JobPropertiesExportInterface",
+    "ExistenceComputationInterface",
+    "SupplyComputationInterface",
+    "CarryInComputationInterface",
+    "FactsCarryInComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/FactsCarryInLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/analysis_facts_busy_interval_carry_in_export_config.json",
+  "export_name": "FactsCarryIn",
+  "cert_dir": "certificates/analysis_facts_busy_interval_carry_in",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "ArrivalsCorrespondence",
+    "JitterSvcBaseAdapter",
+    "JitterSvcNatBoolOperations",
+    "JitterSvcIntervalOperations",
+    "JitterSvcScheduleOperations",
+    "JitterSvcJobOperations",
+    "PreemptionParameterCorrespondence",
+    "PreemptionTimeCorrespondence",
+    "PriorityDrivenCorrespondence",
+    "PStateCoverHelpers",
+    "FactsPreemptionHelpers",
+    "WorkloadCorrespondence",
+    "PriorityInversionCorrespondence",
+    "ExistenceHelpers",
+    "FactsCarryInCorrespondence"
+  ],
+  "audit_module": "FactsCarryInAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/FactsCarryInImportedTypeAudit.v",
+  "assumption_config": "certificates/analysis_facts_busy_interval_carry_in/facts_carry_in_assumption_config.json",
+  "lean_axiom_config": "certificates/analysis_facts_busy_interval_carry_in/facts_carry_in_lean_axiom_config.json",
+  "computational": [],
+  "principal": {},
+  "helpers": [
+    "fci_supply_at_related",
+    "fci_is_blackout_related",
+    "fci_blackout_during_related",
+    "fci_no_carry_in_related",
+    "fci_total_workload_between_related",
+    "fci_fully_consuming_related"
+  ],
+  "previous_status": "analysis_facts_busy_interval_hep_at_pt_module_status.json",
+  "previous_files": 209,
+  "previous_decls": 1466,
+  "input_relations": [
+    "processor states by the accepted processor-model relation IsjPSRel (covered), schedules through it (covered)",
+    "job_arrival by ArJobArrivalRel, job_cost by the accepted SvcJobCostRel",
+    "the JLFP policy pointwise on Booleans (covered)",
+    "JobReady on the statement's schedule pair (covered)",
+    "arrival sequences by ArArrivalSequenceRel",
+    "jobs identity, instants by SubNatRel"
+  ],
+  "coverage_for_inner_binders": [
+    "processor states",
+    "schedules",
+    "JLFP policies",
+    "JobReady",
+    "jobs identity",
+    "instants"
+  ],
+  "lean_representation_note": "Booleans in Prop position are `= true`; the canonical conversions JLFP\u2192JLDP and FP\u2192JLFP are the accepted `JLFP_to_JLDP`/`FP_to_JLFP`, passed explicitly",
+  "export_diagnosis": "the accepted busy-interval-existence export root merged with the accepted supply export root (kernel-guarded supply/blackout projections) and the accepted carry-in export root, plus fully_consuming_proc_model and the nine statements",
+  "extra_pinned_sources": [
+    "analysis/definitions/carry_in.v"
+  ],
+  "extra_lean": [],
+  "extra_source_patches": [],
+  "extra_artifacts": [],
+  "extra_olean_artifacts": [
+    {
+      "from": "analysis_facts_model_rbf_final/olean/Prosa/Model/Job/Properties.olean",
+      "to": "Prosa/Model/Job/Properties.olean",
+      "manifest": "model_job_properties",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_model_rbf_final/olean/Prosa/Analysis/Definitions/SchedulePrefix.olean",
+      "to": "Prosa/Analysis/Definitions/SchedulePrefix.olean",
+      "manifest": "analysis_schedule_prefix",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_sbf_final/olean/Prosa/Analysis/Facts/Behavior/Supply.olean",
+      "to": "Prosa/Analysis/Facts/Behavior/Supply.olean",
+      "manifest": "analysis_facts_behavior_supply",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_model_rbf_final/olean/Prosa/Analysis/Definitions/Service.olean",
+      "to": "Prosa/Analysis/Definitions/Service.olean",
+      "manifest": "analysis_service",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_model_rbf_final/olean/Prosa/Analysis/Facts/Model/Scheduled.olean",
+      "to": "Prosa/Analysis/Facts/Model/Scheduled.olean",
+      "manifest": "analysis_facts_model_scheduled",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_model_rbf_final/olean/Prosa/Analysis/Facts/Behavior/Service.olean",
+      "to": "Prosa/Analysis/Facts/Behavior/Service.olean",
+      "manifest": "analysis_facts_behavior_service",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_model_rbf_final/olean/Prosa/Analysis/Facts/Behavior/Completion.olean",
+      "to": "Prosa/Analysis/Facts/Behavior/Completion.olean",
+      "manifest": "analysis_facts_behavior_completion",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_model_rbf_final/olean/Prosa/Analysis/Definitions/BusyInterval/Classical.olean",
+      "to": "Prosa/Analysis/Definitions/BusyInterval/Classical.olean",
+      "manifest": "analysis_definitions_busy_interval_classical",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "model_aggregate_workload_final/olean/Prosa/Model/Aggregate/Workload.olean",
+      "to": "Prosa/Model/Aggregate/Workload.olean",
+      "manifest": "model_aggregate_workload",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_model_rbf_final/olean/Prosa/Model/Aggregate/ServiceOfJobs.olean",
+      "to": "Prosa/Model/Aggregate/ServiceOfJobs.olean",
+      "manifest": "model_aggregate_service_of_jobs",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_model_rbf_final/olean/Prosa/Analysis/Definitions/CarryIn.olean",
+      "to": "Prosa/Analysis/Definitions/CarryIn.olean",
+      "manifest": "analysis_definitions_carry_in",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_model_rbf_final/olean/Prosa/Analysis/Facts/BusyInterval/QuietTime.olean",
+      "to": "Prosa/Analysis/Facts/BusyInterval/QuietTime.olean",
+      "manifest": "analysis_facts_busy_interval_quiet_time",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_model_rbf_final/olean/Prosa/Analysis/Facts/Model/Uniprocessor.olean",
+      "to": "Prosa/Analysis/Facts/Model/Uniprocessor.olean",
+      "manifest": "analysis_facts_model_uniprocessor",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_model_rbf_final/olean/Prosa/Analysis/Facts/Model/ServiceOfJobs.olean",
+      "to": "Prosa/Analysis/Facts/Model/ServiceOfJobs.olean",
+      "manifest": "analysis_facts_model_service_of_jobs",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_readiness_basic_final/olean/Prosa/Analysis/Definitions/WorkBearingReadiness.olean",
+      "to": "Prosa/Analysis/Definitions/WorkBearingReadiness.olean",
+      "manifest": "analysis_definitions_work_bearing_readiness",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_priority_inversion_final/olean/Prosa/Analysis/Definitions/PriorityInversion.olean",
+      "to": "Prosa/Analysis/Definitions/PriorityInversion.olean",
+      "manifest": "analysis_definitions_priority_inversion",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_priority_inversion_final/olean/Prosa/Analysis/Facts/Priority/Inversion.olean",
+      "to": "Prosa/Analysis/Facts/Priority/Inversion.olean",
+      "manifest": "analysis_facts_priority_inversion",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_model_rbf_final/olean/Prosa/Analysis/Facts/Model/Workload.olean",
+      "to": "Prosa/Analysis/Facts/Model/Workload.olean",
+      "manifest": "analysis_facts_model_workload",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_model_task_schedule_final/olean/Prosa/Analysis/Facts/Model/Ideal/ServiceOfJobs.olean",
+      "to": "Prosa/Analysis/Facts/Model/Ideal/ServiceOfJobs.olean",
+      "manifest": "analysis_facts_model_ideal_service_of_jobs",
+      "key": "production_olean_sha256"
+    }
+  ]
+}

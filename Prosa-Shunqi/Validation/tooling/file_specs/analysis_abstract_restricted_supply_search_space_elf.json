@@ -1,0 +1,267 @@
+{
+  "rank": 223,
+  "layer": 20,
+  "tag": "SSELF",
+  "slug": "analysis_abstract_restricted_supply_search_space_elf",
+  "source": "analysis/abstract/restricted_supply/search_space/elf.v",
+  "dependencies": [
+    "analysis/abstract/search_space.v",
+    "analysis/definitions/blocking_bound/elf.v",
+    "analysis/facts/model/rbf.v",
+    "analysis/facts/workload/elf_athep_bound.v"
+  ],
+  "declaration_count": 2,
+  "base_run": "analysis_facts_workload_elf_athep_bound_final",
+  "base_checks": [
+    {
+      "manifest": "analysis_facts_workload_elf_athep_bound",
+      "olean": "Prosa/Analysis/Facts/Workload/ElfAthepBound.olean",
+      "vo": "FactsElfAthepBoundSemanticSource.vo"
+    }
+  ],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "SearchSpaceElfSemanticSource",
+    "drop_imports": [
+      "Require Export prosa.analysis.facts.model.rbf.",
+      "Require Export prosa.analysis.abstract.search_space.",
+      "Require Export prosa.analysis.definitions.blocking_bound.elf.",
+      "Require Export prosa.analysis.facts.workload.elf_athep_bound."
+    ],
+    "add_imports": [
+      "Require Export prosa.RequestBoundFunctionSemanticSource.",
+      "Export RequestBoundFunctionSemanticSource.",
+      "Require Export prosa.BlockingBoundElfSemanticSource.",
+      "Export BlockingBoundElfSemanticSource.",
+      "Require Export prosa.ElfAthepBoundSemanticSource.",
+      "Export ElfAthepBoundSemanticSource.",
+      "Require Export prosa.analysis.abstract.search_space.",
+      "Require Export prosa.util.int prosa.model.priority.gel prosa.model.priority.elf.",
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq bigop.",
+      "Require Import prosa.util.epsilon prosa.util.rel prosa.model.task.concept prosa.model.task.arrival.curves.",
+      "Module elf := prosa.BlockingBoundElfSemanticSource.BlockingBoundElfSemanticSource."
+    ],
+    "printer_repairs": [
+      "elf.is_in_search_space=is_in_search_space"
+    ],
+    "note": "the definition is a byte-identical computational block (its section-local Lets included) and the lemma statement is the authoritative elaborated type (proof omitted); the request-bound-function, blocking_bound/elf and definitions/workload/elf_athep_bound imports are bound to their accepted extracted sources (RequestBoundFunctionSemanticSource and ElfAthepBoundSemanticSource as in the base; BlockingBoundElfSemanticSource and its TaskPreemptionParametersSemanticSource .vo copied from their accepted runs and hash-checked against their manifests); util/int, model/priority/gel and model/priority/elf are the accepted compiled pinned sources of the base closure; analysis/abstract/search_space is the pinned source compiled with its accepted proof-only Rocq 9.3 compatibility patch (as in the accepted EDF search space); the proof-only facts/model/rbf and facts/workload/elf_athep_bound imports are dropped; the elaborated statement prints the module-qualified name `elf.blocking_bound`, reconnected to the accepted extracted definition by a recorded validation-only module alias, and `elf.is_in_search_space` (this file's own definition, qualified only to disambiguate it from `search_space.is_in_search_space`) by a recorded printer repair to the unqualified local name, as in the accepted EDF search space"
+  },
+  "extra_artifacts": [
+    {
+      "from": "analysis_definitions_request_bound_function_final/source/RequestBoundFunctionSemanticSource.vo",
+      "to": "source/RequestBoundFunctionSemanticSource.vo",
+      "manifest": "analysis_definitions_request_bound_function",
+      "key": "source_vo_sha256"
+    },
+    {
+      "from": "analysis_definitions_workload_elf_athep_bound_final/source/ElfAthepBoundSemanticSource.vo",
+      "to": "source/ElfAthepBoundSemanticSource.vo",
+      "manifest": "analysis_definitions_workload_elf_athep_bound",
+      "key": "source_vo_sha256"
+    },
+    {
+      "from": "model_priority_elf_final/source/util/int.vo",
+      "to": "source/util/int.vo",
+      "manifest": "util_int",
+      "key": "official_rocq_vo_sha256"
+    },
+    {
+      "from": "model_priority_elf_final/source/model/priority/gel.vo",
+      "to": "source/model/priority/gel.vo",
+      "manifest": "model_priority_gel",
+      "key": "source_vo_sha256"
+    },
+    {
+      "from": "model_priority_elf_final/source/model/priority/elf.vo",
+      "to": "source/model/priority/elf.vo",
+      "manifest": "model_priority_elf",
+      "key": "source_vo_sha256"
+    },
+    {
+      "from": "analysis_definitions_blocking_bound_elf_final/source/BlockingBoundElfSemanticSource.vo",
+      "to": "source/BlockingBoundElfSemanticSource.vo",
+      "manifest": "analysis_definitions_blocking_bound_elf",
+      "key": "source_vo_sha256"
+    },
+    {
+      "from": "model_task_preemption_parameters_final/source/TaskPreemptionParametersSemanticSource.vo",
+      "to": "source/TaskPreemptionParametersSemanticSource.vo",
+      "manifest": "model_task_preemption_parameters",
+      "key": "source_vo_sha256"
+    }
+  ],
+  "extra_pinned_sources": [
+    "model/job/properties.v",
+    "model/aggregate/workload.v",
+    "model/task/absolute_deadline.v",
+    "analysis/abstract/search_space.v"
+  ],
+  "extra_olean_artifacts": [
+    {
+      "from": "analysis_definitions_workload_edf_athep_bound_final/olean/Prosa/Analysis/Definitions/Workload/EdfAthepBound.olean",
+      "to": "Prosa/Analysis/Definitions/Workload/EdfAthepBound.olean",
+      "manifest": "analysis_definitions_workload_edf_athep_bound",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "model_priority_edf_final/olean/Prosa/Model/Priority/Edf.olean",
+      "to": "Prosa/Model/Priority/Edf.olean",
+      "manifest": "model_priority_edf",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "model_priority_elf_final/olean/Prosa/Util/Int.olean",
+      "to": "Prosa/Util/Int.olean",
+      "manifest": "util_int",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "model_priority_elf_final/olean/Prosa/Model/Priority/Gel.olean",
+      "to": "Prosa/Model/Priority/Gel.olean",
+      "manifest": "model_priority_gel",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "model_priority_elf_final/olean/Prosa/Model/Priority/Elf.olean",
+      "to": "Prosa/Model/Priority/Elf.olean",
+      "manifest": "model_priority_elf",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_definitions_workload_elf_athep_bound_final/olean/Prosa/Analysis/Definitions/Workload/ElfAthepBound.olean",
+      "to": "Prosa/Analysis/Definitions/Workload/ElfAthepBound.olean",
+      "manifest": "analysis_definitions_workload_elf_athep_bound",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_abstract_ibf_task_final/olean/Prosa/Analysis/Abstract/SearchSpace.olean",
+      "to": "Prosa/Analysis/Abstract/SearchSpace.olean",
+      "manifest": "analysis_abstract_search_space",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_abstract_ibf_task_final/olean/Prosa/Model/Task/Preemption/Parameters.olean",
+      "to": "Prosa/Model/Task/Preemption/Parameters.olean",
+      "manifest": "model_task_preemption_parameters",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_blocking_bound_elf_final/olean/Prosa/Analysis/Definitions/BlockingBound/Elf.olean",
+      "to": "Prosa/Analysis/Definitions/BlockingBound/Elf.olean",
+      "manifest": "analysis_definitions_blocking_bound_elf",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_blocking_bound_fp_final/olean/Prosa/Analysis/Definitions/BlockingBound/Fp.olean",
+      "to": "Prosa/Analysis/Definitions/BlockingBound/Fp.olean",
+      "manifest": "analysis_definitions_blocking_bound_fp",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_blocking_bound_edf_final/olean/Prosa/Analysis/Definitions/BlockingBound/Edf.olean",
+      "to": "Prosa/Analysis/Definitions/BlockingBound/Edf.olean",
+      "manifest": "analysis_definitions_blocking_bound_edf",
+      "key": "production_olean_sha256"
+    }
+  ],
+  "fingerprint_probe": "Validation/fixtures/translation_order/SearchSpaceElfStatementProbe.v",
+  "production": "Prosa/Analysis/Abstract/RestrictedSupply/SearchSpace/Elf.lean",
+  "production_olean": "Prosa/Analysis/Abstract/RestrictedSupply/SearchSpace/Elf.olean",
+  "lean_namespace": "Prosa.Analysis.Abstract.RestrictedSupply.SearchSpace.Elf",
+  "fixtures": [
+    "NondecreasingComputationInterface",
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "PreemptionParameterComputationInterface",
+    "BusyIntervalClassicalComputationInterface",
+    "ArrivalsComputationInterface",
+    "WorkloadComputationInterface",
+    "WorkloadBoundedComputationInterface",
+    "RequestBoundFunctionComputationInterface",
+    "CurvesComputationInterface",
+    "ProcessorStateCoverInterface",
+    "EdfAthepBoundComputationInterface",
+    "FactsEdfAthepBoundComputationInterface",
+    "PriorityGelComputationInterface",
+    "PriorityElfComputationInterface",
+    "ElfAthepBoundComputationInterface",
+    "FactsElfAthepBoundComputationInterface",
+    "TaskPreemptionParametersComputationInterface",
+    "BlockingBoundEdfComputationInterface",
+    "BlockingBoundFpComputationInterface",
+    "BlockingBoundElfComputationInterface",
+    "FactsSearchSpaceElfComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/SearchSpaceElfLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/analysis_abstract_restricted_supply_search_space_elf_export_config.json",
+  "export_name": "SearchSpaceElf",
+  "cert_dir": "certificates/analysis_abstract_restricted_supply_search_space_elf",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "ArrivalsCorrespondence",
+    "JitterSvcBaseAdapter",
+    "JitterSvcNatBoolOperations",
+    "JitterSvcIntervalOperations",
+    "JitterSvcScheduleOperations",
+    "JitterSvcJobOperations",
+    "PreemptionParameterCorrespondence",
+    "WorkloadCorrespondence",
+    "CurvesCorrespondence",
+    "RequestBoundFunctionCorrespondence",
+    "WorkloadBoundedCorrespondence",
+    "EdfAthepBoundCorrespondence",
+    "NatSubCorrespondence",
+    "PcoBaseAdapter",
+    "PcoStaticOrder",
+    "PcoDynamicOrder",
+    "PriorityCoercionCorrespondence",
+    "PriorityGelHelpers",
+    "PriorityElfHelpers",
+    "ElfAthepBoundCorrespondence",
+    "TaskPreemptionParametersCorrespondence",
+    "BlockingBoundElfCorrespondence",
+    "SearchSpaceElfCorrespondence"
+  ],
+  "audit_module": "SearchSpaceElfAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/SearchSpaceElfImportedTypeAudit.v",
+  "assumption_config": "certificates/analysis_abstract_restricted_supply_search_space_elf/search_space_elf_assumption_config.json",
+  "lean_axiom_config": "certificates/analysis_abstract_restricted_supply_search_space_elf/search_space_elf_lean_axiom_config.json",
+  "computational": [
+    "is_in_search_space"
+  ],
+  "principal": {},
+  "helpers": [
+    "ssel_false_correspondence",
+    "ssel_nat_neq_correspondence",
+    "ssel_or_correspondence",
+    "ssel_and3_correspondence",
+    "ssel_decide_not",
+    "ssel_nat_neqb_related",
+    "ssel_int_neq_le",
+    "ssel_int_neq_related",
+    "ssel_has_canonical",
+    "ssel_has_related",
+    "ssel_ep_task_related"
+  ],
+  "previous_status": "analysis_abstract_restricted_supply_task_intra_interference_bound_module_status.json",
+  "previous_files": 242,
+  "previous_decls": 1687,
+  "input_relations": [
+    "task costs pointwise by SubNatRel, TaskMaxNonpreemptiveSegment by the accepted TppMaxSegmentRel, priority points by the accepted GelPriorityPointRel, maximum arrivals by the accepted CvMaxArrivalsRel, task sets by ArListRel, the FP policy pointwise on Booleans (PdFPRel)",
+    "FP policies covered in both directions (accepted pco_forall_fp), tasks by identity, Nats covered in both directions"
+  ],
+  "coverage_for_inner_binders": [
+    "FP policies",
+    "tasks",
+    "durations"
+  ],
+  "lean_representation_note": "the EDF policy is the accepted `EDF` instance over the accepted `job_deadline_from_task_deadline` instance, named explicitly; the section-local `EDF_from tsk_o` is inlined; `A` is `job_arrival j - t1`; `\u03b5` is `1`; `\\sum_(x <- xs | P x) F x` is `sumFiltered xs P F`; `monotone leq f` is `Prosa.Util.Rel.monotone (fun x y => decide (x \u2264 y)) f`",
+  "export_diagnosis": "the accepted ELF workload-bound facts export root (without statements) merged with the accepted ELF blocking-bound root and the accepted abstract search-space predicate, plus kernel-checked List.any and Int equations, the definition and the statement",
+  "extra_source_patches": [
+    "patches/prosa-v06-rocq93-analysis-abstract-search-space.patch"
+  ]
+}

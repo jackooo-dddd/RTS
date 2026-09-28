@@ -1,0 +1,361 @@
+{
+  "slice": "TRANSLATION_ORDER_ANALYSIS_FACTS_BUSY_INTERVAL_SERVICE_INVERSION",
+  "generated_at": "2026-09-27T21:32:19.287092+08:00",
+  "published_at": "2026-09-27T21:32:19.287092+08:00",
+  "rank": 228,
+  "layer": 22,
+  "source_file": "analysis/facts/busy_interval/service_inversion.v",
+  "source_commit": "414e66760333eaa4ef78c685bcf53291c527a548",
+  "source_tree": "7d7e94c731f7eefde4ca738310d4cafdd7bebdf0",
+  "source_file_sha256": "a770364d735f97315cc5dd237128bc3ab79932c43ad07edc6f07f548ae717249",
+  "pipeline": "Validation/scripts/translation_file_pipeline.py",
+  "spec": "Validation/tooling/file_specs/analysis_facts_busy_interval_service_inversion.json",
+  "spec_sha256": "83a2524ca1b613b0178cb0984a20f961275e08fc4a4aecfed5ca8b33790e18c2",
+  "source_compatibility": {
+    "mode": "extract",
+    "note": "theorem statements from the authoritative elaborated types (proofs omitted); service inversion and its busy-prefix bound are bound to the accepted extracted ServiceInversionPredSemanticSource/ServiceInversionBusyPrefixSemanticSource (byte-identical dependencies with this closure), max_lp_nonpreemptive_segment to the accepted extracted BusyIntervalPiSemanticSource, task preemption parameters to the accepted extracted TaskPreemptionParametersSemanticSource; the remaining definitions are the accepted extracted and compiled pinned sources of the base closure",
+    "extracted_sha256": "93553f23c5173f008793fddeff60aceafc9850b02d120758d93474bbf1c33d1d",
+    "extraction_metadata_sha256": "cabb6e6b0762a51277792da2388b6d26ceee76f31b95acc30794271ac93b5ab0"
+  },
+  "source_type_evidence": {
+    "prosa.analysis.facts.busy_interval.service_inversion.blackout_implies_no_service_inversion": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.busy_interval.service_inversion.idle_implies_no_service_inversion": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.busy_interval.service_inversion.receives_service_implies_no_service_inversion": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.busy_interval.service_inversion.service_inversion_cat": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.busy_interval.service_inversion.service_inversion_widen": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.busy_interval.service_inversion.service_inversion_supply_sched": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.busy_interval.service_inversion.service_inv_implies_priority_inv": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.busy_interval.service_inversion.cumul_service_inv_le_cumul_priority_inv": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.busy_interval.service_inversion.cumulative_service_inversion_from_one_job": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.busy_interval.service_inversion.lp_job_bounded_service": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.busy_interval.service_inversion.lp_job_bounded_service_max": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.busy_interval.service_inversion.service_inversion_is_bounded": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE"
+  },
+  "statement_only_export_boundary": [
+    "Prosa.Analysis.Facts.BusyInterval.ServiceInversion.blackout_implies_no_service_inversion",
+    "Prosa.Analysis.Facts.BusyInterval.ServiceInversion.idle_implies_no_service_inversion",
+    "Prosa.Analysis.Facts.BusyInterval.ServiceInversion.receives_service_implies_no_service_inversion",
+    "Prosa.Analysis.Facts.BusyInterval.ServiceInversion.service_inversion_cat",
+    "Prosa.Analysis.Facts.BusyInterval.ServiceInversion.service_inversion_widen",
+    "Prosa.Analysis.Facts.BusyInterval.ServiceInversion.service_inversion_supply_sched",
+    "Prosa.Analysis.Facts.BusyInterval.ServiceInversion.service_inv_implies_priority_inv",
+    "Prosa.Analysis.Facts.BusyInterval.ServiceInversion.cumul_service_inv_le_cumul_priority_inv",
+    "Prosa.Analysis.Facts.BusyInterval.ServiceInversion.cumulative_service_inversion_from_one_job",
+    "Prosa.Analysis.Facts.BusyInterval.ServiceInversion.lp_job_bounded_service",
+    "Prosa.Analysis.Facts.BusyInterval.ServiceInversion.lp_job_bounded_service_max",
+    "Prosa.Analysis.Facts.BusyInterval.ServiceInversion.service_inversion_is_bounded"
+  ],
+  "input_relations": [
+    "processor states by the accepted processor-model relation IsjPSRel (covered), schedules through it (covered)",
+    "job_arrival by ArJobArrivalRel, job_cost by the accepted SvcJobCostRel",
+    "JLFP policies pointwise on Booleans (covered); JLDP policies pointwise on Booleans at related instants (covered); the JLFP policy reaches the JLDP-based service inversion through the accepted coercions",
+    "TaskMaxNonpreemptiveSegment by the accepted TppMaxSegmentRel, job_task by Lean.eq",
+    "JobPreemptable by the accepted PpJobPreemptableRel (covered)",
+    "JobReady on the statement's schedule pair (covered)",
+    "arrival sequences by ArArrivalSequenceRel (covered)",
+    "blocking-bound functions pointwise on related Nats (covered)",
+    "tasks and jobs identity, instants by SubNatRel"
+  ],
+  "coverage_for_inner_binders": [
+    "processor states",
+    "schedules",
+    "arrival sequences",
+    "JLFP policies",
+    "JLDP policies",
+    "JobPreemptable",
+    "JobReady",
+    "blocking-bound functions",
+    "tasks",
+    "jobs identity",
+    "instants"
+  ],
+  "lean_representation_note": "Booleans in Prop position are `= true`; the canonical conversions JLFP\u2192JLDP and FP\u2192JLFP are the accepted `JLFP_to_JLDP`/`FP_to_JLFP`, passed explicitly",
+  "export_size": {
+    "lines": 141363,
+    "soft_budget_flag": "OVER_100K_DIAGNOSED",
+    "diagnosis": "the accepted pi_bound export root merged with the accepted service-inversion busy-prefix export root (union of targets, body projections and kernel guards, both over the same preemption-parameter closure), reused so that both accepted certificate chains apply, plus the statements"
+  },
+  "file_dependencies": {
+    "analysis/definitions/service_inversion/busy_prefix.v": "analysis_definitions_service_inversion_busy_prefix_module_status.json",
+    "analysis/facts/busy_interval/pi.v": "analysis_facts_busy_interval_pi_module_status.json"
+  },
+  "production_file": "Prosa/Analysis/Facts/BusyInterval/ServiceInversion.lean",
+  "production_source_sha256": "5a5c49d93bca8aeb6e5214880aaaacfbd194aeee83eddf80a0c91a0b67a31010",
+  "production_olean_sha256": "16fb95c4336ac76fc72cdbc151d6455733fa428601fd750444c71b631fd30059",
+  "export_config_sha256": "ac7c6094a7815d4823eef47b186a2f0138dc846e1326c3b4bf77136a1845e47a",
+  "export_sha256": "4f545615fbec9d6fdb062eee94a82b4c1ac7aacdb7b3090dadd788bfe703ec00",
+  "export_lines": 141363,
+  "export_bytes": 3180455,
+  "import_sha256": "2d3a25354e66eaff78745df44560b406460d33a6c187d8d1fcc2cd63f44cafd7",
+  "source_vo_sha256": "4011b1daf68e5b5654cf8722f4d0e56ad5c14f339441d7a5a42d072b0b50b9db",
+  "lean_axiom_summary_sha256": "4403e5271d97e24fcecf261e64df4472997c37cee12a9e2450ce9ebd6a543720",
+  "rocq_assumption_summary_sha256": "33f7b17636add4724143beeff799a41c49a58e5cd60610bde137607a8e461701",
+  "assumption_config_sha256": "165507a1c1147d5a4e4f926551ce5ae50885f8ac9590d17cb098edc0ed06a85f",
+  "stage_timing_seconds": {
+    "source_acquisition": {
+      "mode": "FRESH",
+      "seconds": 4
+    },
+    "lean_build": {
+      "mode": "FRESH",
+      "seconds": 1494
+    },
+    "export": {
+      "mode": "FRESH",
+      "seconds": 42
+    },
+    "rocq_import": {
+      "mode": "FRESH",
+      "seconds": 66
+    },
+    "certificate_compile": {
+      "mode": "FRESH",
+      "seconds": 64
+    },
+    "assumption_audit": {
+      "mode": "FRESH",
+      "seconds": 0
+    }
+  },
+  "certificates": {
+    "ArrivalsSeqBaseAdapter": {
+      "source_sha256": "0061eb778912383cd3d9e46bdde5583402661658e8e593bdbc11f2951fd8618e",
+      "vo_sha256": "7381edae24be44cbefa74e321d84a6e2da7741ab1aea4400a77db1ea5bf6cfc0"
+    },
+    "ArrivalsSeqOperations": {
+      "source_sha256": "4bf0996b15db64f8a191460dfc4516e94a0a36aae736a71074e4ee21a39c2c63",
+      "vo_sha256": "d44c3e804852a549c5e768ca8ca0e0a4f6d9db7bcf86a4f68cbbab9256a01b15"
+    },
+    "ArrivalsSeqCorrespondence": {
+      "source_sha256": "15ad9019d1abf9202aa41c1178026cf30d98b43e60806697f6f0ddb9f106d5b1",
+      "vo_sha256": "23f2bd2de0560fb6e6f70475befce9b8f12a663d716715853b9d96c53743029b"
+    },
+    "ArrivalsCorrespondence": {
+      "source_sha256": "b9758a50ea6b7c567577cf09cd0592015ce0e28eb880665e294614cae5b8cdab",
+      "vo_sha256": "b9175b983ce68979be6ca83a4e68328b808b950f331975b79b54269c964dd884"
+    },
+    "JitterSvcBaseAdapter": {
+      "source_sha256": "b7dce4d131991e9aeb441864ca394f94185881ccdce2794d5bad5a0cbd723f46",
+      "vo_sha256": "57368cfeb6855749db14d067fe12cc317149de5bf46da62c80062d568805d9db"
+    },
+    "JitterSvcNatBoolOperations": {
+      "source_sha256": "f6d23dde5df85228358b2c35bddbc2724953d7fc5257d1e7af20c5c8594e5740",
+      "vo_sha256": "b837164742b777ae3e76111e7d6db439d44faf0ab3c0bcaf0aa6603451dd6ce8"
+    },
+    "JitterSvcIntervalOperations": {
+      "source_sha256": "4d96d57905d4e75705975e818ba1ef2d8322b1848d15ebb41107d32a662d1a35",
+      "vo_sha256": "ed771dcdbbf4729025d86d8ddae45694cf3bf6f304d3e59db99eb90ed444cee7"
+    },
+    "JitterSvcScheduleOperations": {
+      "source_sha256": "54d8f886ae7d1819301918d03186dee289c077310e0a8311921b980d04e8ddec",
+      "vo_sha256": "0477532630ad7cc9e557d365df04347e528d6346b67dafb5aaa19a1c63bdfe95"
+    },
+    "JitterSvcJobOperations": {
+      "source_sha256": "99bd8e71350cef73b650e28b98e7df105d00bf11160c12dac5d93aa8cc8ccffa",
+      "vo_sha256": "2883e4be099a35d2fcb62f65d42aa8bf70ac8fa14e71bc943bcd686cc773c52e"
+    },
+    "PreemptionParameterCorrespondence": {
+      "source_sha256": "6fb8c63d4e806acc781e0d9293e1279d59cfdad364f802011ab57ed886173e4e",
+      "vo_sha256": "63c29fd84257171bb8bc2ad3f2f2ad6a6637ad3bdb60d3e905b762dde92561dd"
+    },
+    "PreemptionTimeCorrespondence": {
+      "source_sha256": "47a2c97dcb365713dfed065d55d33f167a3fae3e6a6aac3c8dc1647ee46ad830",
+      "vo_sha256": "ece3133ca7c0d95a38d36f3c99390ccedea0fe930d193ab54ef5e0cca22dbd49"
+    },
+    "PriorityDrivenCorrespondence": {
+      "source_sha256": "a8af85a5f3109abf1443dfaf3531563b28fe4aea9c028d952d4ccbddd3c826cf",
+      "vo_sha256": "411f34198f514c569b62d1e251ee51086e03f736c7d57809090d4f5ee8608111"
+    },
+    "PStateCoverHelpers": {
+      "source_sha256": "bf1414c1e66e6fb95ba52ac49d4a8ddaba25faf7cb572a472e647437bb7934d3",
+      "vo_sha256": "35e7a92659192071b651337d8529f54dc8b204fa83dedcd78d6d9c34bf8b7ad2"
+    },
+    "FactsPreemptionHelpers": {
+      "source_sha256": "e35519fa9918d158c29dce4af91d4fd802f3cc3d903086b511c4ff0fb7bb5313",
+      "vo_sha256": "d2335ece1768d1d4103e96bf2ad43ec585588c22747bfa43cd2c4536d132b407"
+    },
+    "WorkloadCorrespondence": {
+      "source_sha256": "8e5862a4715df14920b4bfb895cfd9e5a98a5be7c693bfd30689f831445833a7",
+      "vo_sha256": "940ae4616aaebf73a4e4bb2abb4638922d496fd38116a635146f16069200bad4"
+    },
+    "PriorityInversionCorrespondence": {
+      "source_sha256": "01ea90af2f54ecbcf8515d694ecd192d56a0abf7dde8065942ac508febfe20a2",
+      "vo_sha256": "7776821c5833cc5033c9a5acb98394e87b4a3427941a51f7e8d78a677791ad68"
+    },
+    "ExistenceHelpers": {
+      "source_sha256": "9728361b69f39c2ceab2d9d429c93c93f2b380b6eb5211d1a368339c0f9b98ac",
+      "vo_sha256": "bb7227e6f8ca458bd984ae2785616f88366d56066f9676adda52e0a89947497e"
+    },
+    "HepAtPtHelpers": {
+      "source_sha256": "e2b848de502a73ed205194eebe9c18027f267c162c7ec4c2cce4ea30575bb8be",
+      "vo_sha256": "08a17dcedc8578a82ceb57e7e287d46b7beb5c938bddadb2ba7229c38328faed"
+    },
+    "TaskPreemptionParametersCorrespondence": {
+      "source_sha256": "6ac7d09007dd92f9139eba4c89d0546a3cd466ada363923a3d644435551302ff",
+      "vo_sha256": "17c9993c9a47c3f16c400245307b8447f0656ce81afdf9c43778bb88bbcfda6d"
+    },
+    "BusyIntervalPiHelpers": {
+      "source_sha256": "638047373a315bbee7e60bd076fdf0fb1a4d25b619656cd64d6050da51cfa4b6",
+      "vo_sha256": "953d7d35531e76d37d1a593758d9158d4fe7bb0244fcb140a4d5efa94c5924d4"
+    },
+    "ServiceInversionPredCorrespondence": {
+      "source_sha256": "d3c684823f9a8c89d408b70d419d540437d8f82268312b29f63289a6bda4869e",
+      "vo_sha256": "5934ee0fbd37720155e370a446792135f71c15b38ef247293a5242dcbb8a3bb0"
+    },
+    "BusyIntervalServiceInversionCorrespondence": {
+      "source_sha256": "87605d2924735f0908b4c1f58d3b258422836adab00441b142a9f6562b808a7c",
+      "vo_sha256": "93651765c955e5899e087e1ccaaae1e0978488d282883b86bf28d114749f92b3"
+    },
+    "BusyIntervalServiceInversionAssumptionAudit": {
+      "source_sha256": "266c09bc8ee2f57c41654c4bcfdbdb6ab7a46bbb40afdaa3761903044d94980e",
+      "vo_sha256": "b290a3a91a3640a4afb5d9df49d62f2cb6dce9ad711b2a7f8175dbce9467dfe2"
+    }
+  },
+  "declarations": [
+    {
+      "source_declaration": "prosa.analysis.facts.busy_interval.service_inversion.blackout_implies_no_service_inversion",
+      "lean_declaration": "Prosa.Analysis.Facts.BusyInterval.ServiceInversion.blackout_implies_no_service_inversion",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "blackout_implies_no_service_inversion_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.busy_interval.service_inversion.idle_implies_no_service_inversion",
+      "lean_declaration": "Prosa.Analysis.Facts.BusyInterval.ServiceInversion.idle_implies_no_service_inversion",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "idle_implies_no_service_inversion_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.busy_interval.service_inversion.receives_service_implies_no_service_inversion",
+      "lean_declaration": "Prosa.Analysis.Facts.BusyInterval.ServiceInversion.receives_service_implies_no_service_inversion",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "receives_service_implies_no_service_inversion_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.busy_interval.service_inversion.service_inversion_cat",
+      "lean_declaration": "Prosa.Analysis.Facts.BusyInterval.ServiceInversion.service_inversion_cat",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "service_inversion_cat_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.busy_interval.service_inversion.service_inversion_widen",
+      "lean_declaration": "Prosa.Analysis.Facts.BusyInterval.ServiceInversion.service_inversion_widen",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "service_inversion_widen_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.busy_interval.service_inversion.service_inversion_supply_sched",
+      "lean_declaration": "Prosa.Analysis.Facts.BusyInterval.ServiceInversion.service_inversion_supply_sched",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "service_inversion_supply_sched_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.busy_interval.service_inversion.service_inv_implies_priority_inv",
+      "lean_declaration": "Prosa.Analysis.Facts.BusyInterval.ServiceInversion.service_inv_implies_priority_inv",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "service_inv_implies_priority_inv_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.busy_interval.service_inversion.cumul_service_inv_le_cumul_priority_inv",
+      "lean_declaration": "Prosa.Analysis.Facts.BusyInterval.ServiceInversion.cumul_service_inv_le_cumul_priority_inv",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "cumul_service_inv_le_cumul_priority_inv_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.busy_interval.service_inversion.cumulative_service_inversion_from_one_job",
+      "lean_declaration": "Prosa.Analysis.Facts.BusyInterval.ServiceInversion.cumulative_service_inversion_from_one_job",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "cumulative_service_inversion_from_one_job_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.busy_interval.service_inversion.lp_job_bounded_service",
+      "lean_declaration": "Prosa.Analysis.Facts.BusyInterval.ServiceInversion.lp_job_bounded_service",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "lp_job_bounded_service_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.busy_interval.service_inversion.lp_job_bounded_service_max",
+      "lean_declaration": "Prosa.Analysis.Facts.BusyInterval.ServiceInversion.lp_job_bounded_service_max",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "lp_job_bounded_service_max_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.busy_interval.service_inversion.service_inversion_is_bounded",
+      "lean_declaration": "Prosa.Analysis.Facts.BusyInterval.ServiceInversion.service_inversion_is_bounded",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "service_inversion_is_bounded_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    }
+  ],
+  "acceptance": "ACCEPTED_V06_FILE"
+}

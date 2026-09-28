@@ -1,0 +1,4 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedFifoAhepBound.
+
+Check ImportedFifoAhepBound.Prosa_Analysis_Facts_Priority_FifoAhepBound_bound_on_hep_workload.

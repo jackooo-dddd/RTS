@@ -1,0 +1,145 @@
+{
+  "rank": 140,
+  "layer": 16,
+  "tag": "BBELF",
+  "slug": "analysis_definitions_blocking_bound_elf",
+  "source": "analysis/definitions/blocking_bound/elf.v",
+  "dependencies": [
+    "model/task/preemption/parameters.v",
+    "model/task/arrival/curves.v",
+    "model/priority/elf.v"
+  ],
+  "declaration_count": 1,
+  "base_run": "analysis_definitions_blocking_bound_fp_final",
+  "base_checks": [
+    {
+      "manifest": "analysis_definitions_blocking_bound_fp",
+      "olean": "Prosa/Analysis/Definitions/BlockingBound/Fp.olean",
+      "vo": "BlockingBoundFpSemanticSource.vo"
+    }
+  ],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "BlockingBoundElfSemanticSource",
+    "drop_imports": [
+      "Require Export prosa.model.task.preemption.parameters."
+    ],
+    "add_imports": [
+      "Require Export prosa.TaskPreemptionParametersSemanticSource.",
+      "Export TaskPreemptionParametersSemanticSource.",
+      "Require Import prosa.util.int.",
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq bigop.",
+      "Require Import prosa.util.epsilon."
+    ],
+    "note": "the definition (with its section Lets) is a byte-identical computational block; the model/task/preemption/parameters import is bound to the accepted extracted TaskPreemptionParametersSemanticSource of the base closure, model/task/arrival/curves is the pinned source of the base closure, util/int, model/priority/gel and model/priority/elf are the accepted compiled pinned sources (.vo manifest-hash-checked artifacts, byte-identical dependencies with this closure)"
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/BlockingBoundElfStatementProbe.v",
+  "production": "Prosa/Analysis/Definitions/BlockingBound/Elf.lean",
+  "production_olean": "Prosa/Analysis/Definitions/BlockingBound/Elf.olean",
+  "lean_namespace": "Prosa.Analysis.Definitions.BlockingBound.Elf",
+  "fixtures": [
+    "NondecreasingComputationInterface",
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "PreemptionParameterComputationInterface",
+    "TaskPreemptionParametersComputationInterface",
+    "BlockingBoundEdfComputationInterface",
+    "BlockingBoundFpComputationInterface",
+    "PriorityGelComputationInterface",
+    "PriorityElfComputationInterface",
+    "BlockingBoundElfComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/BlockingBoundElfLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/analysis_definitions_blocking_bound_elf_export_config.json",
+  "export_name": "BlockingBoundElf",
+  "cert_dir": "certificates/analysis_definitions_blocking_bound_elf",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "JitterSvcBaseAdapter",
+    "JitterSvcNatBoolOperations",
+    "JitterSvcIntervalOperations",
+    "JitterSvcScheduleOperations",
+    "JitterSvcJobOperations",
+    "PreemptionParameterCorrespondence",
+    "TaskPreemptionParametersCorrespondence",
+    "NatSubCorrespondence",
+    "PcoBaseAdapter",
+    "PcoStaticOrder",
+    "PcoDynamicOrder",
+    "PriorityCoercionCorrespondence",
+    "PriorityGelHelpers",
+    "BlockingBoundElfCorrespondence"
+  ],
+  "audit_module": "BlockingBoundElfAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/BlockingBoundElfImportedTypeAudit.v",
+  "assumption_config": "certificates/analysis_definitions_blocking_bound_elf/blocking_bound_elf_assumption_config.json",
+  "lean_axiom_config": "certificates/analysis_definitions_blocking_bound_elf/blocking_bound_elf_lean_axiom_config.json",
+  "computational": [
+    "blocking_bound"
+  ],
+  "principal": {},
+  "helpers": [
+    "bbelf_bigmax_canonical",
+    "bbelf_bigmax_related",
+    "bbelf_hp_task_related",
+    "bbelf_ep_task_related",
+    "bbelf_point_lt_related"
+  ],
+  "previous_status": "analysis_facts_priority_fifo_module_status.json",
+  "previous_files": 236,
+  "previous_decls": 1670,
+  "input_relations": [
+    "task costs, maximum nonpreemptive segments (accepted TppMaxSegmentRel), priority points (accepted GelPriorityPointRel), arrival curves and the FP policy pointwise; task sets by ArListRel; tasks by identity and durations by SubNatRel"
+  ],
+  "coverage_for_inner_binders": [
+    "task sets",
+    "durations"
+  ],
+  "lean_representation_note": "`\\max_(x <- xs | P x) F x` is the accepted `bigMaxListCond xs P F`; `~~ b` is `!b`; `\u03b5` is `1`",
+  "export_diagnosis": "the accepted blocking-bound export root merged with the accepted ELF/GEL export root plus one kernel-checked Int order equation and the definition",
+  "extra_pinned_sources": [],
+  "extra_artifacts": [
+    {
+      "from": "model_priority_elf_final/source/util/int.vo",
+      "to": "source/util/int.vo",
+      "manifest": "util_int",
+      "key": "official_rocq_vo_sha256"
+    },
+    {
+      "from": "model_priority_elf_final/source/model/priority/gel.vo",
+      "to": "source/model/priority/gel.vo",
+      "manifest": "model_priority_gel",
+      "key": "source_vo_sha256"
+    },
+    {
+      "from": "model_priority_elf_final/source/model/priority/elf.vo",
+      "to": "source/model/priority/elf.vo",
+      "manifest": "model_priority_elf",
+      "key": "source_vo_sha256"
+    }
+  ],
+  "extra_olean_artifacts": [
+    {
+      "from": "model_priority_elf_final/olean/Prosa/Util/Int.olean",
+      "to": "Prosa/Util/Int.olean",
+      "manifest": "util_int",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "model_priority_elf_final/olean/Prosa/Model/Priority/Gel.olean",
+      "to": "Prosa/Model/Priority/Gel.olean",
+      "manifest": "model_priority_gel",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "model_priority_elf_final/olean/Prosa/Model/Priority/Elf.olean",
+      "to": "Prosa/Model/Priority/Elf.olean",
+      "manifest": "model_priority_elf",
+      "key": "production_olean_sha256"
+    }
+  ]
+}
