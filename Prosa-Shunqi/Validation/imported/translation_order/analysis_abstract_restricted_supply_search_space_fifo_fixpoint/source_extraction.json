@@ -1,0 +1,94 @@
+{
+  "mode": "proof_independent_semantic_source_signature",
+  "source_file": "analysis/abstract/restricted_supply/search_space/fifo_fixpoint.v",
+  "source_file_sha256": "08932e6f4d0bce3ffd7dbe892b390d52a86d753d2b76e872be13f2f06f2f2060",
+  "source_commit": "414e66760333eaa4ef78c685bcf53291c527a548",
+  "generated_file": "/Users/shunqiwang/CityuHK/Research/Lean/TranslationProof/Prosa-Shunqi/Validation/.work/experiments/analysis_abstract_restricted_supply_search_space_fifo_fixpoint_final/source/FifoFixpointSemanticSource.v",
+  "transformations": {
+    "computational": "byte-identical declaration block",
+    "theorem": "verified post-Section Check type converted to a definition with its declared Prop/Type sort preserved; exact source header retained as provenance; opaque proof omitted",
+    "local_bindings": {},
+    "dropped_irrelevant_imports": [
+      "Require Export prosa.analysis.abstract.restricted_supply.search_space.fifo.",
+      "Require Export prosa.analysis.definitions.sbf.busy.",
+      "Require Export prosa.model.priority.fifo.",
+      "Require Export prosa.model.task.preemption.parameters."
+    ],
+    "added_validation_imports": [
+      "Require Export prosa.RequestBoundFunctionSemanticSource.",
+      "Export RequestBoundFunctionSemanticSource.",
+      "Require Export prosa.TaskPreemptionParametersSemanticSource.",
+      "Export TaskPreemptionParametersSemanticSource.",
+      "Require Export prosa.SbfBusySemanticSource.",
+      "Export SbfBusySemanticSource.",
+      "Require Export prosa.SearchSpaceFifoSemanticSource.",
+      "Export SearchSpaceFifoSemanticSource.",
+      "Require Export prosa.model.priority.fifo.",
+      "Require Export prosa.analysis.abstract.search_space prosa.analysis.definitions.sbf.pred.",
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq bigop.",
+      "Require Import prosa.util.epsilon prosa.behavior.all prosa.model.task.arrival.curves.",
+      "Module fifo := prosa.SearchSpaceFifoSemanticSource.SearchSpaceFifoSemanticSource."
+    ],
+    "printer_repairs": [
+      "fifo_fixpoint.intra_IBF=intra_IBF"
+    ]
+  },
+  "declarations": {
+    "intra_IBF": {
+      "source_kind": "computational",
+      "acquisition_mode": "BODY_EXACT",
+      "source_block_sha256": "61795ab93125b1d6b003b9aa060ef2d3c0ed071ddacb175ec5ef652a01aa1427",
+      "generated_text_sha256": "61795ab93125b1d6b003b9aa060ef2d3c0ed071ddacb175ec5ef652a01aa1427",
+      "source_statement_sha256": null,
+      "normalized_statement_sha256": null,
+      "elaborated_type_sha256": null,
+      "elaborated_type_evidence": null,
+      "statement_sort": null,
+      "context": [
+        "  Context {Task : TaskType}.",
+        "  Context `{TaskCost Task}.",
+        "  Context `{MaxArrivals Task}.",
+        "  Context `{TaskRunToCompletionThreshold Task}.",
+        "  Context `{TaskMaxNonpreemptiveSegment Task}.",
+        "  Context {Job : JobType}.",
+        "  Context `{JobTask Job Task}.",
+        "  Context `{JobCost Job}.",
+        "  Context `{JobArrival Job}.",
+        "  Context `{JobPreemptable Job}.",
+        "  Context `{PState : ProcessorState Job}.",
+        "  Context {SBF : SupplyBoundFunction}.",
+        "  Hypothesis H_SBF_monotone : sbf_is_monotone SBF.",
+        "  Hypothesis H_unit_SBF : unit_supply_bound_function SBF.",
+        "  Variable ts : seq Task.",
+        "  Variable tsk : Task.",
+        "  Hypothesis H_tsk_in_ts : tsk \\in ts.",
+        "  Variable arr_seq : arrival_sequence Job.",
+        "  Hypothesis H_valid_arrival_curve : valid_taskset_arrival_curve ts max_arrivals.",
+        "  Variable sched : schedule PState.",
+        "  Hypothesis H_valid_SBF : valid_busy_sbf arr_seq sched tsk SBF.",
+        "  Hypothesis H_valid_run_to_completion_threshold :",
+        "    valid_task_run_to_completion_threshold arr_seq tsk.",
+        "  Variable L : duration.",
+        "  Hypothesis H_L_positive : 0 < L.",
+        "  Hypothesis H_task_cost_pos : 0 < task_cost tsk.",
+        "  Hypothesis H_arrival_curve_pos : 0 < max_arrivals tsk \u03b5."
+      ],
+      "omitted_context_for_elaborated_theorem": false,
+      "local_bindings": {}
+    },
+    "soln_abstract_response_time_recurrence": {
+      "source_kind": "theorem",
+      "acquisition_mode": "STATEMENT_EXACT_PROOF_OMITTED",
+      "source_block_sha256": "e91c6efd1db360e48289eeb3faf3a89e9b45913124a1cebd39b8dcc8c97ec66a",
+      "generated_text_sha256": "9ab3860f7bafe2a5aebf3a5f2f69c61d6628fd492bd1ac8252f9a81a0441499f",
+      "source_statement_sha256": "8d3b26c14751258a3d3e69cc2967925c19cbecb7fa7ff226e35656646e598347",
+      "normalized_statement_sha256": "71ce924f649e2ad67f6ca2fb05a901b4251a9944f736ac2d299b9a664a380bf3",
+      "elaborated_type_sha256": "89b78a8e66577f81080f1eaf5e3401231ae73bede2dd269742c9a1ba78b25845",
+      "elaborated_type_evidence": "ELABORATED_ROCQ_CHECK",
+      "statement_sort": "Prop",
+      "context": [],
+      "omitted_context_for_elaborated_theorem": true,
+      "local_bindings": {}
+    }
+  }
+}

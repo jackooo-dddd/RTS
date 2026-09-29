@@ -215,10 +215,21 @@
     "rta_recurrence_solution"
   ],
   "principal": {},
-  "helpers": [],
-  "previous_status": "PLACEHOLDER",
-  "previous_files": 0,
-  "previous_decls": 0,
+  "helpers": [
+    "rfp_fun1_to_target_rel",
+    "rfp_fun1_to_source_rel",
+    "rfp_forall_fun1",
+    "rfp_forall_sbf",
+    "rfp_task_cost_of_job_related",
+    "rfp_valid_job_costs_rel",
+    "rfp_all_jobs_from_taskset_rel",
+    "rfp_sequential_ready_at",
+    "rfp_fully_preemptive_job_related",
+    "rfp_respects_fp_rel"
+  ],
+  "previous_status": "analysis_abstract_restricted_supply_bounded_bi_elf_module_status.json",
+  "previous_files": 251,
+  "previous_decls": 1703,
   "input_relations": [
     "task_cost, job_cost and job_arrival pointwise, max_arrivals by the accepted CvMaxArrivalsRel, job_task by the accepted AdJobTaskRel, the processor state by the accepted two-sided SvcProcessorStateRel with the pointwise supply_on relation",
     "FP policies (pointwise on Booleans), supply bound functions (pointwise on Nats through their class field), task sets, arrival sequences, schedules, tasks, jobs and instants covered in both directions"
@@ -233,7 +244,7 @@
     "durations",
     "instants"
   ],
-  "lean_representation_note": "a Boolean in `Prop` position is `= true`; `a < b <= c` is `(decide (a < b) && decide (b ≤ c)) = true`; `t.+1` is `t + 1`; `j \\in s` is `decide (j ∈ s) = true`; instance inputs quantified after a hypothesis are `∀ [..]`-free explicit class variables as in the elaborated types",
+  "lean_representation_note": "a Boolean in `Prop` position is `= true`; `a < b <= c` is `(decide (a < b) && decide (b \u2264 c)) = true`; `t.+1` is `t + 1`; `j \\in s` is `decide (j \u2208 s) = true`; instance inputs quantified after a hypothesis are `\u2200 [..]`-free explicit class variables as in the elaborated types",
   "export_diagnosis": "the accepted restricted-supply FP bounded-busy-interval export root (without statements) merged with the accepted FP search-space root, plus the two definitions and the statement",
   "extra_source_patches": [
     "patches/prosa-v06-rocq93-analysis-sbf-pred.patch",
@@ -588,6 +599,54 @@
       "from": "analysis_facts_blocking_bound_edf_final/olean/Prosa/Analysis/Definitions/BlockingBound/Edf.olean",
       "to": "Prosa/Analysis/Definitions/BlockingBound/Edf.olean",
       "manifest": "analysis_definitions_blocking_bound_edf",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "model_readiness_sequential_final/olean/Prosa/Model/Readiness/Sequential.olean",
+      "to": "Prosa/Model/Readiness/Sequential.olean",
+      "manifest": "model_readiness_sequential",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_model_sequential_final/olean/Prosa/Analysis/Facts/Readiness/Sequential.olean",
+      "to": "Prosa/Analysis/Facts/Readiness/Sequential.olean",
+      "manifest": "analysis_facts_readiness_sequential",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_edf_definitions_final/olean/Prosa/Model/Preemption/FullyPreemptive.olean",
+      "to": "Prosa/Model/Preemption/FullyPreemptive.olean",
+      "manifest": "model_preemption_fully_preemptive",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_preemption_job_preemptive_final/olean/Prosa/Analysis/Facts/Preemption/Job/Preemptive.olean",
+      "to": "Prosa/Analysis/Facts/Preemption/Job/Preemptive.olean",
+      "manifest": "analysis_facts_preemption_job_preemptive",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "model_task_preemption_fully_preemptive_final/olean/Prosa/Model/Task/Preemption/FullyPreemptive.olean",
+      "to": "Prosa/Model/Task/Preemption/FullyPreemptive.olean",
+      "manifest": "model_task_preemption_fully_preemptive",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_preemption_task_preemptive_final/olean/Prosa/Analysis/Facts/Preemption/Task/Preemptive.olean",
+      "to": "Prosa/Analysis/Facts/Preemption/Task/Preemptive.olean",
+      "manifest": "analysis_facts_preemption_task_preemptive",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_preemption_rtc_threshold_preemptive_final/olean/Prosa/Analysis/Facts/Preemption/RtcThreshold/Preemptive.olean",
+      "to": "Prosa/Analysis/Facts/Preemption/RtcThreshold/Preemptive.olean",
+      "manifest": "analysis_facts_preemption_rtc_threshold_preemptive",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_abstract_restricted_supply_search_space_fp_final/olean/Prosa/Analysis/Abstract/RestrictedSupply/SearchSpace/Fp.olean",
+      "to": "Prosa/Analysis/Abstract/RestrictedSupply/SearchSpace/Fp.olean",
+      "manifest": "analysis_abstract_restricted_supply_search_space_fp",
       "key": "production_olean_sha256"
     }
   ],

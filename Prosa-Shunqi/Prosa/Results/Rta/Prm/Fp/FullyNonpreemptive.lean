@@ -89,7 +89,7 @@ def rta_recurrence_solution {Task : TaskType} [DecidableEq Task] [TaskCost Task]
       prm_sbf Pi γ F + (task_cost tsk - 1) ≤ prm_sbf Pi γ (A + R) ∧
       F ≤ A + R
 
-theorem uniprocessor_response_time_bound_fully_nonpreemptive_fp {Task : TaskType} [DecidableEq Task]
+theorem uniprocessor_response_time_bound_fully_non_preemptive_fp {Task : TaskType} [DecidableEq Task]
     [TaskCost Task] [MaxArrivals Task] {Job : JobType} [DecidableEq Job] [JobTask Job Task]
     [JobCost Job] [JobArrival Job] (ts : List Task) (tsk : Task) :
     decide (tsk ∈ ts) = true →

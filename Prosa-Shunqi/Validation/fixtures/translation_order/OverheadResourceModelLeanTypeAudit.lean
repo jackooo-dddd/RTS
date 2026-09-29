@@ -1,0 +1,24 @@
+import Prosa.Model.Processor.OverheadResourceModel
+set_option pp.fieldNotation false
+
+#check @Prosa.Model.Processor.OverheadResourceModel.time_spent_in_dispatch
+#check @Prosa.Model.Processor.OverheadResourceModel.time_spent_in_context_switch
+#check @Prosa.Model.Processor.OverheadResourceModel.time_spent_in_CRPD
+#check @Prosa.Model.Processor.OverheadResourceModel.time_spent_in_dispatch_is_bounded_by
+#check @Prosa.Model.Processor.OverheadResourceModel.time_spent_in_context_switch_is_bounded_by
+#check @Prosa.Model.Processor.OverheadResourceModel.time_spent_in_CRPD_is_bounded_by
+#check @Prosa.Model.Processor.OverheadResourceModel.dispatch_precedes_context_switch
+#check @Prosa.Model.Processor.OverheadResourceModel.context_switch_precedes_progress
+#check @Prosa.Model.Processor.OverheadResourceModel.context_switch_precedes_CRPD
+#check @Prosa.Model.Processor.OverheadResourceModel.overhead_resource_model
+
+#print axioms Prosa.Model.Processor.OverheadResourceModel.time_spent_in_dispatch
+#print axioms Prosa.Model.Processor.OverheadResourceModel.time_spent_in_context_switch
+#print axioms Prosa.Model.Processor.OverheadResourceModel.time_spent_in_CRPD
+#print axioms Prosa.Model.Processor.OverheadResourceModel.time_spent_in_dispatch_is_bounded_by
+#print axioms Prosa.Model.Processor.OverheadResourceModel.time_spent_in_context_switch_is_bounded_by
+#print axioms Prosa.Model.Processor.OverheadResourceModel.time_spent_in_CRPD_is_bounded_by
+#print axioms Prosa.Model.Processor.OverheadResourceModel.dispatch_precedes_context_switch
+#print axioms Prosa.Model.Processor.OverheadResourceModel.context_switch_precedes_progress
+#print axioms Prosa.Model.Processor.OverheadResourceModel.context_switch_precedes_CRPD
+#print axioms Prosa.Model.Processor.OverheadResourceModel.overhead_resource_model

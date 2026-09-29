@@ -11,10 +11,20 @@ Validation/tooling/file_specs/<slug>.json:
            proof-only patch, or extract_v06_semantic_source.py) + type
            fingerprint probe + fresh Lean build + Lean type/axiom audit
            + actual lean4export + Rocq import
-  check    certificate chain compile, imported type audit, fail-closed Lean
-           axiom audit and Rocq assumption audit
+  check    imported-symbol preflight, certificate chain compile, imported type
+           audit, fail-closed Lean axiom audit and Rocq assumption audit
   publish  manifest / status / publication directory (hash-chained to the
            previous status); refuses on any failed gate
+
+The production target is always built fresh.  A computation fixture .olean is
+reused from the content-addressed cache (.work/cache/lean_fixtures) only when
+its key matches: fixture source bytes, Lean binary/version/options, the Lake
+manifest, and the sha256 of every Prosa/Validation .olean in its actual import
+closure (read from the compiled import tables).  PIPELINE_FIXTURE_CACHE=0
+builds every fixture fresh (clean path).  Certificate modules are compiled in
+chain order; a module is reused within the same run only when its checkpoint
+key (Rocq/importer identity, imported .vo, source .vo set, its own .v and the
+previous module's .vo) and its recorded .vo/log hashes all match.
 
 Usage: translation_file_pipeline.py <spec.json> prepare|check|publish|all
 """
@@ -150,9 +160,167 @@ def inventory(spec: Spec) -> list[dict]:
         return [r for r in csv.DictReader(stream) if r["source_file"] == spec.source]
 
 
-def stamp(spec: Spec, stage: str, seconds: float) -> None:
+def stamp(spec: Spec, stage: str, seconds: float, mode: str = "FRESH") -> None:
     with (spec.work / "stage_timing.tsv").open("a") as out:
-        out.write(f"{stage}\tFRESH\t{int(seconds)}\n")
+        out.write(f"{stage}\t{mode}\t{int(seconds)}\n")
+
+
+def digest(obj) -> str:
+    return hashlib.sha256(json.dumps(obj, sort_keys=True).encode()).hexdigest()
+
+
+# --------------------------------------------------------------------------- fixture cache
+
+FIXTURE_CACHE = V / ".work/cache/lean_fixtures"
+LEAN_OPTIONS = ["-DautoImplicit=false", "-R", str(PROJECT)]
+
+
+def lean_identity(env: dict) -> dict:
+    """Everything outside the Prosa/Validation import closure that a fixture .olean depends on."""
+    prefix = Path(subprocess.check_output(["lean", "--print-prefix"], env=env, text=True).strip())
+    return {"lean_binary_sha256": sha(prefix / "bin/lean"),
+            "lean_version": subprocess.check_output(["lean", "--version"], env=env, text=True).strip(),
+            "lake_manifest_sha256": sha(PROJECT / "lake-manifest.json"),
+            "lean_toolchain": (PROJECT / "lean-toolchain").read_text().strip(),
+            "options": LEAN_OPTIONS, "lean_path_packages": PACKAGES}
+
+
+def olean_import_tables(files: list[Path], env: dict, tag: str) -> dict[str, list[str]]:
+    """module -> imported modules, read from the compiled .olean files themselves."""
+    if not files:
+        return {}
+    proc = subprocess.run(["lean", "--run", str(V / "scripts/olean_imports.lean"), *map(str, files)],
+                          env=env, cwd=PROJECT, capture_output=True, text=True)
+    require(proc.returncode == 0, f"olean import table read failed: {proc.stderr[-500:]}", tag)
+    by_path = dict(line.split("\t", 1) for line in proc.stdout.splitlines() if "\t" in line)
+    require(len(by_path) == len(files), "olean import table incomplete", tag)
+    return {str(p): by_path[str(p)].split() for p in files}
+
+
+def olean_module(olean: Path, path: Path) -> str:
+    return ".".join(path.relative_to(olean).with_suffix("").parts)
+
+
+def source_imports(path: Path) -> list[str]:
+    """Header imports of a fixture source (checked against the built .olean afterwards)."""
+    mods: list[str] = []
+    text = path.read_text()
+    while True:  # comments may precede the header, as in Lean (`--`, `/- … -/`, `/-! … -/`, nested)
+        text = text.lstrip()
+        if text.startswith("--"):
+            text = text.split("\n", 1)[1] if "\n" in text else ""
+        elif text.startswith("/-"):
+            depth, i = 0, 0
+            while i < len(text):
+                if text.startswith("/-", i):
+                    depth, i = depth + 1, i + 2
+                elif text.startswith("-/", i):
+                    depth, i = depth - 1, i + 2
+                    if depth == 0:
+                        break
+                else:
+                    i += 1
+            text = text[i:]
+        elif text.startswith("import "):
+            line, _, text = text.partition("\n")
+            mods += line.split("--")[0].split()[1:]
+        else:
+            return mods
+
+
+def fsha(path: Path) -> str:
+    """sha256 of an existing (possibly empty) file."""
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def fixture_cache_hit(entry: Path, module: str, key: str) -> bool:
+    meta_path, cached = entry / "meta.json", entry / f"{module}.olean"
+    if not (meta_path.is_file() and cached.is_file()):
+        return False
+    try:
+        meta = read(meta_path)
+    except json.JSONDecodeError:
+        return False
+    return (meta.get("key") == key and meta.get("module") == module
+            and fsha(cached) == meta.get("olean_sha256"))
+
+
+def fixture_cache_store(entry: Path, module: str, key: str, built: Path, slug: str) -> None:
+    import time
+    FIXTURE_CACHE.mkdir(parents=True, exist_ok=True)
+    if entry.exists():
+        if fixture_cache_hit(entry, module, key):  # stored meanwhile by a concurrent run
+            return
+        entry.rename(entry.with_name(f"{entry.name}.invalid-{int(time.time())}"))  # kept as evidence
+    tmp = Path(tempfile.mkdtemp(dir=FIXTURE_CACHE, prefix=".tmp-"))
+    shutil.copy2(built, tmp / f"{module}.olean")
+    (tmp / "meta.json").write_text(json.dumps({
+        "module": module, "key": key, "olean_sha256": sha(built), "built_in_run": slug,
+        "created_at": datetime.now(timezone.utc).isoformat()}, indent=2) + "\n")
+    try:
+        tmp.rename(entry)
+    except OSError:  # a concurrent run stored the same key first
+        shutil.rmtree(tmp)
+
+
+def build_fixtures(spec: Spec, olean: Path, env: dict) -> None:
+    """Build (or reuse from the verified cache) every computation fixture, timing each one."""
+    import time
+    tag, work = spec.tag, spec.work
+    use_cache = os.environ.get("PIPELINE_FIXTURE_CACHE", "1") != "0"
+    identity = lean_identity(env)
+    fixture_dir = olean / "Validation/fixtures/translation_order"
+    compiled = sorted(olean.rglob("*.olean"))  # production + accepted dependencies
+    tables = {olean_module(olean, Path(p)): imps
+              for p, imps in olean_import_tables(compiled, env, tag).items()}
+    hashes: dict[str, str] = {}
+
+    def olean_sha(module: str) -> str:
+        if module not in hashes:
+            path = olean / (module.replace(".", "/") + ".olean")
+            hashes[module] = fsha(path) if path.is_file() else "MISSING"
+        return hashes[module]
+
+    fixture_imports: dict[str, list[str]] = {}
+    provenance: dict = {"identity": identity, "cache_enabled": use_cache, "fixtures": {}}
+    for module in spec.get("fixtures", []):
+        t1 = time.time()
+        source = PROJECT / spec.fixtures / f"{module}.lean"
+        name = f"Validation.fixtures.translation_order.{module}"
+        fixture_imports[name] = source_imports(source)
+        closure: set[str] = set()
+        stack = list(fixture_imports[name])
+        while stack:
+            m = stack.pop()
+            if m in closure or not m.startswith(("Prosa.", "Validation.")):
+                continue
+            closure.add(m)
+            stack += fixture_imports.get(m, tables.get(m, []))
+        key = digest({"format": 1, "module": name, "source_sha256": sha(source), "identity": identity,
+                      "imports": {m: olean_sha(m) for m in sorted(closure)}})
+        out = fixture_dir / f"{module}.olean"
+        entry = FIXTURE_CACHE / key
+        if use_cache and fixture_cache_hit(entry, module, key):
+            shutil.copy2(entry / f"{module}.olean", out)
+            require(sha(out) == read(entry / "meta.json")["olean_sha256"], f"cached fixture copy differs: {module}", tag)
+            mode = "CACHED"
+        else:
+            require(run(["lean", *LEAN_OPTIONS, "-o", str(out), f"{spec.fixtures}/{module}.lean"],
+                        work / f"{module}_build.log", PROJECT, env) == 0, f"fixture build failed: {module}", tag)
+            if use_cache:
+                fixture_cache_store(entry, module, key, out, spec.slug)
+            mode = "FRESH"
+        hashes[name] = sha(out)
+        provenance["fixtures"][module] = {"mode": mode, "key": key, "olean_sha256": hashes[name],
+                                          "import_closure": len(closure)}
+        stamp(spec, f"fixture:{module}", time.time() - t1, mode)
+    # the keys used the source header imports: they must be what each built/reused .olean records
+    built = [fixture_dir / f"{m}.olean" for m in spec.get("fixtures", [])]
+    for path, imps in olean_import_tables(built, env, tag).items():
+        name = olean_module(olean, Path(path))
+        require(sorted(set(imps) - {"Init"}) == sorted(set(fixture_imports[name]) - {"Init"}),
+                f"fixture .olean imports differ from its header: {name}", tag)
+    (work / "lean_fixture_provenance.json").write_text(json.dumps(provenance, indent=2) + "\n")
 
 
 # --------------------------------------------------------------------------- prepare
@@ -298,15 +466,15 @@ def prepare(spec: Spec) -> None:
                     f"rebuilt dependency olean differs from its manifest: {out}", tag)
     prod_out = olean / spec["production_olean"]
     prod_out.parent.mkdir(parents=True, exist_ok=True)
-    require(run(["lean", "-DautoImplicit=false", "-R", str(PROJECT), "-o", str(prod_out), spec["production"]],
+    t1 = time.time()
+    require(run(["lean", *LEAN_OPTIONS, "-o", str(prod_out), spec["production"]],
                 work / "lean_build.log", PROJECT, env) == 0, "production Lean build failed", tag)
-    for module in spec.get("fixtures", []):
-        out = olean / "Validation/fixtures/translation_order" / f"{module}.olean"
-        require(run(["lean", "-DautoImplicit=false", "-R", str(PROJECT), "-o", str(out),
-                     f"{spec.fixtures}/{module}.lean"], work / f"{module}_build.log", PROJECT, env) == 0,
-                f"fixture build failed: {module}", tag)
-    require(run(["lean", "-DautoImplicit=false", "-R", str(PROJECT), spec["lean_type_audit"]],
+    stamp(spec, "lean_production", time.time() - t1)
+    build_fixtures(spec, olean, env)
+    t1 = time.time()
+    require(run(["lean", *LEAN_OPTIONS, spec["lean_type_audit"]],
                 work / "lean_type_audit.log", PROJECT, env) == 0, "Lean type audit failed", tag)
+    stamp(spec, "lean_type_audit", time.time() - t1)
     stamp(spec, "lean_build", time.time() - t0)
     t0 = time.time()
 
@@ -352,31 +520,134 @@ def rocq_cert(spec: Spec, args: list[str], log: Path) -> int:
                  "-Q", str(w / "certificates"), "FoundationCertificates", *args], log, w)
 
 
+COMMON_CERTS = ("PropSPropFoundation", "LogicalRelation", "SubadditivityNatCorrespondence")
+IMPORTED_REF = re.compile(r"\b(?:I|Imported\w+)\.(Prosa_[A-Za-z0-9_']+)")
+
+
+def chain_order(spec: Spec) -> list[str]:
+    return [*COMMON_CERTS, *spec["chain"], spec["audit_module"]]
+
+
+def chain_base_key(spec: Spec) -> str:
+    """Inputs shared by every certificate module of this run (Rocq side)."""
+    w = spec.work
+    rocq_bin = subprocess.check_output(["opam", "exec", "--switch=rocq93rc1", "--", "which", "rocq"], text=True).strip()
+    packages = subprocess.check_output(["opam", "list", "--switch=rocq93rc1", "--installed", "--short",
+                                        "--columns=package"], text=True).split()
+    return digest({"format": 1, "rocq_sha256": sha(Path(rocq_bin)), "opam_packages": packages,
+                   "importer_plugin_sha256": sha(IMPORTER / "lean_import.cmxs"),
+                   "importer_foundation_sha256": sha(IMPORTER / "Lean.vo"),
+                   "imported_vo": {p.name: sha(p) for p in sorted((w / "imported").glob("*.vo"))},
+                   "source_vo": {str(p.relative_to(w / "source")): sha(p)
+                                 for p in sorted((w / "source").rglob("*.vo"))},
+                   "load_path": ["-R source prosa", "-Q importer LeanImport", "-I importer",
+                                 "-Q imported FoundationImported", "-Q certificates FoundationCertificates"]})
+
+
+def chain_key(previous_key: str, previous_vo: str | None, module: str, source: Path) -> str:
+    return digest({"previous_key": previous_key, "previous_vo_sha256": previous_vo,
+                   "module": module, "source_sha256": fsha(source)})
+
+
+def checkpoint_valid(entry: dict | None, key: str, vo: Path, log: Path) -> bool:
+    return bool(entry and entry.get("key") == key and vo.is_file() and log.is_file()
+                and fsha(vo) == entry.get("vo_sha256") and fsha(log) == entry.get("log_sha256")
+                and "Error" not in log.read_text(errors="replace"))
+
+
+def exported_names(imported: Path) -> set[str]:
+    """Rocq-side names (`A_B_c`) of every Lean name declared in the actual export files."""
+    mangle = lambda n: "".join(c if c.isascii() else f"_UU{ord(c):04x}_" for c in n)
+    names: set[str] = set()
+    for out in sorted(imported.glob("*.out")):
+        table = {0: ""}
+        with out.open(encoding="utf-8", errors="replace") as stream:
+            for line in stream:
+                if (m := re.match(r"(\d+) #NS (\d+) (.+)$", line)):
+                    parent = table[int(m.group(2))]
+                    table[int(m.group(1))] = f"{parent}.{m.group(3).strip()}" if parent else m.group(3).strip()
+                    names.add(mangle(table[int(m.group(1))]).replace(".", "_"))
+                elif (m := re.match(r"(\d+) #NI (\d+) (\d+)", line)):
+                    table[int(m.group(1))] = f"{table[int(m.group(2))]}.{m.group(3)}"
+    return names
+
+
+def preflight_missing(spec: Spec) -> dict[str, list[str]]:
+    """Imported constants named by chain certificates or the imported type audit but absent from this
+    run's export."""
+    names = exported_names(spec.work / "imported")
+    missing = {}
+    files = {m: spec.work / f"certificates/{m}.v" for m in spec["chain"]}
+    files["imported_type_audit"] = PROJECT / spec["imported_type_audit"]
+    for m, path in files.items():
+        if not path.is_file():  # a missing chain source is rejected by the chain loop
+            continue
+        refs = set(IMPORTED_REF.findall(path.read_text()))
+        absent = sorted(n for n in refs if re.sub(r"_inst[0-9]+$", "", n) not in names)
+        if absent:
+            missing[m] = absent
+    return missing
+
+
 def check(spec: Spec) -> None:
     import time
     tag, work = spec.tag, spec.work
     require((work / f"imported/Imported{spec['export_name']}.vo").is_file(), "prepare not complete", tag)
     t0 = time.time()
     certs = work / "certificates"
-    for m in ("PropSPropFoundation", "LogicalRelation", "SubadditivityNatCorrespondence"):
+    for m in COMMON_CERTS:
         shutil.copy2(V / f"certificates/common/{m}.v", certs)
-        require(rocq_cert(spec, [f"certificates/{m}.v"], certs / f"{m}.log") == 0, f"common {m}", tag)
     for f in spec.cert_dir.glob("*.v"):
         shutil.copy2(f, certs)
-    for m in spec["chain"] + [spec["audit_module"]]:
-        if rocq_cert(spec, [f"certificates/{m}.v"], certs / f"{m}.log") != 0:
-            print((certs / f"{m}.log").read_text()[-3000:], file=sys.stderr)
-            raise Rejected(f"{tag}_CHECK_FAILED: {m}")
+    missing = preflight_missing(spec)
+    if missing:
+        raise Rejected(f"{tag}_CHECK_FAILED: preflight: imported symbols absent from the export: "
+                       + json.dumps(missing))
+    checkpoint_path = certs / "chain_checkpoints.json"
+    try:
+        checkpoints = read(checkpoint_path) if checkpoint_path.is_file() else {}
+    except json.JSONDecodeError:
+        checkpoints = {}
+
+    def save() -> None:
+        tmp = checkpoint_path.with_suffix(".tmp")
+        tmp.write_text(json.dumps(checkpoints, indent=2) + "\n")
+        tmp.replace(checkpoint_path)
+
+    key, vo_sha, compiled, reused = chain_base_key(spec), None, 0, 0
+    for m in chain_order(spec):
+        if not (certs / f"{m}.v").is_file():  # e.g. the audit module, generated at finalization
+            raise Rejected(f"{tag}_CHECK_FAILED: missing certificate source {m}.v "
+                           f"(compiled {compiled}, reused {reused} before it)")
+        key = chain_key(key, vo_sha, m, certs / f"{m}.v")
+        vo, log = certs / f"{m}.vo", certs / f"{m}.log"
+        if checkpoint_valid(checkpoints.get(m), key, vo, log):
+            reused += 1
+        else:
+            checkpoints.pop(m, None)
+            save()
+            if rocq_cert(spec, [f"certificates/{m}.v"], log) != 0:
+                print(log.read_text()[-3000:], file=sys.stderr)
+                raise Rejected(f"{tag}_CHECK_FAILED: {m}")
+            checkpoints[m] = {"key": key, "vo_sha256": sha(vo), "log_sha256": fsha(log)}
+            save()
+            compiled += 1
+        vo_sha = checkpoints[m]["vo_sha256"]
+    stamp(spec, "certificate_compile", time.time() - t0, f"COMPILED={compiled};REUSED={reused}")
+    print(f"{tag}_CERTIFICATES: compiled {compiled}, reused {reused}")
+    t0 = time.time()
     if rocq_cert(spec, [str(PROJECT / spec["imported_type_audit"])], work / "imported_type_audit.log") != 0:
         print((work / "imported_type_audit.log").read_text()[-3000:], file=sys.stderr)
         raise Rejected(f"{tag}_CHECK_FAILED: imported type audit")
-    stamp(spec, "certificate_compile", time.time() - t0)
+    stamp(spec, "imported_type_audit", time.time() - t0)
     t0 = time.time()
     if run([sys.executable, str(V / "scripts/audit_lean_axioms.py"), "--config", str(V / spec["lean_axiom_config"]),
             "--log", "lean_type_audit.log", "--output", "lean_axiom_summary.json"],
            work / "lean_axiom_classifier.log", work) != 0:
         print((work / "lean_axiom_classifier.log").read_text()[-3000:], file=sys.stderr)
         raise Rejected(f"{tag}_CHECK_FAILED: Lean axiom audit")
+    stamp(spec, "lean_axiom_audit", time.time() - t0)
+    t0 = time.time()
     if run([sys.executable, str(V / "scripts/audit_assumptions.py"), "--config", str(V / spec["assumption_config"]),
             "--log", f"certificates/{spec['audit_module']}.log", "--output", "assumption_summary.json"],
            work / "assumption_classifier.log", work) != 0:
@@ -450,15 +721,17 @@ def fingerprint_matches(spec: Spec, rows: list[dict]) -> dict:
         # difference, nothing else.
         mc_order = re.sub(r"(?<![\w.'])Order\.Def\.(max|min)(?![\w'])", r"Order.\1", ref)
         # A statement may name a declaration of this same file qualified by the
-        # file's own module (`edf.x`) when another `x` was in scope in the
-        # official environment; the extraction repairs exactly that qualifier
-        # to the local name (recorded printer repair `own.x=x` for a declaration
-        # `x` of this file).  Accept exactly those recorded repairs, nothing else.
+        # file's own module (`edf.x`, or a longer trailing suffix of the file's
+        # own logical path such as `edf.fully_preemptive.x`, as in the `Check`
+        # rule above) when another `x` was in scope in the official environment;
+        # the extraction repairs exactly that qualifier to the local name
+        # (recorded printer repair `qual.x=x` for a declaration `x` of this
+        # file).  Accept exactly those recorded repairs, nothing else.
         own_names = {r["declaration_name"] for r in inventory(spec)}
         own_repairs = [tuple(r.split("=", 1)) for r in
                        (spec.get("extraction") or {}).get("printer_repairs", [])]
         own_repairs = [(old, new) for old, new in own_repairs
-                       if new in own_names and old == f"{own}.{new}"]
+                       if new in own_names and any(old == f"{qual}.{new}" for qual in own_qualifiers)]
         repaired = ref
         for old, new in own_repairs:
             repaired = re.sub(rf"(?<![\w.']){re.escape(old)}(?![\w'])", new, repaired)
@@ -654,8 +927,18 @@ def publish(spec: Spec) -> None:
         require(sha(work / f"certificates/{m}.vo")
                 and "Error" not in (work / f"certificates/{m}.log").read_text(), f"cert compile: {m}", tag)
         require(not ESCAPE_ROCQ.search((spec.cert_dir / f"{m}.v").read_text()), f"certificate escape: {m}", tag)
-    for m in ("PropSPropFoundation", "LogicalRelation", "SubadditivityNatCorrespondence"):
+    for m in COMMON_CERTS:
         require(sha(V / f"certificates/common/{m}.v") == sha(work / f"certificates/{m}.v"), f"common {m}", tag)
+    # every published .vo must be the checkpointed compile of the current chain inputs
+    checkpoint_path = work / "certificates/chain_checkpoints.json"
+    checkpoints = read(checkpoint_path)
+    key, vo_sha = chain_base_key(spec), None
+    for m in chain_order(spec):
+        key = chain_key(key, vo_sha, m, work / f"certificates/{m}.v")
+        require(checkpoint_valid(checkpoints.get(m), key, work / f"certificates/{m}.vo",
+                                 work / f"certificates/{m}.log"), f"certificate checkpoint mismatch: {m}", tag)
+        vo_sha = checkpoints[m]["vo_sha256"]
+    provenance = work / "lean_fixture_provenance.json"
     summary = read(work / "assumption_summary.json")
     aconf = read(V / spec["assumption_config"])
     principal = spec["principal"]
@@ -720,6 +1003,8 @@ def publish(spec: Spec) -> None:
         "stage_timing_seconds": {s: {"mode": m, "seconds": int(t)} for s, m, t in timing},
         "certificates": {m: {"source_sha256": sha(spec.cert_dir / f"{m}.v"),
                              "vo_sha256": sha(work / f"certificates/{m}.vo")} for m in modules},
+        "certificate_checkpoints_sha256": sha(checkpoint_path),
+        **({"lean_fixture_provenance_sha256": sha(provenance)} if provenance.is_file() else {}),
         "declarations": declarations, "acceptance": "ACCEPTED_V06_FILE",
     }
     manifest_path = PIPE / f"{spec.slug}_module_manifest.json"
@@ -745,6 +1030,7 @@ def publish(spec: Spec) -> None:
     status_path.write_text(json.dumps(status, indent=2) + "\n")
     (destination / "certificates").mkdir(parents=True)
     extra = [work / "source_extraction.json"] if mode == "extract" else []
+    extra += [checkpoint_path] + ([provenance] if provenance.is_file() else [])
     for p in [exported, work / f"imported/Imported{name}.v", imported_vo, work / "export_metadata.json",
               work / "lean_type_audit.log", work / "lean_axiom_summary.json", work / "assumption_summary.json",
               work / "source_type_fingerprint.log", work / "source_build.log", work / "stage_timing.tsv",

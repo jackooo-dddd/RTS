@@ -1,0 +1,26 @@
+import Prosa.Analysis.Facts.Model.Overheads.BlackoutBound
+set_option pp.fieldNotation false
+
+#check @Prosa.Analysis.Facts.Model.Overheads.BlackoutBound.blackout_during_split
+#check @Prosa.Analysis.Facts.Model.Overheads.BlackoutBound.total_dispatch_time_eq_job_dispatch_time
+#check @Prosa.Analysis.Facts.Model.Overheads.BlackoutBound.total_cswitch_time_eq_job_cswitch_time
+#check @Prosa.Analysis.Facts.Model.Overheads.BlackoutBound.total_CRPD_time_eq_job_CRPD_time
+#check @Prosa.Analysis.Facts.Model.Overheads.BlackoutBound.total_time_in_dispatch_is_bounded
+#check @Prosa.Analysis.Facts.Model.Overheads.BlackoutBound.total_time_in_cswitch_is_bounded
+#check @Prosa.Analysis.Facts.Model.Overheads.BlackoutBound.total_time_in_CRPD_is_bounded
+#check @Prosa.Analysis.Facts.Model.Overheads.BlackoutBound.no_sched_changes_bounded_overheads_blackout
+#check @Prosa.Analysis.Facts.Model.Overheads.BlackoutBound.sched_changes_start_busy_pref_bounded_overheads_blackout
+#check @Prosa.Analysis.Facts.Model.Overheads.BlackoutBound.fin_sched_changes_start_busy_pref_bounded_overheads_blackout
+#check @Prosa.Analysis.Facts.Model.Overheads.BlackoutBound.finite_sched_changes_bounded_overheads_blackout
+
+#print axioms Prosa.Analysis.Facts.Model.Overheads.BlackoutBound.blackout_during_split
+#print axioms Prosa.Analysis.Facts.Model.Overheads.BlackoutBound.total_dispatch_time_eq_job_dispatch_time
+#print axioms Prosa.Analysis.Facts.Model.Overheads.BlackoutBound.total_cswitch_time_eq_job_cswitch_time
+#print axioms Prosa.Analysis.Facts.Model.Overheads.BlackoutBound.total_CRPD_time_eq_job_CRPD_time
+#print axioms Prosa.Analysis.Facts.Model.Overheads.BlackoutBound.total_time_in_dispatch_is_bounded
+#print axioms Prosa.Analysis.Facts.Model.Overheads.BlackoutBound.total_time_in_cswitch_is_bounded
+#print axioms Prosa.Analysis.Facts.Model.Overheads.BlackoutBound.total_time_in_CRPD_is_bounded
+#print axioms Prosa.Analysis.Facts.Model.Overheads.BlackoutBound.no_sched_changes_bounded_overheads_blackout
+#print axioms Prosa.Analysis.Facts.Model.Overheads.BlackoutBound.sched_changes_start_busy_pref_bounded_overheads_blackout
+#print axioms Prosa.Analysis.Facts.Model.Overheads.BlackoutBound.fin_sched_changes_start_busy_pref_bounded_overheads_blackout
+#print axioms Prosa.Analysis.Facts.Model.Overheads.BlackoutBound.finite_sched_changes_bounded_overheads_blackout

@@ -101,6 +101,15 @@ def active_context(text: str, stop: int) -> list[str]:
             while not command[-1].rstrip().endswith("."):
                 i += 1
                 command.append(lines[i])
+            # An instance whose body names itself re-exposes the imported constant
+            # of the same name (e.g. `rs_jlfp_interference := rs_jlfp_interference
+            # arr_seq sched`); in the extracted module that name resolves to the
+            # extracted helper block instead, so such an instance is not copied
+            # (statements name these instances explicitly via printer repairs).
+            body = " ".join(command).split(":=", 1)[1] if ":=" in " ".join(command) else ""
+            if re.search(rf"(?<![\w.']){re.escape(m.group(1))}(?![\w'])", body):
+                i += 1
+                continue
             indent = lines[i - len(command) + 1][: len(lines[i - len(command) + 1]) - len(stripped)]
             first = re.sub(r"#\[local\]\s*Instance\s+", "Let ", command[0], count=1)
             frames[-1].extend([first, *command[1:], f"{indent}#[local] Existing Instance {m.group(1)}."])

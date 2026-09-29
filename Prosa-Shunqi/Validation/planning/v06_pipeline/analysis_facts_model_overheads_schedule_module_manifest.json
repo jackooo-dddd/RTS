@@ -1,0 +1,388 @@
+{
+  "slice": "TRANSLATION_ORDER_ANALYSIS_FACTS_MODEL_OVERHEADS_SCHEDULE",
+  "generated_at": "2026-09-29T03:49:16.755067+08:00",
+  "published_at": "2026-09-29T03:49:16.755067+08:00",
+  "rank": 226,
+  "layer": 22,
+  "source_file": "analysis/facts/model/overheads/schedule.v",
+  "source_commit": "414e66760333eaa4ef78c685bcf53291c527a548",
+  "source_tree": "7d7e94c731f7eefde4ca738310d4cafdd7bebdf0",
+  "source_file_sha256": "4ada82303a143dfe437f16282371e73cf86fb64b967e0c487b1bf006b2a3a173",
+  "pipeline": "Validation/scripts/translation_file_pipeline.py",
+  "spec": "Validation/tooling/file_specs/analysis_facts_model_overheads_schedule.json",
+  "spec_sha256": "af45547fe26d2c9b3469023feb9190c65620b600dcddb197e4497462016cc85f",
+  "source_compatibility": {
+    "mode": "extract",
+    "note": "theorem statements from the authoritative elaborated types (proofs omitted); model/processor/overheads is the accepted validation source with its accepted Rocq 9.3 compatibility patch (.v and .vo copied from its accepted run and hash-checked against its manifest) (imported here with Export so that its notations are available to the statements); the classical busy interval, work-bearing readiness, work conservation and job properties are the accepted extracted and compiled pinned sources of the base closure; the proof-only pi import is dropped; the source's Global Hint Resolve command is proof automation only",
+    "extracted_sha256": "290b64b8c8c98b98e93cea74a5e59c08d01619feeee0f3c27578c0d4e6417d89",
+    "extraction_metadata_sha256": "063c4c8383c6c198c79290c2d17438689f10c76be58587e61f6b588e00127c09"
+  },
+  "source_type_evidence": {
+    "prosa.analysis.facts.model.overheads.schedule.overheads_proc_model_is_a_uniprocessor_model": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.model.overheads.schedule.overheads_proc_model_provides_unit_supply": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.model.overheads.schedule.overheads_proc_model_fully_consuming": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.model.overheads.schedule.scheduled_job_dec": "TYPE_EQUAL_MODULO_EXISTS_PARENS",
+    "prosa.analysis.facts.model.overheads.schedule.scheduled_at_iff_scheduled_job": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.model.overheads.schedule.job_scheduled_in_busy_interval_prefix": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE"
+  },
+  "statement_only_export_boundary": [
+    "Prosa.Analysis.Facts.Model.Overheads.Schedule.overheads_proc_model_is_a_uniprocessor_model",
+    "Prosa.Analysis.Facts.Model.Overheads.Schedule.overheads_proc_model_provides_unit_supply",
+    "Prosa.Analysis.Facts.Model.Overheads.Schedule.overheads_proc_model_fully_consuming",
+    "Prosa.Analysis.Facts.Model.Overheads.Schedule.scheduled_job_dec",
+    "Prosa.Analysis.Facts.Model.Overheads.Schedule.scheduled_at_iff_scheduled_job",
+    "Prosa.Analysis.Facts.Model.Overheads.Schedule.job_scheduled_in_busy_interval_prefix"
+  ],
+  "input_relations": [
+    "job_arrival by ArJobArrivalRel, job_cost by the accepted SvcJobCostRel",
+    "the overheads processor model by a concrete processor-model relation (state and core bijections with the scheduled/service/supply observations, through the kernel-checked interface equations)",
+    "schedules through it (covered)",
+    "JLFP policies pointwise on Booleans (covered)",
+    "JobReady on the statement's schedule pair (covered)",
+    "arrival sequences by ArArrivalSequenceRel (covered)",
+    "jobs identity, instants by SubNatRel"
+  ],
+  "coverage_for_inner_binders": [
+    "schedules",
+    "JLFP policies",
+    "JobReady",
+    "arrival sequences",
+    "jobs identity",
+    "instants"
+  ],
+  "lean_representation_note": "Booleans in Prop position are `= true`; the canonical conversions JLFP\u2192JLDP and FP\u2192JLFP are the accepted `JLFP_to_JLDP`/`FP_to_JLFP`, passed explicitly",
+  "export_size": {
+    "lines": 147011,
+    "soft_budget_flag": "OVER_100K_DIAGNOSED",
+    "diagnosis": "the accepted pi export root plus the overheads processor model, the fully-consuming and unit-supply platform properties, three kernel-checked per-state interface equations, and the six statements; the export root is the validation-only witness module OverheadsInstWitnessComputationInterface (imports the overheads root; 42 definitions applying generic processor-state-dependent constants at the overheads processor model so that the import provides their universe-specialised copies; no statement or equation added)"
+  },
+  "file_dependencies": {
+    "analysis/facts/busy_interval/pi.v": "analysis_facts_busy_interval_pi_module_status.json",
+    "model/processor/overheads.v": "model_processor_overheads_module_status.json"
+  },
+  "production_file": "Prosa/Analysis/Facts/Model/Overheads/Schedule.lean",
+  "production_source_sha256": "179b6240aa73fa790981299171c6b5e7578dac31c851940260454d52a284315f",
+  "production_olean_sha256": "d13a8486a78d2eb85abab2077baf2d13051d12af4f607d278422d7f7a0349722",
+  "export_config_sha256": "26ddfd524340f000150b57d39a8a46d44ed1215442b57014425ad6ddfe04c5ab",
+  "export_sha256": "a8fbc619fbbd799693297948173e0a3e231c1bcb6f412de1c59de9f4e1dabaec",
+  "export_lines": 147011,
+  "export_bytes": 3320346,
+  "import_sha256": "81e1a150ac86a4f155076e994208f9805ba77984de6f0a729e9ad1399dd8cebe",
+  "source_vo_sha256": "5fcffe09ad77ca3fcd71d0e29a54a4ebc9903ff070083f37f5ab0b198349ea15",
+  "lean_axiom_summary_sha256": "ab64ddf73f6d914fbfe09047db26820735a667a5cea6f8a959306a15c836ba28",
+  "rocq_assumption_summary_sha256": "30a1fd10123772cf794cfbac192c805b22f0bb86acfdee79836842b1f70bc0a1",
+  "assumption_config_sha256": "592b5a095f3b567ec7fa9ef1866a25b50f30dcff4b287ecc59896294d5dff965",
+  "stage_timing_seconds": {
+    "source_acquisition": {
+      "mode": "FRESH",
+      "seconds": 3
+    },
+    "lean_production": {
+      "mode": "FRESH",
+      "seconds": 45
+    },
+    "fixture:NondecreasingComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:BigcatComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:ArrivalSequenceComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:ScheduleComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:ServiceComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:PreemptionParameterComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:PreemptionTimeComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:PriorityDrivenComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:ScheduledComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:ProcessorStateCoverInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:FactsPreemptionComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:BusyIntervalClassicalComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:ArrivalsComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:WorkloadComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:ServiceOfJobsComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:FactsServiceOfJobsComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:PriorityInversionComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:WorkBearingReadinessComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:JobPropertiesExportInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:ExistenceComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:HepAtPtComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:TaskPreemptionParametersComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:PiComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:OverheadsScheduleComputationInterface": {
+      "mode": "FRESH",
+      "seconds": 53
+    },
+    "fixture:OverheadsInstWitnessComputationInterface": {
+      "mode": "FRESH",
+      "seconds": 41
+    },
+    "lean_type_audit": {
+      "mode": "FRESH",
+      "seconds": 36
+    },
+    "lean_build": {
+      "mode": "FRESH",
+      "seconds": 182
+    },
+    "export": {
+      "mode": "FRESH",
+      "seconds": 36
+    },
+    "rocq_import": {
+      "mode": "FRESH",
+      "seconds": 46
+    },
+    "certificate_compile": {
+      "mode": "COMPILED=0;REUSED=26",
+      "seconds": 0
+    },
+    "imported_type_audit": {
+      "mode": "FRESH",
+      "seconds": 0
+    },
+    "lean_axiom_audit": {
+      "mode": "FRESH",
+      "seconds": 0
+    },
+    "assumption_audit": {
+      "mode": "FRESH",
+      "seconds": 0
+    }
+  },
+  "certificates": {
+    "OvhArrivalsSeqBaseAdapter": {
+      "source_sha256": "d4d1a83e70ca0b1d6f59d65d31bf6a8985a173f008bf25da58bd5ef956a650c7",
+      "vo_sha256": "ce2f01a5ecef31c7b69058075461458323269a1d474546160f80885b71996fac"
+    },
+    "OvhArrivalsSeqOperations": {
+      "source_sha256": "9531bdd56653719e7779104de19e5a12e3184bf85ddc460d3e8ea516c4d8b458",
+      "vo_sha256": "a63281c5f380b3634debb64236957072fd138836bc5a01e2728de2675bd2a694"
+    },
+    "OvhArrivalsSeqCorrespondence": {
+      "source_sha256": "a2391024f2446430056e0e6affe8d90f5d428e1a1e51d3d0dcfa65b7b94cf152",
+      "vo_sha256": "33a16cd2941dadbb166e03f80709c8e0091f5fbfba5c951c469a9fe405e81575"
+    },
+    "OvhArrivalsCorrespondence": {
+      "source_sha256": "45d03c9e3b586934f55db0c316bce261dc777260d4ed4cfd444a5fd45c617bdd",
+      "vo_sha256": "fd57fd55d5b066f0bcaaf3f56125796d8226434a3f0ffeb3aab9dabe40d696ea"
+    },
+    "OvhJitterSvcBaseAdapter": {
+      "source_sha256": "40c38d9dd1aca4a20010d6d644eb8bde230d76b2f1c8aa0edbe4ae478c3e7ce9",
+      "vo_sha256": "cc9037ba88d07da34f8a902f5d71bec34c1f3b4fb4b118c05446071b040f8159"
+    },
+    "OvhJitterSvcNatBoolOperations": {
+      "source_sha256": "dd883615ffd588882b49b704cb29488ab749332a1271f39f5a0c5520972d83db",
+      "vo_sha256": "e3e962929b4a8258bc8622d3703f368ac28c55c05128c87b8f37653fa37f642b"
+    },
+    "OvhJitterSvcIntervalOperations": {
+      "source_sha256": "14bd5723b58193b60c78c7ca8e30ed51d0354f6cb32cc230b61747abe2297aa1",
+      "vo_sha256": "abb40403ffc4beacf23e5465227b40e65d9f61636c91ead0fb06ac4eddb3c997"
+    },
+    "OvhJitterSvcScheduleOperations": {
+      "source_sha256": "6d13b10a9a5528e13dd38f7e005043d218615ea2ef4e19232abc07fa0277a17e",
+      "vo_sha256": "c5dbc5f7a6b1642ca89eb9057a77270841109d76abc6aeb7e4df0e28d0182399"
+    },
+    "OvhJitterSvcJobOperations": {
+      "source_sha256": "1665f3d7df104657eb51270b433497e5a320e8d0ce3fd3cc489487f181c6542e",
+      "vo_sha256": "ff668f1f4c683a342616837b881d50f15717d4e2bfed7e01698f2b3ef6c6cf0f"
+    },
+    "OvhPreemptionParameterCorrespondence": {
+      "source_sha256": "bc87e7040586944d88059f82ed83be98d2792352e4d8bc586a6fc27d6a95870a",
+      "vo_sha256": "00a17d0762209cf35dc2dac9a55d83a6012eac618c50478852096898b57e78ee"
+    },
+    "OvhPreemptionTimeCorrespondence": {
+      "source_sha256": "639b6b6c02c7cb274a7589c77162c92b32f1e3fbbe92dce81896563830593ef6",
+      "vo_sha256": "9ed5d744984b79239f5be992d4b6ce1228f9d74fb2c549e5abdaa5d76385ae76"
+    },
+    "OvhPriorityDrivenCorrespondence": {
+      "source_sha256": "7cdaca97f7483cbd8c3f44a5a8aa91c6d87a0da623b4342267827a91a4d7808f",
+      "vo_sha256": "5e244c474703de74ad964386210dccb44e3e707414adb2243f5c306f0eec5f6a"
+    },
+    "OvhPStateCoverHelpers": {
+      "source_sha256": "41d76b7fe32420fe1ce9db31f2c60fa21447227c2953f64c6362dde68ed4eaf7",
+      "vo_sha256": "4ba9905c8ac368180e5fbffd9baa2a36a7ecd2f0c0a16634a5840ee844731faa"
+    },
+    "OvhFactsPreemptionHelpers": {
+      "source_sha256": "1674d24b38b62c2484e54b429028153c306c11757767f13e037acf3a367f0688",
+      "vo_sha256": "db0de7bda275d933d9f6ba300dd75bd7be96ad22967849a767c0abf6e58b006e"
+    },
+    "OvhWorkloadCorrespondence": {
+      "source_sha256": "c5924db3677c5cb47c530ed981fa0d2a4335d4e53d36537063ffb3a60d80bcad",
+      "vo_sha256": "798ada50e2757559752aa817dad2f43980256dd6d41d2781d562fc744e3f284a"
+    },
+    "OvhPriorityInversionCorrespondence": {
+      "source_sha256": "3040265c1d8492c1e60c5a3b18f4da0c178faa11c899fe33f07c1eaf705a27ce",
+      "vo_sha256": "4e54f6fdcb3803adab3df27d89348a082e43ca14edfabe7caa1439b7bdbb61a9"
+    },
+    "OvhExistenceHelpers": {
+      "source_sha256": "81265622a505407502eb4dcf6898b15d92e0e2eb178b65212a974348d55e98d4",
+      "vo_sha256": "3fec2e3317807bae99b384c279e7cabccece5f323a1c8dc603d32f29cee8a530"
+    },
+    "OvhHepAtPtHelpers": {
+      "source_sha256": "d41958dea96c914450d845ac66ffe9a38e400657416e37bc6ba6871ac498fdbc",
+      "vo_sha256": "987cb10dd187d3e1a25e155cc382e7bdc7a24d5cd48c1aa80df66ebe4e0df595"
+    },
+    "OvhTaskPreemptionParametersCorrespondence": {
+      "source_sha256": "1e5f5affcfded9aa7d8d6625f961ffb7a9306954ce292cf0c8c152941c76e9ee",
+      "vo_sha256": "555a80d567c84bfb30c04ade393e27ae7069198c95f9de25deda8f8836660ac0"
+    },
+    "OvhBusyIntervalPiHelpers": {
+      "source_sha256": "4fa2cb27611584430aebe0b8fcd24940d059ca1f3ae8dc160e5b3c64cb42d94e",
+      "vo_sha256": "8dd9e8f989a8e03a37c9f64a4b4a1a3f14b42188cd72e2d8699de8ddb3c601eb"
+    },
+    "OvhStateRel": {
+      "source_sha256": "f0def551f45e0e87291e1f5ec5622ca7b73dc522f1b3f21cf36679edd6ed7140",
+      "vo_sha256": "b73de2508b8504397eef9b28a93dbd8346736de7324d4771dac0ed3c434bc3ff"
+    },
+    "OverheadsScheduleCorrespondence": {
+      "source_sha256": "e8e3a91b6bee995ffbcb7fe884f35bfda3815fc630442272b2d11e017435116a",
+      "vo_sha256": "5d7c4b9f26ee686978b643e5a7b8087e56e2803c3db250988694912bac81af5f"
+    },
+    "OverheadsScheduleAssumptionAudit": {
+      "source_sha256": "b884119de65b5c9f2ab7f33873b7a13421a1a9966fbe7cf72dbbc95b6b399888",
+      "vo_sha256": "d89168f7939f8c0d926e5a390a1eb99a35e8b24c143c54ca033013978f3b404f"
+    }
+  },
+  "certificate_checkpoints_sha256": "c67a97a02077d558592af143f9602e75a8bec16d15733d2ce425a3c03c7da8ec",
+  "lean_fixture_provenance_sha256": "1d75692c70ed2efaac7e55db2c1b37c18136b9860d9e122f98dfe89a2d78642f",
+  "declarations": [
+    {
+      "source_declaration": "prosa.analysis.facts.model.overheads.schedule.overheads_proc_model_is_a_uniprocessor_model",
+      "lean_declaration": "Prosa.Analysis.Facts.Model.Overheads.Schedule.overheads_proc_model_is_a_uniprocessor_model",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "overheads_proc_model_is_a_uniprocessor_model_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.model.overheads.schedule.overheads_proc_model_provides_unit_supply",
+      "lean_declaration": "Prosa.Analysis.Facts.Model.Overheads.Schedule.overheads_proc_model_provides_unit_supply",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "overheads_proc_model_provides_unit_supply_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.model.overheads.schedule.overheads_proc_model_fully_consuming",
+      "lean_declaration": "Prosa.Analysis.Facts.Model.Overheads.Schedule.overheads_proc_model_fully_consuming",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "overheads_proc_model_fully_consuming_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.model.overheads.schedule.scheduled_job_dec",
+      "lean_declaration": "Prosa.Analysis.Facts.Model.Overheads.Schedule.scheduled_job_dec",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "scheduled_job_dec_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.model.overheads.schedule.scheduled_at_iff_scheduled_job",
+      "lean_declaration": "Prosa.Analysis.Facts.Model.Overheads.Schedule.scheduled_at_iff_scheduled_job",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "scheduled_at_iff_scheduled_job_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.model.overheads.schedule.job_scheduled_in_busy_interval_prefix",
+      "lean_declaration": "Prosa.Analysis.Facts.Model.Overheads.Schedule.job_scheduled_in_busy_interval_prefix",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "job_scheduled_in_busy_interval_prefix_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    }
+  ],
+  "acceptance": "ACCEPTED_V06_FILE"
+}

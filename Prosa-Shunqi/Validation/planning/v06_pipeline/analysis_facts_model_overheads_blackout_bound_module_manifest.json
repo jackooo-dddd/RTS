@@ -1,0 +1,531 @@
+{
+  "slice": "TRANSLATION_ORDER_ANALYSIS_FACTS_MODEL_OVERHEADS_BLACKOUT_BOUND",
+  "generated_at": "2026-09-29T09:34:14.246465+08:00",
+  "published_at": "2026-09-29T09:34:14.246465+08:00",
+  "rank": 271,
+  "layer": 25,
+  "source_file": "analysis/facts/model/overheads/blackout_bound.v",
+  "source_commit": "414e66760333eaa4ef78c685bcf53291c527a548",
+  "source_tree": "7d7e94c731f7eefde4ca738310d4cafdd7bebdf0",
+  "source_file_sha256": "8abfe8b14890f59d808eb425ad6c6e9ef859b6ff3bda60b1c7c3bf0935215508",
+  "pipeline": "Validation/scripts/translation_file_pipeline.py",
+  "spec": "Validation/tooling/file_specs/analysis_facts_model_overheads_blackout_bound.json",
+  "spec_sha256": "835c5aa5db42592ac4f1e5910b57c078b1c55d24665428d0784e23573401b271",
+  "source_compatibility": {
+    "mode": "extract",
+    "note": "theorem statements from the authoritative elaborated types (proofs omitted); the overhead-resource-model definitions module is the accepted extracted source (.vo copied from its accepted run and hash-checked), which re-exports the overheads processor model and the schedule-change definitions",
+    "extracted_sha256": "7f309294c7ae20375339a40d3369ef3f23333108357a7ee11b0166852f1570a6",
+    "extraction_metadata_sha256": "1ff30475ec6f01cece12640dee7cde4aa9268b6923164264dc68f7db8e1a8608"
+  },
+  "source_type_evidence": {
+    "prosa.analysis.facts.model.overheads.blackout_bound.blackout_during_split": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.model.overheads.blackout_bound.total_dispatch_time_eq_job_dispatch_time": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.model.overheads.blackout_bound.total_cswitch_time_eq_job_cswitch_time": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.model.overheads.blackout_bound.total_CRPD_time_eq_job_CRPD_time": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.model.overheads.blackout_bound.total_time_in_dispatch_is_bounded": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.model.overheads.blackout_bound.total_time_in_cswitch_is_bounded": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.model.overheads.blackout_bound.total_time_in_CRPD_is_bounded": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.model.overheads.blackout_bound.no_sched_changes_bounded_overheads_blackout": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.model.overheads.blackout_bound.sched_changes_start_busy_pref_bounded_overheads_blackout": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.model.overheads.blackout_bound.fin_sched_changes_start_busy_pref_bounded_overheads_blackout": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.model.overheads.blackout_bound.finite_sched_changes_bounded_overheads_blackout": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE"
+  },
+  "statement_only_export_boundary": [
+    "Prosa.Analysis.Facts.Model.Overheads.BlackoutBound.blackout_during_split",
+    "Prosa.Analysis.Facts.Model.Overheads.BlackoutBound.total_dispatch_time_eq_job_dispatch_time",
+    "Prosa.Analysis.Facts.Model.Overheads.BlackoutBound.total_cswitch_time_eq_job_cswitch_time",
+    "Prosa.Analysis.Facts.Model.Overheads.BlackoutBound.total_CRPD_time_eq_job_CRPD_time",
+    "Prosa.Analysis.Facts.Model.Overheads.BlackoutBound.total_time_in_dispatch_is_bounded",
+    "Prosa.Analysis.Facts.Model.Overheads.BlackoutBound.total_time_in_cswitch_is_bounded",
+    "Prosa.Analysis.Facts.Model.Overheads.BlackoutBound.total_time_in_CRPD_is_bounded",
+    "Prosa.Analysis.Facts.Model.Overheads.BlackoutBound.no_sched_changes_bounded_overheads_blackout",
+    "Prosa.Analysis.Facts.Model.Overheads.BlackoutBound.sched_changes_start_busy_pref_bounded_overheads_blackout",
+    "Prosa.Analysis.Facts.Model.Overheads.BlackoutBound.fin_sched_changes_start_busy_pref_bounded_overheads_blackout",
+    "Prosa.Analysis.Facts.Model.Overheads.BlackoutBound.finite_sched_changes_bounded_overheads_blackout"
+  ],
+  "input_relations": [
+    "the overheads processor model fixed on both sides and related by the accepted concrete relation (ovh_psrel)",
+    "schedules through it (covered in both directions; also related by the accepted constructor-wise overheads and schedule-change relations); option jobs through the option map (covered in both directions); instants, durations and counts by SubNatRel"
+  ],
+  "coverage_for_inner_binders": [
+    "schedules",
+    "instants",
+    "durations",
+    "counts",
+    "option jobs"
+  ],
+  "lean_representation_note": "Booleans in Prop position are `= true`; the canonical conversions JLFP\u2192JLDP and FP\u2192JLFP are the accepted `JLFP_to_JLDP`/`FP_to_JLFP`, passed explicitly",
+  "export_size": {
+    "lines": 151230,
+    "soft_budget_flag": "OVER_100K_DIAGNOSED",
+    "diagnosis": "the accepted overhead-resource-model export root merged with the accepted overheads interval-count and supply projection roots, plus the eleven statements"
+  },
+  "file_dependencies": {
+    "model/processor/overhead_resource_model.v": "model_processor_overhead_resource_model_module_status.json"
+  },
+  "production_file": "Prosa/Analysis/Facts/Model/Overheads/BlackoutBound.lean",
+  "production_source_sha256": "9a448781873f061ffe66007d01e57b90a056b262bd36877f2079c9c4d1419498",
+  "production_olean_sha256": "0e77fcb9acf5b82c67aa3693a4fd178422b16e12f4f2a43b98ae0a97cc6bc6a5",
+  "export_config_sha256": "5482933d7ecc30e1d5ff841ae83695f14c9c3bfaaab9cffe2cec97f9657b3d7b",
+  "export_sha256": "f56d4a586e5ebba4fae1046edba0eefea9783d2d9de137c23852581b49581a75",
+  "export_lines": 151230,
+  "export_bytes": 3428087,
+  "import_sha256": "98fd8340be17b827968a73604d4c481ed3531571e5c76f1d6a16e8346968e3f8",
+  "source_vo_sha256": "ef1970d59d8538ae18e4bcd40169779ad491bd3797cb4ca0e3cff6766f55e5fe",
+  "lean_axiom_summary_sha256": "cfd8122bd3525136f44e698c42264959c13f37b07f9da3794cff2b1f695ca00b",
+  "rocq_assumption_summary_sha256": "3d46048055487db76114dd0dae40256ce7bfc2e63b60db3ac048af657ad603ad",
+  "assumption_config_sha256": "5cfa767613eaa8500f8f9f1f07b1261e856ee3c65a665ce8c816a37694585d38",
+  "stage_timing_seconds": {
+    "source_acquisition": {
+      "mode": "FRESH",
+      "seconds": 4
+    },
+    "lean_production": {
+      "mode": "FRESH",
+      "seconds": 89
+    },
+    "fixture:NondecreasingComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:BigcatComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:ArrivalSequenceComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:ScheduleComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:ServiceComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:PreemptionParameterComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:PreemptionTimeComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:PriorityDrivenComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:ScheduledComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:ProcessorStateCoverInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:FactsPreemptionComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:BusyIntervalClassicalComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:ArrivalsComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:WorkloadComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:ServiceOfJobsComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:FactsServiceOfJobsComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:PriorityInversionComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:WorkBearingReadinessComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:JobPropertiesExportInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:ExistenceComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:HepAtPtComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:TaskPreemptionParametersComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:PiComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:OverheadsScheduleComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:OverheadsInstWitnessComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:ScheduleChangeComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:OverheadsInstWitness2ComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:ScheduleChangeFactsComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:OverheadResourceModelComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:SupplyComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:OverheadsComputationInterface": {
+      "mode": "FRESH",
+      "seconds": 99
+    },
+    "fixture:BlackoutBoundComputationInterface": {
+      "mode": "FRESH",
+      "seconds": 94
+    },
+    "lean_type_audit": {
+      "mode": "FRESH",
+      "seconds": 94
+    },
+    "lean_build": {
+      "mode": "FRESH",
+      "seconds": 389
+    },
+    "export": {
+      "mode": "FRESH",
+      "seconds": 56
+    },
+    "rocq_import": {
+      "mode": "FRESH",
+      "seconds": 48
+    },
+    "certificate_compile": {
+      "mode": "COMPILED=0;REUSED=39",
+      "seconds": 0
+    },
+    "imported_type_audit": {
+      "mode": "FRESH",
+      "seconds": 0
+    },
+    "lean_axiom_audit": {
+      "mode": "FRESH",
+      "seconds": 0
+    },
+    "assumption_audit": {
+      "mode": "FRESH",
+      "seconds": 0
+    }
+  },
+  "certificates": {
+    "OvhArrivalsSeqBaseAdapter": {
+      "source_sha256": "de1fdb60524cd4f37ea42cbdebd1f3379ee84797bf9a6bfeea7c2b004f9605c6",
+      "vo_sha256": "418f22e645a42fa6db0383cca2aea7e10d9e27e41d55137fac285b5a44172405"
+    },
+    "OvhArrivalsSeqOperations": {
+      "source_sha256": "76dfb173efc93656cd936b1e88e96d47b1ca1bd51b3eb50ba3a14b610a2f23dd",
+      "vo_sha256": "4570a0dae00fb025c10a10f37e8c338339b4714cb7740c82e8ee42680c1379fe"
+    },
+    "OvhArrivalsSeqCorrespondence": {
+      "source_sha256": "9af362cba93f5eb3fac4b9b3356188bed4b0c2c609647fcdb5ad074adf4fd974",
+      "vo_sha256": "91ff7c932496c4e31faf15913f0a8daa41e0922a319cf9cc7b89b57462431eca"
+    },
+    "OvhArrivalsCorrespondence": {
+      "source_sha256": "9cfe75580be7384aa0fe84bed5f5b1238b09c38856b2eeb2446e2314e6c664ca",
+      "vo_sha256": "b72cc426bca2626ca0843e8cdbf9ce33e7bdd8765f1aa8a78bc61591e471563d"
+    },
+    "OvhJitterSvcBaseAdapter": {
+      "source_sha256": "5db8cab07f581abb91dfca8957873c799e0a0e79395908dab72598aee49bc58b",
+      "vo_sha256": "47f74a95fc61110f1f747086f5e55522affce4b5000070fd4cc3ea0565c1d4ca"
+    },
+    "OvhJitterSvcNatBoolOperations": {
+      "source_sha256": "a32ad0f5fe91875a6c93491ea8778be42a85821851efdc69edb89b6d936ee053",
+      "vo_sha256": "d8539d3d105b7d3df1e04a821c9e9f720097dfd83239fc1e9436f9b3c2f6abeb"
+    },
+    "OvhJitterSvcIntervalOperations": {
+      "source_sha256": "aa4272beac7c6eb8323e073dbe9a28bb6f3fd7fa2f256908fb74a20a70e09aad",
+      "vo_sha256": "1f05c074e4d38ae86ba9703ae3d460f150da5c76b771016840ab0612b665062c"
+    },
+    "OvhJitterSvcScheduleOperations": {
+      "source_sha256": "01099b01594e74fbe92229fc004b9b72ff7995d524211f0d421376118f346c40",
+      "vo_sha256": "4fb2f617e31db3fd130ec0e707350f930e04dd8dd97ee5062a27575d5fbf5a5b"
+    },
+    "OvhJitterSvcJobOperations": {
+      "source_sha256": "3c75cd0e5d5fbbc0d3ea4fc815394af84b471ad6a7be912881ee38a33cfe17cd",
+      "vo_sha256": "86d8c9490c2b93479aa5342b1c14dae726f1ac625bc765b9321e79d36969f483"
+    },
+    "OvhPreemptionParameterCorrespondence": {
+      "source_sha256": "6ffe1d3106edf742c1ef1426b014277cb7108f630bd39a5aa37bf426979a0d92",
+      "vo_sha256": "ff8b57a45c001e6581c5bb427c446a2954c1ddeee3dcd9fdb84e9ba019b03826"
+    },
+    "OvhPreemptionTimeCorrespondence": {
+      "source_sha256": "42adc3238d36392305472bc3cc02353da3e6eb6b71586b3f9b991fe51a8090e7",
+      "vo_sha256": "f2fd7e18bf748d13b4e25883f7d2a11f9591281ef10a97cb713efbf52bfc4634"
+    },
+    "OvhPriorityDrivenCorrespondence": {
+      "source_sha256": "a1f30a5485f8e2466e7b6b87a7978d17291e106bc53655945b62dfb65a6ecb1b",
+      "vo_sha256": "579ab2b7639e1c74e916aae1bd722a79b3987ac5307b55f9c280293a0d939e39"
+    },
+    "OvhPStateCoverHelpers": {
+      "source_sha256": "c0aac31378e407753ee04e3fcb6e93329ef10db5477726b451715521442228d2",
+      "vo_sha256": "163d9abee5f27e3d7c366fc81b2036ed6f3637756ed71613590074c6c11e7644"
+    },
+    "OvhFactsPreemptionHelpers": {
+      "source_sha256": "edce1cfbf133af59afd175a71674af472791749d61ba2e6d7ca2b807c0a5e501",
+      "vo_sha256": "22ec73cb1c00de95309fd0ab12854cd5e1a13728a42ee273839f215374c9c3e0"
+    },
+    "OvhWorkloadCorrespondence": {
+      "source_sha256": "079f618f1dc217f7cdf8a9ef202b593f531b5b1669369c943c7cd276930b2407",
+      "vo_sha256": "2479a169d0e3b5661c5264664703bb2f8544457976379f834571ec0549b0577c"
+    },
+    "OvhPriorityInversionCorrespondence": {
+      "source_sha256": "6a67c4c6b2e81e835b05827f2edb734739102d514a2297ce0734274f03085503",
+      "vo_sha256": "ee3a2afdb981cdee254de6ae59347af8241356d118a10e1a1c646ba0483d8e65"
+    },
+    "OvhExistenceHelpers": {
+      "source_sha256": "e00a331ab8ad63af5f5a39a49c25a79277113f869970813f0a2d70e10bca7dd3",
+      "vo_sha256": "3e04d89a6d4fa26771e8f3d41dae3f48c0249aa0aca2d9d961520b072c05870c"
+    },
+    "OvhHepAtPtHelpers": {
+      "source_sha256": "78727c83208b3fe943aadd7ff178bb63f463b61c565c76778fbdd6f25c881541",
+      "vo_sha256": "e4ac315506d9a026752b30e9b8cec541770fd44e0503d61965e5723928c1ae70"
+    },
+    "OvhTaskPreemptionParametersCorrespondence": {
+      "source_sha256": "bed298e9f952584a216f5397658d83e664b1fc4a7198e91a7de63a016d2c35a9",
+      "vo_sha256": "a33b51ba4cb46cbe22a0399b15fa47a4ddfac9e11583cc37d7eeb50662692e13"
+    },
+    "OvhBusyIntervalPiHelpers": {
+      "source_sha256": "abb65d604a9afae6e8d40002894476e9b44a85985e6779b20997b46e802af5bd",
+      "vo_sha256": "a80d65fa51dc79c864d7332c29863bfe13bc8950fbe676b145915d68fc602594"
+    },
+    "OvhStateRel": {
+      "source_sha256": "716cf345d9fc500ebcdd54e56a472cf09f4d7c088ecd992a0f09408b6ea98cb5",
+      "vo_sha256": "bee8b09520148725b6ab367148e9e27dfa8d7d0ea1a3668974fc2d9382a6e40e"
+    },
+    "ScheduleChangeBaseAdapter": {
+      "source_sha256": "7e5b6144076cf5135b6aa0b8fbccd0172535a839a0488018da4371d76f6e96cd",
+      "vo_sha256": "8464f701b521043bc319a4e578ce70a4e2fa1107e133ba9c6dcfbcf68c9ad805"
+    },
+    "ScheduleChangeStateAdapter": {
+      "source_sha256": "dd08435d2706d7aba36304701ad8c7c3f9f4ac151ef271e7860d94e418693ad2",
+      "vo_sha256": "cd6637e619b030756ca4218001bb2ece0a9a9438201673f732e2224083722345"
+    },
+    "ScheduleChangeOptionOperations": {
+      "source_sha256": "d7539291883ee26219cb98d9fb8a30e2f5dcdf033328f3abcbce02ec8f4520e8",
+      "vo_sha256": "e943ca3e76a0278b9a5a66160b1801361ef73ad0ee4ec7c91b92148c9268fa05"
+    },
+    "ScheduleChangeIntervalOperations": {
+      "source_sha256": "ef796e2e81ece8fd9bda937c904461a91396be7570dfd376afb7e090e48d30fa",
+      "vo_sha256": "1ea79d0a65d4fccfcd9e487f9cfac2e686dcdb867104375df6b686033daf2cf8"
+    },
+    "ScheduleChangeListOperations": {
+      "source_sha256": "3f614128531e5d914aecd21021c009e9c63af9fb091618d21f698fc987621da8",
+      "vo_sha256": "6c74b66534383604d535078f90330c35e8ff8f65d24b17605b858dc6629d8429"
+    },
+    "ScheduleChangeCorrespondence": {
+      "source_sha256": "acc6c707ef06312710573ee960a7ae8c480374f5ff756ddfa0164af90f0f01b3",
+      "vo_sha256": "e7d1ffc4ef4e6e2d51d83626f55742055d0160ced184e12c57f421f7c39010cc"
+    },
+    "ArrivalsSeqBaseAdapter": {
+      "source_sha256": "c7a6dfb7ad714cef485150f1204e03404d766c93474a7d2ef0fa954c1cbe230a",
+      "vo_sha256": "36eaf2bc69adae9b18f6c99d51e58f0aec46472cfe69af851040668a8722e6f8"
+    },
+    "ArrivalsSeqOperations": {
+      "source_sha256": "3655fc689be81edfbfd38dc80355ac5d6dd7e6a81c2503c8add32922753043d8",
+      "vo_sha256": "79ba31d4f747bcbe430a29e28ecb9dd5783b54665287c6077c0b056d87fdb768"
+    },
+    "OverheadsBaseAdapter": {
+      "source_sha256": "fece74b47580e7d524a039bb78c05c32770117b978eb7d9a17132e73f99df795",
+      "vo_sha256": "a71e58c75859d75765448ac2ff38625a98d4c7536cd4ad3750576ecec6b9fe3e"
+    },
+    "OverheadsNatBoolOperations": {
+      "source_sha256": "7887901b152374d9909d9c16972a56fbcd6d75ee808f41c2c307122aa6f0ee39",
+      "vo_sha256": "4bfe9f4d00a74e45ff2c79c46966e5064cacc791ebea8cdf8d691431cc664b3d"
+    },
+    "OverheadsIntervalOperations": {
+      "source_sha256": "0fd2d4f40fd45b193e46d8096199831a998876161c64eb40d4fc7f457e6160e3",
+      "vo_sha256": "d038f9221411b6f17908e0ef10aa8f5afcf206aa166266a0899cb657679fc772"
+    },
+    "OverheadsCorrespondence": {
+      "source_sha256": "e6a0f38d7202ddd56505291043ad44ffd45442b3ffd62c7bec8de91a0feb68ce",
+      "vo_sha256": "e93f56c72d28fece48a28659a8b3c1f028db6ff44a01d198786ad0883d520e64"
+    },
+    "OverheadResourceModelCorrespondence": {
+      "source_sha256": "04909cfd63ce1ab7a2d845a26b58354a4a6daea1996152e34ef91c4ff5f3e6de",
+      "vo_sha256": "4679f3b299dbff958a48b1a58615a7b1a0ab7aedfc64ef7d380bc493943bf181"
+    },
+    "OverheadsBlackoutBoundCorrespondence": {
+      "source_sha256": "dfc1bb362d0ae39be602e62dee7a7454d7109511c845b36cd69952f80f79ed77",
+      "vo_sha256": "03fb050cb3c32a2f38109cdcd1721fe149bee7fcd678587823cdcaee40872c0c"
+    },
+    "OverheadsBlackoutBoundAssumptionAudit": {
+      "source_sha256": "f1df5beaca71a814e836900a7f929e803e7ce027a7a5666d3cbb5ea9e323a83b",
+      "vo_sha256": "2241b7629ac55a5ab075bcbbb11f3b195aa93dcd3d8782377a2ad3d8fa9d2694"
+    }
+  },
+  "certificate_checkpoints_sha256": "fdcdac9c6e60328d22a8c645fef2a4433fbb45d33ba76e1e71b7c9dd0dea5e8a",
+  "lean_fixture_provenance_sha256": "de23f52c71fa281be0c4d55282a6439286e1090f7330d652ae6a5a8c70f549c4",
+  "declarations": [
+    {
+      "source_declaration": "prosa.analysis.facts.model.overheads.blackout_bound.blackout_during_split",
+      "lean_declaration": "Prosa.Analysis.Facts.Model.Overheads.BlackoutBound.blackout_during_split",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "blackout_during_split_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.model.overheads.blackout_bound.total_dispatch_time_eq_job_dispatch_time",
+      "lean_declaration": "Prosa.Analysis.Facts.Model.Overheads.BlackoutBound.total_dispatch_time_eq_job_dispatch_time",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "total_dispatch_time_eq_job_dispatch_time_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.model.overheads.blackout_bound.total_cswitch_time_eq_job_cswitch_time",
+      "lean_declaration": "Prosa.Analysis.Facts.Model.Overheads.BlackoutBound.total_cswitch_time_eq_job_cswitch_time",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "total_cswitch_time_eq_job_cswitch_time_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.model.overheads.blackout_bound.total_CRPD_time_eq_job_CRPD_time",
+      "lean_declaration": "Prosa.Analysis.Facts.Model.Overheads.BlackoutBound.total_CRPD_time_eq_job_CRPD_time",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "total_CRPD_time_eq_job_CRPD_time_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.model.overheads.blackout_bound.total_time_in_dispatch_is_bounded",
+      "lean_declaration": "Prosa.Analysis.Facts.Model.Overheads.BlackoutBound.total_time_in_dispatch_is_bounded",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "total_time_in_dispatch_is_bounded_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.model.overheads.blackout_bound.total_time_in_cswitch_is_bounded",
+      "lean_declaration": "Prosa.Analysis.Facts.Model.Overheads.BlackoutBound.total_time_in_cswitch_is_bounded",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "total_time_in_cswitch_is_bounded_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.model.overheads.blackout_bound.total_time_in_CRPD_is_bounded",
+      "lean_declaration": "Prosa.Analysis.Facts.Model.Overheads.BlackoutBound.total_time_in_CRPD_is_bounded",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "total_time_in_CRPD_is_bounded_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.model.overheads.blackout_bound.no_sched_changes_bounded_overheads_blackout",
+      "lean_declaration": "Prosa.Analysis.Facts.Model.Overheads.BlackoutBound.no_sched_changes_bounded_overheads_blackout",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "no_sched_changes_bounded_overheads_blackout_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.model.overheads.blackout_bound.sched_changes_start_busy_pref_bounded_overheads_blackout",
+      "lean_declaration": "Prosa.Analysis.Facts.Model.Overheads.BlackoutBound.sched_changes_start_busy_pref_bounded_overheads_blackout",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "sched_changes_start_busy_pref_bounded_overheads_blackout_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.model.overheads.blackout_bound.fin_sched_changes_start_busy_pref_bounded_overheads_blackout",
+      "lean_declaration": "Prosa.Analysis.Facts.Model.Overheads.BlackoutBound.fin_sched_changes_start_busy_pref_bounded_overheads_blackout",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "fin_sched_changes_start_busy_pref_bounded_overheads_blackout_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.model.overheads.blackout_bound.finite_sched_changes_bounded_overheads_blackout",
+      "lean_declaration": "Prosa.Analysis.Facts.Model.Overheads.BlackoutBound.finite_sched_changes_bounded_overheads_blackout",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "finite_sched_changes_bounded_overheads_blackout_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    }
+  ],
+  "acceptance": "ACCEPTED_V06_FILE"
+}

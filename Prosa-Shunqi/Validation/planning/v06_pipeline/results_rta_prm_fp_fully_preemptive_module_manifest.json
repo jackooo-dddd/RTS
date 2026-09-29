@@ -1,0 +1,680 @@
+{
+  "slice": "TRANSLATION_ORDER_RESULTS_RTA_PRM_FP_FULLY_PREEMPTIVE",
+  "generated_at": "2026-09-29T02:24:47.969843+08:00",
+  "published_at": "2026-09-29T02:24:47.969843+08:00",
+  "rank": 341,
+  "layer": 28,
+  "source_file": "results/rta/prm/fp/fully_preemptive.v",
+  "source_commit": "414e66760333eaa4ef78c685bcf53291c527a548",
+  "source_tree": "7d7e94c731f7eefde4ca738310d4cafdd7bebdf0",
+  "source_file_sha256": "9e4ed8e0efaa0e5da05d75a78163b0e1e89918275961cf6e422692a88b347579",
+  "pipeline": "Validation/scripts/translation_file_pipeline.py",
+  "spec": "Validation/tooling/file_specs/results_rta_prm_fp_fully_preemptive.json",
+  "spec_sha256": "2424cb0221edef124f2f760325a79f60a5043ba2567152f76a0bce0246feb302",
+  "source_compatibility": {
+    "mode": "extract",
+    "note": "the two recurrence definitions are byte-identical computational blocks and the statement is the authoritative elaborated type (proof omitted); the accepted extracted sources RsIwInstantiationSemanticSource, SbfBusySemanticSource, RequestBoundFunctionSemanticSource, SearchSpaceFpSemanticSource, PriorityDrivenSemanticSource, PreemptionParameterSemanticSource, TaskPreemptionParametersSemanticSource, SchedulabilitySemanticSource, TaskPreemptionFullyPreemptiveSemanticSource are bound as hash-checked .vo artifacts; util/setoid, analysis/definitions/sbf/sbf, analysis/definitions/sbf/pred, model/preemption/fully_preemptive, analysis/definitions/sbf/plain, analysis/definitions/sbf/periodic, model/composite/valid_task_arrival_sequence are compiled from the pinned tree (under their accepted Rocq 9.3 compatibility patches); the plain imports model/schedule/work_conserving, model/readiness/basic, model/task/sequentiality come from the base source tree; the proof-only imports of the official file are dropped; the instances implicit in the elaborated statement are made explicit by recorded printer repairs (valid_schedule, work_conserving, respects_FP_policy_at_preemption_point); the own-module qualifier prm.fp.fully_preemptive.X is mapped to X by recorded printer repairs",
+    "extracted_sha256": "597211f6180fe3af8da79db9d86eb8573287a41d585bc8fa10928d9cf3652fd4",
+    "extraction_metadata_sha256": "16f98b446bc80a7e760455102838be779d43b2d90bc7d470caac5d3475ab0889"
+  },
+  "source_type_evidence": {
+    "prosa.results.rta.prm.fp.fully_preemptive.busy_window_recurrence_solution": "EXACT_MODULO_OWN_MODULE_QUALIFIER",
+    "prosa.results.rta.prm.fp.fully_preemptive.rta_recurrence_solution": "EXACT_MODULO_OWN_MODULE_QUALIFIER",
+    "prosa.results.rta.prm.fp.fully_preemptive.uniprocessor_response_time_bound_fully_preemptive_fp": "STATEMENT_BODY_EQUAL_MODULO_OWN_MODULE_QUALIFIER"
+  },
+  "statement_only_export_boundary": [
+    "Prosa.Results.Rta.Prm.Fp.FullyPreemptive.uniprocessor_response_time_bound_fully_preemptive_fp"
+  ],
+  "input_relations": [
+    "task_cost pointwise, max_arrivals by the accepted CvMaxArrivalsRel, job_task by the accepted AdJobTaskRel, job_arrival pointwise, job_cost pointwise",
+    "FP policies, task sets, arrival sequences, schedules, tasks, durations, instants, resource-model parameters (\u03a0, \u03b3) covered in both directions; the processor model, quantified inside the statement, covered in both directions by rs_forall_pstate (the accepted two-sided SvcProcessorStateRel with the pointwise supply_on relation)"
+  ],
+  "coverage_for_inner_binders": [
+    "FP policies",
+    "task sets",
+    "arrival sequences",
+    "schedules",
+    "tasks",
+    "durations",
+    "instants",
+    "resource-model parameters",
+    "processor models"
+  ],
+  "lean_representation_note": "a Boolean in `Prop` position is `= true`; `a < b <= c` is `(decide (a < b) && decide (b \u2264 c)) = true`; `t.+1` is `t + 1`; `j \\in s` is `decide (j \u2208 s) = true`; instance inputs quantified after a hypothesis are `\u2200 [..]`-free explicit class variables as in the elaborated types",
+  "export_size": {
+    "lines": 146987,
+    "soft_budget_flag": "OVER_100K_DIAGNOSED",
+    "diagnosis": "export root Validation.fixtures.translation_order.RtaPrmFpFullyPreemptiveComputationInterface: the two definitions and the statement, together with the accepted export roots merged into this config (399 targets)"
+  },
+  "file_dependencies": {
+    "analysis/abstract/restricted_supply/bounded_bi/fp.v": "analysis_abstract_restricted_supply_bounded_bi_fp_module_status.json",
+    "analysis/abstract/restricted_supply/search_space/fp.v": "analysis_abstract_restricted_supply_search_space_fp_module_status.json",
+    "analysis/abstract/restricted_supply/task_intra_interference_bound.v": "analysis_abstract_restricted_supply_task_intra_interference_bound_module_status.json",
+    "analysis/facts/model/sbf/periodic.v": "analysis_facts_model_sbf_periodic_module_status.json",
+    "analysis/facts/preemption/rtc_threshold/preemptive.v": "analysis_facts_preemption_rtc_threshold_preemptive_module_status.json",
+    "analysis/facts/preemption/task/preemptive.v": "analysis_facts_preemption_task_preemptive_module_status.json",
+    "analysis/facts/readiness/basic.v": "analysis_facts_readiness_basic_module_status.json",
+    "model/composite/valid_task_arrival_sequence.v": "model_composite_valid_task_arrival_sequence_module_status.json"
+  },
+  "production_file": "Prosa/Results/Rta/Prm/Fp/FullyPreemptive.lean",
+  "production_source_sha256": "d5fcb916e8436250993e9488c753e517bd9b4a7dc95e2b079c229d727b040960",
+  "production_olean_sha256": "a01b5bca9290352846c6a83d00c7980477ed507d5d1bf9ffb38b7c23a63e9c9e",
+  "export_config_sha256": "754f0d94263fd4ca3cf92d98de800096f6c2c9bf41029bdc6aabc30312ff7812",
+  "export_sha256": "cf97c5864fc76d8c5a20012ebab90c0ae628b32164ce7d6718bb7eda0747b98a",
+  "export_lines": 146987,
+  "export_bytes": 3340747,
+  "import_sha256": "7ad998af2d392034673f35493c2f719a7e8bf5328349a4783b165ba5a5045952",
+  "source_vo_sha256": "408f7e638c9c3c3a982a5fb9d3e3aba62188040f8b2cfecbf591f336b924cd86",
+  "lean_axiom_summary_sha256": "1a89d193eb75faf1c5c0f27efc7e966b32520a3f95a6fde1377d61a2c680d36d",
+  "rocq_assumption_summary_sha256": "fcd4d209742ee9ed0967d55fda62d3e479ae35819f5cc3c807ba6d074c71f823",
+  "assumption_config_sha256": "bb37048faa6deea1990d03fce7c7fc31708178e2f30696d6a774bdecc9f7181f",
+  "stage_timing_seconds": {
+    "source_acquisition": {
+      "mode": "FRESH",
+      "seconds": 13
+    },
+    "lean_production": {
+      "mode": "FRESH",
+      "seconds": 78
+    },
+    "fixture:NondecreasingComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:BigcatComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:ArrivalSequenceComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:ScheduleComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:ServiceComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:PreemptionParameterComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:ServiceInversionPredComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:AbstractDefinitionsComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:BusyPrefixComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:ArrivalsComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:WorkloadComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:BusyIntervalAbstractComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:LowerBoundOnServiceComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:TaskPreemptionParametersComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:AbstractRtaComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:IdealAbstractRtaComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:RequestBoundFunctionComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:TaskScheduleComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:SequentialityComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:ServiceOfJobsComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:CurvesComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:IbfTaskComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:SupplyComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:IbfSupplyComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:IbfSupplyTaskComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:PreemptionTimeComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:PriorityDrivenComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:ScheduledComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:ProcessorStateCoverInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:FactsPreemptionComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:BusyIntervalClassicalComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:FactsServiceOfJobsComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:PriorityInversionComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:WorkBearingReadinessComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:JobPropertiesExportInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:ExistenceComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:HepAtPtComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:PiComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:PiBoundComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:ServiceInversionBusyPrefixComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:BusyIntervalServiceInversionComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:InterferenceComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:FactsInterferenceComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:RsIwInstantiationComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:WorkloadBoundedComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:TaskIntraInterferenceBoundComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:PredExportInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:SbfBusyComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:BoundedBiJlfpComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:BlockingBoundEdfComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:BlockingBoundFpComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:BoundedBiFpComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:FactsSearchSpaceFpComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:PlatformPropertiesComputationInterface": {
+      "mode": "FRESH",
+      "seconds": 91
+    },
+    "fixture:DivModComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:FactsSbfPeriodicComputationInterface": {
+      "mode": "FRESH",
+      "seconds": 97
+    },
+    "fixture:RtaPrmFpFullyPreemptiveComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "lean_type_audit": {
+      "mode": "FRESH",
+      "seconds": 91
+    },
+    "lean_build": {
+      "mode": "FRESH",
+      "seconds": 372
+    },
+    "export": {
+      "mode": "FRESH",
+      "seconds": 34
+    },
+    "rocq_import": {
+      "mode": "FRESH",
+      "seconds": 53
+    },
+    "certificate_compile": {
+      "mode": "COMPILED=0;REUSED=77",
+      "seconds": 1
+    },
+    "imported_type_audit": {
+      "mode": "FRESH",
+      "seconds": 0
+    },
+    "lean_axiom_audit": {
+      "mode": "FRESH",
+      "seconds": 0
+    },
+    "assumption_audit": {
+      "mode": "FRESH",
+      "seconds": 0
+    }
+  },
+  "certificates": {
+    "ArrivalsSeqBaseAdapter": {
+      "source_sha256": "ac5bf341d2edeeb146c31276e593862da05e6e404470b86fca9e5152e4b3288a",
+      "vo_sha256": "aab6d2155ad9e99a256db34f5f0b593991a3bcefe8bd876b0ad794bc63c095b5"
+    },
+    "ArrivalsSeqOperations": {
+      "source_sha256": "d6abd0b74d79bc9c4ddbd6c0d8d16c053cff11155ec524884e79a4c39cf2190f",
+      "vo_sha256": "04222fa818d3ddf196e4ca1ddc14273e19986410152887dacfd2d7ff9c3d2149"
+    },
+    "ArrivalsSeqCorrespondence": {
+      "source_sha256": "f82cbaf03ebc35a39296dc6d91bbf88f5e757cc18123cc362af77f79b1e6979f",
+      "vo_sha256": "90b71c1c308959b6fdce99dfb4fdd8ea5205d831298fe069db79de7456d70b0a"
+    },
+    "ArrivalsCorrespondence": {
+      "source_sha256": "5ba708f2de069ac80f13bd815f5e88a38bdb2a8bee0dc41407eaa11269b26634",
+      "vo_sha256": "a7edb801c0acfb7619407beaa9849821575ed559bc8bb5feb485ed85d523fbd8"
+    },
+    "WorkloadCorrespondence": {
+      "source_sha256": "28bd0020e9d88038367e33109f2e5283a004490a18319903a82cfe67722a3946",
+      "vo_sha256": "a2b2c142e0f9aac1704ddbeae3ca8d5cd67d0c324150a386481c5c2c62d9b70f"
+    },
+    "AbstractDefinitionsBaseAdapter": {
+      "source_sha256": "8676fae30ef01e20662d0499034d44e327ccd1f4dc2b204e9339a69f053d7f59",
+      "vo_sha256": "907e6c88f23ece07fd1980892c91d05884ef94e5cc6f17ed11304cc6ac04781d"
+    },
+    "ServiceBaseAdapter": {
+      "source_sha256": "0f06deb9dd5e52168992f4dad714945a3e863825c42d6d6285bdf3ec0fb1c55a",
+      "vo_sha256": "31a1cacba24a91aee39882061c5369cf49def63e3b4bf985655b3acbace680de"
+    },
+    "ServiceNatBoolOperations": {
+      "source_sha256": "90025a0ade6728f10acf1d1d153e49c34f262abe1dc3fa5a1736fc940e708379",
+      "vo_sha256": "1bef12b77f10eaaab2c0ddbf8a2659b243c2acd65ade4c3874dde91a661ddd85"
+    },
+    "AbstractDefinitionsArrivalOperations": {
+      "source_sha256": "c6a10013e8c2fb1bfaff59b8db93114535d4a1021df0aa671558fd97c67b7307",
+      "vo_sha256": "4750e2126948af298ecd6329075750d7699256b3419c993a049c818a35c18589"
+    },
+    "AbstractDefinitionsClasses": {
+      "source_sha256": "40e7647ab3afb22ef45d1cbc8415027f58a6af5aef7676e396ef1221c8104f13",
+      "vo_sha256": "8fe65bbd06c7dd06d48a29ff0f9b189a009810a073743e4b0715e91875bb86ea"
+    },
+    "AbstractDefinitionsNatBoolOperations": {
+      "source_sha256": "c097ac5c21062cb257ef06d8ffe8a00d075032ad8fbc5017ae202b7971b8ea0e",
+      "vo_sha256": "3a39ee8cdb8aff69c412d0b8bf1684af0c759dd3f3875bc45f2a7f34c4953e3e"
+    },
+    "AbstractDefinitionsIntervalOperations": {
+      "source_sha256": "b4f2ea3b99e27c83993339e47c26ffb5b5658dab862f1d0ca34a0eb8fbccc703",
+      "vo_sha256": "5bc340046b4f8ce3c7e9c33afb63012bef58be84f7b14f5ce286d256809fcacd"
+    },
+    "AbstractDefinitionsOperations": {
+      "source_sha256": "e633177997409b67832ad6f0440dfaa12701da63927aaee80c103c1779b9695b",
+      "vo_sha256": "88fa0866d0f97f6a805eac8675e7366ec6ed411d230b25bcb84aa722b0bc65c7"
+    },
+    "AbstractDefinitionsSums": {
+      "source_sha256": "586394dc7b73e727a042be98dcbd793b5fb576d3fb1730963ed1d6a55e6950db",
+      "vo_sha256": "ff1854ecf624709bf4f78c349c4a7a25046018e81ce583558bee914b7fc40c12"
+    },
+    "AbstractDefinitionsLogical": {
+      "source_sha256": "758a9a5c08b8f567c510672fb138651055fc9b46707384c9d67b5dbafd64434e",
+      "vo_sha256": "58d5849ec03b821cb560a3d2bf4427a31d727dec141eb47a8367fa47b64c569e"
+    },
+    "ServiceIntervalOperations": {
+      "source_sha256": "224b22329baf52d4e877b9979e55e17f1d251475e8bc4a9425bfe554c65948e3",
+      "vo_sha256": "36855f8dbe4dde36961df519666de323e11ee78e2c3bf59f3f1d5007f96aff71"
+    },
+    "ServiceScheduleOperations": {
+      "source_sha256": "541bdfe3f8fb0995fad5e3639606642f226feff4c09c47194688bbb559050fd1",
+      "vo_sha256": "914121ff24e9bdb8367bc582f362e2066462a72b1b0dd122a317d6e81d2e8e35"
+    },
+    "AbstractDefinitionsPendingOperations": {
+      "source_sha256": "d497395a36aa1f8756ac2e254f8a11b5e1cb32e4e9dd8731a262ba2fe5e75c70",
+      "vo_sha256": "d4b465c7f298d25c6e9c819112df90f2be95320c88a7d2804cdcc52b5fcdaca8"
+    },
+    "AbstractDefinitionsTaskOperations": {
+      "source_sha256": "011a45688ac5a4d29b26023e944cf4f840e83a640320e1ce77d36b696c969b36",
+      "vo_sha256": "0b7dc88872132822186459b3989f20d950406e0c9d42d2a6c938d35f715c33cb"
+    },
+    "AbstractDefinitionsBusyIntervalHelpers": {
+      "source_sha256": "41337dfc23fba813267bae2744b14f65b7245fcc060659e5f0380234a787db13",
+      "vo_sha256": "923b86f76ffb588201b54e17514bc67b123c404309a0f94e7c51ec423b73817d"
+    },
+    "AbstractRtaHelpers": {
+      "source_sha256": "72f75bd8c753d7e8ac847da505cdac8d588c17865d6ee7a94ecb60c1358b6295",
+      "vo_sha256": "006c80a1c29fe75ca41fe2bb5b7854f0af9d76077c06b783397d5ee0b91c0d68"
+    },
+    "JitterSvcBaseAdapter": {
+      "source_sha256": "6c3f3f6312c3f09f866996ebcd27b6daeb15bcbc86a1fd447b36de4d82163c78",
+      "vo_sha256": "c6fb15a7b461b26fedbfc1b4825a4055a2ae68da68e79efa15e1679e03da929f"
+    },
+    "JitterSvcNatBoolOperations": {
+      "source_sha256": "53c2c5a8ddcbbd8418248ba7741962bc2bcfae6977620f8b51d857e3f967ae9a",
+      "vo_sha256": "bb499f1afa1c456eefa3b6ddb70a411f7d55a6224ab41b664340330d523e775e"
+    },
+    "JitterSvcIntervalOperations": {
+      "source_sha256": "f46a63e2621ac4f5ce8fc68640f16385d98d16ca64ec461495af465c34449a56",
+      "vo_sha256": "3e6973cf871ffabccf54f73d447f46815f6a79a426a8649804a0647e59a83ec1"
+    },
+    "JitterSvcScheduleOperations": {
+      "source_sha256": "c1d158aa5bfc9b2b890c725496749b6e2107e745c5161ac52f7f78daf1ebc85c",
+      "vo_sha256": "c93d7cad15581fffd2390dfe5183b1bb3a1cf442e6fa556ad8a3d775ff8b0fad"
+    },
+    "JitterSvcJobOperations": {
+      "source_sha256": "577a23a7b11c29646599e8ade9af3428dcbad2bc161853e80c270bd4eb2cdcfe",
+      "vo_sha256": "07a7e5b3a1713e64f10c1b918d038abaeeae00198893d78e699315305d01dff6"
+    },
+    "PreemptionParameterCorrespondence": {
+      "source_sha256": "b422c3578b47b1575ff2ba381bb1f10778673450ff00a58a688c73c162427f61",
+      "vo_sha256": "d7862cd971debe7e2f5b1e5a0b99ad72f1f73828419dd4797307642fd49e1730"
+    },
+    "TaskPreemptionParametersCorrespondence": {
+      "source_sha256": "3267b9c692440e78ee961a9f18a4ff45a3cb2b98bcb2d540abe59cb27f19e2c1",
+      "vo_sha256": "4118fed8eb592da764b3995180919aac4c93e31dbeb4d11191c08ed63b6082ab"
+    },
+    "IdealAbstractRtaHelpers": {
+      "source_sha256": "c0dba9ad6fe35f3402efa6832d8ec1eac7f5495037f4cfe7cc18a0e91446df48",
+      "vo_sha256": "a29af98bcf3c3f356b21ba2fde7c7f2d8d0b53ecdcdd34f63edd8fdd5803f1ae"
+    },
+    "ArrivalSequenceBaseAdapter": {
+      "source_sha256": "64d251401474b87480ed434a6b31e26bcb68ea31afdaa2a2a329aa1cd4b69630",
+      "vo_sha256": "aa10e43c71ec5f3a4e9bbebaa41ae84e0e645492287c9d162ea735996574e3e8"
+    },
+    "ArrivalSequenceOperations": {
+      "source_sha256": "6b62c18a6a55c8255e93db3e8e7aea2f62ce56fc60f7724696604934372c0869",
+      "vo_sha256": "ae747c75e582f7417d85113dbdf79fcb4a729ba112e3abf4d48c0e8a951077c4"
+    },
+    "TaskScheduleCorrespondence": {
+      "source_sha256": "b01524b747ba84a0c7d691f335be0cd81ffe9fc5ddadc7368966555dc7c4934e",
+      "vo_sha256": "bd8e66a9b621848188af5ef3c48b7fa38a6db00944f389537503034400bcd803"
+    },
+    "CurvesCorrespondence": {
+      "source_sha256": "3fa535152f6eba29e8f98d3b5bd71c4b0f72e123c8bd4bc8f012f129e3cca0d9",
+      "vo_sha256": "c6698a4e3e30ce9ffb44f8eb426529a32cf5580bffddd422b4c020c126501182"
+    },
+    "RequestBoundFunctionCorrespondence": {
+      "source_sha256": "cf51359f71d5e07037e01376653904f7857d454f96e48b05edaffb97feec1615",
+      "vo_sha256": "78c353f2d5b498b012f65f965979e955d0606c7b40afc5dc6f0778d366d225ce"
+    },
+    "SequentialityCorrespondence": {
+      "source_sha256": "ac2e3a4d75afc0ef8276f24e42434a047c9ca12e372ceafc97882e326f1f2c89",
+      "vo_sha256": "d14a5ee8bad3a16c5c5c1f24b82d769f8ccdee2db5fe8543b6cceb4efb8d2889"
+    },
+    "ServiceOfJobsCorrespondence": {
+      "source_sha256": "fcf26f6aa861a5d0da437d296043b4bb7f38f914c3ee15e663883179427d4a24",
+      "vo_sha256": "63821b2aa40da0353b5b3bf33c6bf9ea953ae3da6a1ea1084df1efe1041ab04f"
+    },
+    "SupplyScheduleBaseAdapter": {
+      "source_sha256": "a1944332352490aed68c368b68097c7157f5cd728f24bbd40a069f59ee76eb35",
+      "vo_sha256": "f93c93ceaa5f9a755cadc7a64af1176ce060b8492d0ecd6bfed8ded346efae48"
+    },
+    "SupplyScheduleFiniteOperations": {
+      "source_sha256": "46020d9411c6cfb2ef3d18692e7efaf5c90106a48455f0cf3e2bcdb12f626742",
+      "vo_sha256": "f732c2eb748350cbca04c29bc73e195cb7d9f6fe48929fc4a72d810679794ea9"
+    },
+    "SupplyScheduleOperations": {
+      "source_sha256": "c8f1b12941776cf3ead26b109f60873b6fc53b779c171c4707ed0411e450c685",
+      "vo_sha256": "c6f4d7f214ae86c0163752287263f4ccb8d80b7ad19e49286c9d5fd4b4f83aba"
+    },
+    "SupplyBaseAdapter": {
+      "source_sha256": "6d6c572a123db200cf1dbcedb569ca9644ca57db5d8029821795bf26289ddffd",
+      "vo_sha256": "840b9e1fbe56d7a573583c1612305dbb99ea8aed25682e49ce8358e830b6409d"
+    },
+    "SupplyNatBoolOperations": {
+      "source_sha256": "feb06544687cc4eae547936fc0ecc842713978ce2bbbbd51d4a2783fd5fde637",
+      "vo_sha256": "e1bf15f62d7b2f3e77c07f966caf07043420babe99c59df7a08e7d5c19cb3ec1"
+    },
+    "SupplyIntervalOperations": {
+      "source_sha256": "6615c85588f15250b3f999c3529f5af6f7ef51adad438503280067f41c35e39d",
+      "vo_sha256": "983880e6e565c8a76d47dae8f6912aeaaf4d4b2e144aedd057973562fab14674"
+    },
+    "SupplyCorrespondence": {
+      "source_sha256": "e04596e7df85da591fb7575e76bc3ace4bcd06a09db2596826e08de33803bd67",
+      "vo_sha256": "04eff233ba81fdd131c7280e11cadf0e307d1308ae8a1553a174dafdbed78038"
+    },
+    "IbfTaskHelpers": {
+      "source_sha256": "bc6a73a59823d569343e9dee4326f94d6edc68378d8389d28a52e55fc6851331",
+      "vo_sha256": "bcb029b041f081a72905ef7387fe24e792e142f5ca98565eb2154bfdc59cd6a5"
+    },
+    "IbfSupplyTaskCorrespondence": {
+      "source_sha256": "4fa845984ee311aeabd6d4abd58596b2d77b76e7e5a9eec2735abb071b05fb49",
+      "vo_sha256": "a5e503831d5fc4f1f79eac3d396145d3552bc1a0ffbe838451d0c9578e26138e"
+    },
+    "IbfTaskFullHelpers": {
+      "source_sha256": "3c2caf226d6c67bb05323b2e342c16c13670dbc58431410bc683fad4877cdeff",
+      "vo_sha256": "485f5aa0ba97176bfb61b4855bdb26862365a0aae38914d3a7dd6bbccc63e2ce"
+    },
+    "ServiceInversionPredCorrespondence": {
+      "source_sha256": "8e79769635c7d9db546bea5aacfaa8fd9bef2bd682a8b754c9f9f4f434321a57",
+      "vo_sha256": "84eb278488da440673fa221fbaa5c8837841092acff9fb8fc887f161069184fa"
+    },
+    "InterferenceCorrespondence": {
+      "source_sha256": "fcad8280ffcc4b6d6fb6c3853011223612aa7c1b362a10f9897b8a90bb00c1d4",
+      "vo_sha256": "c7db2c34eb76fcd1b63a4d33dc574f86fd8dc2e2384826f64e86199bafef4ebb"
+    },
+    "RsIwHelpers": {
+      "source_sha256": "3d048ed850e22e9d9d624b38c3310ed6f56d170ee29aa6ff4d532e4ec98c1a4a",
+      "vo_sha256": "02f50cc2b2e7efe8cf1d05f6f06d12fae96281ef26a9fd324434f7c98c74cf03"
+    },
+    "WorkloadBoundedCorrespondence": {
+      "source_sha256": "8ce890e3c35dac186b96068172bb45ae674a1f8e04c560f220680316e0297ac1",
+      "vo_sha256": "06adf7e4da7e871fb1bc61ef9ba8bab5b75167644a5161715e1364a145c6d116"
+    },
+    "ServiceInversionBusyPrefixCorrespondence": {
+      "source_sha256": "8b2c61735a09f5405b9f55734a31aaa226ddf553b360223b0af47616604b91c1",
+      "vo_sha256": "fa42614f93334e1738528ca7edf5277209d7306d26ca8d2d921b915fedeac5f4"
+    },
+    "ArrivalSequenceCorrespondence": {
+      "source_sha256": "c81798b70823e08fabbb394ccb689a955d27eee929face553b729b11b8952102",
+      "vo_sha256": "eeb074313c3f4d3839751cef5eba00050305d61bddae171578487f346f3e2b4d"
+    },
+    "BusyIntervalClassicalHelpers": {
+      "source_sha256": "66e408473329535491a57094a8de1fc89a3ab3c515e6acf5922e227bfb53be0e",
+      "vo_sha256": "ade3ca260fae9ac5e4ede367fc0d90a60d0af3b3dcee355b28f73650e32d9243"
+    },
+    "PredHelpers": {
+      "source_sha256": "29a8806309b9f0348a3823e9cd5f5b258ccf2be12f6a7038a4b35c19c06b8691",
+      "vo_sha256": "464e7393f9c9370e1c678c3eab16c3e808438e555ec1900e253c9638a782c4b5"
+    },
+    "SbfBusyCorrespondence": {
+      "source_sha256": "beccb24ab9e10d36ea52a39b7164096e9c6ae1850201ddb46993e47ff0b9ba2f",
+      "vo_sha256": "77adc5304fdc8b3028f86e33b607c742aa22ec99c4a10e9b840c782a47f2d841"
+    },
+    "PreemptionTimeCorrespondence": {
+      "source_sha256": "a8ba6e3c54a60f83356eea87888f8c37d458ad5a52edde4c8861069a65a257f4",
+      "vo_sha256": "780771b8aa0d11363becbbef819509cc6991a9e6ab65f7d95355f16ba243147d"
+    },
+    "PriorityDrivenCorrespondence": {
+      "source_sha256": "c931fa8c010b5f6d9676004a6d923dda91b9416e8688a81d4e7fe609a83e8a1b",
+      "vo_sha256": "23cef57a34f1313cc5bf139d2c1fdaebc4a3183332912fb90932e0fbe5f83eb0"
+    },
+    "PcoBaseAdapter": {
+      "source_sha256": "54ac461aa9578aac4c7cf39189d572c3f9310ae22665ad22e430c35ec108772c",
+      "vo_sha256": "70ebbb6f86da7e236093e39428007ab012037d262ee26bd22e4789265286ec8a"
+    },
+    "BlockingBoundFpCorrespondence": {
+      "source_sha256": "068850fe17cd8679a5e1624a45ae0c24ef6af76f24a25dfd6fb2ebe0913ec774",
+      "vo_sha256": "5830cded0025baf50464cdc90c8b7c1eac0b5e538575e81668c73a28afa7b7b5"
+    },
+    "BoundedBiFpCorrespondence": {
+      "source_sha256": "00f69a8df134840dd0ca738a60c061f9316bd0fceef89b9048c3e92a32ffabfa",
+      "vo_sha256": "dd686ae2ee8f633e452d6a91303ac16eeab708467a844ac8c846745fb933614d"
+    },
+    "SearchSpaceFpCorrespondence": {
+      "source_sha256": "1b6c1668deffa38ea7eecd91f80638f02292cd7dd8ed6de6fcf8909a45f5e995",
+      "vo_sha256": "ae10fe3b737a3f96da109fd5d1914866300c0d4b24e6ffe09134d95f2441f930"
+    },
+    "PredCorrespondence": {
+      "source_sha256": "28e64f990042e7e8d6560c5beded482f61298125328b972f626d7809ff721beb",
+      "vo_sha256": "bdb3a431761dc53fdd68c781e38a10fea545e157b8e9f02bc2ab77e4b1d4e7d3"
+    },
+    "PlainCorrespondence": {
+      "source_sha256": "c6e6f96932f9bd62ca6349fc22ac96a95c690603799e38830afcca0f9739d777",
+      "vo_sha256": "914388e593b8cafbc794ea1024d52690b3ecbc4f53ff125dfa5d334c7cf5d643"
+    },
+    "NatSubCorrespondence": {
+      "source_sha256": "488af4e5c8c4d0d0d8a38bb4281971a1999dd1fd29864fc81375d356592af137",
+      "vo_sha256": "6bd95e95414cc8f6c4e58302e2b36f336fcbe5271bc0d1d880ca4ca7d4236bb6"
+    },
+    "DivModCorrespondence": {
+      "source_sha256": "ea4bde2c760db91bbdf134aa59eb5f93c8cb05a9f999b4b79608dfa8210873fc",
+      "vo_sha256": "ea9f6dfeafa51bd05a821d2d0476946557b13182819bf585682a8bf7a9669576"
+    },
+    "PeriodicCorrespondence": {
+      "source_sha256": "74ae595fdb65d56edf6363a2f1162dcf575e54b6204dbfe475f2ceb9c68537f2",
+      "vo_sha256": "26febc3c73a9cc992aaac005f3b8e6e7373490d22499408d730057b7dc289e9a"
+    },
+    "FsScheduleBaseAdapter": {
+      "source_sha256": "01247768aabecc88f21c5bc49c7e36cf246a37322d95e636e162810b6b09eaba",
+      "vo_sha256": "982bc2b12d78e8cc3b5d61ce237d0929ce2cfe0058327b15306b9329497c5cf8"
+    },
+    "FsScheduleFiniteOperations": {
+      "source_sha256": "5a75b0677f0bd5226f5c294775c13765cef1b10500cd98586bc304288bb0ad2e",
+      "vo_sha256": "b2521a0b15dcc8a86b32dfc0031c6d2a93ace20dc62933dabcfd3dcf9ffc0327"
+    },
+    "FsScheduleCorrespondence": {
+      "source_sha256": "a7c11a06170f11a5135fbc908d723295b0a7d46a7466af218bc4ee44aa1ff2f5",
+      "vo_sha256": "412c64575ba4295690f91109e11ef99b06cdfd847441b8f88025414687295a14"
+    },
+    "FsProcessorStateCorrespondence": {
+      "source_sha256": "def702f17710d3abe220f5c83a612f5fbb60089344423b8261fd45da0895b44f",
+      "vo_sha256": "22ec5913411b7ad2154681bf185d3810c956cd5eb291d805e1e54fc81c856e1b"
+    },
+    "FactsSupplyPlatformPropertiesCorrespondence": {
+      "source_sha256": "22141721e035ca7a382d958b799f1b3ecc9fdffcc85f431e79d1f7203cf4a852",
+      "vo_sha256": "746ba9bac38e90816c4e565e20adf6393395bc9dea7cf150f59b5f5a07ba4f6b"
+    },
+    "RsPStateCover": {
+      "source_sha256": "c480ecca0596d27249e7c5439c0812617cbb03151762af1501266063f68cb1b7",
+      "vo_sha256": "dcc12d1df11ccd463e1d3c06852836d3a7d388d3404730f93e122eb8c52bde7c"
+    },
+    "RtaPrmFpFullyPreemptiveCorrespondence": {
+      "source_sha256": "f17352f2b8e193d8d2b009f345a111b10bee33934ee95398e1485252ddbd47e1",
+      "vo_sha256": "7f2f764086b459b1783208402bca0d779a9c991f9d13a5a296802e95c15864fa"
+    },
+    "RtaPrmFpFullyPreemptiveAssumptionAudit": {
+      "source_sha256": "e0b0e3ffa6d4dba47d58868339ba0270ad24dfba47236a9c6b9cf7bf7534059e",
+      "vo_sha256": "9c3f1898095c758681ac4ca8c03cccec60eb1e59d3051a16a314b0e605f8b1ef"
+    }
+  },
+  "certificate_checkpoints_sha256": "62e39673c5bda0d926c34aa3eb9e43b14383cec1eb38cd501a3261fb175871ec",
+  "lean_fixture_provenance_sha256": "2c97d9b82d9061fa8a91261a7498a228bafd400ac352d056c6655ac17db40615",
+  "declarations": [
+    {
+      "source_declaration": "prosa.results.rta.prm.fp.fully_preemptive.busy_window_recurrence_solution",
+      "lean_declaration": "Prosa.Results.Rta.Prm.Fp.FullyPreemptive.busy_window_recurrence_solution",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "busy_window_recurrence_solution_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.results.rta.prm.fp.fully_preemptive.rta_recurrence_solution",
+      "lean_declaration": "Prosa.Results.Rta.Prm.Fp.FullyPreemptive.rta_recurrence_solution",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "rta_recurrence_solution_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.results.rta.prm.fp.fully_preemptive.uniprocessor_response_time_bound_fully_preemptive_fp",
+      "lean_declaration": "Prosa.Results.Rta.Prm.Fp.FullyPreemptive.uniprocessor_response_time_bound_fully_preemptive_fp",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "uniprocessor_response_time_bound_fully_preemptive_fp_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    }
+  ],
+  "acceptance": "ACCEPTED_V06_FILE"
+}

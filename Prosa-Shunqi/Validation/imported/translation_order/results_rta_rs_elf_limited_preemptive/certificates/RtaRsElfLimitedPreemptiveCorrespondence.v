@@ -1,0 +1,407 @@
+From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq bigop.
+From prosa Require Import RtaRsElfLimitedPreemptiveSemanticSource.
+From prosa Require Import analysis.abstract.definitions model.job.properties
+  model.processor.platform_properties model.processor.supply analysis.definitions.sbf.pred
+  model.readiness.basic
+  util.int model.priority.gel model.priority.elf model.schedule.work_conserving.
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedRtaRsElfLimitedPreemptive ImportedSubadditivity.
+From FoundationCertificates Require Import PropSPropFoundation LogicalRelation
+  SubadditivityNatCorrespondence
+  ArrivalsSeqBaseAdapter ArrivalsSeqOperations ArrivalsSeqCorrespondence ArrivalsCorrespondence
+  WorkloadCorrespondence
+  AbstractDefinitionsBaseAdapter ServiceBaseAdapter ServiceNatBoolOperations
+  AbstractDefinitionsArrivalOperations AbstractDefinitionsClasses AbstractDefinitionsNatBoolOperations
+  AbstractDefinitionsIntervalOperations AbstractDefinitionsOperations AbstractDefinitionsSums
+  AbstractDefinitionsLogical ServiceIntervalOperations ServiceScheduleOperations
+  AbstractDefinitionsPendingOperations AbstractDefinitionsTaskOperations
+  AbstractDefinitionsBusyIntervalHelpers AbstractRtaHelpers IdealAbstractRtaHelpers.
+From FoundationCertificates Require
+  SupplyScheduleBaseAdapter SupplyScheduleFiniteOperations SupplyScheduleOperations
+  SupplyBaseAdapter SupplyNatBoolOperations SupplyIntervalOperations SupplyCorrespondence
+  JitterSvcBaseAdapter JitterSvcNatBoolOperations JitterSvcIntervalOperations
+  JitterSvcScheduleOperations JitterSvcJobOperations PreemptionParameterCorrespondence
+  TaskPreemptionParametersCorrespondence SequentialityCorrespondence CurvesCorrespondence
+  RequestBoundFunctionCorrespondence
+  IbfTaskHelpers IbfSupplyTaskCorrespondence ServiceInversionPredCorrespondence
+  InterferenceCorrespondence ServiceOfJobsCorrespondence
+  WorkloadBoundedCorrespondence ServiceInversionBusyPrefixCorrespondence
+  ArrivalSequenceCorrespondence BusyIntervalClassicalHelpers PredHelpers SbfBusyCorrespondence
+  PreemptionTimeCorrespondence PriorityDrivenCorrespondence
+  ElfAthepBoundCorrespondence BlockingBoundElfCorrespondence SearchSpaceElfCorrespondence
+  LimitedPreemptiveCorrespondence ScheduleLimitedPreemptiveCorrespondence TaskLimitedPreemptiveCorrespondence.
+From FoundationCertificates Require Import PcoBaseAdapter PcoStaticOrder PcoDynamicOrder
+  PriorityCoercionCorrespondence PriorityGelHelpers PriorityElfHelpers.
+From FoundationCertificates Require Import IbfTaskFullHelpers RsIwHelpers.
+
+Module I := ImportedRtaRsElfLimitedPreemptive.
+Module S := RtaRsElfLimitedPreemptiveSemanticSource.RtaRsElfLimitedPreemptiveSemanticSource.
+Module SSO := FoundationCertificates.ServiceScheduleOperations.
+Module SUP := FoundationCertificates.SupplyScheduleOperations.
+Module JSI := FoundationCertificates.JitterSvcIntervalOperations.
+Module CV := FoundationCertificates.CurvesCorrespondence.
+Module RBF := FoundationCertificates.RequestBoundFunctionCorrespondence.
+Module PC := FoundationCertificates.PredHelpers.
+Module SBFB := FoundationCertificates.SbfBusyCorrespondence.
+
+Module PPC := FoundationCertificates.PreemptionParameterCorrespondence.
+Module TPPC := FoundationCertificates.TaskPreemptionParametersCorrespondence.
+Module PTC := FoundationCertificates.PreemptionTimeCorrespondence.
+Module JSO := FoundationCertificates.JitterSvcScheduleOperations.
+Module PDS := PriorityDrivenSemanticSource.PriorityDrivenSemanticSource.
+Module PPS := PreemptionParameterSemanticSource.PreemptionParameterSemanticSource.
+Module TPS := TaskPreemptionParametersSemanticSource.TaskPreemptionParametersSemanticSource.
+
+Module SSEL := FoundationCertificates.SearchSpaceElfCorrespondence.
+Module EABE := FoundationCertificates.ElfAthepBoundCorrespondence.
+Module BBEL := FoundationCertificates.BlockingBoundElfCorrespondence.
+Module LPC := FoundationCertificates.LimitedPreemptiveCorrespondence.
+Module SLPC := FoundationCertificates.ScheduleLimitedPreemptiveCorrespondence.
+Module LPS := LimitedPreemptiveSemanticSource.LimitedPreemptiveSemanticSource.
+Module TLPC := FoundationCertificates.TaskLimitedPreemptiveCorrespondence.
+Module SCH := SchedulabilitySemanticSource.SchedulabilitySemanticSource.
+
+(** Correspondences for [results/rta/rs/elf/limited_preemptive.v]. Source side:
+    the extracted definition blocks and the extracted statement specialised
+    at their leading inputs (task and job types, [task_cost],
+    [max_arrivals], [priority_point], [job_task], [job_cost], [job_arrival],
+    a leading processor state); target side: the compiled Lean definitions
+    and the imported Lean theorem type. Inputs: [task_cost], [job_cost],
+    [job_arrival] pointwise; priority points by the accepted
+    [GelPriorityPointRel]; [max_arrivals] by the accepted
+    [CvMaxArrivalsRel]; [job_task] by the accepted [AdJobTaskRel]; the
+    processor state by the accepted two-sided [SvcProcessorStateRel]
+    together with the pointwise [supply_on] relation (the accepted
+    restricted-supply family relations). FP policies (the accepted
+    [pco_forall_fp]), supply bound functions (pointwise on Nats through
+    their class field), task sets, arrival sequences, schedules, tasks, jobs
+    and instants are covered in both directions.
+
+    The basic readiness model is related at each related schedule pair from the
+    accepted pending relation; the limited-preemptive job model by the accepted
+    [LpJobPreemptionPointsRel] input, the task preemption points by the accepted [TppPointsRel]
+    input (task models through the accepted conversion instance, the last nonpreemptive segment by
+    the accepted certificate); the fixed-preemption-points model and the schedule's respect of the
+    preemption model by the accepted certificates; the FP order properties by the accepted order certificates
+    and the ELF policy by the accepted [ELF_correspondence] (as in the
+    accepted ELF bounded-busy-interval certificate). Schedule validity and
+    work conservation are the accepted restricted-supply helper relations at
+    that readiness model; the JLFP policy at preemption points is the
+    priority-driven relation replayed at the schedule pair; the classical
+    busy-SBF validity, the supply-bound-function predicates, the ELF search
+    space, the RBFs, the ELF athep workload bound, the ELF blocking bound
+    and the task response-time bound are the accepted certificates re-instantiated at this artifact. No
+    source or target theorem is used. *)
+
+Ltac body_of f := let T := type of f in match T with _ -> ?B => exact B end.
+Ltac type_of_term t := let T := type of t in exact T.
+
+(** ** Covers *)
+
+Definition rfp_fun1_to_target (fR : nat -> nat) : Lean.Nat -> Lean.Nat :=
+  fun xL => sub_nat_to_imported (fR (sub_nat_to_rocq xL)).
+Definition rfp_fun1_to_source (fL : Lean.Nat -> Lean.Nat) : nat -> nat :=
+  fun xR => sub_nat_to_rocq (fL (sub_nat_to_imported xR)).
+
+Lemma rfp_fun1_to_target_rel fR : JSI.SvcNatFunRel fR (rfp_fun1_to_target fR).
+Proof.
+  intros xR xL Hx. unfold rfp_fun1_to_target.
+  rewrite (arta_nat_input _ _ Hx). exact (sub_nat_rel_canonical _).
+Qed.
+
+Lemma rfp_fun1_to_source_rel fL : JSI.SvcNatFunRel (rfp_fun1_to_source fL) fL.
+Proof. intros xR xL Hx. destruct Hx. exact (sub_nat_imported_roundtrip _). Qed.
+
+Lemma rfp_forall_fun1 (PR : (nat -> nat) -> Prop) (PL : (Lean.Nat -> Lean.Nat) -> SProp) :
+  (forall fR fL, JSI.SvcNatFunRel fR fL -> PropSPropRel (PR fR) (PL fL)) ->
+  PropSPropRel (forall f, PR f) (forall f, PL f).
+Proof.
+  exact (arta_forall_cover _ _ JSI.SvcNatFunRel rfp_fun1_to_target rfp_fun1_to_source
+    rfp_fun1_to_target_rel rfp_fun1_to_source_rel PR PL).
+Qed.
+
+Definition RfpSbfRel (sR : prosa.analysis.definitions.sbf.sbf.SupplyBoundFunction)
+    (sL : I.Prosa_Analysis_Definitions_Sbf_SupplyBoundFunction) : SProp :=
+  PC.PredFunctionRel sR (I.Prosa_Analysis_Definitions_Sbf_SupplyBoundFunction_supply_bound_function sL).
+
+Definition rfp_sbf_to_target (fR : prosa.analysis.definitions.sbf.sbf.SupplyBoundFunction) :
+    I.Prosa_Analysis_Definitions_Sbf_SupplyBoundFunction :=
+  I.Prosa_Analysis_Definitions_Sbf_SupplyBoundFunction_mk
+    (fun dL => sub_nat_to_imported (fR (sub_nat_to_rocq dL))).
+Definition rfp_sbf_to_source (sL : I.Prosa_Analysis_Definitions_Sbf_SupplyBoundFunction) :
+    prosa.analysis.definitions.sbf.sbf.SupplyBoundFunction :=
+  ((fun dR => sub_nat_to_rocq
+    (I.Prosa_Analysis_Definitions_Sbf_SupplyBoundFunction_supply_bound_function sL (sub_nat_to_imported dR)))
+    : prosa.analysis.definitions.sbf.sbf.SupplyBoundFunction).
+
+Lemma rfp_forall_sbf (PR : prosa.analysis.definitions.sbf.sbf.SupplyBoundFunction -> Prop)
+    (PL : I.Prosa_Analysis_Definitions_Sbf_SupplyBoundFunction -> SProp) :
+  (forall sR sL, RfpSbfRel sR sL -> PropSPropRel (PR sR) (PL sL)) ->
+  PropSPropRel (forall s, PR s) (forall s, PL s).
+Proof.
+  apply (arta_forall_cover _ _ RfpSbfRel rfp_sbf_to_target rfp_sbf_to_source).
+  - intros fR nR nL Hn. unfold RfpSbfRel, rfp_sbf_to_target. cbn.
+    rewrite (arta_nat_input _ _ Hn). exact (sub_nat_rel_canonical _).
+  - intros sL nR nL Hn. destruct Hn. exact (sub_nat_imported_roundtrip _).
+Qed.
+
+Section RtaRsElfLimitedPreemptive.
+  Context (Task Job : eqType).
+  Let dT := ad_decidable_eq Task.
+  Let dJ := ad_decidable_eq Job.
+  Context (PStateR : prosa.behavior.schedule.ProcessorState Job).
+  Variable PStateL : I.Prosa_Behavior_Schedule_ProcessorState Job dJ.
+  Variable R : SSO.SvcProcessorStateRel Job PStateR PStateL.
+  Hypothesis Hsupply_on : forall sR sL cR,
+    SSO.svc_ps_state_rel Job PStateR PStateL R sR sL ->
+    SubNatRel (@prosa.behavior.schedule.supply_on Job PStateR sR cR)
+      (SUP.supply_target_supply_on Job PStateL sL (SSO.svc_ps_core_to_target Job PStateR PStateL R cR)).
+  Variable tcR : prosa.model.task.concept.TaskCost Task.
+  Variable tcL : I.Prosa_Model_Task_Concept_TaskCost Task dT.
+  Hypothesis Htc : forall tsk : Task,
+    SubNatRel (@prosa.model.task.concept.task_cost Task tcR tsk)
+      (I.Prosa_Model_Task_Concept_TaskCost_task_cost Task dT tcL tsk).
+  Variable ppR : prosa.model.priority.gel.PriorityPoint Task.
+  Variable ppL : I.Prosa_Model_Priority_Gel_PriorityPoint Task dT.
+  Hypothesis Hpp : GelPriorityPointRel Task ppR ppL.
+  Variable maR : prosa.model.task.arrival.curves.MaxArrivals Task.
+  Variable maL : I.Prosa_Model_Task_Arrival_Curves_MaxArrivals Task dT.
+  Hypothesis Hma : CV.CvMaxArrivalsRel Task maR maL.
+  Variable tppR : TaskPreemptionParametersSemanticSource.TaskPreemptionParametersSemanticSource.TaskPreemptionPoints Task.
+  Variable tppL : I.Prosa_Model_Task_Preemption_Parameters_TaskPreemptionPoints Task dT.
+  Hypothesis Htpp : TPPC.TppPointsRel Task tppR tppL.
+  Variable jppR : LPS.JobPreemptionPoints Job.
+  Variable jppL : I.Prosa_Model_Preemption_LimitedPreemptive_JobPreemptionPoints Job dJ.
+  Hypothesis Hjpp : LPC.LpJobPreemptionPointsRel Job jppR jppL.
+  Variable jtR : prosa.model.task.concept.JobTask Job Task.
+  Variable jtL : I.Prosa_Model_Task_Concept_JobTask Job dJ Task dT.
+  Hypothesis Hjt : AdJobTaskRel Job Task jtR jtL.
+  Variable jaR : prosa.behavior.job.JobArrival Job.
+  Variable jaL : I.Prosa_Behavior_Job_JobArrival Job dJ.
+  Hypothesis Hja : forall j : Job,
+    SubNatRel (@prosa.behavior.job.job_arrival Job jaR j)
+      (I.Prosa_Behavior_Job_JobArrival_job_arrival Job dJ jaL j).
+  Variable costR : prosa.behavior.job.JobCost Job.
+  Variable costL : I.Prosa_Behavior_Job_JobCost Job dJ.
+  Hypothesis Hcost : forall j : Job,
+    SubNatRel (@prosa.behavior.job.job_cost Job costR j)
+      (I.Prosa_Behavior_Job_JobCost_job_cost Job dJ costL j).
+
+  Local Ltac imp H := apply ad_imp_correspondence; [exact H|].
+
+  (** *** Task-set level predicates *)
+
+  Lemma rfp_task_cost_of_job_related (j : Job) :
+    SubNatRel (@prosa.model.task.concept.task_cost Task tcR (@prosa.model.task.concept.job_task Job Task jtR j))
+      (I.Prosa_Model_Task_Concept_TaskCost_task_cost Task dT tcL
+        (I.Prosa_Model_Task_Concept_JobTask_job_task Job dJ Task dT jtL j)).
+  Proof.
+    exact (arta_lean_transport
+      (fun v => SubNatRel (@prosa.model.task.concept.task_cost Task tcR (@prosa.model.task.concept.job_task Job Task jtR j))
+        (I.Prosa_Model_Task_Concept_TaskCost_task_cost Task dT tcL v)) _ _ (Hjt j) (Htc _)).
+  Qed.
+
+  Lemma rfp_valid_job_costs_rel arrR arrL (Harr : ArArrivalSequenceRel Job arrR arrL) :
+    PropSPropRel (@prosa.model.task.concept.arrivals_have_valid_job_costs Task tcR Job jtR costR arrR)
+      (I.Prosa_Model_Task_Concept_arrivals_have_valid_job_costs Task dT tcL Job dJ jtL costL arrL).
+  Proof.
+    unfold prosa.model.task.concept.arrivals_have_valid_job_costs, prosa.model.task.concept.valid_job_cost.
+    cbn [I.Prosa_Model_Task_Concept_arrivals_have_valid_job_costs I.Prosa_Model_Task_Concept_valid_job_cost].
+    apply ar_forall_identity_correspondence. intro j.
+    apply ar_imp_correspondence; [exact (arrives_in_correspondence_certificate Job arrR arrL j Harr)|].
+    exact (ar_bool_truth_correspondence _ _
+      (svc_decide_le_related _ _ _ _ (Hcost j) (rfp_task_cost_of_job_related j))).
+  Qed.
+
+  Lemma rfp_all_jobs_from_taskset_rel arrR arrL (Harr : ArArrivalSequenceRel Job arrR arrL)
+      tsR tsL (Hts : ArListRel tsR tsL) :
+    PropSPropRel (@prosa.model.task.concept.all_jobs_from_taskset Task Job jtR arrR tsR)
+      (I.Prosa_Model_Task_Concept_all_jobs_from_taskset Task dT Job dJ jtL arrL tsL).
+  Proof.
+    unfold prosa.model.task.concept.all_jobs_from_taskset.
+    cbn [I.Prosa_Model_Task_Concept_all_jobs_from_taskset].
+    apply ar_forall_identity_correspondence. intro j.
+    apply ar_imp_correspondence; [exact (arrives_in_correspondence_certificate Job arrR arrL j Harr)|].
+    exact (ar_bool_truth_correspondence _ _ (arta_lean_transport
+      (fun v => ArBoolRel (@prosa.model.task.concept.job_task Job Task jtR j \in tsR)
+        (ar_target_decide_mem Task v tsL)) _ _ (Hjt j)
+      (ar_decide_mem_related Task (@prosa.model.task.concept.job_task Job Task jtR j) _ _ Hts))).
+  Qed.
+
+  Let J := rsi_jsvc Job PStateR PStateL R.
+  Let HsJ sR sL (Hs : SSO.SvcScheduleRel Job PStateR PStateL R sR sL) :=
+    rsi_hs_jsvc Job PStateR PStateL R sR sL Hs.
+
+  (** *** Section-local models *)
+
+  Lemma rfe_basic_ready_at sR sL (Hs : SSO.SvcScheduleRel Job PStateR PStateL R sR sL) :
+    RsiJrAt Job PStateR PStateL jaR jaL costR costL sR sL
+      (@prosa.model.readiness.basic.basic_ready_instance Job PStateR jaR costR)
+      (I.Prosa_Model_Readiness_Basic_basic_ready_instance Job dJ PStateL jaL costL).
+  Proof.
+    intros j tR tL Ht. cbn.
+    exact (ibt_pending Job PStateR PStateL R jaR jaL Hja costR costL Hcost sR sL Hs j tR tL Ht).
+  Qed.
+
+  Let rfe_task_model_related := TPPC.TaskPreemptionPoints_to_TaskMaxNonpreemptiveSegment_conversion_correspondence
+    Task tppR tppL Htpp.
+  Let LAST tsk := TPPC.task_last_nonpr_segment_correspondence Task tppR tppL Htpp tsk.
+
+  Lemma rfe_job_model_related :
+    PPC.PpJobPreemptableRel Job (@LPS.limited_preemptive_job_model Job jppR)
+      (I.Prosa_Model_Preemption_LimitedPreemptive_limited_preemptive_job_model Job dJ jppL).
+  Proof.
+    intros j nR nL Hn.
+    exact (LPC.lp_limited_preemptive_job_model_related Job jppR jppL Hjpp j nR nL Hn).
+  Qed.
+
+  Lemma rfe_respects_jlfp_rel sR sL (Hs : SSO.SvcScheduleRel Job PStateR PStateL R sR sL)
+      arrR arrL (Harr : ArArrivalSequenceRel Job arrR arrL)
+      jpR jpL (Hjp : PPC.PpJobPreemptableRel Job jpR jpL)
+      jrR jrL (Hjr : RsiJrAt Job PStateR PStateL jaR jaL costR costL sR sL jrR jrL)
+      pR pL (Hp : RsiJLFPRel Job pR pL) :
+    PropSPropRel (@PDS.respects_JLFP_policy_at_preemption_point Job jaR costR PStateR jpR jrR arrR sR pR)
+      (I.Prosa_Model_Schedule_PriorityDriven_respects_JLFP_policy_at_preemption_point
+        Job dJ jaL costL PStateL jpL jrL arrL sL pL).
+  Proof.
+    unfold PDS.respects_JLFP_policy_at_preemption_point, PDS.respects_JLDP_policy_at_preemption_point.
+    cbn [I.Prosa_Model_Schedule_PriorityDriven_respects_JLFP_policy_at_preemption_point
+      I.Prosa_Model_Schedule_PriorityDriven_respects_JLDP_policy_at_preemption_point].
+    apply ar_forall_identity_correspondence. intro j.
+    apply ar_forall_identity_correspondence. intro j_hp.
+    apply ar_forall_nat_correspondence. intros tR tL Ht.
+    imp (arrives_in_correspondence_certificate Job arrR arrL j Harr).
+    imp (ar_bool_truth_correspondence _ _
+      (PTC.preemption_time_correspondence Job jpR jpL Hjp PStateR PStateL J sR sL (HsJ sR sL Hs)
+        arrR arrL Harr tR tL Ht)).
+    imp (ar_bool_truth_correspondence _ _
+      (rsi_backlogged_related Job PStateR PStateL R jaR jaL costR costL sR sL Hs jrR jrL Hjr j tR tL Ht)).
+    imp (ar_bool_truth_correspondence _ _
+      (PPC.pp_scheduled_at_related Job PStateR PStateL J sR sL (HsJ sR sL Hs) j_hp tR tL Ht)).
+    exact (ar_bool_truth_correspondence _ _ (Hp j_hp j)).
+  Qed.
+
+  (** *** The two definitions *)
+
+  Let TSK tsk := RBF.task_request_bound_function_correspondence Task tcR tcL Htc maR maL Hma tsk.
+  Let ONE := sub_nat_rel_canonical (S O).
+
+  Let TRBF tsR tsL (Hts : ArListRel tsR tsL) fR fL (Hf : PdFPRel Task fR fL) tsk :=
+    RBF.total_hep_request_bound_function_FP_correspondence Task tcR tcL Htc maR maL Hma tsR tsL Hts fR fL Hf tsk.
+
+  Let BB tsR tsL (Hts : ArListRel tsR tsL) fR fL (Hf : PdFPRel Task fR fL) tsk :=
+    BBEL.blocking_bound_correspondence Task tcR tcL Htc _ _ rfe_task_model_related ppR ppL Hpp tsR tsL Hts
+      maR maL Hma fR fL Hf tsk.
+
+  Theorem busy_window_recurrence_solution_correspondence tsR tsL (Hts : ArListRel tsR tsL)
+      (tsk : Task) fR fL (Hf : PdFPRel Task fR fL) sbR sbL (Hsb : RfpSbfRel sbR sbL)
+      (LR : nat) (LL : Lean.Nat) (HL : SubNatRel LR LL) :
+    PropSPropRel (@S.busy_window_recurrence_solution Task tcR maR tppR ppR tsR tsk fR sbR LR)
+      (I.Prosa_Results_Rta_Rs_Elf_LimitedPreemptive_busy_window_recurrence_solution
+        Task dT tcL maL tppL ppL tsL tsk fL sbL LL).
+  Proof.
+    unfold S.busy_window_recurrence_solution.
+    cbn [I.Prosa_Results_Rta_Rs_Elf_LimitedPreemptive_busy_window_recurrence_solution].
+    apply ar_and_correspondence.
+    - exact (sub_nat_lt_correspondence _ _ _ _ (sub_nat_rel_canonical O) HL).
+    - apply ad_forall_nat_correspondence. intros AR AL HA.
+      exact (sub_nat_le_correspondence _ _ _ _
+        (svc_target_add_related _ _ _ _ (BB tsR tsL Hts fR fL Hf tsk AR AL HA) (TRBF tsR tsL Hts fR fL Hf tsk LR LL HL))
+        (Hsb _ _ HL)).
+  Qed.
+
+  Theorem rta_recurrence_solution_correspondence tsR tsL (Hts : ArListRel tsR tsL)
+      (tsk : Task) fR fL (Hf : PdFPRel Task fR fL) sbR sbL (Hsb : RfpSbfRel sbR sbL)
+      (LR : nat) (LL : Lean.Nat) (HL : SubNatRel LR LL) (RR : nat) (RL : Lean.Nat) (HR : SubNatRel RR RL) :
+    PropSPropRel (@S.rta_recurrence_solution Task tcR maR tppR ppR tsR tsk fR sbR LR RR)
+      (I.Prosa_Results_Rta_Rs_Elf_LimitedPreemptive_rta_recurrence_solution
+        Task dT tcL maL tppL ppL tsL tsk fL sbL LL RL).
+  Proof.
+    unfold S.rta_recurrence_solution.
+    cbn [I.Prosa_Results_Rta_Rs_Elf_LimitedPreemptive_rta_recurrence_solution].
+    apply ad_forall_nat_correspondence. intros AR AL HA.
+    apply ad_imp_correspondence;
+      [exact (ar_bool_truth_correspondence _ _
+        (SSEL.is_in_search_space_correspondence Task tcR tcL Htc _ _ rfe_task_model_related ppR ppL Hpp
+          tsR tsL Hts maR maL Hma fR fL Hf tsk LR AR LL AL HL HA))|].
+    apply ar_exists_nat_correspondence. intros FR FL HF.
+    have Hc1 := svc_target_sub_related _ _ _ _ (LAST tsk) ONE.
+    apply ar_and_correspondence.
+    - exact (sub_nat_le_correspondence _ _ _ _
+        (svc_target_add_related _ _ _ _
+          (svc_target_add_related _ _ _ _ (BB tsR tsL Hts fR fL Hf tsk AR AL HA)
+            (svc_target_sub_related _ _ _ _ (TSK tsk _ _ (svc_target_add_related _ _ _ _ HA ONE)) Hc1))
+          (EABE.bound_on_athep_workload_correspondence Task tcR tcL Htc maR maL Hma ppR ppL Hpp tsR tsL Hts
+            fR fL Hf tsk AR FR AL FL HA HF))
+        (Hsb _ _ HF)).
+    - apply ar_and_correspondence.
+      + exact (sub_nat_le_correspondence _ _ _ _ (svc_target_add_related _ _ _ _ (Hsb _ _ HF) Hc1)
+          (Hsb _ _ (svc_target_add_related _ _ _ _ HA HR))).
+      + exact (sub_nat_le_correspondence _ _ _ _ HF (svc_target_add_related _ _ _ _ HA HR)).
+  Qed.
+
+  (** *** The theorem *)
+
+  Definition src_uniprocessor_response_time_bound_limited_elf : Prop :=
+    ltac:(body_of (fun s : S.statement_uniprocessor_response_time_bound_limited_elf =>
+      s Task tcR maR tppR ppR Job jtR costR jaR jppR PStateR)).
+  Definition tgt_uniprocessor_response_time_bound_limited_elf : SProp :=
+    ltac:(type_of_term
+      (@I.Prosa_Results_Rta_Rs_Elf_LimitedPreemptive_uniprocessor_response_time_bound_limited_elf
+        Task dT tcL maL tppL ppL Job dJ jtL costL jaL jppL PStateL)).
+
+  Theorem uniprocessor_response_time_bound_limited_elf_correspondence :
+    PropSPropRel src_uniprocessor_response_time_bound_limited_elf
+      tgt_uniprocessor_response_time_bound_limited_elf.
+  Proof.
+    unfold src_uniprocessor_response_time_bound_limited_elf,
+      tgt_uniprocessor_response_time_bound_limited_elf.
+    imp (ibt_uni Job PStateR PStateL R).
+    imp (rsi_unit_supply_rel Job PStateR PStateL R Hsupply_on).
+    imp (rsi_fully_consuming_rel Job PStateR PStateL R Hsupply_on).
+    apply (rsi_forall_arr Job). intros arrR arrL Harr.
+    imp (valid_arrival_sequence_correspondence_certificate Job jaR jaL arrR arrL Hja Harr).
+    imp (rfp_valid_job_costs_rel arrR arrL Harr).
+    apply arta_forall_list. intros tsR tsL Hts.
+    imp (rfp_all_jobs_from_taskset_rel arrR arrL Harr tsR tsL Hts).
+    imp (TLPC.valid_fixed_preemption_points_model_correspondence Task tcR tcL Htc tppR tppL Htpp tsR tsL Hts
+      Job jtR jtL Hjt jppR jppL Hjpp arrR arrL Harr costR costL Hcost).
+    imp (CV.taskset_respects_max_arrivals_correspondence Task Job jtR jtL Hjt arrR arrL Harr tsR tsL Hts
+      maR maL Hma).
+    imp (CV.valid_taskset_arrival_curve_correspondence Task tsR tsL _ _ Hts Hma).
+    apply ad_forall_identity_correspondence. intro tsk.
+    imp (ar_bool_truth_correspondence _ _ (ar_decide_mem_related Task tsk _ _ Hts)).
+    apply (rsi_forall_sched Job PStateR PStateL R). intros sR sL Hs.
+    have Hjr := rfe_basic_ready_at sR sL Hs.
+    imp (rsi_valid_schedule_rel Job PStateR PStateL R jaR jaL costR costL sR sL Hs arrR arrL Harr _ _ Hjr).
+    imp (rsi_work_conserving_related Job PStateR PStateL R jaR jaL costR costL sR sL Hs arrR arrL Harr _ _ Hjr).
+    imp (SLPC.schedule_respects_preemption_model_correspondence Job _ _ rfe_job_model_related
+      PStateR PStateL J sR sL (HsJ sR sL Hs) arrR arrL Harr).
+    apply (pco_forall_fp Task). intros fR fL Hf.
+    imp (pd_reflexive_task_priorities_certificate Task fR fL Hf).
+    imp (pd_transitive_task_priorities_certificate Task fR fL Hf).
+    imp (pd_total_task_priorities_certificate Task fR fL Hf).
+    have Hp := ELF_correspondence Job Task ppR ppL Hpp jaR jaL Hja jtR jtL Hjt fR fL Hf.
+    imp (rfe_respects_jlfp_rel sR sL Hs arrR arrL Harr _ _ rfe_job_model_related _ _ Hjr _ _ Hp).
+    apply rfp_forall_sbf. intros sbR sbL Hsb.
+    imp (PC.pred_unit_supply_bound_function_correspondence _ _ Hsb).
+    imp (SBFB.valid_busy_sbf_correspondence Task Job PStateR PStateL
+      (rsi_sup Job PStateR PStateL R Hsupply_on) J sR sL
+      (rsi_hs_sup Job PStateR PStateL R Hsupply_on sR sL Hs) (HsJ sR sL Hs) arrR arrL Harr jaR jaL Hja
+      costR costL Hcost jtR jtL Hjt _ _ Hp tsk _ _ Hsb).
+    apply ad_forall_nat_correspondence. intros LR LL HL.
+    imp (busy_window_recurrence_solution_correspondence tsR tsL Hts tsk fR fL Hf sbR sbL Hsb LR LL HL).
+    apply ad_forall_nat_correspondence. intros RR RL HR.
+    imp (rta_recurrence_solution_correspondence tsR tsL Hts tsk fR fL Hf sbR sbL Hsb LR LL HL RR RL HR).
+    unfold SCH.task_response_time_bound.
+    cbn [I.Prosa_Analysis_Definitions_Schedulability_task_response_time_bound].
+    apply ar_forall_identity_correspondence. intro j.
+    imp (arrives_in_correspondence_certificate Job arrR arrL j Harr).
+    imp (ar_bool_truth_correspondence _ _ (ad_job_of_task_related Job Task jtR jtL tsk j Hjt)).
+    unfold prosa.behavior.service.job_response_time_bound.
+    cbn [I.Prosa_Behavior_Service_job_response_time_bound].
+    exact (ar_bool_truth_correspondence _ _
+      (ibt_completed Job PStateR PStateL R costR costL Hcost sR sL Hs j _ _
+        (svc_target_add_related _ _ _ _ (Hja j) HR))).
+  Qed.
+End RtaRsElfLimitedPreemptive.

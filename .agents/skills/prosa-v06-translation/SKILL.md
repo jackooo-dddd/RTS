@@ -303,6 +303,45 @@ accepted artifact hash，复用上游模块，只 fresh build 当前文件和必
 从这个局部回归推断已实现。
 新入口仅在最小接入回归通过后启用该复用路径；不要修改正在运行的 driver/hooks 或正在使用的缓存。复用时分别计时依赖装载、target、计算接口和 guards/audit，输入改变只失效相关阶段及下游；始终保留独立 `CLEAN_FULL`。上述计时/复用并非所有历史文件都已实现，缺证据时按 fresh 路径执行并明确记录。
 
+### `translation_file_pipeline.py` 已实现并经回归的复用（2026-09-28）
+
+- **check 预检**：编译 certificate chain 前，核对 chain 模块引用的每个
+  `I.Prosa_*` / `Imported*.Prosa_*` 常量都在本 run 的实际 export（`.out` 名表）中；
+  缺失即 `CHECK_FAILED: preflight` 并列出模块与符号。150 个 accepted run 零误报，
+  历史三次 chain 失败均精确命中。预检同时覆盖 `imported_type_audit` 文件中的 `Imported*.Prosa_*` 引用
+  （154 个 accepted run 零误报；可捕获派生规格残留的他文件导出名）。chain 中缺失的 `.v`（如尚未生成的
+  audit 模块）直接 `CHECK_FAILED: missing certificate source`。整文件 re-bound 的共享模块（如 `PcoStaticOrder`）
+  引用了 export 外的常量时，只在本证书内重述实际用到的最小 helper，并保持它们对
+  实际 imported target 的关联；不要用手写模型替代缺失的 imported 操作。
+- **chain checkpoint**：按 chain 顺序逐模块编译；模块 i 的 key 覆盖 Rocq binary、
+  opam 包集合、importer plugin/`Lean.vo`、本 run 的 imported `.vo`、`source/` 全部
+  `.vo`、load path、本模块 `.v` 以及前一模块的 key 与 `.vo` hash。仅当 key、记录的
+  `.vo`/log hash 全部一致且 log 无 Error 时复用；`.vo` 存在本身不构成复用依据，
+  不同 imported artifact 的 key 必然不同。修改第 k 个模块只重编 k 及其后（若重编
+  结果字节相同，后续仍复用）。`publish` 重新计算全部 key，要求与
+  `chain_checkpoints.json` 一致，并把该文件及其 hash 写入 publication/manifest；
+  publish 不重编 chain。回归（ffx 副本）：冷 284 s/61 编译；不变重跑 1 s/全复用；
+  改末模块 36 s/2 编译；损坏 `.vo`、删除条目、截断 checkpoint 均正确重编，assumption
+  summary 与 accepted 结果逐字节相同。
+- **计时**：`stage_timing.tsv` 分列 `lean_production`、每个 `fixture:<name>`（FRESH/CACHED）、
+  `lean_type_audit`、`certificate_compile`（`COMPILED=n;REUSED=m`）、`imported_type_audit`、
+  `lean_axiom_audit`、`assumption_audit`。
+- 修改证书后直接重跑 `check`（已编译前缀自动复用），不再需要手工只编尾部模块。
+- **fixture `.olean` 缓存（prepare）**：`.work/cache/lean_fixtures/<key>/`。key 覆盖 fixture 源码字节、
+  Lean binary/版本、`lake-manifest`、`lean-toolchain`、编译 options 与包集合，以及该 fixture 实际 import
+  闭包（由 `scripts/olean_imports.lean` 读取 `.olean` import 表）中每个 Prosa/Validation `.olean` 的 hash。
+  fixture header 解析与 Lean 一致，跳过 import 前的 `--`/`/- … -/`（含嵌套）注释（521 个 fixture 与真实
+  import 逐一相符）；构建后仍比对 `.olean` import 表与 header，不符即拒绝。
+  查找时校验 key、module 与 `.olean` hash（对照 `meta.json`），不符即视为未命中并 fresh 构建；写回时
+  若旧条目仍无效，改名 `.invalid-<ts>` 保留为证据（并发 run 已写入有效条目则直接沿用）；
+  `PIPELINE_FIXTURE_CACHE=0` 走完全 fresh 路径。每个 run 写 `lean_fixture_provenance.json`
+  （mode/key/olean hash/闭包大小）。production `.olean` 与 export/import 不走此缓存。
+  回归（bbfp 副本）：冷跑与 accepted 结果 export、production 与 52 个 fixture `.olean` 逐字节相同；
+  不变重跑 52/52 命中，lean_build 6777 s → 254 s；新增 fixture 只 fresh 新增者，export 不变；
+  改动 fixture 源码只重建它及依赖它的 fixture（key 经依赖 `.olean` hash 传递）；损坏的缓存条目
+  被两个并发 run 各自拒绝并重建为字节相同的 `.olean`，隔离后下游仍命中，export 不变。production 源改动只使 import 闭包含该模块的 fixture
+  失效（1 fresh / 51 命中），export 仍逐字节相同。
+
 operation interface 冻结后，互不依赖的 semantic clusters 可以并行开发，共享同一
 prepared snapshot；最后必须统一执行 exact-type audit、assumption audit 和一次
 whole-file publication。并行不改变 file-order/file-DAG gate，也不产生多个互相

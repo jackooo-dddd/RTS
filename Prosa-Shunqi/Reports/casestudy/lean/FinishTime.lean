@@ -20,9 +20,23 @@ section JobFinishTime
 variable {Job : JobType} [DecidableEq Job] [JobArrival Job] [JobCost Job]
 variable {PState : ProcessorState Job}
 variable (sched : schedule PState) (j : Job) (R : Nat)
-variable (H_response_time_bounded : job_response_time_bound sched j R = true)
-include R H_response_time_bounded
+-- 这里有一个很重要的 MathComp/Rocq 特性：`job_response_time_bound sched j R` 的返回类型实际上是 `bool`，
+-- 而不是 `Prop`。在 MathComp 中，布尔值可以通过 coercion 在 proposition 的位置使用，也就是说，当 `b : bool`
+-- 出现在命题位置时，可以理解为要求 `b = true`。因此，Rocq 中写 `Hypothesis H : b.`，本质上就是假设 `b` 为 `true`。
+-- Lean 不提供这种将 `Bool` 隐式当作 `Prop` 使用的机制，所以在从 Rocq 翻译到 Lean 时，
+-- 需要把这个条件显式写成 `b = true`。因此，Rocq 中的 `Hypothesis H_response_time_bounded : job_response_time_bound sched j R.`
+-- 对应到 Lean 就是 `H_response_time_bounded : job_response_time_bound sched j R = true`；这里虽然表面语法不同，
+-- 但表达的是同一个布尔条件成立。
 
+-- H_response_time_bounded： 对当前这个 schedule sched、当前 job j、以及给定的界 R，job j 的 response time 不超过 R
+variable (H_response_time_bounded : job_response_time_bound sched j R = true)
+-- 后面在这个 section 里定义 theorem/def 时，即使H_response_time_bounded 没有直接出现在 theorem 的结论类型里，
+-- 也要把它作为该 declaration 的参数保留下来。
+-- include 只解决一个很特殊的问题：对于 theorem，如果某个 section variable 没有出现在 theorem 的 statement/header 里，但 proof 需要依赖它，就要 include。
+include H_response_time_bounded
+
+/- 
+-/
 private theorem completion_witness :
     ∃ t : instant, completed_by sched j t = true := by
   refine ⟨job_arrival j + R, ?_⟩
@@ -32,7 +46,6 @@ private theorem completion_witness :
 providing an existence witness. -/
 noncomputable def finish_time : instant :=
   Nat.find (completion_witness sched j R H_response_time_bounded)
-#check finish_time
 
 theorem finished_at_finish_time :
     completed_by sched j

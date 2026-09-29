@@ -1,0 +1,332 @@
+From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq.
+From prosa Require Import LimitedPreemptiveSemanticSource.
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedRtaRsElfLimitedPreemptive ImportedSubadditivity.
+From FoundationCertificates Require Import PropSPropFoundation LogicalRelation
+  SubadditivityNatCorrespondence
+  ArrivalsSeqBaseAdapter ArrivalsSeqOperations ArrivalsSeqCorrespondence
+  JitterSvcBaseAdapter JitterSvcNatBoolOperations JitterSvcIntervalOperations
+  JitterSvcScheduleOperations JitterSvcJobOperations.
+
+Module I := ImportedRtaRsElfLimitedPreemptive.
+Module S := LimitedPreemptiveSemanticSource.LimitedPreemptiveSemanticSource.
+Module P := prosa.PreemptionParameterSemanticSource.PreemptionParameterSemanticSource.
+Module L := prosa.util.list.ListSemanticSource.
+Module G := prosa.GeneratedNondecreasingSource.GeneratedNondecreasingSource.
+
+(** Definition certificates for [model/preemption/limited_preemptive.v].
+
+    Source side: the extracted byte-identical class, source-local instance and
+    definition blocks [S.X] (over the accepted extracted parameter source [P],
+    the accepted utility source [L.last0] and the accepted generated source of
+    [G.nondecreasing_sequence]); target side: the compiled Lean declarations.
+    Inputs: [JobPreemptionPoints] pointwise by [SvcNatListRel] (two-way totals
+    below), [job_cost] by the accepted [SvcJobCostRel], arrival sequences by
+    [ArArrivalSequenceRel].  Nat-list operations are related through
+    kernel-checked Lean constructor equations exported with the artifact (the
+    accepted preemption-parameter interface for membership and [last0], the
+    accepted Nondecreasing interface for zero-defaulted lookup). *)
+
+Notation P_natMem := I.Prosa_Validation_PreemptionParameterInterface_natMem.
+
+Lemma lp_nat_input (nR : nat) (nL : Lean.Nat) :
+  SubNatRel nR nL -> Logic.eq (sub_nat_to_rocq nL) nR.
+Proof.
+  intro H. have E := f_equal sub_nat_to_rocq (imported_eq_to_coq_eq _ _ H).
+  rewrite sub_nat_rocq_roundtrip in E. exact (Logic.eq_sym E).
+Qed.
+
+(** ** Nat-list operations *)
+
+Lemma lp_nat_eq_transport (xR yR : nat) (xL yL : Lean.Nat) :
+  xR = yR -> SubNatRel xR xL -> SubNatRel yR yL -> Lean.eq xL yL.
+Proof.
+  intros H Hx Hy. destruct H.
+  exact (sub_imported_eq_trans _ _ _ (sub_imported_eq_sym _ _ Hx) Hy).
+Qed.
+
+Lemma lp_nat_eqb_related (xR yR : nat) (xL yL : Lean.Nat) :
+  SubNatRel xR xL -> SubNatRel yR yL ->
+  ArBoolRel (xR == yR) (I.Decidable_decide (Lean.eq xL yL) (I.instDecidableEqNat xL yL)).
+Proof.
+  intros Hx Hy. unfold ArBoolRel.
+  destruct (xR == yR) eqn:E.
+  - have H : xR = yR by apply/eqP.
+    exact (sub_imported_eq_sym _ _
+      (I.Prosa_Validation_PreemptionParameterInterface_production_nat_decide_eq_true xL yL
+        (lp_nat_eq_transport _ _ _ _ H Hx Hy))).
+  - have NE : xR <> yR by (move=> H; rewrite H eqxx in E).
+    exact (sub_imported_eq_sym _ _
+      (I.Prosa_Validation_PreemptionParameterInterface_production_nat_decide_eq_false xL yL
+        (fun EL => ar_coq_false_to_target
+          (NE (Logic.eq_trans (Logic.eq_sym (lp_nat_input _ _ Hx))
+            (Logic.eq_trans (f_equal sub_nat_to_rocq (imported_eq_to_coq_eq _ _ EL))
+              (lp_nat_input _ _ Hy))))))).
+Qed.
+
+Lemma lp_bool_or_canonical (aR bR : bool) :
+  Lean.eq (ar_bool_to_imported (aR || bR))
+    (I.Bool_or (ar_bool_to_imported aR) (ar_bool_to_imported bR)).
+Proof. destruct aR, bR; exact (@Lean.eq_refl _ _). Qed.
+
+Lemma lp_bool_or_related aR aL bR bL :
+  ArBoolRel aR aL -> ArBoolRel bR bL -> ArBoolRel (aR || bR) (I.Bool_or aL bL).
+Proof.
+  intros Ha Hb. unfold ArBoolRel in *.
+  exact (sub_imported_eq_trans _ _ _ (lp_bool_or_canonical aR bR)
+    (sub_imported_eq_congr2 I.Bool_or _ _ _ _ Ha Hb)).
+Qed.
+
+Lemma lp_mem_canonical (x : nat) (xs : seq nat) :
+  ArBoolRel (x \in xs) (P_natMem (sub_nat_to_imported x) (svc_nat_list_to_imported xs)).
+Proof.
+  induction xs as [|y ys IH].
+  - exact (sub_imported_eq_sym _ _
+      (I.Prosa_Validation_PreemptionParameterInterface_production_natMem_nil
+        (sub_nat_to_imported x))).
+  - rewrite in_cons. cbn [svc_nat_list_to_imported].
+    refine (sub_imported_eq_trans _ _ _ _ (sub_imported_eq_sym _ _
+      (I.Prosa_Validation_PreemptionParameterInterface_production_natMem_cons
+        (sub_nat_to_imported x) (sub_nat_to_imported y) (svc_nat_list_to_imported ys)))).
+    exact (lp_bool_or_related _ _ _ _
+      (lp_nat_eqb_related x y (sub_nat_to_imported x) (sub_nat_to_imported y)
+        (sub_nat_rel_canonical x) (sub_nat_rel_canonical y)) IH).
+Qed.
+
+Lemma lp_mem_bool_related xR xL xsR xsL :
+  SubNatRel xR xL -> SvcNatListRel xsR xsL ->
+  ArBoolRel (xR \in xsR)
+    (I.Decidable_decide
+      (I.Membership_mem_inst3 Lean.Nat (I.List_inst1 Lean.Nat)
+        (I.List_instMembership_inst1 Lean.Nat) xsL xL)
+      (I.List_instDecidableMemOfLawfulBEq_inst1 Lean.Nat
+        (I.instBEqOfDecidableEq_inst1 Lean.Nat I.instDecidableEqNat)
+        I.Nat_instLawfulBEq xL xsL)).
+Proof.
+  intros Hx Hxs. unfold ArBoolRel.
+  refine (sub_imported_eq_trans _ _ _ _ (sub_imported_eq_sym _ _
+    (I.Prosa_Validation_PreemptionParameterInterface_production_mem_eq xL xsL))).
+  exact (sub_imported_eq_trans _ _ _ (lp_mem_canonical xR xsR)
+    (sub_imported_eq_congr2 P_natMem _ _ _ _ Hx Hxs)).
+Qed.
+
+Lemma lp_last0_canonical (xs : seq nat) :
+  SubNatRel (L.last0 xs) (I.Prosa_Util_List_last0 (svc_nat_list_to_imported xs)).
+Proof.
+  induction xs as [|x xs IH].
+  - exact (sub_imported_eq_sym _ _ I.Prosa_Validation_PreemptionParameterInterface_production_last0_nil).
+  - destruct xs as [|y ys].
+    + exact (sub_imported_eq_sym _ _
+        (I.Prosa_Validation_PreemptionParameterInterface_production_last0_single (sub_nat_to_imported x))).
+    + have Hs : Logic.eq (L.last0 [:: x, y & ys]) (L.last0 (y :: ys)) by reflexivity.
+      unfold SubNatRel in IH |- *. rewrite Hs. cbn [svc_nat_list_to_imported].
+      exact (sub_imported_eq_trans _ _ _ IH (sub_imported_eq_sym _ _
+        (I.Prosa_Validation_PreemptionParameterInterface_production_last0_cons2
+          (sub_nat_to_imported x) (sub_nat_to_imported y) (svc_nat_list_to_imported ys)))).
+Qed.
+
+Lemma lp_last0_related xsR xsL :
+  SvcNatListRel xsR xsL -> SubNatRel (L.last0 xsR) (I.Prosa_Util_List_last0 xsL).
+Proof.
+  intro Hxs. exact (sub_imported_eq_trans _ _ _ (lp_last0_canonical xsR)
+    (sub_imported_eq_congr I.Prosa_Util_List_last0 _ _ Hxs)).
+Qed.
+
+Lemma lp_length_canonical (xs : seq nat) :
+  SubNatRel (size xs) (I.List_length_inst1 Lean.Nat (svc_nat_list_to_imported xs)).
+Proof.
+  induction xs as [|x xs IH].
+  - exact (@Lean.eq_refl Lean.Nat Lean.Nat_zero).
+  - cbn [svc_nat_list_to_imported].
+    exact (sub_imported_eq_congr Lean.Nat_succ _ _ IH).
+Qed.
+
+Lemma lp_length_related xsR xsL : SvcNatListRel xsR xsL ->
+  SubNatRel (size xsR) (I.List_length_inst1 Lean.Nat xsL).
+Proof.
+  intro Hxs. exact (sub_imported_eq_trans _ _ _ (lp_length_canonical xsR)
+    (sub_imported_eq_congr (I.List_length_inst1 Lean.Nat) _ _ Hxs)).
+Qed.
+
+Lemma lp_nthD_canonical (xs : seq nat) (n : nat) :
+  SubNatRel (nth O xs n)
+    (I.Prosa_Validation_NondecreasingInterface_nthD (svc_nat_list_to_imported xs)
+      (sub_nat_to_imported n)).
+Proof.
+  revert n. induction xs as [|x xs IH]; intro n; destruct n;
+    cbn [svc_nat_list_to_imported sub_nat_to_imported];
+    try exact (@Lean.eq_refl Lean.Nat Lean.Nat_zero);
+    try exact (@Lean.eq_refl Lean.Nat (sub_nat_to_imported x));
+    exact (IH n).
+Qed.
+
+Lemma lp_nthD_related xsR xsL nR nL :
+  SvcNatListRel xsR xsL -> SubNatRel nR nL ->
+  SubNatRel (nth O xsR nR) (I.Prosa_Validation_NondecreasingInterface_nthD xsL nL).
+Proof.
+  intros Hxs Hn. unfold SubNatRel.
+  exact (sub_imported_eq_trans _ _ _ (lp_nthD_canonical xsR nR)
+    (sub_imported_eq_congr2 I.Prosa_Validation_NondecreasingInterface_nthD _ _ _ _ Hxs Hn)).
+Qed.
+
+(** [nondecreasing_sequence] (accepted utility) over related Nat lists; the
+    Lean body's zero-defaulted lookup is convertible to the exported
+    [NondecreasingInterface.nthD]. *)
+Lemma lp_nondecreasing_sequence_related xsR xsL :
+  SvcNatListRel xsR xsL ->
+  PropSPropRel (G.nondecreasing_sequence xsR)
+    (I.Prosa_Util_Nondecreasing_nondecreasing_sequence xsL).
+Proof.
+  intro Hxs. apply prop_sprop_rel_intro.
+  - intros HR n1L n2L HboundsL.
+    set n1R := sub_nat_to_rocq n1L.
+    set n2R := sub_nat_to_rocq n2L.
+    have Hn1 : SubNatRel n1R n1L := sub_nat_rel_surjective n1L.
+    have Hn2 : SubNatRel n2R n2L := sub_nat_rel_surjective n2L.
+    destruct HboundsL as [HleL HltL].
+    apply (prop_to_sprop _ _
+      (sub_nat_le_correspondence _ _ _ _
+        (lp_nthD_related xsR xsL n1R n1L Hxs Hn1)
+        (lp_nthD_related xsR xsL n2R n2L Hxs Hn2))).
+    apply HR. apply/andP; split.
+    + exact (sprop_to_prop _ _ (sub_nat_le_correspondence _ _ _ _ Hn1 Hn2) HleL).
+    + exact (sprop_to_prop _ _
+        (sub_nat_lt_correspondence _ _ _ _ Hn2 (lp_length_related xsR xsL Hxs)) HltL).
+  - intro HL. apply strictly_inhabits.
+    intros n1R n2R HboundsR.
+    move: HboundsR => /andP [HleR HltR].
+    have Hn1 := sub_nat_rel_canonical n1R.
+    have Hn2 := sub_nat_rel_canonical n2R.
+    exact (sprop_to_prop _ _
+      (sub_nat_le_correspondence _ _ _ _
+        (lp_nthD_related xsR xsL n1R (sub_nat_to_imported n1R) Hxs Hn1)
+        (lp_nthD_related xsR xsL n2R (sub_nat_to_imported n2R) Hxs Hn2))
+      (HL (sub_nat_to_imported n1R) (sub_nat_to_imported n2R)
+        (Lean.And_intro _ _
+          (prop_to_sprop _ _ (sub_nat_le_correspondence _ _ _ _ Hn1 Hn2) HleR)
+          (prop_to_sprop _ _
+            (sub_nat_lt_correspondence _ _ _ _ Hn2 (lp_length_related xsR xsL Hxs)) HltR)))).
+Qed.
+
+(** ** The [JobPreemptionPoints] class (input relation with two-way totals) *)
+
+Fixpoint lp_nat_list_to_rocq (xs : I.List_inst1 Lean.Nat) : seq nat :=
+  match xs with
+  | I.List_nil_inst1 => [::]
+  | I.List_cons_inst1 x tail => sub_nat_to_rocq x :: lp_nat_list_to_rocq tail
+  end.
+
+Lemma lp_nat_list_target_roundtrip (xs : I.List_inst1 Lean.Nat) :
+  Lean.eq (svc_nat_list_to_imported (lp_nat_list_to_rocq xs)) xs.
+Proof.
+  induction xs as [|x xs IH].
+  - exact (@Lean.eq_refl _ _).
+  - cbn [lp_nat_list_to_rocq svc_nat_list_to_imported].
+    exact (sub_imported_eq_congr2 (I.List_cons_inst1 Lean.Nat) _ _ _ _
+      (sub_nat_rel_surjective x) IH).
+Qed.
+
+Section Class.
+  Context (Job : eqType).
+  Let dJ := ar_decidable_eq Job.
+
+  Definition LpJobPreemptionPointsRel (ppR : S.JobPreemptionPoints Job)
+      (ppL : I.Prosa_Model_Preemption_LimitedPreemptive_JobPreemptionPoints Job dJ) : SProp :=
+    forall j : Job, SvcNatListRel (@S.job_preemptive_points Job ppR j)
+      (I.Prosa_Model_Preemption_LimitedPreemptive_JobPreemptionPoints_job_preemptive_points
+        Job dJ ppL j).
+
+  Lemma JobPreemptionPoints_source_total (ppR : S.JobPreemptionPoints Job) :
+    LpJobPreemptionPointsRel ppR
+      (I.Prosa_Model_Preemption_LimitedPreemptive_JobPreemptionPoints_mk Job dJ
+        (fun j => svc_nat_list_to_imported (@S.job_preemptive_points Job ppR j))).
+  Proof. intro j. exact (@Lean.eq_refl _ _). Qed.
+
+  Lemma JobPreemptionPoints_target_total
+      (ppL : I.Prosa_Model_Preemption_LimitedPreemptive_JobPreemptionPoints Job dJ) :
+    LpJobPreemptionPointsRel
+      (@S.Build_JobPreemptionPoints Job (fun j => lp_nat_list_to_rocq
+        (I.Prosa_Model_Preemption_LimitedPreemptive_JobPreemptionPoints_job_preemptive_points
+          Job dJ ppL j))) ppL.
+  Proof. intro j. exact (lp_nat_list_target_roundtrip _). Qed.
+End Class.
+
+(** ** Definitions *)
+
+Section Model.
+  Context (Job : eqType).
+  Let dJ := ar_decidable_eq Job.
+  Variable costR : prosa.behavior.job.JobCost Job.
+  Variable costL : I.Prosa_Behavior_Job_JobCost Job dJ.
+  Hypothesis Hcost : SvcJobCostRel Job costR costL.
+  Variable ppR : S.JobPreemptionPoints Job.
+  Variable ppL : I.Prosa_Model_Preemption_LimitedPreemptive_JobPreemptionPoints Job dJ.
+  Hypothesis Hpp : LpJobPreemptionPointsRel Job ppR ppL.
+
+  (** The source-local instance: related as a [JobPreemptable] model
+      (pointwise on Nat progress by [SubNatRel], Booleans). *)
+  Lemma lp_limited_preemptive_job_model_related (j : Job) (nR : nat) (nL : Lean.Nat) :
+    SubNatRel nR nL ->
+    ArBoolRel (@P.job_preemptable Job (@S.limited_preemptive_job_model Job ppR) j nR)
+      (I.Prosa_Model_Preemption_Parameter_JobPreemptable_job_preemptable Job dJ
+        (I.Prosa_Model_Preemption_LimitedPreemptive_limited_preemptive_job_model Job dJ ppL)
+        j nL).
+  Proof.
+    intro Hn. exact (lp_mem_bool_related _ _ _ _ Hn (Hpp j)).
+  Qed.
+
+  Variable arrR : prosa.behavior.arrival_sequence.arrival_sequence Job.
+  Variable arrL : I.Prosa_Behavior_Arrival_sequence_arrival_sequence Job dJ.
+  Hypothesis Harr : ArArrivalSequenceRel Job arrR arrL.
+
+  Theorem beginning_of_execution_in_preemption_points_correspondence :
+    PropSPropRel (@S.beginning_of_execution_in_preemption_points Job ppR arrR)
+      (I.Prosa_Model_Preemption_LimitedPreemptive_beginning_of_execution_in_preemption_points
+        Job dJ ppL arrL).
+  Proof.
+    unfold S.beginning_of_execution_in_preemption_points.
+    cbn [I.Prosa_Model_Preemption_LimitedPreemptive_beginning_of_execution_in_preemption_points].
+    apply ar_forall_identity_correspondence. intro j.
+    apply ar_imp_correspondence; [exact (arrives_in_correspondence_certificate Job arrR arrL j Harr)|].
+    exact (ar_bool_truth_correspondence _ _
+      (lp_mem_bool_related _ _ _ _ (sub_nat_rel_canonical O) (Hpp j))).
+  Qed.
+
+  Theorem end_of_execution_in_preemption_points_correspondence :
+    PropSPropRel (@S.end_of_execution_in_preemption_points Job costR ppR arrR)
+      (I.Prosa_Model_Preemption_LimitedPreemptive_end_of_execution_in_preemption_points
+        Job dJ costL ppL arrL).
+  Proof.
+    unfold S.end_of_execution_in_preemption_points.
+    cbn [I.Prosa_Model_Preemption_LimitedPreemptive_end_of_execution_in_preemption_points].
+    apply ar_forall_identity_correspondence. intro j.
+    apply ar_imp_correspondence; [exact (arrives_in_correspondence_certificate Job arrR arrL j Harr)|].
+    exact (sub_nat_eq_correspondence _ _ _ _ (lp_last0_related _ _ (Hpp j)) (Hcost j)).
+  Qed.
+
+  Theorem preemption_points_is_nondecreasing_sequence_correspondence :
+    PropSPropRel (@S.preemption_points_is_nondecreasing_sequence Job ppR arrR)
+      (I.Prosa_Model_Preemption_LimitedPreemptive_preemption_points_is_nondecreasing_sequence
+        Job dJ ppL arrL).
+  Proof.
+    unfold S.preemption_points_is_nondecreasing_sequence.
+    cbn [I.Prosa_Model_Preemption_LimitedPreemptive_preemption_points_is_nondecreasing_sequence].
+    apply ar_forall_identity_correspondence. intro j.
+    apply ar_imp_correspondence; [exact (arrives_in_correspondence_certificate Job arrR arrL j Harr)|].
+    exact (lp_nondecreasing_sequence_related _ _ (Hpp j)).
+  Qed.
+
+  Theorem valid_limited_preemptions_job_model_correspondence :
+    PropSPropRel (@S.valid_limited_preemptions_job_model Job costR ppR arrR)
+      (I.Prosa_Model_Preemption_LimitedPreemptive_valid_limited_preemptions_job_model
+        Job dJ costL ppL arrL).
+  Proof.
+    unfold S.valid_limited_preemptions_job_model.
+    cbn [I.Prosa_Model_Preemption_LimitedPreemptive_valid_limited_preemptions_job_model].
+    apply ar_and_correspondence;
+      [exact beginning_of_execution_in_preemption_points_correspondence|].
+    apply ar_and_correspondence;
+      [exact end_of_execution_in_preemption_points_correspondence|].
+    exact preemption_points_is_nondecreasing_sequence_correspondence.
+  Qed.
+End Model.

@@ -5,6 +5,9 @@ Import OverheadsScheduleSemanticSource.
 (* display-only: the same imports as the extracted module, so names print unqualified *)
 From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq bigop.
 Require Import prosa.behavior.all prosa.model.schedule.scheduled.
+(* display-only: in the official environment [ideal.processor_state] is also in scope, so the overheads
+   processor model prints module-qualified; this shadow reproduces that display (no statement is affected). *)
+Module ideal_display. Definition processor_state := tt. End ideal_display. Import ideal_display.
 Goal True. idtac "BEGIN|prosa.analysis.facts.model.overheads.schedule.overheads_proc_model_is_a_uniprocessor_model". Abort.
 Print statement_overheads_proc_model_is_a_uniprocessor_model.
 Goal True. idtac "END|prosa.analysis.facts.model.overheads.schedule.overheads_proc_model_is_a_uniprocessor_model". Abort.
