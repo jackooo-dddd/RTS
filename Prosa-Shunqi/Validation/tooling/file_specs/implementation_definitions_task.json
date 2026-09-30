@@ -1,0 +1,141 @@
+{
+  "rank": 129,
+  "layer": 15,
+  "tag": "ITASK",
+  "slug": "implementation_definitions_task",
+  "source": "implementation/definitions/task.v",
+  "dependencies": [
+    "implementation/definitions/arrival_bound.v",
+    "model/priority/numeric_fixed_priority.v",
+    "model/task/arrival/curves.v"
+  ],
+  "declaration_count": 15,
+  "base_run": "model_task_arrival_sporadic_as_curve_final",
+  "base_checks": [
+    {
+      "manifest": "model_task_arrival_sporadic_as_curve",
+      "olean": "Prosa/Model/Task/Arrival/SporadicAsCurve.olean",
+      "vo": "SporadicAsCurveSemanticSource.vo"
+    }
+  ],
+  "source_mode": "pinned",
+  "fingerprint_probe": "Validation/fixtures/translation_order/ImplTaskTypeFingerprintProbe.v",
+  "production": "Prosa/Implementation/Definitions/Task.lean",
+  "production_olean": "Prosa/Implementation/Definitions/Task.olean",
+  "lean_namespace": "Prosa.Implementation.Definitions.Task",
+  "fixtures": [
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ArrivalsComputationInterface",
+    "DivModComputationInterface",
+    "FactsSporadicArrivalBoundComputationInterface",
+    "FactsArrivalCurvesComputationInterface",
+    "SporadicAsCurveComputationInterface",
+    "ExtrapolatedArrivalCurveArithmeticInterface",
+    "ImplTaskComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/ImplTaskLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/implementation_definitions_task_export_config.json",
+  "export_name": "ImplTask",
+  "cert_dir": "certificates/implementation_definitions_task",
+  "chain": [
+    "EacFullCorrespondence",
+    "AbCorrespondence",
+    "ImplTaskCorrespondence"
+  ],
+  "audit_module": "ImplTaskAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/ImplTaskImportedTypeAudit.v",
+  "assumption_config": "certificates/implementation_definitions_task/impl_task_assumption_config.json",
+  "lean_axiom_config": "certificates/implementation_definitions_task/impl_task_lean_axiom_config.json",
+  "computational": [
+    "concrete_task",
+    "task_eqdef",
+    "concrete_job",
+    "get_arrival_curve_prefix",
+    "concrete_max_arrivals",
+    "job_eqdef",
+    "TaskCost",
+    "TaskPriority",
+    "TaskDeadline",
+    "ConcreteMaxArrivals",
+    "JobTask",
+    "JobArrival",
+    "JobCost"
+  ],
+  "principal": {
+    "concrete_task": [
+      "concrete_task_source_total",
+      "concrete_task_target_total"
+    ],
+    "concrete_job": [
+      "concrete_job_source_total",
+      "concrete_job_target_total"
+    ]
+  },
+  "helpers": [
+    "it_task_source_roundtrip",
+    "it_task_target_roundtrip",
+    "it_task_equality",
+    "it_task_id",
+    "it_task_cost",
+    "it_task_arrival",
+    "it_task_deadline",
+    "it_task_priority",
+    "it_ab_decide_related",
+    "it_nat_decide_related",
+    "it_task_eqdef_iff",
+    "it_job_source_roundtrip",
+    "it_job_target_roundtrip",
+    "it_job_equality",
+    "it_job_id",
+    "it_job_arrival",
+    "it_job_cost",
+    "it_job_deadline",
+    "it_job_task",
+    "it_task_decide_related",
+    "it_job_eqdef_iff"
+  ],
+  "previous_status": "model_task_suspension_dynamic_module_status.json",
+  "previous_files": 304,
+  "previous_decls": 1893,
+  "input_relations": [
+    "concrete tasks and jobs by their fieldwise canonical import (two-way totals); arrival bounds and arrival-curve prefixes by the accepted canonical relations; Nat values by SubNatRel"
+  ],
+  "coverage_for_inner_binders": [
+    "concrete tasks",
+    "concrete jobs",
+    "durations"
+  ],
+  "lean_representation_note": "`x == y` on Nat and on the concrete eqTypes is `decide (x = y)` over the derived decidable equalities; `Equality.axiom` is the informative `BoolReflect` view (a proof-valued `def`); the HB equality instances are the derived `DecidableEq` instances; the global parameter instances are named instances",
+  "extra_pinned_sources": [
+    "implementation/definitions/extrapolated_arrival_curve.v",
+    "implementation/definitions/arrival_bound.v",
+    "model/priority/numeric_fixed_priority.v"
+  ],
+  "extra_artifacts": [],
+  "export_diagnosis": "the accepted sporadic-as-curve export root plus the concrete task/job file and its accepted arrival-bound, extrapolated-curve and numeric-priority dependencies",
+  "extra_olean_artifacts": [
+    {
+      "from": "analysis_abstract_restricted_supply_busy_sbf/olean/Prosa/Implementation/Definitions/ExtrapolatedArrivalCurve.olean",
+      "to": "Prosa/Implementation/Definitions/ExtrapolatedArrivalCurve.olean",
+      "manifest": "implementation_extrapolated_arrival_curve",
+      "key": "artifact_hashes.production_olean_sha256"
+    },
+    {
+      "from": "implementation_arrival_bound/olean/Prosa/Implementation/Definitions/ArrivalBound.olean",
+      "to": "Prosa/Implementation/Definitions/ArrivalBound.olean",
+      "manifest": "implementation_arrival_bound",
+      "key": "artifact_hashes.production_olean_sha256"
+    },
+    {
+      "from": "model_priority_numeric_fixed_priority_final/olean/Prosa/Model/Priority/NumericFixedPriority.olean",
+      "to": "Prosa/Model/Priority/NumericFixedPriority.olean",
+      "manifest": "model_priority_numeric_fixed_priority",
+      "key": "production_olean_sha256"
+    }
+  ],
+  "extra_source_patches": [
+    "patches/prosa-v06-rocq93-implementation-extrapolated-arrival-curve.patch",
+    "patches/prosa-v06-rocq93-implementation-arrival-bound.patch"
+  ]
+}

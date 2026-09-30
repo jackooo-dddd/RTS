@@ -1,0 +1,8 @@
+import Prosa.Analysis.Abstract.Ideal.CumulativeBounds
+set_option pp.fieldNotation false
+
+#check @Prosa.Analysis.Abstract.Ideal.CumulativeBounds.cumulative_priority_inversion_is_bounded
+#check @Prosa.Analysis.Abstract.Ideal.CumulativeBounds.cumulative_interference_is_bounded_by_total_service
+
+#print axioms Prosa.Analysis.Abstract.Ideal.CumulativeBounds.cumulative_priority_inversion_is_bounded
+#print axioms Prosa.Analysis.Abstract.Ideal.CumulativeBounds.cumulative_interference_is_bounded_by_total_service

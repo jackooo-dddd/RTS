@@ -1,0 +1,10 @@
+import Prosa.Analysis.Definitions.ServiceInversion.ReadinessAware
+set_option pp.fieldNotation false
+
+#check @Prosa.Analysis.Definitions.ServiceInversion.ReadinessAware.service_inversion
+#check @Prosa.Analysis.Definitions.ServiceInversion.ReadinessAware.cumulative_service_inversion
+#check @Prosa.Analysis.Definitions.ServiceInversion.ReadinessAware.service_inversion_is_bounded
+
+#print axioms Prosa.Analysis.Definitions.ServiceInversion.ReadinessAware.service_inversion
+#print axioms Prosa.Analysis.Definitions.ServiceInversion.ReadinessAware.cumulative_service_inversion
+#print axioms Prosa.Analysis.Definitions.ServiceInversion.ReadinessAware.service_inversion_is_bounded

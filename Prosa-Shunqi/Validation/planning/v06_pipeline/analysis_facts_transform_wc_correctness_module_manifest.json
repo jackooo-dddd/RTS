@@ -1,0 +1,661 @@
+{
+  "slice": "TRANSLATION_ORDER_ANALYSIS_FACTS_TRANSFORM_WC_CORRECTNESS",
+  "generated_at": "2026-09-30T11:06:50.828872+08:00",
+  "published_at": "2026-09-30T11:06:50.828872+08:00",
+  "rank": 228,
+  "layer": 20,
+  "source_file": "analysis/facts/transform/wc_correctness.v",
+  "source_commit": "414e66760333eaa4ef78c685bcf53291c527a548",
+  "source_tree": "7d7e94c731f7eefde4ca738310d4cafdd7bebdf0",
+  "source_file_sha256": "7d7a778e0a8883a22a8ab1df67e9b84889674e549584b39a3a04936288515599",
+  "pipeline": "Validation/scripts/translation_file_pipeline.py",
+  "spec": "Validation/tooling/file_specs/analysis_facts_transform_wc_correctness.json",
+  "spec_sha256": "95c87778f3319097642dfc8bc2632b913f781bb8d3d9e275cf19bca8969ab210",
+  "source_compatibility": {
+    "mode": "extract",
+    "note": "the three definitions are byte-identical computational blocks and the 30 statements are the authoritative elaborated types (proofs omitted); analysis/transform/wc_trans (with util/list, util/search_arg and model/processor/ideal) is the accepted extracted WcTransSemanticSource of the base run; analysis/definitions/schedulability is bound to its accepted extracted SchedulabilitySemanticSource (.vo copied from its accepted run and hash-checked, over the pinned model/task/absolute_deadline); model/schedule/work_conserving is the pinned source compiled from the pinned tree and model/readiness/basic the compiled pinned source of the base closure; the sections' `#[local] Existing Instance ideal.processor_state` and `#[local] Existing Instance basic_ready_instance` are replayed after the imports; the proof-only facts/model/ideal/schedule, facts/transform/swaps and util/tactics imports are dropped",
+    "extracted_sha256": "b81308420b6698c3630d656254047d943b6ef3d379155613b3cc2ea7ba4ae0dd",
+    "extraction_metadata_sha256": "bbba6e02f2a657cf84b75e9f3749c720c82bac8445226d8c640377185c162c14"
+  },
+  "source_type_evidence": {
+    "prosa.analysis.facts.transform.wc_correctness.is_work_conserving_at": "EXACT_HASH",
+    "prosa.analysis.facts.transform.wc_correctness.swap_candidate_is_in_future": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.transform.wc_correctness.fsc_respects_has_arrived": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.transform.wc_correctness.swap_jobs_must_arrive_to_execute": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.transform.wc_correctness.fsc_jobs_must_be_ready_to_execute": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.transform.wc_correctness.mwa_service_bound": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.transform.wc_correctness.mwa_ready_job_also_ready_in_original_schedule": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.transform.wc_correctness.max_dl_is_greatest_dl": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.transform.wc_correctness.order": "EXACT_HASH",
+    "prosa.analysis.facts.transform.wc_correctness.search_result": "EXACT_HASH",
+    "prosa.analysis.facts.transform.wc_correctness.make_wc_at_case_result_found": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.transform.wc_correctness.no_relevant_state_in_range": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.transform.wc_correctness.service_of_j_is_less_than_cost": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.transform.wc_correctness.t_is_less_than_deadline_of_j": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.transform.wc_correctness.equal_service_t_max_dl": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.transform.wc_correctness.j_misses_deadline": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.transform.wc_correctness.make_wc_at_case_result_none": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.transform.wc_correctness.mwa_finds_ready_jobs": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.transform.wc_correctness.mwa_establishes_wc": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.transform.wc_correctness.mwa_jobs_come_from_arrival_sequence": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.transform.wc_correctness.mwa_jobs_must_be_ready_to_execute": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.transform.wc_correctness.mwa_all_deadlines_of_arrivals_met": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.transform.wc_correctness.wc_transform_prefix_inclusion": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.transform.wc_correctness.wc_prefix_service_bound": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.transform.wc_correctness.wc_prefix_job_meets_deadline": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.transform.wc_correctness.wc_prefix_jobs_come_from_arrival_sequence": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.transform.wc_correctness.wc_prefix_jobs_must_be_ready_to_execute": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.transform.wc_correctness.wc_jobs_come_from_arrival_sequence": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.transform.wc_correctness.wc_jobs_must_be_ready_to_execute": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.transform.wc_correctness.wc_all_deadlines_of_arrivals_met": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.transform.wc_correctness.wc_is_work_conserving_at": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.transform.wc_correctness.wc_is_work_conserving": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.transform.wc_correctness.wc_transform_correctness": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE"
+  },
+  "statement_only_export_boundary": [
+    "Prosa.Analysis.Facts.Transform.WcCorrectness.swap_candidate_is_in_future",
+    "Prosa.Analysis.Facts.Transform.WcCorrectness.fsc_respects_has_arrived",
+    "Prosa.Analysis.Facts.Transform.WcCorrectness.swap_jobs_must_arrive_to_execute",
+    "Prosa.Analysis.Facts.Transform.WcCorrectness.fsc_jobs_must_be_ready_to_execute",
+    "Prosa.Analysis.Facts.Transform.WcCorrectness.mwa_service_bound",
+    "Prosa.Analysis.Facts.Transform.WcCorrectness.mwa_ready_job_also_ready_in_original_schedule",
+    "Prosa.Analysis.Facts.Transform.WcCorrectness.max_dl_is_greatest_dl",
+    "Prosa.Analysis.Facts.Transform.WcCorrectness.make_wc_at_case_result_found",
+    "Prosa.Analysis.Facts.Transform.WcCorrectness.no_relevant_state_in_range",
+    "Prosa.Analysis.Facts.Transform.WcCorrectness.service_of_j_is_less_than_cost",
+    "Prosa.Analysis.Facts.Transform.WcCorrectness.t_is_less_than_deadline_of_j",
+    "Prosa.Analysis.Facts.Transform.WcCorrectness.equal_service_t_max_dl",
+    "Prosa.Analysis.Facts.Transform.WcCorrectness.j_misses_deadline",
+    "Prosa.Analysis.Facts.Transform.WcCorrectness.make_wc_at_case_result_none",
+    "Prosa.Analysis.Facts.Transform.WcCorrectness.mwa_finds_ready_jobs",
+    "Prosa.Analysis.Facts.Transform.WcCorrectness.mwa_establishes_wc",
+    "Prosa.Analysis.Facts.Transform.WcCorrectness.mwa_jobs_come_from_arrival_sequence",
+    "Prosa.Analysis.Facts.Transform.WcCorrectness.mwa_jobs_must_be_ready_to_execute",
+    "Prosa.Analysis.Facts.Transform.WcCorrectness.mwa_all_deadlines_of_arrivals_met",
+    "Prosa.Analysis.Facts.Transform.WcCorrectness.wc_transform_prefix_inclusion",
+    "Prosa.Analysis.Facts.Transform.WcCorrectness.wc_prefix_service_bound",
+    "Prosa.Analysis.Facts.Transform.WcCorrectness.wc_prefix_job_meets_deadline",
+    "Prosa.Analysis.Facts.Transform.WcCorrectness.wc_prefix_jobs_come_from_arrival_sequence",
+    "Prosa.Analysis.Facts.Transform.WcCorrectness.wc_prefix_jobs_must_be_ready_to_execute",
+    "Prosa.Analysis.Facts.Transform.WcCorrectness.wc_jobs_come_from_arrival_sequence",
+    "Prosa.Analysis.Facts.Transform.WcCorrectness.wc_jobs_must_be_ready_to_execute",
+    "Prosa.Analysis.Facts.Transform.WcCorrectness.wc_all_deadlines_of_arrivals_met",
+    "Prosa.Analysis.Facts.Transform.WcCorrectness.wc_is_work_conserving_at",
+    "Prosa.Analysis.Facts.Transform.WcCorrectness.wc_is_work_conserving",
+    "Prosa.Analysis.Facts.Transform.WcCorrectness.wc_transform_correctness"
+  ],
+  "input_relations": [
+    "the processor model is fixed to the ideal uniprocessor on both sides; states by the accepted constructor-preserving Option map (IdOptRel), schedules pointwise (IdScheduleRel); job_cost by SvcJobCostRel, job_deadline pointwise by SubNatRel, job_arrival by ArJobArrivalRel, arrival sequences by ArArrivalSequenceRel; the readiness model is the source's local basic instance on both sides, related through the pending relation; instants and naturals by SubNatRel; jobs by identity"
+  ],
+  "coverage_for_inner_binders": [
+    "naturals / instants",
+    "jobs",
+    "schedules (ideal)",
+    "arrival sequences"
+  ],
+  "lean_representation_note": "the processor model is the accepted ideal processor `processor_state Job`; the sections' local `basic_ready_instance` is the accepted Lean definition, registered as a local instance and applied explicitly to `job_ready`; `s == Some j` on states is `s = some j`; a Boolean in `Prop` position is `= true`; the section-local `order` is applied to the states coerced to naturals through `isSome`, as in the elaborated `search_result`",
+  "export_size": {
+    "lines": 152142,
+    "soft_budget_flag": "OVER_100K_DIAGNOSED",
+    "diagnosis": "the accepted wc-trans export root merged with the accepted ideal-schedule and schedulability roots, plus the three definitions and the 30 statements"
+  },
+  "file_dependencies": {
+    "analysis/definitions/schedulability.v": "analysis_definitions_schedulability_module_status.json",
+    "analysis/facts/model/ideal/schedule.v": "analysis_facts_model_ideal_schedule_module_status.json",
+    "analysis/facts/transform/swaps.v": "analysis_facts_transform_swaps_module_status.json",
+    "analysis/transform/wc_trans.v": "analysis_transform_wc_trans_module_status.json",
+    "model/readiness/basic.v": "model_readiness_basic_module_status.json",
+    "model/schedule/work_conserving.v": "model_schedule_work_conserving_module_status.json",
+    "util/list.v": "utility_foundation_expansion_status.json",
+    "util/tactics.v": "foundation_slice_2_closure_status.json"
+  },
+  "production_file": "Prosa/Analysis/Facts/Transform/WcCorrectness.lean",
+  "production_source_sha256": "f9dfb714046dc38f305d8f92913fb3493ccd2c805eff5a5094a1ccbec046d7c4",
+  "production_olean_sha256": "8aeaf716641b381b2fb870781a9c59df490c4186e7aef739cdcb17cd1e849c79",
+  "export_config_sha256": "b5fbeea1e2d6728e85ac319a5bb2f211b0c879f989fa83f509496a165e7cbe1a",
+  "export_sha256": "e284b52aeea82f16d6ec923bd5d7de53a4df638152b8a23741f168f61dabbc29",
+  "export_lines": 152142,
+  "export_bytes": 3449025,
+  "import_sha256": "904a4e7314fdceafa6fb809ee31f9a5a53ee765cedb23af5b01f6eb115a33c83",
+  "source_vo_sha256": "e302ff16e038e52ca7ea07da855834234360d6fc8085ae71b6d61a4511fbe3f5",
+  "lean_axiom_summary_sha256": "784bc5f23b3685a8bcec3112ca223befe68d75ef1f4b870ddb84601e60c3c904",
+  "rocq_assumption_summary_sha256": "51b8bc4722b7c696e6597208d015796da90eb74abb90f9168ae4aaff031bff68",
+  "assumption_config_sha256": "b9c219aab663ebadd1842528870b9ef884ac4134cd5852972266a72ff892ea2f",
+  "stage_timing_seconds": {
+    "source_acquisition": {
+      "mode": "FRESH",
+      "seconds": 6
+    },
+    "lean_production": {
+      "mode": "FRESH",
+      "seconds": 69
+    },
+    "fixture:NondecreasingComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:BigcatComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:ArrivalSequenceComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:ScheduleComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:ServiceComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:PreemptionParameterComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:TransformPrefixComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:FactsWcTransComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:ScheduledComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:IdealScheduleComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:FactsWcCorrectnessComputationInterface": {
+      "mode": "FRESH",
+      "seconds": 80
+    },
+    "lean_type_audit": {
+      "mode": "FRESH",
+      "seconds": 75
+    },
+    "lean_build": {
+      "mode": "FRESH",
+      "seconds": 312
+    },
+    "export": {
+      "mode": "FRESH",
+      "seconds": 59
+    },
+    "rocq_import": {
+      "mode": "FRESH",
+      "seconds": 46
+    },
+    "certificate_compile": {
+      "mode": "COMPILED=0;REUSED=15",
+      "seconds": 0
+    },
+    "imported_type_audit": {
+      "mode": "FRESH",
+      "seconds": 0
+    },
+    "lean_axiom_audit": {
+      "mode": "FRESH",
+      "seconds": 0
+    },
+    "assumption_audit": {
+      "mode": "FRESH",
+      "seconds": 0
+    }
+  },
+  "certificates": {
+    "ArrivalsSeqBaseAdapter": {
+      "source_sha256": "1ab9c168b14b1dc11ea861a6d1e2938e66a1af866d2292921613fbed4df0585b",
+      "vo_sha256": "e83210bb58b5350b91be8b52596f7777d14c50e43cc0a79543c9616e8a433009"
+    },
+    "ArrivalsSeqOperations": {
+      "source_sha256": "2228108f5e79b74fc82c2481c8c9e505bc2399323ab3a39fc88bb13f9dc60fea",
+      "vo_sha256": "9c9860bd7cf2fdaf35770b15fbb536d4d5861c966b66b40e4b083caa5395b4c2"
+    },
+    "ArrivalsSeqCorrespondence": {
+      "source_sha256": "00d1a1744a6fa16cbe2889fa6ceb05584e29443fefe6bfd8f3d79d1683a154ed",
+      "vo_sha256": "1b60f80a18efb6a8d7b1fa845ae3b103ee7f5840a54bfbc7646e75d6dfe33fa8"
+    },
+    "JitterSvcBaseAdapter": {
+      "source_sha256": "ffe429a78907442a31813bab4fcfaca768188554cdfda0526506c889ad4a4f13",
+      "vo_sha256": "4b0e149a48ef2d7bc5c0f44e95df0d7ee77c2e01b2be4ad11be5a3f86c02951e"
+    },
+    "JitterSvcNatBoolOperations": {
+      "source_sha256": "77d80593d5af5b3e93727f570c227ca66a86c239aefcbf416fd99c72e329b4f5",
+      "vo_sha256": "794e5545b51b46512fe884080f840c97f962eeba0332c02e87a697def1902d64"
+    },
+    "JitterSvcIntervalOperations": {
+      "source_sha256": "0f7f4d0a3be265e06d0f1b1354e3139c384a19daf2a383b56498646a074a4628",
+      "vo_sha256": "a0a3275618ef8512955118b5fc171eb520581eb450cfcb997c173a49d9d6a52d"
+    },
+    "JitterSvcScheduleOperations": {
+      "source_sha256": "18820e6a191a07003d038abc9760718880e89af03bd6b4e58d037b6a3e6cc9ab",
+      "vo_sha256": "50d6f6ebe8fd5860d657a9cf92f23df224cec21d0472b030c7598f1e86ea0da1"
+    },
+    "JitterSvcJobOperations": {
+      "source_sha256": "9872b29785c8dffa7c228172dd9e0f491b261e820f172955dffb7afc0c45a7bf",
+      "vo_sha256": "8a0859f2be5fad1c5a6bbd57b2da3a22217c5ffe1ec56f7bb75013bd5e17b83e"
+    },
+    "PreemptionParameterCorrespondence": {
+      "source_sha256": "c843617ef76c21b02747271c1424d59fae5ba77c28eab6383109f117da6b9dbc",
+      "vo_sha256": "b00a493ee62f6dbf2bae12dd4d6c8a7785935cbc0ff63e711753ce667db55d6b"
+    },
+    "WcTransCorrespondence": {
+      "source_sha256": "d1dc61c7a64ecc1c05450f6c9c8f26cb56ecdbb448a76f14b9a9f92e6cb54499",
+      "vo_sha256": "ffa797a7989fdf8291d02d93882d2dfc69a097c9dcdef7dfbb5a339e3b9dfad2"
+    },
+    "FactsWcCorrectnessCorrespondence": {
+      "source_sha256": "a66def63039094caad64132ff4ac431deb4bbcb55d9b1bcd27330fd2a1865cbc",
+      "vo_sha256": "63e9ed2ef841a857f8fe3ca89be06c43ea855d472c584d2b551d0335398d060b"
+    },
+    "FactsWcCorrectnessAssumptionAudit": {
+      "source_sha256": "ba5087c67ef3d962db51009da9258b6bec32bbb4b3a6f23273c8b586c459f1af",
+      "vo_sha256": "912662c2b7039b0e72af1d4fdafa2f6e8a21b99106afb80d76487c96c20d2fc0"
+    }
+  },
+  "certificate_checkpoints_sha256": "fd9ce1292b6b260a0028af72878c16bc48dd353f27166da69ef2a61c149ebe89",
+  "lean_fixture_provenance_sha256": "9f07c363754721397e1445114a144c6d11c6edb9c145d65393e0a7769e24a95c",
+  "declarations": [
+    {
+      "source_declaration": "prosa.analysis.facts.transform.wc_correctness.is_work_conserving_at",
+      "lean_declaration": "Prosa.Analysis.Facts.Transform.WcCorrectness.is_work_conserving_at",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "is_work_conserving_at_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.transform.wc_correctness.swap_candidate_is_in_future",
+      "lean_declaration": "Prosa.Analysis.Facts.Transform.WcCorrectness.swap_candidate_is_in_future",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "swap_candidate_is_in_future_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.transform.wc_correctness.fsc_respects_has_arrived",
+      "lean_declaration": "Prosa.Analysis.Facts.Transform.WcCorrectness.fsc_respects_has_arrived",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "fsc_respects_has_arrived_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.transform.wc_correctness.swap_jobs_must_arrive_to_execute",
+      "lean_declaration": "Prosa.Analysis.Facts.Transform.WcCorrectness.swap_jobs_must_arrive_to_execute",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "swap_jobs_must_arrive_to_execute_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.transform.wc_correctness.fsc_jobs_must_be_ready_to_execute",
+      "lean_declaration": "Prosa.Analysis.Facts.Transform.WcCorrectness.fsc_jobs_must_be_ready_to_execute",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "fsc_jobs_must_be_ready_to_execute_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.transform.wc_correctness.mwa_service_bound",
+      "lean_declaration": "Prosa.Analysis.Facts.Transform.WcCorrectness.mwa_service_bound",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "mwa_service_bound_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.transform.wc_correctness.mwa_ready_job_also_ready_in_original_schedule",
+      "lean_declaration": "Prosa.Analysis.Facts.Transform.WcCorrectness.mwa_ready_job_also_ready_in_original_schedule",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "mwa_ready_job_also_ready_in_original_schedule_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.transform.wc_correctness.max_dl_is_greatest_dl",
+      "lean_declaration": "Prosa.Analysis.Facts.Transform.WcCorrectness.max_dl_is_greatest_dl",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "max_dl_is_greatest_dl_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.transform.wc_correctness.order",
+      "lean_declaration": "Prosa.Analysis.Facts.Transform.WcCorrectness.order",
+      "semantic_status": "CERTIFIED",
+      "certificates": [
+        "order_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.transform.wc_correctness.search_result",
+      "lean_declaration": "Prosa.Analysis.Facts.Transform.WcCorrectness.search_result",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "search_result_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.transform.wc_correctness.make_wc_at_case_result_found",
+      "lean_declaration": "Prosa.Analysis.Facts.Transform.WcCorrectness.make_wc_at_case_result_found",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "make_wc_at_case_result_found_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.transform.wc_correctness.no_relevant_state_in_range",
+      "lean_declaration": "Prosa.Analysis.Facts.Transform.WcCorrectness.no_relevant_state_in_range",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "no_relevant_state_in_range_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.transform.wc_correctness.service_of_j_is_less_than_cost",
+      "lean_declaration": "Prosa.Analysis.Facts.Transform.WcCorrectness.service_of_j_is_less_than_cost",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "service_of_j_is_less_than_cost_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.transform.wc_correctness.t_is_less_than_deadline_of_j",
+      "lean_declaration": "Prosa.Analysis.Facts.Transform.WcCorrectness.t_is_less_than_deadline_of_j",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "t_is_less_than_deadline_of_j_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.transform.wc_correctness.equal_service_t_max_dl",
+      "lean_declaration": "Prosa.Analysis.Facts.Transform.WcCorrectness.equal_service_t_max_dl",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "equal_service_t_max_dl_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.transform.wc_correctness.j_misses_deadline",
+      "lean_declaration": "Prosa.Analysis.Facts.Transform.WcCorrectness.j_misses_deadline",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "j_misses_deadline_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.transform.wc_correctness.make_wc_at_case_result_none",
+      "lean_declaration": "Prosa.Analysis.Facts.Transform.WcCorrectness.make_wc_at_case_result_none",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "make_wc_at_case_result_none_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.transform.wc_correctness.mwa_finds_ready_jobs",
+      "lean_declaration": "Prosa.Analysis.Facts.Transform.WcCorrectness.mwa_finds_ready_jobs",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "mwa_finds_ready_jobs_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.transform.wc_correctness.mwa_establishes_wc",
+      "lean_declaration": "Prosa.Analysis.Facts.Transform.WcCorrectness.mwa_establishes_wc",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "mwa_establishes_wc_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.transform.wc_correctness.mwa_jobs_come_from_arrival_sequence",
+      "lean_declaration": "Prosa.Analysis.Facts.Transform.WcCorrectness.mwa_jobs_come_from_arrival_sequence",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "mwa_jobs_come_from_arrival_sequence_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.transform.wc_correctness.mwa_jobs_must_be_ready_to_execute",
+      "lean_declaration": "Prosa.Analysis.Facts.Transform.WcCorrectness.mwa_jobs_must_be_ready_to_execute",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "mwa_jobs_must_be_ready_to_execute_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.transform.wc_correctness.mwa_all_deadlines_of_arrivals_met",
+      "lean_declaration": "Prosa.Analysis.Facts.Transform.WcCorrectness.mwa_all_deadlines_of_arrivals_met",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "mwa_all_deadlines_of_arrivals_met_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.transform.wc_correctness.wc_transform_prefix_inclusion",
+      "lean_declaration": "Prosa.Analysis.Facts.Transform.WcCorrectness.wc_transform_prefix_inclusion",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "wc_transform_prefix_inclusion_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.transform.wc_correctness.wc_prefix_service_bound",
+      "lean_declaration": "Prosa.Analysis.Facts.Transform.WcCorrectness.wc_prefix_service_bound",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "wc_prefix_service_bound_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.transform.wc_correctness.wc_prefix_job_meets_deadline",
+      "lean_declaration": "Prosa.Analysis.Facts.Transform.WcCorrectness.wc_prefix_job_meets_deadline",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "wc_prefix_job_meets_deadline_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.transform.wc_correctness.wc_prefix_jobs_come_from_arrival_sequence",
+      "lean_declaration": "Prosa.Analysis.Facts.Transform.WcCorrectness.wc_prefix_jobs_come_from_arrival_sequence",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "wc_prefix_jobs_come_from_arrival_sequence_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.transform.wc_correctness.wc_prefix_jobs_must_be_ready_to_execute",
+      "lean_declaration": "Prosa.Analysis.Facts.Transform.WcCorrectness.wc_prefix_jobs_must_be_ready_to_execute",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "wc_prefix_jobs_must_be_ready_to_execute_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.transform.wc_correctness.wc_jobs_come_from_arrival_sequence",
+      "lean_declaration": "Prosa.Analysis.Facts.Transform.WcCorrectness.wc_jobs_come_from_arrival_sequence",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "wc_jobs_come_from_arrival_sequence_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.transform.wc_correctness.wc_jobs_must_be_ready_to_execute",
+      "lean_declaration": "Prosa.Analysis.Facts.Transform.WcCorrectness.wc_jobs_must_be_ready_to_execute",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "wc_jobs_must_be_ready_to_execute_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.transform.wc_correctness.wc_all_deadlines_of_arrivals_met",
+      "lean_declaration": "Prosa.Analysis.Facts.Transform.WcCorrectness.wc_all_deadlines_of_arrivals_met",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "wc_all_deadlines_of_arrivals_met_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.transform.wc_correctness.wc_is_work_conserving_at",
+      "lean_declaration": "Prosa.Analysis.Facts.Transform.WcCorrectness.wc_is_work_conserving_at",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "wc_is_work_conserving_at_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.transform.wc_correctness.wc_is_work_conserving",
+      "lean_declaration": "Prosa.Analysis.Facts.Transform.WcCorrectness.wc_is_work_conserving",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "wc_is_work_conserving_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.transform.wc_correctness.wc_transform_correctness",
+      "lean_declaration": "Prosa.Analysis.Facts.Transform.WcCorrectness.wc_transform_correctness",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "wc_transform_correctness_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    }
+  ],
+  "acceptance": "ACCEPTED_V06_FILE"
+}

@@ -1,0 +1,6 @@
+import Prosa.Results.Rta.Ideal.Fp.FloatingNonpreemptive
+set_option pp.fieldNotation false
+
+#check @Prosa.Results.Rta.Ideal.Fp.FloatingNonpreemptive.uniprocessor_response_time_bound_fp_with_floating_nonpreemptive_regions
+
+#print axioms Prosa.Results.Rta.Ideal.Fp.FloatingNonpreemptive.uniprocessor_response_time_bound_fp_with_floating_nonpreemptive_regions

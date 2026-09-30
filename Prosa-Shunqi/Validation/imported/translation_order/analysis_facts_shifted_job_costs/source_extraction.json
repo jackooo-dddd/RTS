@@ -1,0 +1,120 @@
+{
+  "mode": "proof_independent_semantic_source_signature",
+  "source_file": "analysis/facts/shifted_job_costs.v",
+  "source_file_sha256": "31fea99224da98a5fa43edf11d6c482661d6221c96ec569adbc2e86dd56385ec",
+  "source_commit": "414e66760333eaa4ef78c685bcf53291c527a548",
+  "generated_file": "/Users/shunqiwang/CityuHK/Research/Lean/TranslationProof/Prosa-Shunqi/Validation/.work/experiments/analysis_facts_shifted_job_costs_final/source/ShiftedJobCostsSemanticSource.v",
+  "transformations": {
+    "computational": "byte-identical declaration block",
+    "theorem": "verified post-Section Check type converted to a definition with its declared Prop/Type sort preserved; exact source header retained as provenance; opaque proof omitted",
+    "local_bindings": {
+      "job_costs_shifted": "job_costs_shifted arr_seq ts j"
+    },
+    "dropped_irrelevant_imports": [
+      "Require Export prosa.analysis.facts.hyperperiod.",
+      "Require Export prosa.analysis.facts.periodic.arrival_times.",
+      "Require Export prosa.analysis.facts.periodic.task_arrivals_size.",
+      "Require Export prosa.model.task.concept."
+    ],
+    "added_validation_imports": [
+      "Require Export prosa.HyperperiodSemanticSource.",
+      "Export HyperperiodSemanticSource.",
+      "Require Export prosa.analysis.definitions.infinite_jobs.",
+      "Require Export prosa.model.task.concept.",
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq div."
+    ],
+    "printer_repairs": [
+      "ts -> arrivals_have_valid_job_costs arr_seq=ts -> @arrivals_have_valid_job_costs _ _ _ _ (@job_costs_in_oi _ _ _ _ _ _ _ arr_seq ts j) arr_seq"
+    ]
+  },
+  "declarations": {
+    "job_costs_shifted": {
+      "source_kind": "computational",
+      "acquisition_mode": "BODY_EXACT",
+      "source_block_sha256": "c2ac11c2606ecda4f126cf029c450875a6db9aee3896dabebcc878484e3d702f",
+      "generated_text_sha256": "c2ac11c2606ecda4f126cf029c450875a6db9aee3896dabebcc878484e3d702f",
+      "source_statement_sha256": null,
+      "normalized_statement_sha256": null,
+      "elaborated_type_sha256": null,
+      "elaborated_type_evidence": null,
+      "statement_sort": null,
+      "context": [
+        "  Context {Task : TaskType}.",
+        "  Context `{TaskOffset Task}.",
+        "  Context `{PeriodicModel Task}.",
+        "  Context `{TaskCost Task}.",
+        "  Context {Job : JobType}.",
+        "  Context `{JobTask Job Task}.",
+        "  Context `{JobArrival Job}.",
+        "  Context `{JobCost Job}.",
+        "  Context `{JobDeadline Job}.",
+        "  Variable arr_seq : arrival_sequence Job.",
+        "  Hypothesis H_valid_arrival_sequence : valid_arrival_sequence arr_seq.",
+        "  Hypothesis H_arrivals_have_valid_job_costs : arrivals_have_valid_job_costs arr_seq.",
+        "  Variable ts : TaskSet Task.",
+        "  Hypothesis H_periodic_taskset : taskset_respects_periodic_task_model arr_seq ts.",
+        "  Hypothesis H_valid_periods_in_taskset : valid_periods ts.",
+        "  Hypothesis H_valid_offsets_in_taskset : valid_offsets arr_seq ts.",
+        "  Variable j : Job.",
+        "  Hypothesis H_j_from_arrival_sequence : arrives_in arr_seq j.",
+        "  Let O_max := max_task_offset ts.",
+        "  Let HP := hyperperiod ts."
+      ],
+      "omitted_context_for_elaborated_theorem": false,
+      "local_bindings": {}
+    },
+    "job_costs_in_oi": {
+      "source_kind": "computational",
+      "acquisition_mode": "BODY_EXACT",
+      "source_block_sha256": "3159770c3ee9edadabaf40c004e7b44ab011c70323a5a9e2334c1b9f25af69fd",
+      "generated_text_sha256": "3159770c3ee9edadabaf40c004e7b44ab011c70323a5a9e2334c1b9f25af69fd",
+      "source_statement_sha256": null,
+      "normalized_statement_sha256": null,
+      "elaborated_type_sha256": null,
+      "elaborated_type_evidence": null,
+      "statement_sort": null,
+      "context": [
+        "  Context {Task : TaskType}.",
+        "  Context `{TaskOffset Task}.",
+        "  Context `{PeriodicModel Task}.",
+        "  Context `{TaskCost Task}.",
+        "  Context {Job : JobType}.",
+        "  Context `{JobTask Job Task}.",
+        "  Context `{JobArrival Job}.",
+        "  Context `{JobCost Job}.",
+        "  Context `{JobDeadline Job}.",
+        "  Variable arr_seq : arrival_sequence Job.",
+        "  Hypothesis H_valid_arrival_sequence : valid_arrival_sequence arr_seq.",
+        "  Hypothesis H_arrivals_have_valid_job_costs : arrivals_have_valid_job_costs arr_seq.",
+        "  Variable ts : TaskSet Task.",
+        "  Hypothesis H_periodic_taskset : taskset_respects_periodic_task_model arr_seq ts.",
+        "  Hypothesis H_valid_periods_in_taskset : valid_periods ts.",
+        "  Hypothesis H_valid_offsets_in_taskset : valid_offsets arr_seq ts.",
+        "  Variable j : Job.",
+        "  Hypothesis H_j_from_arrival_sequence : arrives_in arr_seq j.",
+        "  Let O_max := max_task_offset ts.",
+        "  Let HP := hyperperiod ts.",
+        "  Hypothesis H_infinite_jobs : infinite_jobs arr_seq.",
+        "  Hypothesis H_jobs_from_taskset : all_jobs_from_taskset arr_seq ts."
+      ],
+      "omitted_context_for_elaborated_theorem": false,
+      "local_bindings": {
+        "job_costs_shifted": "job_costs_shifted arr_seq ts j"
+      }
+    },
+    "job_costs_shifted_valid": {
+      "source_kind": "theorem",
+      "acquisition_mode": "STATEMENT_EXACT_PROOF_OMITTED",
+      "source_block_sha256": "d2429ea7633d81d52bef84c553eb0653e6cc83179e8f9cb5845ea55129130a7b",
+      "generated_text_sha256": "6062a243f8fb9f89b284957d63d94768b03fd10ba4b534b9711bff52b190893e",
+      "source_statement_sha256": "10641b24fb6f68797f7d88e904421949b18ca2cb36ba5b5760395516197fb9c3",
+      "normalized_statement_sha256": "10641b24fb6f68797f7d88e904421949b18ca2cb36ba5b5760395516197fb9c3",
+      "elaborated_type_sha256": "bf578275e961af566a5518889541eacea44413dc69df48409e9ff77cfe8f0b62",
+      "elaborated_type_evidence": "ELABORATED_ROCQ_CHECK",
+      "statement_sort": "Prop",
+      "context": [],
+      "omitted_context_for_elaborated_theorem": true,
+      "local_bindings": {}
+    }
+  }
+}

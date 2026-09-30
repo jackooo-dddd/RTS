@@ -1,0 +1,116 @@
+{
+  "mode": "proof_independent_semantic_source_signature",
+  "source_file": "analysis/abstract/ideal/cumulative_bounds.v",
+  "source_file_sha256": "c72950b90b95e01a094d6ff35cd2b837c0de81e002b6f72553825618bb672251",
+  "source_commit": "414e66760333eaa4ef78c685bcf53291c527a548",
+  "generated_file": "/Users/shunqiwang/CityuHK/Research/Lean/TranslationProof/Prosa-Shunqi/Validation/.work/experiments/analysis_abstract_ideal_cumulative_bounds_final/source/IdealCumulativeBoundsSemanticSource.v",
+  "transformations": {
+    "computational": "byte-identical declaration block",
+    "theorem": "verified post-Section Check type converted to a definition with its declared Prop/Type sort preserved; exact source header retained as provenance; opaque proof omitted",
+    "local_bindings": {},
+    "dropped_irrelevant_imports": [
+      "Require Export analysis.abstract.ideal.iw_instantiation."
+    ],
+    "added_validation_imports": [
+      "Require Export prosa.IdealIwInstantiationSemanticSource.",
+      "Export IdealIwInstantiationSemanticSource.",
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq bigop.",
+      "Require Import prosa.behavior.all prosa.model.processor.ideal."
+    ],
+    "printer_repairs": [
+      "definitions.busy_interval sched j t1 t2=@prosa.analysis.abstract.definitions.busy_interval Job H0 H1 (processor_state Job) sched (@ideal_jlfp_interference Job JLFP arr_seq sched) (@ideal_jlfp_interfering_workload Job H1 JLFP arr_seq sched) j t1 t2"
+    ]
+  },
+  "declarations": {
+    "ideal_jlfp_interference": {
+      "source_kind": "computational",
+      "acquisition_mode": "BODY_EXACT",
+      "source_block_sha256": "06e4f44ceccd68c3b2ea8958879c1567a2c021c5d81ad2a7d4c9862802e696f3",
+      "generated_text_sha256": "06e4f44ceccd68c3b2ea8958879c1567a2c021c5d81ad2a7d4c9862802e696f3",
+      "source_statement_sha256": null,
+      "normalized_statement_sha256": null,
+      "elaborated_type_sha256": null,
+      "elaborated_type_evidence": null,
+      "statement_sort": null,
+      "context": [
+        "  Context {Task : TaskType} {Job : JobType} `{JobTask Job Task}.",
+        "  Context `{JobArrival Job} `{JobCost Job} {JR : JobReady Job (ideal.processor_state Job)}.",
+        "  Context {JLFP : JLFP_policy Job}.",
+        "  Hypothesis H_policy_is_reflexive : reflexive_job_priorities JLFP.",
+        "  Hypothesis H_policy_respecsts_sequential_tasks : policy_respects_sequential_tasks JLFP.",
+        "  Variable arr_seq : arrival_sequence Job.",
+        "  Hypothesis H_valid_arrival_sequence : valid_arrival_sequence arr_seq.",
+        "  Variable sched : schedule (ideal.processor_state Job).",
+        "  Hypothesis H_valid_schedule : valid_schedule sched  arr_seq.",
+        "  Variable ts : list Task.",
+        "  Hypothesis H_all_jobs_from_taskset : all_jobs_from_taskset arr_seq ts.",
+        "  Variable tsk : Task.",
+        "  Variable j : Job.",
+        "  Hypothesis H_j_arrives : arrives_in arr_seq j.",
+        "  Hypothesis H_job_of_tsk : job_of_task tsk j.",
+        "  Hypothesis H_job_cost_positive : job_cost_positive j."
+      ],
+      "omitted_context_for_elaborated_theorem": false,
+      "local_bindings": {}
+    },
+    "ideal_jlfp_interfering_workload": {
+      "source_kind": "computational",
+      "acquisition_mode": "BODY_EXACT",
+      "source_block_sha256": "f67b599af8638eb8ee3db4f18811dbd8f6d7f3a318fb5718ab43bbca84ed4d72",
+      "generated_text_sha256": "f67b599af8638eb8ee3db4f18811dbd8f6d7f3a318fb5718ab43bbca84ed4d72",
+      "source_statement_sha256": null,
+      "normalized_statement_sha256": null,
+      "elaborated_type_sha256": null,
+      "elaborated_type_evidence": null,
+      "statement_sort": null,
+      "context": [
+        "  Context {Task : TaskType} {Job : JobType} `{JobTask Job Task}.",
+        "  Context `{JobArrival Job} `{JobCost Job} {JR : JobReady Job (ideal.processor_state Job)}.",
+        "  Context {JLFP : JLFP_policy Job}.",
+        "  Hypothesis H_policy_is_reflexive : reflexive_job_priorities JLFP.",
+        "  Hypothesis H_policy_respecsts_sequential_tasks : policy_respects_sequential_tasks JLFP.",
+        "  Variable arr_seq : arrival_sequence Job.",
+        "  Hypothesis H_valid_arrival_sequence : valid_arrival_sequence arr_seq.",
+        "  Variable sched : schedule (ideal.processor_state Job).",
+        "  Hypothesis H_valid_schedule : valid_schedule sched  arr_seq.",
+        "  Variable ts : list Task.",
+        "  Hypothesis H_all_jobs_from_taskset : all_jobs_from_taskset arr_seq ts.",
+        "  Variable tsk : Task.",
+        "  Variable j : Job.",
+        "  Hypothesis H_j_arrives : arrives_in arr_seq j.",
+        "  Hypothesis H_job_of_tsk : job_of_task tsk j.",
+        "  Hypothesis H_job_cost_positive : job_cost_positive j."
+      ],
+      "omitted_context_for_elaborated_theorem": false,
+      "local_bindings": {}
+    },
+    "cumulative_priority_inversion_is_bounded": {
+      "source_kind": "theorem",
+      "acquisition_mode": "STATEMENT_EXACT_PROOF_OMITTED",
+      "source_block_sha256": "25d3e6d88cf16fe5b081e1663ac73b7d82b5cff7f44700bc27a3c5639da4dff3",
+      "generated_text_sha256": "64a1808b610d9ab9cbb01de882fcf7fa9913d80157d07b85205b5d9300616d90",
+      "source_statement_sha256": "2347e4c28f7071766b77be88d2ae8c06ed2fb28100a1a806ff152293febda5db",
+      "normalized_statement_sha256": "ef0b585290015e445b9f93c7c967e268d931f19815db60e285a63668b3403303",
+      "elaborated_type_sha256": "2927ffb74d1353a4d939865ed48f1e2216a7aa256a9dbe6de502585a245eec65",
+      "elaborated_type_evidence": "ELABORATED_ROCQ_CHECK",
+      "statement_sort": "Prop",
+      "context": [],
+      "omitted_context_for_elaborated_theorem": true,
+      "local_bindings": {}
+    },
+    "cumulative_interference_is_bounded_by_total_service": {
+      "source_kind": "theorem",
+      "acquisition_mode": "STATEMENT_EXACT_PROOF_OMITTED",
+      "source_block_sha256": "7acc819259c0dac648c18fa99852accc6ff99a952b3cce1f3d7df22be9daea63",
+      "generated_text_sha256": "4b3f377ff49bf8e8e81f721cb6e886d2451baaa11c3fd56556d9a723ff9d50bd",
+      "source_statement_sha256": "3ac1be33e05dbf002706e26304e034d2ecfc026dc0b5e6bb21e5b4531d379022",
+      "normalized_statement_sha256": "9d4b4521b9a2cdf015fcccc400d2387ea8e7bc9eaaaafe4ebdbcebb2bff32817",
+      "elaborated_type_sha256": "c1a8792a2675b3f21c7bafb379e495c9855f17b947cec1c454fac76f6b9c98df",
+      "elaborated_type_evidence": "ELABORATED_ROCQ_CHECK",
+      "statement_sort": "Prop",
+      "context": [],
+      "omitted_context_for_elaborated_theorem": true,
+      "local_bindings": {}
+    }
+  }
+}

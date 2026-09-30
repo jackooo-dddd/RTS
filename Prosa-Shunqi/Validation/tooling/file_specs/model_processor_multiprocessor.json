@@ -1,0 +1,111 @@
+{
+  "rank": 134,
+  "layer": 15,
+  "tag": "MPROC",
+  "slug": "model_processor_multiprocessor",
+  "source": "model/processor/multiprocessor.v",
+  "dependencies": [
+    "behavior/all.v",
+    "analysis/facts/behavior/service.v"
+  ],
+  "declaration_count": 6,
+  "base_run": "model_readiness_suspension_final",
+  "base_checks": [
+    {
+      "manifest": "model_readiness_suspension",
+      "olean": "Prosa/Model/Readiness/Suspension.olean",
+      "vo": "SuspensionSemanticSource.vo"
+    }
+  ],
+  "source_mode": "patched",
+  "fingerprint_probe": "Validation/fixtures/translation_order/MultiprocessorTypeFingerprintProbe.v",
+  "production": "Prosa/Model/Processor/Multiprocessor.lean",
+  "production_olean": "Prosa/Model/Processor/Multiprocessor.olean",
+  "lean_namespace": "Prosa.Model.Processor.Multiprocessor",
+  "fixtures": [
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "ProgressComputationInterface",
+    "SuspensionComputationInterface",
+    "MultiprocessorComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/MultiprocessorLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/model_processor_multiprocessor_export_config.json",
+  "export_name": "Multiprocessor",
+  "cert_dir": "certificates/model_processor_multiprocessor",
+  "chain": [
+    "JitterSvcBaseAdapter",
+    "JitterSvcNatBoolOperations",
+    "JitterSvcIntervalOperations",
+    "JitterSvcScheduleOperations",
+    "JitterSvcJobOperations",
+    "MultiprocessorCorrespondence"
+  ],
+  "audit_module": "MultiprocessorAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/MultiprocessorImportedTypeAudit.v",
+  "assumption_config": "certificates/model_processor_multiprocessor/multiprocessor_assumption_config.json",
+  "lean_axiom_config": "certificates/model_processor_multiprocessor/multiprocessor_lean_axiom_config.json",
+  "computational": [
+    "processor",
+    "multiprocessor_state",
+    "multiproc_scheduled_on",
+    "multiproc_supply_on",
+    "multiproc_service_on"
+  ],
+  "principal": {
+    "processor": [
+      "processor_source_total",
+      "processor_target_total"
+    ],
+    "multiprocessor_state": [
+      "multiprocessor_state_source_total",
+      "multiprocessor_state_target_total"
+    ]
+  },
+  "helpers": [
+    "mp_nat_lt_correspondence",
+    "mp_nat_input",
+    "mp_ord_rel_canonical",
+    "mp_ord_rel_surjective",
+    "mp_ord_rel_source_unique",
+    "mp_ord_rel_target_unique",
+    "mp_source_ord_sum_as_interval",
+    "mp_source_ord_family_lt",
+    "mp_source_ord_family_ge",
+    "mp_ord_family_related",
+    "mp_fin_sum_related_zero",
+    "mp_fin_sum_related_one",
+    "mp_supply_in_related",
+    "mp_core_sum_related",
+    "mp_multiproc_service_in_related"
+  ],
+  "previous_status": "analysis_facts_readiness_interference_module_status.json",
+  "previous_files": 312,
+  "previous_decls": 1942,
+  "input_relations": [
+    "per-core processor states by the accepted two-sided SvcProcessorStateRel; ordinals and Fin values by their values (SubNatRel, two-way totals); multiprocessor states pointwise over related processors (two-way totals); jobs by identity"
+  ],
+  "coverage_for_inner_binders": [
+    "ordinals / Fin values",
+    "multiprocessor states",
+    "jobs"
+  ],
+  "lean_representation_note": "`'I_n` is `Fin n`; `\\sum_(cpu < n)` is the finite sum over `Fin n`; the section-local `multiproc_state` instance is a named helper definition; section variables are explicit binders",
+  "export_diagnosis": "the accepted suspension/Service export root plus the multiprocessor file, the Fin-sum interface (whose proof avoids Finset.sum_range_succ and its Nat.Internal.Linear closure) and the ScheduleInterface supply_in list-sum equation",
+  "extra_pinned_sources": [],
+  "extra_artifacts": [],
+  "extra_olean_artifacts": [],
+  "extra_source_patches": [],
+  "extra_generated_sources": [],
+  "dependency_shims": {},
+  "patches": [
+    "patches/prosa-v06-rocq93-model-processor-multiprocessor.patch"
+  ],
+  "patch_removed_lines": {
+    "patches/prosa-v06-rocq93-model-processor-multiprocessor.patch": [
+      "-Require Import prosa.analysis.facts.behavior.service.",
+      "-    by move => ? ? ?; apply: leq_sum => c _; exact: service_on_le_supply_on.",
+      "-  Next Obligation. by move=> ? ? ?; apply: service_in_implies_scheduled_in. Qed."
+    ]
+  }
+}

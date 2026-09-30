@@ -1,0 +1,5 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedTaskIbfReadiness.
+
+Check ImportedTaskIbfReadiness.Prosa_Analysis_Abstract_RestrictedSupply_TaskIbfReadiness_task_intra_IBF.
+Check ImportedTaskIbfReadiness.Prosa_Analysis_Abstract_RestrictedSupply_TaskIbfReadiness_instantiated_task_intra_interference_is_bounded.

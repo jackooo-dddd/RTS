@@ -1,0 +1,140 @@
+{
+  "rank": 154,
+  "layer": 16,
+  "tag": "JCON",
+  "slug": "implementation_definitions_job_constructor",
+  "source": "implementation/definitions/job_constructor.v",
+  "dependencies": [
+    "implementation/facts/maximal_arrival_sequence.v",
+    "implementation/definitions/task.v"
+  ],
+  "declaration_count": 4,
+  "base_run": "implementation_definitions_task_final",
+  "base_checks": [
+    {
+      "manifest": "implementation_definitions_task",
+      "olean": "Prosa/Implementation/Definitions/Task.olean",
+      "vo": "implementation/definitions/task.vo"
+    }
+  ],
+  "source_mode": "pinned",
+  "fingerprint_probe": "Validation/fixtures/translation_order/JobConstructorTypeFingerprintProbe.v",
+  "production": "Prosa/Implementation/Definitions/JobConstructor.lean",
+  "production_olean": "Prosa/Implementation/Definitions/JobConstructor.olean",
+  "lean_namespace": "Prosa.Implementation.Definitions.JobConstructor",
+  "fixtures": [
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ArrivalsComputationInterface",
+    "DivModComputationInterface",
+    "FactsSporadicArrivalBoundComputationInterface",
+    "FactsArrivalCurvesComputationInterface",
+    "SporadicAsCurveComputationInterface",
+    "ExtrapolatedArrivalCurveArithmeticInterface",
+    "ImplTaskComputationInterface",
+    "JobConstructorComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/JobConstructorLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/implementation_definitions_job_constructor_export_config.json",
+  "export_name": "JobConstructor",
+  "cert_dir": "certificates/implementation_definitions_job_constructor",
+  "chain": [
+    "EacFullCorrespondence",
+    "AbCorrespondence",
+    "ImplTaskCorrespondence",
+    "JobConstructorCorrespondence"
+  ],
+  "audit_module": "JobConstructorAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/JobConstructorImportedTypeAudit.v",
+  "assumption_config": "certificates/implementation_definitions_job_constructor/job_constructor_assumption_config.json",
+  "lean_axiom_config": "certificates/implementation_definitions_job_constructor/job_constructor_lean_axiom_config.json",
+  "computational": [
+    "Task",
+    "Job",
+    "generate_job_at",
+    "generate_jobs_at"
+  ],
+  "principal": {
+    "Task": [
+      "Task_source_total",
+      "Task_target_total"
+    ],
+    "Job": [
+      "Job_source_total",
+      "Job_target_total"
+    ]
+  },
+  "helpers": [
+    "jc_jobs_export",
+    "jc_jobs_import",
+    "jc_jobs_source_roundtrip",
+    "jc_jobs_target_roundtrip",
+    "jc_range_succ",
+    "jc_generate_map_range"
+  ],
+  "previous_status": "implementation_definitions_task_module_status.json",
+  "previous_files": 305,
+  "previous_decls": 1908,
+  "input_relations": [
+    "concrete tasks and jobs by the accepted fieldwise canonical relations (two-way totals); Nat values by SubNatRel; job lists by the canonical list map"
+  ],
+  "coverage_for_inner_binders": [
+    "concrete tasks",
+    "instants",
+    "identifiers",
+    "job counts"
+  ],
+  "lean_representation_note": "the `concrete_task : eqType`/`concrete_job : eqType` aliases are `abbrev`s of the concrete structures; `iota 0 n` is `List.range' 0 n`; `map` is `List.map`",
+  "extra_pinned_sources": [],
+  "extra_artifacts": [
+    {
+      "from": "implementation_facts_maximal_arrival_sequence_final/source/implementation/definitions/maximal_arrival_sequence.vo",
+      "to": "source/implementation/definitions/maximal_arrival_sequence.vo",
+      "manifest": "implementation_definitions_maximal_arrival_sequence",
+      "key": "source_vo_sha256"
+    },
+    {
+      "from": "implementation_facts_maximal_arrival_sequence_final/source/FactsMaximalArrivalSequenceSemanticSource.vo",
+      "to": "source/FactsMaximalArrivalSequenceSemanticSource.vo",
+      "manifest": "implementation_facts_maximal_arrival_sequence",
+      "key": "source_vo_sha256"
+    }
+  ],
+  "export_diagnosis": "the accepted concrete task/job export root plus the two job generators",
+  "extra_olean_artifacts": [
+    {
+      "from": "analysis_abstract_restricted_supply_busy_sbf/olean/Prosa/Implementation/Definitions/ExtrapolatedArrivalCurve.olean",
+      "to": "Prosa/Implementation/Definitions/ExtrapolatedArrivalCurve.olean",
+      "manifest": "implementation_extrapolated_arrival_curve",
+      "key": "artifact_hashes.production_olean_sha256"
+    },
+    {
+      "from": "implementation_arrival_bound/olean/Prosa/Implementation/Definitions/ArrivalBound.olean",
+      "to": "Prosa/Implementation/Definitions/ArrivalBound.olean",
+      "manifest": "implementation_arrival_bound",
+      "key": "artifact_hashes.production_olean_sha256"
+    },
+    {
+      "from": "model_priority_numeric_fixed_priority_final/olean/Prosa/Model/Priority/NumericFixedPriority.olean",
+      "to": "Prosa/Model/Priority/NumericFixedPriority.olean",
+      "manifest": "model_priority_numeric_fixed_priority",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "implementation_facts_maximal_arrival_sequence_final/olean/Prosa/Implementation/Definitions/MaximalArrivalSequence.olean",
+      "to": "Prosa/Implementation/Definitions/MaximalArrivalSequence.olean",
+      "manifest": "implementation_definitions_maximal_arrival_sequence",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "implementation_facts_maximal_arrival_sequence_final/olean/Prosa/Implementation/Facts/MaximalArrivalSequence.olean",
+      "to": "Prosa/Implementation/Facts/MaximalArrivalSequence.olean",
+      "manifest": "implementation_facts_maximal_arrival_sequence",
+      "key": "production_olean_sha256"
+    }
+  ],
+  "extra_source_patches": [],
+  "dependency_shims": {
+    "implementation/facts/maximal_arrival_sequence.v": "FactsMaximalArrivalSequenceSemanticSource"
+  }
+}

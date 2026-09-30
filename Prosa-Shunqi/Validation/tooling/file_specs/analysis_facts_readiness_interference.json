@@ -1,0 +1,233 @@
+{
+  "rank": 226,
+  "layer": 20,
+  "tag": "FRI",
+  "slug": "analysis_facts_readiness_interference",
+  "source": "analysis/facts/readiness_interference.v",
+  "dependencies": [
+    "analysis/definitions/readiness_interference.v",
+    "analysis/facts/priority/classes.v",
+    "analysis/facts/interference.v",
+    "analysis/definitions/service_inversion/readiness_aware.v"
+  ],
+  "declaration_count": 2,
+  "base_run": "analysis_definitions_service_inversion_readiness_aware_final",
+  "base_checks": [
+    {
+      "manifest": "analysis_definitions_service_inversion_readiness_aware",
+      "olean": "Prosa/Analysis/Definitions/ServiceInversion/ReadinessAware.olean",
+      "vo": "ReadinessAwareSemanticSource.vo"
+    }
+  ],
+  "extra_pinned_sources": [
+    "model/aggregate/workload.v"
+  ],
+  "extra_lean": [],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "FactsReadinessInterferenceSemanticSource",
+    "helper_blocks": [],
+    "drop_imports": [
+      "Require Export prosa.analysis.definitions.readiness_interference.",
+      "Require Export prosa.analysis.facts.priority.classes.",
+      "Require Export prosa.analysis.facts.interference.",
+      "Require Export prosa.analysis.definitions.service_inversion.readiness_aware."
+    ],
+    "add_imports": [
+      "Require Export prosa.analysis.definitions.readiness_interference.",
+      "Require Export prosa.InterferenceSemanticSource.",
+      "Export InterferenceSemanticSource.",
+      "Require Export prosa.ReadinessAwareSemanticSource.",
+      "Module readiness_aware := ReadinessAwareSemanticSource.ReadinessAwareSemanticSource.",
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq bigop."
+    ],
+    "printer_repairs": [],
+    "note": "the two statements are the authoritative elaborated types (proofs omitted); the interference definitions are bound to the accepted extracted InterferenceSemanticSource (.vo copied from its accepted run and hash-checked against its manifest; model/aggregate/workload compiled from the pinned tree, byte-identical to that run's); the readiness-aware definitions to the accepted extracted ReadinessAwareSemanticSource through a recorded module alias `readiness_aware` (the elaborated statement prints `readiness_aware.service_inversion`); the proof-only facts imports are dropped"
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/FactsReadinessInterferenceStatementProbe.v",
+  "production": "Prosa/Analysis/Facts/ReadinessInterference.lean",
+  "production_olean": "Prosa/Analysis/Facts/ReadinessInterference.olean",
+  "lean_namespace": "Prosa.Analysis.Facts.ReadinessInterference",
+  "fixtures": [
+    "NondecreasingComputationInterface",
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "PreemptionParameterComputationInterface",
+    "ServiceInversionPredComputationInterface",
+    "AbstractDefinitionsComputationInterface",
+    "BusyPrefixComputationInterface",
+    "ReadinessInterferenceComputationInterface",
+    "ReadinessAwareComputationInterface",
+    "ArrivalsComputationInterface",
+    "InterferenceComputationInterface",
+    "FactsReadinessInterferenceComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/FactsReadinessInterferenceLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/analysis_facts_readiness_interference_export_config.json",
+  "export_name": "FactsReadinessInterference",
+  "cert_dir": "certificates/analysis_facts_readiness_interference",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "JitterSvcBaseAdapter",
+    "JitterSvcNatBoolOperations",
+    "JitterSvcIntervalOperations",
+    "JitterSvcScheduleOperations",
+    "JitterSvcJobOperations",
+    "PreemptionParameterCorrespondence",
+    "ServiceInversionPredCorrespondence",
+    "AbstractDefinitionsBaseAdapter",
+    "ServiceBaseAdapter",
+    "ServiceNatBoolOperations",
+    "AbstractDefinitionsArrivalOperations",
+    "AbstractDefinitionsClasses",
+    "AbstractDefinitionsNatBoolOperations",
+    "AbstractDefinitionsIntervalOperations",
+    "AbstractDefinitionsOperations",
+    "AbstractDefinitionsSums",
+    "AbstractDefinitionsLogical",
+    "ServiceIntervalOperations",
+    "ServiceScheduleOperations",
+    "AbstractDefinitionsPendingOperations",
+    "AbstractDefinitionsTaskOperations",
+    "AbstractDefinitionsBusyIntervalHelpers",
+    "AbstractDefinitionsBusyInterval",
+    "PriorityBaseAdapter",
+    "ReadinessInterferenceCorrespondence",
+    "ReadinessAwareCorrespondence",
+    "ArrivalsCorrespondence",
+    "InterferenceCorrespondence",
+    "FactsReadinessInterferenceCorrespondence"
+  ],
+  "audit_module": "FactsReadinessInterferenceAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/FactsReadinessInterferenceImportedTypeAudit.v",
+  "assumption_config": "certificates/analysis_facts_readiness_interference/facts_readiness_interference_assumption_config.json",
+  "lean_axiom_config": "certificates/analysis_facts_readiness_interference/facts_readiness_interference_lean_axiom_config.json",
+  "computational": [],
+  "principal": {},
+  "helpers": [
+    "fri_scheduled_related",
+    "fri_valid_schedule_related",
+    "fri_forall_jlfp",
+    "fri_some_hep_job_ready_related"
+  ],
+  "previous_status": "analysis_definitions_service_inversion_readiness_aware_module_status.json",
+  "previous_files": 311,
+  "previous_decls": 1940,
+  "input_relations": [
+    "processor states by the accepted two-sided Service relations of both certificate generations over the same state pair; schedules; job-arrival, job-cost and readiness instances and arrival sequences by the accepted relations (two-way totals); JLFP policies by the accepted relation, covered in both directions where quantified inside; jobs by identity; instants by SubNatRel"
+  ],
+  "coverage_for_inner_binders": [
+    "jobs",
+    "instants",
+    "JLFP policies"
+  ],
+  "lean_representation_note": "Booleans in Prop position are `= true`; `~~ b` is `(!b) = true`; the JLFP policy of the first statement is quantified explicitly",
+  "export_diagnosis": "the accepted readiness-aware export root merged with the accepted interference root, plus the two statements",
+  "extra_source_patches": [],
+  "extra_artifacts": [
+    {
+      "from": "analysis_definitions_interference_final/source/InterferenceSemanticSource.vo",
+      "to": "source/InterferenceSemanticSource.vo",
+      "manifest": "analysis_definitions_interference",
+      "key": "source_vo_sha256"
+    }
+  ],
+  "extra_olean_artifacts": [
+    {
+      "from": "analysis_facts_model_rbf_final/olean/Prosa/Model/Job/Properties.olean",
+      "to": "Prosa/Model/Job/Properties.olean",
+      "manifest": "model_job_properties",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_model_rbf_final/olean/Prosa/Analysis/Definitions/SchedulePrefix.olean",
+      "to": "Prosa/Analysis/Definitions/SchedulePrefix.olean",
+      "manifest": "analysis_schedule_prefix",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_sbf_final/olean/Prosa/Analysis/Facts/Behavior/Supply.olean",
+      "to": "Prosa/Analysis/Facts/Behavior/Supply.olean",
+      "manifest": "analysis_facts_behavior_supply",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_model_rbf_final/olean/Prosa/Model/Schedule/Scheduled.olean",
+      "to": "Prosa/Model/Schedule/Scheduled.olean",
+      "manifest": "model_schedule_scheduled",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_model_rbf_final/olean/Prosa/Analysis/Facts/Model/Scheduled.olean",
+      "to": "Prosa/Analysis/Facts/Model/Scheduled.olean",
+      "manifest": "analysis_facts_model_scheduled",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_model_rbf_final/olean/Prosa/Analysis/Facts/Behavior/Service.olean",
+      "to": "Prosa/Analysis/Facts/Behavior/Service.olean",
+      "manifest": "analysis_facts_behavior_service",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_model_rbf_final/olean/Prosa/Analysis/Facts/Behavior/Completion.olean",
+      "to": "Prosa/Analysis/Facts/Behavior/Completion.olean",
+      "manifest": "analysis_facts_behavior_completion",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_definitions_readiness_interference_final/olean/Prosa/Analysis/Abstract/Definitions.olean",
+      "to": "Prosa/Analysis/Abstract/Definitions.olean",
+      "manifest": "analysis_abstract_definitions",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_definitions_readiness_interference_final/olean/Prosa/Analysis/Definitions/ReadinessInterference.olean",
+      "to": "Prosa/Analysis/Definitions/ReadinessInterference.olean",
+      "manifest": "analysis_definitions_readiness_interference",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "regress_bbfp_dep_final/olean/Prosa/Model/Aggregate/Workload.olean",
+      "to": "Prosa/Model/Aggregate/Workload.olean",
+      "manifest": "model_aggregate_workload",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "regress_bbfp_dep_final/olean/Prosa/Analysis/Definitions/Interference.olean",
+      "to": "Prosa/Analysis/Definitions/Interference.olean",
+      "manifest": "analysis_definitions_interference",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "regress_bbfp_dep_final/olean/Prosa/Analysis/Definitions/ServiceInversion/Pred.olean",
+      "to": "Prosa/Analysis/Definitions/ServiceInversion/Pred.olean",
+      "manifest": "analysis_definitions_service_inversion_pred",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_definitions_service_inversion_readiness_aware_final/olean/Prosa/Analysis/Definitions/ServiceInversion/ReadinessAware.olean",
+      "to": "Prosa/Analysis/Definitions/ServiceInversion/ReadinessAware.olean",
+      "manifest": "analysis_definitions_service_inversion_readiness_aware",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "regress_bbfp_dep_final/olean/Prosa/Model/Preemption/Parameter.olean",
+      "to": "Prosa/Model/Preemption/Parameter.olean",
+      "manifest": "model_preemption_parameter",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "regress_bbfp_dep_final/olean/Prosa/Analysis/Abstract/RestrictedSupply/BusyPrefix.olean",
+      "to": "Prosa/Analysis/Abstract/RestrictedSupply/BusyPrefix.olean",
+      "manifest": "analysis_abstract_restricted_supply_busy_prefix",
+      "key": "production_olean_sha256"
+    }
+  ],
+  "extra_generated_sources": [],
+  "dependency_shims": {}
+}

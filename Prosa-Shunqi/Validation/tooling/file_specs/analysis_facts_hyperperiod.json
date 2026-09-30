@@ -1,0 +1,164 @@
+{
+  "rank": 270,
+  "layer": 25,
+  "tag": "FHYP",
+  "slug": "analysis_facts_hyperperiod",
+  "source": "analysis/facts/hyperperiod.v",
+  "dependencies": [
+    "analysis/definitions/hyperperiod.v",
+    "analysis/facts/periodic/task_arrivals_size.v",
+    "util/div_mod.v",
+    "util/tactics.v"
+  ],
+  "declaration_count": 10,
+  "base_run": "analysis_definitions_hyperperiod_final",
+  "base_checks": [
+    {
+      "manifest": "analysis_definitions_hyperperiod",
+      "olean": "Prosa/Analysis/Definitions/Hyperperiod.olean",
+      "vo": "HyperperiodSemanticSource.vo"
+    }
+  ],
+  "extra_olean_artifacts": [
+    {
+      "from": "model_task_arrival_periodic_final/olean/Prosa/Model/Task/Arrival/Periodic.olean",
+      "to": "Prosa/Model/Task/Arrival/Periodic.olean",
+      "manifest": "model_task_arrival_periodic",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "util_lcmseq_final/olean/Prosa/Util/Lcmseq.olean",
+      "to": "Prosa/Util/Lcmseq.olean",
+      "manifest": "util_lcmseq",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_definitions_infinite_jobs_final/olean/Prosa/Analysis/Definitions/InfiniteJobs.olean",
+      "to": "Prosa/Analysis/Definitions/InfiniteJobs.olean",
+      "manifest": "analysis_definitions_infinite_jobs",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "model_priority_rate_monotonic_final/olean/Prosa/Model/Task/Arrival/Sporadic.olean",
+      "to": "Prosa/Model/Task/Arrival/Sporadic.olean",
+      "manifest": "model_task_arrival_sporadic",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_sporadic_arrival_times_final/olean/Prosa/Analysis/Facts/Sporadic/ArrivalTimes.olean",
+      "to": "Prosa/Analysis/Facts/Sporadic/ArrivalTimes.olean",
+      "manifest": "analysis_facts_sporadic_arrival_times",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_sporadic_arrival_sequence_final/olean/Prosa/Analysis/Facts/Sporadic/ArrivalSequence.olean",
+      "to": "Prosa/Analysis/Facts/Sporadic/ArrivalSequence.olean",
+      "manifest": "analysis_facts_sporadic_arrival_sequence",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "model_task_arrival_periodic_as_sporadic_final/olean/Prosa/Model/Task/Arrival/PeriodicAsSporadic.olean",
+      "to": "Prosa/Model/Task/Arrival/PeriodicAsSporadic.olean",
+      "manifest": "model_task_arrival_periodic_as_sporadic",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_periodic_task_arrivals_size_final/olean/Prosa/Analysis/Facts/Periodic/TaskArrivalsSize.olean",
+      "to": "Prosa/Analysis/Facts/Periodic/TaskArrivalsSize.olean",
+      "manifest": "analysis_facts_periodic_task_arrivals_size",
+      "key": "production_olean_sha256"
+    }
+  ],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "FactsHyperperiodSemanticSource",
+    "helper_blocks": [],
+    "drop_imports": [
+      "Require Export prosa.analysis.definitions.hyperperiod.",
+      "Require Export prosa.analysis.facts.periodic.task_arrivals_size.",
+      "Require Export prosa.util.div_mod.",
+      "Require Export prosa.util.tactics."
+    ],
+    "add_imports": [
+      "Require Export prosa.HyperperiodSemanticSource.",
+      "Export HyperperiodSemanticSource.",
+      "Require Export prosa.analysis.definitions.infinite_jobs.",
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq div."
+    ],
+    "printer_repairs": [],
+    "note": "theorem statements from the authoritative elaborated types (proofs omitted); the hyperperiod definitions are bound to the accepted extracted HyperperiodSemanticSource (base run); analysis/definitions/infinite_jobs is the pinned source compiled from the pinned tree, as in its accepted run; the proof-only facts/periodic/task_arrivals_size, util/div_mod and util/tactics imports are dropped"
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/FactsHyperperiodStatementProbe.v",
+  "production": "Prosa/Analysis/Facts/Hyperperiod.lean",
+  "production_olean": "Prosa/Analysis/Facts/Hyperperiod.olean",
+  "lean_namespace": "Prosa.Analysis.Facts.Hyperperiod",
+  "fixtures": [
+    "NondecreasingComputationInterface",
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "PreemptionParameterComputationInterface",
+    "TaskOffsetComputationInterface",
+    "ArrivalsComputationInterface",
+    "PeriodicComputationInterface",
+    "FactsPeriodicArrivalTimesComputationInterface",
+    "LcmseqSpecComputationInterface",
+    "HyperperiodComputationInterface",
+    "InfiniteJobsComputationInterface",
+    "FactsHyperperiodComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/FactsHyperperiodLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/analysis_facts_hyperperiod_export_config.json",
+  "export_name": "FactsHyperperiod",
+  "cert_dir": "certificates/analysis_facts_hyperperiod",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "ArrivalsCorrespondence",
+    "JitterSvcBaseAdapter",
+    "JitterSvcNatBoolOperations",
+    "JitterSvcIntervalOperations",
+    "JitterSvcScheduleOperations",
+    "JitterSvcJobOperations",
+    "PreemptionParameterCorrespondence",
+    "TaskOffsetCorrespondence",
+    "PeriodicCorrespondence",
+    "NatSubCorrespondence",
+    "LcmseqBaseAdapter",
+    "LcmseqDivModAdapter",
+    "LcmseqCorrespondence",
+    "HyperperiodCorrespondence",
+    "InfiniteJobsCorrespondence",
+    "FactsHyperperiodCorrespondence"
+  ],
+  "audit_module": "FactsHyperperiodAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/FactsHyperperiodImportedTypeAudit.v",
+  "assumption_config": "certificates/analysis_facts_hyperperiod/facts_hyperperiod_assumption_config.json",
+  "lean_axiom_config": "certificates/analysis_facts_hyperperiod/facts_hyperperiod_lean_axiom_config.json",
+  "computational": [],
+  "principal": {},
+  "helpers": [
+    "fhyp_forall_list_correspondence",
+    "fhyp_eq_identity_correspondence",
+    "fhyp_corr_job_related"
+  ],
+  "previous_status": "model_processor_multiprocessor_module_status.json",
+  "previous_files": 313,
+  "previous_decls": 1948,
+  "input_relations": [
+    "task-offset, periodic-model, job-task and job-arrival instances by the accepted relations (two-way totals); task sets and job lists by the accepted canonical list relations; arrival sequences by the accepted relation; tasks and jobs by identity; instants and naturals by SubNatRel"
+  ],
+  "coverage_for_inner_binders": [
+    "naturals / instants",
+    "jobs",
+    "tasks"
+  ],
+  "lean_representation_note": "`%/` is `/` on Nat; `index x s` is `List.idxOf x s`; `nth x0 s n` is `s.getD n x0`; the section-local `O_max`/`HP` are unfolded",
+  "export_diagnosis": "the accepted hyperperiod-definitions export root merged with the accepted infinite-jobs root, plus the ten statements",
+  "extra_artifacts": [],
+  "extra_pinned_sources": [
+    "analysis/definitions/infinite_jobs.v"
+  ]
+}

@@ -1,0 +1,286 @@
+{
+  "rank": 228,
+  "layer": 20,
+  "tag": "FWC",
+  "slug": "analysis_facts_transform_wc_correctness",
+  "source": "analysis/facts/transform/wc_correctness.v",
+  "dependencies": [
+    "analysis/definitions/schedulability.v",
+    "analysis/facts/model/ideal/schedule.v",
+    "analysis/facts/transform/swaps.v",
+    "analysis/transform/wc_trans.v",
+    "model/readiness/basic.v",
+    "model/schedule/work_conserving.v",
+    "util/list.v",
+    "util/tactics.v"
+  ],
+  "declaration_count": 33,
+  "base_run": "analysis_transform_wc_trans_final",
+  "base_checks": [
+    {
+      "manifest": "analysis_transform_wc_trans",
+      "olean": "Prosa/Analysis/Transform/WcTrans.olean",
+      "vo": "WcTransSemanticSource.vo"
+    }
+  ],
+  "extra_pinned_sources": [
+    "model/task/absolute_deadline.v",
+    "model/schedule/work_conserving.v"
+  ],
+  "extra_lean": [
+    [
+      "Prosa/Model/Processor/Ideal.lean",
+      "Prosa/Model/Processor/Ideal.olean",
+      "model_processor_ideal",
+      "production_olean_sha256"
+    ]
+  ],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "FactsWcCorrectnessSemanticSource",
+    "helper_blocks": [],
+    "drop_imports": [
+      "Require Export prosa.model.schedule.work_conserving.",
+      "Require Import prosa.model.readiness.basic.",
+      "Require Export prosa.analysis.facts.model.ideal.schedule.",
+      "Require Export prosa.analysis.transform.wc_trans.",
+      "Require Export prosa.analysis.facts.transform.swaps.",
+      "Require Export prosa.analysis.definitions.schedulability.",
+      "Require Export prosa.util.list.",
+      "Require Export prosa.util.tactics."
+    ],
+    "add_imports": [
+      "Require Export prosa.WcTransSemanticSource.",
+      "Export WcTransSemanticSource.",
+      "Require Export prosa.SchedulabilitySemanticSource.",
+      "Export SchedulabilitySemanticSource.",
+      "Require Export prosa.model.schedule.work_conserving.",
+      "Require Import prosa.model.readiness.basic.",
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq.",
+      "Require Import prosa.behavior.all prosa.model.processor.ideal.",
+      "#[local] Existing Instance ideal.processor_state.",
+      "#[local] Existing Instance basic_ready_instance."
+    ],
+    "printer_repairs": [],
+    "note": "the three definitions are byte-identical computational blocks and the 30 statements are the authoritative elaborated types (proofs omitted); analysis/transform/wc_trans (with util/list, util/search_arg and model/processor/ideal) is the accepted extracted WcTransSemanticSource of the base run; analysis/definitions/schedulability is bound to its accepted extracted SchedulabilitySemanticSource (.vo copied from its accepted run and hash-checked, over the pinned model/task/absolute_deadline); model/schedule/work_conserving is the pinned source compiled from the pinned tree and model/readiness/basic the compiled pinned source of the base closure; the sections' `#[local] Existing Instance ideal.processor_state` and `#[local] Existing Instance basic_ready_instance` are replayed after the imports; the proof-only facts/model/ideal/schedule, facts/transform/swaps and util/tactics imports are dropped"
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/FactsWcCorrectnessStatementProbe.v",
+  "production": "Prosa/Analysis/Facts/Transform/WcCorrectness.lean",
+  "production_olean": "Prosa/Analysis/Facts/Transform/WcCorrectness.olean",
+  "lean_namespace": "Prosa.Analysis.Facts.Transform.WcCorrectness",
+  "fixtures": [
+    "NondecreasingComputationInterface",
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "PreemptionParameterComputationInterface",
+    "TransformPrefixComputationInterface",
+    "FactsWcTransComputationInterface",
+    "ScheduledComputationInterface",
+    "IdealScheduleComputationInterface",
+    "FactsWcCorrectnessComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/FactsWcCorrectnessLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/analysis_facts_transform_wc_correctness_export_config.json",
+  "export_name": "FactsWcCorrectness",
+  "cert_dir": "certificates/analysis_facts_transform_wc_correctness",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "JitterSvcBaseAdapter",
+    "JitterSvcNatBoolOperations",
+    "JitterSvcIntervalOperations",
+    "JitterSvcScheduleOperations",
+    "JitterSvcJobOperations",
+    "PreemptionParameterCorrespondence",
+    "WcTransCorrespondence",
+    "FactsWcCorrectnessCorrespondence"
+  ],
+  "audit_module": "FactsWcCorrectnessAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/FactsWcCorrectnessImportedTypeAudit.v",
+  "assumption_config": "certificates/analysis_facts_transform_wc_correctness/facts_wc_correctness_assumption_config.json",
+  "lean_axiom_config": "certificates/analysis_facts_transform_wc_correctness/facts_wc_correctness_lean_axiom_config.json",
+  "computational": [
+    "is_work_conserving_at",
+    "order",
+    "search_result"
+  ],
+  "principal": {},
+  "helpers": [
+    "wcc_forall_cover",
+    "wcc_exists_identity_correspondence",
+    "wcc_false_correspondence",
+    "wcc_opt_source_roundtrip",
+    "wcc_opt_target_roundtrip",
+    "wcc_opt_rel_canonical",
+    "wcc_opt_eq_correspondence",
+    "wcc_option_some_eq_correspondence",
+    "wcc_option_some_eq_rel",
+    "wcc_option_none_eq_related",
+    "wcc_optnat_roundtrip",
+    "wcc_optnat_some_eq",
+    "wcc_optnat_none_eq",
+    "wcc_src_scheduled_on",
+    "wcc_src_scheduled_in",
+    "wcc_src_service_in",
+    "wcc_scheduled_in_related",
+    "wcc_decide_state_related",
+    "wcc_service_on_related",
+    "wcc_service_in_related",
+    "wcc_sched_to_target_rel",
+    "wcc_sched_to_source_rel",
+    "wcc_forall_sched",
+    "wcc_scheduled_at_related",
+    "wcc_sched_at",
+    "wcc_service_at_fun",
+    "wcc_service_related",
+    "wcc_idle_related",
+    "wcc_maxdl",
+    "wcc_fsc",
+    "wcc_mwa",
+    "wcc_prefix",
+    "wcc_transform",
+    "wcc_swapped",
+    "wcc_pending_related",
+    "wcc_ready_related",
+    "wcc_ready",
+    "wcc_jmae_rel",
+    "wcc_jmbr_rel",
+    "wcc_jcf_rel",
+    "wcc_valid_rel",
+    "wcc_meets_rel",
+    "wcc_doa_rel",
+    "wcc_wc_rel",
+    "wcc_case_prefix",
+    "wcc_none_prefix"
+  ],
+  "previous_status": "analysis_facts_transform_edf_opt_module_status.json",
+  "previous_files": 318,
+  "previous_decls": 2024,
+  "input_relations": [
+    "the processor model is fixed to the ideal uniprocessor on both sides; states by the accepted constructor-preserving Option map (IdOptRel), schedules pointwise (IdScheduleRel); job_cost by SvcJobCostRel, job_deadline pointwise by SubNatRel, job_arrival by ArJobArrivalRel, arrival sequences by ArArrivalSequenceRel; the readiness model is the source's local basic instance on both sides, related through the pending relation; instants and naturals by SubNatRel; jobs by identity"
+  ],
+  "coverage_for_inner_binders": [
+    "naturals / instants",
+    "jobs",
+    "schedules (ideal)",
+    "arrival sequences"
+  ],
+  "lean_representation_note": "the processor model is the accepted ideal processor `processor_state Job`; the sections' local `basic_ready_instance` is the accepted Lean definition, registered as a local instance and applied explicitly to `job_ready`; `s == Some j` on states is `s = some j`; a Boolean in `Prop` position is `= true`; the section-local `order` is applied to the states coerced to naturals through `isSome`, as in the elaborated `search_result`",
+  "export_diagnosis": "the accepted wc-trans export root merged with the accepted ideal-schedule and schedulability roots, plus the three definitions and the 30 statements",
+  "extra_source_patches": [],
+  "extra_artifacts": [
+    {
+      "from": "analysis_definitions_schedulability_final/source/SchedulabilitySemanticSource.vo",
+      "to": "source/SchedulabilitySemanticSource.vo",
+      "manifest": "analysis_definitions_schedulability",
+      "key": "source_vo_sha256"
+    }
+  ],
+  "extra_olean_artifacts": [
+    {
+      "from": "analysis_facts_model_ideal_schedule_final/olean/Prosa/Model/Processor/Ideal.olean",
+      "to": "Prosa/Model/Processor/Ideal.olean",
+      "manifest": "model_processor_ideal",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_transform_swap/olean/Prosa/Analysis/Transform/Swap.olean",
+      "to": "Prosa/Analysis/Transform/Swap.olean",
+      "manifest": "analysis_transform_swap",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "regress_bbfp_dep_final/olean/Prosa/Analysis/Definitions/SchedulePrefix.olean",
+      "to": "Prosa/Analysis/Definitions/SchedulePrefix.olean",
+      "manifest": "analysis_schedule_prefix",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "regress_bbfp_dep_final/olean/Prosa/Analysis/Facts/Behavior/Supply.olean",
+      "to": "Prosa/Analysis/Facts/Behavior/Supply.olean",
+      "manifest": "analysis_facts_behavior_supply",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "regress_bbfp_dep_final/olean/Prosa/Model/Schedule/Scheduled.olean",
+      "to": "Prosa/Model/Schedule/Scheduled.olean",
+      "manifest": "model_schedule_scheduled",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "regress_bbfp_dep_final/olean/Prosa/Analysis/Definitions/Service.olean",
+      "to": "Prosa/Analysis/Definitions/Service.olean",
+      "manifest": "analysis_service",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "regress_bbfp_dep_final/olean/Prosa/Analysis/Facts/Model/Scheduled.olean",
+      "to": "Prosa/Analysis/Facts/Model/Scheduled.olean",
+      "manifest": "analysis_facts_model_scheduled",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "regress_bbfp_dep_final/olean/Prosa/Analysis/Facts/Behavior/Service.olean",
+      "to": "Prosa/Analysis/Facts/Behavior/Service.olean",
+      "manifest": "analysis_facts_behavior_service",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_transform_swaps_final/olean/Prosa/Analysis/Facts/Transform/ReplaceAt.olean",
+      "to": "Prosa/Analysis/Facts/Transform/ReplaceAt.olean",
+      "manifest": "analysis_facts_transform_replace_at",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "regress_bbfp_dep_final/olean/Prosa/Model/Job/Properties.olean",
+      "to": "Prosa/Model/Job/Properties.olean",
+      "manifest": "model_job_properties",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "regress_bbfp_dep_final/olean/Prosa/Analysis/Facts/Behavior/Completion.olean",
+      "to": "Prosa/Analysis/Facts/Behavior/Completion.olean",
+      "manifest": "analysis_facts_behavior_completion",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "regress_bbfp_dep_final/olean/Prosa/Analysis/Facts/Behavior/Deadlines.olean",
+      "to": "Prosa/Analysis/Facts/Behavior/Deadlines.olean",
+      "manifest": "analysis_facts_behavior_deadlines",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_transform_swaps_final/olean/Prosa/Analysis/Facts/Transform/Swaps.olean",
+      "to": "Prosa/Analysis/Facts/Transform/Swaps.olean",
+      "manifest": "analysis_facts_transform_swaps",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_transform_edf_trans_final/olean/Prosa/Analysis/Facts/Model/Ideal/Schedule.olean",
+      "to": "Prosa/Analysis/Facts/Model/Ideal/Schedule.olean",
+      "manifest": "analysis_facts_model_ideal_schedule",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "regress_bbfp_dep_final/olean/Prosa/Model/Task/AbsoluteDeadline.olean",
+      "to": "Prosa/Model/Task/AbsoluteDeadline.olean",
+      "manifest": "model_task_absolute_deadline",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "regress_bbfp_dep_final/olean/Prosa/Analysis/Definitions/Schedulability.olean",
+      "to": "Prosa/Analysis/Definitions/Schedulability.olean",
+      "manifest": "analysis_definitions_schedulability",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_jitter_final/olean/Prosa/Model/Readiness/Basic.olean",
+      "to": "Prosa/Model/Readiness/Basic.olean",
+      "manifest": "model_readiness_basic",
+      "key": "production_olean_sha256"
+    }
+  ]
+}

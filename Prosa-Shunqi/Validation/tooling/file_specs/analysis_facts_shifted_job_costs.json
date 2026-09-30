@@ -1,0 +1,173 @@
+{
+  "rank": 282,
+  "layer": 26,
+  "tag": "SJC",
+  "slug": "analysis_facts_shifted_job_costs",
+  "source": "analysis/facts/shifted_job_costs.v",
+  "dependencies": [
+    "analysis/facts/hyperperiod.v",
+    "analysis/facts/periodic/arrival_times.v",
+    "analysis/facts/periodic/task_arrivals_size.v",
+    "model/task/concept.v"
+  ],
+  "declaration_count": 3,
+  "base_run": "analysis_facts_hyperperiod_final",
+  "base_checks": [
+    {
+      "manifest": "analysis_facts_hyperperiod",
+      "olean": "Prosa/Analysis/Facts/Hyperperiod.olean",
+      "vo": "FactsHyperperiodSemanticSource.vo"
+    }
+  ],
+  "extra_olean_artifacts": [
+    {
+      "from": "model_task_arrival_periodic_final/olean/Prosa/Model/Task/Arrival/Periodic.olean",
+      "to": "Prosa/Model/Task/Arrival/Periodic.olean",
+      "manifest": "model_task_arrival_periodic",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "util_lcmseq_final/olean/Prosa/Util/Lcmseq.olean",
+      "to": "Prosa/Util/Lcmseq.olean",
+      "manifest": "util_lcmseq",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_definitions_infinite_jobs_final/olean/Prosa/Analysis/Definitions/InfiniteJobs.olean",
+      "to": "Prosa/Analysis/Definitions/InfiniteJobs.olean",
+      "manifest": "analysis_definitions_infinite_jobs",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "model_priority_rate_monotonic_final/olean/Prosa/Model/Task/Arrival/Sporadic.olean",
+      "to": "Prosa/Model/Task/Arrival/Sporadic.olean",
+      "manifest": "model_task_arrival_sporadic",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_sporadic_arrival_times_final/olean/Prosa/Analysis/Facts/Sporadic/ArrivalTimes.olean",
+      "to": "Prosa/Analysis/Facts/Sporadic/ArrivalTimes.olean",
+      "manifest": "analysis_facts_sporadic_arrival_times",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_sporadic_arrival_sequence_final/olean/Prosa/Analysis/Facts/Sporadic/ArrivalSequence.olean",
+      "to": "Prosa/Analysis/Facts/Sporadic/ArrivalSequence.olean",
+      "manifest": "analysis_facts_sporadic_arrival_sequence",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "model_task_arrival_periodic_as_sporadic_final/olean/Prosa/Model/Task/Arrival/PeriodicAsSporadic.olean",
+      "to": "Prosa/Model/Task/Arrival/PeriodicAsSporadic.olean",
+      "manifest": "model_task_arrival_periodic_as_sporadic",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_periodic_task_arrivals_size_final/olean/Prosa/Analysis/Facts/Periodic/TaskArrivalsSize.olean",
+      "to": "Prosa/Analysis/Facts/Periodic/TaskArrivalsSize.olean",
+      "manifest": "analysis_facts_periodic_task_arrivals_size",
+      "key": "production_olean_sha256"
+    }
+  ],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "ShiftedJobCostsSemanticSource",
+    "helper_blocks": [],
+    "drop_imports": [
+      "Require Export prosa.analysis.facts.periodic.arrival_times.",
+      "Require Export prosa.analysis.facts.periodic.task_arrivals_size.",
+      "Require Export prosa.model.task.concept.",
+      "Require Export prosa.analysis.facts.hyperperiod."
+    ],
+    "add_imports": [
+      "Require Export prosa.HyperperiodSemanticSource.",
+      "Export HyperperiodSemanticSource.",
+      "Require Export prosa.analysis.definitions.infinite_jobs.",
+      "Require Export prosa.model.task.concept.",
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq div."
+    ],
+    "printer_repairs": [
+      "ts -> arrivals_have_valid_job_costs arr_seq=ts -> @arrivals_have_valid_job_costs _ _ _ _ (@job_costs_in_oi _ _ _ _ _ _ _ arr_seq ts j) arr_seq"
+    ],
+    "local_bindings": [
+      "job_costs_shifted=job_costs_shifted arr_seq ts j"
+    ],
+    "note": "the two definitions are byte-identical computational blocks (the section-local O_max/HP Lets included); the statement is the authoritative elaborated type (proof omitted); the hyperperiod definitions are bound to the accepted extracted HyperperiodSemanticSource and infinite_jobs to the pinned source of the base run; the proof-only facts imports are dropped; the statement names the section-local instance job_costs_in_oi explicitly in its conclusion through a recorded printer repair (as the elaborated source does implicitly)"
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/ShiftedJobCostsStatementProbe.v",
+  "production": "Prosa/Analysis/Facts/ShiftedJobCosts.lean",
+  "production_olean": "Prosa/Analysis/Facts/ShiftedJobCosts.olean",
+  "lean_namespace": "Prosa.Analysis.Facts.ShiftedJobCosts",
+  "fixtures": [
+    "NondecreasingComputationInterface",
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "PreemptionParameterComputationInterface",
+    "TaskOffsetComputationInterface",
+    "ArrivalsComputationInterface",
+    "PeriodicComputationInterface",
+    "FactsPeriodicArrivalTimesComputationInterface",
+    "LcmseqSpecComputationInterface",
+    "HyperperiodComputationInterface",
+    "InfiniteJobsComputationInterface",
+    "FactsHyperperiodComputationInterface",
+    "ShiftedJobCostsComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/ShiftedJobCostsLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/analysis_facts_shifted_job_costs_export_config.json",
+  "export_name": "ShiftedJobCosts",
+  "cert_dir": "certificates/analysis_facts_shifted_job_costs",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "ArrivalsCorrespondence",
+    "JitterSvcBaseAdapter",
+    "JitterSvcNatBoolOperations",
+    "JitterSvcIntervalOperations",
+    "JitterSvcScheduleOperations",
+    "JitterSvcJobOperations",
+    "PreemptionParameterCorrespondence",
+    "TaskOffsetCorrespondence",
+    "PeriodicCorrespondence",
+    "NatSubCorrespondence",
+    "LcmseqBaseAdapter",
+    "LcmseqDivModAdapter",
+    "LcmseqCorrespondence",
+    "HyperperiodCorrespondence",
+    "InfiniteJobsCorrespondence",
+    "ShiftedJobCostsCorrespondence"
+  ],
+  "audit_module": "ShiftedJobCostsAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/ShiftedJobCostsImportedTypeAudit.v",
+  "assumption_config": "certificates/analysis_facts_shifted_job_costs/shifted_job_costs_assumption_config.json",
+  "lean_axiom_config": "certificates/analysis_facts_shifted_job_costs/shifted_job_costs_lean_axiom_config.json",
+  "computational": [
+    "job_costs_shifted",
+    "job_costs_in_oi"
+  ],
+  "principal": {},
+  "helpers": [
+    "sjc_forall_list_correspondence",
+    "sjc_cond_related",
+    "sjc_valid_job_costs_rel",
+    "sjc_all_jobs_from_taskset_rel"
+  ],
+  "previous_status": "analysis_facts_hyperperiod_module_status.json",
+  "previous_files": 314,
+  "previous_decls": 1958,
+  "input_relations": [
+    "task-offset, periodic-model, task-cost, job-task, job-arrival and job-cost instances by the accepted relations; arrival sequences by the accepted relation; task sets by the canonical list relation (covered inside the statement); tasks and jobs by identity"
+  ],
+  "coverage_for_inner_binders": [
+    "jobs",
+    "tasks",
+    "task sets"
+  ],
+  "lean_representation_note": "`%/` is `/` on Nat; `index x s` is `List.idxOf x s`; `nth x0 s n` is `s.getD n x0`; the section-local `O_max`/`HP` are unfolded",
+  "export_diagnosis": "the accepted hyperperiod-facts export root plus the two definitions, the statement and the task-concept validity predicates",
+  "extra_artifacts": [],
+  "extra_pinned_sources": []
+}

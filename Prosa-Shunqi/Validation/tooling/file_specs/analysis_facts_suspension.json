@@ -1,0 +1,134 @@
+{
+  "rank": 178,
+  "layer": 17,
+  "tag": "FSUSP",
+  "slug": "analysis_facts_suspension",
+  "source": "analysis/facts/suspension.v",
+  "dependencies": [
+    "model/readiness/suspension.v"
+  ],
+  "declaration_count": 11,
+  "base_run": "model_task_suspension_dynamic_final",
+  "base_checks": [
+    {
+      "manifest": "model_task_suspension_dynamic",
+      "olean": "Prosa/Model/Task/Suspension/Dynamic.olean",
+      "vo": "DynamicSuspensionSemanticSource.vo"
+    }
+  ],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "FactsSuspensionSemanticSource",
+    "helper_blocks": [],
+    "drop_imports": [
+      "Require Export prosa.model.readiness.suspension."
+    ],
+    "add_imports": [
+      "Require Export prosa.behavior.all.",
+      "Require Export prosa.model.readiness.suspension.",
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq bigop."
+    ],
+    "printer_repairs": [
+      "~~ job_ready sched j t=~~ @job_ready _ _ _ _ (@suspension_ready_instance _ _ _ _ _) sched j t",
+      "-> job_ready sched j t=-> @job_ready _ _ _ _ (@suspension_ready_instance _ _ _ _ _) sched j t",
+      "~~ backlogged sched j t=~~ @backlogged _ _ _ _ (@suspension_ready_instance _ _ _ _ _) sched j t",
+      "valid_schedule sched arr_seq=@valid_schedule _ _ _ sched _ (@suspension_ready_instance _ _ _ _ _) arr_seq"
+    ],
+    "note": "the eleven statements are the authoritative elaborated types (proofs omitted); model/readiness/suspension is compiled from the pinned tree under its Rocq 9.3 proof-compatibility patch (its instance obligation proof avoids the looping `done`), with analysis/definitions/progress reached through a re-export shim of the accepted extracted progress module; the statements that use the section-local readiness instance name it explicitly through recorded printer repairs"
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/FactsSuspensionStatementProbe.v",
+  "production": "Prosa/Analysis/Facts/Suspension.lean",
+  "production_olean": "Prosa/Analysis/Facts/Suspension.olean",
+  "lean_namespace": "Prosa.Analysis.Facts.Suspension",
+  "fixtures": [
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ArrivalsComputationInterface",
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "ProgressComputationInterface",
+    "SuspensionComputationInterface",
+    "DynamicSuspensionComputationInterface",
+    "FactsSuspensionComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/FactsSuspensionLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/analysis_facts_suspension_export_config.json",
+  "export_name": "FactsSuspension",
+  "cert_dir": "certificates/analysis_facts_suspension",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "JitterSvcBaseAdapter",
+    "JitterSvcNatBoolOperations",
+    "JitterSvcIntervalOperations",
+    "JitterSvcScheduleOperations",
+    "JitterSvcJobOperations",
+    "ProgressHelpers",
+    "SuspensionCorrespondence",
+    "FactsSuspensionCorrespondence"
+  ],
+  "audit_module": "FactsSuspensionAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/FactsSuspensionImportedTypeAudit.v",
+  "assumption_config": "certificates/analysis_facts_suspension/facts_suspension_assumption_config.json",
+  "lean_axiom_config": "certificates/analysis_facts_suspension/facts_suspension_lean_axiom_config.json",
+  "computational": [],
+  "principal": {
+    "TaskTotalSuspension": [
+      "TaskTotalSuspension_source_total",
+      "TaskTotalSuspension_target_total"
+    ]
+  },
+  "helpers": [
+    "fs_nat_list_to_rocq",
+    "fs_nat_list_source_roundtrip",
+    "fs_source_mem_forward",
+    "fs_target_mem_decoded",
+    "fs_membership_correspondence",
+    "fs_and_prop_correspondence",
+    "fs_exists2_nat_correspondence",
+    "fs_ite_related",
+    "fs_eqn_prop_related",
+    "fs_nat_of_bool_related",
+    "fs_suspended_related",
+    "fs_service_related",
+    "fs_ready_related",
+    "fs_scheduled_related",
+    "fs_between_related",
+    "fs_suspended_at_service_related",
+    "fs_filtered_sum_related",
+    "fs_valid_schedule_related",
+    "fs_step_premises",
+    "fs_before_related"
+  ],
+  "previous_status": "analysis_definitions_hyperperiod_module_status.json",
+  "previous_files": 308,
+  "previous_decls": 1924,
+  "input_relations": [
+    "processor states by the accepted two-sided SvcProcessorStateRel, schedules by SvcScheduleRel; job-arrival, job-cost and job-suspension instances by the accepted relations (two-way totals); arrival sequences by the accepted relation; jobs by identity; instants, durations and service levels by SubNatRel"
+  ],
+  "coverage_for_inner_binders": [
+    "jobs",
+    "instants",
+    "service levels",
+    "schedules",
+    "arrival sequences"
+  ],
+  "lean_representation_note": "`a <= b` in Prop position is `a \u2264 b`; the job's task is `job_task (Task := Task) j`",
+  "export_diagnosis": "the accepted dynamic-suspension export root merged with the accepted arrival-sequence/service-of-jobs root, plus the eleven statements",
+  "extra_pinned_sources": [
+    "model/readiness/suspension.v"
+  ],
+  "extra_artifacts": [],
+  "extra_olean_artifacts": [],
+  "extra_source_patches": [
+    "patches/prosa-v06-rocq93-model-readiness-suspension.patch"
+  ],
+  "extra_generated_sources": [],
+  "dependency_shims": {
+    "analysis/definitions/progress.v": "ProgressSemanticSource"
+  },
+  "export_env": {
+    "LEAN4EXPORT_PRESERVE_REDUCIBLE_THEOREM_TYPES": "1"
+  }
+}

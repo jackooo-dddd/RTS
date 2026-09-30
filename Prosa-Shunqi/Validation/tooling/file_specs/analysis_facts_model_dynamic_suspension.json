@@ -1,0 +1,191 @@
+{
+  "rank": 185,
+  "layer": 18,
+  "tag": "FDSUSP",
+  "slug": "analysis_facts_model_dynamic_suspension",
+  "source": "analysis/facts/model/dynamic_suspension.v",
+  "dependencies": [
+    "analysis/facts/model/arrival_curves.v",
+    "analysis/facts/suspension.v",
+    "model/task/suspension/dynamic.v"
+  ],
+  "declaration_count": 2,
+  "base_run": "analysis_facts_suspension_final",
+  "base_checks": [
+    {
+      "manifest": "analysis_facts_suspension",
+      "olean": "Prosa/Analysis/Facts/Suspension.olean",
+      "vo": "FactsSuspensionSemanticSource.vo"
+    }
+  ],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "FactsDynamicSuspensionSemanticSource",
+    "helper_blocks": [],
+    "drop_imports": [
+      "Require Export prosa.analysis.facts.suspension.",
+      "Require Export prosa.model.task.suspension.dynamic.",
+      "Require Export prosa.analysis.facts.model.arrival_curves."
+    ],
+    "add_imports": [
+      "Require Export prosa.behavior.all.",
+      "Require Export prosa.DynamicSuspensionSemanticSource.",
+      "Export DynamicSuspensionSemanticSource.",
+      "Export SuspensionSemanticSource.",
+      "Require Export prosa.model.task.arrivals prosa.model.task.arrival.curves.",
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq bigop."
+    ],
+    "printer_repairs": [],
+    "note": "the two statements are the authoritative elaborated types (proofs omitted); the accepted extracted suspension and dynamic-suspension modules are bound as base extraction modules; model/task/arrivals and model/task/arrival/curves are compiled from the pinned tree; the proof-only facts imports are dropped"
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/FactsDynamicSuspensionStatementProbe.v",
+  "production": "Prosa/Analysis/Facts/Model/DynamicSuspension.lean",
+  "production_olean": "Prosa/Analysis/Facts/Model/DynamicSuspension.olean",
+  "lean_namespace": "Prosa.Analysis.Facts.Model.DynamicSuspension",
+  "fixtures": [
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ArrivalsComputationInterface",
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "ProgressComputationInterface",
+    "SuspensionComputationInterface",
+    "DynamicSuspensionComputationInterface",
+    "FactsSuspensionComputationInterface",
+    "FactsArrivalCurvesComputationInterface",
+    "ProcessorStateCoverInterface",
+    "FactsDynamicSuspensionComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/FactsDynamicSuspensionLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/analysis_facts_model_dynamic_suspension_export_config.json",
+  "export_name": "FactsDynamicSuspension",
+  "cert_dir": "certificates/analysis_facts_model_dynamic_suspension",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "ArrivalsCorrespondence",
+    "CurvesCorrespondence",
+    "JitterSvcBaseAdapter",
+    "JitterSvcNatBoolOperations",
+    "JitterSvcIntervalOperations",
+    "JitterSvcScheduleOperations",
+    "JitterSvcJobOperations",
+    "ProgressHelpers",
+    "SuspensionCorrespondence",
+    "DynamicSuspensionCorrespondence",
+    "DsPStateCover",
+    "FactsDynamicSuspensionCorrespondence"
+  ],
+  "audit_module": "FactsDynamicSuspensionAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/FactsDynamicSuspensionImportedTypeAudit.v",
+  "assumption_config": "certificates/analysis_facts_model_dynamic_suspension/facts_dynamic_suspension_assumption_config.json",
+  "lean_axiom_config": "certificates/analysis_facts_model_dynamic_suspension/facts_dynamic_suspension_lean_axiom_config.json",
+  "computational": [],
+  "principal": {
+    "TaskTotalSuspension": [
+      "TaskTotalSuspension_source_total",
+      "TaskTotalSuspension_target_total"
+    ]
+  },
+  "helpers": [
+    "fds_nat_of_bool_related",
+    "fds_valid_related",
+    "fds_suspended_related",
+    "fds_job_sum_related",
+    "fds_forall_cover",
+    "fds_nat_input",
+    "fds_forall_sched",
+    "fds_forall_arr"
+  ],
+  "previous_status": "analysis_facts_suspension_module_status.json",
+  "previous_files": 309,
+  "previous_decls": 1935,
+  "input_relations": [
+    "processor states and schedules by the accepted two-sided Service relations; job-task, job-arrival, job-cost, job-suspension, max-arrivals and task-total-suspension instances by the accepted relations (two-way totals); arrival sequences by the accepted relation; tasks and jobs by identity; instants and durations by SubNatRel"
+  ],
+  "coverage_for_inner_binders": [
+    "jobs",
+    "tasks",
+    "instants",
+    "durations",
+    "processor states",
+    "schedules",
+    "arrival sequences"
+  ],
+  "lean_representation_note": "the interval sum is the `Finset.Ico` sum over Nat; `\\sum_(j <- xs) F j` is `sumSeq xs F`; `nat_of_bool` is `Bool.toNat`; Booleans in Prop position are `= true`",
+  "export_diagnosis": "the accepted suspension-facts export root merged with the accepted arrival-curves root, plus the two statements",
+  "extra_pinned_sources": [
+    "model/task/arrivals.v",
+    "model/task/arrival/curves.v"
+  ],
+  "extra_artifacts": [],
+  "extra_olean_artifacts": [
+    {
+      "from": "regress_bbfp_dep_final/olean/Prosa/Model/Task/Arrival/Curves.olean",
+      "to": "Prosa/Model/Task/Arrival/Curves.olean",
+      "manifest": "model_task_arrival_curves",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "util_lcmseq_final/olean/Prosa/Model/Priority/Definitions.olean",
+      "to": "Prosa/Model/Priority/Definitions.olean",
+      "manifest": "model_priority_definitions",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "util_lcmseq_final/olean/Prosa/Model/Priority/Coercion.olean",
+      "to": "Prosa/Model/Priority/Coercion.olean",
+      "manifest": "model_priority_coercion",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "util_lcmseq_final/olean/Prosa/Model/Priority/Classes.olean",
+      "to": "Prosa/Model/Priority/Classes.olean",
+      "manifest": "model_priority_classes",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "regress_bbfp_dep_final/olean/Prosa/Analysis/Facts/Model/TaskArrivals.olean",
+      "to": "Prosa/Analysis/Facts/Model/TaskArrivals.olean",
+      "manifest": "analysis_facts_model_task_arrivals",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "regress_bbfp_dep_final/olean/Prosa/Analysis/Facts/Model/ArrivalCurves.olean",
+      "to": "Prosa/Analysis/Facts/Model/ArrivalCurves.olean",
+      "manifest": "analysis_facts_model_arrival_curves",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_suspension_final/olean/Prosa/Analysis/Definitions/Progress.olean",
+      "to": "Prosa/Analysis/Definitions/Progress.olean",
+      "manifest": "analysis_definitions_progress",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_suspension_final/olean/Prosa/Model/Readiness/Suspension.olean",
+      "to": "Prosa/Model/Readiness/Suspension.olean",
+      "manifest": "model_readiness_suspension",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_suspension_final/olean/Prosa/Analysis/Facts/Suspension.olean",
+      "to": "Prosa/Analysis/Facts/Suspension.olean",
+      "manifest": "analysis_facts_suspension",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_suspension_final/olean/Prosa/Model/Task/Suspension/Dynamic.olean",
+      "to": "Prosa/Model/Task/Suspension/Dynamic.olean",
+      "manifest": "model_task_suspension_dynamic",
+      "key": "production_olean_sha256"
+    }
+  ],
+  "extra_source_patches": [],
+  "extra_generated_sources": [],
+  "dependency_shims": {},
+  "export_env": {
+    "LEAN4EXPORT_PRESERVE_REDUCIBLE_THEOREM_TYPES": "1"
+  }
+}

@@ -1,0 +1,284 @@
+{
+  "slice": "TRANSLATION_ORDER_RESULTS_OPTIMALITY_EDF",
+  "generated_at": "2026-09-30T11:51:51.095159+08:00",
+  "published_at": "2026-09-30T11:51:51.095159+08:00",
+  "rank": 231,
+  "layer": 22,
+  "source_file": "results/optimality/edf.v",
+  "source_commit": "414e66760333eaa4ef78c685bcf53291c527a548",
+  "source_tree": "7d7e94c731f7eefde4ca738310d4cafdd7bebdf0",
+  "source_file_sha256": "95b469f1978a42b6bb0aea3052d7f6c032cee2ccc6d739cccb6423cdfb13a9b5",
+  "pipeline": "Validation/scripts/translation_file_pipeline.py",
+  "spec": "Validation/tooling/file_specs/results_optimality_edf.json",
+  "spec_sha256": "384883727e4077d6973c527df1d49c762fd0fd7e127541fb86b35c464d6ac205",
+  "source_compatibility": {
+    "mode": "extract",
+    "note": "the four statements are the authoritative elaborated types (proofs omitted); EDF_at/EDF_schedule, schedulability, basic readiness and the priority-driven definitions are bound to the accepted extracted EdfDefinitionsSemanticSource / PriorityDrivenSemanticSource of the base closure; model/schedule/edf, model/schedule/work_conserving, model/priority/edf, model/readiness/basic and model/preemption/fully_preemptive are the compiled pinned sources of the base closure; the section's `#[local] Existing Instance basic_ready_instance` and `#[local] Existing Instance fully_preemptive_job_model` are replayed after the imports; the proof-only facts/transform/edf_opt, facts/transform/edf_wc and facts/edf_definitions imports are dropped",
+    "extracted_sha256": "a19d29a7efb087da95abcc798c66127bac8adb285b1b527a4ebb0b38892d3a38",
+    "extraction_metadata_sha256": "0b5c39bdd09cb547e752dc24959343fbda12dd9e1ec7c0b7c9f04fb7434903f2"
+  },
+  "source_type_evidence": {
+    "prosa.results.optimality.edf.EDF_optimality": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.results.optimality.edf.EDF_WC_optimality": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.results.optimality.edf.EDF_priority_compliant_WC_optimality": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.results.optimality.edf.weak_EDF_optimality": "TYPE_EQUAL_MODULO_EXISTS_PARENS"
+  },
+  "statement_only_export_boundary": [
+    "Prosa.Results.Optimality.Edf.EDF_optimality",
+    "Prosa.Results.Optimality.Edf.EDF_WC_optimality",
+    "Prosa.Results.Optimality.Edf.EDF_priority_compliant_WC_optimality",
+    "Prosa.Results.Optimality.Edf.weak_EDF_optimality"
+  ],
+  "input_relations": [
+    "the processor model is fixed to the ideal uniprocessor on both sides; states by the accepted constructor-preserving Option map (IdOptRel), schedules pointwise (IdScheduleRel, covered in both directions, also under existentials); job_cost by SvcJobCostRel, job_deadline pointwise by SubNatRel, job_arrival by ArJobArrivalRel, arrival sequences by ArArrivalSequenceRel; readiness and preemption are the source's local basic and fully preemptive instances on both sides; the EDF policy is the deadline comparison on both sides; instants and naturals by SubNatRel; jobs by identity"
+  ],
+  "coverage_for_inner_binders": [
+    "naturals / instants",
+    "jobs",
+    "schedules (ideal)",
+    "arrival sequences"
+  ],
+  "lean_representation_note": "the processor model is the accepted ideal processor `processor_state Job`; the sections' local `basic_ready_instance` and `fully_preemptive_job_model` are the accepted Lean definitions, registered as local instances; a Boolean in `Prop` position is `= true`",
+  "export_size": {
+    "lines": 152218,
+    "soft_budget_flag": "OVER_100K_DIAGNOSED",
+    "diagnosis": "the accepted edf-wc export root (edf-definitions root merged with the edf-trans root), plus the four statements"
+  },
+  "file_dependencies": {
+    "analysis/facts/edf_definitions.v": "analysis_facts_edf_definitions_module_status.json",
+    "analysis/facts/transform/edf_opt.v": "analysis_facts_transform_edf_opt_module_status.json",
+    "analysis/facts/transform/edf_wc.v": "analysis_facts_transform_edf_wc_module_status.json",
+    "model/preemption/fully_preemptive.v": "model_preemption_fully_preemptive_module_status.json",
+    "model/priority/edf.v": "model_priority_edf_module_status.json",
+    "model/readiness/basic.v": "model_readiness_basic_module_status.json"
+  },
+  "production_file": "Prosa/Results/Optimality/Edf.lean",
+  "production_source_sha256": "02c4c6e6109ca94f6722c8a4d1d6747816b3382cf94d200171e6cf074eead0d7",
+  "production_olean_sha256": "8fec0fa100424cc25db461504fc75ce74383903fccd5af477fc9528b1d855de3",
+  "export_config_sha256": "861b6c4fa1ea983e7c90620d62bb190e9f46ecead8a8f34081660eba95bba53b",
+  "export_sha256": "02da1d07b72da871b285b98f05f2fa4d678636f0495f86db52e8ed4d84dee2b0",
+  "export_lines": 152218,
+  "export_bytes": 3451485,
+  "import_sha256": "2281d2264cb6fe42eea2b6f0c227e1a7f0ebbcd6797c33ae3643b28cf3a0e490",
+  "source_vo_sha256": "19cb7c6d0151751da6b9a5be7515d2500eefb08bbdd73eb8db0c1bccf6567d4d",
+  "lean_axiom_summary_sha256": "21d2c64b31489038a61ccc04c0a08a43b75076294f8b34a63397f2b0a6bd04c8",
+  "rocq_assumption_summary_sha256": "8bcff0414951f93ffe489bfa1a16fe7bbda98219b6505838f911b59aa811ce27",
+  "assumption_config_sha256": "3fe8c680140951de4897a04a81f3eace8ab1b601aed547112edb25c81ce9bad7",
+  "stage_timing_seconds": {
+    "source_acquisition": {
+      "mode": "FRESH",
+      "seconds": 3
+    },
+    "lean_production": {
+      "mode": "FRESH",
+      "seconds": 106
+    },
+    "fixture:NondecreasingComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:BigcatComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:ArrivalSequenceComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:ScheduleComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:ServiceComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:PreemptionParameterComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:TransformPrefixComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:IdealUniSchedulerComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:EdfDefinitionsComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:ScheduledComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:IdealScheduleComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:FactsEdfTransComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:FactsEdfOptComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:FactsEdfWcComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:OptimalityEdfComputationInterface": {
+      "mode": "FRESH",
+      "seconds": 111
+    },
+    "lean_type_audit": {
+      "mode": "FRESH",
+      "seconds": 86
+    },
+    "lean_build": {
+      "mode": "FRESH",
+      "seconds": 313
+    },
+    "export": {
+      "mode": "FRESH",
+      "seconds": 76
+    },
+    "rocq_import": {
+      "mode": "FRESH",
+      "seconds": 64
+    },
+    "certificate_compile": {
+      "mode": "COMPILED=0;REUSED=18",
+      "seconds": 0
+    },
+    "imported_type_audit": {
+      "mode": "FRESH",
+      "seconds": 0
+    },
+    "lean_axiom_audit": {
+      "mode": "FRESH",
+      "seconds": 0
+    },
+    "assumption_audit": {
+      "mode": "FRESH",
+      "seconds": 0
+    }
+  },
+  "certificates": {
+    "ArrivalsSeqBaseAdapter": {
+      "source_sha256": "7fedca5fe5ffb37a32e27a8a206eab3d6a9852444d6553a6b7c58251f9d25588",
+      "vo_sha256": "8cd282e33ddf96127de76341797046f223081e16d3f46440ef058f518eb6d73e"
+    },
+    "ArrivalsSeqOperations": {
+      "source_sha256": "8f46a8c3b1871856016ce25abb87e1b060ad6f9801488eaeb38e9f5a7b0c7cc7",
+      "vo_sha256": "61be302650c677cfd167208cf35a3a0768a0fc34e0aafbedac4a3cc17388de1e"
+    },
+    "ArrivalsSeqCorrespondence": {
+      "source_sha256": "a139d1159929d4ca61c02a4c7d3b58c95564718511be57f0a51b45a28b1f2886",
+      "vo_sha256": "03b894265e8ec4cee27553ba5508f4904bd364ebc6cb7a46d6d7ee23174fd272"
+    },
+    "JitterSvcBaseAdapter": {
+      "source_sha256": "c6c7004fb39798c1e6edd835ed317162d500b6d6e85db8950c0054c2662734f5",
+      "vo_sha256": "faa0a9cd1258b2d757d42da2a574e9dba5c28393e4f4c8d90763e5add57e2049"
+    },
+    "JitterSvcNatBoolOperations": {
+      "source_sha256": "d9e7bf04c45ff2601fbe03a6ae307e947a9ab3c7838a283fa3e76312be428090",
+      "vo_sha256": "611bd0408979ca61105aefc958842bde1ef917dd8fe0cdc748b82ebe7fc83c9e"
+    },
+    "JitterSvcIntervalOperations": {
+      "source_sha256": "6208a5b20cf0a03d3374873137dfa2c802d0e2ba3ed07124487779a1be2cdf45",
+      "vo_sha256": "8777a9cff1f9c703544f4d35530d09c7665f6581641dcab4c58ac3873ebe3969"
+    },
+    "JitterSvcScheduleOperations": {
+      "source_sha256": "a7b056dc37760dfc46f3c49467c21f2e95dc75a7fe5390133b2a6a6ba4383c0d",
+      "vo_sha256": "d0f60a0fc6209cd7a9218e12599293a4effec5c85684774f9fcb2a54d3cd6aa7"
+    },
+    "JitterSvcJobOperations": {
+      "source_sha256": "3e6ce7da1e58cb3793a3483999c0f2fb8f09f57c0bc5c275bd9603bfa8d2fb3a",
+      "vo_sha256": "73bc02f62306b9dadd070415dcdd2abe53e7bbf151cbf218ed62934f04aea405"
+    },
+    "PreemptionParameterCorrespondence": {
+      "source_sha256": "98e11ccc537746d12839040fc5fb7ac823cda699f8c98714fed9818141b77d75",
+      "vo_sha256": "b37228e9b0597e131e2f35db1bfcee6ca21ddfe22a8ff40ccfee291ad8e5da1c"
+    },
+    "IdealUniSchedulerCorrespondence": {
+      "source_sha256": "a2a92f7d00daf0631b011bbb9f2d64d2ae6256f9710df472d89a813ee0bafe6d",
+      "vo_sha256": "0975b808688c7c5c9b632e98c1e50d05e856e6996c681b71bcdbca63567add77"
+    },
+    "EdfDefinitionsHelpers": {
+      "source_sha256": "0cc3976c88b5633d761eaf60a2f4b69cf65b6449620af372671c6ce1bbf56774",
+      "vo_sha256": "000eb95c699f68a06fc914df76c135d26428f7d94e0207ce90be7a569d84e66f"
+    },
+    "EdfTransCorrespondence": {
+      "source_sha256": "795484018cf76635b697f133594d3f177d45faa14af1cb7b9afdb23924c2b8e6",
+      "vo_sha256": "fc7d41ea581b5f2a3f657fc4ab3701fa53800c6c11f2e0be962da1047bd7bd8c"
+    },
+    "FactsEdfOptCorrespondence": {
+      "source_sha256": "d36e543461952f90183b27c45d677ae4c88f83c2a490e1e4685c9d48a193be24",
+      "vo_sha256": "39ccc94404e0c961020468f6129c341fb105c77b8d325ab0be54616cb859ac4c"
+    },
+    "OptimalityEdfCorrespondence": {
+      "source_sha256": "dca15c72e9909535d7fd8d41ef5fc96fee7f1eb47259df51e226b2e2e9bd474e",
+      "vo_sha256": "e38d84152c61a44d06128f9aff7b5a6adb20e76e3fb0ad5460e296c5d5fbcb2b"
+    },
+    "OptimalityEdfAssumptionAudit": {
+      "source_sha256": "7b5e3e8f0d203cc2a3a866f7e3c4a37744f24f6744616483dce5c490975e1fb6",
+      "vo_sha256": "25a52cbdef7d435a107ec7d4fd60f133bf99a4ac44128a4ec01497c3a1aa275b"
+    }
+  },
+  "certificate_checkpoints_sha256": "28d6bb64d492006511f9080f365e8275fcef371c53d32b8c981f9968d98155e3",
+  "lean_fixture_provenance_sha256": "b131d4be4af8ced0d4a9421515af987d3ac1e5a87d25f4bbd356962ee2dd49d2",
+  "declarations": [
+    {
+      "source_declaration": "prosa.results.optimality.edf.EDF_optimality",
+      "lean_declaration": "Prosa.Results.Optimality.Edf.EDF_optimality",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "EDF_optimality_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.results.optimality.edf.EDF_WC_optimality",
+      "lean_declaration": "Prosa.Results.Optimality.Edf.EDF_WC_optimality",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "EDF_WC_optimality_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.results.optimality.edf.EDF_priority_compliant_WC_optimality",
+      "lean_declaration": "Prosa.Results.Optimality.Edf.EDF_priority_compliant_WC_optimality",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "EDF_priority_compliant_WC_optimality_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.results.optimality.edf.weak_EDF_optimality",
+      "lean_declaration": "Prosa.Results.Optimality.Edf.weak_EDF_optimality",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "weak_EDF_optimality_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    }
+  ],
+  "acceptance": "ACCEPTED_V06_FILE"
+}

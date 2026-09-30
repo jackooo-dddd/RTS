@@ -1,0 +1,817 @@
+{
+  "slice": "TRANSLATION_ORDER_ANALYSIS_FACTS_TRANSFORM_EDF_OPT",
+  "generated_at": "2026-09-30T10:36:44.231638+08:00",
+  "published_at": "2026-09-30T10:36:44.231638+08:00",
+  "rank": 227,
+  "layer": 20,
+  "source_file": "analysis/facts/transform/edf_opt.v",
+  "source_commit": "414e66760333eaa4ef78c685bcf53291c527a548",
+  "source_tree": "7d7e94c731f7eefde4ca738310d4cafdd7bebdf0",
+  "source_file_sha256": "6c4586f556fe2b4cc9d4434a215b38765d70b9dd8ff93b8c157954316ce525df",
+  "pipeline": "Validation/scripts/translation_file_pipeline.py",
+  "spec": "Validation/tooling/file_specs/analysis_facts_transform_edf_opt.json",
+  "spec_sha256": "94706b1fa0c8aa685ab968e868a390e54f62a25e77f7045d93f0a6e37fabd1a0",
+  "source_compatibility": {
+    "mode": "extract",
+    "note": "theorem statements from the authoritative elaborated types (proofs omitted); EDF_at/EDF_schedule, schedulability, basic readiness and identical_prefix are bound to the accepted extracted EdfDefinitionsSemanticSource of the base run (with its pinned model/schedule/edf and model/readiness/basic); analysis/transform/edf_trans is bound to its accepted extracted EdfTransSemanticSource (.vo copied from its accepted run and hash-checked), with util/search_arg bound to its accepted generated definition source (sha256-checked against its accepted manifest entry, compiled here); analysis/definitions/schedule_prefix is the compiled pinned source of the base closure; the recorded alias `edf_trans` names the transformation module as the elaborated types print it; the optimality section's `#[local] Existing Instance basic_ready_instance` is replayed after the imports (the statements of the other sections do not mention readiness); the proof-only facts/transform/swaps and facts/readiness/basic imports are dropped",
+    "extracted_sha256": "66fd5b4c6604b5f48aaa9f19e7863fbf6f10866981753344df36c87b45d83323",
+    "extraction_metadata_sha256": "9566c26383cb2bc3eb416268fa9fd1866ea1d1f326969ca00e3592a9ee6dc9bd"
+  },
+  "source_type_evidence": {
+    "prosa.analysis.facts.transform.edf_opt.t1_relevant": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.transform.edf_opt.fsc_search_successful": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.transform.edf_opt.fsc_search_result": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.transform.edf_opt.fsc_not_idle": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.transform.edf_opt.fsc_found_job_arrival": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.transform.edf_opt.fsc_range": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.transform.edf_opt.fsc_range1": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.transform.edf_opt.fsc_found_job_deadline": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.transform.edf_opt.fsc_no_later_deadline": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.transform.edf_opt.scheduled_job_in_sched_has_later_deadline": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.transform.edf_opt.mea_completed_jobs": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.transform.edf_opt.mea_no_deadline_misses": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.transform.edf_opt.mea_scheduled_job_has_later_deadline": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.transform.edf_opt.mea_guarantee_dl_orig": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.transform.edf_opt.mea_guarantee_fsc_is_j_edf": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.transform.edf_opt.mea_guarantee_deadlines": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.transform.edf_opt.mea_guarantee_case_t'_past_deadline": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.transform.edf_opt.mea_guarantee_case_t'_before_deadline": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.transform.edf_opt.make_edf_at_guarantee": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.transform.edf_opt.mea_jobs_must_arrive": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.transform.edf_opt.mea_job_scheduled": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.transform.edf_opt.mea_job_scheduled'": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.transform.edf_opt.mea_jobs_come_from_arrival_sequence": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.transform.edf_opt.mea_EDF_widen": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.transform.edf_opt.edf_prefix_well_formedness": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.transform.edf_opt.edf_prefix_jobs_must_arrive": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.transform.edf_opt.edf_prefix_scheduled_job_has_later_deadline": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.transform.edf_opt.edf_prefix_job_scheduled": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.transform.edf_opt.edf_prefix_job_scheduled'": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.transform.edf_opt.edf_prefix_jobs_come_from_arrival_sequence": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.transform.edf_opt.edf_prefix_guarantee": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.transform.edf_opt.edf_prefix_inclusion": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.transform.edf_opt.edf_finite_prefix": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.transform.edf_opt.edf_transform_ensures_edf": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.transform.edf_opt.edf_transform_completed_jobs_dont_execute": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.transform.edf_opt.edf_transform_jobs_must_arrive": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.transform.edf_opt.edf_transform_deadlines_met": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.transform.edf_opt.edf_transform_job_scheduled": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.transform.edf_opt.edf_transform_job_scheduled'": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.transform.edf_opt.edf_transform_jobs_come_from_arrival_sequence": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.transform.edf_opt.edf_schedule_is_valid": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.transform.edf_opt.edf_schedule_meets_all_deadlines": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE",
+    "prosa.analysis.facts.transform.edf_opt.edf_schedule_meets_all_deadlines_wrt_arrivals": "STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE"
+  },
+  "statement_only_export_boundary": [
+    "Prosa.Analysis.Facts.Transform.EdfOpt.t1_relevant",
+    "Prosa.Analysis.Facts.Transform.EdfOpt.fsc_search_successful",
+    "Prosa.Analysis.Facts.Transform.EdfOpt.fsc_search_result",
+    "Prosa.Analysis.Facts.Transform.EdfOpt.fsc_not_idle",
+    "Prosa.Analysis.Facts.Transform.EdfOpt.fsc_found_job_arrival",
+    "Prosa.Analysis.Facts.Transform.EdfOpt.fsc_range",
+    "Prosa.Analysis.Facts.Transform.EdfOpt.fsc_range1",
+    "Prosa.Analysis.Facts.Transform.EdfOpt.fsc_found_job_deadline",
+    "Prosa.Analysis.Facts.Transform.EdfOpt.fsc_no_later_deadline",
+    "Prosa.Analysis.Facts.Transform.EdfOpt.scheduled_job_in_sched_has_later_deadline",
+    "Prosa.Analysis.Facts.Transform.EdfOpt.mea_completed_jobs",
+    "Prosa.Analysis.Facts.Transform.EdfOpt.mea_no_deadline_misses",
+    "Prosa.Analysis.Facts.Transform.EdfOpt.mea_scheduled_job_has_later_deadline",
+    "Prosa.Analysis.Facts.Transform.EdfOpt.mea_guarantee_dl_orig",
+    "Prosa.Analysis.Facts.Transform.EdfOpt.mea_guarantee_fsc_is_j_edf",
+    "Prosa.Analysis.Facts.Transform.EdfOpt.mea_guarantee_deadlines",
+    "Prosa.Analysis.Facts.Transform.EdfOpt.mea_guarantee_case_t'_past_deadline",
+    "Prosa.Analysis.Facts.Transform.EdfOpt.mea_guarantee_case_t'_before_deadline",
+    "Prosa.Analysis.Facts.Transform.EdfOpt.make_edf_at_guarantee",
+    "Prosa.Analysis.Facts.Transform.EdfOpt.mea_jobs_must_arrive",
+    "Prosa.Analysis.Facts.Transform.EdfOpt.mea_job_scheduled",
+    "Prosa.Analysis.Facts.Transform.EdfOpt.mea_job_scheduled'",
+    "Prosa.Analysis.Facts.Transform.EdfOpt.mea_jobs_come_from_arrival_sequence",
+    "Prosa.Analysis.Facts.Transform.EdfOpt.mea_EDF_widen",
+    "Prosa.Analysis.Facts.Transform.EdfOpt.edf_prefix_well_formedness",
+    "Prosa.Analysis.Facts.Transform.EdfOpt.edf_prefix_jobs_must_arrive",
+    "Prosa.Analysis.Facts.Transform.EdfOpt.edf_prefix_scheduled_job_has_later_deadline",
+    "Prosa.Analysis.Facts.Transform.EdfOpt.edf_prefix_job_scheduled",
+    "Prosa.Analysis.Facts.Transform.EdfOpt.edf_prefix_job_scheduled'",
+    "Prosa.Analysis.Facts.Transform.EdfOpt.edf_prefix_jobs_come_from_arrival_sequence",
+    "Prosa.Analysis.Facts.Transform.EdfOpt.edf_prefix_guarantee",
+    "Prosa.Analysis.Facts.Transform.EdfOpt.edf_prefix_inclusion",
+    "Prosa.Analysis.Facts.Transform.EdfOpt.edf_finite_prefix",
+    "Prosa.Analysis.Facts.Transform.EdfOpt.edf_transform_ensures_edf",
+    "Prosa.Analysis.Facts.Transform.EdfOpt.edf_transform_completed_jobs_dont_execute",
+    "Prosa.Analysis.Facts.Transform.EdfOpt.edf_transform_jobs_must_arrive",
+    "Prosa.Analysis.Facts.Transform.EdfOpt.edf_transform_deadlines_met",
+    "Prosa.Analysis.Facts.Transform.EdfOpt.edf_transform_job_scheduled",
+    "Prosa.Analysis.Facts.Transform.EdfOpt.edf_transform_job_scheduled'",
+    "Prosa.Analysis.Facts.Transform.EdfOpt.edf_transform_jobs_come_from_arrival_sequence",
+    "Prosa.Analysis.Facts.Transform.EdfOpt.edf_schedule_is_valid",
+    "Prosa.Analysis.Facts.Transform.EdfOpt.edf_schedule_meets_all_deadlines",
+    "Prosa.Analysis.Facts.Transform.EdfOpt.edf_schedule_meets_all_deadlines_wrt_arrivals"
+  ],
+  "input_relations": [
+    "the processor model is fixed to the ideal uniprocessor on both sides; states by the accepted constructor-preserving Option map (IdOptRel), schedules pointwise (IdScheduleRel); job_cost by SvcJobCostRel, job_deadline pointwise by SubNatRel, job_arrival by ArJobArrivalRel, arrival sequences by ArArrivalSequenceRel; the readiness model of the optimality section is the source's local basic instance on both sides, related through the accepted pending relation; instants and naturals by SubNatRel; jobs by identity"
+  ],
+  "coverage_for_inner_binders": [
+    "naturals / instants",
+    "jobs",
+    "schedules (ideal)"
+  ],
+  "lean_representation_note": "the section-local `PState` is the accepted ideal processor `processor_state Job`; the optimality section's `#[local] Existing Instance basic_ready_instance` is the accepted Lean definition `basic_ready_instance`, passed explicitly where the elaborated statements use it implicitly; a Boolean in `Prop` position is `= true`",
+  "export_size": {
+    "lines": 153331,
+    "soft_budget_flag": "OVER_100K_DIAGNOSED",
+    "diagnosis": "the accepted edf-definitions export root merged with the accepted edf-trans export root, plus the 43 statements"
+  },
+  "file_dependencies": {
+    "analysis/definitions/schedulability.v": "analysis_definitions_schedulability_module_status.json",
+    "analysis/facts/readiness/basic.v": "analysis_facts_readiness_basic_module_status.json",
+    "analysis/facts/transform/swaps.v": "analysis_facts_transform_swaps_module_status.json",
+    "analysis/transform/edf_trans.v": "analysis_transform_edf_trans_module_status.json",
+    "model/readiness/basic.v": "model_readiness_basic_module_status.json",
+    "model/schedule/edf.v": "model_schedule_edf_module_status.json"
+  },
+  "production_file": "Prosa/Analysis/Facts/Transform/EdfOpt.lean",
+  "production_source_sha256": "bce05861b96d95acb562d35740f85f803e596d2a8c85b32d54af9c94bb0fca6d",
+  "production_olean_sha256": "f861af36f3c3347a49e7a0b8abb63fb9e01997a966769785c854661d35f7bb53",
+  "export_config_sha256": "f193ac6ee40a9214c2acc4849ce5a4819490d1836b5728cd375d37197f821263",
+  "export_sha256": "eb4f838006df8741494d08f422e388c8534b5405f22d7fe18012b2d3c6b14dd3",
+  "export_lines": 153331,
+  "export_bytes": 3481155,
+  "import_sha256": "79590e4a31830b24ebac7e822d8080be439ab4a0a68358732d6222ae8f6a8d1e",
+  "source_vo_sha256": "4a3016c92e43943874531de2c0a0a05a0465e9619120165a01eab45ddc4ad2b3",
+  "lean_axiom_summary_sha256": "0cd68b802ef18d028de2bcfaa3017677296d17d2d62dfed792ccfc5cc137dd6f",
+  "rocq_assumption_summary_sha256": "dc5bee8def64f9d33fb7fcf56383fb2fb6e6f7d39ed1a71febf5b1e0a39de2a8",
+  "assumption_config_sha256": "160b9217f1c85667a173822d7da79f933457e2150b1a472549cc7f4bb6211078",
+  "stage_timing_seconds": {
+    "source_acquisition": {
+      "mode": "FRESH",
+      "seconds": 5
+    },
+    "lean_production": {
+      "mode": "FRESH",
+      "seconds": 90
+    },
+    "fixture:NondecreasingComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:BigcatComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:ArrivalSequenceComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:ScheduleComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:ServiceComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:PreemptionParameterComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:TransformPrefixComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:IdealUniSchedulerComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:EdfDefinitionsComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:ScheduledComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:IdealScheduleComputationInterface": {
+      "mode": "FRESH",
+      "seconds": 88
+    },
+    "fixture:FactsEdfTransComputationInterface": {
+      "mode": "FRESH",
+      "seconds": 69
+    },
+    "fixture:FactsEdfOptComputationInterface": {
+      "mode": "FRESH",
+      "seconds": 82
+    },
+    "lean_type_audit": {
+      "mode": "FRESH",
+      "seconds": 81
+    },
+    "lean_build": {
+      "mode": "FRESH",
+      "seconds": 421
+    },
+    "export": {
+      "mode": "FRESH",
+      "seconds": 73
+    },
+    "rocq_import": {
+      "mode": "FRESH",
+      "seconds": 49
+    },
+    "certificate_compile": {
+      "mode": "COMPILED=0;REUSED=17",
+      "seconds": 0
+    },
+    "imported_type_audit": {
+      "mode": "FRESH",
+      "seconds": 0
+    },
+    "lean_axiom_audit": {
+      "mode": "FRESH",
+      "seconds": 0
+    },
+    "assumption_audit": {
+      "mode": "FRESH",
+      "seconds": 0
+    }
+  },
+  "certificates": {
+    "ArrivalsSeqBaseAdapter": {
+      "source_sha256": "d6a687f9ac87fd39a68a7047c1015226726a2d5d6202e96a3b0ad77bef21bbc1",
+      "vo_sha256": "61baa05b5f5f1a93c055667c9d5482bb0a6867ff29d5933a598250868a6a3bdb"
+    },
+    "ArrivalsSeqOperations": {
+      "source_sha256": "af905697a8a94948a970d73ebb46290ef5a3327b34cbd35e5e2dd2f7910e6175",
+      "vo_sha256": "b62479578a88b767c14cd90dbb82f80f10258f4ed84d725f93842123c730cc34"
+    },
+    "ArrivalsSeqCorrespondence": {
+      "source_sha256": "c05111517f52cfbc8a9201277c328bf17241b900b76e2eadf5f2196d23c2c7dd",
+      "vo_sha256": "3c816ac94dd7c2607b52d72b36279c25cae3a96b48d977f238a57bd79a303374"
+    },
+    "JitterSvcBaseAdapter": {
+      "source_sha256": "29be76573063850c6a774d122c68a1a19c30b48ef357fe56691152308079b4b7",
+      "vo_sha256": "11abce0abd7ad918494cf7d690635cf12f4d133edd59e8f858ee8563d2c7cfb4"
+    },
+    "JitterSvcNatBoolOperations": {
+      "source_sha256": "76e884861e3692b9565c7bae0409c71a7c4cf62139d93e5e93b48a8f3539aec0",
+      "vo_sha256": "f6c574fc47a9ed8a6286260b0087b37b17e5f4db499ca2b59033cb17d808c5bf"
+    },
+    "JitterSvcIntervalOperations": {
+      "source_sha256": "f32ec72877a728c6de3afd712af721cd52732d194b68490babc09c7e470e8754",
+      "vo_sha256": "cc9b5457907dbfd9a5e5ebc6383c3056bd40fd95bcf508dd0fc007d7e81ab6f4"
+    },
+    "JitterSvcScheduleOperations": {
+      "source_sha256": "78c1fb98d9100865dc2f5a618c9b3b8262a0fb100d9b2b773e92fb7fc48c475b",
+      "vo_sha256": "49c800489d83406cd2478c318dae1bc876ec6524360209e94bd47590f96f7054"
+    },
+    "JitterSvcJobOperations": {
+      "source_sha256": "a2a0ede51569f7b232cf75a68a2e3743745eb19f8eccd45fb24126c4a0ed0d8d",
+      "vo_sha256": "56d2c8a77b27df15c40ee0998d7c592f3ebe4bf212ccc3e1d4b53e849f9d34ae"
+    },
+    "PreemptionParameterCorrespondence": {
+      "source_sha256": "b8ce5c1c7279962579f7165a176844e2b45bdea8621bc4c3bb7d4fc40867c34e",
+      "vo_sha256": "4a6bb7a51f615ca4ec9cd569960bbe92b7bb77d491afd289b1e73868f218fecb"
+    },
+    "IdealUniSchedulerCorrespondence": {
+      "source_sha256": "38a5cedf64a67f675f3d83183b7ab59bc759ec6556a7ce2d906a92c081bce84d",
+      "vo_sha256": "16d02174ccb39c079ea23a80743e483e4e4d0c4bf4100915a6464fb5f60f90d4"
+    },
+    "EdfDefinitionsHelpers": {
+      "source_sha256": "42285e3e70ae2ae802e6a7e27ccb50c763f93910868f68f3b6e63de74319e99a",
+      "vo_sha256": "ec8bd2ddfc98100f492792c9f78c93c16469998583cc8830b969d837d998d729"
+    },
+    "EdfTransCorrespondence": {
+      "source_sha256": "7e75409c6197ae1eb4dbcd54df9ccab8a98bd2616339666d0d1d8b1ad6d67e98",
+      "vo_sha256": "b737ad5b39d4f8cbc48ad017c74a8506dde8dc578b4deec1a4b345f65a87db8a"
+    },
+    "FactsEdfOptCorrespondence": {
+      "source_sha256": "5579fa701f4c52547fd18e73d72feb3487daaf6dd4d0fa151828291d33a3d2e0",
+      "vo_sha256": "3130e54e255cb6d23a59afc1bab558c9c84d72d5d96723172cb10ce738dd5fe9"
+    },
+    "FactsEdfOptAssumptionAudit": {
+      "source_sha256": "a1e291860210c462417386154d5055e0a24c31ccb6b482c07f4dad5e27620cce",
+      "vo_sha256": "e779a242c08a0b9e07cd94befaa3e8634209ced22756eab6adce0fc4a0be470e"
+    }
+  },
+  "certificate_checkpoints_sha256": "40db372c40ac13328f2a20720c42eb33f141973e2db2730d8b0e672192755e90",
+  "lean_fixture_provenance_sha256": "386bd4333c09211037bbc88033031835eeb070846b4125574e41d2548685bf5c",
+  "declarations": [
+    {
+      "source_declaration": "prosa.analysis.facts.transform.edf_opt.t1_relevant",
+      "lean_declaration": "Prosa.Analysis.Facts.Transform.EdfOpt.t1_relevant",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "t1_relevant_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.transform.edf_opt.fsc_search_successful",
+      "lean_declaration": "Prosa.Analysis.Facts.Transform.EdfOpt.fsc_search_successful",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "fsc_search_successful_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.transform.edf_opt.fsc_search_result",
+      "lean_declaration": "Prosa.Analysis.Facts.Transform.EdfOpt.fsc_search_result",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "fsc_search_result_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.transform.edf_opt.fsc_not_idle",
+      "lean_declaration": "Prosa.Analysis.Facts.Transform.EdfOpt.fsc_not_idle",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "fsc_not_idle_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.transform.edf_opt.fsc_found_job_arrival",
+      "lean_declaration": "Prosa.Analysis.Facts.Transform.EdfOpt.fsc_found_job_arrival",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "fsc_found_job_arrival_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.transform.edf_opt.fsc_range",
+      "lean_declaration": "Prosa.Analysis.Facts.Transform.EdfOpt.fsc_range",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "fsc_range_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.transform.edf_opt.fsc_range1",
+      "lean_declaration": "Prosa.Analysis.Facts.Transform.EdfOpt.fsc_range1",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "fsc_range1_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.transform.edf_opt.fsc_found_job_deadline",
+      "lean_declaration": "Prosa.Analysis.Facts.Transform.EdfOpt.fsc_found_job_deadline",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "fsc_found_job_deadline_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.transform.edf_opt.fsc_no_later_deadline",
+      "lean_declaration": "Prosa.Analysis.Facts.Transform.EdfOpt.fsc_no_later_deadline",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "fsc_no_later_deadline_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.transform.edf_opt.scheduled_job_in_sched_has_later_deadline",
+      "lean_declaration": "Prosa.Analysis.Facts.Transform.EdfOpt.scheduled_job_in_sched_has_later_deadline",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "scheduled_job_in_sched_has_later_deadline_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.transform.edf_opt.mea_completed_jobs",
+      "lean_declaration": "Prosa.Analysis.Facts.Transform.EdfOpt.mea_completed_jobs",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "mea_completed_jobs_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.transform.edf_opt.mea_no_deadline_misses",
+      "lean_declaration": "Prosa.Analysis.Facts.Transform.EdfOpt.mea_no_deadline_misses",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "mea_no_deadline_misses_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.transform.edf_opt.mea_scheduled_job_has_later_deadline",
+      "lean_declaration": "Prosa.Analysis.Facts.Transform.EdfOpt.mea_scheduled_job_has_later_deadline",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "mea_scheduled_job_has_later_deadline_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.transform.edf_opt.mea_guarantee_dl_orig",
+      "lean_declaration": "Prosa.Analysis.Facts.Transform.EdfOpt.mea_guarantee_dl_orig",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "mea_guarantee_dl_orig_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.transform.edf_opt.mea_guarantee_fsc_is_j_edf",
+      "lean_declaration": "Prosa.Analysis.Facts.Transform.EdfOpt.mea_guarantee_fsc_is_j_edf",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "mea_guarantee_fsc_is_j_edf_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.transform.edf_opt.mea_guarantee_deadlines",
+      "lean_declaration": "Prosa.Analysis.Facts.Transform.EdfOpt.mea_guarantee_deadlines",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "mea_guarantee_deadlines_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.transform.edf_opt.mea_guarantee_case_t'_past_deadline",
+      "lean_declaration": "Prosa.Analysis.Facts.Transform.EdfOpt.mea_guarantee_case_t'_past_deadline",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "mea_guarantee_case_t'_past_deadline_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.transform.edf_opt.mea_guarantee_case_t'_before_deadline",
+      "lean_declaration": "Prosa.Analysis.Facts.Transform.EdfOpt.mea_guarantee_case_t'_before_deadline",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "mea_guarantee_case_t'_before_deadline_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.transform.edf_opt.make_edf_at_guarantee",
+      "lean_declaration": "Prosa.Analysis.Facts.Transform.EdfOpt.make_edf_at_guarantee",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "make_edf_at_guarantee_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.transform.edf_opt.mea_jobs_must_arrive",
+      "lean_declaration": "Prosa.Analysis.Facts.Transform.EdfOpt.mea_jobs_must_arrive",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "mea_jobs_must_arrive_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.transform.edf_opt.mea_job_scheduled",
+      "lean_declaration": "Prosa.Analysis.Facts.Transform.EdfOpt.mea_job_scheduled",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "mea_job_scheduled_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.transform.edf_opt.mea_job_scheduled'",
+      "lean_declaration": "Prosa.Analysis.Facts.Transform.EdfOpt.mea_job_scheduled'",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "mea_job_scheduled'_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.transform.edf_opt.mea_jobs_come_from_arrival_sequence",
+      "lean_declaration": "Prosa.Analysis.Facts.Transform.EdfOpt.mea_jobs_come_from_arrival_sequence",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "mea_jobs_come_from_arrival_sequence_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.transform.edf_opt.mea_EDF_widen",
+      "lean_declaration": "Prosa.Analysis.Facts.Transform.EdfOpt.mea_EDF_widen",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "mea_EDF_widen_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.transform.edf_opt.edf_prefix_well_formedness",
+      "lean_declaration": "Prosa.Analysis.Facts.Transform.EdfOpt.edf_prefix_well_formedness",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "edf_prefix_well_formedness_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.transform.edf_opt.edf_prefix_jobs_must_arrive",
+      "lean_declaration": "Prosa.Analysis.Facts.Transform.EdfOpt.edf_prefix_jobs_must_arrive",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "edf_prefix_jobs_must_arrive_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.transform.edf_opt.edf_prefix_scheduled_job_has_later_deadline",
+      "lean_declaration": "Prosa.Analysis.Facts.Transform.EdfOpt.edf_prefix_scheduled_job_has_later_deadline",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "edf_prefix_scheduled_job_has_later_deadline_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.transform.edf_opt.edf_prefix_job_scheduled",
+      "lean_declaration": "Prosa.Analysis.Facts.Transform.EdfOpt.edf_prefix_job_scheduled",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "edf_prefix_job_scheduled_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.transform.edf_opt.edf_prefix_job_scheduled'",
+      "lean_declaration": "Prosa.Analysis.Facts.Transform.EdfOpt.edf_prefix_job_scheduled'",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "edf_prefix_job_scheduled'_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.transform.edf_opt.edf_prefix_jobs_come_from_arrival_sequence",
+      "lean_declaration": "Prosa.Analysis.Facts.Transform.EdfOpt.edf_prefix_jobs_come_from_arrival_sequence",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "edf_prefix_jobs_come_from_arrival_sequence_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.transform.edf_opt.edf_prefix_guarantee",
+      "lean_declaration": "Prosa.Analysis.Facts.Transform.EdfOpt.edf_prefix_guarantee",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "edf_prefix_guarantee_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.transform.edf_opt.edf_prefix_inclusion",
+      "lean_declaration": "Prosa.Analysis.Facts.Transform.EdfOpt.edf_prefix_inclusion",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "edf_prefix_inclusion_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.transform.edf_opt.edf_finite_prefix",
+      "lean_declaration": "Prosa.Analysis.Facts.Transform.EdfOpt.edf_finite_prefix",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "edf_finite_prefix_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.transform.edf_opt.edf_transform_ensures_edf",
+      "lean_declaration": "Prosa.Analysis.Facts.Transform.EdfOpt.edf_transform_ensures_edf",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "edf_transform_ensures_edf_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.transform.edf_opt.edf_transform_completed_jobs_dont_execute",
+      "lean_declaration": "Prosa.Analysis.Facts.Transform.EdfOpt.edf_transform_completed_jobs_dont_execute",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "edf_transform_completed_jobs_dont_execute_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.transform.edf_opt.edf_transform_jobs_must_arrive",
+      "lean_declaration": "Prosa.Analysis.Facts.Transform.EdfOpt.edf_transform_jobs_must_arrive",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "edf_transform_jobs_must_arrive_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.transform.edf_opt.edf_transform_deadlines_met",
+      "lean_declaration": "Prosa.Analysis.Facts.Transform.EdfOpt.edf_transform_deadlines_met",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "edf_transform_deadlines_met_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.transform.edf_opt.edf_transform_job_scheduled",
+      "lean_declaration": "Prosa.Analysis.Facts.Transform.EdfOpt.edf_transform_job_scheduled",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "edf_transform_job_scheduled_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.transform.edf_opt.edf_transform_job_scheduled'",
+      "lean_declaration": "Prosa.Analysis.Facts.Transform.EdfOpt.edf_transform_job_scheduled'",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "edf_transform_job_scheduled'_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.transform.edf_opt.edf_transform_jobs_come_from_arrival_sequence",
+      "lean_declaration": "Prosa.Analysis.Facts.Transform.EdfOpt.edf_transform_jobs_come_from_arrival_sequence",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "edf_transform_jobs_come_from_arrival_sequence_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.transform.edf_opt.edf_schedule_is_valid",
+      "lean_declaration": "Prosa.Analysis.Facts.Transform.EdfOpt.edf_schedule_is_valid",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "edf_schedule_is_valid_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.transform.edf_opt.edf_schedule_meets_all_deadlines",
+      "lean_declaration": "Prosa.Analysis.Facts.Transform.EdfOpt.edf_schedule_meets_all_deadlines",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "edf_schedule_meets_all_deadlines_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.analysis.facts.transform.edf_opt.edf_schedule_meets_all_deadlines_wrt_arrivals",
+      "lean_declaration": "Prosa.Analysis.Facts.Transform.EdfOpt.edf_schedule_meets_all_deadlines_wrt_arrivals",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "edf_schedule_meets_all_deadlines_wrt_arrivals_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    }
+  ],
+  "acceptance": "ACCEPTED_V06_FILE"
+}

@@ -16,7 +16,7 @@ open Prosa.Implementation.Definitions.ArrivalBound
 /-! Reference implementations of concrete tasks and jobs.
 Representation: the source's ssreflect `==` on `nat` and on the accepted
 `task_arrivals_bound`/`concrete_task` equality types is `decide (_ = _)` over
-the derived decidable equalities; `Equality.axiom` is the accepted informative
+the derived decidable equalities; the source's `Equality` reflection property is the accepted informative
 `BoolReflect` view (a proof-valued `def`, since it lives in `Type`, as for the
 accepted `eqn_task_arrivals_bound`); the `HB.instance` registrations are the
 derived `DecidableEq` instances; the global parameter instances are named

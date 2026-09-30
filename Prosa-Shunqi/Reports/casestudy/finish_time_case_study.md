@@ -1,19 +1,16 @@
-# Finish Time：一份可单独分享的语义验证案例
+# Finish Time 语义验证案例
 
-此包展示 Prosa v0.6 的 `analysis/definitions/finish_time.v` 如何与**实际编译并导入 Rocq 的** Lean 声明对齐。官方源版本为 Prosa v0.6（commit `414e667`）。已发布的验证结果是 **5/5 个 public declarations 验收通过**；本案例额外重载已发布的导入产物，实际运行 `Check` / `Print`。它没有把这次 inspection 冒充新的 clean build。
+展示 Prosa v0.6 的 `analysis/definitions/finish_time.v` 如何与**实际编译并导入 Rocq 的** Lean 声明对齐。验收时的机器记录见 [manifest](provenance/analysis_finish_time_module_manifest.json) 和 [status](provenance/analysis_finish_time_module_status.json)。
 
-本文提到的案例文件均随 `casestudy/` 一同提供，链接也只指向包内。长串文件校验值不干扰阅读，集中放在 [SHA256SUMS](SHA256SUMS)；验收时的机器记录见 [manifest](provenance/analysis_finish_time_module_manifest.json) 和 [status](provenance/analysis_finish_time_module_status.json)。
 
-## 建议阅读顺序
-
-| 步骤 | 包内文件 | 看什么 |
+| 步骤 | 包内文件 |  内容 |
 | --- | --- | --- |
 | 官方规格 | [原始 Rocq 源](source/finish_time_official.v) | `finish_time`、三个定理 statement、`response_time` |
 | 当前 Lean 实现 | [FinishTime.lean](lean/FinishTime.lean) | 实际生产 translation；[编译后的 .olean](lean/FinishTime.olean)也在包内 |
 | 导出 | [export 配置](audit/analysis_finish_time_export_config.json)、[interface](lean/FinishTimeExportInterface.lean)、[实际 .out](imported/FinishTime.out) | 两个定义的 body、三个定理的精确编译类型；定理 proof body 不导出 |
-| 导入 Rocq | [import wrapper](imported/ImportedFinishTime.v)、[imported .vo](imported/ImportedFinishTime.vo)、[完整 Print/Check 输出](finish_time_import_print.txt) | Lean 常量导入后的名字、参数、类型和定义体 |
-| 语义对齐 | [最小值 bridge](certificates/FinishTimeMinBridge.v)、[五项 correspondence](certificates/FinishTimeCorrespondence.v)、[源/目标类型检查阅读版](finish_time_alignment_readable.txt) | 使用表示关系组合，而非把 theorem 在两侧各证明一遍 |
-| 审计 | [Print Assumptions 原文](finish_time_assumptions_published.txt)、[分类结果](finish_time_assumption_summary_published.json)、[Lean #print axioms 原文](finish_time_lean_axioms_published.txt) | 显式信任边界与自依赖检查 |
+| 导入 Rocq | [import wrapper](imported/ImportedFinishTime.v)、[imported .vo](imported/ImportedFinishTime.vo)、[ Print导入Rocq里的lean](finish_time_import_print.txt) | Lean 常量导入后的名字、参数、类型和定义体 |
+| 语义对齐 Semantic Correspondence | [最小值 bridge](certificates/FinishTimeMinBridge.v)、[五项 correspondence 证明](certificates/FinishTimeCorrespondence.v)、[源/目标类型检查阅读版](finish_time_alignment_readable.txt) | 使用表示关系组合，而非把 theorem 在两侧各证明一遍 |
+| 审计 Aduit | [Correspondence 证明依赖的 Axioms](finish_time_assumptions_published.txt)、[Dependency 完整 audit report](finish_time_assumption_summary_published.json)、[lean theorem 里面自身依赖的 Axiom](finish_time_lean_axioms_published.txt) | 检查证明是否合规  |
 
 Rocq 9.3 所需的[兼容源副本](source/finish_time_rocq93_compat.v)和[精确补丁](source/finish_time_rocq93_compat.patch)也在包内；补丁只改了两个旧 proof script，不改 public statements 或两个计算定义。源侧最终类型的[检查文件](source/FinishTimeSourceTypeAudit.v)和[编译产物](source/FinishTimeSourceTypeAudit.vo)一并保留。
 

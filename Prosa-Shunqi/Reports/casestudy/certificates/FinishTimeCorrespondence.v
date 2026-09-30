@@ -16,6 +16,7 @@ Section FinishTime.
   Variable PStateL :
     ImportedFinishTime.Prosa_Behavior_Schedule_ProcessorState Job
       (svc_decidable_eq Job).
+  (** Relation between the source and target processor states. *)
   Variable Rstate : SvcProcessorStateRel Job PStateR PStateL.
 
   Variable schedR : @prosa.behavior.schedule.schedule Job PStateR.

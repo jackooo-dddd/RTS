@@ -1,0 +1,8 @@
+import Prosa.Analysis.Abstract.RestrictedSupply.TaskIbfReadiness
+set_option pp.fieldNotation false
+
+#check @Prosa.Analysis.Abstract.RestrictedSupply.TaskIbfReadiness.task_intra_IBF
+#check @Prosa.Analysis.Abstract.RestrictedSupply.TaskIbfReadiness.instantiated_task_intra_interference_is_bounded
+
+#print axioms Prosa.Analysis.Abstract.RestrictedSupply.TaskIbfReadiness.task_intra_IBF
+#print axioms Prosa.Analysis.Abstract.RestrictedSupply.TaskIbfReadiness.instantiated_task_intra_interference_is_bounded

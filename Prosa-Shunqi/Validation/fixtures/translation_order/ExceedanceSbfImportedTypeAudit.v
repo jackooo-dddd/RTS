@@ -1,0 +1,7 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedExceedanceSbf.
+
+Check ImportedExceedanceSbf.Prosa_Analysis_Facts_Model_Exceedance_SBF_eps_sbf.
+Check ImportedExceedanceSbf.Prosa_Analysis_Facts_Model_Exceedance_SBF_blackout_during_bounded.
+Check ImportedExceedanceSbf.Prosa_Analysis_Facts_Model_Exceedance_SBF_eps_sbf_is_valid.
+Check ImportedExceedanceSbf.Prosa_Analysis_Facts_Model_Exceedance_SBF_eps_sbf_is_unit.

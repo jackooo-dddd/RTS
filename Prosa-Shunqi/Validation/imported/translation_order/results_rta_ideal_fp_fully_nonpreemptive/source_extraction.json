@@ -1,0 +1,86 @@
+{
+  "mode": "proof_independent_semantic_source_signature",
+  "source_file": "results/rta/ideal/fp/fully_nonpreemptive.v",
+  "source_file_sha256": "281dae9520402736a8f89e037fbbf2c9c4fdf1f7e7120686ce4fa15f8754b3db",
+  "source_commit": "414e66760333eaa4ef78c685bcf53291c527a548",
+  "generated_file": "/Users/shunqiwang/CityuHK/Research/Lean/TranslationProof/Prosa-Shunqi/Validation/.work/experiments/results_rta_ideal_fp_fully_nonpreemptive_final/source/RtaIdealFpFullyNonpreemptiveSemanticSource.v",
+  "transformations": {
+    "computational": "byte-identical declaration block",
+    "theorem": "verified post-Section Check type converted to a definition with its declared Prop/Type sort preserved; exact source header retained as provenance; opaque proof omitted",
+    "local_bindings": {},
+    "dropped_irrelevant_imports": [
+      "Require Export prosa.analysis.facts.preemption.rtc_threshold.nonpreemptive.",
+      "Require Export prosa.analysis.facts.preemption.task.nonpreemptive.",
+      "Require Export prosa.analysis.facts.readiness.sequential.",
+      "Require Export prosa.model.task.preemption.fully_nonpreemptive.",
+      "Require Export prosa.results.rta.ideal.fp.bounded_nps."
+    ],
+    "added_validation_imports": [
+      "Require Export prosa.RtaIdealFpBoundedNpsSemanticSource.",
+      "Export RtaIdealFpBoundedNpsSemanticSource.",
+      "Require Export prosa.TaskPreemptionFullyNonpreemptiveSemanticSource.",
+      "Export TaskPreemptionFullyNonpreemptiveSemanticSource.",
+      "Require Export prosa.model.readiness.sequential prosa.model.preemption.fully_nonpreemptive prosa.model.schedule.nonpreemptive.",
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq bigop.",
+      "Require Import prosa.behavior.all prosa.model.processor.ideal.",
+      "Module fp. Module bounded_pi := prosa.RtaIdealFpBoundedPiSemanticSource.RtaIdealFpBoundedPiSemanticSource. End fp."
+    ],
+    "printer_repairs": [
+      "valid_schedule sched arr_seq=@valid_schedule Job H0 (ideal.processor_state Job) sched H1 (@sequential_ready_instance Job Task H H0 H1 (ideal.processor_state Job) arr_seq) arr_seq",
+      "work_conserving arr_seq sched=@work_conserving Job H0 H1 (ideal.processor_state Job) (@sequential_ready_instance Job Task H H0 H1 (ideal.processor_state Job) arr_seq) arr_seq sched",
+      "respects_FP_policy_at_preemption_point arr_seq sched FP=@respects_FP_policy_at_preemption_point Task Job H H0 H1 (ideal.processor_state Job) (@fully_nonpreemptive_job_model Job H1) (@sequential_ready_instance Job Task H H0 H1 (ideal.processor_state Job) arr_seq) arr_seq sched FP"
+    ]
+  },
+  "declarations": {
+    "sequential_readiness": {
+      "source_kind": "computational",
+      "acquisition_mode": "BODY_EXACT",
+      "source_block_sha256": "2db2fc7d53e145d39b48b15446ba2859bb8cf3e8107b59862bb100cdaacac664",
+      "generated_text_sha256": "2db2fc7d53e145d39b48b15446ba2859bb8cf3e8107b59862bb100cdaacac664",
+      "source_statement_sha256": null,
+      "normalized_statement_sha256": null,
+      "elaborated_type_sha256": null,
+      "elaborated_type_evidence": null,
+      "statement_sort": null,
+      "context": [
+        "  #[local] Existing Instance ideal.processor_state.",
+        "  Context {Task : TaskType}.",
+        "  Context {tc : TaskCost Task}.",
+        "  Context {Job : JobType}.",
+        "  Context `{JobTask Job Task}.",
+        "  Context `{JobArrival Job}.",
+        "  Context `{JobCost Job}.",
+        "  #[local] Existing Instance fully_nonpreemptive_job_model.",
+        "  #[local] Existing Instance fully_nonpreemptive_task_model.",
+        "  #[local] Existing Instance fully_nonpreemptive_rtc_threshold.",
+        "  Variable arr_seq : arrival_sequence Job.",
+        "  Hypothesis H_valid_arrival_sequence : valid_arrival_sequence arr_seq.",
+        "  Variable ts : list Task.",
+        "  Hypothesis H_all_jobs_from_taskset : all_jobs_from_taskset arr_seq ts.",
+        "  Hypothesis H_valid_job_cost :",
+        "    arrivals_have_valid_job_costs arr_seq.",
+        "  Context `{MaxArrivals Task}.",
+        "  Hypothesis H_valid_arrival_curve : valid_taskset_arrival_curve ts max_arrivals.",
+        "  Hypothesis H_is_arrival_curve : taskset_respects_max_arrivals arr_seq ts.",
+        "  Variable tsk : Task.",
+        "  Hypothesis H_tsk_in_ts : tsk \\in ts."
+      ],
+      "omitted_context_for_elaborated_theorem": false,
+      "local_bindings": {}
+    },
+    "uniprocessor_response_time_bound_fully_nonpreemptive_fp": {
+      "source_kind": "theorem",
+      "acquisition_mode": "STATEMENT_EXACT_PROOF_OMITTED",
+      "source_block_sha256": "cffe96464eb86187902cbd4f9248a260289813fda347a99dfd3b083e19a99878",
+      "generated_text_sha256": "062d68a7d29dce1d4077a4116a1157286641f4ed2a2f2db38834ab9e89e1d49d",
+      "source_statement_sha256": "041427d33f2f63249cf0b422bd1f3107f7f535feb6b9c4cd225c02e6de3d3212",
+      "normalized_statement_sha256": "041427d33f2f63249cf0b422bd1f3107f7f535feb6b9c4cd225c02e6de3d3212",
+      "elaborated_type_sha256": "4359a31dcb2998406f66528a9175dca3d9ea696afcadf54d7442ee03b058864b",
+      "elaborated_type_evidence": "ELABORATED_ROCQ_CHECK",
+      "statement_sort": "Prop",
+      "context": [],
+      "omitted_context_for_elaborated_theorem": true,
+      "local_bindings": {}
+    }
+  }
+}

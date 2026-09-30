@@ -1,0 +1,10 @@
+import Prosa.Analysis.Facts.Model.Overheads.ScheduleChangeBound
+set_option pp.fieldNotation false
+
+#check @Prosa.Analysis.Facts.Model.Overheads.ScheduleChangeBound.schedule_changes_bounded_by_total_arrivals_JLFP
+#check @Prosa.Analysis.Facts.Model.Overheads.ScheduleChangeBound.schedule_changes_bounded_by_total_arrivals_FP
+#check @Prosa.Analysis.Facts.Model.Overheads.ScheduleChangeBound.schedule_changes_bounded_by_total_arrivals_FIFO
+
+#print axioms Prosa.Analysis.Facts.Model.Overheads.ScheduleChangeBound.schedule_changes_bounded_by_total_arrivals_JLFP
+#print axioms Prosa.Analysis.Facts.Model.Overheads.ScheduleChangeBound.schedule_changes_bounded_by_total_arrivals_FP
+#print axioms Prosa.Analysis.Facts.Model.Overheads.ScheduleChangeBound.schedule_changes_bounded_by_total_arrivals_FIFO

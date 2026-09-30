@@ -1,0 +1,139 @@
+{
+  "rank": 220,
+  "layer": 20,
+  "tag": "HYP",
+  "slug": "analysis_definitions_hyperperiod",
+  "source": "analysis/definitions/hyperperiod.v",
+  "dependencies": [
+    "model/task/arrival/periodic.v",
+    "util/lcmseq.v"
+  ],
+  "declaration_count": 7,
+  "base_run": "analysis_facts_periodic_arrival_times_final",
+  "base_checks": [
+    {
+      "manifest": "analysis_facts_periodic_arrival_times",
+      "olean": "Prosa/Analysis/Facts/Periodic/ArrivalTimes.olean",
+      "vo": "FactsPeriodicArrivalTimesSemanticSource.vo"
+    }
+  ],
+  "extra_olean_artifacts": [
+    {
+      "from": "model_task_arrival_periodic_final/olean/Prosa/Model/Task/Arrival/Periodic.olean",
+      "to": "Prosa/Model/Task/Arrival/Periodic.olean",
+      "manifest": "model_task_arrival_periodic",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "util_lcmseq_final/olean/Prosa/Util/Lcmseq.olean",
+      "to": "Prosa/Util/Lcmseq.olean",
+      "manifest": "util_lcmseq",
+      "key": "production_olean_sha256"
+    }
+  ],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "HyperperiodSemanticSource",
+    "helper_blocks": [],
+    "drop_imports": [
+      "Require Export prosa.model.task.arrival.periodic.",
+      "Require Export prosa.util.lcmseq."
+    ],
+    "add_imports": [
+      "Require Export prosa.FactsPeriodicArrivalTimesSemanticSource.",
+      "Export FactsPeriodicArrivalTimesSemanticSource.",
+      "Require Export prosa.LcmseqSemanticSource.",
+      "Export LcmseqSemanticSource.",
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq div."
+    ],
+    "printer_repairs": [],
+    "note": "the seven definitions are byte-identical computational blocks with their section contexts (the section-local O_max/HP Lets included); the accepted periodic arrival-times and list-LCM extracted modules are the base extraction modules; the Section variables ts/arr_seq, implicit in the uses of five definitions inside later definitions of the same Section, are reconnected by recorded local notations",
+    "local_bindings": [
+      "hyperperiod_index=hyperperiod_index ts",
+      "starting_instant_of_hyperperiod=starting_instant_of_hyperperiod ts",
+      "starting_instant_of_corresponding_hyperperiod=starting_instant_of_corresponding_hyperperiod ts",
+      "jobs_in_hyperperiod=jobs_in_hyperperiod ts arr_seq",
+      "job_index_in_hyperperiod=job_index_in_hyperperiod ts arr_seq"
+    ]
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/HyperperiodStatementProbe.v",
+  "production": "Prosa/Analysis/Definitions/Hyperperiod.lean",
+  "production_olean": "Prosa/Analysis/Definitions/Hyperperiod.olean",
+  "lean_namespace": "Prosa.Analysis.Definitions.Hyperperiod",
+  "fixtures": [
+    "NondecreasingComputationInterface",
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "PreemptionParameterComputationInterface",
+    "TaskOffsetComputationInterface",
+    "ArrivalsComputationInterface",
+    "PeriodicComputationInterface",
+    "FactsPeriodicArrivalTimesComputationInterface",
+    "LcmseqSpecComputationInterface",
+    "HyperperiodComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/HyperperiodLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/analysis_definitions_hyperperiod_export_config.json",
+  "export_name": "Hyperperiod",
+  "cert_dir": "certificates/analysis_definitions_hyperperiod",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "ArrivalsCorrespondence",
+    "JitterSvcBaseAdapter",
+    "JitterSvcNatBoolOperations",
+    "JitterSvcIntervalOperations",
+    "JitterSvcScheduleOperations",
+    "JitterSvcJobOperations",
+    "PreemptionParameterCorrespondence",
+    "TaskOffsetCorrespondence",
+    "PeriodicCorrespondence",
+    "NatSubCorrespondence",
+    "LcmseqBaseAdapter",
+    "LcmseqDivModAdapter",
+    "LcmseqCorrespondence",
+    "HyperperiodCorrespondence"
+  ],
+  "audit_module": "HyperperiodAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/HyperperiodImportedTypeAudit.v",
+  "assumption_config": "certificates/analysis_definitions_hyperperiod/hyperperiod_assumption_config.json",
+  "lean_axiom_config": "certificates/analysis_definitions_hyperperiod/hyperperiod_lean_axiom_config.json",
+  "computational": [
+    "hyperperiod",
+    "hyperperiod_index",
+    "starting_instant_of_hyperperiod",
+    "starting_instant_of_corresponding_hyperperiod",
+    "jobs_in_hyperperiod",
+    "job_index_in_hyperperiod",
+    "corresponding_job_in_hyperperiod"
+  ],
+  "principal": {},
+  "helpers": [
+    "hyp_period_map_canonical"
+  ],
+  "previous_status": "util_lcmseq_module_status.json",
+  "previous_files": 307,
+  "previous_decls": 1917,
+  "input_relations": [
+    "task-offset, periodic-model, job-task and job-arrival instances by the accepted relations (two-way totals); task sets and job lists by the accepted canonical list relations; arrival sequences by the accepted relation; tasks and jobs by identity; instants by SubNatRel"
+  ],
+  "coverage_for_inner_binders": [
+    "instants",
+    "jobs",
+    "tasks"
+  ],
+  "lean_representation_note": "`%/` is `/` on Nat; `index x s` is `List.idxOf x s`; `nth x0 s n` is `s.getD n x0`; the section-local `O_max`/`HP` are unfolded",
+  "export_diagnosis": "the accepted periodic arrival-times export root merged with the accepted list-LCM root, plus the seven definitions",
+  "extra_artifacts": [
+    {
+      "from": "util_lcmseq_final/source/LcmseqSemanticSource.vo",
+      "to": "source/LcmseqSemanticSource.vo",
+      "manifest": "util_lcmseq",
+      "key": "source_vo_sha256"
+    }
+  ],
+  "extra_pinned_sources": []
+}

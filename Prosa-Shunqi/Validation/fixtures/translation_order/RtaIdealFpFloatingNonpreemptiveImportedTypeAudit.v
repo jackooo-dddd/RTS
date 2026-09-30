@@ -1,0 +1,4 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedRtaIdealFpFloatingNonpreemptive.
+
+Check ImportedRtaIdealFpFloatingNonpreemptive.Prosa_Results_Rta_Ideal_Fp_FloatingNonpreemptive_uniprocessor_response_time_bound_fp_with_floating_nonpreemptive_regions.

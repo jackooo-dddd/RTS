@@ -1,0 +1,5 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedFactsDynamicSuspension.
+
+Check ImportedFactsDynamicSuspension.Prosa_Analysis_Facts_Model_DynamicSuspension_job_suspension_bounded.
+Check ImportedFactsDynamicSuspension.Prosa_Analysis_Facts_Model_DynamicSuspension_suspension_of_task_bounded.

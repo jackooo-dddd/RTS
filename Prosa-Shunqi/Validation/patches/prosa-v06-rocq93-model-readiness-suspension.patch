@@ -1,0 +1,15 @@
+--- a/model/readiness/suspension.v
++++ b/model/readiness/suspension.v
+@@ -55,9 +55,9 @@
+   }.
+   Next Obligation.
+     move=> sched j t /andP[PASSED UNFINISHED].
+-    rewrite /pending. apply /andP. split => //.
+-    move: PASSED. rewrite /suspension_has_passed /has_arrived => /andP [ARR _].
+-    by apply: leq_trans ARR; rewrite leq_addr.
++    rewrite /pending; apply/andP; split; last exact UNFINISHED.
++    move: PASSED; rewrite /suspension_has_passed /has_arrived => /andP [ARR _].
++    exact (leq_trans (leq_addr _ _) ARR).
+   Qed.
+ 
+ End ReadinessOfSelfSuspendingJobs.

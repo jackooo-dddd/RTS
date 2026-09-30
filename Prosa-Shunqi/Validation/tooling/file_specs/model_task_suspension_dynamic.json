@@ -1,0 +1,100 @@
+{
+  "rank": 183,
+  "layer": 17,
+  "tag": "DSUSP",
+  "slug": "model_task_suspension_dynamic",
+  "source": "model/task/suspension/dynamic.v",
+  "dependencies": [
+    "model/readiness/suspension.v",
+    "model/task/concept.v"
+  ],
+  "declaration_count": 2,
+  "base_run": "model_readiness_suspension_final",
+  "base_checks": [
+    {
+      "manifest": "model_readiness_suspension",
+      "olean": "Prosa/Model/Readiness/Suspension.olean",
+      "vo": "SuspensionSemanticSource.vo"
+    }
+  ],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "DynamicSuspensionSemanticSource",
+    "helper_blocks": [],
+    "drop_imports": [
+      "Require Export prosa.model.readiness.suspension.",
+      "Require Export prosa.model.task.concept."
+    ],
+    "add_imports": [
+      "Require Export prosa.behavior.all.",
+      "Require Export prosa.SuspensionSemanticSource.",
+      "Export SuspensionSemanticSource.",
+      "Require Export prosa.model.task.concept.",
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq bigop."
+    ],
+    "printer_repairs": [],
+    "note": "the class and the validity definition are byte-identical computational blocks; the accepted suspension module is the base extraction module"
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/DynamicSuspensionStatementProbe.v",
+  "production": "Prosa/Model/Task/Suspension/Dynamic.lean",
+  "production_olean": "Prosa/Model/Task/Suspension/Dynamic.olean",
+  "lean_namespace": "Prosa.Model.Task.Suspension.Dynamic",
+  "fixtures": [
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "ProgressComputationInterface",
+    "SuspensionComputationInterface",
+    "DynamicSuspensionComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/DynamicSuspensionLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/model_task_suspension_dynamic_export_config.json",
+  "export_name": "DynamicSuspension",
+  "cert_dir": "certificates/model_task_suspension_dynamic",
+  "chain": [
+    "JitterSvcBaseAdapter",
+    "JitterSvcNatBoolOperations",
+    "JitterSvcIntervalOperations",
+    "JitterSvcScheduleOperations",
+    "JitterSvcJobOperations",
+    "ProgressHelpers",
+    "SuspensionCorrespondence",
+    "DynamicSuspensionCorrespondence"
+  ],
+  "audit_module": "DynamicSuspensionAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/DynamicSuspensionImportedTypeAudit.v",
+  "assumption_config": "certificates/model_task_suspension_dynamic/dynamic_suspension_assumption_config.json",
+  "lean_axiom_config": "certificates/model_task_suspension_dynamic/dynamic_suspension_lean_axiom_config.json",
+  "computational": [
+    "TaskTotalSuspension",
+    "valid_dynamic_suspensions"
+  ],
+  "principal": {
+    "TaskTotalSuspension": [
+      "TaskTotalSuspension_source_total",
+      "TaskTotalSuspension_target_total"
+    ]
+  },
+  "helpers": [
+    "dsusp_lean_transport",
+    "dsusp_job_task_import",
+    "dsusp_job_task_export",
+    "dsusp_task_bound_related"
+  ],
+  "previous_status": "model_readiness_suspension_module_status.json",
+  "previous_files": 303,
+  "previous_decls": 1891,
+  "input_relations": [
+    "job-cost and job-suspension instances by the accepted relations; job-task instances pointwise (Lean equality on the identity task carrier, two-way witnesses); task-total-suspension instances pointwise by SubNatRel (the class by two-way totals); jobs and tasks by identity"
+  ],
+  "coverage_for_inner_binders": [
+    "jobs"
+  ],
+  "lean_representation_note": "`a <= b` in Prop position is `a \u2264 b`; the job's task is `job_task (Task := Task) j`",
+  "export_diagnosis": "the accepted suspension export root plus the class and the validity definition",
+  "extra_pinned_sources": [],
+  "extra_artifacts": [],
+  "extra_olean_artifacts": [],
+  "extra_source_patches": [],
+  "extra_generated_sources": [],
+  "dependency_shims": {}
+}

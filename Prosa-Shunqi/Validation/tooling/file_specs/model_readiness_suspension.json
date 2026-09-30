@@ -1,0 +1,103 @@
+{
+  "rank": 155,
+  "layer": 16,
+  "tag": "SUSP",
+  "slug": "model_readiness_suspension",
+  "source": "model/readiness/suspension.v",
+  "dependencies": [
+    "analysis/definitions/progress.v",
+    "behavior/all.v",
+    "util/nat.v"
+  ],
+  "declaration_count": 4,
+  "base_run": "analysis_definitions_progress_final",
+  "base_checks": [
+    {
+      "manifest": "analysis_definitions_progress",
+      "olean": "Prosa/Analysis/Definitions/Progress.olean",
+      "vo": "ProgressSemanticSource.vo"
+    }
+  ],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "SuspensionSemanticSource",
+    "helper_blocks": [],
+    "drop_imports": [
+      "Require Export prosa.behavior.all.",
+      "Require Export prosa.analysis.definitions.progress.",
+      "Require Export prosa.util.nat."
+    ],
+    "add_imports": [
+      "Require Export prosa.behavior.all.",
+      "Require Export prosa.ProgressSemanticSource.",
+      "Export ProgressSemanticSource.",
+      "Require Export prosa.util.nat.",
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq bigop."
+    ],
+    "printer_repairs": [],
+    "note": "the class and the three definitions are byte-identical computational blocks (the section-local readiness instance, which no public declaration uses, is not extracted); the accepted progress module is the base extraction module"
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/SuspensionStatementProbe.v",
+  "production": "Prosa/Model/Readiness/Suspension.lean",
+  "production_olean": "Prosa/Model/Readiness/Suspension.olean",
+  "lean_namespace": "Prosa.Model.Readiness.Suspension",
+  "fixtures": [
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "ProgressComputationInterface",
+    "SuspensionComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/SuspensionLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/model_readiness_suspension_export_config.json",
+  "export_name": "Suspension",
+  "cert_dir": "certificates/model_readiness_suspension",
+  "chain": [
+    "JitterSvcBaseAdapter",
+    "JitterSvcNatBoolOperations",
+    "JitterSvcIntervalOperations",
+    "JitterSvcScheduleOperations",
+    "JitterSvcJobOperations",
+    "ProgressHelpers",
+    "SuspensionCorrespondence"
+  ],
+  "audit_module": "SuspensionAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/SuspensionImportedTypeAudit.v",
+  "assumption_config": "certificates/model_readiness_suspension/suspension_assumption_config.json",
+  "lean_axiom_config": "certificates/model_readiness_suspension/suspension_lean_axiom_config.json",
+  "computational": [
+    "JobSuspension",
+    "suspension_has_passed",
+    "suspended",
+    "total_suspension"
+  ],
+  "principal": {
+    "JobSuspension": [
+      "JobSuspension_source_total",
+      "JobSuspension_target_total"
+    ]
+  },
+  "helpers": [
+    "susp_nat_input",
+    "susp_import_fun_rel",
+    "susp_export_fun_rel",
+    "susp_completed_by_related",
+    "susp_pending_related"
+  ],
+  "previous_status": "results_rta_exc_fp_fully_nonpreemptive_module_status.json",
+  "previous_files": 302,
+  "previous_decls": 1887,
+  "input_relations": [
+    "processor states by the accepted two-sided SvcProcessorStateRel, schedules by the accepted SvcScheduleRel; job-arrival, job-cost and job-suspension instances pointwise (the class by two-way totals); jobs by identity; instants, durations and service levels by SubNatRel"
+  ],
+  "coverage_for_inner_binders": [
+    "job suspensions"
+  ],
+  "lean_representation_note": "`a < b`, `a == b` Booleans are `decide`; `~~ b` is `!b`; Booleans in Prop position are `= true`; the section's unused JobCost context is absent",
+  "export_diagnosis": "the accepted progress export root plus the class and the three definitions",
+  "extra_pinned_sources": [],
+  "extra_artifacts": [],
+  "extra_olean_artifacts": [],
+  "extra_source_patches": [],
+  "extra_generated_sources": [],
+  "dependency_shims": {}
+}

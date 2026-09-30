@@ -1,0 +1,216 @@
+{
+  "rank": 229,
+  "layer": 21,
+  "tag": "FEW",
+  "slug": "analysis_facts_transform_edf_wc",
+  "source": "analysis/facts/transform/edf_wc.v",
+  "dependencies": [
+    "analysis/facts/behavior/deadlines.v",
+    "analysis/facts/readiness/backlogged.v",
+    "analysis/facts/transform/edf_opt.v",
+    "analysis/facts/transform/wc_correctness.v",
+    "model/readiness/basic.v"
+  ],
+  "declaration_count": 11,
+  "base_run": "analysis_facts_transform_edf_opt_final",
+  "base_checks": [
+    {
+      "manifest": "analysis_facts_transform_edf_opt",
+      "olean": "Prosa/Analysis/Facts/Transform/EdfOpt.olean",
+      "vo": "FactsEdfOptSemanticSource.vo"
+    }
+  ],
+  "extra_pinned_sources": [],
+  "extra_lean": [],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "FactsEdfWcSemanticSource",
+    "helper_blocks": [],
+    "drop_imports": [
+      "Require Import prosa.model.readiness.basic.",
+      "Require Export prosa.analysis.facts.transform.edf_opt.",
+      "Require Export prosa.analysis.facts.transform.wc_correctness.",
+      "Require Export prosa.analysis.facts.behavior.deadlines.",
+      "Require Export prosa.analysis.facts.readiness.backlogged."
+    ],
+    "add_imports": [
+      "Require Export prosa.EdfDefinitionsSemanticSource.",
+      "Export EdfDefinitionsSemanticSource.",
+      "Require Export prosa.EdfTransSemanticSource.",
+      "Export EdfTransSemanticSource.",
+      "Module edf_trans := EdfTransSemanticSource.EdfTransSemanticSource.",
+      "Require Export prosa.analysis.definitions.schedule_prefix.",
+      "Require Export prosa.model.schedule.work_conserving.",
+      "Require Import prosa.model.readiness.basic.",
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq.",
+      "Require Import prosa.behavior.all prosa.model.processor.ideal.",
+      "#[local] Existing Instance basic_ready_instance."
+    ],
+    "printer_repairs": [],
+    "note": "the definition scheduled_behavior_premises is a byte-identical computational block and the ten statements are the authoritative elaborated types (proofs omitted); EDF_at/EDF_schedule, schedulability and basic readiness are bound to the accepted extracted EdfDefinitionsSemanticSource of the base closure and analysis/transform/edf_trans to the accepted extracted EdfTransSemanticSource of the base run (with its generated util/search_arg source); analysis/definitions/schedule_prefix, model/schedule/work_conserving and model/readiness/basic are the compiled pinned sources of the base closure; the recorded alias `edf_trans` names the transformation module as the elaborated types print it; the sections' `#[local] Existing Instance basic_ready_instance` is replayed after the imports; the proof-only facts/transform/edf_opt, facts/transform/wc_correctness, facts/behavior/deadlines and facts/readiness/backlogged imports are dropped"
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/FactsEdfWcStatementProbe.v",
+  "production": "Prosa/Analysis/Facts/Transform/EdfWc.lean",
+  "production_olean": "Prosa/Analysis/Facts/Transform/EdfWc.olean",
+  "lean_namespace": "Prosa.Analysis.Facts.Transform.EdfWc",
+  "fixtures": [
+    "NondecreasingComputationInterface",
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "PreemptionParameterComputationInterface",
+    "TransformPrefixComputationInterface",
+    "IdealUniSchedulerComputationInterface",
+    "EdfDefinitionsComputationInterface",
+    "ScheduledComputationInterface",
+    "IdealScheduleComputationInterface",
+    "FactsEdfTransComputationInterface",
+    "FactsEdfOptComputationInterface",
+    "FactsEdfWcComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/FactsEdfWcLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/analysis_facts_transform_edf_wc_export_config.json",
+  "export_name": "FactsEdfWc",
+  "cert_dir": "certificates/analysis_facts_transform_edf_wc",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "JitterSvcBaseAdapter",
+    "JitterSvcNatBoolOperations",
+    "JitterSvcIntervalOperations",
+    "JitterSvcScheduleOperations",
+    "JitterSvcJobOperations",
+    "PreemptionParameterCorrespondence",
+    "IdealUniSchedulerCorrespondence",
+    "EdfDefinitionsHelpers",
+    "EdfTransCorrespondence",
+    "FactsEdfOptCorrespondence",
+    "FactsEdfWcCorrespondence"
+  ],
+  "audit_module": "FactsEdfWcAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/FactsEdfWcImportedTypeAudit.v",
+  "assumption_config": "certificates/analysis_facts_transform_edf_wc/facts_edf_wc_assumption_config.json",
+  "lean_axiom_config": "certificates/analysis_facts_transform_edf_wc/facts_edf_wc_lean_axiom_config.json",
+  "computational": [
+    "scheduled_behavior_premises"
+  ],
+  "principal": {},
+  "helpers": [
+    "few_sched_at",
+    "few_backlogged_related",
+    "few_wc_rel",
+    "few_exists_sched",
+    "few_swapped",
+    "few_outer"
+  ],
+  "previous_status": "analysis_facts_transform_wc_correctness_module_status.json",
+  "previous_files": 319,
+  "previous_decls": 2057,
+  "input_relations": [
+    "the processor model is fixed to the ideal uniprocessor on both sides; states by the accepted constructor-preserving Option map (IdOptRel), schedules pointwise (IdScheduleRel); job_cost by SvcJobCostRel, job_deadline pointwise by SubNatRel, job_arrival by ArJobArrivalRel, arrival sequences by ArArrivalSequenceRel; the readiness model is the source's local basic instance on both sides, related through the accepted pending relation; instants and naturals by SubNatRel; jobs by identity"
+  ],
+  "coverage_for_inner_binders": [
+    "naturals / instants",
+    "jobs",
+    "schedules (ideal)",
+    "arrival sequences"
+  ],
+  "lean_representation_note": "the processor model is the accepted ideal processor `processor_state Job`; the sections' local `basic_ready_instance` is the accepted Lean definition, registered as a local instance; a Boolean in `Prop` position is `= true`; `t1 < t <= t2` is a Boolean conjunction of decides",
+  "export_diagnosis": "the accepted edf-opt export root (edf-definitions root merged with the edf-trans root), plus the definition and the ten statements",
+  "extra_source_patches": [],
+  "extra_artifacts": [],
+  "extra_olean_artifacts": [
+    {
+      "from": "analysis_facts_model_rbf_final/olean/Prosa/Analysis/Facts/Behavior/Completion.olean",
+      "to": "Prosa/Analysis/Facts/Behavior/Completion.olean",
+      "manifest": "analysis_facts_behavior_completion",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_behavior_all_final/olean/Prosa/Analysis/Facts/Behavior/Deadlines.olean",
+      "to": "Prosa/Analysis/Facts/Behavior/Deadlines.olean",
+      "manifest": "analysis_facts_behavior_deadlines",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_model_rbf_final/olean/Prosa/Analysis/Definitions/Schedulability.olean",
+      "to": "Prosa/Analysis/Definitions/Schedulability.olean",
+      "manifest": "analysis_definitions_schedulability",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "model_priority_edf_final/olean/Prosa/Model/Priority/Edf.olean",
+      "to": "Prosa/Model/Priority/Edf.olean",
+      "manifest": "model_priority_edf",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_model_rbf_final/olean/Prosa/Model/Job/Properties.olean",
+      "to": "Prosa/Model/Job/Properties.olean",
+      "manifest": "model_job_properties",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_model_rbf_final/olean/Prosa/Model/Task/AbsoluteDeadline.olean",
+      "to": "Prosa/Model/Task/AbsoluteDeadline.olean",
+      "manifest": "model_task_absolute_deadline",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "model_schedule_edf/olean/Prosa/Model/Schedule/Edf.olean",
+      "to": "Prosa/Model/Schedule/Edf.olean",
+      "manifest": "model_schedule_edf",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_readiness_basic_final/olean/Prosa/Model/Readiness/Basic.olean",
+      "to": "Prosa/Model/Readiness/Basic.olean",
+      "manifest": "model_readiness_basic",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "model_preemption_fully_preemptive_final/olean/Prosa/Model/Preemption/FullyPreemptive.olean",
+      "to": "Prosa/Model/Preemption/FullyPreemptive.olean",
+      "manifest": "model_preemption_fully_preemptive",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_transform_edf_trans_final/olean/Prosa/Analysis/Transform/EdfTrans.olean",
+      "to": "Prosa/Analysis/Transform/EdfTrans.olean",
+      "manifest": "analysis_transform_edf_trans",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_transform_swaps_final/olean/Prosa/Analysis/Facts/Transform/Swaps.olean",
+      "to": "Prosa/Analysis/Facts/Transform/Swaps.olean",
+      "manifest": "analysis_facts_transform_swaps",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "regress_bbfp_dep_final/olean/Prosa/Analysis/Definitions/WorkBearingReadiness.olean",
+      "to": "Prosa/Analysis/Definitions/WorkBearingReadiness.olean",
+      "manifest": "analysis_definitions_work_bearing_readiness",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "results_generality_gel_final/olean/Prosa/Analysis/Facts/Readiness/Basic.olean",
+      "to": "Prosa/Analysis/Facts/Readiness/Basic.olean",
+      "manifest": "analysis_facts_readiness_basic",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_transform_wc_trans_final/olean/Prosa/Analysis/Transform/WcTrans.olean",
+      "to": "Prosa/Analysis/Transform/WcTrans.olean",
+      "manifest": "analysis_transform_wc_trans",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_transform_wc_correctness_final/olean/Prosa/Analysis/Facts/Transform/WcCorrectness.olean",
+      "to": "Prosa/Analysis/Facts/Transform/WcCorrectness.olean",
+      "manifest": "analysis_facts_transform_wc_correctness",
+      "key": "production_olean_sha256"
+    }
+  ]
+}

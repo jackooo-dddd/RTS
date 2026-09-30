@@ -1,0 +1,44 @@
+import Prosa.Analysis.Abstract.Ideal.IwInstantiation
+set_option pp.fieldNotation false
+
+#check @Prosa.Analysis.Abstract.Ideal.IwInstantiation.no_interference_when_idle
+#check @Prosa.Analysis.Abstract.Ideal.IwInstantiation.no_task_interference_when_idle
+#check @Prosa.Analysis.Abstract.Ideal.IwInstantiation.task_interference_eq_false
+#check @Prosa.Analysis.Abstract.Ideal.IwInstantiation.sched_athep_implies_task_interference
+#check @Prosa.Analysis.Abstract.Ideal.IwInstantiation.cumulative_interference_split
+#check @Prosa.Analysis.Abstract.Ideal.IwInstantiation.cumulative_interfering_workload_split
+#check @Prosa.Analysis.Abstract.Ideal.IwInstantiation.cumulative_task_interference_split
+#check @Prosa.Analysis.Abstract.Ideal.IwInstantiation.cumulative_iw_hep_eq_workload_of_ohep
+#check @Prosa.Analysis.Abstract.Ideal.IwInstantiation.quiet_time_cl_implies_quiet_time_ab
+#check @Prosa.Analysis.Abstract.Ideal.IwInstantiation.quiet_time_ab_implies_quiet_time_cl
+#check @Prosa.Analysis.Abstract.Ideal.IwInstantiation.instantiated_quiet_time_equivalent_quiet_time
+#check @Prosa.Analysis.Abstract.Ideal.IwInstantiation.instantiated_busy_interval_prefix_equivalent_busy_interval_prefix
+#check @Prosa.Analysis.Abstract.Ideal.IwInstantiation.instantiated_busy_interval_equivalent_busy_interval
+#check @Prosa.Analysis.Abstract.Ideal.IwInstantiation.abstract_busy_interval_classic_quiet_time
+#check @Prosa.Analysis.Abstract.Ideal.IwInstantiation.abstract_busy_interval_classic_busy_interval_prefix
+#check @Prosa.Analysis.Abstract.Ideal.IwInstantiation.not_interference_implies_scheduled
+#check @Prosa.Analysis.Abstract.Ideal.IwInstantiation.scheduled_implies_no_interference
+#check @Prosa.Analysis.Abstract.Ideal.IwInstantiation.instantiated_i_and_w_are_coherent_with_schedule
+#check @Prosa.Analysis.Abstract.Ideal.IwInstantiation.instantiated_interference_and_workload_consistent_with_sequential_tasks
+#check @Prosa.Analysis.Abstract.Ideal.IwInstantiation.instantiated_busy_intervals_are_bounded
+
+#print axioms Prosa.Analysis.Abstract.Ideal.IwInstantiation.no_interference_when_idle
+#print axioms Prosa.Analysis.Abstract.Ideal.IwInstantiation.no_task_interference_when_idle
+#print axioms Prosa.Analysis.Abstract.Ideal.IwInstantiation.task_interference_eq_false
+#print axioms Prosa.Analysis.Abstract.Ideal.IwInstantiation.sched_athep_implies_task_interference
+#print axioms Prosa.Analysis.Abstract.Ideal.IwInstantiation.cumulative_interference_split
+#print axioms Prosa.Analysis.Abstract.Ideal.IwInstantiation.cumulative_interfering_workload_split
+#print axioms Prosa.Analysis.Abstract.Ideal.IwInstantiation.cumulative_task_interference_split
+#print axioms Prosa.Analysis.Abstract.Ideal.IwInstantiation.cumulative_iw_hep_eq_workload_of_ohep
+#print axioms Prosa.Analysis.Abstract.Ideal.IwInstantiation.quiet_time_cl_implies_quiet_time_ab
+#print axioms Prosa.Analysis.Abstract.Ideal.IwInstantiation.quiet_time_ab_implies_quiet_time_cl
+#print axioms Prosa.Analysis.Abstract.Ideal.IwInstantiation.instantiated_quiet_time_equivalent_quiet_time
+#print axioms Prosa.Analysis.Abstract.Ideal.IwInstantiation.instantiated_busy_interval_prefix_equivalent_busy_interval_prefix
+#print axioms Prosa.Analysis.Abstract.Ideal.IwInstantiation.instantiated_busy_interval_equivalent_busy_interval
+#print axioms Prosa.Analysis.Abstract.Ideal.IwInstantiation.abstract_busy_interval_classic_quiet_time
+#print axioms Prosa.Analysis.Abstract.Ideal.IwInstantiation.abstract_busy_interval_classic_busy_interval_prefix
+#print axioms Prosa.Analysis.Abstract.Ideal.IwInstantiation.not_interference_implies_scheduled
+#print axioms Prosa.Analysis.Abstract.Ideal.IwInstantiation.scheduled_implies_no_interference
+#print axioms Prosa.Analysis.Abstract.Ideal.IwInstantiation.instantiated_i_and_w_are_coherent_with_schedule
+#print axioms Prosa.Analysis.Abstract.Ideal.IwInstantiation.instantiated_interference_and_workload_consistent_with_sequential_tasks
+#print axioms Prosa.Analysis.Abstract.Ideal.IwInstantiation.instantiated_busy_intervals_are_bounded

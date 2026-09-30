@@ -1,0 +1,233 @@
+{
+  "slice": "TRANSLATION_ORDER_MODEL_PROCESSOR_MULTIPROCESSOR",
+  "generated_at": "2026-09-30T08:23:25.936877+08:00",
+  "published_at": "2026-09-30T08:23:25.936877+08:00",
+  "rank": 134,
+  "layer": 15,
+  "source_file": "model/processor/multiprocessor.v",
+  "source_commit": "414e66760333eaa4ef78c685bcf53291c527a548",
+  "source_tree": "7d7e94c731f7eefde4ca738310d4cafdd7bebdf0",
+  "source_file_sha256": "44d8b8b199dd39e85b64e8cf97fce178f302f31341307fcf4ac1803e39748775",
+  "pipeline": "Validation/scripts/translation_file_pipeline.py",
+  "spec": "Validation/tooling/file_specs/model_processor_multiprocessor.json",
+  "spec_sha256": "c0abe34c70ec79a670a7ff9a2a757be2ccf5d9505e956b91f56d45239710b156",
+  "source_compatibility": {
+    "mode": "patched",
+    "note": "pinned source + audited proof-only patches",
+    "patches": {
+      "patches/prosa-v06-rocq93-model-processor-multiprocessor.patch": "339724a0b622a9fab56fd9b9f01fc7d5c7d96afede2fb6fbec81b1108bb2d7b1"
+    }
+  },
+  "source_type_evidence": {
+    "prosa.model.processor.multiprocessor.processor": "EXACT_HASH",
+    "prosa.model.processor.multiprocessor.multiprocessor_state": "EXACT_HASH",
+    "prosa.model.processor.multiprocessor.multiproc_scheduled_on": "EXACT_HASH",
+    "prosa.model.processor.multiprocessor.multiproc_supply_on": "EXACT_HASH",
+    "prosa.model.processor.multiprocessor.multiproc_service_on": "EXACT_HASH",
+    "prosa.model.processor.multiprocessor.multiproc_service_in_eq": "EXACT_HASH"
+  },
+  "statement_only_export_boundary": [
+    "Prosa.Model.Processor.Multiprocessor.multiproc_service_in_eq"
+  ],
+  "input_relations": [
+    "per-core processor states by the accepted two-sided SvcProcessorStateRel; ordinals and Fin values by their values (SubNatRel, two-way totals); multiprocessor states pointwise over related processors (two-way totals); jobs by identity"
+  ],
+  "coverage_for_inner_binders": [
+    "ordinals / Fin values",
+    "multiprocessor states",
+    "jobs"
+  ],
+  "lean_representation_note": "`'I_n` is `Fin n`; `\\sum_(cpu < n)` is the finite sum over `Fin n`; the section-local `multiproc_state` instance is a named helper definition; section variables are explicit binders",
+  "export_size": {
+    "lines": 166156,
+    "soft_budget_flag": "OVER_100K_DIAGNOSED",
+    "diagnosis": "the accepted suspension/Service export root plus the multiprocessor file, the Fin-sum interface (whose proof avoids Finset.sum_range_succ and its Nat.Internal.Linear closure) and the ScheduleInterface supply_in list-sum equation"
+  },
+  "file_dependencies": {
+    "analysis/facts/behavior/service.v": "analysis_facts_behavior_service_module_status.json",
+    "behavior/all.v": "behavior_all_module_status.json"
+  },
+  "production_file": "Prosa/Model/Processor/Multiprocessor.lean",
+  "production_source_sha256": "1a8a4971d4966021d0c31a93adfebaea723014bec627630d3bdeb0a86cbc4dd3",
+  "production_olean_sha256": "9b36cd56f1f2f1a2fbf5f17e64bdda8890cb6377a59e5788acb8dbb7b0ad93d7",
+  "export_config_sha256": "473e2fbaae4ab8bf8c110198bcad2fcfa026f653ab5acd8546f0d5c39605d1a7",
+  "export_sha256": "4804761297bad6f56f265f62e5bdc77d50ecf3e380c1c984b80d697015100dcb",
+  "export_lines": 166156,
+  "export_bytes": 3783341,
+  "import_sha256": "cd77b561d8d069a2847654451b48b3bd369ae8cae696fbbe4a96a4e7571590e7",
+  "source_vo_sha256": "b0dda3fe5ad7ddf3233373a7efc5b463bb68683879b006a6993e69eeb3a403c1",
+  "lean_axiom_summary_sha256": "78ee2e497a1bbcef020185ebd7428a27c70bb06b100ca6b0eafcfbee67ca91e9",
+  "rocq_assumption_summary_sha256": "61bb14ce1df8b73b048455b5689ee302ee94a87f5f000f1b7daeccef1b5336ce",
+  "assumption_config_sha256": "6b9af7683a93456450f87c69d890b93f376ee459d5e1c540f8ae00ee09b57c9b",
+  "stage_timing_seconds": {
+    "source_acquisition": {
+      "mode": "FRESH",
+      "seconds": 4
+    },
+    "lean_production": {
+      "mode": "FRESH",
+      "seconds": 91
+    },
+    "fixture:ScheduleComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:ServiceComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:ProgressComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:SuspensionComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:MultiprocessorComputationInterface": {
+      "mode": "FRESH",
+      "seconds": 92
+    },
+    "lean_type_audit": {
+      "mode": "FRESH",
+      "seconds": 106
+    },
+    "lean_build": {
+      "mode": "FRESH",
+      "seconds": 302
+    },
+    "export": {
+      "mode": "FRESH",
+      "seconds": 90
+    },
+    "rocq_import": {
+      "mode": "FRESH",
+      "seconds": 45
+    },
+    "certificate_compile": {
+      "mode": "COMPILED=0;REUSED=10",
+      "seconds": 0
+    },
+    "imported_type_audit": {
+      "mode": "FRESH",
+      "seconds": 0
+    },
+    "lean_axiom_audit": {
+      "mode": "FRESH",
+      "seconds": 0
+    },
+    "assumption_audit": {
+      "mode": "FRESH",
+      "seconds": 0
+    }
+  },
+  "certificates": {
+    "JitterSvcBaseAdapter": {
+      "source_sha256": "238b96e8ec1b73197c4ccbc0a3a0c95943b7920dda75de4174816b2fa504dc40",
+      "vo_sha256": "e1d3210e12cccf813b4724a2016a563f34f7b01ac365b04e84f5840aaa1538e5"
+    },
+    "JitterSvcNatBoolOperations": {
+      "source_sha256": "74e2367ac9ebf2601ddac038cd8d23cd26452080d2ad869c094f80328d257d68",
+      "vo_sha256": "3ed13a1bea4f4d1523904d296bb64e0bd041444c076962815a14ac5369755e6f"
+    },
+    "JitterSvcIntervalOperations": {
+      "source_sha256": "893d840f7df28ae4d2bc7d072cd2f89b5af222c4bcdaf71e5ba5fabf02a4ec7b",
+      "vo_sha256": "b741b7506484af15d805befd40f3cb642c79ca3629299f0a2de5d134dc42ecf9"
+    },
+    "JitterSvcScheduleOperations": {
+      "source_sha256": "572b4c6a8d5db5acae6fd6151e09e95f1be74f74fecb954da2bda274457fd50c",
+      "vo_sha256": "c2387b0009137e209bf3f30b2c85e402db210261230d0993ed0a9ea41be665e8"
+    },
+    "JitterSvcJobOperations": {
+      "source_sha256": "da23c20fcdc686ffe9c2068f20b70b801961f0e979f7682702afff0755b0bef5",
+      "vo_sha256": "420700249d2acba873151191c9054f1ecad5ee34f1ba92e0bf221b1da63b0a76"
+    },
+    "MultiprocessorCorrespondence": {
+      "source_sha256": "603c1d1a1301a6221fece4655be590b2a26570d539aa6e4efb9086fe1d2abe39",
+      "vo_sha256": "b3ee067c0573a4aa3fe52f09699d60f562dec166cc8beeb43fa70690fa2fc679"
+    },
+    "MultiprocessorAssumptionAudit": {
+      "source_sha256": "2b4f91d2b5ec781c8b424bfecd61d5d60542810a579ccf47cfc7e8543059399e",
+      "vo_sha256": "8d2aeeeed0c40be108efe3b063470a7e4cccf32d192a97338b0c87fab9d643c5"
+    }
+  },
+  "certificate_checkpoints_sha256": "35591c2e960b9f10c0503a1e673491d0f5f6e67db9714df9da83ec3b5b7f0db3",
+  "lean_fixture_provenance_sha256": "729b21c19d2e97d4d86dc8dd587c3fa91af4cde5b3aef3013fd3b4729d8ea0ba",
+  "declarations": [
+    {
+      "source_declaration": "prosa.model.processor.multiprocessor.processor",
+      "lean_declaration": "Prosa.Model.Processor.Multiprocessor.processor",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "processor_source_total",
+        "processor_target_total"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.model.processor.multiprocessor.multiprocessor_state",
+      "lean_declaration": "Prosa.Model.Processor.Multiprocessor.multiprocessor_state",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "multiprocessor_state_source_total",
+        "multiprocessor_state_target_total"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.model.processor.multiprocessor.multiproc_scheduled_on",
+      "lean_declaration": "Prosa.Model.Processor.Multiprocessor.multiproc_scheduled_on",
+      "semantic_status": "CERTIFIED",
+      "certificates": [
+        "multiproc_scheduled_on_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.model.processor.multiprocessor.multiproc_supply_on",
+      "lean_declaration": "Prosa.Model.Processor.Multiprocessor.multiproc_supply_on",
+      "semantic_status": "CERTIFIED",
+      "certificates": [
+        "multiproc_supply_on_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.model.processor.multiprocessor.multiproc_service_on",
+      "lean_declaration": "Prosa.Model.Processor.Multiprocessor.multiproc_service_on",
+      "semantic_status": "CERTIFIED",
+      "certificates": [
+        "multiproc_service_on_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.model.processor.multiprocessor.multiproc_service_in_eq",
+      "lean_declaration": "Prosa.Model.Processor.Multiprocessor.multiproc_service_in_eq",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "multiproc_service_in_eq_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    }
+  ],
+  "acceptance": "ACCEPTED_V06_FILE"
+}

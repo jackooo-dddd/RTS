@@ -1,0 +1,432 @@
+{
+  "rank": 268,
+  "layer": 25,
+  "tag": "IWR",
+  "slug": "analysis_abstract_restricted_supply_iw_readiness",
+  "source": "analysis/abstract/restricted_supply/iw_readiness.v",
+  "dependencies": [
+    "analysis/abstract/IBF/supply_task.v",
+    "analysis/abstract/abstract_rta.v",
+    "analysis/definitions/service_inversion/readiness_aware.v",
+    "analysis/facts/busy_interval/service_inversion.v",
+    "analysis/facts/interference.v",
+    "analysis/facts/model/uniprocessor.v",
+    "analysis/facts/readiness_interference.v",
+    "model/schedule/work_conserving.v"
+  ],
+  "declaration_count": 18,
+  "base_run": "analysis_abstract_restricted_supply_iw_instantiation_final",
+  "base_checks": [
+    {
+      "manifest": "analysis_abstract_restricted_supply_iw_instantiation",
+      "olean": "Prosa/Analysis/Abstract/RestrictedSupply/IwInstantiation.olean",
+      "vo": "RsIwInstantiationSemanticSource.vo"
+    }
+  ],
+  "extra_pinned_sources": [
+    "analysis/definitions/readiness_interference.v"
+  ],
+  "extra_lean": [],
+  "source_mode": "extract",
+  "extraction": {
+    "module": "IwReadinessSemanticSource",
+    "helper_blocks": [
+      "rs_readiness_jlfp_interference",
+      "rs_readiness_jlfp_interfering_workload"
+    ],
+    "drop_imports": [
+      "Require Export prosa.analysis.abstract.abstract_rta.",
+      "Require Export prosa.analysis.abstract.IBF.supply_task.",
+      "Require Export prosa.analysis.facts.interference.",
+      "Require Export prosa.analysis.facts.busy_interval.service_inversion.",
+      "Require Export prosa.analysis.definitions.service_inversion.readiness_aware.",
+      "Require Export prosa.analysis.facts.readiness_interference.",
+      "Require Export prosa.analysis.facts.model.uniprocessor.",
+      "Require Export prosa.model.schedule.work_conserving."
+    ],
+    "add_imports": [
+      "Require Export prosa.IbfSupplyTaskSemanticSource.",
+      "Export IbfSupplyTaskSemanticSource.",
+      "Require Export prosa.ServiceInversionPredSemanticSource.",
+      "Export ServiceInversionPredSemanticSource.",
+      "Require Export prosa.InterferenceSemanticSource.",
+      "Export InterferenceSemanticSource.",
+      "Require Export prosa.analysis.definitions.readiness_interference.",
+      "Require Export prosa.ReadinessAwareSemanticSource.",
+      "Module readiness_aware := ReadinessAwareSemanticSource.ReadinessAwareSemanticSource.",
+      "Export ReadinessAwareSemanticSource.ReadinessAwareSemanticSource.",
+      "Require Export prosa.BusyIntervalClassicalSemanticSource.",
+      "Export BusyIntervalClassicalSemanticSource.",
+      "Require Export prosa.model.schedule.work_conserving.",
+      "Require Export prosa.analysis.definitions.work_bearing_readiness.",
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq bigop.",
+      "Require Import prosa.behavior.all."
+    ],
+    "printer_repairs": [
+      "cumulative_interference j t1 t2=@cumulative_interference Job (@rs_readiness_jlfp_interference Job H1 H2 PState JobReady0 arr_seq sched JLFP) j t1 t2",
+      "cumulative_interfering_workload j t1 t2=@cumulative_interfering_workload Job (@rs_readiness_jlfp_interfering_workload Job H1 H2 PState JobReady0 arr_seq sched JLFP) j t1 t2",
+      "cumul_cond_interference (=@cumul_cond_interference Job (@rs_readiness_jlfp_interference Job H1 H2 PState JobReady0 arr_seq sched JLFP) (",
+      "definitions.busy_interval_prefix sched=@prosa.analysis.abstract.definitions.busy_interval_prefix Job H1 H2 PState sched (@rs_readiness_jlfp_interference Job H1 H2 PState JobReady0 arr_seq sched JLFP) (@rs_readiness_jlfp_interfering_workload Job H1 H2 PState JobReady0 arr_seq sched JLFP)",
+      "definitions.busy_interval sched=@prosa.analysis.abstract.definitions.busy_interval Job H1 H2 PState sched (@rs_readiness_jlfp_interference Job H1 H2 PState JobReady0 arr_seq sched JLFP) (@rs_readiness_jlfp_interfering_workload Job H1 H2 PState JobReady0 arr_seq sched JLFP)",
+      "definitions.quiet_time sched=@prosa.analysis.abstract.definitions.quiet_time Job H1 H2 PState sched (@rs_readiness_jlfp_interference Job H1 H2 PState JobReady0 arr_seq sched JLFP) (@rs_readiness_jlfp_interfering_workload Job H1 H2 PState JobReady0 arr_seq sched JLFP)",
+      "definitions.work_conserving arr_seq sched=@prosa.analysis.abstract.definitions.work_conserving Job H1 H2 PState arr_seq sched (@rs_readiness_jlfp_interference Job H1 H2 PState JobReady0 arr_seq sched JLFP) (@rs_readiness_jlfp_interfering_workload Job H1 H2 PState JobReady0 arr_seq sched JLFP)",
+      "~~ interference j t=~~ @prosa.analysis.abstract.definitions.interference Job (@rs_readiness_jlfp_interference Job H1 H2 PState JobReady0 arr_seq sched JLFP) j t",
+      "interference_and_workload_consistent_with_sequential_tasks arr_seq sched tsk=@interference_and_workload_consistent_with_sequential_tasks Task Job H0 H1 H2 PState arr_seq sched tsk (@rs_readiness_jlfp_interference Job H1 H2 PState JobReady0 arr_seq sched JLFP) (@rs_readiness_jlfp_interfering_workload Job H1 H2 PState JobReady0 arr_seq sched JLFP)",
+      "no_speculative_execution=@prosa.analysis.abstract.definitions.no_speculative_execution Job (@rs_readiness_jlfp_interference Job H1 H2 PState JobReady0 arr_seq sched JLFP) (@rs_readiness_jlfp_interfering_workload Job H1 H2 PState JobReady0 arr_seq sched JLFP)"
+    ],
+    "note": "the eighteen statements are the authoritative elaborated types (proofs omitted) and the two section-local instances are byte-identical helper blocks; the accepted RS iw_instantiation source closure is the base (IBF/supply_task, interference, classical busy intervals, work conservation); analysis/definitions/readiness_interference is compiled from the pinned tree and the readiness-aware definitions are the accepted extracted ReadinessAwareSemanticSource (.vo copied from its accepted run and hash-checked; its dependency .vo files are byte-identical in both closures), exported so that the helper blocks resolve service_inversion to the readiness-aware one as in the source, with the recorded alias readiness_aware that the elaborated statements print; the statements name the section-local instances explicitly through recorded printer repairs; the proof-only facts imports are dropped"
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/IwReadinessStatementProbe.v",
+  "production": "Prosa/Analysis/Abstract/RestrictedSupply/IwReadiness.lean",
+  "production_olean": "Prosa/Analysis/Abstract/RestrictedSupply/IwReadiness.olean",
+  "lean_namespace": "Prosa.Analysis.Abstract.RestrictedSupply.IwReadiness",
+  "fixtures": [
+    "NondecreasingComputationInterface",
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "PreemptionParameterComputationInterface",
+    "ServiceInversionPredComputationInterface",
+    "AbstractDefinitionsComputationInterface",
+    "BusyPrefixComputationInterface",
+    "ArrivalsComputationInterface",
+    "WorkloadComputationInterface",
+    "BusyIntervalAbstractComputationInterface",
+    "LowerBoundOnServiceComputationInterface",
+    "TaskPreemptionParametersComputationInterface",
+    "AbstractRtaComputationInterface",
+    "IdealAbstractRtaComputationInterface",
+    "RequestBoundFunctionComputationInterface",
+    "TaskScheduleComputationInterface",
+    "SequentialityComputationInterface",
+    "ServiceOfJobsComputationInterface",
+    "CurvesComputationInterface",
+    "IbfTaskComputationInterface",
+    "SupplyComputationInterface",
+    "IbfSupplyComputationInterface",
+    "IbfSupplyTaskComputationInterface",
+    "PreemptionTimeComputationInterface",
+    "PriorityDrivenComputationInterface",
+    "ScheduledComputationInterface",
+    "ProcessorStateCoverInterface",
+    "FactsPreemptionComputationInterface",
+    "BusyIntervalClassicalComputationInterface",
+    "FactsServiceOfJobsComputationInterface",
+    "PriorityInversionComputationInterface",
+    "WorkBearingReadinessComputationInterface",
+    "JobPropertiesExportInterface",
+    "ExistenceComputationInterface",
+    "HepAtPtComputationInterface",
+    "PiComputationInterface",
+    "PiBoundComputationInterface",
+    "ServiceInversionBusyPrefixComputationInterface",
+    "BusyIntervalServiceInversionComputationInterface",
+    "InterferenceComputationInterface",
+    "FactsInterferenceComputationInterface",
+    "RsIwInstantiationComputationInterface",
+    "ReadinessInterferenceComputationInterface",
+    "ReadinessAwareComputationInterface",
+    "FactsReadinessInterferenceComputationInterface",
+    "IwReadinessComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/IwReadinessLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/analysis_abstract_restricted_supply_iw_readiness_export_config.json",
+  "export_name": "IwReadiness",
+  "cert_dir": "certificates/analysis_abstract_restricted_supply_iw_readiness",
+  "chain": [
+    "ArrivalsSeqBaseAdapter",
+    "ArrivalsSeqOperations",
+    "ArrivalsSeqCorrespondence",
+    "ArrivalsCorrespondence",
+    "WorkloadCorrespondence",
+    "AbstractDefinitionsBaseAdapter",
+    "ServiceBaseAdapter",
+    "ServiceNatBoolOperations",
+    "AbstractDefinitionsArrivalOperations",
+    "AbstractDefinitionsClasses",
+    "AbstractDefinitionsNatBoolOperations",
+    "AbstractDefinitionsIntervalOperations",
+    "AbstractDefinitionsOperations",
+    "AbstractDefinitionsSums",
+    "AbstractDefinitionsLogical",
+    "ServiceIntervalOperations",
+    "ServiceScheduleOperations",
+    "AbstractDefinitionsPendingOperations",
+    "AbstractDefinitionsTaskOperations",
+    "AbstractDefinitionsBusyIntervalHelpers",
+    "AbstractRtaHelpers",
+    "JitterSvcBaseAdapter",
+    "JitterSvcNatBoolOperations",
+    "JitterSvcIntervalOperations",
+    "JitterSvcScheduleOperations",
+    "JitterSvcJobOperations",
+    "PreemptionParameterCorrespondence",
+    "TaskPreemptionParametersCorrespondence",
+    "IdealAbstractRtaHelpers",
+    "ArrivalSequenceBaseAdapter",
+    "ArrivalSequenceOperations",
+    "TaskScheduleCorrespondence",
+    "CurvesCorrespondence",
+    "RequestBoundFunctionCorrespondence",
+    "SequentialityCorrespondence",
+    "ServiceOfJobsCorrespondence",
+    "SupplyScheduleBaseAdapter",
+    "SupplyScheduleFiniteOperations",
+    "SupplyScheduleOperations",
+    "SupplyBaseAdapter",
+    "SupplyNatBoolOperations",
+    "SupplyIntervalOperations",
+    "SupplyCorrespondence",
+    "IbfTaskHelpers",
+    "IbfSupplyTaskCorrespondence",
+    "IbfTaskFullHelpers",
+    "ServiceInversionPredCorrespondence",
+    "InterferenceCorrespondence",
+    "AbstractDefinitionsBusyInterval",
+    "PriorityBaseAdapter",
+    "ReadinessInterferenceCorrespondence",
+    "ReadinessAwareCorrespondence",
+    "IwReadinessCorrespondence"
+  ],
+  "audit_module": "IwReadinessAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/IwReadinessImportedTypeAudit.v",
+  "assumption_config": "certificates/analysis_abstract_restricted_supply_iw_readiness/iw_readiness_assumption_config.json",
+  "lean_axiom_config": "certificates/analysis_abstract_restricted_supply_iw_readiness/iw_readiness_lean_axiom_config.json",
+  "computational": [],
+  "principal": {},
+  "helpers": [],
+  "previous_status": "analysis_facts_shifted_job_costs_module_status.json",
+  "previous_files": 315,
+  "previous_decls": 1961,
+  "input_relations": [
+    "processor states by the accepted two-sided SvcProcessorStateRel together with the pointwise supply_on relation (both Service generations derived from it), schedules by SvcScheduleRel (covered)",
+    "job_arrival, job_cost pointwise, JobTask by AdJobTaskRel",
+    "arrival sequences, schedules, JLFP policies, readiness instances (at the fixed schedule pair, after a binder reordering), jobs, tasks and instants covered in both directions"
+  ],
+  "coverage_for_inner_binders": [
+    "processor states",
+    "arrival sequences",
+    "schedules",
+    "JLFP policies",
+    "JobReady",
+    "jobs",
+    "tasks",
+    "instants"
+  ],
+  "lean_representation_note": "a Boolean in `Prop` position is `= true`; `a < b <= c` is `(decide (a < b) && decide (b \u2264 c)) = true`; `t.+1` is `t + 1`; `j \\in s` is `decide (j \u2208 s) = true`; instance inputs quantified after a hypothesis are `\u2200 [..]`-free explicit class variables as in the elaborated types",
+  "export_diagnosis": "the accepted RS iw_instantiation export root (without statements) merged with the accepted readiness-interference facts root, plus the two local instances and the eighteen statements",
+  "extra_source_patches": [],
+  "extra_artifacts": [
+    {
+      "from": "analysis_definitions_service_inversion_readiness_aware_final/source/ReadinessAwareSemanticSource.vo",
+      "to": "source/ReadinessAwareSemanticSource.vo",
+      "manifest": "analysis_definitions_service_inversion_readiness_aware",
+      "key": "source_vo_sha256"
+    }
+  ],
+  "extra_olean_artifacts": [
+    {
+      "from": "analysis_facts_model_rbf_final/olean/Prosa/Analysis/Facts/Model/Workload.olean",
+      "to": "Prosa/Analysis/Facts/Model/Workload.olean",
+      "manifest": "analysis_facts_model_workload",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_behavior_all_final/olean/Prosa/Analysis/Facts/Behavior/Deadlines.olean",
+      "to": "Prosa/Analysis/Facts/Behavior/Deadlines.olean",
+      "manifest": "analysis_facts_behavior_deadlines",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_behavior_all_final/olean/Prosa/Analysis/Facts/Behavior/All.olean",
+      "to": "Prosa/Analysis/Facts/Behavior/All.olean",
+      "manifest": "analysis_facts_behavior_all",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "model_task_preemption_parameters_final/olean/Prosa/Model/Task/Preemption/Parameters.olean",
+      "to": "Prosa/Model/Task/Preemption/Parameters.olean",
+      "manifest": "model_task_preemption_parameters",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_preemption_rtc_threshold_preemptive_final/olean/Prosa/Analysis/Facts/Preemption/RtcThreshold/JobPreemptable.olean",
+      "to": "Prosa/Analysis/Facts/Preemption/RtcThreshold/JobPreemptable.olean",
+      "manifest": "analysis_facts_preemption_rtc_threshold_job_preemptable",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_model_rbf_final/olean/Prosa/Model/Task/AbsoluteDeadline.olean",
+      "to": "Prosa/Model/Task/AbsoluteDeadline.olean",
+      "manifest": "model_task_absolute_deadline",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_model_rbf_final/olean/Prosa/Analysis/Definitions/Schedulability.olean",
+      "to": "Prosa/Analysis/Definitions/Schedulability.olean",
+      "manifest": "analysis_definitions_schedulability",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_abstract_restricted_supply_search_space_fp_final/olean/Prosa/Analysis/Abstract/SearchSpace.olean",
+      "to": "Prosa/Analysis/Abstract/SearchSpace.olean",
+      "manifest": "analysis_abstract_search_space",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_readiness_basic_final/olean/Prosa/Analysis/Definitions/Readiness.olean",
+      "to": "Prosa/Analysis/Definitions/Readiness.olean",
+      "manifest": "analysis_definitions_readiness",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_model_rbf_final/olean/Prosa/Analysis/Definitions/RequestBoundFunction.olean",
+      "to": "Prosa/Analysis/Definitions/RequestBoundFunction.olean",
+      "manifest": "analysis_definitions_request_bound_function",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_model_rbf_final/olean/Prosa/Analysis/Definitions/Workload/Bounded.olean",
+      "to": "Prosa/Analysis/Definitions/Workload/Bounded.olean",
+      "manifest": "analysis_definitions_workload_bounded",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_model_rbf_final/olean/Prosa/Analysis/Facts/Model/Rbf.olean",
+      "to": "Prosa/Analysis/Facts/Model/Rbf.olean",
+      "manifest": "analysis_facts_model_rbf",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_model_sequential_final/olean/Prosa/Analysis/Facts/Model/Sequential.olean",
+      "to": "Prosa/Analysis/Facts/Model/Sequential.olean",
+      "manifest": "analysis_facts_model_sequential",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_model_rbf_final/olean/Prosa/Analysis/Facts/Model/TaskCost.olean",
+      "to": "Prosa/Analysis/Facts/Model/TaskCost.olean",
+      "manifest": "analysis_facts_model_task_cost",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_model_task_schedule_final/olean/Prosa/Analysis/Facts/Model/TaskSchedule.olean",
+      "to": "Prosa/Analysis/Facts/Model/TaskSchedule.olean",
+      "manifest": "analysis_facts_model_task_schedule",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "model_task_sequentiality_final/olean/Prosa/Model/Task/Sequentiality.olean",
+      "to": "Prosa/Model/Task/Sequentiality.olean",
+      "manifest": "model_task_sequentiality",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_abstract_ibf_supply_final/olean/Prosa/Analysis/Abstract/IBF/Supply.olean",
+      "to": "Prosa/Analysis/Abstract/IBF/Supply.olean",
+      "manifest": "analysis_abstract_ibf_supply",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_interference_final/olean/Prosa/Analysis/Facts/Interference.olean",
+      "to": "Prosa/Analysis/Facts/Interference.olean",
+      "manifest": "analysis_facts_interference",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_busy_interval_service_inversion_final/olean/Prosa/Analysis/Definitions/ServiceInversion/BusyPrefix.olean",
+      "to": "Prosa/Analysis/Definitions/ServiceInversion/BusyPrefix.olean",
+      "manifest": "analysis_definitions_service_inversion_busy_prefix",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_completes_at_final/olean/Prosa/Model/Schedule/PreemptionTime.olean",
+      "to": "Prosa/Model/Schedule/PreemptionTime.olean",
+      "manifest": "model_schedule_preemption_time",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_completes_at_final/olean/Prosa/Model/Schedule/PriorityDriven.olean",
+      "to": "Prosa/Model/Schedule/PriorityDriven.olean",
+      "manifest": "model_schedule_priority_driven",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_completes_at_final/olean/Prosa/Analysis/Facts/Model/Preemption.olean",
+      "to": "Prosa/Analysis/Facts/Model/Preemption.olean",
+      "manifest": "analysis_facts_model_preemption",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_priority_edf_final/olean/Prosa/Analysis/Definitions/WorkBearingReadiness.olean",
+      "to": "Prosa/Analysis/Definitions/WorkBearingReadiness.olean",
+      "manifest": "analysis_definitions_work_bearing_readiness",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_busy_interval_pi_final/olean/Prosa/Analysis/Definitions/PriorityInversion.olean",
+      "to": "Prosa/Analysis/Definitions/PriorityInversion.olean",
+      "manifest": "analysis_definitions_priority_inversion",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_busy_interval_pi_final/olean/Prosa/Analysis/Facts/Priority/Inversion.olean",
+      "to": "Prosa/Analysis/Facts/Priority/Inversion.olean",
+      "manifest": "analysis_facts_priority_inversion",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_busy_interval_pi_final/olean/Prosa/Analysis/Facts/BusyInterval/Existence.olean",
+      "to": "Prosa/Analysis/Facts/BusyInterval/Existence.olean",
+      "manifest": "analysis_facts_busy_interval_existence",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_busy_interval_pi_final/olean/Prosa/Analysis/Facts/BusyInterval/HepAtPt.olean",
+      "to": "Prosa/Analysis/Facts/BusyInterval/HepAtPt.olean",
+      "manifest": "analysis_facts_busy_interval_hep_at_pt",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_busy_interval_pi_final/olean/Prosa/Analysis/Facts/BusyInterval/Pi.olean",
+      "to": "Prosa/Analysis/Facts/BusyInterval/Pi.olean",
+      "manifest": "analysis_facts_busy_interval_pi",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_busy_interval_service_inversion_final/olean/Prosa/Analysis/Facts/BusyInterval/ServiceInversion.olean",
+      "to": "Prosa/Analysis/Facts/BusyInterval/ServiceInversion.olean",
+      "manifest": "analysis_facts_busy_interval_service_inversion",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_busy_interval_pi_bound_final/olean/Prosa/Analysis/Facts/BusyInterval/PiBound.olean",
+      "to": "Prosa/Analysis/Facts/BusyInterval/PiBound.olean",
+      "manifest": "analysis_facts_busy_interval_pi_bound",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_readiness_interference_final/olean/Prosa/Analysis/Definitions/ReadinessInterference.olean",
+      "to": "Prosa/Analysis/Definitions/ReadinessInterference.olean",
+      "manifest": "analysis_definitions_readiness_interference",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_readiness_interference_final/olean/Prosa/Analysis/Definitions/ServiceInversion/ReadinessAware.olean",
+      "to": "Prosa/Analysis/Definitions/ServiceInversion/ReadinessAware.olean",
+      "manifest": "analysis_definitions_service_inversion_readiness_aware",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_readiness_interference_final/olean/Prosa/Analysis/Facts/ReadinessInterference.olean",
+      "to": "Prosa/Analysis/Facts/ReadinessInterference.olean",
+      "manifest": "analysis_facts_readiness_interference",
+      "key": "production_olean_sha256"
+    }
+  ],
+  "extra_generated_sources": [],
+  "export_env": {
+    "LEAN4EXPORT_PRESERVE_REDUCIBLE_THEOREM_TYPES": "1"
+  }
+}

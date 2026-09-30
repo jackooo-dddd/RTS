@@ -1,0 +1,8 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedLcmseqSpec.
+
+Check ImportedLcmseqSpec.Prosa_Util_Lcmseq_lcml.
+Check ImportedLcmseqSpec.Prosa_Util_Lcmseq_int_divides_lcm_in_seq.
+Check ImportedLcmseqSpec.Prosa_Util_Lcmseq_lcm_seq_divides_lcm_super.
+Check ImportedLcmseqSpec.Prosa_Util_Lcmseq_lcm_seq_is_mult_of_all_ints.
+Check ImportedLcmseqSpec.Prosa_Util_Lcmseq_all_pos_implies_lcml_pos.

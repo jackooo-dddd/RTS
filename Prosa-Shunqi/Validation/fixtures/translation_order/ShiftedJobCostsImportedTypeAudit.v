@@ -1,0 +1,6 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedShiftedJobCosts.
+
+Check ImportedShiftedJobCosts.Prosa_Analysis_Facts_ShiftedJobCosts_job_costs_shifted.
+Check ImportedShiftedJobCosts.Prosa_Analysis_Facts_ShiftedJobCosts_job_costs_in_oi.
+Check ImportedShiftedJobCosts.Prosa_Analysis_Facts_ShiftedJobCosts_job_costs_shifted_valid.

@@ -1,0 +1,5 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedDynamicSuspension.
+
+Check ImportedDynamicSuspension.Prosa_Model_Task_Suspension_Dynamic_TaskTotalSuspension.
+Check ImportedDynamicSuspension.Prosa_Model_Task_Suspension_Dynamic_valid_dynamic_suspensions.

@@ -1,0 +1,7 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedJobConstructor.
+
+Check ImportedJobConstructor.Prosa_Implementation_Definitions_JobConstructor_Task.
+Check ImportedJobConstructor.Prosa_Implementation_Definitions_JobConstructor_Job.
+Check ImportedJobConstructor.Prosa_Implementation_Definitions_JobConstructor_generate_job_at.
+Check ImportedJobConstructor.Prosa_Implementation_Definitions_JobConstructor_generate_jobs_at.

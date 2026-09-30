@@ -1,0 +1,8 @@
+import Prosa.Analysis.Facts.ReadinessInterference
+set_option pp.fieldNotation false
+
+#check @Prosa.Analysis.Facts.ReadinessInterference.no_hep_ready_implies_no_another_hep_interference
+#check @Prosa.Analysis.Facts.ReadinessInterference.no_hep_ready_implies_no_service_inversion
+
+#print axioms Prosa.Analysis.Facts.ReadinessInterference.no_hep_ready_implies_no_another_hep_interference
+#print axioms Prosa.Analysis.Facts.ReadinessInterference.no_hep_ready_implies_no_service_inversion

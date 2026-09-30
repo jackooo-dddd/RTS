@@ -68,7 +68,7 @@ def blank_comments(text: str) -> str:
     return "".join(out)
 
 
-def active_context(text: str, stop: int) -> list[str]:
+def active_context(text: str, stop: int, self_named_instance_context: bool = False) -> list[str]:
     frames: list[list[str]] = [[]]
     lines = blank_comments(text[:stop]).splitlines()
     i = 0
@@ -108,9 +108,32 @@ def active_context(text: str, stop: int) -> list[str]:
             # (statements name these instances explicitly via printer repairs).
             body = " ".join(command).split(":=", 1)[1] if ":=" in " ".join(command) else ""
             if re.search(rf"(?<![\w.']){re.escape(m.group(1))}(?![\w'])", body):
+                if self_named_instance_context:
+                    # opt-in (--self-named-instance-context): a later copied context
+                    # line (e.g. a section `Let` stated with implicit instances)
+                    # relies on this instance, so re-declare it as a section-local
+                    # `Let` under a fresh name, registered as a local instance.  Its
+                    # body names the extracted helper block of the same name, emitted
+                    # earlier in the module, which is definitionally the source instance.
+                    indent = lines[i - len(command) + 1][: len(lines[i - len(command) + 1]) - len(stripped)]
+                    first = re.sub(rf"#\[local\]\s*Instance\s+{re.escape(m.group(1))}\b",
+                                   f"Let {m.group(1)}__source_context", command[0], count=1)
+                    frames[-1].extend([first, *command[1:],
+                                       f"{indent}#[local] Existing Instance {m.group(1)}__source_context."])
                 i += 1
                 continue
             indent = lines[i - len(command) + 1][: len(lines[i - len(command) + 1]) - len(stripped)]
+            if re.match(r"\s*\{(?!\|)", body):
+                # method syntax `{ m := ... }` is only valid in an Instance
+                # declaration, not in a `Let`: copy the instance as a
+                # context-only local instance under a fresh name (registered
+                # for implicit resolution in this copied context only; the
+                # extracted helper block keeps its own name and bytes).
+                first = re.sub(rf"#\[local\]\s*Instance\s+{re.escape(m.group(1))}\b",
+                               f"#[local] Instance {m.group(1)}__source_context", command[0], count=1)
+                frames[-1].extend([first, *command[1:]])
+                i += 1
+                continue
             first = re.sub(r"#\[local\]\s*Instance\s+", "Let ", command[0], count=1)
             frames[-1].extend([first, *command[1:], f"{indent}#[local] Existing Instance {m.group(1)}."])
         i += 1
@@ -203,6 +226,13 @@ def main() -> None:
               "recorded in metadata with acquisition mode BODY_PARENTHESIZED"),
     )
     parser.add_argument(
+        "--self-named-instance-context", action="store_true",
+        help=("copy a source-local instance that re-exposes the imported constant of the "
+              "same name into later copied Section contexts as a context-only local "
+              "instance under a fresh name (bound to the earlier extracted helper block); "
+              "recorded in metadata"),
+    )
+    parser.add_argument(
         "--source-order", action="store_true",
         help="emit the requested blocks in source-file order rather than request order "
              "(needed when a helper block depends on a later-requested declaration)",
@@ -290,6 +320,7 @@ def main() -> None:
             "dropped_irrelevant_imports": sorted(requested_drop_imports),
             "added_validation_imports": args.add_import,
             **({"printer_repairs": args.printer_repair} if args.printer_repair else {}),
+            **({"self_named_instance_context": True} if args.self_named_instance_context else {}),
             **({"body_parenthesizations": {n: {"old": o, "new": w} for n, (o, w) in parenthesizations.items()}}
                if parenthesizations else {}),
         },
@@ -299,7 +330,7 @@ def main() -> None:
         requested = sorted(requested, key=lambda name: declarations[name][0])
     for index, name in enumerate(requested):
         position, kind, block = declarations[name]
-        context = active_context(text, position)
+        context = active_context(text, position, args.self_named_instance_context)
         omitted_context = bool(
             args.omit_theorem_context_when_elaborated
             and elaborated_evidence is not None and kind == "theorem"

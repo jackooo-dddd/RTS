@@ -1,0 +1,7 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedSuspension.
+
+Check ImportedSuspension.Prosa_Model_Readiness_Suspension_JobSuspension.
+Check ImportedSuspension.Prosa_Model_Readiness_Suspension_suspension_has_passed.
+Check ImportedSuspension.Prosa_Model_Readiness_Suspension_suspended.
+Check ImportedSuspension.Prosa_Model_Readiness_Suspension_total_suspension.

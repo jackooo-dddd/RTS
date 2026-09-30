@@ -1,0 +1,144 @@
+{
+  "mode": "proof_independent_semantic_source_signature",
+  "source_file": "analysis/facts/model/overheads/sbf/fp.v",
+  "source_file_sha256": "cc9f38e7226fe1a895e0a4588801d098e15d0c7ade02a4470200e68f793ce431",
+  "source_commit": "414e66760333eaa4ef78c685bcf53291c527a548",
+  "generated_file": "/Users/shunqiwang/CityuHK/Research/Lean/TranslationProof/Prosa-Shunqi/Validation/.work/experiments/analysis_facts_model_overheads_sbf_fp_final/source/OverheadsSbfFpSemanticSource.v",
+  "transformations": {
+    "computational": "byte-identical declaration block",
+    "theorem": "verified post-Section Check type converted to a definition with its declared Prop/Type sort preserved; exact source header retained as provenance; opaque proof omitted",
+    "local_bindings": {
+      "fp_blackout_bound": "fp_blackout_bound ts DB CSB CRPDB tsk"
+    },
+    "dropped_irrelevant_imports": [
+      "Require Export prosa.analysis.definitions.sbf.busy.",
+      "Require Export prosa.analysis.facts.model.overheads.blackout_bound.",
+      "Require Export prosa.analysis.facts.model.overheads.schedule_change_bound.",
+      "Require Export prosa.analysis.facts.readiness.basic."
+    ],
+    "added_validation_imports": [
+      "Require Export prosa.ScheduleChangeBoundSemanticSource.",
+      "Export ScheduleChangeBoundSemanticSource.",
+      "Require Export prosa.OverheadResourceModelSemanticSource.",
+      "Export OverheadResourceModelSemanticSource.",
+      "Require Export prosa.SbfBusySemanticSource.",
+      "Export SbfBusySemanticSource.",
+      "Require Export prosa.GeneratedUnitGrowthSource.",
+      "Export GeneratedUnitGrowthSource.",
+      "Require Export prosa.analysis.definitions.sbf.sbf.",
+      "Require Export prosa.analysis.definitions.sbf.pred.",
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq bigop.",
+      "Require Import prosa.behavior.all."
+    ],
+    "printer_repairs": [
+      "valid_schedule sched arr_seq=@valid_schedule _ _ _ sched _ (@basic_ready_instance _ _ _ _) arr_seq",
+      "work_conserving arr_seq sched=@work_conserving _ _ _ _ (@basic_ready_instance _ _ _ _) arr_seq sched",
+      "respects_FP_policy_at_preemption_point arr_seq sched FP=@respects_FP_policy_at_preemption_point _ _ _ _ _ _ _ (@basic_ready_instance _ _ _ _) arr_seq sched FP"
+    ]
+  },
+  "declarations": {
+    "fp_blackout_bound": {
+      "source_kind": "computational",
+      "acquisition_mode": "BODY_EXACT",
+      "source_block_sha256": "5181cc481702355811807828ed61188b4f4055bf66c14a95facb98bdd9fb0c66",
+      "generated_text_sha256": "5181cc481702355811807828ed61188b4f4055bf66c14a95facb98bdd9fb0c66",
+      "source_statement_sha256": null,
+      "normalized_statement_sha256": null,
+      "elaborated_type_sha256": null,
+      "elaborated_type_evidence": null,
+      "statement_sort": null,
+      "context": [
+        "  Context {Task : TaskType}.",
+        "  Context {FP : FP_policy Task}.",
+        "  Context `{MaxArrivals Task}.",
+        "  Variable ts : seq Task.",
+        "  Variable DB CSB CRPDB : duration.",
+        "  Variable tsk : Task."
+      ],
+      "omitted_context_for_elaborated_theorem": false,
+      "local_bindings": {}
+    },
+    "fp_ovh_sbf_slow": {
+      "source_kind": "computational",
+      "acquisition_mode": "BODY_EXACT",
+      "source_block_sha256": "e697e34586ee0cb9b5457f79e9def0a9c36124c8d4b42d14ee58af5c7aea944e",
+      "generated_text_sha256": "e697e34586ee0cb9b5457f79e9def0a9c36124c8d4b42d14ee58af5c7aea944e",
+      "source_statement_sha256": null,
+      "normalized_statement_sha256": null,
+      "elaborated_type_sha256": null,
+      "elaborated_type_evidence": null,
+      "statement_sort": null,
+      "context": [
+        "  Context {Task : TaskType}.",
+        "  Context {FP : FP_policy Task}.",
+        "  Context `{MaxArrivals Task}.",
+        "  Variable ts : seq Task.",
+        "  Variable DB CSB CRPDB : duration.",
+        "  Variable tsk : Task.",
+        "  Let fp_ovh_sbf : SupplyBoundFunction :=",
+        "    fun \u0394 => \u0394 - fp_blackout_bound \u0394.",
+        "  #[local] Existing Instance fp_ovh_sbf."
+      ],
+      "omitted_context_for_elaborated_theorem": false,
+      "local_bindings": {
+        "fp_blackout_bound": "fp_blackout_bound ts DB CSB CRPDB tsk"
+      }
+    },
+    "overheads_sbf_monotone": {
+      "source_kind": "theorem",
+      "acquisition_mode": "STATEMENT_EXACT_PROOF_OMITTED",
+      "source_block_sha256": "eaea08e4fcf7aa030fa4ab4cb56708ce49a47c276cb33dfa509fdcc842a200fe",
+      "generated_text_sha256": "5e08c126a957d0188ba75017298ef18be74d2b837f2cba47df3c43be5af65bb0",
+      "source_statement_sha256": "d6c65581cabe4867de2a289f05531daa122c07ca89e6f5b9f1cf7d121ae12647",
+      "normalized_statement_sha256": "36d1aa7cc7a0842a83d646ec50b4b85e29d3567a3297e7f5b5a9ba5d92c9f110",
+      "elaborated_type_sha256": "c0724295a9bb273d92ea4d449e32f42069db91155c8298583890f340bbe83040",
+      "elaborated_type_evidence": "ELABORATED_ROCQ_CHECK",
+      "statement_sort": "Prop",
+      "context": [],
+      "omitted_context_for_elaborated_theorem": true,
+      "local_bindings": {}
+    },
+    "fp_blackout_bound_monotone": {
+      "source_kind": "theorem",
+      "acquisition_mode": "STATEMENT_EXACT_PROOF_OMITTED",
+      "source_block_sha256": "8d5c679b3ce52dbeac0789185032cce0f4356b407130cb3ccb7783a1830b41d3",
+      "generated_text_sha256": "e72fcb3e55f808edb47ec93de49cfbce7d0909afcffc694d73ccec006b16bfdb",
+      "source_statement_sha256": "630e1f0d43476a0db044c6402ebaf171a6332fb41a05b7d8373c812a53a36c16",
+      "normalized_statement_sha256": "7e4e13dad128c50a8819469312e432ea5a5eb4dd1643352ecc0548920594b98f",
+      "elaborated_type_sha256": "8a81a80b4287fc0658dc9ff67b6b7878d6816c69fb838465abf0c84b4c88f908",
+      "elaborated_type_evidence": "ELABORATED_ROCQ_CHECK",
+      "statement_sort": "Prop",
+      "context": [],
+      "omitted_context_for_elaborated_theorem": true,
+      "local_bindings": {}
+    },
+    "overheads_sbf_unit": {
+      "source_kind": "theorem",
+      "acquisition_mode": "STATEMENT_EXACT_PROOF_OMITTED",
+      "source_block_sha256": "47965745432d35163334d1f177f5cce8f5a98dc697d04f6ca4bebcb1b72b2653",
+      "generated_text_sha256": "52c418f6a9cebacc47f2c150f79e7920a071a360d491197fca171a7553a837dc",
+      "source_statement_sha256": "8f7540cc0449d77c62efcbacd6112a3b450e2f1cb3ea1d57983e16ff037224f7",
+      "normalized_statement_sha256": "daf41dba2539af25f912c0a7dc98db0dbed2ae70d92a38fe4faaa629254ef670",
+      "elaborated_type_sha256": "55dcdcce7758e71527ba79b0da70d10e9a9eddb8d9ccf2104dd631102c0d69f4",
+      "elaborated_type_evidence": "ELABORATED_ROCQ_CHECK",
+      "statement_sort": "Prop",
+      "context": [],
+      "omitted_context_for_elaborated_theorem": true,
+      "local_bindings": {}
+    },
+    "overheads_sbf_busy_valid": {
+      "source_kind": "theorem",
+      "acquisition_mode": "STATEMENT_EXACT_PROOF_OMITTED",
+      "source_block_sha256": "244d7e00f764623b3471af47b42b2ad65d75a6f0f3f4a5b33d8a5f0e3af229a1",
+      "generated_text_sha256": "6ed1339ed5db15302f8edbaf21c014a96e99f1425e8a848f2a85947b04bebe16",
+      "source_statement_sha256": "2f0ede2434320e028deff201e9c7560e49caa64dd277f190ed3eebc44032d29d",
+      "normalized_statement_sha256": "d7d8d2b4eb7a5620a963494dae019fcc7bc39bb66c74e457d2672b79df1294c3",
+      "elaborated_type_sha256": "01bd73cd59f8a9440b0e99aee4254130bc4bdb2875310eaf86df6e398f875376",
+      "elaborated_type_evidence": "ELABORATED_ROCQ_CHECK",
+      "statement_sort": "Prop",
+      "context": [],
+      "omitted_context_for_elaborated_theorem": true,
+      "local_bindings": {}
+    }
+  }
+}

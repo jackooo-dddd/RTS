@@ -1,0 +1,7 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedOptimalityEdf.
+
+Check ImportedOptimalityEdf.Prosa_Results_Optimality_Edf_EDF_optimality.
+Check ImportedOptimalityEdf.Prosa_Results_Optimality_Edf_EDF_WC_optimality.
+Check ImportedOptimalityEdf.Prosa_Results_Optimality_Edf_EDF_priority_compliant_WC_optimality.
+Check ImportedOptimalityEdf.Prosa_Results_Optimality_Edf_weak_EDF_optimality.

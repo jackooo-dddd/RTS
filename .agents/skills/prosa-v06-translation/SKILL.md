@@ -327,6 +327,21 @@ accepted artifact hash，复用上游模块，只 fresh build 当前文件和必
   `lean_type_audit`、`certificate_compile`（`COMPILED=n;REUSED=m`）、`imported_type_audit`、
   `lean_axiom_audit`、`assumption_audit`。
 - 修改证书后直接重跑 `check`（已编译前缀自动复用），不再需要手工只编尾部模块。
+- **fingerprint 显示规则（2026-09-29 新增）**：`TYPE_EQUAL_MODULO_MATHCOMP_BIGOP_OPERAND_PARENS`。官方 MathComp 2.4
+  把位于类型末尾、作为 `*` 右操作数的 big operator 打印为 `k * (\sum_(…) …)`，验证工具链 MathComp 2.6 打印同一项为
+  `k * \sum_(…) …`（两个 switch 在纯 MathComp 环境中复现）。规则只删除一个以类型末尾结束的 `* (\sum_…)` 括号组，
+  且要求结果与抽取语句逐字相等；其后跟任何内容的括号组不处理。它排在既有规则之后，已接受结果不受影响。使用时另做
+  `Set Printing All` 对照（hazard check）。备份：scratchpad `translation_file_pipeline.pre_bigop.py`。
+- **fingerprint 自身模块限定修复（2026-09-29 扩展）**：记录的 printer repair `qual.x=x` 原先只接受本文件 inventory
+  中的声明名 `x`；现在也接受本文件 `extraction.helper_blocks` 中的名字（源文件局部 `#[local] Instance` 等，按字节从本文件
+  抽取）。例：`analysis/facts/model/exceedance/SBF.v` 的语句在官方环境中打印 `SBF.EPS_SBF_inst e`。条件仍是“本文件的声明
+  + 本文件自身的模块限定前缀”，不接受其它文件的名字。备份：scratchpad `translation_file_pipeline.pre_helperqual.py`。
+- **语句中的 `Finset.Ico` 求和**：Lean 语句若直接含 `∑ t ∈ Finset.Ico a b, f t`，导出闭包会拉入
+  `Nat.instLocallyFiniteOrder`（omega/`Nat.Linear` 证明），Rocq import 会卡住（>30 分钟）。做法：在 export config
+  `normalization.theorem_types` 列出这些语句、`subexpression_heads = ["Finset.sum"]`，并在 spec 中设
+  `export_env = {"LEAN4EXPORT_PRESERVE_REDUCIBLE_THEOREM_TYPES": "1"}`（exporter 把它投影为 `List.foldr Nat.add`
+  over `List.range'`，并做 defeq 检查）。投影只匹配字面 `α = Nat` 的 `Finset.Ico`：若端点类型是 `instant`，
+  须写 `Finset.Ico (α := Nat) t1 t2`，否则 exporter 对整个和做 `reduceAll`，展开出 Multiset/`Quot` 内部结构，import 同样卡住。
 - **fixture `.olean` 缓存（prepare）**：`.work/cache/lean_fixtures/<key>/`。key 覆盖 fixture 源码字节、
   Lean binary/版本、`lake-manifest`、`lean-toolchain`、编译 options 与包集合，以及该 fixture 实际 import
   闭包（由 `scripts/olean_imports.lean` 读取 `.olean` import 表）中每个 Prosa/Validation `.olean` 的 hash。

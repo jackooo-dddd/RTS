@@ -35,8 +35,19 @@ variable (H_response_time_bounded : job_response_time_bound sched j R = true)
 -- include 只解决一个很特殊的问题：对于 theorem，如果某个 section variable 没有出现在 theorem 的 statement/header 里，但 proof 需要依赖它，就要 include。
 include H_response_time_bounded
 
-/- 
--/
+/- include 在这里面的意义
+sched和j不需要include，因为他们已经出现在 theorem 的 statement/header 里。
+Job虽然没有直接写在statement里，但是(j : Job)已经必须被加入 include，所以不需要include Job
+Lean 光看这个 statement，会认为 theorem 只需要：sched， j， 以及它们的类型依赖
+H_response_time_bounded 要 include因为statement里面完全没有 H。 虽然 H 没写在 theorem 的结论里，但是这个 theorem 就是要在 H 这个假设下成立。
+
+为什么 R 也没 include？
+因为 H 的类型是：
+H_response_time_bounded :
+  job_response_time_bound sched j R = true
+要把 H_response_time_bounded 加进 theorem，Lean 必须能写出：
+(H_response_time_bounded : job_response_time_bound sched j R = true)
+所以自然必须先有：(R : Nat) -/
 private theorem completion_witness :
     ∃ t : instant, completed_by sched j t = true := by
   refine ⟨job_arrival j + R, ?_⟩

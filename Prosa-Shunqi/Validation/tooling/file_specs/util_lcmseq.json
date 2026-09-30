@@ -1,0 +1,73 @@
+{
+  "rank": 30,
+  "layer": 2,
+  "tag": "LCM",
+  "slug": "util_lcmseq",
+  "source": "util/lcmseq.v",
+  "dependencies": [
+    "util/tactics.v"
+  ],
+  "declaration_count": 5,
+  "base_run": "model_priority_fifo_final",
+  "base_checks": [
+    {
+      "manifest": "model_priority_fifo",
+      "olean": "Prosa/Model/Priority/Fifo.olean",
+      "vo": "model/priority/fifo.vo"
+    }
+  ],
+  "source_mode": "extract",
+  "fingerprint_probe": "Validation/fixtures/translation_order/LcmseqSpecStatementProbe.v",
+  "production": "Prosa/Util/Lcmseq.lean",
+  "production_olean": "Prosa/Util/Lcmseq.olean",
+  "lean_namespace": "Prosa.Util.Lcmseq",
+  "fixtures": [
+    "LcmseqSpecComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/LcmseqSpecLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/util_lcmseq_export_config.json",
+  "export_name": "LcmseqSpec",
+  "cert_dir": "certificates/util_lcmseq",
+  "chain": [
+    "NatSubCorrespondence",
+    "LcmseqBaseAdapter",
+    "LcmseqDivModAdapter",
+    "LcmseqCorrespondence",
+    "LcmseqCertificate",
+    "LcmseqSpecCorrespondence"
+  ],
+  "audit_module": "LcmseqSpecAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/LcmseqSpecImportedTypeAudit.v",
+  "assumption_config": "certificates/util_lcmseq/lcmseq_assumption_config.json",
+  "lean_axiom_config": "certificates/util_lcmseq/lcmseq_lean_axiom_config.json",
+  "computational": [
+    "lcml"
+  ],
+  "principal": {},
+  "helpers": [],
+  "previous_status": "implementation_definitions_job_constructor_module_status.json",
+  "previous_files": 306,
+  "previous_decls": 1912,
+  "input_relations": [
+    "Nat values by SubNatRel; Nat lists by the canonical list map"
+  ],
+  "coverage_for_inner_binders": [
+    "naturals",
+    "Nat lists"
+  ],
+  "lean_representation_note": "`x %| y` is Nat divisibility `x \u2223 y`; `x \\in xs` in Prop position is `x \u2208 xs`; `lcmn` is `Nat.lcm`; `foldr` is `List.foldr`",
+  "extra_pinned_sources": [],
+  "extra_artifacts": [],
+  "export_diagnosis": "the accepted fifo export root plus the list LCM, its four lemma statements and the arithmetic interface with proof bodies",
+  "extraction": {
+    "module": "LcmseqSemanticSource",
+    "helper_blocks": [],
+    "drop_imports": [
+      "Require Export prosa.util.tactics."
+    ],
+    "add_imports": [],
+    "printer_repairs": [],
+    "note": "the list LCM is a byte-identical computational block; the four lemma statements are the authoritative elaborated types (proofs omitted); the proof-only util/tactics import is dropped"
+  },
+  "extra_olean_artifacts": []
+}

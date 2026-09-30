@@ -431,6 +431,8 @@ def prepare(spec: Spec) -> None:
                 cmd += [flag, item]
         if x.get("source_order"):
             cmd.append("--source-order")
+        if x.get("self_named_instance_context"):
+            cmd.append("--self-named-instance-context")
         for item in x.get("body_parenthesizations", []):
             cmd += ["--body-parenthesization", "\t".join((item["name"], item["old"], item["new"]))]
         if x.get("omit_theorem_context", True):
@@ -726,8 +728,45 @@ def fingerprint_matches(spec: Spec, rows: list[dict]) -> dict:
         # rule above) when another `x` was in scope in the official environment;
         # the extraction repairs exactly that qualifier to the local name
         # (recorded printer repair `qual.x=x` for a declaration `x` of this
-        # file).  Accept exactly those recorded repairs, nothing else.
-        own_names = {r["declaration_name"] for r in inventory(spec)}
+        # file, including a source-local helper block of this file such as a
+        # `#[local] Instance` named by the statements).  Accept exactly those
+        # recorded repairs, nothing else.
+        # MathComp 2.4 (official evidence) prints a big operator that is the right
+        # operand of `*` at the end of a type with parentheses (`k * (\\sum_(i <- r) F i)`);
+        # MathComp 2.6 (the validation toolchain) prints the same term without them
+        # (`k * \\sum_(i <- r) F i`).  Accept exactly the removal of such a final
+        # parenthesised `\\sum_` operand, nothing else.
+        mc_sum = ref
+        opener = mc_sum.rfind(" * (\\sum_")
+        if opener >= 0:
+            start, depth, close = opener + 3, 0, None
+            for k in range(start, len(mc_sum)):
+                depth += {"(": 1, ")": -1}.get(mc_sum[k], 0)
+                if depth == 0:
+                    close = k
+                    break
+            if close == len(mc_sum) - 1:
+                mc_sum = mc_sum[:start] + mc_sum[start + 1:close]
+        # Rocq 9.0 (official evidence) prints a lambda that is the body of
+        # ssreflect's `fun=>` (`fun _ => ...`) with parentheses
+        # (`fun=> (fun R : T => e)`); Rocq 9.3 (the validation toolchain) prints
+        # the same term without them (`fun=> fun R : T => e`).  Accept exactly the
+        # removal of the parentheses around such a `fun=>` body lambda, nothing else.
+        ssr_fun = ref
+        while (opener := ssr_fun.find("fun=> (fun ")) >= 0:
+            start, depth, close = opener + 6, 0, None
+            for k in range(start, len(ssr_fun)):
+                depth += {"(": 1, ")": -1}.get(ssr_fun[k], 0)
+                if depth == 0:
+                    close = k
+                    break
+            if close is None:
+                break
+            ssr_fun = ssr_fun[:start] + ssr_fun[start + 1:close] + ssr_fun[close + 1:]
+        # declarations of this same file: its inventory declarations and its
+        # source-local helper blocks (extracted byte-identically from this file)
+        own_names = {r["declaration_name"] for r in inventory(spec)} | \
+            set((spec.get("extraction") or {}).get("helper_blocks", []))
         own_repairs = [tuple(r.split("=", 1)) for r in
                        (spec.get("extraction") or {}).get("printer_repairs", [])]
         own_repairs = [(old, new) for old, new in own_repairs
@@ -740,6 +779,10 @@ def fingerprint_matches(spec: Spec, rows: list[dict]) -> dict:
                         and unparen != ref
                         else "TYPE_EQUAL_MODULO_MATHCOMP_ORDER_DEF_ABBREVIATION"
                         if body is not None and body == mc_order and mc_order != ref
+                        else "TYPE_EQUAL_MODULO_MATHCOMP_BIGOP_OPERAND_PARENS"
+                        if body is not None and body == mc_sum and mc_sum != ref
+                        else "TYPE_EQUAL_MODULO_SSR_FUN_WILDCARD_BODY_PARENS"
+                        if body is not None and body == ssr_fun and ssr_fun != ref
                         else "STATEMENT_BODY_EQUAL_MODULO_OWN_MODULE_QUALIFIER"
                         if own_repairs and body is not None and body == repaired and repaired != ref
                         else "MISMATCH")
