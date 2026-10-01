@@ -1,0 +1,351 @@
+# Proof-only Rocq 9.3 compatibility changes for the official proof closure of
+#   implementation/refinements/EDF/refinements.v
+# (Prosa v0.6 414e667, compiled under the pinned rocq93rc1 with CoqEAL 2.1.2 built locally, unchanged).
+# Only three kinds of change occur, none touching a statement:
+#  * util/tactics.v: `ssreflect.done` -> `Corelib.ssr.ssreflect_rw.done` in `Ltac done` (Rocq 9.3 moved the
+#    ssreflect `done`; same tactic);
+#  * util/seqset.v: `of phant T` -> `(_ : phant T)` (Rocq 9.3 no longer parses the `of` binder; same binder);
+#  * one added line `Set SsrOldRewriteGoalsOrder.` after the imports (restores the Rocq 9.0 order of
+#    `rewrite` side goals the official proof scripts were written for; file-local; no proof script changed).
+--- a/util/tactics.v
++++ b/util/tactics.v
+@@ -122,7 +122,7 @@
+ #[deprecated(since="prosa-0.6", note="use by or // instead")]
+ Ltac rt_eauto := eauto 4 with basic_rt_facts.
+ 
+-Ltac done := solve [ ssreflect.done | eauto 4 with basic_rt_facts ].
++Ltac done := solve [ Corelib.ssr.ssreflect_rw.done | eauto 4 with basic_rt_facts ].
+ #[export] Hint Resolve I : basic_rt_facts.
+ 
+ (** Note: [idtac] is a no-op. However, it suppresses the default obligation tactic,
+--- a/util/list.v
++++ b/util/list.v
+@@ -3,6 +3,7 @@
+ 
+ Require Import prosa.util.tactics.
+ Require Export prosa.util.supremum.
++Set SsrOldRewriteGoalsOrder.
+ 
+ (** * Maximum, First, and Last Element of Empty Lists *)
+ 
+--- a/util/bigcat.v
++++ b/util/bigcat.v
+@@ -2,6 +2,7 @@
+ Require Export prosa.util.tactics prosa.util.notation.
+ From mathcomp Require Import ssreflect ssrbool eqtype ssrnat seq fintype bigop.
+ Require Export prosa.util.tactics prosa.util.list.
++Set SsrOldRewriteGoalsOrder.
+ 
+ (** In this section, we introduce lemmas about the concatenation
+     operation performed over arbitrary sequences. *)
+--- a/util/div_mod.v
++++ b/util/div_mod.v
+@@ -1,5 +1,6 @@
+ From mathcomp Require Export ssreflect ssrbool eqtype ssrnat seq fintype bigop div ssrfun.
+ Require Export prosa.util.nat prosa.util.subadditivity.
++Set SsrOldRewriteGoalsOrder.
+ 
+ (** * Additional Lemmas about [divn] and [modn] *)
+ 
+--- a/util/sum.v
++++ b/util/sum.v
+@@ -3,6 +3,7 @@
+ Require Export prosa.util.notation.
+ Require Export prosa.util.rel.
+ Require Export prosa.util.nat.
++Set SsrOldRewriteGoalsOrder.
+ 
+ Section SumsOverSequences.
+ 
+--- a/util/seqset.v
++++ b/util/seqset.v
+@@ -21,7 +21,7 @@
+   HB.instance Definition _  setSubType := [isSub for _set_seq].
+   HB.instance Definition _ := [Equality of set by <:].
+   Canonical Structure mem_set_predType := PredType (fun (l : set) => mem_seq (_set_seq l)).
+-  Definition set_of of phant T := set.
++  Definition set_of (_ : phant T) := set.
+ 
+ End SeqSet.
+ Set Warnings "redundant-canonical-projection".
+--- a/util/unit_growth.v
++++ b/util/unit_growth.v
+@@ -1,5 +1,6 @@
+ From mathcomp Require Import ssreflect ssrbool eqtype ssrnat zify.zify.
+ Require Import prosa.util.tactics prosa.util.notation prosa.util.rel.
++Set SsrOldRewriteGoalsOrder.
+ 
+ (** We say that a function [f] is a unit growth function iff for any
+     time instant [t] it holds that [f (t + 1) <= f t + 1]. *)
+--- a/util/nondecreasing.v
++++ b/util/nondecreasing.v
+@@ -2,6 +2,7 @@
+ Require Export prosa.util.epsilon.
+ Require Export prosa.util.nat.
+ Require Export prosa.util.list.
++Set SsrOldRewriteGoalsOrder.
+ 
+ (** * Non-Decreasing Sequence and Distances *)
+ (** In this file we introduce the notion of a non-decreasing sequence. *)
+--- a/implementation/facts/extrapolated_arrival_curve.v
++++ b/implementation/facts/extrapolated_arrival_curve.v
+@@ -1,6 +1,7 @@
+ Require Export prosa.behavior.time.
+ Require Export prosa.util.all.
+ Require Export prosa.implementation.definitions.extrapolated_arrival_curve.
++Set SsrOldRewriteGoalsOrder.
+ 
+ (** In this file, we prove basic properties of the arrival-curve
+     prefix and the [extrapolated_arrival_curve] function. *)
+--- a/implementation/refinements/arrival_bound.v
++++ b/implementation/refinements/arrival_bound.v
+@@ -1,5 +1,6 @@
+ Require Export prosa.implementation.refinements.refinements.
+ Require Export prosa.implementation.definitions.arrival_bound.
++Set SsrOldRewriteGoalsOrder.
+ 
+ (** In this section, we define a generic version of arrival bound and
+     prove that it is isomorphic to the standard, natural-number-based
+--- a/analysis/facts/behavior/arrivals.v
++++ b/analysis/facts/behavior/arrivals.v
+@@ -1,6 +1,7 @@
+ Require Export prosa.behavior.all.
+ Require Export prosa.util.all.
+ Require Export prosa.model.task.arrivals.
++Set SsrOldRewriteGoalsOrder.
+ 
+ (** * Arrival Sequence *)
+ 
+--- a/analysis/facts/behavior/service.v
++++ b/analysis/facts/behavior/service.v
+@@ -3,6 +3,7 @@
+ Require Export prosa.analysis.definitions.schedule_prefix.
+ Require Export prosa.analysis.facts.behavior.supply.
+ Require Export prosa.analysis.facts.model.scheduled.
++Set SsrOldRewriteGoalsOrder.
+ 
+ 
+ (** * Service *)
+--- a/analysis/facts/behavior/completion.v
++++ b/analysis/facts/behavior/completion.v
+@@ -2,6 +2,7 @@
+ Require Export prosa.analysis.facts.behavior.service.
+ Require Export prosa.analysis.facts.behavior.arrivals.
+ Require Export prosa.analysis.definitions.schedule_prefix.
++Set SsrOldRewriteGoalsOrder.
+ 
+ (** * Completion *)
+ 
+--- a/analysis/facts/model/service_of_jobs.v
++++ b/analysis/facts/model/service_of_jobs.v
+@@ -3,6 +3,7 @@
+ Require Export prosa.analysis.facts.behavior.completion.
+ Require Export prosa.analysis.facts.busy_interval.quiet_time.
+ Require Export prosa.analysis.facts.model.uniprocessor.
++Set SsrOldRewriteGoalsOrder.
+ 
+ (** * Lemmas about Service Received by Sets of Jobs *)
+ (** In this file, we establish basic facts about the service received by _sets_ of jobs. *)
+--- a/analysis/facts/busy_interval/existence.v
++++ b/analysis/facts/busy_interval/existence.v
+@@ -3,6 +3,7 @@
+ Require Export prosa.analysis.facts.model.service_of_jobs.
+ Require Export prosa.analysis.definitions.work_bearing_readiness.
+ Require Export prosa.analysis.facts.priority.inversion.
++Set SsrOldRewriteGoalsOrder.
+ 
+ (** * Existence of Busy Interval for JLFP-models *)
+ (** In this module we derive a sufficient condition for existence of
+--- a/analysis/facts/busy_interval/pi.v
++++ b/analysis/facts/busy_interval/pi.v
+@@ -1,6 +1,7 @@
+ Require Export prosa.model.task.preemption.parameters.
+ Require Export prosa.analysis.facts.model.preemption.
+ Require Export prosa.analysis.facts.busy_interval.hep_at_pt.
++Set SsrOldRewriteGoalsOrder.
+ 
+ (** * Priority Inversion in a Busy Interval *)
+ (** In this module, we reason about priority inversion that occurs during a busy
+--- a/analysis/facts/behavior/deadlines.v
++++ b/analysis/facts/behavior/deadlines.v
+@@ -1,4 +1,5 @@
+ Require Export prosa.analysis.facts.behavior.completion.
++Set SsrOldRewriteGoalsOrder.
+ 
+ (** * Deadlines *)
+ 
+--- a/analysis/facts/model/task_arrivals.v
++++ b/analysis/facts/model/task_arrivals.v
+@@ -1,6 +1,7 @@
+ Require Export prosa.model.task.arrivals.
+ Require Export prosa.util.all.
+ Require Export prosa.analysis.facts.behavior.arrivals.
++Set SsrOldRewriteGoalsOrder.
+ 
+ (** In this file we provide basic properties related to tasks on arrival sequences. *)
+ Section TaskArrivals.
+--- a/analysis/facts/priority/edf.v
++++ b/analysis/facts/priority/edf.v
+@@ -70,6 +70,7 @@
+ Require Export prosa.analysis.facts.priority.inversion.
+ Require Export prosa.analysis.facts.priority.sequential.
+ Require Export prosa.analysis.facts.model.sequential.
++Set SsrOldRewriteGoalsOrder.
+ 
+ (** In this section, we prove that the EDF priority policy implies that tasks
+     are executed sequentially. *)
+--- a/analysis/facts/model/workload.v
++++ b/analysis/facts/model/workload.v
+@@ -1,6 +1,7 @@
+ Require Export prosa.model.aggregate.workload.
+ Require Export prosa.analysis.facts.behavior.arrivals.
+ Require Export prosa.analysis.facts.model.task_arrivals.
++Set SsrOldRewriteGoalsOrder.
+ 
+ (** * Lemmas about Workload of Sets of Jobs *)
+ (** In this file, we establish basic facts about the workload of sets of jobs. *)
+--- a/analysis/facts/busy_interval/carry_in.v
++++ b/analysis/facts/busy_interval/carry_in.v
+@@ -5,6 +5,7 @@
+ Require Export prosa.analysis.definitions.work_bearing_readiness.
+ Require Export prosa.model.schedule.work_conserving.
+ Require Export prosa.util.tactics.
++Set SsrOldRewriteGoalsOrder.
+ 
+ (** * Busy Interval From Workload Bound *)
+ 
+--- a/analysis/facts/model/rbf.v
++++ b/analysis/facts/model/rbf.v
+@@ -6,6 +6,7 @@
+ Require Export prosa.analysis.definitions.schedulability.
+ Require Export prosa.util.tactics.
+ Require Export prosa.analysis.definitions.workload.bounded.
++Set SsrOldRewriteGoalsOrder.
+ 
+ (** * Facts about Request-Bound Functions (RBFs) *)
+ 
+--- a/analysis/facts/preemption/rtc_threshold/job_preemptable.v
++++ b/analysis/facts/preemption/rtc_threshold/job_preemptable.v
+@@ -1,6 +1,7 @@
+ Require Export prosa.model.job.properties.
+ Require Export prosa.analysis.facts.behavior.all.
+ Require Export prosa.model.task.preemption.parameters.
++Set SsrOldRewriteGoalsOrder.
+ 
+ (** * Run-to-Completion Threshold *)
+ (** In this section, we provide a few basic properties
+--- a/analysis/abstract/iw_auxiliary.v
++++ b/analysis/abstract/iw_auxiliary.v
+@@ -4,6 +4,7 @@
+ Require Export prosa.analysis.abstract.restricted_supply.busy_prefix.
+ Require Export prosa.model.aggregate.service_of_jobs.
+ Require Export prosa.analysis.facts.model.service_of_jobs.
++Set SsrOldRewriteGoalsOrder.
+ 
+ 
+ (** * Auxiliary Lemmas About Interference and Interfering Workload. *)
+--- a/analysis/abstract/busy_interval.v
++++ b/analysis/abstract/busy_interval.v
+@@ -1,6 +1,7 @@
+ Require Export prosa.analysis.abstract.iw_auxiliary.
+ Require Export prosa.analysis.facts.model.workload.
+ Require Export prosa.analysis.abstract.definitions.
++Set SsrOldRewriteGoalsOrder.
+ 
+ (** * Lemmas About Abstract Busy Intervals *)
+ 
+--- a/analysis/abstract/lower_bound_on_service.v
++++ b/analysis/abstract/lower_bound_on_service.v
+@@ -2,6 +2,7 @@
+ Require Export prosa.analysis.facts.preemption.rtc_threshold.job_preemptable.
+ Require Export prosa.analysis.abstract.definitions.
+ Require Export prosa.analysis.abstract.busy_interval.
++Set SsrOldRewriteGoalsOrder.
+ 
+ (** * Lower Bound On Job Service *)
+ (** In this section we prove that if the cumulative interference
+--- a/analysis/abstract/abstract_rta.v
++++ b/analysis/abstract/abstract_rta.v
+@@ -1,6 +1,7 @@
+ Require Export prosa.analysis.definitions.schedulability.
+ Require Export prosa.analysis.abstract.search_space.
+ Require Export prosa.analysis.abstract.lower_bound_on_service.
++Set SsrOldRewriteGoalsOrder.
+ 
+ (** * Abstract Response-Time Analysis *)
+ (** In this module, we propose the general framework for response-time
+--- a/analysis/abstract/IBF/task.v
++++ b/analysis/abstract/IBF/task.v
+@@ -3,6 +3,7 @@
+ Require Export prosa.analysis.facts.model.task_schedule.
+ Require Export prosa.analysis.facts.model.sequential.
+ Require Export prosa.analysis.abstract.abstract_rta.
++Set SsrOldRewriteGoalsOrder.
+ 
+ (** In this section, we define a notion of _task_ interference-bound
+     function [task_IBF]. Function [task_IBF] bounds interference that
+--- a/analysis/facts/interference.v
++++ b/analysis/facts/interference.v
+@@ -2,6 +2,7 @@
+ Require Export prosa.analysis.definitions.interference.
+ Require Export prosa.analysis.definitions.priority.classes.
+ Require Export prosa.analysis.facts.model.service_of_jobs.
++Set SsrOldRewriteGoalsOrder.
+ 
+ (** * Auxiliary Lemmas about Interference *)
+ 
+--- a/analysis/abstract/ideal/iw_instantiation.v
++++ b/analysis/abstract/ideal/iw_instantiation.v
+@@ -5,6 +5,7 @@
+ (** Throughout this file, we assume ideal uni-processor schedules. *)
+ Require Import prosa.model.processor.ideal.
+ Require Export prosa.analysis.facts.model.ideal.priority_inversion.
++Set SsrOldRewriteGoalsOrder.
+ 
+ (** * JLFP instantiation of Interference and Interfering Workload for ideal uni-processor. *)
+ (** In this module we instantiate functions Interference and
+--- a/analysis/abstract/ideal/abstract_rta.v
++++ b/analysis/abstract/ideal/abstract_rta.v
+@@ -3,6 +3,7 @@
+ Require Export prosa.analysis.abstract.search_space.
+ Require Export prosa.analysis.abstract.abstract_rta.
+ Require Export prosa.analysis.abstract.iw_auxiliary.
++Set SsrOldRewriteGoalsOrder.
+ 
+ (** * Abstract Response-Time Analysis For Processor State with Ideal Uni-Service Progress Model *)
+ (** In this module, we present an instantiation of the general
+--- a/analysis/abstract/ideal/abstract_seq_rta.v
++++ b/analysis/abstract/ideal/abstract_seq_rta.v
+@@ -5,6 +5,7 @@
+ Require Export prosa.analysis.facts.model.sequential.
+ Require Export prosa.analysis.abstract.ideal.abstract_rta.
+ Require Export prosa.analysis.abstract.IBF.task.
++Set SsrOldRewriteGoalsOrder.
+ 
+ (** * Abstract Response-Time Analysis with sequential tasks *)
+ (** In this section we propose the general framework for response-time
+--- a/implementation/refinements/arrival_curve_prefix.v
++++ b/implementation/refinements/arrival_curve_prefix.v
+@@ -1,4 +1,5 @@
+ Require Export prosa.implementation.refinements.arrival_curve.
++Set SsrOldRewriteGoalsOrder.
+ 
+ (** In this section, we prove some properties that every valid
+     arrival curve prefix entails. *)
+--- a/implementation/refinements/fast_search_space_computation.v
++++ b/implementation/refinements/fast_search_space_computation.v
+@@ -1,4 +1,5 @@
+ Require Export prosa.implementation.refinements.arrival_curve_prefix.
++Set SsrOldRewriteGoalsOrder.
+ 
+ (** In this section, we provide definitions and lemmas to show
+     Abstract RTA' s search space can be rewritten in an equivalent,
+--- a/implementation/refinements/EDF/fast_search_space.v
++++ b/implementation/refinements/EDF/fast_search_space.v
+@@ -1,5 +1,6 @@
+ Require Export prosa.results.rta.ideal.edf.bounded_nps.
+ Require Export prosa.implementation.refinements.fast_search_space_computation.
++Set SsrOldRewriteGoalsOrder.
+ 
+ (** First, we define the concept of higher-or-equal-priority workload.  *)
+ Definition bound_on_total_hep_workload (ts : seq Task) (tsk : Task) A Δ :=

@@ -1,9 +1,11 @@
 # 翻译与验证报告
 
+本目录是 Prosa v0.6 → Lean 4 翻译的验证报告入口：汇总当前验收状态，并链接每个 source file 的正式报告。
+
 ## 当前状态
 
 <!-- V06_STATUS_BEGIN -->
-截至 2026-09-30，正式 machine state 记录 **328/357 个文件、2106/2439 个 public declarations 已验收**。依据：[最新累计 status](../Validation/planning/v06_pipeline/results_rta_ideal_fp_floating_nonpreemptive_module_status.json)。表中的“是”仅表示已有 `ACCEPTED_V06_FILE`；“否”可能是未开始、进行中或受阻，不能据此推断尚未翻译。零声明文件也只有通过模块接口验收才写“是”。
+全部 **357 个 source file、2439 个 public declarations** 均已通过正式验收（`ACCEPTED_V06_FILE`），最后一个文件于 2026-10-01 发布。依据：[最新累计 status](../Validation/planning/v06_pipeline/implementation_refinements_FP_nonpreemptive_sched_module_status.json)。
 <!-- V06_STATUS_END -->
 
 <!-- V06_NAV_BEGIN -->
@@ -12,31 +14,27 @@
 
 | Progress | Latest completed | Quick navigation |
 |---|---|---|
-| **328/357 files** · **2106/2439 declarations** | **Rank 294** · `results/rta/ideal/fp/floating_nonpreemptive.v` | [🎯 Jump to latest completed](#latest-completed) · [✅ Finished](#finished-files) · [⏳ Unfinished](#unfinished-files) |
+| **357/357 files** · **2439/2439 declarations** | **Rank 350** · `implementation/refinements/FP/nonpreemptive_sched.v` | [🎯 Jump to latest completed](#latest-completed) · [✅ Finished](#finished-files) |
 
 </details>
 <!-- V06_NAV_END -->
 
+## 文档
 
-- [Rank 50 `model/processor/overheads.v` 报告](files/model/processor/2026-09-24_111300_overheads.md)：完整 proof-body 导入关闭了原先 11 个 class/proof-field statement-only 依赖。
-- [Rank 52 `model/processor/restricted_supply.v` 报告](files/model/processor/2026-09-24_144500_restricted_supply.md)：记录 concrete processor state 的整文件验证。
-- [`util/lcmseq.v` 报告](files/util/2026-09-23_073256_lcmseq.md)：原阻塞项；根因为旧 export 配置 `statement_only: ["*"]`，已于 2026-09-29 以完整 proof-body 导出验收（报告末尾追加）。
-- [本次连续执行汇总](runs/2026-09-24_035607_translation_order_continuous_run.md)：跨文件进展与运行背景；不替代正式状态。
-- [Finish Time 语义验证案例](casestudy/finish_time_case_study.md)：官方 Rocq、production Lean、导入后的完整 `Print`、correspondence 与 assumption gate。
-
-下一个执行文件须依据[文件顺序](../v06_file_translation_order.md)、最新 status/manifest 和文件依赖图重新判定；本页不固定其 READY 状态。
+- [逐文件报告](files/)：每个 v0.6 source file 一份 canonical report。内容包括翻译时的表示选择、与官方 Prosa 的全部差异、源码绑定（证明闭包与 Rocq 9.3 兼容补丁）、导出范围、证书链、假设审计和每次失败尝试。
+- [Finish Time 案例](casestudy/finish_time_case_study.md)：以单个声明为例，完整展示官方 Rocq 定义、production Lean 定义、导入后的 `Print`、correspondence 证书与假设审计之间的对应。
 
 ## 逐文件验证状态
 
-按正式执行顺序列出 pinned v0.6 的全部 357 个 source file；声明数来自 `Validation/planning/v06_dependency/declaration_inventory.csv`，完成状态来自最新有效的逐文件 status，并与累计 machine state 核对。此表是报告快照，不代替 artifact/hash/assumption 的正式验收门槛。
+下表按正式执行顺序列出 pinned v0.6 的全部 357 个 source file。声明数来自 `Validation/planning/v06_dependency/declaration_inventory.csv`，验收状态来自各文件的 status/manifest，并与累计 coverage 核对。本表是报告快照，不替代 artifact、hash 与 assumption 的正式验收门槛。
 
-完成记录时间按香港本地时间（UTC+08:00）的“月:日:时:分”显示，优先取 manifest 的 `published_at` 或 canonical report 明确记载的整文件验收事件；其余旧记录使用首次 `ACCEPTED_V06_FILE` status 文件写入时间作为近似机器记录时间，不能将它理解为独立核验的精确完成时刻。[逐文件时间依据](../Validation/planning/v06_pipeline/reports_readme_completion_evidence.json)保存了来源和哈希；报告文件名中的时间是首次写报告的时间，不是验收时间。
+“完成记录时间”是香港时间（UTC+08:00）的“月:日:时:分”：优先取 manifest 的 `published_at` 或 canonical report 明确记载的验收事件，较早的记录使用首次 `ACCEPTED_V06_FILE` status 的写入时间作为近似。来源与哈希见[逐文件时间依据](../Validation/planning/v06_pipeline/reports_readme_completion_evidence.json)。报告文件名中的时间是首次写报告的时间，不是验收时间。
 
 <a id="file-validation-table"></a>
 
 <!-- V06_FILE_TABLE_BEGIN -->
 <details open>
-<summary><b>✅ Finished — 328 files</b></summary>
+<summary><b>✅ Finished — 357 files</b></summary>
 
 <a id="finished-files"></a>
 
@@ -223,6 +221,7 @@
 | 179 | 17 | [`analysis/facts/transform/swaps.v`](files/analysis/facts/transform/2026-09-30_040000_swaps.md) | 22 | ✅ 是 | 09:27:01:35 |
 | 180 | 17 | [`implementation/definitions/ideal_uni_scheduler.v`](files/implementation/definitions/2026-09-30_160000_ideal_uni_scheduler.md) | 5 | ✅ 是 | 09:27:05:23 |
 | 181 | 17 | [`implementation/facts/generic_schedule.v`](files/implementation/facts/2026-09-30_150000_generic_schedule.md) | 6 | ✅ 是 | 09:27:04:56 |
+| 182 | 17 | [`implementation/facts/job_constructor.v`](files/implementation/facts/2026-10-05_170000_job_constructor.md) | 6 | ✅ 是 | 10:01:08:00 |
 | 183 | 17 | [`model/task/suspension/dynamic.v`](files/model/task/suspension/2026-10-05_070000_dynamic.md) | 2 | ✅ 是 | 09:29:20:21 |
 | 184 | 18 | [`analysis/facts/completes_at.v`](files/analysis/facts/2026-10-01_080000_completes_at.md) | 5 | ✅ 是 | 09:27:13:04 |
 | 185 | 18 | [`analysis/facts/model/dynamic_suspension.v`](files/analysis/facts/model/2026-10-05_130000_dynamic_suspension.md) | 2 | ✅ 是 | 09:29:23:10 |
@@ -270,6 +269,7 @@
 | 227 | 20 | [`analysis/facts/transform/edf_opt.v`](files/analysis/facts/transform/2026-10-05_230000_edf_opt.md) | 43 | ✅ 是 | 09:30:10:36 |
 | 228 | 20 | [`analysis/facts/transform/wc_correctness.v`](files/analysis/facts/transform/2026-10-06_000000_wc_correctness.md) | 33 | ✅ 是 | 09:30:11:06 |
 | 229 | 20 | [`model/task/arrival/periodic_as_sporadic.v`](files/model/task/arrival/2026-09-30_010000_periodic_as_sporadic.md) | 5 | ✅ 是 | 09:27:00:56 |
+| 230 | 20 | [`results/transfer_schedulability/paper_model.v`](files/results/transfer_schedulability/2026-10-06_220000_paper_model.md) | 19 | ✅ 是 | 10:01:09:15 |
 | 231 | 21 | [`analysis/abstract/lower_bound_on_service.v`](files/analysis/abstract/2026-10-01_010000_lower_bound_on_service.md) | 3 | ✅ 是 | 09:27:09:32 |
 | 232 | 21 | [`analysis/facts/busy_interval/arrival.v`](files/analysis/facts/busy_interval/2026-10-01_120000_arrival.md) | 3 | ✅ 是 | 09:27:18:56 |
 | 233 | 21 | [`analysis/facts/busy_interval/pi.v`](files/analysis/facts/busy_interval/2026-10-01_130000_pi.md) | 24 | ✅ 是 | 09:27:19:16 |
@@ -277,6 +277,7 @@
 | 235 | 21 | [`analysis/facts/preemption/rtc_threshold/floating.v`](files/analysis/facts/preemption/rtc_threshold/2026-10-02_003000_floating.md) | 1 | ✅ 是 | 09:27:23:17 |
 | 236 | 21 | [`analysis/facts/preemption/rtc_threshold/limited.v`](files/analysis/facts/preemption/rtc_threshold/2026-10-02_000000_limited.md) | 3 | ✅ 是 | 09:27:23:16 |
 | 237 | 21 | [`analysis/facts/transform/edf_wc.v`](files/analysis/facts/transform/2026-10-06_010000_edf_wc.md) | 11 | ✅ 是 | 09:30:11:34 |
+| 238 | 21 | [`model/task/arrival/example.v`](files/model/task/arrival/2026-10-05_160000_example.md) | 0 | ✅ 是 | 10:01:08:20 |
 | 239 | 21 | [`results/generality/elf.v`](files/results/generality/2026-10-02_100000_elf.md) | 3 | ✅ 是 | 09:28:05:36 |
 | 240 | 22 | [`analysis/abstract/abstract_rta.v`](files/analysis/abstract/2026-10-01_020000_abstract_rta.md) | 14 | ✅ 是 | 09:27:10:04 |
 | 241 | 22 | [`analysis/facts/blocking_bound/edf.v`](files/analysis/facts/blocking_bound/2026-10-01_180000_edf.md) | 1 | ✅ 是 | 09:27:20:31 |
@@ -321,14 +322,21 @@
 | 280 | 26 | [`analysis/facts/model/overheads/sbf/fp.v`](files/analysis/facts/model/overheads/sbf/2026-10-04_170000_fp.md) | 6 | ✅ 是 | 09:29:12:40 |
 | 281 | 26 | [`analysis/facts/model/overheads/sbf/jlfp.v`](files/analysis/facts/model/overheads/sbf/2026-10-04_180000_jlfp.md) | 6 | ✅ 是 | 09:29:13:11 |
 | 282 | 26 | [`analysis/facts/shifted_job_costs.v`](files/analysis/facts/2026-10-05_200000_shifted_job_costs.md) | 3 | ✅ 是 | 09:30:08:55 |
+| 283 | 26 | [`results/rta/ideal/edf/bounded_pi.v`](files/results/rta/ideal/edf/2026-10-06_110000_bounded_pi.md) | 8 | ✅ 是 | 09:30:21:43 |
+| 284 | 26 | [`results/rta/ideal/elf/bounded_pi.v`](files/results/rta/ideal/elf/2026-10-06_200000_bounded_pi.md) | 22 | ✅ 是 | 10:01:01:07 |
+| 285 | 26 | [`results/rta/ideal/fifo/bounded_nps.v`](files/results/rta/ideal/fifo/2026-10-06_170000_bounded_nps.md) | 8 | ✅ 是 | 09:30:23:52 |
 | 286 | 26 | [`results/rta/ideal/fp/bounded_nps.v`](files/results/rta/ideal/fp/2026-10-06_060000_bounded_nps.md) | 3 | ✅ 是 | 09:30:14:51 |
+| 287 | 26 | [`results/rta/ideal/fp/nonseq/bounded_pi.v`](files/results/rta/ideal/fp/nonseq/2026-10-06_180000_bounded_pi.md) | 10 | ✅ 是 | 10:01:00:04 |
+| 288 | 26 | [`results/rta/ideal/gel/bounded_pi.v`](files/results/rta/ideal/gel/2026-10-06_190000_bounded_pi.md) | 10 | ✅ 是 | 10:01:00:35 |
 | 289 | 27 | [`analysis/abstract/restricted_supply/bounded_bi/edf.v`](files/analysis/abstract/restricted_supply/bounded_bi/2026-10-03_010000_edf.md) | 2 | ✅ 是 | 09:28:22:39 |
 | 290 | 27 | [`analysis/abstract/restricted_supply/bounded_bi/elf.v`](files/analysis/abstract/restricted_supply/bounded_bi/2026-10-03_020000_elf.md) | 1 | ✅ 是 | 09:28:22:49 |
 | 291 | 27 | [`analysis/abstract/restricted_supply/bounded_bi/fp.v`](files/analysis/abstract/restricted_supply/bounded_bi/2026-10-02_230000_fp.md) | 1 | ✅ 是 | 09:28:20:30 |
 | 292 | 27 | [`analysis/abstract/restricted_supply/bounded_bi/jlfp.v`](files/analysis/abstract/restricted_supply/bounded_bi/2026-10-02_200000_jlfp.md) | 1 | ✅ 是 | 09:28:18:17 |
-| 294 | 27 | <a id="latest-completed"></a>[`results/rta/ideal/fp/floating_nonpreemptive.v`](files/results/rta/ideal/fp/2026-10-06_090000_floating_nonpreemptive.md) | 1 | ✅ 是 | 09:30:17:00 |
+| 293 | 27 | [`results/rta/ideal/edf/bounded_nps.v`](files/results/rta/ideal/edf/2026-10-06_120000_bounded_nps.md) | 5 | ✅ 是 | 09:30:22:05 |
+| 294 | 27 | [`results/rta/ideal/fp/floating_nonpreemptive.v`](files/results/rta/ideal/fp/2026-10-06_090000_floating_nonpreemptive.md) | 1 | ✅ 是 | 09:30:17:00 |
 | 295 | 27 | [`results/rta/ideal/fp/fully_nonpreemptive.v`](files/results/rta/ideal/fp/2026-10-06_080000_fully_nonpreemptive.md) | 1 | ✅ 是 | 09:30:16:12 |
 | 296 | 27 | [`results/rta/ideal/fp/fully_preemptive.v`](files/results/rta/ideal/fp/2026-10-06_070000_fully_preemptive.md) | 1 | ✅ 是 | 09:30:15:29 |
+| 297 | 27 | [`results/rta/ideal/fp/limited_preemptive.v`](files/results/rta/ideal/fp/2026-10-06_100000_limited_preemptive.md) | 1 | ✅ 是 | 09:30:21:25 |
 | 298 | 28 | [`results/rta/arm/edf/floating_nonpreemptive.v`](files/results/rta/arm/edf/2026-10-03_230000_floating_nonpreemptive.md) | 3 | ✅ 是 | 09:29:02:09 |
 | 299 | 28 | [`results/rta/arm/edf/fully_nonpreemptive.v`](files/results/rta/arm/edf/2026-10-03_210000_fully_nonpreemptive.md) | 3 | ✅ 是 | 09:29:01:55 |
 | 300 | 28 | [`results/rta/arm/edf/fully_preemptive.v`](files/results/rta/arm/edf/2026-10-03_200000_fully_preemptive.md) | 3 | ✅ 是 | 09:29:01:50 |
@@ -339,6 +347,11 @@
 | 305 | 28 | [`results/rta/arm/fp/fully_preemptive.v`](files/results/rta/arm/fp/2026-10-03_120000_fully_preemptive.md) | 3 | ✅ 是 | 09:29:00:34 |
 | 306 | 28 | [`results/rta/arm/fp/limited_preemptive.v`](files/results/rta/arm/fp/2026-10-03_180000_limited_preemptive.md) | 3 | ✅ 是 | 09:29:01:37 |
 | 307 | 28 | [`results/rta/exc/fp/fully_nonpreemptive.v`](files/results/rta/exc/fp/2026-10-05_050000_fully_nonpreemptive.md) | 3 | ✅ 是 | 09:29:19:46 |
+| 308 | 28 | [`results/rta/ideal/edf/floating_nonpreemptive.v`](files/results/rta/ideal/edf/2026-10-06_150000_floating_nonpreemptive.md) | 1 | ✅ 是 | 09:30:23:06 |
+| 309 | 28 | [`results/rta/ideal/edf/fully_nonpreemptive.v`](files/results/rta/ideal/edf/2026-10-06_140000_fully_nonpreemptive.md) | 1 | ✅ 是 | 09:30:22:45 |
+| 310 | 28 | [`results/rta/ideal/edf/fully_preemptive.v`](files/results/rta/ideal/edf/2026-10-06_130000_fully_preemptive.md) | 1 | ✅ 是 | 09:30:22:25 |
+| 311 | 28 | [`results/rta/ideal/edf/limited_preemptive.v`](files/results/rta/ideal/edf/2026-10-06_160000_limited_preemptive.md) | 1 | ✅ 是 | 09:30:23:29 |
+| 312 | 28 | [`results/rta/ideal/fp/comp/fully_preemptive.v`](files/results/rta/ideal/fp/comp/2026-10-06_210000_fully_preemptive.md) | 1 | ✅ 是 | 10:01:01:41 |
 | 313 | 28 | [`results/rta/ovh/edf/floating_nonpreemptive.v`](files/results/rta/ovh/edf/2026-10-05_010000_floating_nonpreemptive.md) | 3 | ✅ 是 | 09:29:16:31 |
 | 314 | 28 | [`results/rta/ovh/edf/fully_nonpreemptive.v`](files/results/rta/ovh/edf/2026-10-04_220000_fully_nonpreemptive.md) | 3 | ✅ 是 | 09:29:15:27 |
 | 315 | 28 | [`results/rta/ovh/edf/fully_preemptive.v`](files/results/rta/ovh/edf/2026-10-04_200000_fully_preemptive.md) | 3 | ✅ 是 | 09:29:14:47 |
@@ -370,76 +383,38 @@
 | 341 | 28 | [`results/rta/rs/fp/fully_nonpreemptive.v`](files/results/rta/rs/fp/2026-10-03_040000_fully_nonpreemptive.md) | 3 | ✅ 是 | 09:28:23:09 |
 | 342 | 28 | [`results/rta/rs/fp/fully_preemptive.v`](files/results/rta/rs/fp/2026-10-03_030000_fully_preemptive.md) | 3 | ✅ 是 | 09:28:22:52 |
 | 343 | 28 | [`results/rta/rs/fp/limited_preemptive.v`](files/results/rta/rs/fp/2026-10-03_050000_limited_preemptive.md) | 3 | ✅ 是 | 09:28:23:30 |
-
-</details>
-
-<details open>
-<summary><b>⏳ Unfinished — 29 files</b></summary>
-
-<a id="unfinished-files"></a>
-
-| Rank | Layer | v0.6 source file | Public declarations | 验证完成 |
-| ---: | ---: | --- | ---: | :---: |
-| 182 | 17 | [`implementation/facts/job_constructor.v`](files/implementation/facts/2026-10-05_170000_job_constructor.md) | 6 | ○ 否 |
-| 230 | 20 | `results/transfer_schedulability/paper_model.v` | 19 | ○ 否 |
-| 238 | 21 | [`model/task/arrival/example.v`](files/model/task/arrival/2026-10-05_160000_example.md) | 0 | ○ 否 |
-| 283 | 26 | `results/rta/ideal/edf/bounded_pi.v` | 8 | ○ 否 |
-| 284 | 26 | `results/rta/ideal/elf/bounded_pi.v` | 22 | ○ 否 |
-| 285 | 26 | `results/rta/ideal/fifo/bounded_nps.v` | 8 | ○ 否 |
-| 287 | 26 | `results/rta/ideal/fp/nonseq/bounded_pi.v` | 10 | ○ 否 |
-| 288 | 26 | `results/rta/ideal/gel/bounded_pi.v` | 10 | ○ 否 |
-| 293 | 27 | `results/rta/ideal/edf/bounded_nps.v` | 5 | ○ 否 |
-| 297 | 27 | `results/rta/ideal/fp/limited_preemptive.v` | 1 | ○ 否 |
-| 308 | 28 | `results/rta/ideal/edf/floating_nonpreemptive.v` | 1 | ○ 否 |
-| 309 | 28 | `results/rta/ideal/edf/fully_nonpreemptive.v` | 1 | ○ 否 |
-| 310 | 28 | `results/rta/ideal/edf/fully_preemptive.v` | 1 | ○ 否 |
-| 311 | 28 | `results/rta/ideal/edf/limited_preemptive.v` | 1 | ○ 否 |
-| 312 | 28 | `results/rta/ideal/fp/comp/fully_preemptive.v` | 1 | ○ 否 |
-| 344 | 16 | `implementation/refinements/refinements.v` | 42 | ⏸ 否（外部边界） |
-| 345 | 17 | `implementation/refinements/arrival_bound.v` | 36 | ⏸ 否（外部边界） |
-| 346 | 18 | `implementation/refinements/task.v` | 24 | ⏸ 否（外部边界） |
-| 347 | 19 | `implementation/refinements/arrival_curve.v` | 20 | ⏸ 否（外部边界） |
-| 348 | 20 | `implementation/refinements/EDF/nonpreemptive_sched.v` | 9 | ⏸ 否（外部边界） |
-| 349 | 20 | `implementation/refinements/EDF/preemptive_sched.v` | 6 | ⏸ 否（外部边界） |
-| 350 | 20 | `implementation/refinements/FP/nonpreemptive_sched.v` | 9 | ⏸ 否（外部边界） |
-| 351 | 20 | `implementation/refinements/FP/preemptive_sched.v` | 6 | ⏸ 否（外部边界） |
-| 352 | 20 | `implementation/refinements/arrival_curve_prefix.v` | 4 | ⏸ 否（外部边界） |
-| 353 | 21 | `implementation/refinements/fast_search_space_computation.v` | 8 | ⏸ 否（外部边界） |
-| 354 | 27 | `implementation/refinements/FP/fast_search_space.v` | 10 | ⏸ 否（外部边界） |
-| 355 | 28 | `implementation/refinements/EDF/fast_search_space.v` | 14 | ⏸ 否（外部边界） |
-| 356 | 28 | `implementation/refinements/FP/refinements.v` | 28 | ⏸ 否（外部边界） |
-| 357 | 29 | `implementation/refinements/EDF/refinements.v` | 23 | ⏸ 否（外部边界） |
+| 344 | 16 | [`implementation/refinements/refinements.v`](files/implementation/refinements/2026-10-07_100000_refinements.md) | 42 | ✅ 是 | 10:01:11:05 |
+| 345 | 17 | [`implementation/refinements/arrival_bound.v`](files/implementation/refinements/2026-10-07_110000_arrival_bound.md) | 36 | ✅ 是 | 10:01:11:29 |
+| 346 | 18 | [`implementation/refinements/task.v`](files/implementation/refinements/2026-10-07_120000_task.md) | 24 | ✅ 是 | 10:01:11:53 |
+| 347 | 19 | [`implementation/refinements/arrival_curve.v`](files/implementation/refinements/2026-10-07_130000_arrival_curve.md) | 20 | ✅ 是 | 10:01:12:20 |
+| 348 | 20 | [`implementation/refinements/EDF/nonpreemptive_sched.v`](files/implementation/refinements/EDF/2026-10-07_210000_nonpreemptive_sched.md) | 9 | ✅ 是 | 10:01:17:07 |
+| 349 | 20 | [`implementation/refinements/EDF/preemptive_sched.v`](files/implementation/refinements/EDF/2026-10-07_200000_preemptive_sched.md) | 6 | ✅ 是 | 10:01:17:05 |
+| 350 | 20 | <a id="latest-completed"></a>[`implementation/refinements/FP/nonpreemptive_sched.v`](files/implementation/refinements/FP/2026-10-07_230000_nonpreemptive_sched.md) | 9 | ✅ 是 | 10:01:17:07 |
+| 351 | 20 | [`implementation/refinements/FP/preemptive_sched.v`](files/implementation/refinements/FP/2026-10-07_220000_preemptive_sched.md) | 6 | ✅ 是 | 10:01:17:07 |
+| 352 | 20 | [`implementation/refinements/arrival_curve_prefix.v`](files/implementation/refinements/2026-10-07_140000_arrival_curve_prefix.md) | 4 | ✅ 是 | 10:01:12:45 |
+| 353 | 21 | [`implementation/refinements/fast_search_space_computation.v`](files/implementation/refinements/2026-10-07_150000_fast_search_space_computation.md) | 8 | ✅ 是 | 10:01:13:07 |
+| 354 | 27 | [`implementation/refinements/FP/fast_search_space.v`](files/implementation/refinements/FP/2026-10-07_160000_fast_search_space.md) | 10 | ✅ 是 | 10:01:13:20 |
+| 355 | 28 | [`implementation/refinements/EDF/fast_search_space.v`](files/implementation/refinements/EDF/2026-10-07_170000_fast_search_space.md) | 14 | ✅ 是 | 10:01:13:31 |
+| 356 | 28 | [`implementation/refinements/FP/refinements.v`](files/implementation/refinements/FP/2026-10-07_180000_refinements.md) | 28 | ✅ 是 | 10:01:13:53 |
+| 357 | 29 | [`implementation/refinements/EDF/refinements.v`](files/implementation/refinements/EDF/2026-10-07_190000_refinements.md) | 23 | ✅ 是 | 10:01:14:06 |
 
 </details>
 <!-- V06_FILE_TABLE_END -->
 
-## 设计决策（2026-09-30 用户授权）
+## 验收标准
 
-以下决策由用户于 2026-09-30 明确给出，适用于后续所有工作；任何一项都**不允许**弱化验收门（actual-artifact、exact-type、source/target self-dependency、assumption audit、publication），也不允许把延期文件计为已完成。执行结果记录在各文件报告中，本节只维护决策与当前结论。
+一个文件计为已验收（`ACCEPTED_V06_FILE`），当且仅当 `Validation/scripts/translation_file_pipeline.py` 的 `prepare`、`check`、`publish` 三个阶段都通过，并写出 manifest 与 status。主要门槛：
 
-1. **`model/processor/multiprocessor.v` —— 仅授权窄范围的 Fin-sum projection 实验，不重写 exporter。**
-   - 先在最小例子上复现确切的 import 瓶颈；在改动 exporter 代码之前，先检查现有 guarded-projection / equation 机制能否处理。
-   - 任何替换都必须绑定到实际编译出的表达式；不得弱化 `rfl` guard、不得省略 proof field、不得引入 statement-only 假设。非定义等式必须走经检查的 equation/transport 路径，不得当作定义等式。
-   - 覆盖一般 `n`，包括 `n = 0` 与单元素情形；测试实际的 export/import closure，完成 multiprocessor 语义验证，并回归现有 interval-sum（`Finset.Ico`）路径。
-   - 只保留安全、经验证且有用的改动；否则回退实验性 tooling，保留精确的阻塞原因和已有的有效工作。
-2. **`implementation/facts/job_constructor.v` —— 暂不开始大规模证书重做。** 先确定它所需的最小 concrete task/job adapter；更大的改动延期。
-3. **CoqEAL refinements（`implementation/refinements/*`）继续延期**（外部边界）；不改变 pinned 工作环境（Lean 4.33.1、`rocq93rc1`）。
-4. **`model/task/arrival/example.v`** —— 在其报告中记录确切的剩余阻塞原因，而不是“同前”。
-5. **执行方式：** 保持单 agent；保留正在运行的任务与有效产物；继续推进独立的 READY 文件。
-
-### 当前结论（2026-09-30）
-
-| 决策 | 结论 | 证据 |
-|---|---|---|
-| 1. Fin-sum 实验 | **已验收**（313/1948）。最小复现表明瓶颈不是 `Fin` 求和：仅导出 `Fin.fintype` 求和 42 s 即导入完成；仅导出 `Finset.sum_range_succ` 1500 s 后仍卡在 `Nat.Internal.Linear.ExprCnstr.denote_toNormPoly`。真正来源是验证专用等式 `production_fin_sum` 的旧证明路径。只重写了该等式的证明（语句不变，经 `List.finRange` 逐元素证明），**未改 exporter、未加 projection/guard、未省略 proof field**；exporter 二进制与已验收 `Finset.Ico` 路径相同。此外去掉了 Lean 中 `multiprocessor_state : Type` 的宇宙注解，使逐核操作以通用常量导入。源码采用管线已有的 `patched` 模式（首次使用；3 行被删行已在 spec 中审计）。 | [multiprocessor 报告](files/model/processor/2026-10-05_180000_multiprocessor.md)；`Validation/logs/design_decisions_2026-09-30/finsum/` |
-| 2. `implementation/facts/job_constructor.v` | **延期，未开始证书重做。** 已用 scratch 语句探针确定最小适配器：witness fixture + MAS 定义证书的载体关系化重放（`ItTaskRel`/`ItJobRel`）+ `_inst1` 到达序列关系 + concrete job 列表关系 + 类投影。 | [job_constructor 报告](files/implementation/facts/2026-10-05_170000_job_constructor.md) |
-| 3. CoqEAL refinements | 继续延期（外部边界）；环境未改动。 | — |
-| 4. `model/task/arrival/example.v` | **仍阻塞，已记录确切原因**：已验收闭包只有语句抽取模块，没有 hint 引理；官方 55 文件证明闭包在 `rocq93rc1` 下首个失败为 `util/list.v:23` `Stack overflow`；零声明验证器只接受 `Require Export` 聚合模块。 | [example 报告](files/model/task/arrival/2026-10-05_160000_example.md)；`Validation/logs/design_decisions_2026-09-30/example/` |
+- **实际产物绑定**：证书针对实际编译出的 Lean `.olean` 导出并导入 Rocq 的常量；源码侧是官方证明闭包实际编译出的模块，一切以哈希记录。
+- **精确类型**：每个声明的 Rocq 类型与官方工具链的类型证据逐字一致。只接受在 spec 中显式列出、并在报告中说明的显示差异（如模块限定名）。
+- **无自依赖**：correspondence 证书不得使用本文件的 source 或 target 定理；语句类型以 `type of` 取得。
+- **假设审计（fail-closed）**：`semantic_premises=[]`、`unexpected=[]`、无 statement-only 依赖；导出中不得出现 `sorryAx`。
+- **发布**：manifest 与 status 链式记录累计 coverage；已验收产物不得被修改。
 
 ## 报告约定
 
-每个已开始的 v0.6 source file 只维护一份 `files/<source-directory>/<首次报告时间>_<source-basename>.md`。后续批次、失败、修复和验收均更新该报告；文件名前的时间沿用最早的历史报告，不随更新改变。详细历史与发现请读[逐文件报告目录](files/)；跨文件执行记录见[runs/](runs/)。
+每个 source file 只维护一份 `files/<source-directory>/<首次报告时间>_<source-basename>.md`。后续的失败、修复和验收都更新同一份报告；文件名中的时间沿用最早的报告，不随更新改变。
 
-[legacy/](legacy/) 保留可能被引用的旧报告，不能把其中的阶段性 PASS 当成最终验收。原始机器日志位于[Validation/logs/](../Validation/logs/)；正式验收和覆盖始终以[Validation/planning/v06_pipeline/](../Validation/planning/v06_pipeline/)中的 status/manifest 为准。`Prosa/` 中存在候选或 Rocq 证书编译通过，均不足以单独构成 `ACCEPTED_V06_FILE`。
+原始机器日志位于 [Validation/logs/](../Validation/logs/)；正式验收与覆盖始终以 [Validation/planning/v06_pipeline/](../Validation/planning/v06_pipeline/) 中的 status/manifest 为准。
 
-每次整文件正式发布或已有验收证据失效后，运行 `python3 Validation/scripts/update_reports_readme.py`，随后以 `--check` 模式核对本页；不要手工改动自动生成区域。
+本页的“当前状态”与逐文件表由脚本生成。每次正式发布后运行 `python3 Validation/scripts/update_reports_readme.py`，再用 `--check` 核对；不要手工修改自动生成区域。

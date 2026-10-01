@@ -1,0 +1,37 @@
+Rocq 9.3 compatibility, files of the official proof closure of results/transfer_schedulability/paper_model.v that
+are not in the closure of example.v:
+- analysis/facts/model/service_of_jobs.v: one added line `Set SsrOldRewriteGoalsOrder.` after the imports (Rocq 9.0
+  `rewrite` side-goal order; see prosa-v06-rocq93-official-proof-closure-common.patch);
+- results/transfer_schedulability/criterion.v: the body of slackless_interval gets the parentheses of the
+  official-toolchain parse, `(t1 < t2) && (\sum_(...) ... == t2 - t1)` (recorded for the accepted criterion run in
+  Validation/fixtures/translation_order/CriterionOfficialParse.log; Rocq 9.3 / MathComp 2.6 would read
+  `((t1 < t2) && \sum_(...) ...) == t2 - t1`). Same term as the official elaboration.
+--- a/analysis/facts/model/service_of_jobs.v
++++ b/analysis/facts/model/service_of_jobs.v
+@@ -3,6 +3,7 @@
+ Require Export prosa.analysis.facts.behavior.completion.
+ Require Export prosa.analysis.facts.busy_interval.quiet_time.
+ Require Export prosa.analysis.facts.model.uniprocessor.
++Set SsrOldRewriteGoalsOrder.
+ 
+ (** * Lemmas about Service Received by Sets of Jobs *)
+ (** In this file, we establish basic facts about the service received by _sets_ of jobs. *)
+--- a/results/transfer_schedulability/criterion.v
++++ b/results/transfer_schedulability/criterion.v
+@@ -33,6 +33,7 @@
+ 
+ Require Export prosa.analysis.facts.model.ideal.schedule.
+ Require Export prosa.analysis.facts.model.uniprocessor.
++Set SsrOldRewriteGoalsOrder.
+ 
+ 
+ (** ** System Model *)
+@@ -514,7 +515,7 @@
+ 
+     Definition slackless_interval t1 t2 :=
+       (t1 < t2)
+-      && \sum_(j <- critical_jobs t1 t2) remaining_cost_bound j t1 == t2 - t1.
++      && (\sum_(j <- critical_jobs t1 t2) remaining_cost_bound j t1 == t2 - t1).
+ 
+     (** In fact, in our proof we require a stronger notion of slackless
+         intervals: slackless intervals without "holes." To this end, we call an

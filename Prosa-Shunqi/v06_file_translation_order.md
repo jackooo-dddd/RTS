@@ -2,6 +2,8 @@
 
 ## 使用方式
 
+**当前状态：** 全部 357 个文件已验收（见 [Reports/README.md](Reports/README.md)）。本文件保留为执行顺序的正式记录。
+
 本文件是**正式 file execution order，但不是 acceptance 证据**。正式路径固定为
 `Prosa-Shunqi/v06_file_translation_order.md`；正式 workspace 为
 `Prosa-Shunqi/`。Agent 开始新文件前必须重读本文件、
@@ -15,7 +17,7 @@
 - 本次读取 RTS commit：`4e9f60d54e5722a92170413bf4506c7df91cdf21`。
 - 正式验证环境：Lean 4.33.1；Mathlib `0df444a360eaa60ab8c11dca51a86af692955474`；Rocq 9.3。
 - 调度 authority：`Validation/planning/v06_dependency/file_layers.csv`；数量及种类来自 `file_inventory.csv`、`declaration_inventory.csv`。
-- 完整范围：357 个文件。343 个属于 main；14 个 refinement 文件单独保留为 deferred。普通 MathComp/HB/Stdlib 依赖不因此被一概排除。
+- 完整范围：357 个文件。343 个属于 main；14 个 refinement 文件位于 CoqEAL 构建边界后，排在最后（Rank 344–357），已借助本地 CoqEAL 2.1.2 构建全部验收。普通 MathComp/HB/Stdlib 依赖不因此被一概排除。
 - `scope_manifest.json` 中较早的 worktree 路径和工具版本是历史 inventory provenance，不是要求退回旧 workspace 或旧验证环境。
 
 JSON 内锁定了四个 planning input 的 Git blob SHA。正常的新翻译 commit 不改变这份顺序；planning input 变更则检查失败，必须重新审查计划，不能只改 hash 绕过检查。

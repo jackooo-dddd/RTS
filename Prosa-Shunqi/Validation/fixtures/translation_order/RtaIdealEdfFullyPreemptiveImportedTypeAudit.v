@@ -1,0 +1,4 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedRtaIdealEdfFullyPreemptive.
+
+Check ImportedRtaIdealEdfFullyPreemptive.Prosa_Results_Rta_Ideal_Edf_FullyPreemptive_uniprocessor_response_time_bound_fully_preemptive_edf.

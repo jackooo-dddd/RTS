@@ -1,0 +1,108 @@
+# Proof-only Rocq 9.3 compatibility changes for the official proof closure of
+#   implementation/refinements/arrival_bound.v
+# (Prosa v0.6 414e667, compiled under the pinned rocq93rc1 with CoqEAL 2.1.2 built locally, unchanged).
+# Only three kinds of change occur, none touching a statement:
+#  * util/tactics.v: `ssreflect.done` -> `Corelib.ssr.ssreflect_rw.done` in `Ltac done` (Rocq 9.3 moved the
+#    ssreflect `done`; same tactic);
+#  * util/seqset.v: `of phant T` -> `(_ : phant T)` (Rocq 9.3 no longer parses the `of` binder; same binder);
+#  * one added line `Set SsrOldRewriteGoalsOrder.` after the imports (restores the Rocq 9.0 order of
+#    `rewrite` side goals the official proof scripts were written for; file-local; no proof script changed).
+--- a/util/tactics.v
++++ b/util/tactics.v
+@@ -122,7 +122,7 @@
+ #[deprecated(since="prosa-0.6", note="use by or // instead")]
+ Ltac rt_eauto := eauto 4 with basic_rt_facts.
+ 
+-Ltac done := solve [ ssreflect.done | eauto 4 with basic_rt_facts ].
++Ltac done := solve [ Corelib.ssr.ssreflect_rw.done | eauto 4 with basic_rt_facts ].
+ #[export] Hint Resolve I : basic_rt_facts.
+ 
+ (** Note: [idtac] is a no-op. However, it suppresses the default obligation tactic,
+--- a/util/list.v
++++ b/util/list.v
+@@ -3,6 +3,7 @@
+ 
+ Require Import prosa.util.tactics.
+ Require Export prosa.util.supremum.
++Set SsrOldRewriteGoalsOrder.
+ 
+ (** * Maximum, First, and Last Element of Empty Lists *)
+ 
+--- a/util/bigcat.v
++++ b/util/bigcat.v
+@@ -2,6 +2,7 @@
+ Require Export prosa.util.tactics prosa.util.notation.
+ From mathcomp Require Import ssreflect ssrbool eqtype ssrnat seq fintype bigop.
+ Require Export prosa.util.tactics prosa.util.list.
++Set SsrOldRewriteGoalsOrder.
+ 
+ (** In this section, we introduce lemmas about the concatenation
+     operation performed over arbitrary sequences. *)
+--- a/util/div_mod.v
++++ b/util/div_mod.v
+@@ -1,5 +1,6 @@
+ From mathcomp Require Export ssreflect ssrbool eqtype ssrnat seq fintype bigop div ssrfun.
+ Require Export prosa.util.nat prosa.util.subadditivity.
++Set SsrOldRewriteGoalsOrder.
+ 
+ (** * Additional Lemmas about [divn] and [modn] *)
+ 
+--- a/util/sum.v
++++ b/util/sum.v
+@@ -3,6 +3,7 @@
+ Require Export prosa.util.notation.
+ Require Export prosa.util.rel.
+ Require Export prosa.util.nat.
++Set SsrOldRewriteGoalsOrder.
+ 
+ Section SumsOverSequences.
+ 
+--- a/util/seqset.v
++++ b/util/seqset.v
+@@ -21,7 +21,7 @@
+   HB.instance Definition _  setSubType := [isSub for _set_seq].
+   HB.instance Definition _ := [Equality of set by <:].
+   Canonical Structure mem_set_predType := PredType (fun (l : set) => mem_seq (_set_seq l)).
+-  Definition set_of of phant T := set.
++  Definition set_of (_ : phant T) := set.
+ 
+ End SeqSet.
+ Set Warnings "redundant-canonical-projection".
+--- a/util/unit_growth.v
++++ b/util/unit_growth.v
+@@ -1,5 +1,6 @@
+ From mathcomp Require Import ssreflect ssrbool eqtype ssrnat zify.zify.
+ Require Import prosa.util.tactics prosa.util.notation prosa.util.rel.
++Set SsrOldRewriteGoalsOrder.
+ 
+ (** We say that a function [f] is a unit growth function iff for any
+     time instant [t] it holds that [f (t + 1) <= f t + 1]. *)
+--- a/util/nondecreasing.v
++++ b/util/nondecreasing.v
+@@ -2,6 +2,7 @@
+ Require Export prosa.util.epsilon.
+ Require Export prosa.util.nat.
+ Require Export prosa.util.list.
++Set SsrOldRewriteGoalsOrder.
+ 
+ (** * Non-Decreasing Sequence and Distances *)
+ (** In this file we introduce the notion of a non-decreasing sequence. *)
+--- a/implementation/facts/extrapolated_arrival_curve.v
++++ b/implementation/facts/extrapolated_arrival_curve.v
+@@ -1,6 +1,7 @@
+ Require Export prosa.behavior.time.
+ Require Export prosa.util.all.
+ Require Export prosa.implementation.definitions.extrapolated_arrival_curve.
++Set SsrOldRewriteGoalsOrder.
+ 
+ (** In this file, we prove basic properties of the arrival-curve
+     prefix and the [extrapolated_arrival_curve] function. *)
+--- a/implementation/refinements/arrival_bound.v
++++ b/implementation/refinements/arrival_bound.v
+@@ -1,5 +1,6 @@
+ Require Export prosa.implementation.refinements.refinements.
+ Require Export prosa.implementation.definitions.arrival_bound.
++Set SsrOldRewriteGoalsOrder.
+ 
+ (** In this section, we define a generic version of arrival bound and
+     prove that it is isomorphic to the standard, natural-number-based

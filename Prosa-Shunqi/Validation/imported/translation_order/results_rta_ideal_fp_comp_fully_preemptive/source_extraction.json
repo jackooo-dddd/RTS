@@ -1,0 +1,79 @@
+{
+  "mode": "proof_independent_semantic_source_signature",
+  "source_file": "results/rta/ideal/fp/comp/fully_preemptive.v",
+  "source_file_sha256": "8dc878f41b128d997cc0ee2c14c91d1e1282497818664efb948ee950710d4998",
+  "source_commit": "414e66760333eaa4ef78c685bcf53291c527a548",
+  "generated_file": "/Users/shunqiwang/CityuHK/Research/Lean/TranslationProof/Prosa-Shunqi/Validation/.work/experiments/results_rta_ideal_fp_comp_fully_preemptive_final/source/RtaIdealFpCompFullyPreemptiveSemanticSource.v",
+  "transformations": {
+    "computational": "byte-identical declaration block",
+    "theorem": "verified post-Section Check type converted to a definition with its declared Prop/Type sort preserved; exact source header retained as provenance; opaque proof omitted",
+    "local_bindings": {},
+    "dropped_irrelevant_imports": [
+      "Require Export prosa.results.rta.ideal.fp.fully_preemptive.",
+      "Require Export prosa.util.fixpoint."
+    ],
+    "added_validation_imports": [
+      "Require Export prosa.RtaIdealFpFullyPreemptiveSemanticSource.",
+      "Export RtaIdealFpFullyPreemptiveSemanticSource.",
+      "Require Export prosa.util.fixpoint.",
+      "Require Export prosa.TaskPreemptionFullyPreemptiveSemanticSource.",
+      "Export TaskPreemptionFullyPreemptiveSemanticSource.",
+      "Require Export prosa.model.readiness.sequential prosa.model.preemption.fully_preemptive.",
+      "From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq bigop.",
+      "Require Import prosa.behavior.all prosa.model.processor.ideal.",
+      "Module fp. Module bounded_pi := prosa.RtaIdealFpBoundedPiSemanticSource.RtaIdealFpBoundedPiSemanticSource. End fp."
+    ],
+    "printer_repairs": [
+      "valid_schedule sched arr_seq=@valid_schedule Job H1 (ideal.processor_state Job) sched H2 (@sequential_ready_instance Job Task H0 H1 H2 (ideal.processor_state Job) arr_seq) arr_seq",
+      "work_conserving arr_seq sched=@work_conserving Job H1 H2 (ideal.processor_state Job) (@sequential_ready_instance Job Task H0 H1 H2 (ideal.processor_state Job) arr_seq) arr_seq sched",
+      "respects_FP_policy_at_preemption_point arr_seq sched FP=@respects_FP_policy_at_preemption_point Task Job H0 H1 H2 (ideal.processor_state Job) (@fully_preemptive_job_model Job) (@sequential_ready_instance Job Task H0 H1 H2 (ideal.processor_state Job) arr_seq) arr_seq sched FP"
+    ]
+  },
+  "declarations": {
+    "sequential_readiness": {
+      "source_kind": "computational",
+      "acquisition_mode": "BODY_EXACT",
+      "source_block_sha256": "2db2fc7d53e145d39b48b15446ba2859bb8cf3e8107b59862bb100cdaacac664",
+      "generated_text_sha256": "2db2fc7d53e145d39b48b15446ba2859bb8cf3e8107b59862bb100cdaacac664",
+      "source_statement_sha256": null,
+      "normalized_statement_sha256": null,
+      "elaborated_type_sha256": null,
+      "elaborated_type_evidence": null,
+      "statement_sort": null,
+      "context": [
+        "  #[local] Existing Instance ideal.processor_state.",
+        "  Context {Task : TaskType} `{TaskCost Task}.",
+        "  Context {Job : JobType} `{JobTask Job Task} `{JobArrival Job} `{JobCost Job}.",
+        "  #[local] Existing Instance fully_preemptive_job_model.",
+        "  #[local] Existing Instance fully_preemptive_task_model.",
+        "  #[local] Existing Instance fully_preemptive_rtc_threshold.",
+        "  Variable arr_seq : arrival_sequence Job.",
+        "  Hypothesis H_valid_arrival_sequence : valid_arrival_sequence arr_seq.",
+        "  Variable ts : list Task.",
+        "  Hypothesis H_all_jobs_from_taskset : all_jobs_from_taskset arr_seq ts.",
+        "  Hypothesis H_valid_job_cost : arrivals_have_valid_job_costs arr_seq.",
+        "  Context `{MaxArrivals Task}.",
+        "  Hypothesis H_valid_arrival_curve : valid_taskset_arrival_curve ts max_arrivals.",
+        "  Hypothesis H_is_arrival_curve : taskset_respects_max_arrivals arr_seq ts.",
+        "  Variable tsk : Task.",
+        "  Hypothesis H_tsk_in_ts : tsk \\in ts."
+      ],
+      "omitted_context_for_elaborated_theorem": false,
+      "local_bindings": {}
+    },
+    "uniprocessor_response_time_bound_fully_preemptive_fp": {
+      "source_kind": "theorem",
+      "acquisition_mode": "STATEMENT_EXACT_PROOF_OMITTED",
+      "source_block_sha256": "2a53f4b121e7e942c843ff0a843f0efa8c8c36056fc9eb0062b22c973fac9434",
+      "generated_text_sha256": "28ad13cf70ee26bf9126e035bb28c9812b8f98e26294104b4cba1731f02259ba",
+      "source_statement_sha256": "041427d33f2f63249cf0b422bd1f3107f7f535feb6b9c4cd225c02e6de3d3212",
+      "normalized_statement_sha256": "041427d33f2f63249cf0b422bd1f3107f7f535feb6b9c4cd225c02e6de3d3212",
+      "elaborated_type_sha256": "9fafb3bff280d650ffc23362f65341d7f4e8e1a1db64d88dd973875583202568",
+      "elaborated_type_evidence": "ELABORATED_ROCQ_CHECK",
+      "statement_sort": "Prop",
+      "context": [],
+      "omitted_context_for_elaborated_theorem": true,
+      "local_bindings": {}
+    }
+  }
+}

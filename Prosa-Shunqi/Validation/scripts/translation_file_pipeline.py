@@ -32,6 +32,7 @@ Usage: translation_file_pipeline.py <spec.json> prepare|check|publish|all
 from __future__ import annotations
 
 import csv
+import difflib
 import hashlib
 import json
 import os
@@ -57,6 +58,63 @@ PACKAGES = ["mathlib", "plausible", "proofwidgets", "batteries", "aesop", "impor
             "LeanSearchClient", "Qq", "Cli"]
 ESCAPE_ROCQ = re.compile(r"\b(Admitted|admit|Axiom|Parameter)\b")
 ESCAPE_LEAN = re.compile(r"\b(sorry|admit|axiom|unsafe)\b", re.I)
+
+# ------------------------------------------------------------------ validation family
+# "v06" (the default) is the pinned Prosa v0.6 chain above.  "classic" is opt-in (spec field
+# `family: "classic"`, Stage 0 of classic-prosa/casestudy-translation, approved by the user on
+# 2026-10-01): ProsaBuddy's classic Prosa at commit f692cb7 (the case-study environment), its own
+# planning inputs (planning/classic_dependency), its own status chain (planning/classic_pipeline)
+# and acceptance labels, and the recorded Rocq 9.0 compatibility prelude for classic source files.
+# Accepted v0.6 artifacts a classic run reuses are checked against the v0.6 manifests.  Every value
+# below keeps its v0.6 meaning unless `configure_family` switches it for a classic spec.
+FAMILY = "v06"
+V06_PIPE = PIPE
+ACCEPT_FILE, ACCEPT_DECL = "ACCEPTED_V06_FILE", "ACCEPTED_V06_TRANSLATION"
+PUBLISH_DIR = V / "imported/translation_order"
+SLICE_PREFIX = "TRANSLATION_ORDER_"
+AUTHORITATIVE = {"files": 357, "declarations": 2439}
+CLASSIC_PRELUDE: list[str] = []
+CLASSIC = {
+    "source_root": V / ".work/prosabuddy-f692cb7/prosaworkspace",
+    "pin": "f692cb7479780cf6009493f373a309e13165201c",
+    "tree": "24727b135eda27b7234119bf8d931d962d7c3593",
+    "pipe": V / "planning/classic_pipeline",
+    "dep": V / "planning/classic_dependency",
+    "prelude_source": PROJECT / "classic-prosa/rocq93-port/Rocq90Compat.v",
+    "prelude_sha256": "",   # bound at configuration time to planning/classic_dependency/prelude.json
+}
+
+
+def configure_family(spec: "Spec") -> None:
+    global FAMILY, PIPE, DEP, SOURCE_ROOT, PIN, TREE, ACCEPT_FILE, ACCEPT_DECL, PUBLISH_DIR, SLICE_PREFIX
+    family = spec.get("family", "v06")
+    require(family in ("v06", "classic"), f"unknown family {family}", spec.tag)
+    if family == "v06":
+        return
+    require(not spec.get("coqeal"), "classic family has no CoqEAL", spec.tag)
+    FAMILY = "classic"
+    PIPE, DEP, SOURCE_ROOT = CLASSIC["pipe"], CLASSIC["dep"], CLASSIC["source_root"]
+    PIN, TREE = CLASSIC["pin"], CLASSIC["tree"]
+    ACCEPT_FILE, ACCEPT_DECL = "ACCEPTED_CLASSIC_FILE", "ACCEPTED_CLASSIC_TRANSLATION"
+    PUBLISH_DIR = V / "imported/classic_translation_order"
+    SLICE_PREFIX = "CLASSIC_TRANSLATION_ORDER_"
+    scope = read(DEP / "scope.json")
+    AUTHORITATIVE.update(files=scope["case_study_files"], declarations=scope["case_study_declarations"])
+    prelude = read(DEP / "prelude.json")
+    require(sha(CLASSIC["prelude_source"]) == prelude["sha256"], "compatibility prelude changed", spec.tag)
+    CLASSIC["prelude_sha256"] = prelude["sha256"]
+    ROCQ_EXTRA[:] = ["-Q", str(spec.work / "compat"), "Compat"]
+    CLASSIC_PRELUDE[:] = ["-ri", "Compat.Rocq90Compat"]
+
+
+def source_flags(rel: str) -> list[str]:
+    """Extra compile flags of one source file: the recorded prelude for classic files of a classic run."""
+    return CLASSIC_PRELUDE if FAMILY == "classic" and rel.startswith("classic/") else []
+
+
+def cert_name(declaration: str) -> str:
+    """Default principal certificate name (a classic declaration name may carry its Rocq module path)."""
+    return f"{declaration.replace('.', '_')}_correspondence"
 
 
 class Rejected(SystemExit):
@@ -99,8 +157,13 @@ def run(cmd: list[str], log: Path, cwd: Path, env=None, append=False) -> int:
         return subprocess.run(wrapped, cwd=cwd, env=env, stdout=out, stderr=subprocess.STDOUT).returncode
 
 
+# Opt-in extra Rocq load path: set only for a spec with a `coqeal` field (the implementation/refinements files);
+# empty for every other spec, whose Rocq commands are therefore unchanged.
+ROCQ_EXTRA: list[str] = []
+
+
 def rocq(args: list[str], log: Path, cwd: Path, append=False) -> int:
-    return run(["opam", "exec", "--switch=rocq93rc1", "--", "rocq", "c", *args], log, cwd,
+    return run(["opam", "exec", "--switch=rocq93rc1", "--", "rocq", "c", *ROCQ_EXTRA, *args], log, cwd,
                append=append)
 
 
@@ -113,19 +176,24 @@ def lean_env(olean: Path) -> dict:
 
 
 def accepted_status(source_file: str) -> str:
-    for path in sorted(PIPE.glob("*status.json")):
-        try:
-            item = read(path).get("per_file", {}).get(source_file)
-        except json.JSONDecodeError:
-            continue
-        if isinstance(item, dict) and item.get("status") == "ACCEPTED_V06_FILE":
-            return path.name
+    chains = [(PIPE, ACCEPT_FILE)] + ([(V06_PIPE, "ACCEPTED_V06_FILE")] if FAMILY == "classic" else [])
+    for pipe, label in chains:
+        for path in sorted(pipe.glob("*status.json")):
+            try:
+                item = read(path).get("per_file", {}).get(source_file)
+            except json.JSONDecodeError:
+                continue
+            if isinstance(item, dict) and item.get("status") == label:
+                return path.name if FAMILY == "v06" else f"{pipe.name}/{path.name}"
     raise Rejected(f"PIPELINE_REJECTED: dependency not accepted: {source_file}")
 
 
 def manifest_hash(stem: str, key: str) -> str:
-    man = read(PIPE / f"{stem}_module_manifest.json")
-    require(man.get("acceptance") == "ACCEPTED_V06_FILE", f"{stem} not accepted")
+    path, label = PIPE / f"{stem}_module_manifest.json", ACCEPT_FILE
+    if FAMILY == "classic" and not path.is_file():   # an accepted v0.6 artifact reused by a classic run
+        path, label = V06_PIPE / f"{stem}_module_manifest.json", "ACCEPTED_V06_FILE"
+    man = read(path)
+    require(man.get("acceptance") == label, f"{stem} not accepted")
     value = man
     for part in key.split("."):  # older manifests keep hashes under artifact_hashes
         if isinstance(value, list) and part.isdigit():  # or inside declarations[i]
@@ -323,6 +391,100 @@ def build_fixtures(spec: Spec, olean: Path, env: dict) -> None:
     (work / "lean_fixture_provenance.json").write_text(json.dumps(provenance, indent=2) + "\n")
 
 
+# ------------------------------------------------------------------ official proof closure
+
+def official_closure_files(spec: Spec) -> tuple[list[str], set[str]]:
+    """The recorded official proof closure (dependency order, the module last) and the files its recorded
+    compatibility patches touch (never the module itself)."""
+    closure = (V / spec["official_closure"]["files"]).read_text().split()
+    require(closure[-1] == spec.source and len(set(closure)) == len(closure), "closure list malformed", spec.tag)
+    patched: set[str] = set()
+    for patch in spec["official_closure"]["patches"]:
+        touched = re.findall(r"^\+\+\+ b/(\S+)", (V / patch).read_text(), re.M)
+        require(all(t in closure for t in touched), f"patch touches a file outside the closure: {patch}", spec.tag)
+        # opt-in (`module_change`): the module may receive exactly the file-local rewrite-order flag, checked
+        # line by line in `module_flag_only`; every other spec keeps the module unpatched
+        require(spec.source not in touched
+                or spec["official_closure"].get("module_change") == "rewrite_goals_order_flag",
+                "the module itself must not be patched", spec.tag)
+        patched |= set(touched)
+    return closure, patched
+
+
+REWRITE_ORDER_FLAG = "Set SsrOldRewriteGoalsOrder."
+
+
+def module_flag_only(official: Path, compiled: Path) -> bool:
+    """`compiled` is `official` with exactly one added line `Set SsrOldRewriteGoalsOrder.` and nothing else."""
+    a, b = official.read_text().splitlines(), compiled.read_text().splitlines()
+    ops = [op for op in difflib.SequenceMatcher(a=a, b=b, autojunk=False).get_opcodes() if op[0] != "equal"]
+    return (len(ops) == 1 and ops[0][0] == "insert" and ops[0][4] - ops[0][3] == 1
+            and b[ops[0][3]] == REWRITE_ORDER_FLAG)
+
+
+# ------------------------------------------------------------------ CoqEAL (opt-in, refinements files only)
+
+def coqeal_files(spec: Spec) -> tuple[dict, Path]:
+    """The recorded CoqEAL release: the clone must be at the recorded commit and every used file must have its
+    recorded sha256; no CoqEAL file is patched."""
+    m = read(V / spec["coqeal"])
+    clone = V / m["clone"]
+    require(git(clone, "rev-parse", "HEAD") == m["commit"], "CoqEAL clone not at the recorded commit", spec.tag)
+    require(not git(clone, "status", "--porcelain", "--untracked-files=no"), "CoqEAL clone modified", spec.tag)
+    for f in m["files"]:
+        require(sha(clone / f["path"]) == f["sha256"], f"CoqEAL file changed: {f['path']}", spec.tag)
+    return m, clone
+
+
+def build_coqeal(spec: Spec) -> None:
+    """Compile the recorded CoqEAL files, unchanged, under the pinned rocq93rc1 into the run (`coqeal/CoqEAL`)."""
+    m, clone = coqeal_files(spec)
+    out = spec.work / "coqeal/CoqEAL"
+    out.mkdir(parents=True)
+    log = spec.work / "coqeal_build.log"
+    log.write_text("")
+    for f in m["files"]:
+        shutil.copy2(clone / f["path"], out / Path(f["path"]).name)
+    for f in m["files"]:
+        require(run(["opam", "exec", "--switch=rocq93rc1", "--", "rocq", "c", "-Q", str(out), "CoqEAL",
+                     str(out / Path(f["path"]).name)], log, spec.work / "coqeal", append=True) == 0,
+                f"CoqEAL compile failed: {f['path']}", spec.tag)
+
+
+def coqeal_record(spec: Spec) -> dict:
+    m, clone = coqeal_files(spec)
+    out = spec.work / "coqeal/CoqEAL"
+    for f in m["files"]:
+        require(sha(out / Path(f["path"]).name) == f["sha256"], f"run CoqEAL source changed: {f['path']}", spec.tag)
+    return {"manifest": spec["coqeal"], "manifest_sha256": sha(V / spec["coqeal"]), "commit": m["commit"],
+            "type_evidence": "planning/v06_dependency/coqeal_declaration_type_evidence.json",
+            "type_evidence_sha256": sha(DEP / "coqeal_declaration_type_evidence.json"),
+            "vo_sha256": {p.name: sha(p) for p in sorted(out.glob("*.vo"))}}
+
+
+def build_official_closure(spec: Spec, src: Path, log: Path) -> None:
+    """Source tree = the pinned official files of the recorded closure (each hash-checked against the file
+    inventory) + the recorded compatibility patches, compiled in dependency order; no accepted semantic module."""
+    closure, patched = official_closure_files(spec)
+    with (DEP / "file_inventory.csv").open() as stream:
+        inv = {r["file"]: r["sha256"] for r in csv.DictReader(stream)}
+    for rel in closure:
+        require(inv[rel] == sha(SOURCE_ROOT / rel), f"pinned closure file changed: {rel}", spec.tag)
+        (src / rel).parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(SOURCE_ROOT / rel, src / rel)
+    for patch in spec["official_closure"]["patches"]:
+        subprocess.run(["patch", "-s", "-p1", "-i", str(V / patch)], cwd=src, check=True)
+    for rel in closure:
+        require((sha(src / rel) == sha(SOURCE_ROOT / rel)) == (rel not in patched),
+                f"closure file differs from the pinned file without a recorded patch: {rel}", spec.tag)
+    if spec.source in patched:
+        require(module_flag_only(SOURCE_ROOT / spec.source, src / spec.source),
+                "module change is not exactly the rewrite-order flag", spec.tag)
+    for rel in closure:
+        require(rocq(["-R", str(src), "prosa", *source_flags(rel), rel], log, src, append=True) == 0,
+                f"official closure compile failed: {rel}", spec.tag)
+
+
 # --------------------------------------------------------------------------- prepare
 
 def prepare(spec: Spec) -> None:
@@ -333,7 +495,10 @@ def prepare(spec: Spec) -> None:
     with (DEP / "file_inventory.csv").open() as stream:
         row = next(r for r in csv.DictReader(stream) if r["file"] == spec.source)
     require(row["sha256"] == sha(official), "file inventory mismatch", tag)
-    base = EXP / spec["base_run"]
+    # a classic run may start without a base run (no Lean or Rocq dependency artifacts to inherit)
+    require(spec["base_run"] is not None or (FAMILY == "classic" and not spec["base_checks"]),
+            "base_run required", tag)
+    base = EXP / spec["base_run"] if spec["base_run"] is not None else None
     for check in spec["base_checks"]:
         if check.get("olean"):
             require(sha(base / "olean" / check["olean"]) ==
@@ -345,12 +510,23 @@ def prepare(spec: Spec) -> None:
                     f"base source vo changed: {check['vo']}", tag)
     for sub in ("olean/Validation/fixtures/translation_order", "imported", "certificates"):
         (work / sub).mkdir(parents=True)
+    if FAMILY == "classic":   # the recorded Rocq 9.0 compatibility prelude, compiled into the run
+        (work / "compat").mkdir()
+        shutil.copy2(CLASSIC["prelude_source"], work / "compat/Rocq90Compat.v")
+        require(sha(work / "compat/Rocq90Compat.v") == CLASSIC["prelude_sha256"], "prelude copy changed", tag)
+        require(rocq(["Rocq90Compat.v"], work / "compat/build.log", work / "compat") == 0,
+                "compatibility prelude compile failed", tag)
     (work / "stage_timing.tsv").write_text("")
     t0 = time.time()
+    if spec.get("coqeal"):
+        build_coqeal(spec)
 
     # ---- source binding
     src = work / "source"
-    shutil.copytree(base / "source", src)
+    if spec["source_mode"] == "official_closure" or base is None:   # no inherited tree: built below
+        src.mkdir(parents=True)
+    else:
+        shutil.copytree(base / "source", src)
     for rel in spec.get("extra_pinned_sources", []):
         (src / rel).parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(SOURCE_ROOT / rel, src / rel)
@@ -403,8 +579,12 @@ def prepare(spec: Spec) -> None:
         shutil.copy2(official, src / spec.source)
         for patch in spec.get("patches", []):
             subprocess.run(["patch", "-s", "-p1", "-i", str(V / patch)], cwd=src, check=True)
-        require(rocq(["-R", str(src), "prosa", spec.source], log, src, append=True) == 0,
-                "official source compile failed", tag)
+        require(rocq(["-R", str(src), "prosa", *source_flags(spec.source), spec.source], log, src,
+                     append=True) == 0, "official source compile failed", tag)
+        require(rocq(["-R", str(src), "prosa", str(PROJECT / spec["fingerprint_probe"])],
+                     work / "source_type_fingerprint.log", src) == 0, "fingerprint probe failed", tag)
+    elif mode == "official_closure":
+        build_official_closure(spec, src, log)
         require(rocq(["-R", str(src), "prosa", str(PROJECT / spec["fingerprint_probe"])],
                      work / "source_type_fingerprint.log", src) == 0, "fingerprint probe failed", tag)
     elif mode == "extract":
@@ -433,6 +613,8 @@ def prepare(spec: Spec) -> None:
             cmd.append("--source-order")
         if x.get("self_named_instance_context"):
             cmd.append("--self-named-instance-context")
+        for item in x.get("omit_context_lets", []):
+            cmd += ["--omit-context-let", item]
         for item in x.get("body_parenthesizations", []):
             cmd += ["--body-parenthesization", "\t".join((item["name"], item["old"], item["new"]))]
         if x.get("omit_theorem_context", True):
@@ -451,7 +633,10 @@ def prepare(spec: Spec) -> None:
 
     # ---- Lean
     olean = work / "olean"
-    shutil.copytree(base / "olean/Prosa", olean / "Prosa")
+    if base is not None:
+        shutil.copytree(base / "olean/Prosa", olean / "Prosa")
+    else:
+        (olean / "Prosa").mkdir(parents=True)
     for art in spec.get("extra_olean_artifacts", []):
         dest = olean / art["to"]
         dest.parent.mkdir(parents=True, exist_ok=True)
@@ -543,7 +728,12 @@ def chain_base_key(spec: Spec) -> str:
                    "source_vo": {str(p.relative_to(w / "source")): sha(p)
                                  for p in sorted((w / "source").rglob("*.vo"))},
                    "load_path": ["-R source prosa", "-Q importer LeanImport", "-I importer",
-                                 "-Q imported FoundationImported", "-Q certificates FoundationCertificates"]})
+                                 "-Q imported FoundationImported", "-Q certificates FoundationCertificates"],
+                   **({"coqeal_vo": {p.name: sha(p) for p in sorted((w / "coqeal/CoqEAL").glob("*.vo"))}}
+                      if spec.get("coqeal") else {}),
+                   **({"classic_prelude": {"load_path": "-Q compat Compat",
+                                           "vo_sha256": sha(w / "compat/Rocq90Compat.vo")}}
+                      if FAMILY == "classic" else {})})
 
 
 def chain_key(previous_key: str, previous_vo: str | None, module: str, source: Path) -> str:
@@ -664,6 +854,10 @@ def check(spec: Spec) -> None:
 
 def fingerprint_matches(spec: Spec, rows: list[dict]) -> dict:
     evidence = read(DEP / "declaration_type_evidence.json")
+    # opt-in (CoqEAL specs): official-toolchain evidence for the declarations the inventory marks as the CoqEAL
+    # build boundary, produced by scripts/elaborate_coqeal_declaration_types.py (see its docstring)
+    coqeal_evidence = (read(DEP / "coqeal_declaration_type_evidence.json")["declarations"]
+                       if spec.get("coqeal") else {})
     log = (spec.work / "source_type_fingerprint.log").read_text()
     require("Error" not in log, "Rocq source type audit failed", spec.tag)
     blocks = {m.group(1): " ".join(m.group(2).split())
@@ -671,9 +865,16 @@ def fingerprint_matches(spec: Spec, rows: list[dict]) -> dict:
     result = {}
     for row in rows:
         name = row["qualified_name"]
-        item = evidence[name]
-        require(row["final_type_or_type_fingerprint"] == "rocq-check-sha256:" + item["sha256"],
-                f"source type evidence changed for {name}", spec.tag)
+        if name in coqeal_evidence:
+            item = coqeal_evidence[name]
+            require(row["type_evidence_status"] == "UNRESOLVED_EXTERNAL_BUILD_BOUNDARY_COQEAL"
+                    and item["inventory_fingerprint"] == row["final_type_or_type_fingerprint"]
+                    and item["source_file"] == spec.source,
+                    f"CoqEAL type evidence not bound to the inventory row: {name}", spec.tag)
+        else:
+            item = evidence[name]
+            require(row["final_type_or_type_fingerprint"] == "rocq-check-sha256:" + item["sha256"],
+                    f"source type evidence changed for {name}", spec.tag)
         got = blocks.get(name)
         require(got is not None, f"missing source fingerprint: {name}", spec.tag)
         if hashlib.sha256(got.encode()).hexdigest() == item["sha256"]:
@@ -695,9 +896,77 @@ def fingerprint_matches(spec: Spec, rows: list[dict]) -> dict:
                     got == f"@{short} : " + item["normalized_check"][len(qualified):]:
                 matched_qualifier = True
                 break
+            # a declaration without implicit arguments is displayed by `Check @name`
+            # without the `@` (`readiness.x : T`); accept the same display qualifier
+            bare = f"{qual}.{short} : "
+            if item["normalized_check"].startswith(bare) and \
+                    got == f"{short} : " + item["normalized_check"][len(bare):]:
+                matched_qualifier = True
+                break
         if matched_qualifier:
             result[name] = "EXACT_MODULO_OWN_MODULE_QUALIFIER"
             continue
+        # opt-in (spec `own_qualified_in_type`, a list of this file's own declaration names): the official evidence
+        # context loads every module, including later files that declare the same short names (e.g. `eq_taskab` in
+        # EDF/FP refinements), so the official `Check` prints those own declarations qualified by this file's own
+        # module, also inside the type.  Accept exactly that qualifier on exactly the listed own names, nothing else.
+        own_in_type = spec.get("own_qualified_in_type", [])
+        if own_in_type:
+            require(set(own_in_type) <= {r["declaration_name"] for r in rows},
+                    "own_qualified_in_type lists a name that is not a declaration of this file", spec.tag)
+            repaired = item["normalized_check"]
+            for qual in own_qualifiers:
+                for own in own_in_type:
+                    repaired = re.sub(r"(?<![\w.'])" + re.escape(f"{qual}.{own}") + r"(?![\w'])", own, repaired)
+            if repaired != item["normalized_check"] and got == repaired:
+                result[name] = "EXACT_MODULO_OWN_MODULE_QUALIFIER"
+                continue
+        # opt-in (spec `dependency_qualified_in_type`, a list of fully qualified declarations of files of the official
+        # closure): the official evidence context also loads later files that declare the same short names (e.g.
+        # `Task` in job_constructor and EDF/FP), so the official `Check` prints such a dependency declaration
+        # qualified by a trailing suffix of its own module path (`task.Task`).  Accept exactly those qualifiers on
+        # exactly the listed declarations, and only when no other declaration of the closure has the same short name
+        # (so the unqualified name of the validation context denotes that declaration); nothing else.
+        dep_in_type = spec.get("dependency_qualified_in_type", [])
+        if dep_in_type:
+            closure = set(official_closure_files(spec)[0])
+            with (DEP / "declaration_inventory.csv").open() as stream:
+                closure_rows = list(csv.DictReader(stream))
+            repaired = item["normalized_check"]
+            for full in dep_in_type:
+                src_of = [r["source_file"] for r in closure_rows if r["qualified_name"] == full]
+                require(len(src_of) == 1 and src_of[0] in closure and src_of[0] != spec.source,
+                        f"dependency_qualified_in_type: not a closure dependency declaration: {full}", spec.tag)
+                dshort = full.split(".")[-1]
+                require([r["qualified_name"] for r in closure_rows
+                         if r["declaration_name"] == dshort and r["source_file"] in closure] == [full],
+                        f"dependency_qualified_in_type: short name not unique in the closure: {full}", spec.tag)
+                dpath = full.split(".")[1:-1]
+                for qual in [".".join(dpath[i:]) for i in range(len(dpath) - 1, -1, -1)]:
+                    repaired = re.sub(r"(?<![\w.'])" + re.escape(f"{qual}.{dshort}") + r"(?![\w'])", dshort,
+                                      repaired)
+            if repaired != item["normalized_check"] and got == repaired:
+                result[name] = "EXACT_MODULO_DEPENDENCY_MODULE_QUALIFIER"
+                continue
+            # together with exactly the accepted Rocq 9.0/9.3 display difference of a final parenthesised
+            # `exists` operand of `\/`, `<->` or `~` (the `TYPE_EQUAL_MODULO_EXISTS_PARENS` normalization below)
+            repaired_unparen = re.sub(r"(\\/|<->|~) \((exists .*)\)$", r"\1 \2", repaired)
+            if repaired != item["normalized_check"] and repaired_unparen != repaired and got == repaired_unparen:
+                result[name] = "EXACT_MODULO_DEPENDENCY_MODULE_QUALIFIER_AND_EXISTS_PARENS"
+                continue
+            # together with exactly the own-module qualifiers accepted above: the display qualifier at the head
+            # (`@qual.x : `/`qual.x : `) and, for the names listed in `own_qualified_in_type`, inside the type
+            if repaired != item["normalized_check"]:
+                both = repaired
+                for qual in own_qualifiers:
+                    for own in own_in_type:
+                        both = re.sub(r"(?<![\w.'])" + re.escape(f"{qual}.{own}") + r"(?![\w'])", own, both)
+                heads = [both] + [prefix + both[len(prefix + qual + "."):]
+                                  for qual in own_qualifiers for prefix in ("@", "")
+                                  if both.startswith(f"{prefix}{qual}.{short} : ")]
+                if got in heads and got != repaired:
+                    result[name] = "EXACT_MODULO_DEPENDENCY_AND_OWN_MODULE_QUALIFIER"
+                    continue
         # MathComp 2.4 (official evidence) displays the carrier of the canonical
         # integer structure that types `(x - y)%R` as
         # `ssrint_int__canonical__GRing_Nmodule`; MathComp 2.6 (the validation
@@ -774,6 +1043,12 @@ def fingerprint_matches(spec: Spec, rows: list[dict]) -> dict:
         repaired = ref
         for old, new in own_repairs:
             repaired = re.sub(rf"(?<![\w.']){re.escape(old)}(?![\w'])", new, repaired)
+        # both accepted display differences at once: the MathComp `Order.Def`
+        # abbreviation and a recorded own-module qualifier repair (each exactly as
+        # accepted above), nothing else
+        mc_order_repaired = mc_order
+        for old, new in own_repairs:
+            mc_order_repaired = re.sub(rf"(?<![\w.']){re.escape(old)}(?![\w'])", new, mc_order_repaired)
         result[name] = ("STATEMENT_BODY_EQUAL_TO_ELABORATED_TYPE" if body == ref
                         else "TYPE_EQUAL_MODULO_EXISTS_PARENS" if body is not None and body == unparen
                         and unparen != ref
@@ -785,6 +1060,9 @@ def fingerprint_matches(spec: Spec, rows: list[dict]) -> dict:
                         if body is not None and body == ssr_fun and ssr_fun != ref
                         else "STATEMENT_BODY_EQUAL_MODULO_OWN_MODULE_QUALIFIER"
                         if own_repairs and body is not None and body == repaired and repaired != ref
+                        else "TYPE_EQUAL_MODULO_MATHCOMP_ORDER_DEF_ABBREVIATION_AND_OWN_MODULE_QUALIFIER"
+                        if own_repairs and body is not None and body == mc_order_repaired
+                        and mc_order != ref and mc_order_repaired != mc_order
                         else "MISMATCH")
         require(result[name] != "MISMATCH", f"source type mismatch: {name}: {got}", spec.tag)
     return result
@@ -812,10 +1090,38 @@ def publish(spec: Spec) -> None:
     mode = spec["source_mode"]
     copied = work / "source" / spec.source
     compat: dict = {"mode": mode}
+    if FAMILY == "classic":
+        compat["classic_prelude"] = {
+            "file": str(CLASSIC["prelude_source"].relative_to(PROJECT)), "sha256": CLASSIC["prelude_sha256"],
+            "vo_sha256": sha(work / "compat/Rocq90Compat.vo"),
+            "flags": "-Q compat Compat -ri Compat.Rocq90Compat (classic/ source files only)"}
     if mode == "pinned":
         require(sha(copied) == sha(official), "compiled source copy is not byte-identical", tag)
         source_vo = copied.with_suffix(".vo")
         compat["note"] = "pinned source compiled byte-identically"
+    elif mode == "official_closure":
+        closure, patched = official_closure_files(spec)
+        with tempfile.TemporaryDirectory() as tmp:
+            for rel in closure:
+                (Path(tmp) / rel).parent.mkdir(parents=True, exist_ok=True)
+                shutil.copy2(SOURCE_ROOT / rel, Path(tmp) / rel)
+            for patch in spec["official_closure"]["patches"]:
+                subprocess.run(["patch", "-s", "-p1", "-i", str(V / patch)], cwd=tmp, check=True)
+            for rel in closure:
+                require(sha(work / "source" / rel) == sha(Path(tmp) / rel),
+                        f"closure file is not official + recorded patches: {rel}", tag)
+        if spec.source in patched:
+            require(module_flag_only(official, copied), "module change is not exactly the rewrite-order flag", tag)
+            compat["module_change"] = "one added line `" + REWRITE_ORDER_FLAG + "` (file-local rewrite-order flag)"
+        else:
+            require(sha(copied) == sha(official), "compiled module is not byte-identical", tag)
+        source_vo = copied.with_suffix(".vo")
+        compat.update(note="official proof closure (pinned files + recorded compatibility patches); module "
+                           "compiled byte-identically" + (" except the recorded rewrite-order flag"
+                                                         if spec.source in patched else ""),
+                      closure_files=closure, closure_list_sha256=sha(V / spec["official_closure"]["files"]),
+                      patches={p: sha(V / p) for p in spec["official_closure"]["patches"]},
+                      patched_files=sorted(patched))
     elif mode == "patched":
         with tempfile.TemporaryDirectory() as tmp:
             probe = Path(tmp) / spec.source
@@ -897,7 +1203,6 @@ def publish(spec: Spec) -> None:
         if stem:
             require(sha(work / "olean" / out) == manifest_hash(stem, key[0] if key else "production_olean_sha256"),
                     f"dependency olean changed: {out}", tag)
-    base = EXP / spec["base_run"]
     for check in spec["base_checks"]:
         if check.get("olean"):
             require(sha(work / "olean" / check["olean"]) ==
@@ -907,6 +1212,8 @@ def publish(spec: Spec) -> None:
             require(sha(work / "source" / check["vo"]) ==
                     manifest_hash(check["manifest"], check.get("vo_key", "source_vo_sha256")),
                     f"dependency vo changed: {check['vo']}", tag)
+    if spec.get("coqeal"):
+        compat["coqeal"] = coqeal_record(spec)
     matches = fingerprint_matches(spec, rows)
 
     # toolchain
@@ -960,7 +1267,7 @@ def publish(spec: Spec) -> None:
     prefix = spec["lean_namespace"].replace(".", "_") + "_"
     # the Rocq importer spells non-ASCII identifier characters as `_UU<hex4>_`
     mangle = lambda n: "".join(c if c.isascii() else f"_UU{ord(c):04x}_" for c in n)
-    require("Error" not in type_audit and all(prefix + mangle(n) in type_audit for n in targets),
+    require("Error" not in type_audit and all(prefix + mangle(n).replace(".", "_") in type_audit for n in targets),
             "imported type audit failed", tag)
 
     # certificates
@@ -985,7 +1292,7 @@ def publish(spec: Spec) -> None:
     summary = read(work / "assumption_summary.json")
     aconf = read(V / spec["assumption_config"])
     principal = spec["principal"]
-    expected = {c for n in targets for c in principal.get(n, [f"{n}_correspondence"])} | set(spec["helpers"])
+    expected = {c for n in targets for c in principal.get(n, [cert_name(n)])} | set(spec["helpers"])
     require(summary["audit_policy"] == "fail_closed"
             and set(summary["certificates"]) == set(aconf["certificates"]) == expected
             and aconf["statement_only_dependencies"] == [], "assumption summary incomplete", tag)
@@ -996,19 +1303,28 @@ def publish(spec: Spec) -> None:
                 and not item["target_theorem_dependency"], "Rocq semantic gate failed", tag)
 
     # baseline
-    previous_path = PIPE / spec["previous_status"]
-    previous = read(previous_path)
-    require(previous["status"] == "PASS"
-            and previous["coverage"]["accepted_files"] == spec["previous_files"]
-            and previous["coverage"]["accepted_declarations"] == spec["previous_decls"],
-            "formal baseline changed", tag)
-    require(not git(ROOT, "status", "--porcelain", "--", "Prosa-fei"), "Prosa-fei changed", tag)
+    if spec["previous_status"] is None:   # the first file of the classic chain
+        require(FAMILY == "classic" and spec["previous_files"] == 0 and spec["previous_decls"] == 0
+                and not list(PIPE.glob("*_module_status.json")), "previous status required", tag)
+        previous_path = None
+        previous = {"coverage": {"translated_but_not_certified": 0, "deferred_external_boundary": 0}}
+    else:
+        previous_path = PIPE / spec["previous_status"]
+        previous = read(previous_path)
+        require(previous["status"] == "PASS"
+                and previous["coverage"]["accepted_files"] == spec["previous_files"]
+                and previous["coverage"]["accepted_declarations"] == spec["previous_decls"],
+                "formal baseline changed", tag)
+    # Prosa-fei must be unchanged while it exists; once the directory has been removed from the working tree (by
+    # the user, 2026-10-01: "treat as if there is no such folder") there is nothing to compare against.
+    if (ROOT / "Prosa-fei").exists():
+        require(not git(ROOT, "status", "--porcelain", "--", "Prosa-fei"), "Prosa-fei changed", tag)
 
     now = datetime.now(timezone.utc).astimezone()
     declarations = []
     for r in rows:
         n = r["declaration_name"]
-        certs = principal.get(n, [f"{n}_correspondence"])
+        certs = principal.get(n, [cert_name(n)])
         statuses = {summary["certificates"][c]["status"] for c in certs}
         declarations.append({
             "source_declaration": r["qualified_name"], "lean_declaration": ns + n,
@@ -1016,11 +1332,11 @@ def publish(spec: Spec) -> None:
             if "CERTIFIED_WITH_PROP_SPROP_FOUNDATION" in statuses else "CERTIFIED",
             "certificates": certs, "semantic_premises": [],
             "source_theorem_dependency": False, "target_theorem_dependency": False,
-            "acceptance": "ACCEPTED_V06_TRANSLATION"})
+            "acceptance": ACCEPT_DECL})
     timing = [l.split("\t") for l in (work / "stage_timing.tsv").read_text().splitlines()]
     export_lines = sum(1 for _ in exported.open("rb"))
     manifest = {
-        "slice": "TRANSLATION_ORDER_" + spec.slug.upper(),
+        "slice": SLICE_PREFIX + spec.slug.upper(),
         "generated_at": now.isoformat(), "published_at": now.isoformat(),
         "rank": spec["rank"], "layer": spec["layer"], "source_file": spec.source,
         "source_commit": PIN, "source_tree": TREE, "source_file_sha256": sha(official),
@@ -1048,12 +1364,12 @@ def publish(spec: Spec) -> None:
                              "vo_sha256": sha(work / f"certificates/{m}.vo")} for m in modules},
         "certificate_checkpoints_sha256": sha(checkpoint_path),
         **({"lean_fixture_provenance_sha256": sha(provenance)} if provenance.is_file() else {}),
-        "declarations": declarations, "acceptance": "ACCEPTED_V06_FILE",
+        "declarations": declarations, "acceptance": ACCEPT_FILE,
     }
     manifest_path = PIPE / f"{spec.slug}_module_manifest.json"
     status_path = PIPE / f"{spec.slug}_module_status.json"
     require(not manifest_path.exists() and not status_path.exists(), "publication already exists", tag)
-    destination = V / "imported/translation_order" / spec.slug
+    destination = PUBLISH_DIR / spec.slug
     require(not destination.exists(), "publication destination exists", tag)
     manifest_path.write_text(json.dumps(manifest, indent=2) + "\n")
     n = len(targets)
@@ -1062,13 +1378,15 @@ def publish(spec: Spec) -> None:
         "per_file": {spec.source: {
             "public_declarations": n, "translated": n, "proof_clean": n,
             "semantic_proof_compiled": n, "certified": n,
-            "status": "ACCEPTED_V06_FILE", "published_at": now.isoformat()}},
+            "status": ACCEPT_FILE, "published_at": now.isoformat()}},
         "coverage": {
-            "accepted_files": spec["previous_files"] + 1, "authoritative_files": 357,
-            "accepted_declarations": spec["previous_decls"] + n, "authoritative_declarations": 2439,
+            "accepted_files": spec["previous_files"] + 1, "authoritative_files": AUTHORITATIVE["files"],
+            "accepted_declarations": spec["previous_decls"] + n,
+            "authoritative_declarations": AUTHORITATIVE["declarations"],
             "translated_but_not_certified": previous["coverage"]["translated_but_not_certified"],
             "deferred_external_boundary": previous["coverage"]["deferred_external_boundary"]},
-        "previous_status_sha256": sha(previous_path), "manifest_sha256": sha(manifest_path),
+        "previous_status_sha256": sha(previous_path) if previous_path else None,
+        "manifest_sha256": sha(manifest_path),
     }
     status_path.write_text(json.dumps(status, indent=2) + "\n")
     (destination / "certificates").mkdir(parents=True)
@@ -1090,7 +1408,8 @@ def reprobe(spec: Spec) -> None:
 
     For extracted sources the (display-only) probe is re-copied next to the
     unchanged extracted module, whose compiled .vo is reused as is."""
-    require(spec["source_mode"] in ("pinned", "patched", "extract"), "reprobe: unknown source mode", spec.tag)
+    require(spec["source_mode"] in ("pinned", "patched", "extract", "official_closure"), "reprobe: unknown source mode",
+            spec.tag)
     src = spec.work / "source"
     if spec["source_mode"] == "extract":
         require((src / f"{spec['extraction']['module']}.vo").is_file(), "reprobe: extracted module not built",
@@ -1109,6 +1428,9 @@ def reprobe(spec: Spec) -> None:
 
 def main() -> None:
     spec = Spec(Path(sys.argv[1]).resolve())
+    configure_family(spec)
+    if spec.get("coqeal"):
+        ROCQ_EXTRA[:] = ["-Q", str(spec.work / "coqeal/CoqEAL"), "CoqEAL"]
     stage = sys.argv[2]
     stages = {"prepare": [prepare], "check": [check], "publish": [publish], "reprobe": [reprobe],
               "all": [prepare, check, publish]}[stage]

@@ -1,0 +1,12 @@
+--- a/classic/analysis/global/jitter/bertogna_edf_theory.v	2026-10-01 19:29:35
++++ b/classic/analysis/global/jitter/bertogna_edf_theory.v	2026-10-01 19:29:35
+@@ -328,8 +328,7 @@
+             move: (BEFOREother) => LT; rewrite -(ltn_add2r R) in LT.
+             exploit (BEFOREok j_other tsk R ARRother SAMEtsk INbounds).
+             {
+-              rewrite -addnA [_ + R]addnC addnA -[(_ + _) + R]addnA [_ tsk + R]addnC addnA.
+-              by rewrite ltn_add2r.
++              by rewrite !ltn_add2r.
+             }
+             intros COMP.
+             move: PENDING => /andP [_ /negP NOTCOMP]; apply NOTCOMP.

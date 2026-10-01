@@ -1,0 +1,31 @@
+Rocq 9.3 compatibility for util/fixpoint.v (proof-only).
+1. The same file-local `done` as the util/minmax.v compatibility patch (the accepted
+   util/tactics.v patch makes Prosa's `done` call itself under Rocq 9.3).
+2. `fmfs_finds_fixpoint` uses the util/list.v lemma `has_all_nilp`; the validation chain
+   binds util/list.v by its accepted statement-only semantic source, so that lemma's
+   two-line proof is inlined at its only use. No statement or definition changes.
+--- a/util/fixpoint.v
++++ b/util/fixpoint.v
+@@ -4,6 +4,8 @@
+ Require Export prosa.util.list.
+ Require Export prosa.util.minmax.
+ 
++Local Ltac done := solve [ Corelib.ssr.ssreflect_rw.done | eauto 4 with basic_rt_facts ].
++
+ (** * Fixpoint Search *)
+ 
+ (** This module provides some utilities for finding positive fixpoints of
+@@ -222,9 +224,12 @@
+   move: H. rewrite ifT //= => [][]H.
+   have NN': ~~ nilp fps
+     by rewrite /fps /nilp size_map -/(nilp sp).
++  have HAS: has (fun opt => opt != None) fps.
++  { move: ALL NN'; case E: fps => [//|a s] /allP ALLa _.
++    by apply/hasP; exists a; [exact: mem_head | apply: ALLa; exact: mem_head]. }
+   move: (bigmax_witness
+            (fun fp => match fp with | Some x' => x' | None => 0 end)
+-           (has_all_nilp _ _ ALL NN'))
++           HAS)
+       => //= [w [IN [SOME MAX]]].
+   case: w IN SOME MAX => // w IN _.
+   rewrite {}H => WX.

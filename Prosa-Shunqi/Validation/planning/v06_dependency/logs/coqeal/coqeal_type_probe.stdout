@@ -1,0 +1,956 @@
+BEGIN|prosa.implementation.refinements.EDF.fast_search_space.bound_on_total_hep_workload
+bound_on_total_hep_workload
+     : seq task.Task -> task.Task -> nat -> nat -> nat
+END|prosa.implementation.refinements.EDF.fast_search_space.bound_on_total_hep_workload
+BEGIN|prosa.implementation.refinements.EDF.fast_search_space.check_point_FP
+check_point_FP
+     : seq task.Task -> task.Task -> nat -> nat * nat -> bool
+END|prosa.implementation.refinements.EDF.fast_search_space.check_point_FP
+BEGIN|prosa.implementation.refinements.EDF.fast_search_space.blocking_bound_NP
+blocking_bound_NP
+     : seq task.Task -> task.Task -> nat -> nat
+END|prosa.implementation.refinements.EDF.fast_search_space.blocking_bound_NP
+BEGIN|prosa.implementation.refinements.EDF.fast_search_space.check_point_NP
+check_point_NP
+     : seq task.Task -> task.Task -> nat -> nat * nat -> bool
+END|prosa.implementation.refinements.EDF.fast_search_space.check_point_NP
+BEGIN|prosa.implementation.refinements.EDF.fast_search_space.Task
+Task
+     : eqType
+END|prosa.implementation.refinements.EDF.fast_search_space.Task
+BEGIN|prosa.implementation.refinements.EDF.fast_search_space.Job
+Job
+     : eqType
+END|prosa.implementation.refinements.EDF.fast_search_space.Job
+BEGIN|prosa.implementation.refinements.EDF.fast_search_space.correct_search_space
+correct_search_space
+     : seq Task -> Task -> duration -> seq duration
+END|prosa.implementation.refinements.EDF.fast_search_space.correct_search_space
+BEGIN|prosa.implementation.refinements.EDF.fast_search_space.search_space_emax_FP_h
+search_space_emax_FP_h
+     : Task -> nat -> nat -> seq nat
+END|prosa.implementation.refinements.EDF.fast_search_space.search_space_emax_FP_h
+BEGIN|prosa.implementation.refinements.EDF.fast_search_space.search_space_emax_FP
+search_space_emax_FP
+     : nat -> Task -> seq nat
+END|prosa.implementation.refinements.EDF.fast_search_space.search_space_emax_FP
+BEGIN|prosa.implementation.refinements.EDF.fast_search_space.task_search_space_emax_EDF_h
+task_search_space_emax_EDF_h
+     : Task -> Task -> nat -> nat -> seq nat
+END|prosa.implementation.refinements.EDF.fast_search_space.task_search_space_emax_EDF_h
+BEGIN|prosa.implementation.refinements.EDF.fast_search_space.task_search_space_emax_EDF
+task_search_space_emax_EDF
+     : Task -> Task -> nat -> seq nat
+END|prosa.implementation.refinements.EDF.fast_search_space.task_search_space_emax_EDF
+BEGIN|prosa.implementation.refinements.EDF.fast_search_space.search_space_emax_EDF
+search_space_emax_EDF
+     : seq Task -> Task -> nat -> seq nat
+END|prosa.implementation.refinements.EDF.fast_search_space.search_space_emax_EDF
+BEGIN|prosa.implementation.refinements.EDF.fast_search_space.EDF_ss_generalize_FP_ss
+EDF_ss_generalize_FP_ss
+     : forall (L : duration) (ts : seq Task) (tsk : Task), tsk \in ts -> task_search_space_emax_EDF_h tsk tsk 0 ((L + (task_deadline tsk - task_deadline tsk)) %/ get_horizon_of_task tsk).+1 = search_space_emax_FP L tsk
+END|prosa.implementation.refinements.EDF.fast_search_space.EDF_ss_generalize_FP_ss
+BEGIN|prosa.implementation.refinements.EDF.fast_search_space.search_space_subset_EDF
+search_space_subset_EDF
+     : forall (L : duration) (ts : seq Task), task_set_with_valid_arrivals ts -> (forall tsk : Task, tsk \in ts -> 0 < task_cost tsk) -> (forall tsk : Task, tsk \in ts -> 0 < (head (0, 0) (steps_of (get_arrival_curve_prefix tsk))).1) -> forall tsk : Task, tsk \in ts -> forall A : Datatypes_nat__canonical__eqtype_Equality, A \in correct_search_space ts tsk L -> A \in search_space_emax_EDF ts tsk L
+END|prosa.implementation.refinements.EDF.fast_search_space.search_space_subset_EDF
+BEGIN|prosa.implementation.refinements.EDF.nonpreemptive_sched.Task
+EDF.nonpreemptive_sched.Task
+     : eqType
+END|prosa.implementation.refinements.EDF.nonpreemptive_sched.Task
+BEGIN|prosa.implementation.refinements.EDF.nonpreemptive_sched.Job
+EDF.nonpreemptive_sched.Job
+     : eqType
+END|prosa.implementation.refinements.EDF.nonpreemptive_sched.Job
+BEGIN|prosa.implementation.refinements.EDF.nonpreemptive_sched.basic_ready_instance
+nonpreemptive_sched.basic_ready_instance
+     : JobReady EDF.nonpreemptive_sched.Job (processor_state EDF.nonpreemptive_sched.Job)
+END|prosa.implementation.refinements.EDF.nonpreemptive_sched.basic_ready_instance
+BEGIN|prosa.implementation.refinements.EDF.nonpreemptive_sched.sched
+EDF.nonpreemptive_sched.sched
+     : arrival_sequence EDF.nonpreemptive_sched.Job -> schedule (processor_state EDF.nonpreemptive_sched.Job)
+END|prosa.implementation.refinements.EDF.nonpreemptive_sched.sched
+BEGIN|prosa.implementation.refinements.EDF.nonpreemptive_sched.sched_jobs_must_be_ready_to_execute
+EDF.nonpreemptive_sched.sched_jobs_must_be_ready_to_execute
+     : forall arr_seq : arrival_sequence EDF.nonpreemptive_sched.Job, jobs_must_be_ready_to_execute (EDF.nonpreemptive_sched.sched arr_seq)
+END|prosa.implementation.refinements.EDF.nonpreemptive_sched.sched_jobs_must_be_ready_to_execute
+BEGIN|prosa.implementation.refinements.EDF.nonpreemptive_sched.sched_valid
+EDF.nonpreemptive_sched.sched_valid
+     : forall arr_seq : arrival_sequence EDF.nonpreemptive_sched.Job, valid_schedule (EDF.nonpreemptive_sched.sched arr_seq) arr_seq
+END|prosa.implementation.refinements.EDF.nonpreemptive_sched.sched_valid
+BEGIN|prosa.implementation.refinements.EDF.nonpreemptive_sched.sched_nonpreemptive_next
+EDF.nonpreemptive_sched.sched_nonpreemptive_next
+     : forall (arr_seq : arrival_sequence EDF.nonpreemptive_sched.Job) (j : EDF.nonpreemptive_sched.Job) (t : instant), scheduled_at (EDF.nonpreemptive_sched.sched arr_seq) j t -> ~~ completed_by (EDF.nonpreemptive_sched.sched arr_seq) j t.+1 -> scheduled_at (EDF.nonpreemptive_sched.sched arr_seq) j t.+1
+END|prosa.implementation.refinements.EDF.nonpreemptive_sched.sched_nonpreemptive_next
+BEGIN|prosa.implementation.refinements.EDF.nonpreemptive_sched.sched_nonpreemptive
+EDF.nonpreemptive_sched.sched_nonpreemptive
+     : forall arr_seq : arrival_sequence EDF.nonpreemptive_sched.Job, nonpreemptive_schedule (uni_schedule arr_seq)
+END|prosa.implementation.refinements.EDF.nonpreemptive_sched.sched_nonpreemptive
+BEGIN|prosa.implementation.refinements.EDF.nonpreemptive_sched.respects_policy_at_preemption_point_edf_np
+respects_policy_at_preemption_point_edf_np
+     : forall arr_seq : arrival_sequence EDF.nonpreemptive_sched.Job, valid_arrival_sequence arr_seq -> respects_JLFP_policy_at_preemption_point arr_seq (EDF.nonpreemptive_sched.sched arr_seq) (EDF EDF.nonpreemptive_sched.Job)
+END|prosa.implementation.refinements.EDF.nonpreemptive_sched.respects_policy_at_preemption_point_edf_np
+BEGIN|prosa.implementation.refinements.EDF.preemptive_sched.Task
+EDF.preemptive_sched.Task
+     : eqType
+END|prosa.implementation.refinements.EDF.preemptive_sched.Task
+BEGIN|prosa.implementation.refinements.EDF.preemptive_sched.Job
+EDF.preemptive_sched.Job
+     : eqType
+END|prosa.implementation.refinements.EDF.preemptive_sched.Job
+BEGIN|prosa.implementation.refinements.EDF.preemptive_sched.basic_ready_instance
+basic_ready_instance
+     : JobReady EDF.preemptive_sched.Job (processor_state EDF.preemptive_sched.Job)
+END|prosa.implementation.refinements.EDF.preemptive_sched.basic_ready_instance
+BEGIN|prosa.implementation.refinements.EDF.preemptive_sched.sched
+EDF.preemptive_sched.sched
+     : arrival_sequence EDF.preemptive_sched.Job -> schedule (processor_state EDF.preemptive_sched.Job)
+END|prosa.implementation.refinements.EDF.preemptive_sched.sched
+BEGIN|prosa.implementation.refinements.EDF.preemptive_sched.sched_valid
+EDF.preemptive_sched.sched_valid
+     : forall arr_seq : arrival_sequence EDF.preemptive_sched.Job, valid_schedule (EDF.preemptive_sched.sched arr_seq) arr_seq
+END|prosa.implementation.refinements.EDF.preemptive_sched.sched_valid
+BEGIN|prosa.implementation.refinements.EDF.preemptive_sched.respects_policy_at_preemption_point_edf_fp
+respects_policy_at_preemption_point_edf_fp
+     : forall arr_seq : arrival_sequence EDF.preemptive_sched.Job, valid_arrival_sequence arr_seq -> respects_JLFP_policy_at_preemption_point arr_seq (EDF.preemptive_sched.sched arr_seq) (EDF EDF.preemptive_sched.Job)
+END|prosa.implementation.refinements.EDF.preemptive_sched.respects_policy_at_preemption_point_edf_fp
+BEGIN|prosa.implementation.refinements.EDF.refinements.total_rbf_T
+@total_rbf_T
+     : forall T : Type, zero_of T -> one_of T -> add_of T -> mul_of T -> div_of T -> mod_of T -> leq_of T -> seq task_T -> T -> T
+END|prosa.implementation.refinements.EDF.refinements.total_rbf_T
+BEGIN|prosa.implementation.refinements.EDF.refinements.bound_on_total_hep_workload_T
+@bound_on_total_hep_workload_T
+     : forall T : Type, zero_of T -> one_of T -> sub_of T -> add_of T -> mul_of T -> div_of T -> mod_of T -> leq_of T -> lt_of T -> eq_of task_T -> seq task_T -> task_T -> T -> T -> T
+END|prosa.implementation.refinements.EDF.refinements.bound_on_total_hep_workload_T
+BEGIN|prosa.implementation.refinements.EDF.refinements.check_point_FP_T
+@check_point_FP_T
+     : forall T : Type, zero_of T -> one_of T -> sub_of T -> add_of T -> mul_of T -> div_of T -> mod_of T -> leq_of T -> lt_of T -> eq_of task_T -> seq task_T -> task_T -> T -> T * T -> bool
+END|prosa.implementation.refinements.EDF.refinements.check_point_FP_T
+BEGIN|prosa.implementation.refinements.EDF.refinements.blocking_bound_NP_T
+@blocking_bound_NP_T
+     : forall T : Type, zero_of T -> one_of T -> sub_of T -> add_of T -> mul_of T -> div_of T -> mod_of T -> leq_of T -> lt_of T -> seq task_T -> task_T -> T -> T
+END|prosa.implementation.refinements.EDF.refinements.blocking_bound_NP_T
+BEGIN|prosa.implementation.refinements.EDF.refinements.check_point_NP_T
+@check_point_NP_T
+     : forall T : Type, zero_of T -> one_of T -> sub_of T -> add_of T -> mul_of T -> div_of T -> mod_of T -> leq_of T -> lt_of T -> eq_of task_T -> seq task_T -> task_T -> T -> T * T -> bool
+END|prosa.implementation.refinements.EDF.refinements.check_point_NP_T
+BEGIN|prosa.implementation.refinements.EDF.refinements.valid_arrivals_T
+@valid_arrivals_T
+     : forall T : Type, zero_of T -> one_of T -> eq_of T -> leq_of T -> lt_of T -> task_T -> bool
+END|prosa.implementation.refinements.EDF.refinements.valid_arrivals_T
+BEGIN|prosa.implementation.refinements.EDF.refinements.iota_N
+iota_N
+     : N -> N -> seq N
+END|prosa.implementation.refinements.EDF.refinements.iota_N
+BEGIN|prosa.implementation.refinements.EDF.refinements.task_search_space_emax_EDF_h_N
+task_search_space_emax_EDF_h_N
+     : task_T -> task_T -> N -> N -> seq N
+END|prosa.implementation.refinements.EDF.refinements.task_search_space_emax_EDF_h_N
+BEGIN|prosa.implementation.refinements.EDF.refinements.task_search_space_emax_EDF_N
+task_search_space_emax_EDF_N
+     : task_T -> task_T -> N -> seq N
+END|prosa.implementation.refinements.EDF.refinements.task_search_space_emax_EDF_N
+BEGIN|prosa.implementation.refinements.EDF.refinements.search_space_emax_EDF_N
+search_space_emax_EDF_N
+     : seq task_T -> task_T -> N -> seq N
+END|prosa.implementation.refinements.EDF.refinements.search_space_emax_EDF_N
+BEGIN|prosa.implementation.refinements.EDF.refinements.refine_task_search_space_emax_EDF
+refine_task_search_space_emax_EDF
+     : forall tsk tsko : task_T, refines (Rnat ==> list_R Rnat) (task_search_space_emax_EDF (taskT_to_task tsk) (taskT_to_task tsko)) (task_search_space_emax_EDF_N tsk tsko)
+END|prosa.implementation.refinements.EDF.refinements.refine_task_search_space_emax_EDF
+BEGIN|prosa.implementation.refinements.EDF.refinements.refine_search_space_emax_EDF
+refine_search_space_emax_EDF
+     : forall (ts : seq task_T) (tsk : task_T), refines (Rnat ==> list_R Rnat) (search_space_emax_EDF [seq taskT_to_task i | i <- ts] (taskT_to_task tsk)) (search_space_emax_EDF_N ts tsk)
+END|prosa.implementation.refinements.EDF.refinements.refine_search_space_emax_EDF
+BEGIN|prosa.implementation.refinements.EDF.refinements.refine_total_rbf'
+refine_total_rbf'
+     : forall ts : seq task_T, refines (Rnat ==> Rnat) (total_request_bound_function [seq taskT_to_task i | i <- ts]) (total_rbf_T ts)
+END|prosa.implementation.refinements.EDF.refinements.refine_total_rbf'
+BEGIN|prosa.implementation.refinements.EDF.refinements.eq_listN
+eq_listN
+     : eq_of (seq N)
+END|prosa.implementation.refinements.EDF.refinements.eq_listN
+BEGIN|prosa.implementation.refinements.EDF.refinements.eq_NlistNN
+eq_NlistNN
+     : eq_of (N * seq (N * N))
+END|prosa.implementation.refinements.EDF.refinements.eq_NlistNN
+BEGIN|prosa.implementation.refinements.EDF.refinements.eq_taskab
+eq_taskab
+     : eq_of task_arrivals_bound_T
+END|prosa.implementation.refinements.EDF.refinements.eq_taskab
+BEGIN|prosa.implementation.refinements.EDF.refinements.eq_task
+eq_task
+     : eq_of task_T
+END|prosa.implementation.refinements.EDF.refinements.eq_task
+BEGIN|prosa.implementation.refinements.EDF.refinements.refine_bound_on_total_hep_workload
+refine_bound_on_total_hep_workload
+     : refines (list_R Rtask ==> Rtask ==> Rnat ==> Rnat ==> Rnat) bound_on_total_hep_workload bound_on_total_hep_workload_T
+END|prosa.implementation.refinements.EDF.refinements.refine_bound_on_total_hep_workload
+BEGIN|prosa.implementation.refinements.EDF.refinements.refine_check_point_FP
+refine_check_point_FP
+     : refines (list_R Rtask ==> Rtask ==> Rnat ==> prod_R Rnat Rnat ==> bool_R) check_point_FP check_point_FP_T
+END|prosa.implementation.refinements.EDF.refinements.refine_check_point_FP
+BEGIN|prosa.implementation.refinements.EDF.refinements.refine_check_point_FP'
+refine_check_point_FP'
+     : forall (ts : seq task_T) (tsk : task_T), refines (Rnat ==> prod_R Rnat Rnat ==> bool_R) (check_point_FP [seq taskT_to_task i | i <- ts] (taskT_to_task tsk)) (check_point_FP_T ts tsk)
+END|prosa.implementation.refinements.EDF.refinements.refine_check_point_FP'
+BEGIN|prosa.implementation.refinements.EDF.refinements.refine_blocking_bound
+refine_blocking_bound
+     : refines (list_R Rtask ==> Rtask ==> Rnat ==> Rnat) blocking_bound_NP blocking_bound_NP_T
+END|prosa.implementation.refinements.EDF.refinements.refine_blocking_bound
+BEGIN|prosa.implementation.refinements.EDF.refinements.refine_check_point_NP
+refine_check_point_NP
+     : refines (list_R Rtask ==> Rtask ==> Rnat ==> prod_R Rnat Rnat ==> bool_R) check_point_NP check_point_NP_T
+END|prosa.implementation.refinements.EDF.refinements.refine_check_point_NP
+BEGIN|prosa.implementation.refinements.EDF.refinements.refine_check_point_NP'
+refine_check_point_NP'
+     : forall (ts : seq task_T) (tsk : task_T), refines (Rnat ==> prod_R Rnat Rnat ==> bool_R) (check_point_NP [seq taskT_to_task i | i <- ts] (taskT_to_task tsk)) (check_point_NP_T ts tsk)
+END|prosa.implementation.refinements.EDF.refinements.refine_check_point_NP'
+BEGIN|prosa.implementation.refinements.FP.fast_search_space.ohep_task
+ohep_task
+     : task.Task -> task.Task -> bool
+END|prosa.implementation.refinements.FP.fast_search_space.ohep_task
+BEGIN|prosa.implementation.refinements.FP.fast_search_space.total_hep_rbf
+total_hep_rbf
+     : seq task.Task -> task.Task -> duration -> nat
+END|prosa.implementation.refinements.FP.fast_search_space.total_hep_rbf
+BEGIN|prosa.implementation.refinements.FP.fast_search_space.total_ohep_rbf
+total_ohep_rbf
+     : seq task.Task -> task.Task -> duration -> nat
+END|prosa.implementation.refinements.FP.fast_search_space.total_ohep_rbf
+BEGIN|prosa.implementation.refinements.FP.fast_search_space.check_point_FP
+FP.fast_search_space.check_point_FP
+     : seq task.Task -> task.Task -> nat -> nat * nat -> bool
+END|prosa.implementation.refinements.FP.fast_search_space.check_point_FP
+BEGIN|prosa.implementation.refinements.FP.fast_search_space.blocking_bound_NP
+FP.fast_search_space.blocking_bound_NP
+     : seq task.Task -> task.Task -> nat
+END|prosa.implementation.refinements.FP.fast_search_space.blocking_bound_NP
+BEGIN|prosa.implementation.refinements.FP.fast_search_space.check_point_NP
+FP.fast_search_space.check_point_NP
+     : seq task.Task -> task.Task -> nat -> nat * nat -> bool
+END|prosa.implementation.refinements.FP.fast_search_space.check_point_NP
+BEGIN|prosa.implementation.refinements.FP.fast_search_space.correct_search_space
+FP.fast_search_space.correct_search_space
+     : task.Task -> duration -> seq nat
+END|prosa.implementation.refinements.FP.fast_search_space.correct_search_space
+BEGIN|prosa.implementation.refinements.FP.fast_search_space.search_space_emax_FP_h
+FP.fast_search_space.search_space_emax_FP_h
+     : task.Task -> nat -> nat -> seq nat
+END|prosa.implementation.refinements.FP.fast_search_space.search_space_emax_FP_h
+BEGIN|prosa.implementation.refinements.FP.fast_search_space.search_space_emax_FP
+FP.fast_search_space.search_space_emax_FP
+     : task.Task -> duration -> seq nat
+END|prosa.implementation.refinements.FP.fast_search_space.search_space_emax_FP
+BEGIN|prosa.implementation.refinements.FP.fast_search_space.search_space_subset_FP
+search_space_subset_FP
+     : forall (L : duration) (ts : seq task.Task), task_set_with_valid_arrivals ts -> forall tsk : task.Task, 0 < task_cost tsk -> tsk \in ts -> forall A : Datatypes_nat__canonical__eqtype_Equality, A \in FP.fast_search_space.correct_search_space tsk L -> A \in FP.fast_search_space.search_space_emax_FP tsk L
+END|prosa.implementation.refinements.FP.fast_search_space.search_space_subset_FP
+BEGIN|prosa.implementation.refinements.FP.nonpreemptive_sched.Task
+nonpreemptive_sched.Task
+     : eqType
+END|prosa.implementation.refinements.FP.nonpreemptive_sched.Task
+BEGIN|prosa.implementation.refinements.FP.nonpreemptive_sched.Job
+nonpreemptive_sched.Job
+     : eqType
+END|prosa.implementation.refinements.FP.nonpreemptive_sched.Job
+BEGIN|prosa.implementation.refinements.FP.nonpreemptive_sched.sequential_ready_instance
+nonpreemptive_sched.sequential_ready_instance
+     : arrival_sequence nonpreemptive_sched.Job -> JobReady nonpreemptive_sched.Job (processor_state nonpreemptive_sched.Job)
+END|prosa.implementation.refinements.FP.nonpreemptive_sched.sequential_ready_instance
+BEGIN|prosa.implementation.refinements.FP.nonpreemptive_sched.sched
+nonpreemptive_sched.sched
+     : arrival_sequence nonpreemptive_sched.Job -> schedule (processor_state nonpreemptive_sched.Job)
+END|prosa.implementation.refinements.FP.nonpreemptive_sched.sched
+BEGIN|prosa.implementation.refinements.FP.nonpreemptive_sched.sched_jobs_must_be_ready_to_execute
+sched_jobs_must_be_ready_to_execute
+     : forall arr_seq : arrival_sequence nonpreemptive_sched.Job, jobs_must_be_ready_to_execute (nonpreemptive_sched.sched arr_seq)
+END|prosa.implementation.refinements.FP.nonpreemptive_sched.sched_jobs_must_be_ready_to_execute
+BEGIN|prosa.implementation.refinements.FP.nonpreemptive_sched.sched_valid
+nonpreemptive_sched.sched_valid
+     : forall arr_seq : arrival_sequence nonpreemptive_sched.Job, valid_schedule (nonpreemptive_sched.sched arr_seq) arr_seq
+END|prosa.implementation.refinements.FP.nonpreemptive_sched.sched_valid
+BEGIN|prosa.implementation.refinements.FP.nonpreemptive_sched.sched_nonpreemptive_next
+sched_nonpreemptive_next
+     : forall (arr_seq : arrival_sequence nonpreemptive_sched.Job) (j : nonpreemptive_sched.Job) (t : instant), scheduled_at (nonpreemptive_sched.sched arr_seq) j t -> ~~ completed_by (nonpreemptive_sched.sched arr_seq) j t.+1 -> scheduled_at (nonpreemptive_sched.sched arr_seq) j t.+1
+END|prosa.implementation.refinements.FP.nonpreemptive_sched.sched_nonpreemptive_next
+BEGIN|prosa.implementation.refinements.FP.nonpreemptive_sched.sched_nonpreemptive
+sched_nonpreemptive
+     : forall arr_seq : arrival_sequence nonpreemptive_sched.Job, nonpreemptive_schedule (uni_schedule arr_seq)
+END|prosa.implementation.refinements.FP.nonpreemptive_sched.sched_nonpreemptive
+BEGIN|prosa.implementation.refinements.FP.nonpreemptive_sched.respects_policy_at_preemption_point_np
+respects_policy_at_preemption_point_np
+     : forall arr_seq : arrival_sequence nonpreemptive_sched.Job, valid_arrival_sequence arr_seq -> respects_FP_policy_at_preemption_point arr_seq (nonpreemptive_sched.sched arr_seq) (NumericFPAscending nonpreemptive_sched.Task)
+END|prosa.implementation.refinements.FP.nonpreemptive_sched.respects_policy_at_preemption_point_np
+BEGIN|prosa.implementation.refinements.FP.preemptive_sched.Task
+preemptive_sched.Task
+     : eqType
+END|prosa.implementation.refinements.FP.preemptive_sched.Task
+BEGIN|prosa.implementation.refinements.FP.preemptive_sched.Job
+preemptive_sched.Job
+     : eqType
+END|prosa.implementation.refinements.FP.preemptive_sched.Job
+BEGIN|prosa.implementation.refinements.FP.preemptive_sched.sequential_ready_instance
+sequential_ready_instance
+     : arrival_sequence preemptive_sched.Job -> JobReady preemptive_sched.Job (processor_state preemptive_sched.Job)
+END|prosa.implementation.refinements.FP.preemptive_sched.sequential_ready_instance
+BEGIN|prosa.implementation.refinements.FP.preemptive_sched.sched
+sched
+     : arrival_sequence preemptive_sched.Job -> schedule (processor_state preemptive_sched.Job)
+END|prosa.implementation.refinements.FP.preemptive_sched.sched
+BEGIN|prosa.implementation.refinements.FP.preemptive_sched.sched_valid
+sched_valid
+     : forall arr_seq : arrival_sequence preemptive_sched.Job, valid_schedule (sched arr_seq) arr_seq
+END|prosa.implementation.refinements.FP.preemptive_sched.sched_valid
+BEGIN|prosa.implementation.refinements.FP.preemptive_sched.respects_policy_at_preemption_point
+respects_policy_at_preemption_point
+     : forall arr_seq : arrival_sequence preemptive_sched.Job, valid_arrival_sequence arr_seq -> respects_FP_policy_at_preemption_point arr_seq (sched arr_seq) (NumericFPAscending preemptive_sched.Task)
+END|prosa.implementation.refinements.FP.preemptive_sched.respects_policy_at_preemption_point
+BEGIN|prosa.implementation.refinements.FP.refinements.hep_task_T
+@hep_task_T
+     : forall T : Type, leq_of T -> task_T -> task_T -> bool
+END|prosa.implementation.refinements.FP.refinements.hep_task_T
+BEGIN|prosa.implementation.refinements.FP.refinements.total_hep_rbf_T
+@total_hep_rbf_T
+     : forall T : Type, zero_of T -> one_of T -> add_of T -> mul_of T -> div_of T -> mod_of T -> leq_of T -> seq task_T -> task_T -> T -> T
+END|prosa.implementation.refinements.FP.refinements.total_hep_rbf_T
+BEGIN|prosa.implementation.refinements.FP.refinements.ohep_task_T
+@ohep_task_T
+     : forall T : Type, leq_of T -> eq_of task_T -> task_T -> task_T -> bool
+END|prosa.implementation.refinements.FP.refinements.ohep_task_T
+BEGIN|prosa.implementation.refinements.FP.refinements.total_ohep_rbf_T
+@total_ohep_rbf_T
+     : forall T : Type, zero_of T -> one_of T -> add_of T -> mul_of T -> div_of T -> mod_of T -> leq_of T -> eq_of task_T -> seq task_T -> task_T -> T -> T
+END|prosa.implementation.refinements.FP.refinements.total_ohep_rbf_T
+BEGIN|prosa.implementation.refinements.FP.refinements.check_point_FP_T
+@FP.refinements.check_point_FP_T
+     : forall T : Type, zero_of T -> one_of T -> add_of T -> mul_of T -> div_of T -> mod_of T -> leq_of T -> eq_of task_T -> seq task_T -> task_T -> T -> T * T -> bool
+END|prosa.implementation.refinements.FP.refinements.check_point_FP_T
+BEGIN|prosa.implementation.refinements.FP.refinements.blocking_bound_NP_T
+@FP.refinements.blocking_bound_NP_T
+     : forall T : Type, zero_of T -> one_of T -> sub_of T -> leq_of T -> lt_of T -> seq task_T -> task_T -> T
+END|prosa.implementation.refinements.FP.refinements.blocking_bound_NP_T
+BEGIN|prosa.implementation.refinements.FP.refinements.check_point_NP_T
+@FP.refinements.check_point_NP_T
+     : forall T : Type, zero_of T -> one_of T -> sub_of T -> add_of T -> mul_of T -> div_of T -> mod_of T -> leq_of T -> lt_of T -> eq_of task_T -> seq task_T -> task_T -> T -> T * T -> bool
+END|prosa.implementation.refinements.FP.refinements.check_point_NP_T
+BEGIN|prosa.implementation.refinements.FP.refinements.iota_N
+FP.refinements.iota_N
+     : N -> N -> seq N
+END|prosa.implementation.refinements.FP.refinements.iota_N
+BEGIN|prosa.implementation.refinements.FP.refinements.search_space_emax_FP_h_N
+search_space_emax_FP_h_N
+     : task_T -> N -> N -> seq N
+END|prosa.implementation.refinements.FP.refinements.search_space_emax_FP_h_N
+BEGIN|prosa.implementation.refinements.FP.refinements.search_space_emax_FP_N
+search_space_emax_FP_N
+     : task_T -> N -> seq N
+END|prosa.implementation.refinements.FP.refinements.search_space_emax_FP_N
+BEGIN|prosa.implementation.refinements.FP.refinements.refine_search_space_emax
+refine_search_space_emax
+     : forall tsk : task_T, refines (Rnat ==> list_R Rnat) (FP.fast_search_space.search_space_emax_FP (taskT_to_task tsk)) (search_space_emax_FP_N tsk)
+END|prosa.implementation.refinements.FP.refinements.refine_search_space_emax
+BEGIN|prosa.implementation.refinements.FP.refinements.refine_hep_task
+refine_hep_task
+     : refines (Rtask ==> Rtask ==> bool_R) hep_task hep_task_T
+END|prosa.implementation.refinements.FP.refinements.refine_hep_task
+BEGIN|prosa.implementation.refinements.FP.refinements.refine_total_hep_rbf
+refine_total_hep_rbf
+     : refines (list_R Rtask ==> Rtask ==> Rnat ==> Rnat) total_hep_rbf total_hep_rbf_T
+END|prosa.implementation.refinements.FP.refinements.refine_total_hep_rbf
+BEGIN|prosa.implementation.refinements.FP.refinements.refine_total_hep_rbf'
+refine_total_hep_rbf'
+     : forall (ts : seq task_T) (tsk : task_T), refines (Rnat ==> Rnat) (total_hep_rbf [seq taskT_to_task i | i <- ts] (taskT_to_task tsk)) (total_hep_rbf_T ts tsk)
+END|prosa.implementation.refinements.FP.refinements.refine_total_hep_rbf'
+BEGIN|prosa.implementation.refinements.FP.refinements.eq_listN
+FP.refinements.eq_listN
+     : eq_of (seq N)
+END|prosa.implementation.refinements.FP.refinements.eq_listN
+BEGIN|prosa.implementation.refinements.FP.refinements.eq_listNN
+eq_listNN
+     : eq_of (seq (N * N))
+END|prosa.implementation.refinements.FP.refinements.eq_listNN
+BEGIN|prosa.implementation.refinements.FP.refinements.eq_NlistNN
+FP.refinements.eq_NlistNN
+     : eq_of (N * seq (N * N))
+END|prosa.implementation.refinements.FP.refinements.eq_NlistNN
+BEGIN|prosa.implementation.refinements.FP.refinements.eq_taskab
+FP.refinements.eq_taskab
+     : eq_of task_arrivals_bound_T
+END|prosa.implementation.refinements.FP.refinements.eq_taskab
+BEGIN|prosa.implementation.refinements.FP.refinements.eq_task
+FP.refinements.eq_task
+     : eq_of task_T
+END|prosa.implementation.refinements.FP.refinements.eq_task
+BEGIN|prosa.implementation.refinements.FP.refinements.refine_task_eqdef
+FP.refinements.refine_task_eqdef
+     : refines (Rtask ==> Rtask ==> bool_R) task_eqdef task_eqdef_T
+END|prosa.implementation.refinements.FP.refinements.refine_task_eqdef
+BEGIN|prosa.implementation.refinements.FP.refinements.refine_ohep_task
+refine_ohep_task
+     : refines (Rtask ==> Rtask ==> bool_R) ohep_task ohep_task_T
+END|prosa.implementation.refinements.FP.refinements.refine_ohep_task
+BEGIN|prosa.implementation.refinements.FP.refinements.refine_total_ohep_rbf
+refine_total_ohep_rbf
+     : refines (list_R Rtask ==> Rtask ==> Rnat ==> Rnat) total_ohep_rbf total_ohep_rbf_T
+END|prosa.implementation.refinements.FP.refinements.refine_total_ohep_rbf
+BEGIN|prosa.implementation.refinements.FP.refinements.refine_check_point
+refine_check_point
+     : refines (list_R Rtask ==> Rtask ==> Rnat ==> prod_R Rnat Rnat ==> bool_R) FP.fast_search_space.check_point_FP FP.refinements.check_point_FP_T
+END|prosa.implementation.refinements.FP.refinements.refine_check_point
+BEGIN|prosa.implementation.refinements.FP.refinements.refine_check_point'
+refine_check_point'
+     : forall (ts : seq task_T) (tsk : task_T), refines (Rnat ==> prod_R Rnat Rnat ==> bool_R) (FP.fast_search_space.check_point_FP [seq taskT_to_task i | i <- ts] (taskT_to_task tsk)) (FP.refinements.check_point_FP_T ts tsk)
+END|prosa.implementation.refinements.FP.refinements.refine_check_point'
+BEGIN|prosa.implementation.refinements.FP.refinements.refine_blocking_bound
+FP.refinements.refine_blocking_bound
+     : refines (list_R Rtask ==> Rtask ==> Rnat) FP.fast_search_space.blocking_bound_NP FP.refinements.blocking_bound_NP_T
+END|prosa.implementation.refinements.FP.refinements.refine_blocking_bound
+BEGIN|prosa.implementation.refinements.FP.refinements.refine_blocking_bound'
+refine_blocking_bound'
+     : forall (ts : seq task_T) (tsk : task_T), refines Rnat (FP.fast_search_space.blocking_bound_NP [seq taskT_to_task i | i <- ts] (taskT_to_task tsk)) (FP.refinements.blocking_bound_NP_T ts tsk)
+END|prosa.implementation.refinements.FP.refinements.refine_blocking_bound'
+BEGIN|prosa.implementation.refinements.FP.refinements.refine_check_point_NP
+FP.refinements.refine_check_point_NP
+     : refines (list_R Rtask ==> Rtask ==> Rnat ==> prod_R Rnat Rnat ==> bool_R) FP.fast_search_space.check_point_NP FP.refinements.check_point_NP_T
+END|prosa.implementation.refinements.FP.refinements.refine_check_point_NP
+BEGIN|prosa.implementation.refinements.FP.refinements.refine_check_point_NP'
+FP.refinements.refine_check_point_NP'
+     : forall (ts : seq task_T) (tsk : task_T), refines (Rnat ==> prod_R Rnat Rnat ==> bool_R) (FP.fast_search_space.check_point_NP [seq taskT_to_task i | i <- ts] (taskT_to_task tsk)) (FP.refinements.check_point_NP_T ts tsk)
+END|prosa.implementation.refinements.FP.refinements.refine_check_point_NP'
+BEGIN|prosa.implementation.refinements.arrival_bound.task_arrivals_bound_T
+@task_arrivals_bound_T
+     : Type -> Type
+END|prosa.implementation.refinements.arrival_bound.task_arrivals_bound_T
+BEGIN|prosa.implementation.refinements.arrival_bound.taskab_eqdef_T
+@taskab_eqdef_T
+     : forall T : Type, eq_of T -> eq_of (T * seq (T * T)) -> task_arrivals_bound_T -> task_arrivals_bound_T -> bool
+END|prosa.implementation.refinements.arrival_bound.taskab_eqdef_T
+BEGIN|prosa.implementation.refinements.arrival_bound.horizon_of_T
+@horizon_of_T
+     : forall T : Type, T * seq (T * T) -> T
+END|prosa.implementation.refinements.arrival_bound.horizon_of_T
+BEGIN|prosa.implementation.refinements.arrival_bound.steps_of_T
+@steps_of_T
+     : forall T : Type, T * seq (T * T) -> seq (T * T)
+END|prosa.implementation.refinements.arrival_bound.steps_of_T
+BEGIN|prosa.implementation.refinements.arrival_bound.time_steps_of_T
+@time_steps_of_T
+     : forall T : Type, T * seq (T * T) -> seq T
+END|prosa.implementation.refinements.arrival_bound.time_steps_of_T
+BEGIN|prosa.implementation.refinements.arrival_bound.step_at_T
+@step_at_T
+     : forall T : Type, zero_of T -> leq_of T -> T * seq (T * T) -> T -> T * T
+END|prosa.implementation.refinements.arrival_bound.step_at_T
+BEGIN|prosa.implementation.refinements.arrival_bound.value_at_T
+@value_at_T
+     : forall T : Type, zero_of T -> leq_of T -> T * seq (T * T) -> T -> T
+END|prosa.implementation.refinements.arrival_bound.value_at_T
+BEGIN|prosa.implementation.refinements.arrival_bound.extrapolated_arrival_curve_T
+@extrapolated_arrival_curve_T
+     : forall T : Type, zero_of T -> add_of T -> mul_of T -> div_of T -> mod_of T -> leq_of T -> T * seq (T * T) -> T -> T
+END|prosa.implementation.refinements.arrival_bound.extrapolated_arrival_curve_T
+BEGIN|prosa.implementation.refinements.arrival_bound.ltn_steps_T
+@ltn_steps_T
+     : forall T : Type, lt_of T -> T * T -> T * T -> bool
+END|prosa.implementation.refinements.arrival_bound.ltn_steps_T
+BEGIN|prosa.implementation.refinements.arrival_bound.sorted_ltn_steps_T
+@sorted_ltn_steps_T
+     : forall T : Type, lt_of T -> T * seq (T * T) -> bool
+END|prosa.implementation.refinements.arrival_bound.sorted_ltn_steps_T
+BEGIN|prosa.implementation.refinements.arrival_bound.leq_steps_T
+@leq_steps_T
+     : forall T : Type, leq_of T -> T * T -> T * T -> bool
+END|prosa.implementation.refinements.arrival_bound.leq_steps_T
+BEGIN|prosa.implementation.refinements.arrival_bound.positive_horizon_T
+@positive_horizon_T
+     : forall T : Type, zero_of T -> lt_of T -> T * seq (T * T) -> bool
+END|prosa.implementation.refinements.arrival_bound.positive_horizon_T
+BEGIN|prosa.implementation.refinements.arrival_bound.large_horizon_T
+@large_horizon_T
+     : forall T : Type, leq_of T -> T * seq (T * T) -> bool
+END|prosa.implementation.refinements.arrival_bound.large_horizon_T
+BEGIN|prosa.implementation.refinements.arrival_bound.no_inf_arrivals_T
+@no_inf_arrivals_T
+     : forall T : Type, zero_of T -> eq_of T -> leq_of T -> T * seq (T * T) -> bool
+END|prosa.implementation.refinements.arrival_bound.no_inf_arrivals_T
+BEGIN|prosa.implementation.refinements.arrival_bound.specified_bursts_T
+@specified_bursts_T
+     : forall T : Type, one_of T -> eq_of T -> T * seq (T * T) -> bool
+END|prosa.implementation.refinements.arrival_bound.specified_bursts_T
+BEGIN|prosa.implementation.refinements.arrival_bound.valid_extrapolated_arrival_curve_T
+@valid_extrapolated_arrival_curve_T
+     : forall T : Type, zero_of T -> one_of T -> eq_of T -> leq_of T -> lt_of T -> T * seq (T * T) -> bool
+END|prosa.implementation.refinements.arrival_bound.valid_extrapolated_arrival_curve_T
+BEGIN|prosa.implementation.refinements.arrival_bound.ACPrefixT_to_ACPrefix
+ACPrefixT_to_ACPrefix
+     : N * seq (N * N) -> ArrivalCurvePrefix
+END|prosa.implementation.refinements.arrival_bound.ACPrefixT_to_ACPrefix
+BEGIN|prosa.implementation.refinements.arrival_bound.RArrivalCurvePrefix
+RArrivalCurvePrefix
+     : ArrivalCurvePrefix -> N * seq (N * N) -> Type
+END|prosa.implementation.refinements.arrival_bound.RArrivalCurvePrefix
+BEGIN|prosa.implementation.refinements.arrival_bound.ACPrefix_to_ACPrefixT
+ACPrefix_to_ACPrefixT
+     : ArrivalCurvePrefix -> N * seq (N * N)
+END|prosa.implementation.refinements.arrival_bound.ACPrefix_to_ACPrefixT
+BEGIN|prosa.implementation.refinements.arrival_bound.task_abT_to_task_ab
+task_abT_to_task_ab
+     : task_arrivals_bound_T -> task_arrivals_bound
+END|prosa.implementation.refinements.arrival_bound.task_abT_to_task_ab
+BEGIN|prosa.implementation.refinements.arrival_bound.Rtask_ab
+Rtask_ab
+     : task_arrivals_bound -> task_arrivals_bound_T -> Type
+END|prosa.implementation.refinements.arrival_bound.Rtask_ab
+BEGIN|prosa.implementation.refinements.arrival_bound.task_ab_to_task_abT
+task_ab_to_task_abT
+     : task_arrivals_bound -> task_arrivals_bound_T
+END|prosa.implementation.refinements.arrival_bound.task_ab_to_task_abT
+BEGIN|prosa.implementation.refinements.arrival_bound.leq_stepsT_is_transitive
+leq_stepsT_is_transitive
+     : transitive (T:=N * N) leq_steps_T
+END|prosa.implementation.refinements.arrival_bound.leq_stepsT_is_transitive
+BEGIN|prosa.implementation.refinements.arrival_bound.ltn_stepsT_is_transitive
+ltn_stepsT_is_transitive
+     : transitive (T:=N * N) ltn_steps_T
+END|prosa.implementation.refinements.arrival_bound.ltn_stepsT_is_transitive
+BEGIN|prosa.implementation.refinements.arrival_bound.refine_leq_steps
+refine_leq_steps
+     : refines (prod_R Rnat Rnat ==> prod_R Rnat Rnat ==> bool_R) leq_steps leq_steps_T
+END|prosa.implementation.refinements.arrival_bound.refine_leq_steps
+BEGIN|prosa.implementation.refinements.arrival_bound.refine_ltn_steps
+refine_ltn_steps
+     : refines (prod_R Rnat Rnat ==> prod_R Rnat Rnat ==> bool_R) ltn_steps ltn_steps_T
+END|prosa.implementation.refinements.arrival_bound.refine_ltn_steps
+BEGIN|prosa.implementation.refinements.arrival_bound.refine_ltn_steps_sorted
+refine_ltn_steps_sorted
+     : forall (xs : seq (nat * nat)) (xs' : seq (N * N)), refines (list_R (prod_R Rnat Rnat)) xs xs' -> refines bool_R (sorted ltn_steps xs) (sorted ltn_steps_T xs')
+END|prosa.implementation.refinements.arrival_bound.refine_ltn_steps_sorted
+BEGIN|prosa.implementation.refinements.arrival_bound.refine_leq_steps_sorted
+refine_leq_steps_sorted
+     : forall (xs : seq (nat * nat)) (xs' : seq (N * N)), refines (list_R (prod_R Rnat Rnat)) xs xs' -> refines bool_R (sorted leq_steps xs) (sorted leq_steps_T xs')
+END|prosa.implementation.refinements.arrival_bound.refine_leq_steps_sorted
+BEGIN|prosa.implementation.refinements.arrival_bound.refine_value_at
+refine_value_at
+     : refines (prod_R Rnat (list_R (prod_R Rnat Rnat)) ==> Rnat ==> Rnat) value_at value_at_T
+END|prosa.implementation.refinements.arrival_bound.refine_value_at
+BEGIN|prosa.implementation.refinements.arrival_bound.refine_get_time_steps
+refine_get_time_steps
+     : refines (prod_R Rnat (list_R (prod_R Rnat Rnat)) ==> list_R Rnat) time_steps_of time_steps_of_T
+END|prosa.implementation.refinements.arrival_bound.refine_get_time_steps
+BEGIN|prosa.implementation.refinements.arrival_bound.refine_arrival_curve_prefix
+refine_arrival_curve_prefix
+     : refines (prod_R Rnat (list_R (prod_R Rnat Rnat)) ==> Rnat ==> Rnat) extrapolated_arrival_curve extrapolated_arrival_curve_T
+END|prosa.implementation.refinements.arrival_bound.refine_arrival_curve_prefix
+BEGIN|prosa.implementation.refinements.arrival_bound.refine_ArrivalPrefix
+refine_ArrivalPrefix
+     : refines (prod_R Rnat (list_R (prod_R Rnat Rnat)) ==> Rtask_ab) ArrivalPrefix ArrivalPrefix_T
+END|prosa.implementation.refinements.arrival_bound.refine_ArrivalPrefix
+BEGIN|prosa.implementation.refinements.arrival_bound.eq_listN
+arrival_bound.eq_listN
+     : eq_of (seq N)
+END|prosa.implementation.refinements.arrival_bound.eq_listN
+BEGIN|prosa.implementation.refinements.arrival_bound.eq_NlistNN
+arrival_bound.eq_NlistNN
+     : eq_of (N * seq (N * N))
+END|prosa.implementation.refinements.arrival_bound.eq_NlistNN
+BEGIN|prosa.implementation.refinements.arrival_bound.eq_taskab
+arrival_bound.eq_taskab
+     : eq_of task_arrivals_bound_T
+END|prosa.implementation.refinements.arrival_bound.eq_taskab
+BEGIN|prosa.implementation.refinements.arrival_bound.refine_task_ab_eq
+refine_task_ab_eq
+     : refines (Rtask_ab ==> Rtask_ab ==> bool_R) eq_op arrival_bound.eq_taskab
+END|prosa.implementation.refinements.arrival_bound.refine_task_ab_eq
+BEGIN|prosa.implementation.refinements.arrival_curve.get_horizon_of_task
+get_horizon_of_task
+     : task.Task -> duration
+END|prosa.implementation.refinements.arrival_curve.get_horizon_of_task
+BEGIN|prosa.implementation.refinements.arrival_curve.get_time_steps_of_task
+get_time_steps_of_task
+     : task.Task -> seq duration
+END|prosa.implementation.refinements.arrival_curve.get_time_steps_of_task
+BEGIN|prosa.implementation.refinements.arrival_curve.time_steps_with_offset
+time_steps_with_offset
+     : task.Task -> nat -> seq nat
+END|prosa.implementation.refinements.arrival_curve.time_steps_with_offset
+BEGIN|prosa.implementation.refinements.arrival_curve.repeat_steps_with_offset
+repeat_steps_with_offset
+     : task.Task -> seq nat -> seq nat
+END|prosa.implementation.refinements.arrival_curve.repeat_steps_with_offset
+BEGIN|prosa.implementation.refinements.arrival_curve.task_rbf
+task_rbf
+     : task.Task -> duration -> nat
+END|prosa.implementation.refinements.arrival_curve.task_rbf
+BEGIN|prosa.implementation.refinements.arrival_curve.valid_arrivals
+valid_arrivals
+     : task.Task -> bool
+END|prosa.implementation.refinements.arrival_curve.valid_arrivals
+BEGIN|prosa.implementation.refinements.arrival_curve.is_periodic_arrivals
+is_periodic_arrivals
+     : task.Task -> Prop
+END|prosa.implementation.refinements.arrival_curve.is_periodic_arrivals
+BEGIN|prosa.implementation.refinements.arrival_curve.is_sporadic_arrivals
+is_sporadic_arrivals
+     : task.Task -> Prop
+END|prosa.implementation.refinements.arrival_curve.is_sporadic_arrivals
+BEGIN|prosa.implementation.refinements.arrival_curve.is_etamax_arrivals
+is_etamax_arrivals
+     : task.Task -> Prop
+END|prosa.implementation.refinements.arrival_curve.is_etamax_arrivals
+BEGIN|prosa.implementation.refinements.arrival_curve.has_valid_arrival_curve_prefix
+has_valid_arrival_curve_prefix
+     : task.Task -> Prop
+END|prosa.implementation.refinements.arrival_curve.has_valid_arrival_curve_prefix
+BEGIN|prosa.implementation.refinements.arrival_curve.task_set_with_valid_arrivals
+task_set_with_valid_arrivals
+     : seq task.Task -> Prop
+END|prosa.implementation.refinements.arrival_curve.task_set_with_valid_arrivals
+BEGIN|prosa.implementation.refinements.arrival_curve.arrival_cases
+arrival_cases
+     : forall tsk : task.Task, is_periodic_arrivals tsk \/ is_sporadic_arrivals tsk \/ is_etamax_arrivals tsk
+END|prosa.implementation.refinements.arrival_curve.arrival_cases
+BEGIN|prosa.implementation.refinements.arrival_curve.refine_valid_arrivals
+refine_valid_arrivals
+     : forall tsk : task_T, refines bool_R (valid_arrivals (taskT_to_task tsk)) (task.valid_arrivals_T tsk)
+END|prosa.implementation.refinements.arrival_curve.refine_valid_arrivals
+BEGIN|prosa.implementation.refinements.arrival_curve.refine_repeat_steps_with_offset
+refine_repeat_steps_with_offset
+     : refines (Rtask ==> list_R Rnat ==> list_R Rnat) repeat_steps_with_offset repeat_steps_with_offset_T
+END|prosa.implementation.refinements.arrival_curve.refine_repeat_steps_with_offset
+BEGIN|prosa.implementation.refinements.arrival_curve.refine_get_horizon_of_task
+refine_get_horizon_of_task
+     : refines (Rtask ==> Rnat) get_horizon_of_task get_horizon_of_task_T
+END|prosa.implementation.refinements.arrival_curve.refine_get_horizon_of_task
+BEGIN|prosa.implementation.refinements.arrival_curve.refine_ConcreteMaxArrivals'
+refine_ConcreteMaxArrivals'
+     : forall tsk : task_T, refines (Rnat ==> Rnat) (ConcreteMaxArrivals (taskT_to_task tsk)) (ConcreteMaxArrivals_T tsk)
+END|prosa.implementation.refinements.arrival_curve.refine_ConcreteMaxArrivals'
+BEGIN|prosa.implementation.refinements.arrival_curve.refine_get_arrival_curve_prefix
+refine_get_arrival_curve_prefix
+     : refines (Rtask ==> prod_R Rnat (list_R (prod_R Rnat Rnat))) get_arrival_curve_prefix get_extrapolated_arrival_curve_T
+END|prosa.implementation.refinements.arrival_curve.refine_get_arrival_curve_prefix
+BEGIN|prosa.implementation.refinements.arrival_curve.refine_get_arrival_curve_prefix'
+refine_get_arrival_curve_prefix'
+     : forall tsk : task_T, refines (prod_R Rnat (list_R (prod_R Rnat Rnat))) (get_arrival_curve_prefix (taskT_to_task tsk)) (get_extrapolated_arrival_curve_T tsk)
+END|prosa.implementation.refinements.arrival_curve.refine_get_arrival_curve_prefix'
+BEGIN|prosa.implementation.refinements.arrival_curve.refine_sorted_leq_steps
+refine_sorted_leq_steps
+     : forall tsk : task_T, refines bool_R (sorted leq_steps (steps_of (get_arrival_curve_prefix (taskT_to_task tsk)))) (sorted leq_steps_T (get_extrapolated_arrival_curve_T tsk).2)
+END|prosa.implementation.refinements.arrival_curve.refine_sorted_leq_steps
+BEGIN|prosa.implementation.refinements.arrival_curve.refine_task_rbf
+refine_task_rbf
+     : refines (Rtask ==> Rnat ==> Rnat) task_rbf task_rbf_T
+END|prosa.implementation.refinements.arrival_curve.refine_task_rbf
+BEGIN|prosa.implementation.refinements.arrival_curve_prefix.has_valid_arrival_curve_prefix_tsk
+has_valid_arrival_curve_prefix_tsk
+     : forall ts : seq task.Task, task_set_with_valid_arrivals ts -> forall tsk : task.Task, tsk \in ts -> has_valid_arrival_curve_prefix tsk
+END|prosa.implementation.refinements.arrival_curve_prefix.has_valid_arrival_curve_prefix_tsk
+BEGIN|prosa.implementation.refinements.arrival_curve_prefix.steps_are_positive_if_first_step_is_positive
+steps_are_positive_if_first_step_is_positive
+     : forall ts : seq task.Task, task_set_with_valid_arrivals ts -> forall tsk : task.Task, 0 < task_cost tsk -> tsk \in ts -> 0 < (head (0, 0) (steps_of (get_arrival_curve_prefix tsk))).1 -> forall st : Datatypes_nat__canonical__eqtype_Equality, st \in get_time_steps_of_task tsk -> 0 < st
+END|prosa.implementation.refinements.arrival_curve_prefix.steps_are_positive_if_first_step_is_positive
+BEGIN|prosa.implementation.refinements.arrival_curve_prefix.nonshifted_offsets_are_positive
+nonshifted_offsets_are_positive
+     : forall ts : seq task.Task, task_set_with_valid_arrivals ts -> forall tsk : task.Task, 0 < task_cost tsk -> tsk \in ts -> 0 < (head (0, 0) (steps_of (get_arrival_curve_prefix tsk))).1 -> forall (A : Datatypes_nat__canonical__eqtype_Equality) (offs : seq nat), A \in repeat_steps_with_offset tsk offs -> 0 < A
+END|prosa.implementation.refinements.arrival_curve_prefix.nonshifted_offsets_are_positive
+BEGIN|prosa.implementation.refinements.arrival_curve_prefix.time_steps_sorted
+time_steps_sorted
+     : forall ts : seq task.Task, task_set_with_valid_arrivals ts -> forall tsk : task.Task, tsk \in ts -> sorted ltn (get_time_steps_of_task tsk)
+END|prosa.implementation.refinements.arrival_curve_prefix.time_steps_sorted
+BEGIN|prosa.implementation.refinements.fast_search_space_computation.search_space_arrival_curve_prefix_FP_h
+search_space_arrival_curve_prefix_FP_h
+     : task.Task -> nat -> nat -> seq nat
+END|prosa.implementation.refinements.fast_search_space_computation.search_space_arrival_curve_prefix_FP_h
+BEGIN|prosa.implementation.refinements.fast_search_space_computation.search_space_arrival_curve_prefix_FP
+search_space_arrival_curve_prefix_FP
+     : task.Task -> nat -> seq nat
+END|prosa.implementation.refinements.fast_search_space_computation.search_space_arrival_curve_prefix_FP
+BEGIN|prosa.implementation.refinements.fast_search_space_computation.steps_lt_horizon_last_eq_horizon
+steps_lt_horizon_last_eq_horizon
+     : forall ts : seq task.Task, task_set_with_valid_arrivals ts -> forall tsk : task.Task, 0 < task_cost tsk -> tsk \in ts -> (forall s : Datatypes_nat__canonical__eqtype_Equality, s \in get_time_steps_of_task tsk -> s < get_horizon_of_task tsk) \/ last0 (get_time_steps_of_task tsk) = get_horizon_of_task tsk
+END|prosa.implementation.refinements.fast_search_space_computation.steps_lt_horizon_last_eq_horizon
+BEGIN|prosa.implementation.refinements.fast_search_space_computation.structure_of_correct_search_space
+structure_of_correct_search_space
+     : forall (L : duration) (ts : seq task.Task), task_set_with_valid_arrivals ts -> forall tsk : task.Task, 0 < task_cost tsk -> tsk \in ts -> forall A : nat, A < L -> task_rbf tsk A != task_rbf tsk (A + 1) -> (exists (i : nat) (t : Datatypes_nat__canonical__eqtype_Equality), i < (L %/ get_horizon_of_task tsk).+1 /\ t \in get_time_steps_of_task tsk /\ A + 1 = i * get_horizon_of_task tsk + t) \/ (exists i : nat, i < (L %/ get_horizon_of_task tsk).+1 /\ A + 1 = i * get_horizon_of_task tsk)
+END|prosa.implementation.refinements.fast_search_space_computation.structure_of_correct_search_space
+BEGIN|prosa.implementation.refinements.fast_search_space_computation.multiple_of_horizon_in_approx_ss
+multiple_of_horizon_in_approx_ss
+     : forall (L : duration) (ts : seq task.Task), task_set_with_valid_arrivals ts -> forall tsk : task.Task, 0 < task_cost tsk -> tsk \in ts -> forall A : nat, A < L -> get_horizon_of_task tsk %| A -> A \in search_space_arrival_curve_prefix_FP tsk L
+END|prosa.implementation.refinements.fast_search_space_computation.multiple_of_horizon_in_approx_ss
+BEGIN|prosa.implementation.refinements.fast_search_space_computation.steps_in_approx_ss
+steps_in_approx_ss
+     : forall (L : duration) (ts : seq task.Task), task_set_with_valid_arrivals ts -> forall tsk : task.Task, 0 < task_cost tsk -> tsk \in ts -> forall (i : nat) (t : Datatypes_nat__canonical__eqtype_Equality) (A : nat), i < (L %/ get_horizon_of_task tsk).+1 -> t \in get_time_steps_of_task tsk -> A + 1 = i * get_horizon_of_task tsk + t -> A \in search_space_arrival_curve_prefix_FP tsk L
+END|prosa.implementation.refinements.fast_search_space_computation.steps_in_approx_ss
+BEGIN|prosa.implementation.refinements.fast_search_space_computation.constant_max_arrivals
+constant_max_arrivals
+     : forall ts : seq task.Task, task_set_with_valid_arrivals ts -> forall tsk : task.Task, 0 < task_cost tsk -> tsk \in ts -> forall A : nat, (forall s : Datatypes_nat__canonical__eqtype_Equality, s \in get_time_steps_of_task tsk -> s < get_horizon_of_task tsk) -> get_horizon_of_task tsk %| A + 1 -> max_arrivals tsk A = max_arrivals tsk (A + 1)
+END|prosa.implementation.refinements.fast_search_space_computation.constant_max_arrivals
+BEGIN|prosa.implementation.refinements.fast_search_space_computation.task_search_space_subset
+task_search_space_subset
+     : forall (L : duration) (ts : seq task.Task), task_set_with_valid_arrivals ts -> forall tsk : task.Task, 0 < task_cost tsk -> tsk \in ts -> forall A : nat, A < L -> task_rbf tsk A != task_rbf tsk (A + 1) -> A \in search_space_arrival_curve_prefix_FP tsk L
+END|prosa.implementation.refinements.fast_search_space_computation.task_search_space_subset
+BEGIN|prosa.implementation.refinements.refinements.m_b2n
+m_b2n
+     : seq N -> seq nat
+END|prosa.implementation.refinements.refinements.m_b2n
+BEGIN|prosa.implementation.refinements.refinements.m_n2b
+m_n2b
+     : seq nat -> seq N
+END|prosa.implementation.refinements.refinements.m_n2b
+BEGIN|prosa.implementation.refinements.refinements.tmap
+@tmap
+     : forall X Y : Type, (X -> Y) -> X * X -> Y * Y
+END|prosa.implementation.refinements.refinements.tmap
+BEGIN|prosa.implementation.refinements.refinements.tb2tn
+tb2tn
+     : N * N -> nat * nat
+END|prosa.implementation.refinements.refinements.tb2tn
+BEGIN|prosa.implementation.refinements.refinements.tn2tb
+tn2tb
+     : nat * nat -> N * N
+END|prosa.implementation.refinements.refinements.tn2tb
+BEGIN|prosa.implementation.refinements.refinements.m_tb2tn
+m_tb2tn
+     : seq (N * N) -> seq (nat * nat)
+END|prosa.implementation.refinements.refinements.m_tb2tn
+BEGIN|prosa.implementation.refinements.refinements.m_tn2tb
+m_tn2tb
+     : seq (nat * nat) -> seq (N * N)
+END|prosa.implementation.refinements.refinements.m_tn2tb
+BEGIN|prosa.implementation.refinements.refinements.predn_T
+@predn_T
+     : forall T : Type, one_of T -> sub_of T -> T -> T
+END|prosa.implementation.refinements.refinements.predn_T
+BEGIN|prosa.implementation.refinements.refinements.maxn_T
+@maxn_T
+     : forall T : Type, lt_of T -> T -> T -> T
+END|prosa.implementation.refinements.refinements.maxn_T
+BEGIN|prosa.implementation.refinements.refinements.minn_T
+@minn_T
+     : forall T : Type, lt_of T -> T -> T -> T
+END|prosa.implementation.refinements.refinements.minn_T
+BEGIN|prosa.implementation.refinements.refinements.dvdn_T
+@dvdn_T
+     : forall T : Type, zero_of T -> mod_of T -> eq_of T -> T -> T -> bool
+END|prosa.implementation.refinements.refinements.dvdn_T
+BEGIN|prosa.implementation.refinements.refinements.div_ceil_T
+@div_ceil_T
+     : forall T : Type, zero_of T -> one_of T -> add_of T -> div_of T -> mod_of T -> eq_of T -> T -> T -> T
+END|prosa.implementation.refinements.refinements.div_ceil_T
+BEGIN|prosa.implementation.refinements.refinements.refine_b2n
+refine_b2n
+     : refines (unify (A:=N) ==> Rnat) nat_of_bin id
+END|prosa.implementation.refinements.refinements.refine_b2n
+BEGIN|prosa.implementation.refinements.refinements.Rnat_pred
+Rnat_pred
+     : refines (Rnat ==> Rnat) predn predn_T
+END|prosa.implementation.refinements.refinements.Rnat_pred
+BEGIN|prosa.implementation.refinements.refinements.refine_dvdn
+refine_dvdn
+     : refines (Rnat ==> Rnat ==> bool_R) dvdn dvdn_T
+END|prosa.implementation.refinements.refinements.refine_dvdn
+BEGIN|prosa.implementation.refinements.refinements.refine_div_ceil
+refine_div_ceil
+     : refines (Rnat ==> Rnat ==> Rnat) div_ceil div_ceil_T
+END|prosa.implementation.refinements.refinements.refine_div_ceil
+BEGIN|prosa.implementation.refinements.refinements.refine_minn
+refine_minn
+     : refines (Rnat ==> Rnat ==> Rnat) minn minn_T
+END|prosa.implementation.refinements.refinements.refine_minn
+BEGIN|prosa.implementation.refinements.refinements.refine_maxn
+refine_maxn
+     : refines (Rnat ==> Rnat ==> Rnat) maxn maxn_T
+END|prosa.implementation.refinements.refinements.refine_maxn
+BEGIN|prosa.implementation.refinements.refinements.posBinNatNotZero
+posBinNatNotZero
+     : forall p : positive, N.pos p <> 0
+END|prosa.implementation.refinements.refinements.posBinNatNotZero
+BEGIN|prosa.implementation.refinements.refinements.eq_SnPos_to_nPred
+eq_SnPos_to_nPred
+     : forall (b : nat) (p : positive), Rnat b.+1 (N.pos p) -> Rnat b (Pos.pred_N p)
+END|prosa.implementation.refinements.refinements.eq_SnPos_to_nPred
+BEGIN|prosa.implementation.refinements.refinements.refine_ltn
+refine_ltn
+     : forall (a : nat) (a' : N) (b : nat) (b' : N), Rnat a a' -> Rnat b b' -> bool_R (a < b) (a' < b')%C
+END|prosa.implementation.refinements.refinements.refine_ltn
+BEGIN|prosa.implementation.refinements.refinements.iota_T
+@iota_T
+     : forall T : Type, one_of T -> add_of T -> T -> nat -> seq T
+END|prosa.implementation.refinements.refinements.iota_T
+BEGIN|prosa.implementation.refinements.refinements.size_T
+@size_T
+     : forall T : Type, zero_of T -> one_of T -> add_of T -> forall X : Type, seq X -> T
+END|prosa.implementation.refinements.refinements.size_T
+BEGIN|prosa.implementation.refinements.refinements.shift_points_pos_T
+@shift_points_pos_T
+     : forall T : Type, add_of T -> seq T -> T -> seq T
+END|prosa.implementation.refinements.refinements.shift_points_pos_T
+BEGIN|prosa.implementation.refinements.refinements.shift_points_neg_T
+@shift_points_neg_T
+     : forall T : Type, sub_of T -> leq_of T -> seq T -> T -> seq T
+END|prosa.implementation.refinements.refinements.shift_points_neg_T
+BEGIN|prosa.implementation.refinements.refinements.refine_map
+@refine_map
+     : forall (A A' B B' : Type) (F : A -> B) (F' : A' -> B') (rA : A -> A' -> Type) (rB : B -> B' -> Type) (xs : seq A) (xs' : seq A'), refines (list_R rA) xs xs' -> refines (rA ==> rB) F F' -> refines (list_R rB) [seq F i | i <- xs] [seq F' i | i <- xs']
+END|prosa.implementation.refinements.refinements.refine_map
+BEGIN|prosa.implementation.refinements.refinements.refine_zip
+refine_zip
+     : refines (list_R Rnat ==> list_R Rnat ==> list_R (prod_R Rnat Rnat)) zip zip
+END|prosa.implementation.refinements.refinements.refine_zip
+BEGIN|prosa.implementation.refinements.refinements.refine_all
+@refine_all
+     : forall (A A' : Type) (rA : A -> A' -> Type), refines ((rA ==> bool_R) ==> list_R rA ==> bool_R) all all
+END|prosa.implementation.refinements.refinements.refine_all
+BEGIN|prosa.implementation.refinements.refinements.refine_flatten
+@refine_flatten
+     : forall (A A' : Type) (rA : A -> A' -> Type), refines (list_R (list_R rA) ==> list_R rA) flatten flatten
+END|prosa.implementation.refinements.refinements.refine_flatten
+BEGIN|prosa.implementation.refinements.refinements.refine_cons
+refine_cons
+     : forall (A C : Type) (rAC : A -> C -> Type), refines (rAC ==> list_R rAC ==> list_R rAC) cons cons
+END|prosa.implementation.refinements.refinements.refine_cons
+BEGIN|prosa.implementation.refinements.refinements.refine_nil
+refine_nil
+     : forall (A C : Type) (rAC : A -> C -> Type), refines (list_R rAC) [::] [::]
+END|prosa.implementation.refinements.refinements.refine_nil
+BEGIN|prosa.implementation.refinements.refinements.refine_last
+@refine_last
+     : forall (A B : Type) (rA : A -> B -> Type), refines (rA ==> list_R rA ==> rA) last last
+END|prosa.implementation.refinements.refinements.refine_last
+BEGIN|prosa.implementation.refinements.refinements.refine_size
+refine_size
+     : forall (A C : Type) (rAC : A -> C -> Type), refines (list_R rAC ==> Rnat) size size_T
+END|prosa.implementation.refinements.refinements.refine_size
+BEGIN|prosa.implementation.refinements.refinements.iotaTsuccN
+iotaTsuccN
+     : forall (a : N) (p : positive), iota_T a (N.succ (Pos.pred_N p)) = a :: iota_T (succN a) (Pos.pred_N p)
+END|prosa.implementation.refinements.refinements.iotaTsuccN
+BEGIN|prosa.implementation.refinements.refinements.refine_iota
+refine_iota
+     : refines (Rnat ==> Rnat ==> list_R Rnat) iota (fun a b : N => iota_T a b)
+END|prosa.implementation.refinements.refinements.refine_iota
+BEGIN|prosa.implementation.refinements.refinements.refine_shift_points_pos
+refine_shift_points_pos
+     : refines (list_R Rnat ==> Rnat ==> list_R Rnat) shift_points_pos shift_points_pos_T
+END|prosa.implementation.refinements.refinements.refine_shift_points_pos
+BEGIN|prosa.implementation.refinements.refinements.refine_shift_points_neg
+refine_shift_points_neg
+     : refines (list_R Rnat ==> Rnat ==> list_R Rnat) shift_points_neg shift_points_neg_T
+END|prosa.implementation.refinements.refinements.refine_shift_points_neg
+BEGIN|prosa.implementation.refinements.refinements.refine_abstract
+refine_abstract
+     : forall xs : seq N, refines (list_R Rnat) [seq i | i <- xs] xs
+END|prosa.implementation.refinements.refinements.refine_abstract
+BEGIN|prosa.implementation.refinements.refinements.refine_foldr_lemma
+refine_foldr_lemma
+     : refines ((Rnat ==> Rnat ==> Rnat) ==> Rnat ==> list_R Rnat ==> Rnat) foldr foldr
+END|prosa.implementation.refinements.refinements.refine_foldr_lemma
+BEGIN|prosa.implementation.refinements.refinements.refine_foldr
+@refine_foldr
+     : forall (T1 T2 : Type) (xs : seq T1) (xs' : seq T2) (R : T1 -> bool) (R' : T2 -> bool) (F : T1 -> nat) (F' : T2 -> N) (rT : T1 -> T2 -> Type), refines (list_R rT) xs xs' -> refines (rT ==> Rnat) F F' -> refines (rT ==> bool_R) R R' -> refines Rnat (\sum_(x <- xs | R x) F x) (foldr +%C 0%C [seq F' x' | x' <- xs' & R' x'])
+END|prosa.implementation.refinements.refinements.refine_foldr
+BEGIN|prosa.implementation.refinements.refinements.refine_uncond_foldr
+@refine_uncond_foldr
+     : forall (T1 T2 : Type) (xs : seq T1) (xs' : seq T2) (F : T1 -> nat) (F' : T2 -> N) (rT : T1 -> T2 -> Type), refines (list_R rT) xs xs' -> refines (rT ==> Rnat) F F' -> refines Rnat (\sum_(x <- xs) F x) (foldr +%C 0%C [seq F' x' | x' <- xs'])
+END|prosa.implementation.refinements.refinements.refine_uncond_foldr
+BEGIN|prosa.implementation.refinements.refinements.refine_foldr_max
+@refine_foldr_max
+     : forall (T1 T2 : Type) (xs : seq T1) (xs' : seq T2) (R : T1 -> bool) (R' : T2 -> bool) (F : T1 -> nat) (F' : T2 -> N) (rT : T1 -> T2 -> Type), refines (list_R rT) xs xs' -> refines (rT ==> Rnat) F F' -> refines (rT ==> bool_R) R R' -> refines Rnat (\max_(x <- xs | R x) F x) (foldr maxn_T 0%C [seq F' x' | x' <- xs' & R' x'])
+END|prosa.implementation.refinements.refinements.refine_foldr_max
+BEGIN|prosa.implementation.refinements.task.Task
+task.Task
+     : eqType
+END|prosa.implementation.refinements.task.Task
+BEGIN|prosa.implementation.refinements.task.Job
+task.Job
+     : eqType
+END|prosa.implementation.refinements.task.Job
+BEGIN|prosa.implementation.refinements.task.task_T
+@task_T
+     : Type -> Type
+END|prosa.implementation.refinements.task.task_T
+BEGIN|prosa.implementation.refinements.task.task_eqdef_T
+@task_eqdef_T
+     : forall T : Type, eq_of T -> eq_of task_arrivals_bound_T -> task_T -> task_T -> bool
+END|prosa.implementation.refinements.task.task_eqdef_T
+BEGIN|prosa.implementation.refinements.task.inter_arrival_to_extrapolated_arrival_curve_T
+@inter_arrival_to_extrapolated_arrival_curve_T
+     : forall T : Type, one_of T -> T -> T * seq (T * T)
+END|prosa.implementation.refinements.task.inter_arrival_to_extrapolated_arrival_curve_T
+BEGIN|prosa.implementation.refinements.task.get_extrapolated_arrival_curve_T
+@get_extrapolated_arrival_curve_T
+     : forall T : Type, one_of T -> task_T -> T * seq (T * T)
+END|prosa.implementation.refinements.task.get_extrapolated_arrival_curve_T
+BEGIN|prosa.implementation.refinements.task.ConcreteMaxArrivals_T
+@ConcreteMaxArrivals_T
+     : forall T : Type, zero_of T -> one_of T -> add_of T -> mul_of T -> div_of T -> mod_of T -> leq_of T -> task_T -> T -> T
+END|prosa.implementation.refinements.task.ConcreteMaxArrivals_T
+BEGIN|prosa.implementation.refinements.task.task_rbf_T
+@task_rbf_T
+     : forall T : Type, zero_of T -> one_of T -> add_of T -> mul_of T -> div_of T -> mod_of T -> leq_of T -> task_T -> T -> T
+END|prosa.implementation.refinements.task.task_rbf_T
+BEGIN|prosa.implementation.refinements.task.valid_arrivals_T
+@task.valid_arrivals_T
+     : forall T : Type, zero_of T -> one_of T -> eq_of T -> leq_of T -> lt_of T -> task_T -> bool
+END|prosa.implementation.refinements.task.valid_arrivals_T
+BEGIN|prosa.implementation.refinements.task.get_horizon_of_task_T
+@get_horizon_of_task_T
+     : forall T : Type, one_of T -> task_T -> T
+END|prosa.implementation.refinements.task.get_horizon_of_task_T
+BEGIN|prosa.implementation.refinements.task.get_time_steps_of_task_T
+@get_time_steps_of_task_T
+     : forall T : Type, one_of T -> task_T -> seq T
+END|prosa.implementation.refinements.task.get_time_steps_of_task_T
+BEGIN|prosa.implementation.refinements.task.time_steps_with_offset_T
+@time_steps_with_offset_T
+     : forall T : Type, one_of T -> add_of T -> task_T -> T -> seq T
+END|prosa.implementation.refinements.task.time_steps_with_offset_T
+BEGIN|prosa.implementation.refinements.task.repeat_steps_with_offset_T
+@repeat_steps_with_offset_T
+     : forall T : Type, one_of T -> add_of T -> task_T -> seq T -> seq T
+END|prosa.implementation.refinements.task.repeat_steps_with_offset_T
+BEGIN|prosa.implementation.refinements.task.taskT_to_task
+taskT_to_task
+     : task_T -> task.Task
+END|prosa.implementation.refinements.task.taskT_to_task
+BEGIN|prosa.implementation.refinements.task.Rtask
+Rtask
+     : task.Task -> task_T -> Type
+END|prosa.implementation.refinements.task.Rtask
+BEGIN|prosa.implementation.refinements.task.task_to_taskT
+task_to_taskT
+     : task.Task -> task_T
+END|prosa.implementation.refinements.task.task_to_taskT
+BEGIN|prosa.implementation.refinements.task.refine_task
+refine_task
+     : refines (Rnat ==> Rnat ==> Rtask_ab ==> Rnat ==> Rnat ==> Rtask) Build_concrete_task Build_task_T
+END|prosa.implementation.refinements.task.refine_task
+BEGIN|prosa.implementation.refinements.task.refine_task_id
+refine_task_id
+     : refines (Rtask ==> Rnat) task_id task_id_T
+END|prosa.implementation.refinements.task.refine_task_id
+BEGIN|prosa.implementation.refinements.task.refine_task_cost
+refine_task_cost
+     : refines (Rtask ==> Rnat) task_cost task_cost_T
+END|prosa.implementation.refinements.task.refine_task_cost
+BEGIN|prosa.implementation.refinements.task.refine_task_arrival
+refine_task_arrival
+     : refines (Rtask ==> Rtask_ab) task_arrival task_arrival_T
+END|prosa.implementation.refinements.task.refine_task_arrival
+BEGIN|prosa.implementation.refinements.task.refine_task_deadline
+refine_task_deadline
+     : refines (Rtask ==> Rnat) task_deadline task_deadline_T
+END|prosa.implementation.refinements.task.refine_task_deadline
+BEGIN|prosa.implementation.refinements.task.refine_task_priority
+refine_task_priority
+     : refines (Rtask ==> Rnat) task_priority task_priority_T
+END|prosa.implementation.refinements.task.refine_task_priority
+BEGIN|prosa.implementation.refinements.task.refine_Periodic
+refine_Periodic
+     : refines (Rnat ==> Rtask_ab) Periodic Periodic_T
+END|prosa.implementation.refinements.task.refine_Periodic
+BEGIN|prosa.implementation.refinements.task.refine_Sporadic
+refine_Sporadic
+     : refines (Rnat ==> Rtask_ab) Sporadic Sporadic_T
+END|prosa.implementation.refinements.task.refine_Sporadic

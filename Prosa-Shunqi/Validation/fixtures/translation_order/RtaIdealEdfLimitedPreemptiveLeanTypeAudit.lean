@@ -1,0 +1,6 @@
+import Prosa.Results.Rta.Ideal.Edf.LimitedPreemptive
+set_option pp.fieldNotation false
+
+#check @Prosa.Results.Rta.Ideal.Edf.LimitedPreemptive.uniprocessor_response_time_bound_edf_with_fixed_preemption_points
+
+#print axioms Prosa.Results.Rta.Ideal.Edf.LimitedPreemptive.uniprocessor_response_time_bound_edf_with_fixed_preemption_points

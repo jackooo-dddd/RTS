@@ -1,0 +1,18 @@
+Rocq 9.3 compatibility for util/minmax.v (proof-only).
+In Rocq 9.3 the ssreflect `done` is `Corelib.ssr.ssreflect_rw.done`; the accepted
+util/tactics.v compatibility patch names it `done`, which inside `Ltac done := ...`
+refers to Prosa's `done` itself, so `by` / `//` closers here recurse until a stack
+overflow. A file-local `done` restores the original definition
+`solve [ ssreflect.done | eauto 4 with basic_rt_facts ]` for this file only.
+No statement or definition changes.
+--- a/util/minmax.v
++++ b/util/minmax.v
+@@ -1,6 +1,8 @@
+ From mathcomp Require Import ssreflect ssrbool eqtype ssrnat seq fintype bigop.
+ Require Export prosa.util.notation prosa.util.nat prosa.util.list prosa.util.setoid.
+ 
++Local Ltac done := solve [ Corelib.ssr.ssreflect_rw.done | eauto 4 with basic_rt_facts ].
++
+ (** * Additional Lemmas about [\max]. *)
+ 
+ (** Given a function [F], a predicate [P], and a sequence [xs], we

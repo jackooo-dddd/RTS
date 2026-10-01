@@ -1,0 +1,6 @@
+import Prosa.Results.Rta.Ideal.Edf.FloatingNonpreemptive
+set_option pp.fieldNotation false
+
+#check @Prosa.Results.Rta.Ideal.Edf.FloatingNonpreemptive.uniprocessor_response_time_bound_edf_with_floating_nonpreemptive_regions
+
+#print axioms Prosa.Results.Rta.Ideal.Edf.FloatingNonpreemptive.uniprocessor_response_time_bound_edf_with_floating_nonpreemptive_regions

@@ -217,23 +217,45 @@ def main() -> None:
             "per-file accepted evidence differs from cumulative machine coverage: "
             f"{len(accepted)}/{accepted_declarations} vs "
             f"{latest_files}/{latest_decls}")
-    require(all(not source.startswith("implementation/refinements/") for source in accepted),
-            "refinement boundary unexpectedly accepted")
+    # A file behind the CoqEAL build boundary is accepted only through the authorized local CoqEAL build: its
+    # accepted manifest must record the CoqEAL source binding and the official-toolchain CoqEAL type evidence.
+    for source in accepted:
+        if source.startswith("implementation/refinements/"):
+            manifest = first_accepted[source][1].with_name(
+                first_accepted[source][1].name.replace("_status.json", "_manifest.json"))
+            compat = json.loads(manifest.read_text()).get("source_compatibility", {})
+            require("coqeal" in compat
+                    and compat["coqeal"].get("type_evidence")
+                    == "planning/v06_dependency/coqeal_declaration_type_evidence.json",
+                    f"refinement boundary accepted without the CoqEAL source binding: {source}")
 
     evidence = completion_evidence(
         accepted, {source: first_accepted[source][1] for source in accepted}, args.check)
-    latest_source = max(accepted, key=lambda source: evidence[source]["completed_at"])
+    def published_at(source: str) -> str:
+        """Full-precision manifest publication time (breaks ties of the minute-precision record)."""
+        manifest = first_accepted[source][1].with_name(
+            first_accepted[source][1].name.replace("_status.json", "_manifest.json"))
+        return json.loads(manifest.read_text()).get("published_at", "") if manifest.is_file() else ""
+
+    latest_source = max(accepted, key=lambda source: (evidence[source]["completed_at"], published_at(source)))
     latest_rank = next(rank for rank, _, source, _ in order if source == latest_source)
 
     today = max(entry["completed_at"] for entry in evidence.values())[:10]
     relative_status = latest_path.relative_to(PROJECT).as_posix()
-    status_content = (
-        f"截至 {today}，正式 machine state 记录 **{latest_files}/357 个文件、"
-        f"{latest_decls}/2439 个 public declarations 已验收**。"
-        f"依据：[最新累计 status](../{relative_status})。"
-        "表中的“是”仅表示已有 `ACCEPTED_V06_FILE`；“否”可能是未开始、"
-        "进行中或受阻，不能据此推断尚未翻译。零声明文件也只有通过模块接口验收才写“是”。"
-    )
+    complete = len(accepted) == 357
+    if complete:
+        status_content = (
+            f"全部 **357 个 source file、2439 个 public declarations** 均已通过正式验收（`ACCEPTED_V06_FILE`），"
+            f"最后一个文件于 {today} 发布。依据：[最新累计 status](../{relative_status})。"
+        )
+    else:
+        status_content = (
+            f"截至 {today}，正式 machine state 记录 **{latest_files}/357 个文件、"
+            f"{latest_decls}/2439 个 public declarations 已验收**。"
+            f"依据：[最新累计 status](../{relative_status})。"
+            "表中的“是”仅表示已有 `ACCEPTED_V06_FILE`；“否”可能是未开始、"
+            "进行中或受阻，不能据此推断尚未翻译。零声明文件也只有通过模块接口验收才写“是”。"
+        )
     nav = (
         "<details open>\n"
         "<summary><b>📊 Translation Status</b></summary>\n\n"
@@ -242,8 +264,8 @@ def main() -> None:
         f"| **{latest_files}/357 files** · **{latest_decls}/2439 declarations** | "
         f"**Rank {latest_rank}** · `{latest_source}` | "
         "[🎯 Jump to latest completed](#latest-completed) · "
-        "[✅ Finished](#finished-files) · "
-        "[⏳ Unfinished](#unfinished-files) |\n\n"
+        "[✅ Finished](#finished-files)"
+        + ("" if complete else " · [⏳ Unfinished](#unfinished-files)") + " |\n\n"
         "</details>"
     )
     rows = ["<details open>",
@@ -258,7 +280,9 @@ def main() -> None:
         time = datetime.fromisoformat(evidence[source]["completed_at"]).strftime("%m:%d:%H:%M")
         rows.append(f"| {rank} | {layer} | {marker}{link_for(source, True)} | "
                     f"{counts[source]} | ✅ 是 | {time} |")
-    rows.extend(["", "</details>", "", "<details open>",
+    rows.extend(["", "</details>"])
+    if not complete:
+        rows.extend(["", "<details open>",
                  f"<summary><b>⏳ Unfinished — {357 - len(accepted)} files</b></summary>",
                  "", "<a id=\"unfinished-files\"></a>", "",
                  "| Rank | Layer | v0.6 source file | Public declarations | 验证完成 |",
@@ -268,7 +292,8 @@ def main() -> None:
             continue
         result = "⏸ 否（外部边界）" if source.startswith("implementation/refinements/") else "○ 否"
         rows.append(f"| {rank} | {layer} | {link_for(source, False)} | {counts[source]} | {result} |")
-    rows.extend(["", "</details>"])
+    if not complete:
+        rows.extend(["", "</details>"])
 
     original = README.read_text()
     rendered = between(original, STATUS_BEGIN, STATUS_END, status_content)

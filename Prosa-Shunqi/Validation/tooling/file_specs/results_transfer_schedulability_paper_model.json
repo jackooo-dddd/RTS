@@ -1,0 +1,162 @@
+{
+  "rank": 230,
+  "layer": 20,
+  "tag": "TSPM",
+  "slug": "results_transfer_schedulability_paper_model",
+  "source": "results/transfer_schedulability/paper_model.v",
+  "dependencies": [
+    "analysis/definitions/finish_time.v",
+    "results/transfer_schedulability/criterion.v",
+    "util/all.v"
+  ],
+  "declaration_count": 19,
+  "base_run": "results_transfer_schedulability_criterion_final",
+  "base_checks": [
+    {
+      "manifest": "results_transfer_schedulability_criterion",
+      "olean": "Prosa/Results/TransferSchedulability/Criterion.olean"
+    }
+  ],
+  "extra_pinned_sources": [],
+  "extra_source_patches": [],
+  "extra_lean": [],
+  "source_mode": "official_closure",
+  "official_closure": {
+    "files": "tooling/proof_closure/paper_model_closure.txt",
+    "patches": [
+      "patches/prosa-v06-rocq93-official-proof-closure-common.patch",
+      "patches/prosa-v06-rocq93-official-proof-closure-paper-model.patch"
+    ]
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/PaperModelTypeFingerprintProbe.v",
+  "production": "Prosa/Results/TransferSchedulability/PaperModel.lean",
+  "production_olean": "Prosa/Results/TransferSchedulability/PaperModel.olean",
+  "lean_namespace": "Prosa.Results.TransferSchedulability.PaperModel",
+  "fixtures": [
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "ArrivalsComputationInterface",
+    "ServiceOfJobsComputationInterface",
+    "ScheduledComputationInterface",
+    "IdealScheduleComputationInterface",
+    "CriterionComputationInterface",
+    "FinishTimeExportInterface",
+    "PaperModelComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/PaperModelLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/results_transfer_schedulability_paper_model_export_config.json",
+  "export_name": "PaperModel",
+  "cert_dir": "certificates/results_transfer_schedulability_paper_model",
+  "chain": [
+    "PmArrivalsSeqBaseAdapter",
+    "PmArrivalsSeqOperations",
+    "PmArrivalsSeqCorrespondence",
+    "PmJitterSvcBaseAdapter",
+    "PmJitterSvcNatBoolOperations",
+    "PmJitterSvcIntervalOperations",
+    "PmJitterSvcScheduleOperations",
+    "PmJitterSvcJobOperations",
+    "PmCriterionDefs",
+    "PmFinishTimeMinBridge",
+    "PaperModelCorrespondence"
+  ],
+  "audit_module": "PaperModelAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/PaperModelImportedTypeAudit.v",
+  "assumption_config": "certificates/results_transfer_schedulability_paper_model/paper_model_assumption_config.json",
+  "lean_axiom_config": "certificates/results_transfer_schedulability_paper_model/paper_model_lean_axiom_config.json",
+  "computational": [
+    "JobPredecessors",
+    "JobDelay",
+    "SystemEvolutions",
+    "Scheduler",
+    "schedulability_transferred_AB",
+    "clairvoyant_criterion",
+    "nonclairvoyant_criterion",
+    "ref_finish_time",
+    "online_response_time_bound",
+    "online_finish_time",
+    "online_finish_time_bounded",
+    "online_finish_time'",
+    "online_finish_time_bounded'"
+  ],
+  "principal": {
+    "JobPredecessors": [
+      "JobPredecessors_source_total",
+      "JobPredecessors_target_total"
+    ],
+    "JobDelay": [
+      "JobDelay_source_total",
+      "JobDelay_target_total"
+    ],
+    "SystemEvolutions": [
+      "SystemEvolutions_source_total",
+      "SystemEvolutions_target_total"
+    ],
+    "Scheduler": [
+      "Scheduler_source_total",
+      "Scheduler_target_total",
+      "Scheduler_generic_source_total",
+      "Scheduler_generic_target_total"
+    ]
+  },
+  "helpers": [
+    "pm_forall_type",
+    "pm_forall_proof",
+    "pm_forall_pred",
+    "pm_forall_evo",
+    "pm_all_canonical",
+    "pm_all_related",
+    "pm_job_ready_related",
+    "pm_valid_schedule_rel",
+    "pm_jrtb_related",
+    "pm_finish_time_rel",
+    "pm_forall_alg",
+    "pm_bound_source_total",
+    "pm_bound_target_total",
+    "pm_ns_target_total",
+    "pm_ns_pick_at",
+    "pm_ns_to_target_at_jf",
+    "pm_max_cost_rel",
+    "pm_vs"
+  ],
+  "previous_status": "model_task_arrival_example_module_status.json",
+  "previous_files": 342,
+  "previous_decls": 2181,
+  "input_relations": [
+    "jobs by identity (any eqType); the processor model fixed to the ideal uniprocessor (accepted constructor-preserving state relation, schedules pointwise); job costs, arrivals, predecessors and delays pointwise; evolutions by identity with the evolution parameters related pointwise; schedulers pointwise; non-starvation witnesses by their bound values"
+  ],
+  "coverage_for_inner_binders": [
+    "evolutions",
+    "schedulers",
+    "jobs",
+    "instants",
+    "arrival sequences",
+    "non-starvation witnesses"
+  ],
+  "lean_representation_note": "`{R | P R}` is the subtype `{R // P R = true}`, `sval`/`proj2_sig` are `Subtype.val`/`Subtype.property`; the local readiness instance is the definition `delayed_precedence_ready_instance`; a Boolean in `Prop` is `= true`; `all p xs` is `xs.all p`",
+  "export_diagnosis": "the accepted criterion and finish-time export roots, the file's definitions with its local readiness instance, online_response_time_bound with its proof, and the six statements",
+  "extra_artifacts": [],
+  "extra_olean_artifacts": [
+    {
+      "from": "analysis_facts_model_ideal_schedule_final/olean/Prosa/Model/Processor/Ideal.olean",
+      "to": "Prosa/Model/Processor/Ideal.olean",
+      "manifest": "model_processor_ideal",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_transform_edf_trans_final/olean/Prosa/Analysis/Facts/Model/Ideal/Schedule.olean",
+      "to": "Prosa/Analysis/Facts/Model/Ideal/Schedule.olean",
+      "manifest": "analysis_facts_model_ideal_schedule",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_finish_time/olean/Prosa/Analysis/Definitions/FinishTime.olean",
+      "to": "Prosa/Analysis/Definitions/FinishTime.olean",
+      "manifest": "analysis_finish_time",
+      "key": "production_olean_sha256"
+    }
+  ],
+  "extra_generated_sources": []
+}

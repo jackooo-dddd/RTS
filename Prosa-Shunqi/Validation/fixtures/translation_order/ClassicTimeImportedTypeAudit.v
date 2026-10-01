@@ -1,0 +1,6 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedClassicTime.
+
+Check ImportedClassicTime.Prosa_Classic_Model_Time_Time_time.
+Check ImportedClassicTime.Prosa_Classic_Model_Time_Time_duration.
+Check ImportedClassicTime.Prosa_Classic_Model_Time_Time_instant.

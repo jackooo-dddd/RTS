@@ -1,0 +1,248 @@
+{
+  "rank": 349,
+  "layer": 20,
+  "tag": "REFEDFPS",
+  "slug": "implementation_refinements_EDF_preemptive_sched",
+  "source": "implementation/refinements/EDF/preemptive_sched.v",
+  "dependencies": [
+    "analysis/definitions/tardiness.v",
+    "analysis/facts/preemption/rtc_threshold/preemptive.v",
+    "analysis/facts/preemption/task/preemptive.v",
+    "analysis/facts/readiness/basic.v",
+    "implementation/definitions/task.v",
+    "implementation/facts/ideal_uni/prio_aware.v",
+    "model/priority/edf.v"
+  ],
+  "declaration_count": 6,
+  "base_run": "implementation_refinements_EDF_refinements_final",
+  "base_checks": [
+    {
+      "manifest": "implementation_definitions_task",
+      "olean": "Prosa/Implementation/Definitions/Task.olean"
+    }
+  ],
+  "extra_pinned_sources": [],
+  "extra_source_patches": [],
+  "extra_lean": [],
+  "source_mode": "official_closure",
+  "official_closure": {
+    "files": "tooling/proof_closure/refinements_EDF_preemptive_sched_closure.txt",
+    "patches": [
+      "patches/prosa-v06-rocq93-official-proof-closure-refinements-EDF_preemptive_sched.patch"
+    ]
+  },
+  "coqeal": "tooling/coqeal/coqeal_2.1.2.json",
+  "fingerprint_probe": "Validation/fixtures/translation_order/RefEDFPSchedTypeFingerprintProbe.v",
+  "production": "Prosa/Implementation/Refinements/EDF/PreemptiveSched.lean",
+  "production_olean": "Prosa/Implementation/Refinements/EDF/PreemptiveSched.olean",
+  "lean_namespace": "Prosa.Implementation.Refinements.EDF.PreemptiveSched",
+  "fixtures": [
+    "NondecreasingComputationInterface",
+    "BigcatComputationInterface",
+    "ArrivalSequenceComputationInterface",
+    "ScheduleComputationInterface",
+    "ServiceComputationInterface",
+    "PreemptionParameterComputationInterface",
+    "TransformPrefixComputationInterface",
+    "IdealUniSchedulerComputationInterface",
+    "ExtrapolatedArrivalCurveArithmeticInterface",
+    "RefSchedComputationInterface",
+    "RefEDFPSchedComputationInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/RefEDFPSchedLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/implementation_refinements_EDF_preemptive_sched_export_config.json",
+  "export_name": "RefEDFPSched",
+  "cert_dir": "certificates/implementation_refinements_EDF_preemptive_sched",
+  "chain": [
+    "PsEac",
+    "PsAb",
+    "PsImplTask",
+    "PsListOps",
+    "PsSvcBase",
+    "PsSvcNatBool",
+    "PsSvcInterval",
+    "PsSched",
+    "RefEDFPSchedCorrespondence"
+  ],
+  "audit_module": "RefEDFPSchedAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/RefEDFPSchedImportedTypeAudit.v",
+  "assumption_config": "certificates/implementation_refinements_EDF_preemptive_sched/ref_edf_psched_assumption_config.json",
+  "lean_axiom_config": "certificates/implementation_refinements_EDF_preemptive_sched/ref_edf_psched_lean_axiom_config.json",
+  "computational": [
+    "Task",
+    "Job",
+    "basic_ready_instance",
+    "sched"
+  ],
+  "principal": {
+    "Task": [
+      "Task_source_total",
+      "Task_target_total"
+    ],
+    "Job": [
+      "Job_source_total",
+      "Job_target_total"
+    ]
+  },
+  "helpers": [],
+  "previous_status": "implementation_refinements_EDF_refinements_module_status.json",
+  "previous_files": 353,
+  "previous_decls": 2409,
+  "input_relations": [
+    "unary numbers canonically; Booleans canonically; concrete tasks and jobs by the accepted fieldwise canonical relations of the implementation task certificate (two-way totals); lists of jobs elementwise by the job relation; optional jobs constructor-preserving with the job relation; arrival sequences and schedules pointwise; the readiness model, preemption model and priority policy are the file's fixed instances on both sides"
+  ],
+  "coverage_for_inner_binders": [
+    "unary numbers",
+    "concrete jobs",
+    "arrival sequences"
+  ],
+  "lean_representation_note": "the `Task`/`Job` aliases are abbreviations of the accepted concrete types; the section-local instances (basic readiness, the fully-preemptive model, `EDF` through the JLDP coercion, the job-deadline instance) are passed explicitly; the section's `arr_seq` and `H_valid_arrivals` are explicit binders in the order of the elaborated types",
+  "export_diagnosis": "the file's definitions and statements with the accepted ideal-uniprocessor-scheduler export root, the accepted concrete task/job definitions and their arrival-curve closure",
+  "extra_artifacts": [],
+  "extra_olean_artifacts": [
+    {
+      "from": "analysis_definitions_tardiness_final/olean/Prosa/Analysis/Definitions/Tardiness.olean",
+      "to": "Prosa/Analysis/Definitions/Tardiness.olean",
+      "manifest": "analysis_definitions_tardiness",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "results_generality_gel_final/olean/Prosa/Analysis/Facts/Preemption/Job/Nonpreemptive.olean",
+      "to": "Prosa/Analysis/Facts/Preemption/Job/Nonpreemptive.olean",
+      "manifest": "analysis_facts_preemption_job_nonpreemptive",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "results_rta_ideal_elf_bounded_pi_final/olean/Prosa/Analysis/Facts/Preemption/Job/Preemptive.olean",
+      "to": "Prosa/Analysis/Facts/Preemption/Job/Preemptive.olean",
+      "manifest": "analysis_facts_preemption_job_preemptive",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "results_rta_ideal_elf_bounded_pi_final/olean/Prosa/Analysis/Facts/Preemption/RtcThreshold/Nonpreemptive.olean",
+      "to": "Prosa/Analysis/Facts/Preemption/RtcThreshold/Nonpreemptive.olean",
+      "manifest": "analysis_facts_preemption_rtc_threshold_nonpreemptive",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "results_rta_ideal_elf_bounded_pi_final/olean/Prosa/Analysis/Facts/Preemption/RtcThreshold/Preemptive.olean",
+      "to": "Prosa/Analysis/Facts/Preemption/RtcThreshold/Preemptive.olean",
+      "manifest": "analysis_facts_preemption_rtc_threshold_preemptive",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "results_rta_ideal_elf_bounded_pi_final/olean/Prosa/Analysis/Facts/Preemption/Task/Nonpreemptive.olean",
+      "to": "Prosa/Analysis/Facts/Preemption/Task/Nonpreemptive.olean",
+      "manifest": "analysis_facts_preemption_task_nonpreemptive",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "results_rta_ideal_elf_bounded_pi_final/olean/Prosa/Analysis/Facts/Preemption/Task/Preemptive.olean",
+      "to": "Prosa/Analysis/Facts/Preemption/Task/Preemptive.olean",
+      "manifest": "analysis_facts_preemption_task_preemptive",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "results_optimality_edf_final/olean/Prosa/Analysis/Facts/Readiness/Backlogged.olean",
+      "to": "Prosa/Analysis/Facts/Readiness/Backlogged.olean",
+      "manifest": "analysis_facts_readiness_backlogged",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_facts_model_sequential_final/olean/Prosa/Analysis/Facts/Readiness/Sequential.olean",
+      "to": "Prosa/Analysis/Facts/Readiness/Sequential.olean",
+      "manifest": "analysis_facts_readiness_sequential",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "results_optimality_edf_final/olean/Prosa/Analysis/Facts/Transform/ReplaceAt.olean",
+      "to": "Prosa/Analysis/Facts/Transform/ReplaceAt.olean",
+      "manifest": "analysis_facts_transform_replace_at",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "results_optimality_edf_final/olean/Prosa/Analysis/Transform/Swap.olean",
+      "to": "Prosa/Analysis/Transform/Swap.olean",
+      "manifest": "analysis_transform_swap",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "results_optimality_edf_final/olean/Prosa/Implementation/Definitions/GenericScheduler.olean",
+      "to": "Prosa/Implementation/Definitions/GenericScheduler.olean",
+      "manifest": "implementation_definitions_generic_scheduler",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "results_optimality_edf_final/olean/Prosa/Implementation/Definitions/IdealUniScheduler.olean",
+      "to": "Prosa/Implementation/Definitions/IdealUniScheduler.olean",
+      "manifest": "implementation_definitions_ideal_uni_scheduler",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "results_optimality_edf_final/olean/Prosa/Implementation/Facts/GenericSchedule.olean",
+      "to": "Prosa/Implementation/Facts/GenericSchedule.olean",
+      "manifest": "implementation_facts_generic_schedule",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "results_optimality_edf_final/olean/Prosa/Implementation/Facts/IdealUni/PreemptionAware.olean",
+      "to": "Prosa/Implementation/Facts/IdealUni/PreemptionAware.olean",
+      "manifest": "implementation_facts_ideal_uni_preemption_aware",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "results_optimality_edf_final/olean/Prosa/Implementation/Facts/IdealUni/PrioAware.olean",
+      "to": "Prosa/Implementation/Facts/IdealUni/PrioAware.olean",
+      "manifest": "implementation_facts_ideal_uni_prio_aware",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "results_generality_gel_final/olean/Prosa/Model/Preemption/FullyNonpreemptive.olean",
+      "to": "Prosa/Model/Preemption/FullyNonpreemptive.olean",
+      "manifest": "model_preemption_fully_nonpreemptive",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "results_optimality_edf_final/olean/Prosa/Model/Preemption/FullyPreemptive.olean",
+      "to": "Prosa/Model/Preemption/FullyPreemptive.olean",
+      "manifest": "model_preemption_fully_preemptive",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "model_readiness_sequential_final/olean/Prosa/Model/Readiness/Sequential.olean",
+      "to": "Prosa/Model/Readiness/Sequential.olean",
+      "manifest": "model_readiness_sequential",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "results_optimality_edf_final/olean/Prosa/Model/Schedule/LimitedPreemptive.olean",
+      "to": "Prosa/Model/Schedule/LimitedPreemptive.olean",
+      "manifest": "model_schedule_limited_preemptive",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "results_rta_ideal_elf_bounded_pi_final/olean/Prosa/Model/Task/Preemption/FullyNonpreemptive.olean",
+      "to": "Prosa/Model/Task/Preemption/FullyNonpreemptive.olean",
+      "manifest": "model_task_preemption_fully_nonpreemptive",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "results_rta_ideal_elf_bounded_pi_final/olean/Prosa/Model/Task/Preemption/FullyPreemptive.olean",
+      "to": "Prosa/Model/Task/Preemption/FullyPreemptive.olean",
+      "manifest": "model_task_preemption_fully_preemptive",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "results_optimality_edf_final/olean/Prosa/Analysis/Transform/Prefix.olean",
+      "to": "Prosa/Analysis/Transform/Prefix.olean",
+      "manifest": "analysis_transform_prefix",
+      "key": "production_olean_sha256"
+    }
+  ],
+  "extra_generated_sources": [],
+  "own_qualified_in_type": [
+    "Job",
+    "sched",
+    "sched_valid"
+  ]
+}

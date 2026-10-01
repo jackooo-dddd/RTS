@@ -68,7 +68,8 @@ def blank_comments(text: str) -> str:
     return "".join(out)
 
 
-def active_context(text: str, stop: int, self_named_instance_context: bool = False) -> list[str]:
+def active_context(text: str, stop: int, self_named_instance_context: bool = False,
+                   omit_lets: tuple = ()) -> list[str]:
     frames: list[list[str]] = [[]]
     lines = blank_comments(text[:stop]).splitlines()
     i = 0
@@ -89,6 +90,10 @@ def active_context(text: str, stop: int, self_named_instance_context: bool = Fal
             while not command[-1].rstrip().endswith("."):
                 i += 1
                 command.append(lines[i])
+            let_name = re.match(rf"^Let\s+({IDENTIFIER_RE})\b", stripped)
+            if let_name and let_name.group(1) in omit_lets:
+                i += 1
+                continue
             frames[-1].extend(command)
         elif m := re.match(rf"^#\[local\]\s*Instance\s+({IDENTIFIER_RE})\b(.*)$", stripped):
             # a source-local instance *definition* (e.g. a section-local readiness
@@ -226,6 +231,11 @@ def main() -> None:
               "recorded in metadata with acquisition mode BODY_PARENTHESIZED"),
     )
     parser.add_argument(
+        "--omit-context-let", action="append", default=[],
+        help=("NAME of a section `Let` to omit from copied Section contexts; refused when an extracted block "
+              "mentions NAME (the Let is then unused by it); recorded in metadata"),
+    )
+    parser.add_argument(
         "--self-named-instance-context", action="store_true",
         help=("copy a source-local instance that re-exposes the imported constant of the "
               "same name into later copied Section contexts as a context-only local "
@@ -321,6 +331,7 @@ def main() -> None:
             "added_validation_imports": args.add_import,
             **({"printer_repairs": args.printer_repair} if args.printer_repair else {}),
             **({"self_named_instance_context": True} if args.self_named_instance_context else {}),
+            **({"omitted_context_lets": args.omit_context_let} if args.omit_context_let else {}),
             **({"body_parenthesizations": {n: {"old": o, "new": w} for n, (o, w) in parenthesizations.items()}}
                if parenthesizations else {}),
         },
@@ -330,7 +341,14 @@ def main() -> None:
         requested = sorted(requested, key=lambda name: declarations[name][0])
     for index, name in enumerate(requested):
         position, kind, block = declarations[name]
-        context = active_context(text, position, args.self_named_instance_context)
+        # an omitted Let must not be used by the extracted text: the body of a computational block, or the
+        # statement of a theorem (proofs are never extracted)
+        used_text = block if name in computational else theorem_statement(name, block)
+        for let_name in args.omit_context_let:
+            if re.search(rf"(?<![\w.']){re.escape(let_name)}(?![\w'])", used_text):
+                raise SystemExit(f"--omit-context-let {let_name}: used by extracted block {name}")
+        context = active_context(text, position, args.self_named_instance_context,
+                                 tuple(args.omit_context_let))
         omitted_context = bool(
             args.omit_theorem_context_when_elaborated
             and elaborated_evidence is not None and kind == "theorem"

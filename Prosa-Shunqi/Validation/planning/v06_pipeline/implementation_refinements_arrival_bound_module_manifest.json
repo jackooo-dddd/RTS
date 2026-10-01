@@ -1,0 +1,679 @@
+{
+  "slice": "TRANSLATION_ORDER_IMPLEMENTATION_REFINEMENTS_ARRIVAL_BOUND",
+  "generated_at": "2026-10-01T11:29:27.754576+08:00",
+  "published_at": "2026-10-01T11:29:27.754576+08:00",
+  "rank": 345,
+  "layer": 17,
+  "source_file": "implementation/refinements/arrival_bound.v",
+  "source_commit": "414e66760333eaa4ef78c685bcf53291c527a548",
+  "source_tree": "7d7e94c731f7eefde4ca738310d4cafdd7bebdf0",
+  "source_file_sha256": "c8f33c5f54900f41270a554b49f0fbffe9fd7daccd760ff10eb56d03db0f3dd8",
+  "pipeline": "Validation/scripts/translation_file_pipeline.py",
+  "spec": "Validation/tooling/file_specs/implementation_refinements_arrival_bound.json",
+  "spec_sha256": "456f5757c9d6fc3ae71cb85ac1ecb23797d36ba3282750d99850e3f3c87b859f",
+  "source_compatibility": {
+    "mode": "official_closure",
+    "module_change": "one added line `Set SsrOldRewriteGoalsOrder.` (file-local rewrite-order flag)",
+    "note": "official proof closure (pinned files + recorded compatibility patches); module compiled byte-identically except the recorded rewrite-order flag",
+    "closure_files": [
+      "behavior/time.v",
+      "util/notation.v",
+      "util/tactics.v",
+      "util/supremum.v",
+      "util/list.v",
+      "util/bigcat.v",
+      "util/bigop.v",
+      "util/nat.v",
+      "util/subadditivity.v",
+      "util/div_mod.v",
+      "util/rel.v",
+      "util/sum.v",
+      "util/seqset.v",
+      "util/unit_growth.v",
+      "util/epsilon.v",
+      "util/search_arg.v",
+      "util/setoid.v",
+      "util/minmax.v",
+      "util/nondecreasing.v",
+      "util/poet.v",
+      "util/all.v",
+      "implementation/definitions/extrapolated_arrival_curve.v",
+      "implementation/definitions/arrival_bound.v",
+      "behavior/job.v",
+      "behavior/arrival_sequence.v",
+      "behavior/schedule.v",
+      "behavior/service.v",
+      "behavior/ready.v",
+      "behavior/all.v",
+      "model/task/concept.v",
+      "model/task/arrivals.v",
+      "model/task/arrival/curves.v",
+      "model/priority/definitions.v",
+      "model/priority/coercion.v",
+      "model/priority/classes.v",
+      "model/priority/numeric_fixed_priority.v",
+      "implementation/definitions/task.v",
+      "implementation/facts/extrapolated_arrival_curve.v",
+      "implementation/refinements/refinements.v",
+      "implementation/refinements/arrival_bound.v"
+    ],
+    "closure_list_sha256": "8fd3a55ba8ba69e639edf70000c0cae29bd113e4051af71ac348b40972ae9f92",
+    "patches": {
+      "patches/prosa-v06-rocq93-official-proof-closure-refinements-arrival_bound.patch": "8d5d6dd706fc2a6c5ac0569af861815df84a58d8c83a6a88c1c850ea9484a501"
+    },
+    "patched_files": [
+      "implementation/facts/extrapolated_arrival_curve.v",
+      "implementation/refinements/arrival_bound.v",
+      "util/bigcat.v",
+      "util/div_mod.v",
+      "util/list.v",
+      "util/nondecreasing.v",
+      "util/seqset.v",
+      "util/sum.v",
+      "util/tactics.v",
+      "util/unit_growth.v"
+    ],
+    "coqeal": {
+      "manifest": "tooling/coqeal/coqeal_2.1.2.json",
+      "manifest_sha256": "899b17495c24d48efba85019c8d6b54bed4c4097508db63776787af3b173ff6c",
+      "commit": "ce3d1d6835e2dfcb1a154fc1df60abb201701d3e",
+      "type_evidence": "planning/v06_dependency/coqeal_declaration_type_evidence.json",
+      "type_evidence_sha256": "da0cac5dedd0760a0df6d16341964b06328e88b2881e81095c4cb7149da6afac",
+      "vo_sha256": {
+        "binnat.vo": "558b194ad22c5e9e69f9122a4ccb286570f78ed6359e70aade2a1bc599554d9a",
+        "hrel.vo": "fb1cc6d33f158bd2832fd2bfc4e6ddb0a2748032d3bb72fc7279dffe6892bbde",
+        "param.vo": "669c6b36dfd14a428182bcbdd245f07eccc50af9ba04f04836c76c9599d0ad1f",
+        "pos.vo": "ba6857339ce7f207761a1b0a3e77045c9eb0a2b5fc5d1e2989f65338b66347ea",
+        "refinements.vo": "aeddb9e3390a3e99d0c892706c201620cda57dd34fa2c19ca9fe5caa4ef43761"
+      }
+    }
+  },
+  "source_type_evidence": {
+    "prosa.implementation.refinements.arrival_bound.task_arrivals_bound_T": "EXACT_HASH",
+    "prosa.implementation.refinements.arrival_bound.taskab_eqdef_T": "EXACT_HASH",
+    "prosa.implementation.refinements.arrival_bound.horizon_of_T": "EXACT_HASH",
+    "prosa.implementation.refinements.arrival_bound.steps_of_T": "EXACT_HASH",
+    "prosa.implementation.refinements.arrival_bound.time_steps_of_T": "EXACT_HASH",
+    "prosa.implementation.refinements.arrival_bound.step_at_T": "EXACT_HASH",
+    "prosa.implementation.refinements.arrival_bound.value_at_T": "EXACT_HASH",
+    "prosa.implementation.refinements.arrival_bound.extrapolated_arrival_curve_T": "EXACT_HASH",
+    "prosa.implementation.refinements.arrival_bound.ltn_steps_T": "EXACT_HASH",
+    "prosa.implementation.refinements.arrival_bound.sorted_ltn_steps_T": "EXACT_HASH",
+    "prosa.implementation.refinements.arrival_bound.leq_steps_T": "EXACT_HASH",
+    "prosa.implementation.refinements.arrival_bound.positive_horizon_T": "EXACT_HASH",
+    "prosa.implementation.refinements.arrival_bound.large_horizon_T": "EXACT_HASH",
+    "prosa.implementation.refinements.arrival_bound.no_inf_arrivals_T": "EXACT_HASH",
+    "prosa.implementation.refinements.arrival_bound.specified_bursts_T": "EXACT_HASH",
+    "prosa.implementation.refinements.arrival_bound.valid_extrapolated_arrival_curve_T": "EXACT_HASH",
+    "prosa.implementation.refinements.arrival_bound.ACPrefixT_to_ACPrefix": "EXACT_HASH",
+    "prosa.implementation.refinements.arrival_bound.RArrivalCurvePrefix": "EXACT_HASH",
+    "prosa.implementation.refinements.arrival_bound.ACPrefix_to_ACPrefixT": "EXACT_HASH",
+    "prosa.implementation.refinements.arrival_bound.task_abT_to_task_ab": "EXACT_HASH",
+    "prosa.implementation.refinements.arrival_bound.Rtask_ab": "EXACT_HASH",
+    "prosa.implementation.refinements.arrival_bound.task_ab_to_task_abT": "EXACT_HASH",
+    "prosa.implementation.refinements.arrival_bound.leq_stepsT_is_transitive": "EXACT_HASH",
+    "prosa.implementation.refinements.arrival_bound.ltn_stepsT_is_transitive": "EXACT_HASH",
+    "prosa.implementation.refinements.arrival_bound.refine_leq_steps": "EXACT_HASH",
+    "prosa.implementation.refinements.arrival_bound.refine_ltn_steps": "EXACT_HASH",
+    "prosa.implementation.refinements.arrival_bound.refine_ltn_steps_sorted": "EXACT_HASH",
+    "prosa.implementation.refinements.arrival_bound.refine_leq_steps_sorted": "EXACT_HASH",
+    "prosa.implementation.refinements.arrival_bound.refine_value_at": "EXACT_HASH",
+    "prosa.implementation.refinements.arrival_bound.refine_get_time_steps": "EXACT_HASH",
+    "prosa.implementation.refinements.arrival_bound.refine_arrival_curve_prefix": "EXACT_HASH",
+    "prosa.implementation.refinements.arrival_bound.refine_ArrivalPrefix": "EXACT_HASH",
+    "prosa.implementation.refinements.arrival_bound.eq_listN": "EXACT_MODULO_OWN_MODULE_QUALIFIER",
+    "prosa.implementation.refinements.arrival_bound.eq_NlistNN": "EXACT_MODULO_OWN_MODULE_QUALIFIER",
+    "prosa.implementation.refinements.arrival_bound.eq_taskab": "EXACT_MODULO_OWN_MODULE_QUALIFIER",
+    "prosa.implementation.refinements.arrival_bound.refine_task_ab_eq": "EXACT_MODULO_OWN_MODULE_QUALIFIER"
+  },
+  "statement_only_export_boundary": [
+    "Prosa.Implementation.Refinements.ArrivalBound.leq_stepsT_is_transitive",
+    "Prosa.Implementation.Refinements.ArrivalBound.ltn_stepsT_is_transitive",
+    "Prosa.Implementation.Refinements.ArrivalBound.refine_leq_steps",
+    "Prosa.Implementation.Refinements.ArrivalBound.refine_ltn_steps",
+    "Prosa.Implementation.Refinements.ArrivalBound.refine_ltn_steps_sorted",
+    "Prosa.Implementation.Refinements.ArrivalBound.refine_leq_steps_sorted",
+    "Prosa.Implementation.Refinements.ArrivalBound.refine_value_at",
+    "Prosa.Implementation.Refinements.ArrivalBound.refine_get_time_steps",
+    "Prosa.Implementation.Refinements.ArrivalBound.refine_arrival_curve_prefix",
+    "Prosa.Implementation.Refinements.ArrivalBound.refine_ArrivalPrefix",
+    "Prosa.Implementation.Refinements.ArrivalBound.refine_task_ab_eq"
+  ],
+  "input_relations": [
+    "unary numbers canonically; binary numbers (`N`, `positive`) by the constructor-preserving maps onto the Lean mirrors; lists, pairs and Booleans canonically; element types of generic statements by identity; operation-class instances by their single field; CoqEAL Type-valued relations by two-way maps of their inhabitants"
+  ],
+  "coverage_for_inner_binders": [
+    "unary numbers",
+    "binary numbers",
+    "lists",
+    "pairs",
+    "Booleans",
+    "types",
+    "relations",
+    "functions"
+  ],
+  "lean_representation_note": "Rocq `positive`/`N` and their Stdlib operations are Lean mirrors with the same constructors and recursions; CoqEAL's Type-valued relations are Type-valued; Rocq cumulativity Prop \u2264 Type is `PLift`; Type-valued instances and lemmas are Lean `def`s; a Boolean `if` is Lean `if` on a `Bool`; MathComp `last` is `seq_last`; `iota` is `List.range'`; `size` is `List.length`; `all p s` is `s.all p`; `d %| m` is `decide (d \u2223 m)`",
+  "export_size": {
+    "lines": 179452,
+    "soft_budget_flag": "OVER_100K_DIAGNOSED",
+    "diagnosis": "the file's definitions and statements with the accepted refinements and extrapolated-arrival-curve definitions they use, the accepted div/mod interface"
+  },
+  "file_dependencies": {
+    "implementation/definitions/arrival_bound.v": "implementation_arrival_bound_module_status.json",
+    "implementation/refinements/refinements.v": "implementation_refinements_refinements_module_status.json"
+  },
+  "production_file": "Prosa/Implementation/Refinements/ArrivalBound.lean",
+  "production_source_sha256": "c95057026e79b52170b129fc4dfe2ba16de4ed1cd30480236de5cf6e93d8c207",
+  "production_olean_sha256": "7439636170cfa4c3eabe9513c7dd863d179eb84a184267b342895270b6abfefe",
+  "export_config_sha256": "c9c015aa502465a686dd0a51e1edc2b2738ededfaa6e52e46a2e579d3f8b4727",
+  "export_sha256": "d49456b2a624921376e1fbdcc743b135cf5170ceb275606d44325002f9200c01",
+  "export_lines": 179452,
+  "export_bytes": 4111173,
+  "import_sha256": "1f00789362f71fc569094e9aa214709ef2a7b41d8c818514628d3a744a623a1a",
+  "source_vo_sha256": "01ee5d34686c54bda65f5e0590cb80f13114f464904bf597b4d8da418e566d8f",
+  "lean_axiom_summary_sha256": "96efc85efd3d804c7678b05d0cf0ee74db88031a0439dbca382c289c5384128f",
+  "rocq_assumption_summary_sha256": "73a67d566e56595422936fc0ed65a51ef46c1d0d5af21d0c6628cdec2d7f186f",
+  "assumption_config_sha256": "a6ef1db9b2359853c7d53fccc2e268cbe125ebb8dc19a2a8c0850a38e7643cac",
+  "stage_timing_seconds": {
+    "source_acquisition": {
+      "mode": "FRESH",
+      "seconds": 65
+    },
+    "lean_production": {
+      "mode": "FRESH",
+      "seconds": 100
+    },
+    "fixture:DivModComputationInterface": {
+      "mode": "CACHED",
+      "seconds": 0
+    },
+    "fixture:RefArrivalBoundComputationInterface": {
+      "mode": "FRESH",
+      "seconds": 70
+    },
+    "lean_type_audit": {
+      "mode": "FRESH",
+      "seconds": 76
+    },
+    "lean_build": {
+      "mode": "FRESH",
+      "seconds": 259
+    },
+    "export": {
+      "mode": "FRESH",
+      "seconds": 55
+    },
+    "rocq_import": {
+      "mode": "FRESH",
+      "seconds": 49
+    },
+    "certificate_compile": {
+      "mode": "COMPILED=6;REUSED=0",
+      "seconds": 14
+    },
+    "imported_type_audit": {
+      "mode": "FRESH",
+      "seconds": 0
+    },
+    "lean_axiom_audit": {
+      "mode": "FRESH",
+      "seconds": 0
+    },
+    "assumption_audit": {
+      "mode": "FRESH",
+      "seconds": 0
+    }
+  },
+  "certificates": {
+    "RabBase": {
+      "source_sha256": "08323542461dfbbb724913978bc0a5ef48eb9cb194dedd677101648e3051e1a0",
+      "vo_sha256": "47af0dea5edf6af02aee973b38b54b0763270209bb2f8ee3e958abd0ee446299"
+    },
+    "RefArrivalBoundCorrespondence": {
+      "source_sha256": "70a6de675c67a52d8519674786f8ba73711ed2bac28b0bd4428aa2113dc48ed1",
+      "vo_sha256": "6bbe104bd2dd1852604b07290f57fd9a855afbb4dca34f1482c0607b19222dc0"
+    },
+    "RefArrivalBoundAssumptionAudit": {
+      "source_sha256": "0613ef3b666a8826f666522e9edca58b88943af9c5058a1fbb9ce452680ed1ab",
+      "vo_sha256": "2ceea89217729d56b5f0015636ffa099b6de5cdbb499b8af1d31eedaa4d40565"
+    }
+  },
+  "certificate_checkpoints_sha256": "31c244b759cdf6f55bc99b0e1868d6dc6203bd3a95cecc587affd71251ec3227",
+  "lean_fixture_provenance_sha256": "e92a001daf4e52ff92df809db725922992fa3a9481b79df5d7470507fc72263d",
+  "declarations": [
+    {
+      "source_declaration": "prosa.implementation.refinements.arrival_bound.task_arrivals_bound_T",
+      "lean_declaration": "Prosa.Implementation.Refinements.ArrivalBound.task_arrivals_bound_T",
+      "semantic_status": "CERTIFIED",
+      "certificates": [
+        "task_arrivals_bound_T_source_total",
+        "task_arrivals_bound_T_target_total"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.implementation.refinements.arrival_bound.taskab_eqdef_T",
+      "lean_declaration": "Prosa.Implementation.Refinements.ArrivalBound.taskab_eqdef_T",
+      "semantic_status": "CERTIFIED",
+      "certificates": [
+        "taskab_eqdef_T_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.implementation.refinements.arrival_bound.horizon_of_T",
+      "lean_declaration": "Prosa.Implementation.Refinements.ArrivalBound.horizon_of_T",
+      "semantic_status": "CERTIFIED",
+      "certificates": [
+        "horizon_of_T_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.implementation.refinements.arrival_bound.steps_of_T",
+      "lean_declaration": "Prosa.Implementation.Refinements.ArrivalBound.steps_of_T",
+      "semantic_status": "CERTIFIED",
+      "certificates": [
+        "steps_of_T_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.implementation.refinements.arrival_bound.time_steps_of_T",
+      "lean_declaration": "Prosa.Implementation.Refinements.ArrivalBound.time_steps_of_T",
+      "semantic_status": "CERTIFIED",
+      "certificates": [
+        "time_steps_of_T_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.implementation.refinements.arrival_bound.step_at_T",
+      "lean_declaration": "Prosa.Implementation.Refinements.ArrivalBound.step_at_T",
+      "semantic_status": "CERTIFIED",
+      "certificates": [
+        "step_at_T_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.implementation.refinements.arrival_bound.value_at_T",
+      "lean_declaration": "Prosa.Implementation.Refinements.ArrivalBound.value_at_T",
+      "semantic_status": "CERTIFIED",
+      "certificates": [
+        "value_at_T_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.implementation.refinements.arrival_bound.extrapolated_arrival_curve_T",
+      "lean_declaration": "Prosa.Implementation.Refinements.ArrivalBound.extrapolated_arrival_curve_T",
+      "semantic_status": "CERTIFIED",
+      "certificates": [
+        "extrapolated_arrival_curve_T_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.implementation.refinements.arrival_bound.ltn_steps_T",
+      "lean_declaration": "Prosa.Implementation.Refinements.ArrivalBound.ltn_steps_T",
+      "semantic_status": "CERTIFIED",
+      "certificates": [
+        "ltn_steps_T_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.implementation.refinements.arrival_bound.sorted_ltn_steps_T",
+      "lean_declaration": "Prosa.Implementation.Refinements.ArrivalBound.sorted_ltn_steps_T",
+      "semantic_status": "CERTIFIED",
+      "certificates": [
+        "sorted_ltn_steps_T_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.implementation.refinements.arrival_bound.leq_steps_T",
+      "lean_declaration": "Prosa.Implementation.Refinements.ArrivalBound.leq_steps_T",
+      "semantic_status": "CERTIFIED",
+      "certificates": [
+        "leq_steps_T_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.implementation.refinements.arrival_bound.positive_horizon_T",
+      "lean_declaration": "Prosa.Implementation.Refinements.ArrivalBound.positive_horizon_T",
+      "semantic_status": "CERTIFIED",
+      "certificates": [
+        "positive_horizon_T_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.implementation.refinements.arrival_bound.large_horizon_T",
+      "lean_declaration": "Prosa.Implementation.Refinements.ArrivalBound.large_horizon_T",
+      "semantic_status": "CERTIFIED",
+      "certificates": [
+        "large_horizon_T_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.implementation.refinements.arrival_bound.no_inf_arrivals_T",
+      "lean_declaration": "Prosa.Implementation.Refinements.ArrivalBound.no_inf_arrivals_T",
+      "semantic_status": "CERTIFIED",
+      "certificates": [
+        "no_inf_arrivals_T_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.implementation.refinements.arrival_bound.specified_bursts_T",
+      "lean_declaration": "Prosa.Implementation.Refinements.ArrivalBound.specified_bursts_T",
+      "semantic_status": "CERTIFIED",
+      "certificates": [
+        "specified_bursts_T_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.implementation.refinements.arrival_bound.valid_extrapolated_arrival_curve_T",
+      "lean_declaration": "Prosa.Implementation.Refinements.ArrivalBound.valid_extrapolated_arrival_curve_T",
+      "semantic_status": "CERTIFIED",
+      "certificates": [
+        "valid_extrapolated_arrival_curve_T_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.implementation.refinements.arrival_bound.ACPrefixT_to_ACPrefix",
+      "lean_declaration": "Prosa.Implementation.Refinements.ArrivalBound.ACPrefixT_to_ACPrefix",
+      "semantic_status": "CERTIFIED",
+      "certificates": [
+        "ACPrefixT_to_ACPrefix_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.implementation.refinements.arrival_bound.RArrivalCurvePrefix",
+      "lean_declaration": "Prosa.Implementation.Refinements.ArrivalBound.RArrivalCurvePrefix",
+      "semantic_status": "CERTIFIED",
+      "certificates": [
+        "RArrivalCurvePrefix_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.implementation.refinements.arrival_bound.ACPrefix_to_ACPrefixT",
+      "lean_declaration": "Prosa.Implementation.Refinements.ArrivalBound.ACPrefix_to_ACPrefixT",
+      "semantic_status": "CERTIFIED",
+      "certificates": [
+        "ACPrefix_to_ACPrefixT_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.implementation.refinements.arrival_bound.task_abT_to_task_ab",
+      "lean_declaration": "Prosa.Implementation.Refinements.ArrivalBound.task_abT_to_task_ab",
+      "semantic_status": "CERTIFIED",
+      "certificates": [
+        "task_abT_to_task_ab_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.implementation.refinements.arrival_bound.Rtask_ab",
+      "lean_declaration": "Prosa.Implementation.Refinements.ArrivalBound.Rtask_ab",
+      "semantic_status": "CERTIFIED",
+      "certificates": [
+        "Rtask_ab_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.implementation.refinements.arrival_bound.task_ab_to_task_abT",
+      "lean_declaration": "Prosa.Implementation.Refinements.ArrivalBound.task_ab_to_task_abT",
+      "semantic_status": "CERTIFIED",
+      "certificates": [
+        "task_ab_to_task_abT_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.implementation.refinements.arrival_bound.leq_stepsT_is_transitive",
+      "lean_declaration": "Prosa.Implementation.Refinements.ArrivalBound.leq_stepsT_is_transitive",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "leq_stepsT_is_transitive_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.implementation.refinements.arrival_bound.ltn_stepsT_is_transitive",
+      "lean_declaration": "Prosa.Implementation.Refinements.ArrivalBound.ltn_stepsT_is_transitive",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "ltn_stepsT_is_transitive_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.implementation.refinements.arrival_bound.refine_leq_steps",
+      "lean_declaration": "Prosa.Implementation.Refinements.ArrivalBound.refine_leq_steps",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "refine_leq_steps_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.implementation.refinements.arrival_bound.refine_ltn_steps",
+      "lean_declaration": "Prosa.Implementation.Refinements.ArrivalBound.refine_ltn_steps",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "refine_ltn_steps_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.implementation.refinements.arrival_bound.refine_ltn_steps_sorted",
+      "lean_declaration": "Prosa.Implementation.Refinements.ArrivalBound.refine_ltn_steps_sorted",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "refine_ltn_steps_sorted_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.implementation.refinements.arrival_bound.refine_leq_steps_sorted",
+      "lean_declaration": "Prosa.Implementation.Refinements.ArrivalBound.refine_leq_steps_sorted",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "refine_leq_steps_sorted_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.implementation.refinements.arrival_bound.refine_value_at",
+      "lean_declaration": "Prosa.Implementation.Refinements.ArrivalBound.refine_value_at",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "refine_value_at_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.implementation.refinements.arrival_bound.refine_get_time_steps",
+      "lean_declaration": "Prosa.Implementation.Refinements.ArrivalBound.refine_get_time_steps",
+      "semantic_status": "CERTIFIED",
+      "certificates": [
+        "refine_get_time_steps_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.implementation.refinements.arrival_bound.refine_arrival_curve_prefix",
+      "lean_declaration": "Prosa.Implementation.Refinements.ArrivalBound.refine_arrival_curve_prefix",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "refine_arrival_curve_prefix_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.implementation.refinements.arrival_bound.refine_ArrivalPrefix",
+      "lean_declaration": "Prosa.Implementation.Refinements.ArrivalBound.refine_ArrivalPrefix",
+      "semantic_status": "CERTIFIED",
+      "certificates": [
+        "refine_ArrivalPrefix_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.implementation.refinements.arrival_bound.eq_listN",
+      "lean_declaration": "Prosa.Implementation.Refinements.ArrivalBound.eq_listN",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "eq_listN_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.implementation.refinements.arrival_bound.eq_NlistNN",
+      "lean_declaration": "Prosa.Implementation.Refinements.ArrivalBound.eq_NlistNN",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "eq_NlistNN_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.implementation.refinements.arrival_bound.eq_taskab",
+      "lean_declaration": "Prosa.Implementation.Refinements.ArrivalBound.eq_taskab",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "eq_taskab_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    },
+    {
+      "source_declaration": "prosa.implementation.refinements.arrival_bound.refine_task_ab_eq",
+      "lean_declaration": "Prosa.Implementation.Refinements.ArrivalBound.refine_task_ab_eq",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "refine_task_ab_eq_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_V06_TRANSLATION"
+    }
+  ],
+  "acceptance": "ACCEPTED_V06_FILE"
+}

@@ -427,3 +427,13 @@ status 文件时间，须标明它只是机器记录时间，不能拿报告文�
 - [验证友好实现与证书边界](references/validation-friendly-patterns.md)
 - [证据索引](references/evidence-index.md)
 - [安装后 smoke cases](references/skill-smoke-tests.md)
+
+## 13. Classic 家族（ProsaBuddy classic，2026-10-01 用户批准）
+
+classic Prosa 的翻译与验证是**独立家族**，不改变上面任何 v0.6 规则：
+
+- **语义目标**：固定检出 `Validation/.work/prosabuddy-f692cb7`（commit `f692cb7…`，tree `24727b1…`）中 `prosaworkspace/classic/` 的文件，加上它导入的官方 v0.6 `util/`（与 v0.6 pin 字节相同）。逐声明 elaborated 类型证据在 ProsaBuddy 自己的工具链（opam switch `prosa-0.6`，Rocq 9.0.1 + MathComp 2.4）中生成：`Validation/scripts/classic_reference_evidence.py` → `Validation/planning/classic_dependency/`。
+- **计划、排序与进度**：`classic-prosa/casestudy-translation/README.md` 和 `file_order.csv`（49 个文件，sha256 绑定）。Lean 目标在 `Prosa/Classic/…`，命名空间 = 文件路径 + 源文件内的 `Module` 名。
+- **表示规则**：`Validation/planning/classic_policy/representation_addendum.md`（显式参数函数、`schedule Job num_cpus`、`Fin num_cpus`、seqset 任务集等）；未覆盖处沿用 v0.6 policy。
+- **验证**：同一 `translation_file_pipeline.py`，spec 写 `"family": "classic"`。该模式使用 classic 的 planning 输入、`planning/classic_pipeline` 状态链、`ACCEPTED_CLASSIC_FILE` / `ACCEPTED_CLASSIC_TRANSLATION` 标签、`imported/classic_translation_order` 发布目录，并只对 `classic/` 源文件加载已记录的兼容 prelude（`-ri Compat.Rocq90Compat`）。复用的 v0.6 artifact 仍按 v0.6 manifest 校验。classic 覆盖数不计入 v0.6 覆盖数，反之亦然。
+- 不得修改 ProsaBuddy 源码或其检出；Rocq 9.3 下若需证明补丁，按 v0.6 规矩作为已记录、只改证明的补丁并在报告中说明。

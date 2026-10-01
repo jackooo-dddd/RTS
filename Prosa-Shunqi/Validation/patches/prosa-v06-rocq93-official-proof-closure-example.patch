@@ -1,0 +1,29 @@
+Rocq 9.3 compatibility, files of the official proof closure of model/task/arrival/example.v that are not in the
+closure of paper_model.v: one added line `Set SsrOldRewriteGoalsOrder.` after the imports (Rocq 9.0 `rewrite`
+side-goal order; see prosa-v06-rocq93-official-proof-closure-common.patch). No proof script is changed.
+--- a/analysis/facts/behavior/deadlines.v
++++ b/analysis/facts/behavior/deadlines.v
+@@ -1,4 +1,5 @@
+ Require Export prosa.analysis.facts.behavior.completion.
++Set SsrOldRewriteGoalsOrder.
+ 
+ (** * Deadlines *)
+ 
+--- a/analysis/facts/job_index.v
++++ b/analysis/facts/job_index.v
+@@ -1,4 +1,5 @@
+ Require Export prosa.analysis.facts.model.task_arrivals.
++Set SsrOldRewriteGoalsOrder.
+ 
+ (** In this section, we prove some properties related to [job_index]. *)
+ Section JobIndexLemmas.
+--- a/analysis/facts/model/task_arrivals.v
++++ b/analysis/facts/model/task_arrivals.v
+@@ -1,6 +1,7 @@
+ Require Export prosa.model.task.arrivals.
+ Require Export prosa.util.all.
+ Require Export prosa.analysis.facts.behavior.arrivals.
++Set SsrOldRewriteGoalsOrder.
+ 
+ (** In this file we provide basic properties related to tasks on arrival sequences. *)
+ Section TaskArrivals.

@@ -1,0 +1,4 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedRtaIdealEdfFloatingNonpreemptive.
+
+Check ImportedRtaIdealEdfFloatingNonpreemptive.Prosa_Results_Rta_Ideal_Edf_FloatingNonpreemptive_uniprocessor_response_time_bound_edf_with_floating_nonpreemptive_regions.

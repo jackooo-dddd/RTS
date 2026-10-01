@@ -1,0 +1,12 @@
+import Prosa.Implementation.Refinements.ArrivalCurvePrefix
+set_option pp.fieldNotation false
+
+#check @Prosa.Implementation.Refinements.ArrivalCurvePrefix.has_valid_arrival_curve_prefix_tsk
+#check @Prosa.Implementation.Refinements.ArrivalCurvePrefix.steps_are_positive_if_first_step_is_positive
+#check @Prosa.Implementation.Refinements.ArrivalCurvePrefix.nonshifted_offsets_are_positive
+#check @Prosa.Implementation.Refinements.ArrivalCurvePrefix.time_steps_sorted
+
+#print axioms Prosa.Implementation.Refinements.ArrivalCurvePrefix.has_valid_arrival_curve_prefix_tsk
+#print axioms Prosa.Implementation.Refinements.ArrivalCurvePrefix.steps_are_positive_if_first_step_is_positive
+#print axioms Prosa.Implementation.Refinements.ArrivalCurvePrefix.nonshifted_offsets_are_positive
+#print axioms Prosa.Implementation.Refinements.ArrivalCurvePrefix.time_steps_sorted
