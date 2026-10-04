@@ -1,0 +1,52 @@
+# classic/model/schedule/global/transformation/construction.v: 6 declarations
+
+## Print Module
+
+Module construction := Struct Module ScheduleConstruction End
+
+Module ScheduleConstruction := Struct Definition update_schedule : forall (Job : eqtype.Equality.type) (num_cpus : nat), (schedule.Schedule.schedule Job num_cpus -> schedule.Schedule.schedule Job num_cpus) -> schedule.Schedule.schedule Job num_cpus -> time.Time.time -> schedule.Schedule.schedule Job num_cpus. Definition schedule_prefix : forall (Job : eqtype.Equality.type) (num_cpus : nat), (schedule.Schedule.schedule Job num_cpus -> schedule.Schedule.schedule Job num_cpus) -> schedule.Schedule.schedule Job num_cpus -> time.Time.time -> schedule.Schedule.schedule Job num_cpus. Definition build_schedule_from_prefixes : forall (Job : eqtype.Equality.type) (num_cpus : nat), (schedule.Schedule.schedule Job num_cpus -> schedule.Schedule.schedule Job num_cpus) -> schedule.Schedule.schedule Job num_cpus -> schedule.Schedule.processor num_cpus -> time.Time.time -> option (eqtype.Equality.sort Job). Parameter prefix_construction_same_prefix : forall (Job : eqtype.Equality.type) (num_cpus : nat) (build_schedule : schedule.Schedule.schedule Job num_cpus -> schedule.Schedule.schedule Job num_cpus) (base_sched : schedule.Schedule.schedule Job num_cpus) (t t_max : nat) (cpu : schedule.Schedule.processor num_cpus), is_true (ssrnat.leq t t_max) -> schedule_prefix num_cpus build_schedule base_sched t_max cpu t = build_schedule_from_prefixes num_cpus build_schedule base_sched cpu t. Parameter service_dependent_schedule_construction : forall (Job : eqtype.Equality.type) (num_cpus : nat) (build_schedule : schedule.Schedule.schedule Job num_cpus -> schedule.Schedule.schedule Job num_cpus) (base_sched : schedule.Schedule.schedule Job num_cpus), (forall (sched1 sched2 : schedule.Schedule.schedule Job num_cpus) (cpu : schedule.Schedule.processor num_cpus) (t : time.Time.time), (forall j : eqtype.Equality.sort Job, schedule.Schedule.service sched1 j t = schedule.Schedule.service sched2 j t) -> build_schedule sched1 cpu t = build_schedule sched2 cpu t) -> forall (cpu : schedule.Schedule.processor num_cpus) (t : time.Time.time), build_schedule_from_prefixes num_cpus build_schedule base_sched cpu t = build_schedule (build_schedule_from_prefixes num_cpus build_schedule base_sched) cpu t. Parameter prefix_dependent_schedule_construction : forall (Job : eqtype.Equality.type) (num_cpus : nat) (build_schedule : schedule.Schedule.schedule Job num_cpus -> schedule.Schedule.schedule Job num_cpus) (base_sched : schedule.Schedule.schedule Job num_cpus), (forall (sched1 sched2 : schedule.Schedule.schedule Job num_cpus) (cpu : schedule.Schedule.processor num_cpus) (t : nat), (forall (t0 : nat) (cpu0 : schedule.Schedule.processor num_cpus), is_true (ssrnat.leq (S t0) t) -> sched1 cpu0 t0 = sched2 cpu0 t0) -> build_schedule sched1 cpu t = build_schedule sched2 cpu t) -> forall (cpu : schedule.Schedule.processor num_cpus) (t : time.Time.time), build_schedule_from_prefixes num_cpus build_schedule base_sched cpu t = build_schedule (build_schedule_from_prefixes num_cpus build_schedule base_sched) cpu t. End
+
+## About
+
+ScheduleConstruction.update_schedule : forall {Job : eqtype.Equality.type} (num_cpus : nat), (schedule.Schedule.schedule Job num_cpus -> schedule.Schedule.schedule Job num_cpus) -> schedule.Schedule.schedule Job num_cpus -> time.Time.time -> schedule.Schedule.schedule Job num_cpus
+
+ScheduleConstruction.update_schedule is not universe polymorphic
+Arguments ScheduleConstruction.update_schedule {Job} num_cpus%nat_scope build_schedule%function_scope prev_sched t_next _ _
+ScheduleConstruction.update_schedule is transparent
+Expands to: Constant prosa.classic.model.schedule.global.transformation.construction.ScheduleConstruction.update_schedule
+Declared in library prosa.classic.model.schedule.global.transformation.construction, line 30, characters 15-30
+ScheduleConstruction.schedule_prefix : forall {Job : eqtype.Equality.type} (num_cpus : nat), (schedule.Schedule.schedule Job num_cpus -> schedule.Schedule.schedule Job num_cpus) -> schedule.Schedule.schedule Job num_cpus -> time.Time.time -> schedule.Schedule.schedule Job num_cpus
+
+ScheduleConstruction.schedule_prefix is not universe polymorphic
+Arguments ScheduleConstruction.schedule_prefix {Job} num_cpus%nat_scope build_schedule%function_scope base_sched t_max _ _
+ScheduleConstruction.schedule_prefix is transparent
+Expands to: Constant prosa.classic.model.schedule.global.transformation.construction.ScheduleConstruction.schedule_prefix
+Declared in library prosa.classic.model.schedule.global.transformation.construction, line 38, characters 4-210
+ScheduleConstruction.build_schedule_from_prefixes : forall {Job : eqtype.Equality.type} (num_cpus : nat), (schedule.Schedule.schedule Job num_cpus -> schedule.Schedule.schedule Job num_cpus) -> schedule.Schedule.schedule Job num_cpus -> schedule.Schedule.processor num_cpus -> time.Time.time -> option (eqtype.Equality.sort Job)
+
+ScheduleConstruction.build_schedule_from_prefixes is not universe polymorphic
+Arguments ScheduleConstruction.build_schedule_from_prefixes {Job} num_cpus%nat_scope build_schedule%function_scope base_sched cpu t
+ScheduleConstruction.build_schedule_from_prefixes is transparent
+Expands to: Constant prosa.classic.model.schedule.global.transformation.construction.ScheduleConstruction.build_schedule_from_prefixes
+Declared in library prosa.classic.model.schedule.global.transformation.construction, line 45, characters 15-43
+ScheduleConstruction.prefix_construction_same_prefix : forall {Job : eqtype.Equality.type} (num_cpus : nat) (build_schedule : schedule.Schedule.schedule Job num_cpus -> schedule.Schedule.schedule Job num_cpus) (base_sched : schedule.Schedule.schedule Job num_cpus) (t t_max : nat) (cpu : schedule.Schedule.processor num_cpus), is_true (ssrnat.leq t t_max) -> ScheduleConstruction.schedule_prefix num_cpus build_schedule base_sched t_max cpu t = ScheduleConstruction.build_schedule_from_prefixes num_cpus build_schedule base_sched cpu t
+
+ScheduleConstruction.prefix_construction_same_prefix is not universe polymorphic
+Arguments ScheduleConstruction.prefix_construction_same_prefix {Job} num_cpus%nat_scope build_schedule%function_scope base_sched (t t_max)%nat_scope cpu _
+ScheduleConstruction.prefix_construction_same_prefix is opaque
+Expands to: Constant prosa.classic.model.schedule.global.transformation.construction.ScheduleConstruction.prefix_construction_same_prefix
+Declared in library prosa.classic.model.schedule.global.transformation.construction, line 54, characters 12-43
+ScheduleConstruction.service_dependent_schedule_construction : forall {Job : eqtype.Equality.type} (num_cpus : nat) (build_schedule : schedule.Schedule.schedule Job num_cpus -> schedule.Schedule.schedule Job num_cpus) (base_sched : schedule.Schedule.schedule Job num_cpus), (forall (sched1 sched2 : schedule.Schedule.schedule Job num_cpus) (cpu : schedule.Schedule.processor num_cpus) (t : time.Time.time), (forall j : eqtype.Equality.sort Job, schedule.Schedule.service sched1 j t = schedule.Schedule.service sched2 j t) -> build_schedule sched1 cpu t = build_schedule sched2 cpu t) -> forall (cpu : schedule.Schedule.processor num_cpus) (t : time.Time.time), ScheduleConstruction.build_schedule_from_prefixes num_cpus build_schedule base_sched cpu t = build_schedule (ScheduleConstruction.build_schedule_from_prefixes num_cpus build_schedule base_sched) cpu t
+
+ScheduleConstruction.service_dependent_schedule_construction is not universe polymorphic
+Arguments ScheduleConstruction.service_dependent_schedule_construction {Job} num_cpus%nat_scope build_schedule%function_scope base_sched H_depends_only_on_service%function_scope cpu t
+ScheduleConstruction.service_dependent_schedule_construction is opaque
+Expands to: Constant prosa.classic.model.schedule.global.transformation.construction.ScheduleConstruction.service_dependent_schedule_construction
+Declared in library prosa.classic.model.schedule.global.transformation.construction, line 86, characters 14-53
+ScheduleConstruction.prefix_dependent_schedule_construction : forall {Job : eqtype.Equality.type} (num_cpus : nat) (build_schedule : schedule.Schedule.schedule Job num_cpus -> schedule.Schedule.schedule Job num_cpus) (base_sched : schedule.Schedule.schedule Job num_cpus), (forall (sched1 sched2 : schedule.Schedule.schedule Job num_cpus) (cpu : schedule.Schedule.processor num_cpus) (t : nat), (forall (t0 : nat) (cpu0 : schedule.Schedule.processor num_cpus), is_true (ssrnat.leq (S t0) t) -> sched1 cpu0 t0 = sched2 cpu0 t0) -> build_schedule sched1 cpu t = build_schedule sched2 cpu t) -> forall (cpu : schedule.Schedule.processor num_cpus) (t : time.Time.time), ScheduleConstruction.build_schedule_from_prefixes num_cpus build_schedule base_sched cpu t = build_schedule (ScheduleConstruction.build_schedule_from_prefixes num_cpus build_schedule base_sched) cpu t
+
+ScheduleConstruction.prefix_dependent_schedule_construction is not universe polymorphic
+Arguments ScheduleConstruction.prefix_dependent_schedule_construction {Job} num_cpus%nat_scope build_schedule%function_scope base_sched H_depends_only_on_prefix%function_scope cpu t
+ScheduleConstruction.prefix_dependent_schedule_construction is opaque
+Expands to: Constant prosa.classic.model.schedule.global.transformation.construction.ScheduleConstruction.prefix_dependent_schedule_construction
+Declared in library prosa.classic.model.schedule.global.transformation.construction, line 124, characters 14-52

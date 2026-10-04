@@ -1,0 +1,207 @@
+{
+  "rank": 32,
+  "layer": 11,
+  "tag": "CWORK",
+  "slug": "classic_model_schedule_global_workload",
+  "family": "classic",
+  "source": "classic/model/schedule/global/workload.v",
+  "dependencies": [
+    "classic/model/arrival/basic/job.v",
+    "classic/model/arrival/basic/task.v",
+    "classic/model/arrival/basic/task_arrival.v",
+    "classic/model/schedule/global/basic/schedule.v",
+    "classic/model/schedule/global/response_time.v",
+    "classic/model/schedule/global/schedulability.v",
+    "classic/util/all.v"
+  ],
+  "declaration_count": 4,
+  "base_run": null,
+  "base_checks": [],
+  "source_mode": "official_closure",
+  "official_closure": {
+    "files": "tooling/classic/closures/classic_model_schedule_global_workload.txt",
+    "patches": [
+      "patches/classic/rocq93-util-tactics.patch",
+      "patches/classic/rocq93-util-list.patch",
+      "patches/classic/rocq93-util-bigcat.patch",
+      "patches/classic/rocq93-util-div_mod.patch",
+      "patches/prosa-v06-rocq93-util-minmax.patch",
+      "patches/classic/rocq93-util-seqset.patch",
+      "patches/classic/rocq93-util-sum.patch"
+    ]
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/ClassicWorkloadTypeFingerprintProbe.v",
+  "production": "Prosa/Classic/Model/Schedule/Global/Workload.lean",
+  "production_olean": "Prosa/Classic/Model/Schedule/Global/Workload.olean",
+  "lean_namespace": "Prosa.Classic.Model.Schedule.Global.Workload",
+  "fixtures": [
+    "ClassicWorkloadInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/ClassicWorkloadLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/classic/classic_model_schedule_global_workload_export_config.json",
+  "export_name": "ClassicWorkload",
+  "cert_dir": "certificates/classic_model_schedule_global_workload",
+  "chain": [
+    "ClassicWorkloadBase",
+    "ClassicWorkloadList",
+    "ClassicWorkloadOrd",
+    "ClassicWorkloadCorrespondence"
+  ],
+  "audit_module": "ClassicWorkloadAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/ClassicWorkloadImportedTypeAudit.v",
+  "assumption_config": "certificates/classic_model_schedule_global_workload/classic_model_schedule_global_workload_assumption_config.json",
+  "lean_axiom_config": "certificates/classic_model_schedule_global_workload/classic_model_schedule_global_workload_lean_axiom_config.json",
+  "computational": [
+    "Workload.service_of_task",
+    "Workload.workload",
+    "Workload.workload_joblist"
+  ],
+  "principal": {},
+  "helpers": [
+    "cs_forall_ncpus_sched",
+    "cs_ico",
+    "cs_undup_rel",
+    "cs_bigcat_nat_rel",
+    "cw_sumSeq"
+  ],
+  "previous_status": "classic_model_schedule_global_schedulability_module_status.json",
+  "previous_files": 31,
+  "previous_decls": 355,
+  "input_relations": [
+    "job and task types: eqTypes identified, Lean DecidableEq instances = the eqTypes' decision procedures; job_task identified",
+    "natural numbers (time, num_cpus) by SubNatRel; processors 'I_n and Fin n by their values; schedules pointwise on related processors and times with option values by the constructor map; sequences elementwise (two-way totals)"
+  ],
+  "coverage_for_inner_binders": [],
+  "lean_representation_note": "as for the accepted classic schedule validation; `\\sum_(t1 <= t < t2) \\sum_(cpu < n) F` is `\u2211 t \u2208 Finset.Ico t1 t2, \u2211 cpu : Fin n, F`; a Boolean read as a number is `Bool.toNat`; `\\sum_(j <- s) F j` is the accepted v0.6 helper `sumSeq s F`",
+  "extra_pinned_sources": [],
+  "extra_artifacts": [],
+  "extra_olean_artifacts": [
+    {
+      "from": "analysis_abstract_abstract_rta_final/olean/Prosa/Util/Notation.olean",
+      "to": "Prosa/Util/Notation.olean",
+      "v06_file": "util/notation.v"
+    },
+    {
+      "from": "analysis_abstract_abstract_rta_final/olean/Prosa/Util/Rel.olean",
+      "to": "Prosa/Util/Rel.olean",
+      "v06_file": "util/rel.v"
+    },
+    {
+      "from": "analysis_abstract_abstract_rta_final/olean/Prosa/Util/Tactics.olean",
+      "to": "Prosa/Util/Tactics.olean",
+      "v06_file": "util/tactics.v"
+    },
+    {
+      "from": "analysis_abstract_abstract_rta_final/olean/Prosa/Util/Nat.olean",
+      "to": "Prosa/Util/Nat.olean",
+      "v06_file": "util/nat.v"
+    },
+    {
+      "from": "analysis_abstract_abstract_rta_final/olean/Prosa/Util/Sum.olean",
+      "to": "Prosa/Util/Sum.olean",
+      "v06_file": "util/sum.v"
+    },
+    {
+      "from": "classic_model_time_final/olean/Prosa/Classic/Model/Time.olean",
+      "to": "Prosa/Classic/Model/Time.olean",
+      "manifest": "classic_model_time",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_abstract_abstract_rta_final/olean/Prosa/Util/Seqset.olean",
+      "to": "Prosa/Util/Seqset.olean",
+      "v06_file": "util/seqset.v"
+    },
+    {
+      "from": "classic_model_arrival_basic_task_final/olean/Prosa/Classic/Model/Arrival/Basic/Task.olean",
+      "to": "Prosa/Classic/Model/Arrival/Basic/Task.olean",
+      "manifest": "classic_model_arrival_basic_task",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_abstract_abstract_rta_final/olean/Prosa/Util/Supremum.olean",
+      "to": "Prosa/Util/Supremum.olean",
+      "v06_file": "util/supremum.v"
+    },
+    {
+      "from": "analysis_abstract_abstract_rta_final/olean/Prosa/Util/List.olean",
+      "to": "Prosa/Util/List.olean",
+      "v06_file": "util/list.v"
+    },
+    {
+      "from": "analysis_abstract_abstract_rta_final/olean/Prosa/Util/Bigcat.olean",
+      "to": "Prosa/Util/Bigcat.olean",
+      "v06_file": "util/bigcat.v"
+    },
+    {
+      "from": "classic_model_arrival_basic_arrival_sequence_final/olean/Prosa/Classic/Model/Arrival/Basic/ArrivalSequence.olean",
+      "to": "Prosa/Classic/Model/Arrival/Basic/ArrivalSequence.olean",
+      "manifest": "classic_model_arrival_basic_arrival_sequence",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "classic_model_arrival_basic_job_final/olean/Prosa/Classic/Model/Arrival/Basic/Job.olean",
+      "to": "Prosa/Classic/Model/Arrival/Basic/Job.olean",
+      "manifest": "classic_model_arrival_basic_job",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "classic_model_arrival_basic_task_arrival_final/olean/Prosa/Classic/Model/Arrival/Basic/TaskArrival.olean",
+      "to": "Prosa/Classic/Model/Arrival/Basic/TaskArrival.olean",
+      "manifest": "classic_model_arrival_basic_task_arrival",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "classic_util_notation_final/olean/Prosa/Classic/Util/Notation.olean",
+      "to": "Prosa/Classic/Util/Notation.olean",
+      "manifest": "classic_util_notation",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_abstract_abstract_rta_final/olean/Prosa/Util/Bigop.olean",
+      "to": "Prosa/Util/Bigop.olean",
+      "v06_file": "util/bigop.v"
+    },
+    {
+      "from": "classic_util_bigord_final/olean/Prosa/Classic/Util/Bigord.olean",
+      "to": "Prosa/Classic/Util/Bigord.olean",
+      "manifest": "classic_util_bigord",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "classic_util_bigcat_final/olean/Prosa/Classic/Util/Bigcat.olean",
+      "to": "Prosa/Classic/Util/Bigcat.olean",
+      "manifest": "classic_util_bigcat",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "classic_util_ord_quantifier_final/olean/Prosa/Classic/Util/OrdQuantifier.olean",
+      "to": "Prosa/Classic/Util/OrdQuantifier.olean",
+      "manifest": "classic_util_ord_quantifier",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "classic_model_schedule_global_basic_schedule_final/olean/Prosa/Classic/Model/Schedule/Global/Basic/Schedule.olean",
+      "to": "Prosa/Classic/Model/Schedule/Global/Basic/Schedule.olean",
+      "manifest": "classic_model_schedule_global_basic_schedule",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "classic_model_schedule_global_response_time_final/olean/Prosa/Classic/Model/Schedule/Global/ResponseTime.olean",
+      "to": "Prosa/Classic/Model/Schedule/Global/ResponseTime.olean",
+      "manifest": "classic_model_schedule_global_response_time",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "classic_model_schedule_global_schedulability_final/olean/Prosa/Classic/Model/Schedule/Global/Schedulability.olean",
+      "to": "Prosa/Classic/Model/Schedule/Global/Schedulability.olean",
+      "manifest": "classic_model_schedule_global_schedulability",
+      "key": "production_olean_sha256"
+    }
+  ],
+  "export_diagnosis": "as for the accepted classic schedule export (service_at is a filtered Finset sum over Fin num_cpus, jobs_scheduled_between uses Mathlib List.dedup, validation-only interface theorems exported with their proof bodies); workload, service and service_during are exported through kernel-guarded rfl body projections, keeping Nat.instLocallyFiniteOrder and its Nat.Internal.Linear proofs out of the export.",
+  "own_qualified_in_type": [
+    "Workload.workload",
+    "Workload.workload_joblist"
+  ]
+}

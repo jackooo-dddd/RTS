@@ -1,0 +1,73 @@
+{
+  "rank": 25,
+  "layer": 9,
+  "slug": "classic_model_arrival_basic_task_arrival",
+  "tag": "CTASKARR",
+  "export_name": "ClassicTaskArrival",
+  "source": "classic/model/arrival/basic/task_arrival.v",
+  "production": "Prosa/Classic/Model/Arrival/Basic/TaskArrival.lean",
+  "fixtures": [
+    "ClassicTaskArrivalInterface"
+  ],
+  "export_module": "Validation.fixtures.translation_order.ClassicTaskArrivalInterface",
+  "interface_theorems": [
+    "Prosa.Validation.ClassicTaskArrivalInterface.bigCat_range'",
+    "Prosa.Validation.ClassicTaskArrivalInterface.mergeSort_isChain",
+    "Prosa.Validation.ClassicTaskArrivalInterface.mergeSort_filter_class"
+  ],
+  "computational": [
+    "TaskArrival.sporadic_task_model",
+    "TaskArrival.is_job_of_task",
+    "TaskArrival.arrivals_of_task_between",
+    "TaskArrival.arrivals_of_task_before",
+    "TaskArrival.num_arrivals_of_task"
+  ],
+  "chain": [
+    "ClassicTaskArrivalBase",
+    "ClassicTaskArrivalList",
+    "ClassicTaskArrivalCorrespondence"
+  ],
+  "base_run": null,
+  "base_checks": [],
+  "previous_status": "classic_model_arrival_basic_job_module_status.json",
+  "input_relations": [
+    "job and task types: eqTypes identified, Lean DecidableEq instances = the eqTypes' decision procedures; job_task identified",
+    "natural numbers (time) by SubNatRel; job/task parameters pointwise through SubNatRel; sequences elementwise; arrival sequences pointwise on related times (two-way totals)"
+  ],
+  "lean_representation_note": "`sort (fun j j' => job_arrival j <= job_arrival j') s` is the core `List.mergeSort s (fun j j' => decide (job_arrival j ≤ job_arrival j'))` (both stable sorts by the same total preorder); `nth elem s i` is `s.getD i elem`; `n.-1` is `n - 1`; `[seq j <- s | p j]` is `s.filter p`",
+  "probe_extra": [],
+  "helpers": [
+    "cta_sort_rel",
+    "cta_sorted_class_uniq",
+    "cta_bigcat_rel",
+    "cta_getD",
+    "cta_forall_arr",
+    "cta_forall_par"
+  ],
+  "prop_sprop_foundation": [
+    "PropSPropFoundation.interpret_strict"
+  ],
+  "importer_foundation": [
+    "ImportedClassicTaskArrival.Classical_choice",
+    "ImportedClassicTaskArrival.Quot_sound",
+    "ImportedClassicTaskArrival.propext",
+    "PrimInt63.eqb",
+    "PrimInt63.int",
+    "PrimInt63.land",
+    "PrimInt63.lsr"
+  ],
+  "rocq_sprop_uip": [
+    "ClassicTaskArrivalBase.I.HEq_inst1",
+    "ClassicTaskArrivalBase.I.True",
+    "ClassicTaskArrivalList.I.HEq_inst1",
+    "ClassicTaskArrivalList.I.True",
+    "CtaTrue",
+    "I.HEq",
+    "I.HEq_inst1",
+    "I.True",
+    "Lean.eq",
+    "Lean.eq_inst1",
+    "SubadditivityNatCorrespondence.SubNatTrue"
+  ],
+  "export_diagnosis": "142,033 lines: the statements mention the core List.mergeSort (well-founded recursion through MergeSort.Internal.splitInTwo, whose termination proofs are `omega` certificates, exporting the Lean.Omega closure and List/getElem lemmas), and the validation-only interface theorems are exported with their proof bodies (pairwise_mergeSort, mergeSort_perm, List.Pairwise/IsChain/filter lemmas). The stability fact is proved in the fixture by the recursion of mergeSort/merge instead of the core sublist_mergeSort, whose proof closure (merge_stable) contains Nat.Internal.Linear reflection proofs that the Rocq importer could not check in reasonable time (import stalled at Nat.Internal.Linear.ExprCnstr.denote_toNormPoly)."
+}

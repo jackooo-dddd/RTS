@@ -1,0 +1,94 @@
+{
+  "rank": 73,
+  "layer": 10,
+  "classic_scope": "full",
+  "slug": "classic_model_schedule_uni_susp_suspension_intervals",
+  "tag": "CUSI",
+  "export_name": "ClassicUniSuspensionIntervals",
+  "source": "classic/model/schedule/uni/susp/suspension_intervals.v",
+  "production": "Prosa/Classic/Model/Schedule/Uni/Susp/SuspensionIntervals.lean",
+  "fixtures": [
+    "ClassicUniSuspensionIntervalsInterface"
+  ],
+  "export_module": "Validation.fixtures.translation_order.ClassicUniSuspensionIntervalsInterface",
+  "interface_theorems": [
+    "Prosa.Validation.ClassicUniSuspensionIntervalsInterface.finRange_map_shift",
+    "Prosa.Validation.ClassicUniSuspensionIntervalsInterface.finRange_map_val",
+    "Prosa.Validation.ClassicUniSuspensionIntervalsInterface.finRange_any",
+    "Prosa.Validation.ClassicUniSuspensionIntervalsInterface.map_finRange_eq_map_range'",
+    "Prosa.Validation.ClassicUniSuspensionIntervalsInterface.maxFiltered_eq_foldr_cond",
+    "Prosa.Validation.ClassicUniSuspensionIntervalsInterface.maxFiltered_finRange"
+  ],
+  "computational": [
+    "SuspensionIntervals.suspension_duration",
+    "SuspensionIntervals.suspended_at",
+    "SuspensionIntervals.cumulative_suspension_during",
+    "SuspensionIntervals.cumulative_suspension",
+    "SuspensionIntervals.respects_self_suspensions"
+  ],
+  "chain": [
+    "ClassicUniSuspensionIntervalsBase",
+    "ClassicUniSuspensionIntervalsList",
+    "ClassicUniSuspensionIntervalsOrd",
+    "ClassicUniSuspensionIntervalsCorrespondence"
+  ],
+  "principal": {},
+  "helpers": [
+    "csi_forall_sched",
+    "csi_forall_par",
+    "csi_ico",
+    "csi_forall_susp"
+  ],
+  "base_run": null,
+  "base_checks": [],
+  "previous_status": "classic_model_schedule_uni_susp_last_execution_module_status.json",
+  "input_relations": [
+    "job type: eqType identified, Lean DecidableEq instance = the eqType's decision procedure",
+    "times by SubNatRel; job parameters pointwise through SubNatRel; suspension functions pointwise; schedules pointwise through the option map (two-way totals)"
+  ],
+  "lean_representation_note": "the Rocq module SuspensionIntervals is a namespace; `\\sum_(t1 <= t < t2) F t` is `\u2211 t \u2208 Finset.Ico t1 t2, F t` (kernel-guarded body projections); Boolean predicates in Prop positions use `= true`; `~ P` is `\u00ac P`",
+  "prop_sprop_foundation": [
+    "PropSPropFoundation.interpret_strict"
+  ],
+  "importer_foundation": [
+    "ImportedClassicUniSuspensionIntervals.Quot_sound",
+    "ImportedClassicUniSuspensionIntervals.propext",
+    "PrimInt63.eqb",
+    "PrimInt63.int",
+    "PrimInt63.land",
+    "PrimInt63.lsr"
+  ],
+  "rocq_sprop_uip": [
+    "ClassicUniSuspensionIntervalsBase.I.HEq_inst1",
+    "ClassicUniSuspensionIntervalsBase.I.True",
+    "ClassicUniSuspensionIntervalsOrd.I.HEq",
+    "ClassicUniSuspensionIntervalsOrd.I.HEq_inst1",
+    "ClassicUniSuspensionIntervalsOrd.I.True",
+    "I.HEq",
+    "I.HEq_inst1",
+    "I.True",
+    "Lean.eq",
+    "Lean.eq_inst1",
+    "SubadditivityNatCorrespondence.SubNatTrue"
+  ],
+  "normalization": {
+    "theorem_types": [],
+    "subexpression_heads": [
+      "Finset.sum"
+    ],
+    "definition_bodies": [],
+    "body_projections": [
+      "Prosa.Classic.Model.Schedule.Uni.Schedule.UniprocessorSchedule.service_during=Prosa.Validation.ClassicUniSuspensionIntervalsInterface.service_during_proj=Prosa.Validation.ClassicUniSuspensionIntervalsInterface.service_during_proj_guard",
+      "Prosa.Classic.Model.Schedule.Uni.Schedule.UniprocessorSchedule.total_service_during=Prosa.Validation.ClassicUniSuspensionIntervalsInterface.total_service_during_proj=Prosa.Validation.ClassicUniSuspensionIntervalsInterface.total_service_during_proj_guard",
+      "Prosa.Classic.Model.Suspension.Suspension.total_suspension=Prosa.Validation.ClassicUniSuspensionIntervalsInterface.total_suspension_proj=Prosa.Validation.ClassicUniSuspensionIntervalsInterface.total_suspension_proj_guard",
+      "Prosa.Classic.Model.Schedule.Uni.Susp.SuspensionIntervals.SuspensionIntervals.cumulative_suspension_during=Prosa.Validation.ClassicUniSuspensionIntervalsInterface.cumulative_suspension_during_proj=Prosa.Validation.ClassicUniSuspensionIntervalsInterface.cumulative_suspension_during_proj_guard"
+    ]
+  },
+  "export_env": {
+    "LEAN4EXPORT_PRESERVE_REDUCIBLE_THEOREM_TYPES": "1",
+    "LEAN4EXPORT_NAT_INDEX_ALIASES": "Prosa.Classic.Model.Time.Time.time"
+  },
+  "kernel_guard_artifacts": [
+    "Validation/fixtures/translation_order/ClassicUniSuspensionIntervalsInterface.lean"
+  ]
+}

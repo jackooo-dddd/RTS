@@ -1,0 +1,32 @@
+import Validation.fixtures.translation_order.ClassicAllcostsMainInterface
+set_option pp.fieldNotation false
+
+#check @Prosa.Classic.Analysis.Uni.Susp.Sustainability.Allcosts.MainClaim.SustainabilityAllCostsProperty.policy_is_weakly_sustainable
+#check @Prosa.Validation.ClassicAllcostsMainInterface.finRange_map_shift
+#check @Prosa.Validation.ClassicAllcostsMainInterface.finRange_map_val
+#check @Prosa.Validation.ClassicAllcostsMainInterface.finRange_any
+#check @Prosa.Validation.ClassicAllcostsMainInterface.map_finRange_eq_map_range'
+#check @Prosa.Validation.ClassicAllcostsMainInterface.maxFiltered_eq_foldr_cond
+#check @Prosa.Validation.ClassicAllcostsMainInterface.maxFiltered_finRange
+#check @Prosa.Validation.ClassicAllcostsMainInterface.bigCat_range'
+#check @Prosa.Validation.ClassicAllcostsMainInterface.production_schedule_prefix_zero
+#check @Prosa.Validation.ClassicAllcostsMainInterface.production_schedule_prefix_succ
+#check @Prosa.Validation.ClassicAllcostsMainInterface.xsu_find_param_nil
+#check @Prosa.Validation.ClassicAllcostsMainInterface.xsu_find_param_cons
+#check @Prosa.Validation.ClassicAllcostsMainInterface.xsu_get_param_same
+#check @Prosa.Validation.ClassicAllcostsMainInterface.xsu_get_param_other
+
+#print axioms Prosa.Classic.Analysis.Uni.Susp.Sustainability.Allcosts.MainClaim.SustainabilityAllCostsProperty.policy_is_weakly_sustainable
+#print axioms Prosa.Validation.ClassicAllcostsMainInterface.finRange_map_shift
+#print axioms Prosa.Validation.ClassicAllcostsMainInterface.finRange_map_val
+#print axioms Prosa.Validation.ClassicAllcostsMainInterface.finRange_any
+#print axioms Prosa.Validation.ClassicAllcostsMainInterface.map_finRange_eq_map_range'
+#print axioms Prosa.Validation.ClassicAllcostsMainInterface.maxFiltered_eq_foldr_cond
+#print axioms Prosa.Validation.ClassicAllcostsMainInterface.maxFiltered_finRange
+#print axioms Prosa.Validation.ClassicAllcostsMainInterface.bigCat_range'
+#print axioms Prosa.Validation.ClassicAllcostsMainInterface.production_schedule_prefix_zero
+#print axioms Prosa.Validation.ClassicAllcostsMainInterface.production_schedule_prefix_succ
+#print axioms Prosa.Validation.ClassicAllcostsMainInterface.xsu_find_param_nil
+#print axioms Prosa.Validation.ClassicAllcostsMainInterface.xsu_find_param_cons
+#print axioms Prosa.Validation.ClassicAllcostsMainInterface.xsu_get_param_same
+#print axioms Prosa.Validation.ClassicAllcostsMainInterface.xsu_get_param_other

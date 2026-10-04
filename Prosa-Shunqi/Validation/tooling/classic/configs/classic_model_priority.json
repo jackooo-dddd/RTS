@@ -1,0 +1,67 @@
+{
+  "rank": 26,
+  "layer": 9,
+  "slug": "classic_model_priority",
+  "tag": "CPRIO",
+  "export_name": "ClassicPriority",
+  "source": "classic/model/priority.v",
+  "production": "Prosa/Classic/Model/Priority.lean",
+  "fixtures": [],
+  "export_module": "Prosa.Classic.Model.Priority",
+  "interface_theorems": [],
+  "computational": [
+    "Priority.FP_policy",
+    "Priority.JLFP_policy",
+    "Priority.JLDP_policy",
+    "Priority.FP_to_JLFP",
+    "Priority.FP_to_JLDP",
+    "Priority.JLFP_to_JLDP",
+    "Priority.FP_is_reflexive",
+    "Priority.FP_is_irreflexive",
+    "Priority.FP_is_transitive",
+    "Priority.FP_is_total_over_task_set",
+    "Priority.FP_is_antisymmetric_over_task_set",
+    "Priority.JLFP_is_reflexive",
+    "Priority.JLFP_is_irreflexive",
+    "Priority.JLFP_is_transitive",
+    "Priority.JLFP_is_total",
+    "Priority.JLFP_respects_sequential_jobs",
+    "Priority.JLDP_is_reflexive",
+    "Priority.JLDP_is_irreflexive",
+    "Priority.JLDP_is_transitive",
+    "Priority.JLDP_is_total",
+    "Priority.RM",
+    "Priority.DM",
+    "Priority.EDF",
+    "Priority.job_relative_dealine",
+    "Priority.higher_priority_task",
+    "Priority.different_task"
+  ],
+  "chain": [
+    "ClassicPriorityBase",
+    "ClassicPriorityList",
+    "ClassicPriorityCorrespondence"
+  ],
+  "base_run": null,
+  "base_checks": [],
+  "previous_status": "classic_model_arrival_basic_task_arrival_module_status.json",
+  "input_relations": [
+    "job and task types: eqTypes identified, Lean DecidableEq instances = the eqTypes' decision procedures; job_task identified",
+    "natural numbers (time) by SubNatRel; job/task parameters pointwise through SubNatRel; Boolean relations (FP/JLFP policies) pointwise, JLDP policies pointwise on related times; sequences elementwise; arrival sequences pointwise on related times (two-way totals)"
+  ],
+  "lean_representation_note": "`rel T` is `T \u2192 T \u2192 Bool`; MathComp `reflexive`/`irreflexive`/`transitive` on Boolean relations are the LEAN_HELPERs `reflexiveB`/`irreflexiveB`/`transitiveB` (same binder order); Boolean tests are `decide` of the Nat orders / equalities; `x != y` is `!decide (x = y)`",
+  "probe_extra": [],
+  "prop_sprop_foundation": [
+    "PropSPropFoundation.interpret_strict"
+  ],
+  "importer_foundation": [],
+  "rocq_sprop_uip": [
+    "ClassicPriorityBase.I.HEq_inst1",
+    "ClassicPriorityBase.I.True",
+    "I.HEq_inst1",
+    "I.True",
+    "Lean.eq",
+    "Lean.eq_inst1",
+    "SubadditivityNatCorrespondence.SubNatTrue"
+  ]
+}

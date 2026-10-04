@@ -1,0 +1,42 @@
+import Validation.fixtures.translation_order.ClassicTasksetRtaInterface
+set_option pp.fieldNotation false
+
+#check @Prosa.Classic.Analysis.Uni.Susp.Dynamic.Jitter.TasksetRta.TaskSetRTA.valid_jobs_with_jitter
+#check @Prosa.Classic.Analysis.Uni.Susp.Dynamic.Jitter.TasksetRta.TaskSetRTA.valid_response_time_bound_of_tsk_i
+#check @Prosa.Validation.ClassicTasksetRtaInterface.finRange_map_shift
+#check @Prosa.Validation.ClassicTasksetRtaInterface.finRange_map_val
+#check @Prosa.Validation.ClassicTasksetRtaInterface.finRange_any
+#check @Prosa.Validation.ClassicTasksetRtaInterface.map_finRange_eq_map_range'
+#check @Prosa.Validation.ClassicTasksetRtaInterface.maxFiltered_eq_foldr_cond
+#check @Prosa.Validation.ClassicTasksetRtaInterface.maxFiltered_finRange
+#check @Prosa.Validation.ClassicTasksetRtaInterface.bigCat_range'
+#check @Prosa.Validation.ClassicTasksetRtaInterface.production_schedule_prefix_zero
+#check @Prosa.Validation.ClassicTasksetRtaInterface.production_schedule_prefix_succ
+#check @Prosa.Validation.ClassicTasksetRtaInterface.production_sumSeq_nil
+#check @Prosa.Validation.ClassicTasksetRtaInterface.production_sumSeq_cons
+#check @Prosa.Validation.ClassicTasksetRtaInterface.production_sumFiltered_nil
+#check @Prosa.Validation.ClassicTasksetRtaInterface.production_sumFiltered_cons_true
+#check @Prosa.Validation.ClassicTasksetRtaInterface.production_sumFiltered_cons_false
+#check @Prosa.Validation.ClassicTasksetRtaInterface.finRange_find?_map_val
+#check @Prosa.Validation.ClassicTasksetRtaInterface.finRange_all
+#check @Prosa.Validation.ClassicTasksetRtaInterface.default0_find?
+
+#print axioms Prosa.Classic.Analysis.Uni.Susp.Dynamic.Jitter.TasksetRta.TaskSetRTA.valid_jobs_with_jitter
+#print axioms Prosa.Classic.Analysis.Uni.Susp.Dynamic.Jitter.TasksetRta.TaskSetRTA.valid_response_time_bound_of_tsk_i
+#print axioms Prosa.Validation.ClassicTasksetRtaInterface.finRange_map_shift
+#print axioms Prosa.Validation.ClassicTasksetRtaInterface.finRange_map_val
+#print axioms Prosa.Validation.ClassicTasksetRtaInterface.finRange_any
+#print axioms Prosa.Validation.ClassicTasksetRtaInterface.map_finRange_eq_map_range'
+#print axioms Prosa.Validation.ClassicTasksetRtaInterface.maxFiltered_eq_foldr_cond
+#print axioms Prosa.Validation.ClassicTasksetRtaInterface.maxFiltered_finRange
+#print axioms Prosa.Validation.ClassicTasksetRtaInterface.bigCat_range'
+#print axioms Prosa.Validation.ClassicTasksetRtaInterface.production_schedule_prefix_zero
+#print axioms Prosa.Validation.ClassicTasksetRtaInterface.production_schedule_prefix_succ
+#print axioms Prosa.Validation.ClassicTasksetRtaInterface.production_sumSeq_nil
+#print axioms Prosa.Validation.ClassicTasksetRtaInterface.production_sumSeq_cons
+#print axioms Prosa.Validation.ClassicTasksetRtaInterface.production_sumFiltered_nil
+#print axioms Prosa.Validation.ClassicTasksetRtaInterface.production_sumFiltered_cons_true
+#print axioms Prosa.Validation.ClassicTasksetRtaInterface.production_sumFiltered_cons_false
+#print axioms Prosa.Validation.ClassicTasksetRtaInterface.finRange_find?_map_val
+#print axioms Prosa.Validation.ClassicTasksetRtaInterface.finRange_all
+#print axioms Prosa.Validation.ClassicTasksetRtaInterface.default0_find?

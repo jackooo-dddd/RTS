@@ -1,0 +1,108 @@
+{
+  "rank": 46,
+  "layer": 15,
+  "slug": "classic_analysis_apa_bertogna_fp_theory",
+  "tag": "CBFPA",
+  "export_name": "ClassicBertognaFpApa",
+  "source": "classic/analysis/apa/bertogna_fp_theory.v",
+  "production": "Prosa/Classic/Analysis/Apa/BertognaFpTheory.lean",
+  "fixtures": [
+    "ClassicBertognaFpApaInterface"
+  ],
+  "export_module": "Validation.fixtures.translation_order.ClassicBertognaFpApaInterface",
+  "interface_theorems": [
+    "Prosa.Validation.ClassicBertognaFpApaInterface.finRange_any",
+    "Prosa.Validation.ClassicBertognaFpApaInterface.bigCatFin_range'",
+    "Prosa.Validation.ClassicBertognaFpApaInterface.fin_sum_range'",
+    "Prosa.Validation.ClassicBertognaFpApaInterface.bigCat_range'",
+    "Prosa.Validation.ClassicBertognaFpApaInterface.service_at_sum",
+    "Prosa.Validation.ClassicBertognaFpApaInterface.dedup_nil",
+    "Prosa.Validation.ClassicBertognaFpApaInterface.dedup_cons_mem",
+    "Prosa.Validation.ClassicBertognaFpApaInterface.dedup_cons_not_mem",
+    "Prosa.Validation.ClassicBertognaFpApaInterface.length_eq_count",
+    "Prosa.Validation.ClassicBertognaFpApaInterface.card_filter_sum",
+    "Prosa.Validation.DivModInterface.production_div_floor_eq",
+    "Prosa.Validation.DivModInterface.production_div_ceil_eq",
+    "Prosa.Validation.DivModInterface.production_div_add_mod",
+    "Prosa.Validation.DivModInterface.production_mod_lt",
+    "Prosa.Validation.DivModInterface.production_div_zero",
+    "Prosa.Validation.DivModInterface.production_mod_zero",
+    "Prosa.Validation.DivModInterface.production_dvd_iff_mod_eq_zero"
+  ],
+  "computational": [],
+  "chain": [
+    "ClassicBertognaFpApaNatSub",
+    "ClassicBertognaFpApaOps",
+    "ClassicBertognaFpApaBase",
+    "ClassicBertognaFpApaList",
+    "ClassicBertognaFpApaList1",
+    "ClassicBertognaFpApaOrd",
+    "ClassicBertognaFpApaCorrespondence"
+  ],
+  "base_run": null,
+  "base_checks": [],
+  "previous_status": "classic_model_schedule_global_basic_interference_edf_module_status.json",
+  "input_relations": [
+    "job and task types: eqTypes identified, Lean DecidableEq instances = the eqTypes' decision procedures; job_task identified",
+    "natural numbers (time, num_cpus) by SubNatRel; processors 'I_n and Fin n by their values; schedules pointwise on related processors and times with option values by the constructor map; job and task parameters pointwise through SubNatRel; arrival sequences pointwise on related times; task sets by their underlying sequences; sequences of (task, time) pairs elementwise by the pair conversion; FP policies pointwise; affinities by their underlying sequences through the ordinal conversion, task affinities pointwise (two-way totals)"
+  ],
+  "lean_representation_note": "as for the accepted classic schedule, task, task_arrival, affinity, interference, platform, response_time, workload_bound and interference_bound_fp validations; Boolean tests in propositions are `= true`; the section-local `Let`s are unfolded",
+  "normalization": {
+    "theorem_types": [],
+    "subexpression_heads": [],
+    "definition_bodies": [],
+    "body_projections": [
+      "Prosa.Classic.Model.Schedule.Global.Basic.Schedule.Schedule.service=Prosa.Validation.ClassicBertognaFpApaInterface.service_proj=Prosa.Validation.ClassicBertognaFpApaInterface.service_proj_guard",
+      "Prosa.Classic.Model.Schedule.Global.Basic.Schedule.Schedule.service_during=Prosa.Validation.ClassicBertognaFpApaInterface.service_during_proj=Prosa.Validation.ClassicBertognaFpApaInterface.service_during_proj_guard",
+      "Prosa.Classic.Model.Schedule.Apa.Interference.Interference.total_interference=Prosa.Validation.ClassicBertognaFpApaInterface.total_interference_proj=Prosa.Validation.ClassicBertognaFpApaInterface.total_interference_proj_guard",
+      "Prosa.Classic.Model.Schedule.Apa.Interference.Interference.job_interference=Prosa.Validation.ClassicBertognaFpApaInterface.job_interference_proj=Prosa.Validation.ClassicBertognaFpApaInterface.job_interference_proj_guard",
+      "Prosa.Classic.Model.Schedule.Apa.Interference.Interference.task_interference=Prosa.Validation.ClassicBertognaFpApaInterface.task_interference_proj=Prosa.Validation.ClassicBertognaFpApaInterface.task_interference_proj_guard"
+    ]
+  },
+  "kernel_guard_artifacts": [
+    "Validation/fixtures/translation_order/ClassicBertognaFpApaInterface.lean"
+  ],
+  "own_qualified_in_type": [],
+  "dependency_qualified_in_type": [
+    "prosa.classic.analysis.apa.interference_bound_fp.InterferenceBoundFP.total_interference_bound_fp",
+    "prosa.classic.analysis.apa.workload_bound.WorkloadBound.W",
+    "prosa.classic.model.schedule.apa.interference.Interference.task_interference",
+    "prosa.classic.model.schedule.apa.interference.Interference.total_interference",
+    "prosa.classic.model.schedule.global.response_time.ResponseTime.is_response_time_bound_of_task"
+  ],
+  "helpers": [
+    "cs_forall_ncpus_sched",
+    "cs_ico",
+    "caf_forall",
+    "cai_forall_taff"
+  ],
+  "export_diagnosis": "as for the accepted classic schedule and APA interference exports (service_at is a filtered Finset sum over Fin num_cpus; validation-only interface theorems exported with their proof bodies); service/service_during and the interference definitions through kernel-guarded rfl body projections.",
+  "probe_extra": [],
+  "prop_sprop_foundation": [
+    "PropSPropFoundation.interpret_strict"
+  ],
+  "importer_foundation": [
+    "ImportedClassicBertognaFpApa.Classical_choice",
+    "ImportedClassicBertognaFpApa.Quot_sound",
+    "ImportedClassicBertognaFpApa.propext",
+    "PrimInt63.eqb",
+    "PrimInt63.int",
+    "PrimInt63.land",
+    "PrimInt63.lsr"
+  ],
+  "rocq_sprop_uip": [
+    "ClassicBertognaFpApaBase.I.HEq_inst1",
+    "ClassicBertognaFpApaBase.I.True",
+    "ClassicBertognaFpApaOrd.I.HEq",
+    "ClassicBertognaFpApaOrd.I.HEq_inst1",
+    "ClassicBertognaFpApaOrd.I.True",
+    "I.HEq",
+    "I.HEq_inst1",
+    "I.True",
+    "ImportedClassicBertognaFpApa.HEq_inst1",
+    "ImportedClassicBertognaFpApa.True",
+    "Lean.eq",
+    "Lean.eq_inst1",
+    "SubadditivityNatCorrespondence.SubNatTrue"
+  ]
+}

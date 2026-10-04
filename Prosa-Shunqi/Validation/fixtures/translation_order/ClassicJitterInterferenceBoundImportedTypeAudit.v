@@ -1,0 +1,4 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedClassicJitterInterferenceBound.
+
+Check ImportedClassicJitterInterferenceBound.Prosa_Classic_Analysis_Global_Jitter_InterferenceBound_InterferenceBoundJitter_interference_bound_generic.

@@ -6,8 +6,8 @@
 | sha256 | `8c8069433f2727dd357712b3a7963174d0a331058786d885147bc5c3a2ad5a29` |
 | Lean module | `Prosa/Classic/Util/DivMod.lean` (namespace `Prosa.Classic.Util.DivMod`) |
 | Tier / layer | S / 3 |
-| Status | **TRANSLATED**: compiles (Lean 4.33.1, pinned Mathlib), no `sorry`; `#print axioms` ⊆ {`propext`, `Quot.sound`, `Classical.choice`} |
-| Validation | pending Stage 0 (classic pipeline extension) |
+| Status | **ACCEPTED** (classic validation family; see the manifest) |
+| Validation | accepted |
 
 ## Declarations (17 source → Lean, same names)
 
@@ -45,3 +45,5 @@ Representation notes: `m %/ d` and `m %% d` are Lean's `/` and `%` on `Nat`
 ## History
 
 - 2026-10-01: translated; build and axiom check passed.
+- 2026-10-02: translated; build and axiom check passed.
+- 2026-10-02: accepted.

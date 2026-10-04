@@ -1,0 +1,68 @@
+@ResponseTimeAnalysisFP.Theorem3_07
+     : forall (sporadic_task : eqType)
+         (task_cost task_period
+          task_deadline : sporadic_task -> time.Time.time)
+         (Job : eqType)
+         (job_arrival job_cost job_deadline : Job -> time.Time.time)
+         (job_task : Job -> sporadic_task)
+         (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job),
+       (forall j : Job,
+        arrival_sequence.ArrivalSequence.arrives_in arr_seq j ->
+        Job.valid_sporadic_job task_cost task_deadline job_cost job_deadline
+          job_task j) ->
+       forall ts : SporadicTaskset.taskset_of sporadic_task,
+       SporadicTaskset.valid_sporadic_taskset task_cost task_period
+         task_deadline ts ->
+       (forall j : Job,
+        arrival_sequence.ArrivalSequence.arrives_in arr_seq j ->
+        job_task j \in ts) ->
+       forall (num_cpus : nat) (sched : Schedule.schedule Job num_cpus),
+       Schedule.sequential_jobs sched ->
+       Schedule.jobs_must_arrive_to_execute job_arrival sched ->
+       Schedule.completed_jobs_dont_execute job_cost sched ->
+       TaskArrival.sporadic_task_model task_period job_arrival job_task
+         arr_seq ->
+       Platform.work_conserving job_arrival job_cost arr_seq sched ->
+       0 < num_cpus ->
+       forall tsk : sporadic_task,
+       tsk \in ts ->
+       forall R : time.Time.time,
+       task_cost tsk <= R ->
+       arrival_sequence.ArrivalSequence.arrival_times_are_consistent
+         job_arrival arr_seq ->
+       arrival_sequence.ArrivalSequence.arrival_sequence_is_a_set arr_seq ->
+       SporadicTaskset.constrained_deadline_model task_deadline task_period
+         ts ->
+       Schedule.jobs_come_from_arrival_sequence sched arr_seq ->
+       forall j : Job,
+       arrival_sequence.ArrivalSequence.arrives_in arr_seq j ->
+       job_task j = tsk ->
+       (forall j0 : Job,
+        job_task j0 = tsk ->
+        arrival_sequence.ArrivalSequence.arrives_in arr_seq j0 ->
+        Interference.total_interference job_arrival job_cost sched j0
+          (job_arrival j0) (job_arrival j0 + R) <=
+        Interference.total_interference job_arrival job_cost sched j
+          (job_arrival j) (job_arrival j + R)) ->
+       (forall (j0 : Job) (a b : time.Time.time) (c : nat),
+        arrival_sequence.ArrivalSequence.arrives_in arr_seq j0 ->
+        job_task j0 = tsk ->
+        c <=
+        Interference.total_interference job_arrival job_cost sched j0 a b <->
+        num_cpus * c <=
+        \sum_(t <- ts | t != tsk)
+           PeanoNat.Nat.min
+             (Interference.task_interference job_arrival job_cost job_task
+                sched j0 t a b)
+             c) ->
+       \sum_(t <- ts | t != tsk)
+          PeanoNat.Nat.min
+            (Interference.task_interference job_arrival job_cost job_task
+               sched j t (job_arrival j) (job_arrival j + R))
+            (R - task_cost tsk + 1) <
+       num_cpus * (R - task_cost tsk + 1) ->
+       ResponseTime.is_response_time_bound_of_task job_arrival job_cost
+         job_task arr_seq sched tsk R
+with arguments constr at level 99, constr and "[ pairs ( _ , _ ) | _ <- _ ]"
+defined at level 0 with arguments constr at level 1, constr at level 1
+have incompatible prefixes. One of them will likely not work.

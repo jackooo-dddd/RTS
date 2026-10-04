@@ -1,0 +1,80 @@
+import Validation.fixtures.translation_order.ClassicObliviousReductionInterface
+set_option pp.fieldNotation false
+
+#check @Prosa.Classic.Analysis.Uni.Susp.Dynamic.Oblivious.Reduction.ReductionToBasicSchedule.inflated_job_cost
+#check @Prosa.Classic.Analysis.Uni.Susp.Dynamic.Oblivious.Reduction.ReductionToBasicSchedule.inflated_task_cost
+#check @Prosa.Classic.Analysis.Uni.Susp.Dynamic.Oblivious.Reduction.ReductionToBasicSchedule.suspension_oblivious_job_parameters_remain_valid
+#check @Prosa.Classic.Analysis.Uni.Susp.Dynamic.Oblivious.Reduction.ReductionToBasicSchedule.suspension_oblivious_task_parameters_remain_valid
+#check @Prosa.Classic.Analysis.Uni.Susp.Dynamic.Oblivious.Reduction.ReductionToBasicSchedule.pending_jobs
+#check @Prosa.Classic.Analysis.Uni.Susp.Dynamic.Oblivious.Reduction.ReductionToBasicSchedule.highest_priority_job
+#check @Prosa.Classic.Analysis.Uni.Susp.Dynamic.Oblivious.Reduction.ReductionToBasicSchedule.build_schedule
+#check @Prosa.Classic.Analysis.Uni.Susp.Dynamic.Oblivious.Reduction.ReductionToBasicSchedule.sched_new
+#check @Prosa.Classic.Analysis.Uni.Susp.Dynamic.Oblivious.Reduction.ReductionToBasicSchedule.sched_new_depends_only_on_service
+#check @Prosa.Classic.Analysis.Uni.Susp.Dynamic.Oblivious.Reduction.ReductionToBasicSchedule.sched_new_uses_construction_function
+#check @Prosa.Classic.Analysis.Uni.Susp.Dynamic.Oblivious.Reduction.ReductionToBasicSchedule.sched_newjobs_come_from_arrival_sequence
+#check @Prosa.Classic.Analysis.Uni.Susp.Dynamic.Oblivious.Reduction.ReductionToBasicSchedule.sched_new_jobs_must_arrive_to_execute
+#check @Prosa.Classic.Analysis.Uni.Susp.Dynamic.Oblivious.Reduction.ReductionToBasicSchedule.sched_new_completed_jobs_dont_execute
+#check @Prosa.Classic.Analysis.Uni.Susp.Dynamic.Oblivious.Reduction.ReductionToBasicSchedule.sched_new_work_conserving
+#check @Prosa.Classic.Analysis.Uni.Susp.Dynamic.Oblivious.Reduction.ReductionToBasicSchedule.sched_new_respects_policy
+#check @Prosa.Classic.Analysis.Uni.Susp.Dynamic.Oblivious.Reduction.ReductionToBasicSchedule.sched_new_breaks_ties
+#check @Prosa.Classic.Analysis.Uni.Susp.Dynamic.Oblivious.Reduction.ReductionToBasicSchedule.reduction_inductive_step_not_arrived
+#check @Prosa.Classic.Analysis.Uni.Susp.Dynamic.Oblivious.Reduction.ReductionToBasicSchedule.reduction_inductive_step_case1_completed
+#check @Prosa.Classic.Analysis.Uni.Susp.Dynamic.Oblivious.Reduction.ReductionToBasicSchedule.reduction_inductive_step_not_scheduled_in_new
+#check @Prosa.Classic.Analysis.Uni.Susp.Dynamic.Oblivious.Reduction.ReductionToBasicSchedule.reduction_inductive_step_scheduled_in_susp
+#check @Prosa.Classic.Analysis.Uni.Susp.Dynamic.Oblivious.Reduction.ReductionToBasicSchedule.reduction_inductive_step_j_is_backlogged
+#check @Prosa.Classic.Analysis.Uni.Susp.Dynamic.Oblivious.Reduction.ReductionToBasicSchedule.reduction_inductive_step_exists_hep_job
+#check @Prosa.Classic.Analysis.Uni.Susp.Dynamic.Oblivious.Reduction.ReductionToBasicSchedule.reduction_inductive_step_j_hp_completed_in_new
+#check @Prosa.Classic.Analysis.Uni.Susp.Dynamic.Oblivious.Reduction.ReductionToBasicSchedule.reduction_inductive_step_j_hp_completed_in_susp
+#check @Prosa.Classic.Analysis.Uni.Susp.Dynamic.Oblivious.Reduction.ReductionToBasicSchedule.reduction_inductive_step_contradiction
+#check @Prosa.Classic.Analysis.Uni.Susp.Dynamic.Oblivious.Reduction.ReductionToBasicSchedule.reduction_inductive_step_case2_pending
+#check @Prosa.Classic.Analysis.Uni.Susp.Dynamic.Oblivious.Reduction.ReductionToBasicSchedule.suspension_oblivious_preserves_service
+#check @Prosa.Classic.Analysis.Uni.Susp.Dynamic.Oblivious.Reduction.ReductionToBasicSchedule.suspension_oblivious_preserves_completion
+#check @Prosa.Classic.Analysis.Uni.Susp.Dynamic.Oblivious.Reduction.ReductionToBasicSchedule.suspension_oblivious_preserves_schedulability
+#check @Prosa.Validation.ClassicObliviousReductionInterface.finRange_map_shift
+#check @Prosa.Validation.ClassicObliviousReductionInterface.finRange_map_val
+#check @Prosa.Validation.ClassicObliviousReductionInterface.finRange_any
+#check @Prosa.Validation.ClassicObliviousReductionInterface.map_finRange_eq_map_range'
+#check @Prosa.Validation.ClassicObliviousReductionInterface.maxFiltered_eq_foldr_cond
+#check @Prosa.Validation.ClassicObliviousReductionInterface.maxFiltered_finRange
+#check @Prosa.Validation.ClassicObliviousReductionInterface.bigCat_range'
+#check @Prosa.Validation.ClassicObliviousReductionInterface.production_schedule_prefix_zero
+#check @Prosa.Validation.ClassicObliviousReductionInterface.production_schedule_prefix_succ
+
+#print axioms Prosa.Classic.Analysis.Uni.Susp.Dynamic.Oblivious.Reduction.ReductionToBasicSchedule.inflated_job_cost
+#print axioms Prosa.Classic.Analysis.Uni.Susp.Dynamic.Oblivious.Reduction.ReductionToBasicSchedule.inflated_task_cost
+#print axioms Prosa.Classic.Analysis.Uni.Susp.Dynamic.Oblivious.Reduction.ReductionToBasicSchedule.suspension_oblivious_job_parameters_remain_valid
+#print axioms Prosa.Classic.Analysis.Uni.Susp.Dynamic.Oblivious.Reduction.ReductionToBasicSchedule.suspension_oblivious_task_parameters_remain_valid
+#print axioms Prosa.Classic.Analysis.Uni.Susp.Dynamic.Oblivious.Reduction.ReductionToBasicSchedule.pending_jobs
+#print axioms Prosa.Classic.Analysis.Uni.Susp.Dynamic.Oblivious.Reduction.ReductionToBasicSchedule.highest_priority_job
+#print axioms Prosa.Classic.Analysis.Uni.Susp.Dynamic.Oblivious.Reduction.ReductionToBasicSchedule.build_schedule
+#print axioms Prosa.Classic.Analysis.Uni.Susp.Dynamic.Oblivious.Reduction.ReductionToBasicSchedule.sched_new
+#print axioms Prosa.Classic.Analysis.Uni.Susp.Dynamic.Oblivious.Reduction.ReductionToBasicSchedule.sched_new_depends_only_on_service
+#print axioms Prosa.Classic.Analysis.Uni.Susp.Dynamic.Oblivious.Reduction.ReductionToBasicSchedule.sched_new_uses_construction_function
+#print axioms Prosa.Classic.Analysis.Uni.Susp.Dynamic.Oblivious.Reduction.ReductionToBasicSchedule.sched_newjobs_come_from_arrival_sequence
+#print axioms Prosa.Classic.Analysis.Uni.Susp.Dynamic.Oblivious.Reduction.ReductionToBasicSchedule.sched_new_jobs_must_arrive_to_execute
+#print axioms Prosa.Classic.Analysis.Uni.Susp.Dynamic.Oblivious.Reduction.ReductionToBasicSchedule.sched_new_completed_jobs_dont_execute
+#print axioms Prosa.Classic.Analysis.Uni.Susp.Dynamic.Oblivious.Reduction.ReductionToBasicSchedule.sched_new_work_conserving
+#print axioms Prosa.Classic.Analysis.Uni.Susp.Dynamic.Oblivious.Reduction.ReductionToBasicSchedule.sched_new_respects_policy
+#print axioms Prosa.Classic.Analysis.Uni.Susp.Dynamic.Oblivious.Reduction.ReductionToBasicSchedule.sched_new_breaks_ties
+#print axioms Prosa.Classic.Analysis.Uni.Susp.Dynamic.Oblivious.Reduction.ReductionToBasicSchedule.reduction_inductive_step_not_arrived
+#print axioms Prosa.Classic.Analysis.Uni.Susp.Dynamic.Oblivious.Reduction.ReductionToBasicSchedule.reduction_inductive_step_case1_completed
+#print axioms Prosa.Classic.Analysis.Uni.Susp.Dynamic.Oblivious.Reduction.ReductionToBasicSchedule.reduction_inductive_step_not_scheduled_in_new
+#print axioms Prosa.Classic.Analysis.Uni.Susp.Dynamic.Oblivious.Reduction.ReductionToBasicSchedule.reduction_inductive_step_scheduled_in_susp
+#print axioms Prosa.Classic.Analysis.Uni.Susp.Dynamic.Oblivious.Reduction.ReductionToBasicSchedule.reduction_inductive_step_j_is_backlogged
+#print axioms Prosa.Classic.Analysis.Uni.Susp.Dynamic.Oblivious.Reduction.ReductionToBasicSchedule.reduction_inductive_step_exists_hep_job
+#print axioms Prosa.Classic.Analysis.Uni.Susp.Dynamic.Oblivious.Reduction.ReductionToBasicSchedule.reduction_inductive_step_j_hp_completed_in_new
+#print axioms Prosa.Classic.Analysis.Uni.Susp.Dynamic.Oblivious.Reduction.ReductionToBasicSchedule.reduction_inductive_step_j_hp_completed_in_susp
+#print axioms Prosa.Classic.Analysis.Uni.Susp.Dynamic.Oblivious.Reduction.ReductionToBasicSchedule.reduction_inductive_step_contradiction
+#print axioms Prosa.Classic.Analysis.Uni.Susp.Dynamic.Oblivious.Reduction.ReductionToBasicSchedule.reduction_inductive_step_case2_pending
+#print axioms Prosa.Classic.Analysis.Uni.Susp.Dynamic.Oblivious.Reduction.ReductionToBasicSchedule.suspension_oblivious_preserves_service
+#print axioms Prosa.Classic.Analysis.Uni.Susp.Dynamic.Oblivious.Reduction.ReductionToBasicSchedule.suspension_oblivious_preserves_completion
+#print axioms Prosa.Classic.Analysis.Uni.Susp.Dynamic.Oblivious.Reduction.ReductionToBasicSchedule.suspension_oblivious_preserves_schedulability
+#print axioms Prosa.Validation.ClassicObliviousReductionInterface.finRange_map_shift
+#print axioms Prosa.Validation.ClassicObliviousReductionInterface.finRange_map_val
+#print axioms Prosa.Validation.ClassicObliviousReductionInterface.finRange_any
+#print axioms Prosa.Validation.ClassicObliviousReductionInterface.map_finRange_eq_map_range'
+#print axioms Prosa.Validation.ClassicObliviousReductionInterface.maxFiltered_eq_foldr_cond
+#print axioms Prosa.Validation.ClassicObliviousReductionInterface.maxFiltered_finRange
+#print axioms Prosa.Validation.ClassicObliviousReductionInterface.bigCat_range'
+#print axioms Prosa.Validation.ClassicObliviousReductionInterface.production_schedule_prefix_zero
+#print axioms Prosa.Validation.ClassicObliviousReductionInterface.production_schedule_prefix_succ

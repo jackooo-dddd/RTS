@@ -1,0 +1,98 @@
+import Validation.fixtures.translation_order.ClassicImplApaScheduleInterface
+set_option pp.fieldNotation false
+
+#check @Prosa.Classic.Implementation.Apa.Schedule.ConcreteScheduler.pending_jobs
+#check @Prosa.Classic.Implementation.Apa.Schedule.ConcreteScheduler.sorted_pending_jobs
+#check @Prosa.Classic.Implementation.Apa.Schedule.ConcreteScheduler.should_be_scheduled
+#check @Prosa.Classic.Implementation.Apa.Schedule.ConcreteScheduler.update_available_cpu
+#check @Prosa.Classic.Implementation.Apa.Schedule.ConcreteScheduler.schedule_jobs_from_list
+#check @Prosa.Classic.Implementation.Apa.Schedule.ConcreteScheduler.apa_schedule
+#check @Prosa.Classic.Implementation.Apa.Schedule.ConcreteScheduler.scheduler
+#check @Prosa.Classic.Implementation.Apa.Schedule.ConcreteScheduler.scheduler_depends_only_on_prefix
+#check @Prosa.Classic.Implementation.Apa.Schedule.ConcreteScheduler.scheduler_uses_construction_function
+#check @Prosa.Classic.Implementation.Apa.Schedule.ConcreteScheduler.scheduler_uniq_cpus
+#check @Prosa.Classic.Implementation.Apa.Schedule.ConcreteScheduler.scheduler_job_in_mapping
+#check @Prosa.Classic.Implementation.Apa.Schedule.ConcreteScheduler.scheduler_mapping_respects_affinity
+#check @Prosa.Classic.Implementation.Apa.Schedule.ConcreteScheduler.scheduler_has_no_duplicate_jobs
+#check @Prosa.Classic.Implementation.Apa.Schedule.ConcreteScheduler.scheduler_scheduled_on
+#check @Prosa.Classic.Implementation.Apa.Schedule.ConcreteScheduler.scheduler_has_cpus
+#check @Prosa.Classic.Implementation.Apa.Schedule.ConcreteScheduler.scheduler_mapping_is_work_conserving
+#check @Prosa.Classic.Implementation.Apa.Schedule.ConcreteScheduler.scheduler_priority
+#check @Prosa.Classic.Implementation.Apa.Schedule.ConcreteScheduler.scheduler_jobs_come_from_arrival_sequence
+#check @Prosa.Classic.Implementation.Apa.Schedule.ConcreteScheduler.scheduler_jobs_must_arrive_to_execute
+#check @Prosa.Classic.Implementation.Apa.Schedule.ConcreteScheduler.scheduler_sequential_jobs
+#check @Prosa.Classic.Implementation.Apa.Schedule.ConcreteScheduler.scheduler_completed_jobs_dont_execute
+#check @Prosa.Classic.Implementation.Apa.Schedule.ConcreteScheduler.scheduler_apa_work_conserving
+#check @Prosa.Classic.Implementation.Apa.Schedule.ConcreteScheduler.scheduler_respects_affinity
+#check @Prosa.Classic.Implementation.Apa.Schedule.ConcreteScheduler.scheduler_respects_policy
+#check @Prosa.Validation.ClassicImplApaScheduleInterface.finRange_any
+#check @Prosa.Validation.ClassicImplApaScheduleInterface.bigCatFin_range'
+#check @Prosa.Validation.ClassicImplApaScheduleInterface.fin_sum_range'
+#check @Prosa.Validation.ClassicImplApaScheduleInterface.bigCat_range'
+#check @Prosa.Validation.ClassicImplApaScheduleInterface.count_filter_eq
+#check @Prosa.Validation.ClassicImplApaScheduleInterface.service_at_sum
+#check @Prosa.Validation.ClassicImplApaScheduleInterface.dedup_nil
+#check @Prosa.Validation.ClassicImplApaScheduleInterface.dedup_cons_mem
+#check @Prosa.Validation.ClassicImplApaScheduleInterface.dedup_cons_not_mem
+#check @Prosa.Validation.ClassicImplApaScheduleInterface.production_schedule_prefix_zero
+#check @Prosa.Validation.ClassicImplApaScheduleInterface.production_schedule_prefix_succ
+#check @Prosa.Validation.ClassicImplApaScheduleInterface.xms_merge_nil
+#check @Prosa.Validation.ClassicImplApaScheduleInterface.xms_merge_cons_nil
+#check @Prosa.Validation.ClassicImplApaScheduleInterface.xms_merge_cons_cons
+#check @Prosa.Validation.ClassicImplApaScheduleInterface.xms_push_nil
+#check @Prosa.Validation.ClassicImplApaScheduleInterface.xms_push_nil_cons
+#check @Prosa.Validation.ClassicImplApaScheduleInterface.xms_push_cons_cons
+#check @Prosa.Validation.ClassicImplApaScheduleInterface.xms_pop_nil
+#check @Prosa.Validation.ClassicImplApaScheduleInterface.xms_pop_cons
+#check @Prosa.Validation.ClassicImplApaScheduleInterface.xms_rec_nil
+#check @Prosa.Validation.ClassicImplApaScheduleInterface.xms_rec_one
+#check @Prosa.Validation.ClassicImplApaScheduleInterface.xms_rec_two
+#check @Prosa.Validation.ClassicImplApaScheduleInterface.xms_sort
+
+#print axioms Prosa.Classic.Implementation.Apa.Schedule.ConcreteScheduler.pending_jobs
+#print axioms Prosa.Classic.Implementation.Apa.Schedule.ConcreteScheduler.sorted_pending_jobs
+#print axioms Prosa.Classic.Implementation.Apa.Schedule.ConcreteScheduler.should_be_scheduled
+#print axioms Prosa.Classic.Implementation.Apa.Schedule.ConcreteScheduler.update_available_cpu
+#print axioms Prosa.Classic.Implementation.Apa.Schedule.ConcreteScheduler.schedule_jobs_from_list
+#print axioms Prosa.Classic.Implementation.Apa.Schedule.ConcreteScheduler.apa_schedule
+#print axioms Prosa.Classic.Implementation.Apa.Schedule.ConcreteScheduler.scheduler
+#print axioms Prosa.Classic.Implementation.Apa.Schedule.ConcreteScheduler.scheduler_depends_only_on_prefix
+#print axioms Prosa.Classic.Implementation.Apa.Schedule.ConcreteScheduler.scheduler_uses_construction_function
+#print axioms Prosa.Classic.Implementation.Apa.Schedule.ConcreteScheduler.scheduler_uniq_cpus
+#print axioms Prosa.Classic.Implementation.Apa.Schedule.ConcreteScheduler.scheduler_job_in_mapping
+#print axioms Prosa.Classic.Implementation.Apa.Schedule.ConcreteScheduler.scheduler_mapping_respects_affinity
+#print axioms Prosa.Classic.Implementation.Apa.Schedule.ConcreteScheduler.scheduler_has_no_duplicate_jobs
+#print axioms Prosa.Classic.Implementation.Apa.Schedule.ConcreteScheduler.scheduler_scheduled_on
+#print axioms Prosa.Classic.Implementation.Apa.Schedule.ConcreteScheduler.scheduler_has_cpus
+#print axioms Prosa.Classic.Implementation.Apa.Schedule.ConcreteScheduler.scheduler_mapping_is_work_conserving
+#print axioms Prosa.Classic.Implementation.Apa.Schedule.ConcreteScheduler.scheduler_priority
+#print axioms Prosa.Classic.Implementation.Apa.Schedule.ConcreteScheduler.scheduler_jobs_come_from_arrival_sequence
+#print axioms Prosa.Classic.Implementation.Apa.Schedule.ConcreteScheduler.scheduler_jobs_must_arrive_to_execute
+#print axioms Prosa.Classic.Implementation.Apa.Schedule.ConcreteScheduler.scheduler_sequential_jobs
+#print axioms Prosa.Classic.Implementation.Apa.Schedule.ConcreteScheduler.scheduler_completed_jobs_dont_execute
+#print axioms Prosa.Classic.Implementation.Apa.Schedule.ConcreteScheduler.scheduler_apa_work_conserving
+#print axioms Prosa.Classic.Implementation.Apa.Schedule.ConcreteScheduler.scheduler_respects_affinity
+#print axioms Prosa.Classic.Implementation.Apa.Schedule.ConcreteScheduler.scheduler_respects_policy
+#print axioms Prosa.Validation.ClassicImplApaScheduleInterface.finRange_any
+#print axioms Prosa.Validation.ClassicImplApaScheduleInterface.bigCatFin_range'
+#print axioms Prosa.Validation.ClassicImplApaScheduleInterface.fin_sum_range'
+#print axioms Prosa.Validation.ClassicImplApaScheduleInterface.bigCat_range'
+#print axioms Prosa.Validation.ClassicImplApaScheduleInterface.count_filter_eq
+#print axioms Prosa.Validation.ClassicImplApaScheduleInterface.service_at_sum
+#print axioms Prosa.Validation.ClassicImplApaScheduleInterface.dedup_nil
+#print axioms Prosa.Validation.ClassicImplApaScheduleInterface.dedup_cons_mem
+#print axioms Prosa.Validation.ClassicImplApaScheduleInterface.dedup_cons_not_mem
+#print axioms Prosa.Validation.ClassicImplApaScheduleInterface.production_schedule_prefix_zero
+#print axioms Prosa.Validation.ClassicImplApaScheduleInterface.production_schedule_prefix_succ
+#print axioms Prosa.Validation.ClassicImplApaScheduleInterface.xms_merge_nil
+#print axioms Prosa.Validation.ClassicImplApaScheduleInterface.xms_merge_cons_nil
+#print axioms Prosa.Validation.ClassicImplApaScheduleInterface.xms_merge_cons_cons
+#print axioms Prosa.Validation.ClassicImplApaScheduleInterface.xms_push_nil
+#print axioms Prosa.Validation.ClassicImplApaScheduleInterface.xms_push_nil_cons
+#print axioms Prosa.Validation.ClassicImplApaScheduleInterface.xms_push_cons_cons
+#print axioms Prosa.Validation.ClassicImplApaScheduleInterface.xms_pop_nil
+#print axioms Prosa.Validation.ClassicImplApaScheduleInterface.xms_pop_cons
+#print axioms Prosa.Validation.ClassicImplApaScheduleInterface.xms_rec_nil
+#print axioms Prosa.Validation.ClassicImplApaScheduleInterface.xms_rec_one
+#print axioms Prosa.Validation.ClassicImplApaScheduleInterface.xms_rec_two
+#print axioms Prosa.Validation.ClassicImplApaScheduleInterface.xms_sort

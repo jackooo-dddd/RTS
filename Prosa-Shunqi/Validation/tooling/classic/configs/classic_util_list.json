@@ -1,0 +1,68 @@
+{
+  "rank": 9,
+  "layer": 2,
+  "slug": "classic_util_list",
+  "tag": "CLIST",
+  "export_name": "ClassicList",
+  "source": "classic/util/list.v",
+  "production": "Prosa/Classic/Util/List.lean",
+  "fixtures": [],
+  "export_module": "Prosa.Classic.Util.List",
+  "interface_theorems": [],
+  "computational": [
+    "nth_or_none",
+    "set_nth_if_exists",
+    "replace_first",
+    "replace_first_const",
+    "set_pair_1nd",
+    "set_pair_2nd",
+    "pairs_to_function",
+    "total_over_list",
+    "antisymmetric_over_list"
+  ],
+  "chain": [
+    "ClassicListBase",
+    "ClassicListOps",
+    "ClassicListCorrespondence"
+  ],
+  "base_run": null,
+  "base_checks": [],
+  "previous_status": "classic_util_induction_module_status.json",
+  "previous_files": 8,
+  "previous_decls": 47,
+  "input_relations": [
+    "type parameters and elements identified; eqType T: Lean DecidableEq instance = the eqType's decision procedure",
+    "sequences, options and pairs structurally (two-way totals); natural numbers by SubNatRel; Booleans constructor-wise",
+    "functions and predicates pointwise on related arguments (two-way totals)"
+  ],
+  "lean_representation_note": "seq is List; size length; uniq Nodup; index idxOf; nth x0 l i is l.getD i x0; rcons s x is s ++ [x]; nseq replicate; pmap filterMap; unzip1/unzip2 map Prod.fst/Prod.snd; reflect is the LEAN_HELPER BoolReflect",
+  "helpers": [
+    "ClassicListOps.cl_mem_rel",
+    "ClassicListOps.cl_uniq_rel",
+    "ClassicListOps.cl_index",
+    "cc_in_rel",
+    "cc_maxn"
+  ],
+  "export_diagnosis": "102,556 lines: the 44 statements mention List.Nodup/Pairwise, List.idxOf/findIdx, List.getD, List.filterMap, List.zip/replicate/set and the LawfulBEq/DecidableEq-derived membership decision procedures (including the product instances), whose Init/Std dependency closure is exported; the accepted v0.6 Prosa.Util.List and Prosa.Util.Supremum modules are imported as dependencies. Statement-only targets; no proof body is exported.",
+  "prop_sprop_foundation": [
+    "PropSPropFoundation.interpret_strict"
+  ],
+  "importer_foundation": [
+    "ImportedClassicList.propext",
+    "PrimInt63.eqb",
+    "PrimInt63.int",
+    "PrimInt63.land",
+    "PrimInt63.lsr"
+  ],
+  "rocq_sprop_uip": [
+    "ClassicListBase.I.HEq_inst1",
+    "ClassicListBase.I.True",
+    "ClassicListOps.I.HEq_inst1",
+    "ClassicListOps.I.True",
+    "I.HEq_inst1",
+    "I.True",
+    "Lean.eq",
+    "Lean.eq_inst1",
+    "SubadditivityNatCorrespondence.SubNatTrue"
+  ]
+}

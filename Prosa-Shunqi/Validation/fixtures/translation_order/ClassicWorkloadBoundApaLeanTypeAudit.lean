@@ -1,0 +1,80 @@
+import Validation.fixtures.translation_order.ClassicWorkloadBoundApaInterface
+set_option pp.fieldNotation false
+
+#check @Prosa.Classic.Analysis.Apa.WorkloadBound.WorkloadBound.max_jobs
+#check @Prosa.Classic.Analysis.Apa.WorkloadBound.WorkloadBound.W
+#check @Prosa.Classic.Analysis.Apa.WorkloadBound.WorkloadBound.W_monotonic
+#check @Prosa.Classic.Analysis.Apa.WorkloadBound.WorkloadBound.workload_bound_simpl_by_sorting_scheduled_jobs
+#check @Prosa.Classic.Analysis.Apa.WorkloadBound.WorkloadBound.workload_bound_job_in_same_sequence
+#check @Prosa.Classic.Analysis.Apa.WorkloadBound.WorkloadBound.workload_bound_all_jobs_from_tsk
+#check @Prosa.Classic.Analysis.Apa.WorkloadBound.WorkloadBound.workload_bound_jobs_ordered_by_arrival
+#check @Prosa.Classic.Analysis.Apa.WorkloadBound.WorkloadBound.workload_bound_holds_for_at_most_n_k_jobs
+#check @Prosa.Classic.Analysis.Apa.WorkloadBound.WorkloadBound.workload_bound_j_fst_is_job_of_tsk
+#check @Prosa.Classic.Analysis.Apa.WorkloadBound.WorkloadBound.workload_bound_holds_for_a_single_job
+#check @Prosa.Classic.Analysis.Apa.WorkloadBound.WorkloadBound.workload_bound_j_lst_is_job_of_tsk
+#check @Prosa.Classic.Analysis.Apa.WorkloadBound.WorkloadBound.workload_bound_response_time_of_first_job_inside_interval
+#check @Prosa.Classic.Analysis.Apa.WorkloadBound.WorkloadBound.workload_bound_last_job_arrives_before_end_of_interval
+#check @Prosa.Classic.Analysis.Apa.WorkloadBound.WorkloadBound.workload_bound_service_of_first_and_last_jobs
+#check @Prosa.Classic.Analysis.Apa.WorkloadBound.WorkloadBound.workload_bound_simpl_expression_with_first_and_last
+#check @Prosa.Classic.Analysis.Apa.WorkloadBound.WorkloadBound.workload_bound_service_of_middle_jobs
+#check @Prosa.Classic.Analysis.Apa.WorkloadBound.WorkloadBound.workload_bound_many_periods_in_between
+#check @Prosa.Classic.Analysis.Apa.WorkloadBound.WorkloadBound.workload_bound_n_k_covers_middle_jobs
+#check @Prosa.Classic.Analysis.Apa.WorkloadBound.WorkloadBound.workload_bound_n_k_equals_num_mid_jobs
+#check @Prosa.Classic.Analysis.Apa.WorkloadBound.WorkloadBound.workload_bound_n_k_equals_num_mid_jobs_plus_1
+#check @Prosa.Classic.Analysis.Apa.WorkloadBound.WorkloadBound.workload_bounded_by_W
+#check @Prosa.Validation.ClassicWorkloadBoundApaInterface.finRange_any
+#check @Prosa.Validation.ClassicWorkloadBoundApaInterface.bigCatFin_range'
+#check @Prosa.Validation.ClassicWorkloadBoundApaInterface.fin_sum_range'
+#check @Prosa.Validation.ClassicWorkloadBoundApaInterface.bigCat_range'
+#check @Prosa.Validation.ClassicWorkloadBoundApaInterface.service_at_sum
+#check @Prosa.Validation.ClassicWorkloadBoundApaInterface.dedup_nil
+#check @Prosa.Validation.ClassicWorkloadBoundApaInterface.dedup_cons_mem
+#check @Prosa.Validation.ClassicWorkloadBoundApaInterface.dedup_cons_not_mem
+#check @Prosa.Validation.ClassicWorkloadBoundApaInterface.mergeSort_isChain
+#check @Prosa.Validation.ClassicWorkloadBoundApaInterface.mergeSort_filter_class
+#check @Prosa.Validation.DivModInterface.production_div_floor_eq
+#check @Prosa.Validation.DivModInterface.production_div_ceil_eq
+#check @Prosa.Validation.DivModInterface.production_div_add_mod
+#check @Prosa.Validation.DivModInterface.production_mod_lt
+#check @Prosa.Validation.DivModInterface.production_div_zero
+#check @Prosa.Validation.DivModInterface.production_mod_zero
+#check @Prosa.Validation.DivModInterface.production_dvd_iff_mod_eq_zero
+
+#print axioms Prosa.Classic.Analysis.Apa.WorkloadBound.WorkloadBound.max_jobs
+#print axioms Prosa.Classic.Analysis.Apa.WorkloadBound.WorkloadBound.W
+#print axioms Prosa.Classic.Analysis.Apa.WorkloadBound.WorkloadBound.W_monotonic
+#print axioms Prosa.Classic.Analysis.Apa.WorkloadBound.WorkloadBound.workload_bound_simpl_by_sorting_scheduled_jobs
+#print axioms Prosa.Classic.Analysis.Apa.WorkloadBound.WorkloadBound.workload_bound_job_in_same_sequence
+#print axioms Prosa.Classic.Analysis.Apa.WorkloadBound.WorkloadBound.workload_bound_all_jobs_from_tsk
+#print axioms Prosa.Classic.Analysis.Apa.WorkloadBound.WorkloadBound.workload_bound_jobs_ordered_by_arrival
+#print axioms Prosa.Classic.Analysis.Apa.WorkloadBound.WorkloadBound.workload_bound_holds_for_at_most_n_k_jobs
+#print axioms Prosa.Classic.Analysis.Apa.WorkloadBound.WorkloadBound.workload_bound_j_fst_is_job_of_tsk
+#print axioms Prosa.Classic.Analysis.Apa.WorkloadBound.WorkloadBound.workload_bound_holds_for_a_single_job
+#print axioms Prosa.Classic.Analysis.Apa.WorkloadBound.WorkloadBound.workload_bound_j_lst_is_job_of_tsk
+#print axioms Prosa.Classic.Analysis.Apa.WorkloadBound.WorkloadBound.workload_bound_response_time_of_first_job_inside_interval
+#print axioms Prosa.Classic.Analysis.Apa.WorkloadBound.WorkloadBound.workload_bound_last_job_arrives_before_end_of_interval
+#print axioms Prosa.Classic.Analysis.Apa.WorkloadBound.WorkloadBound.workload_bound_service_of_first_and_last_jobs
+#print axioms Prosa.Classic.Analysis.Apa.WorkloadBound.WorkloadBound.workload_bound_simpl_expression_with_first_and_last
+#print axioms Prosa.Classic.Analysis.Apa.WorkloadBound.WorkloadBound.workload_bound_service_of_middle_jobs
+#print axioms Prosa.Classic.Analysis.Apa.WorkloadBound.WorkloadBound.workload_bound_many_periods_in_between
+#print axioms Prosa.Classic.Analysis.Apa.WorkloadBound.WorkloadBound.workload_bound_n_k_covers_middle_jobs
+#print axioms Prosa.Classic.Analysis.Apa.WorkloadBound.WorkloadBound.workload_bound_n_k_equals_num_mid_jobs
+#print axioms Prosa.Classic.Analysis.Apa.WorkloadBound.WorkloadBound.workload_bound_n_k_equals_num_mid_jobs_plus_1
+#print axioms Prosa.Classic.Analysis.Apa.WorkloadBound.WorkloadBound.workload_bounded_by_W
+#print axioms Prosa.Validation.ClassicWorkloadBoundApaInterface.finRange_any
+#print axioms Prosa.Validation.ClassicWorkloadBoundApaInterface.bigCatFin_range'
+#print axioms Prosa.Validation.ClassicWorkloadBoundApaInterface.fin_sum_range'
+#print axioms Prosa.Validation.ClassicWorkloadBoundApaInterface.bigCat_range'
+#print axioms Prosa.Validation.ClassicWorkloadBoundApaInterface.service_at_sum
+#print axioms Prosa.Validation.ClassicWorkloadBoundApaInterface.dedup_nil
+#print axioms Prosa.Validation.ClassicWorkloadBoundApaInterface.dedup_cons_mem
+#print axioms Prosa.Validation.ClassicWorkloadBoundApaInterface.dedup_cons_not_mem
+#print axioms Prosa.Validation.ClassicWorkloadBoundApaInterface.mergeSort_isChain
+#print axioms Prosa.Validation.ClassicWorkloadBoundApaInterface.mergeSort_filter_class
+#print axioms Prosa.Validation.DivModInterface.production_div_floor_eq
+#print axioms Prosa.Validation.DivModInterface.production_div_ceil_eq
+#print axioms Prosa.Validation.DivModInterface.production_div_add_mod
+#print axioms Prosa.Validation.DivModInterface.production_mod_lt
+#print axioms Prosa.Validation.DivModInterface.production_div_zero
+#print axioms Prosa.Validation.DivModInterface.production_mod_zero
+#print axioms Prosa.Validation.DivModInterface.production_dvd_iff_mod_eq_zero

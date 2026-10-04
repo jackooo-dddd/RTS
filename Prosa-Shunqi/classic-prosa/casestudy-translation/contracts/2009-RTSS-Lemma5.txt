@@ -1,0 +1,990 @@
+@ResponseTimeAnalysisFP.max_jobs
+     : forall sporadic_task : eqType,
+       (sporadic_task -> time.Time.time) ->
+       (sporadic_task -> time.Time.time) ->
+       sporadic_task -> time.Time.time -> nat
+ResponseTimeAnalysisFP.max_jobs =
+fun (sporadic_task : eqType)
+  (task_cost task_period : sporadic_task -> time.Time.time)
+  (tsk : sporadic_task) (delta : time.Time.time) =>
+div_floor (delta - task_cost tsk) (task_period tsk)
+     : forall {sporadic_task : eqType},
+       (sporadic_task -> time.Time.time) ->
+       (sporadic_task -> time.Time.time) ->
+       sporadic_task -> time.Time.time -> nat
+
+Arguments ResponseTimeAnalysisFP.max_jobs {sporadic_task}
+  (task_cost task_period)%function_scope tsk delta
+@ResponseTimeAnalysisFP.W
+     : forall sporadic_task : eqType,
+       (sporadic_task -> time.Time.time) ->
+       (sporadic_task -> time.Time.time) ->
+       sporadic_task -> time.Time.time -> time.Time.time -> nat
+ResponseTimeAnalysisFP.W =
+fun (sporadic_task : eqType)
+  (task_cost task_period : sporadic_task -> time.Time.time)
+  (tsk : sporadic_task) (R_tsk delta : time.Time.time) =>
+let e_k := task_cost tsk in
+let p_k := task_period tsk in
+minn (e_k - 1)
+  (delta + R_tsk - e_k -
+   ResponseTimeAnalysisFP.max_jobs task_cost task_period tsk delta * p_k -
+   p_k) +
+ResponseTimeAnalysisFP.max_jobs task_cost task_period tsk delta * e_k + e_k
+     : forall {sporadic_task : eqType},
+       (sporadic_task -> time.Time.time) ->
+       (sporadic_task -> time.Time.time) ->
+       sporadic_task -> time.Time.time -> time.Time.time -> nat
+
+Arguments ResponseTimeAnalysisFP.W {sporadic_task}
+  (task_cost task_period)%function_scope tsk R_tsk 
+  delta
+@ResponseTimeAnalysisFP.W_NC
+     : forall sporadic_task : eqType,
+       (sporadic_task -> time.Time.time) ->
+       (sporadic_task -> time.Time.time) ->
+       sporadic_task -> time.Time.time -> nat
+ResponseTimeAnalysisFP.W_NC =
+fun (sporadic_task : eqType)
+  (task_cost task_period : sporadic_task -> time.Time.time)
+  (tsk : sporadic_task) (delta : time.Time.time) =>
+let e_i := task_cost tsk in
+let p_i := task_period tsk in
+div_floor delta p_i * e_i + minn e_i (delta %% p_i)
+     : forall {sporadic_task : eqType},
+       (sporadic_task -> time.Time.time) ->
+       (sporadic_task -> time.Time.time) ->
+       sporadic_task -> time.Time.time -> nat
+
+Arguments ResponseTimeAnalysisFP.W_NC {sporadic_task}
+  (task_cost task_period)%function_scope tsk delta
+@ResponseTimeAnalysisFP.interference_bound_arbitrary_ci
+     : forall sporadic_task : eqType,
+       (sporadic_task -> time.Time.time) ->
+       (sporadic_task -> time.Time.time) ->
+       sporadic_task ->
+       time.Time.time -> sporadic_task * time.Time.time -> nat -> nat
+ResponseTimeAnalysisFP.interference_bound_arbitrary_ci =
+fun (sporadic_task : eqType)
+  (task_cost task_period : sporadic_task -> time.Time.time)
+  (tsk : sporadic_task) =>
+let task_with_response_time := (sporadic_task * time.Time.time)%type in
+fun (delta : time.Time.time) (tsk_R : task_with_response_time) =>
+let tsk_other := tsk_R.1 in
+let R_other := tsk_R.2 in
+fun h : nat =>
+minn (ResponseTimeAnalysisFP.W task_cost task_period tsk_other R_other delta)
+  (delta - h * task_cost tsk + 1)
+     : forall {sporadic_task : eqType},
+       (sporadic_task -> time.Time.time) ->
+       (sporadic_task -> time.Time.time) ->
+       sporadic_task ->
+       time.Time.time -> sporadic_task * time.Time.time -> nat -> nat
+
+Arguments ResponseTimeAnalysisFP.interference_bound_arbitrary_ci
+  {sporadic_task} (task_cost task_period)%function_scope 
+  tsk delta tsk_R h%nat_scope
+@ResponseTimeAnalysisFP.interference_bound_arbitrary_nc
+     : forall sporadic_task : eqType,
+       (sporadic_task -> time.Time.time) ->
+       (sporadic_task -> time.Time.time) ->
+       sporadic_task ->
+       time.Time.time -> sporadic_task * time.Time.time -> nat -> nat
+ResponseTimeAnalysisFP.interference_bound_arbitrary_nc =
+fun (sporadic_task : eqType)
+  (task_cost task_period : sporadic_task -> time.Time.time)
+  (tsk : sporadic_task) =>
+let task_with_response_time := (sporadic_task * time.Time.time)%type in
+fun (delta : time.Time.time) (tsk_R : task_with_response_time) =>
+let tsk_other := tsk_R.1 in
+fun h : nat =>
+minn (ResponseTimeAnalysisFP.W_NC task_cost task_period tsk_other delta)
+  (delta - h * task_cost tsk + 1)
+     : forall {sporadic_task : eqType},
+       (sporadic_task -> time.Time.time) ->
+       (sporadic_task -> time.Time.time) ->
+       sporadic_task ->
+       time.Time.time -> sporadic_task * time.Time.time -> nat -> nat
+
+Arguments ResponseTimeAnalysisFP.interference_bound_arbitrary_nc
+  {sporadic_task} (task_cost task_period)%function_scope 
+  tsk delta tsk_R h%nat_scope
+@ResponseTimeAnalysisFP.interference_bound_delta
+     : forall sporadic_task : eqType,
+       (sporadic_task -> time.Time.time) ->
+       (sporadic_task -> time.Time.time) ->
+       sporadic_task ->
+       time.Time.time -> sporadic_task * time.Time.time -> nat -> nat
+ResponseTimeAnalysisFP.interference_bound_delta =
+fun (sporadic_task : eqType)
+  (task_cost task_period : sporadic_task -> time.Time.time)
+  (tsk : sporadic_task) =>
+let task_with_response_time := (sporadic_task * time.Time.time)%type in
+fun (delta : time.Time.time) (tsk_R : task_with_response_time) =>
+let tsk_other := tsk_R.1 in
+let R_other := tsk_R.2 in
+fun h : nat =>
+ResponseTimeAnalysisFP.interference_bound_arbitrary_ci task_cost task_period
+  tsk delta tsk_R h -
+ResponseTimeAnalysisFP.interference_bound_arbitrary_nc task_cost task_period
+  tsk delta tsk_R h
+     : forall {sporadic_task : eqType},
+       (sporadic_task -> time.Time.time) ->
+       (sporadic_task -> time.Time.time) ->
+       sporadic_task ->
+       time.Time.time -> sporadic_task * time.Time.time -> nat -> nat
+
+Arguments ResponseTimeAnalysisFP.interference_bound_delta 
+  {sporadic_task} (task_cost task_period)%function_scope 
+  tsk delta tsk_R h%nat_scope
+ResponseTimeAnalysisFP.sum_largest
+     : nat -> seq nat -> nat
+ResponseTimeAnalysisFP.sum_largest =
+fun (n : nat) (xs : seq nat) => \sum_(x <- take n (sort geq xs)) x
+     : nat -> seq nat -> nat
+
+Arguments ResponseTimeAnalysisFP.sum_largest n%nat_scope xs%seq_scope
+@ResponseTimeAnalysisFP.total_interference_bound_fp
+     : forall sporadic_task : eqType,
+       (sporadic_task -> time.Time.time) ->
+       (sporadic_task -> time.Time.time) ->
+       sporadic_task ->
+       seq (sporadic_task * time.Time.time) -> time.Time.time -> nat -> nat
+ResponseTimeAnalysisFP.total_interference_bound_fp =
+fun (sporadic_task : eqType)
+  (task_cost task_period : sporadic_task -> time.Time.time)
+  (tsk : sporadic_task) =>
+let task_with_response_time := (sporadic_task * time.Time.time)%type in
+fun (R_prev : seq task_with_response_time) (delta : time.Time.time) (h : nat) =>
+let total_interference_bound :=
+  ResponseTimeAnalysisFP.interference_bound_arbitrary_ci task_cost
+    task_period tsk delta
+  in
+\sum_((tsk_other,R_other)<-R_prev)
+ total_interference_bound (tsk_other, R_other) h
+     : forall {sporadic_task : eqType},
+       (sporadic_task -> time.Time.time) ->
+       (sporadic_task -> time.Time.time) ->
+       sporadic_task ->
+       seq (sporadic_task * time.Time.time) -> time.Time.time -> nat -> nat
+
+Arguments ResponseTimeAnalysisFP.total_interference_bound_fp 
+  {sporadic_task} (task_cost task_period)%function_scope 
+  tsk R_prev%seq_scope delta h%nat_scope
+@ResponseTimeAnalysisFP.CI_taskset
+     : forall sporadic_task : eqType,
+       (sporadic_task -> time.Time.time) ->
+       (sporadic_task -> time.Time.time) ->
+       sporadic_task ->
+       seq (sporadic_task * time.Time.time) ->
+       time.Time.time -> nat -> nat -> seq (sporadic_task * time.Time.time)
+ResponseTimeAnalysisFP.CI_taskset =
+fun (sporadic_task : eqType)
+  (task_cost task_period : sporadic_task -> time.Time.time)
+  (tsk : sporadic_task) =>
+let task_with_response_time := (sporadic_task * time.Time.time)%type in
+fun (R_prev : seq task_with_response_time) (delta : time.Time.time)
+  (num_cpus h : nat) =>
+let total_interference_bound_delta :=
+  ResponseTimeAnalysisFP.interference_bound_delta task_cost task_period tsk
+    delta
+  in
+take num_cpus.-1
+  (sort
+     (fun p q : sporadic_task * time.Time.time =>
+      total_interference_bound_delta q h <=
+      total_interference_bound_delta p h)
+     R_prev)
+     : forall {sporadic_task : eqType},
+       (sporadic_task -> time.Time.time) ->
+       (sporadic_task -> time.Time.time) ->
+       sporadic_task ->
+       seq (sporadic_task * time.Time.time) ->
+       time.Time.time -> nat -> nat -> seq (sporadic_task * time.Time.time)
+
+Arguments ResponseTimeAnalysisFP.CI_taskset {sporadic_task}
+  (task_cost task_period)%function_scope tsk R_prev%seq_scope 
+  delta (num_cpus h)%nat_scope
+@ResponseTimeAnalysisFP.NC_taskset
+     : forall sporadic_task : eqType,
+       (sporadic_task -> time.Time.time) ->
+       (sporadic_task -> time.Time.time) ->
+       sporadic_task ->
+       seq (sporadic_task * time.Time.time) ->
+       time.Time.time -> nat -> nat -> seq (sporadic_task * time.Time.time)
+ResponseTimeAnalysisFP.NC_taskset =
+fun (sporadic_task : eqType)
+  (task_cost task_period : sporadic_task -> time.Time.time)
+  (tsk : sporadic_task) =>
+let task_with_response_time := (sporadic_task * time.Time.time)%type in
+fun (R_prev : seq task_with_response_time) (delta : time.Time.time)
+  (num_cpus h : nat) =>
+let total_interference_bound_delta :=
+  ResponseTimeAnalysisFP.interference_bound_delta task_cost task_period tsk
+    delta
+  in
+[seq p <- R_prev
+   | p
+       \notin ResponseTimeAnalysisFP.CI_taskset task_cost task_period tsk
+                R_prev delta num_cpus h]
+     : forall {sporadic_task : eqType},
+       (sporadic_task -> time.Time.time) ->
+       (sporadic_task -> time.Time.time) ->
+       sporadic_task ->
+       seq (sporadic_task * time.Time.time) ->
+       time.Time.time -> nat -> nat -> seq (sporadic_task * time.Time.time)
+
+Arguments ResponseTimeAnalysisFP.NC_taskset {sporadic_task}
+  (task_cost task_period)%function_scope tsk R_prev%seq_scope 
+  delta (num_cpus h)%nat_scope
+@ResponseTimeAnalysisFP.total_interference_bound_ci
+     : forall sporadic_task : eqType,
+       (sporadic_task -> time.Time.time) ->
+       (sporadic_task -> time.Time.time) ->
+       sporadic_task ->
+       seq (sporadic_task * time.Time.time) ->
+       time.Time.time -> nat -> nat -> nat
+ResponseTimeAnalysisFP.total_interference_bound_ci =
+fun (sporadic_task : eqType)
+  (task_cost task_period : sporadic_task -> time.Time.time)
+  (tsk : sporadic_task) =>
+let task_with_response_time := (sporadic_task * time.Time.time)%type in
+fun (R_prev : seq task_with_response_time) (delta : time.Time.time)
+  (num_cpus h : nat) =>
+let total_interference_bound :=
+  ResponseTimeAnalysisFP.interference_bound_arbitrary_ci task_cost
+    task_period tsk delta
+  in
+let total_interference_bound_delta :=
+  ResponseTimeAnalysisFP.interference_bound_delta task_cost task_period tsk
+    delta
+  in
+\sum_(p <- ResponseTimeAnalysisFP.CI_taskset task_cost task_period tsk R_prev
+             delta num_cpus h)
+   total_interference_bound p h
+     : forall {sporadic_task : eqType},
+       (sporadic_task -> time.Time.time) ->
+       (sporadic_task -> time.Time.time) ->
+       sporadic_task ->
+       seq (sporadic_task * time.Time.time) ->
+       time.Time.time -> nat -> nat -> nat
+
+Arguments ResponseTimeAnalysisFP.total_interference_bound_ci 
+  {sporadic_task} (task_cost task_period)%function_scope 
+  tsk R_prev%seq_scope delta (num_cpus h)%nat_scope
+@ResponseTimeAnalysisFP.total_interference_bound_nc
+     : forall sporadic_task : eqType,
+       (sporadic_task -> time.Time.time) ->
+       (sporadic_task -> time.Time.time) ->
+       sporadic_task ->
+       seq (sporadic_task * time.Time.time) ->
+       time.Time.time -> nat -> nat -> nat
+ResponseTimeAnalysisFP.total_interference_bound_nc =
+fun (sporadic_task : eqType)
+  (task_cost task_period : sporadic_task -> time.Time.time)
+  (tsk : sporadic_task) =>
+let task_with_response_time := (sporadic_task * time.Time.time)%type in
+fun (R_prev : seq task_with_response_time) (delta : time.Time.time)
+  (num_cpus h : nat) =>
+let interference_bound_nc :=
+  ResponseTimeAnalysisFP.interference_bound_arbitrary_nc task_cost
+    task_period tsk delta
+  in
+let total_interference_bound_delta :=
+  ResponseTimeAnalysisFP.interference_bound_delta task_cost task_period tsk
+    delta
+  in
+\sum_(p <- ResponseTimeAnalysisFP.NC_taskset task_cost task_period tsk R_prev
+             delta num_cpus h)
+   interference_bound_nc p h
+     : forall {sporadic_task : eqType},
+       (sporadic_task -> time.Time.time) ->
+       (sporadic_task -> time.Time.time) ->
+       sporadic_task ->
+       seq (sporadic_task * time.Time.time) ->
+       time.Time.time -> nat -> nat -> nat
+
+Arguments ResponseTimeAnalysisFP.total_interference_bound_nc 
+  {sporadic_task} (task_cost task_period)%function_scope 
+  tsk R_prev%seq_scope delta (num_cpus h)%nat_scope
+@ResponseTimeAnalysisFP.total_interference_bound_gn_arbitrary
+     : forall sporadic_task : eqType,
+       (sporadic_task -> time.Time.time) ->
+       (sporadic_task -> time.Time.time) ->
+       sporadic_task ->
+       seq (sporadic_task * time.Time.time) ->
+       time.Time.time -> nat -> nat -> nat
+ResponseTimeAnalysisFP.total_interference_bound_gn_arbitrary =
+fun (sporadic_task : eqType)
+  (task_cost task_period : sporadic_task -> time.Time.time)
+  (tsk : sporadic_task) =>
+let task_with_response_time := (sporadic_task * time.Time.time)%type in
+fun (R_prev : seq task_with_response_time) (delta : time.Time.time)
+  (num_cpus h : nat) =>
+let total_interference_bound :=
+  ResponseTimeAnalysisFP.interference_bound_arbitrary_ci task_cost
+    task_period tsk delta
+  in
+let interference_bound_nc :=
+  ResponseTimeAnalysisFP.interference_bound_arbitrary_nc task_cost
+    task_period tsk delta
+  in
+let total_interference_bound_delta :=
+  ResponseTimeAnalysisFP.interference_bound_delta task_cost task_period tsk
+    delta
+  in
+\sum_(p <- ResponseTimeAnalysisFP.NC_taskset task_cost task_period tsk R_prev
+             delta num_cpus h)
+   interference_bound_nc p h +
+\sum_(p <- ResponseTimeAnalysisFP.CI_taskset task_cost task_period tsk R_prev
+             delta num_cpus h)
+   total_interference_bound p h
+     : forall {sporadic_task : eqType},
+       (sporadic_task -> time.Time.time) ->
+       (sporadic_task -> time.Time.time) ->
+       sporadic_task ->
+       seq (sporadic_task * time.Time.time) ->
+       time.Time.time -> nat -> nat -> nat
+
+Arguments ResponseTimeAnalysisFP.total_interference_bound_gn_arbitrary
+  {sporadic_task} (task_cost task_period)%function_scope 
+  tsk R_prev%seq_scope delta (num_cpus h)%nat_scope
+@ResponseTimeAnalysisFP.f_chi
+     : forall sporadic_task : eqType,
+       (sporadic_task -> time.Time.time) ->
+       (sporadic_task -> time.Time.time) ->
+       nat ->
+       sporadic_task ->
+       seq (sporadic_task * time.Time.time) -> nat -> time.Time.time -> nat
+ResponseTimeAnalysisFP.f_chi =
+fun (sporadic_task : eqType)
+  (task_cost task_period : sporadic_task -> time.Time.time) 
+  (num_cpus : nat) (tsk : sporadic_task) =>
+let task_with_response_time := (sporadic_task * time.Time.time)%type in
+fun (hp_bounds : seq task_with_response_time) (h : nat)
+  (chi : time.Time.time) =>
+h * task_cost tsk +
+div_floor
+  (ResponseTimeAnalysisFP.total_interference_bound_gn_arbitrary task_cost
+     task_period tsk hp_bounds chi num_cpus h)
+  num_cpus
+     : forall {sporadic_task : eqType},
+       (sporadic_task -> time.Time.time) ->
+       (sporadic_task -> time.Time.time) ->
+       nat ->
+       sporadic_task ->
+       seq (sporadic_task * time.Time.time) -> nat -> time.Time.time -> nat
+
+Arguments ResponseTimeAnalysisFP.f_chi {sporadic_task}
+  (task_cost task_period)%function_scope num_cpus%nat_scope 
+  tsk hp_bounds%seq_scope h%nat_scope chi
+@ResponseTimeAnalysisFP.chi_is_least_solution
+     : forall sporadic_task : eqType,
+       (sporadic_task -> time.Time.time) ->
+       (sporadic_task -> time.Time.time) ->
+       nat ->
+       sporadic_task ->
+       seq (sporadic_task * time.Time.time) -> nat -> time.Time.time -> Prop
+ResponseTimeAnalysisFP.chi_is_least_solution =
+fun (sporadic_task : eqType)
+  (task_cost task_period : sporadic_task -> time.Time.time) 
+  (num_cpus : nat) (tsk : sporadic_task) =>
+let task_with_response_time := (sporadic_task * time.Time.time)%type in
+fun (hp_bounds : seq task_with_response_time) (h : nat)
+  (chi : time.Time.time) =>
+chi =
+ResponseTimeAnalysisFP.f_chi task_cost task_period num_cpus tsk hp_bounds h
+  chi /\
+(forall x : time.Time.time,
+ x =
+ ResponseTimeAnalysisFP.f_chi task_cost task_period num_cpus tsk hp_bounds h
+   x ->
+ chi <= x)
+     : forall {sporadic_task : eqType},
+       (sporadic_task -> time.Time.time) ->
+       (sporadic_task -> time.Time.time) ->
+       nat ->
+       sporadic_task ->
+       seq (sporadic_task * time.Time.time) -> nat -> time.Time.time -> Prop
+
+Arguments ResponseTimeAnalysisFP.chi_is_least_solution 
+  {sporadic_task} (task_cost task_period)%function_scope 
+  num_cpus%nat_scope tsk hp_bounds%seq_scope h%nat_scope 
+  chi
+@ResponseTimeAnalysisFP.hp_busy
+     : forall sporadic_task Job : eqType,
+       (Job -> sporadic_task) ->
+       SporadicTaskset.taskset_of sporadic_task ->
+       forall num_cpus : nat,
+       Schedule.schedule Job num_cpus ->
+       Priority.FP_policy sporadic_task ->
+       sporadic_task -> time.Time.time -> Prop
+ResponseTimeAnalysisFP.hp_busy =
+fun (sporadic_task Job : eqType) (job_task : Job -> sporadic_task)
+  (ts : SporadicTaskset.taskset_of sporadic_task) 
+  (num_cpus : nat) (sched : Schedule.schedule Job num_cpus)
+  (higher_eq_priority : Priority.FP_policy sporadic_task)
+  (tsk : sporadic_task) =>
+let is_hp_task := Priority.higher_priority_task higher_eq_priority tsk in
+let scheduled_heptask :=
+  fun (t : time.Time.time) (tsk_other : sporadic_task) =>
+  ScheduleOfSporadicTask.task_is_scheduled job_task sched tsk_other t &&
+  is_hp_task tsk_other in
+fun t : time.Time.time => count (scheduled_heptask t) ts = num_cpus
+     : forall {sporadic_task Job : eqType},
+       (Job -> sporadic_task) ->
+       SporadicTaskset.taskset_of sporadic_task ->
+       forall num_cpus : nat,
+       Schedule.schedule Job num_cpus ->
+       Priority.FP_policy sporadic_task ->
+       sporadic_task -> time.Time.time -> Prop
+
+Arguments ResponseTimeAnalysisFP.hp_busy {sporadic_task Job}
+  job_task%function_scope ts num_cpus%nat_scope sched 
+  higher_eq_priority tsk t
+@ResponseTimeAnalysisFP.H_phi_satisfy
+     : forall sporadic_task : eqType,
+       (sporadic_task -> time.Time.time) ->
+       sporadic_task ->
+       (nat -> time.Time.time) -> time.Time.time -> nat -> bool
+ResponseTimeAnalysisFP.H_phi_satisfy =
+fun (sporadic_task : eqType) (task_period : sporadic_task -> time.Time.time)
+  (tsk : sporadic_task) (chi_min : nat -> time.Time.time)
+  (phi : time.Time.time) (h : nat) =>
+chi_min h <= h * task_period tsk + phi
+     : forall {sporadic_task : eqType},
+       (sporadic_task -> time.Time.time) ->
+       sporadic_task ->
+       (nat -> time.Time.time) -> time.Time.time -> nat -> bool
+
+Arguments ResponseTimeAnalysisFP.H_phi_satisfy {sporadic_task}
+  task_period%function_scope tsk chi_min%function_scope 
+  phi h%nat_scope
+@ResponseTimeAnalysisFP.R_phi_term
+     : forall sporadic_task : eqType,
+       (sporadic_task -> time.Time.time) ->
+       sporadic_task ->
+       (nat -> time.Time.time) -> time.Time.time -> nat -> time.Time.time
+ResponseTimeAnalysisFP.R_phi_term =
+fun (sporadic_task : eqType) (task_period : sporadic_task -> time.Time.time)
+  (tsk : sporadic_task) (chi_min : nat -> time.Time.time)
+  (phi : time.Time.time) (h : nat) =>
+chi_min h - ((h - 1) * task_period tsk + phi)
+     : forall {sporadic_task : eqType},
+       (sporadic_task -> time.Time.time) ->
+       sporadic_task ->
+       (nat -> time.Time.time) -> time.Time.time -> nat -> time.Time.time
+
+Arguments ResponseTimeAnalysisFP.R_phi_term {sporadic_task}
+  task_period%function_scope tsk chi_min%function_scope 
+  phi h%nat_scope
+@ResponseTimeAnalysisFP.max_R_phi_term
+     : forall sporadic_task : eqType,
+       (sporadic_task -> time.Time.time) ->
+       sporadic_task ->
+       (nat -> time.Time.time) -> time.Time.time -> nat -> time.Time.time
+ResponseTimeAnalysisFP.max_R_phi_term =
+fun (sporadic_task : eqType) (task_period : sporadic_task -> time.Time.time)
+  (tsk : sporadic_task) (chi_min : nat -> time.Time.time)
+  (phi : time.Time.time) =>
+fix max_R_phi_term (h : nat) : time.Time.time :=
+  match h with
+  | 0 => 0
+  | h'.+1 =>
+      maxn (max_R_phi_term h')
+        (ResponseTimeAnalysisFP.R_phi_term task_period tsk chi_min phi h'.+1)
+  end
+     : forall {sporadic_task : eqType},
+       (sporadic_task -> time.Time.time) ->
+       sporadic_task ->
+       (nat -> time.Time.time) -> time.Time.time -> nat -> time.Time.time
+
+Arguments ResponseTimeAnalysisFP.max_R_phi_term {sporadic_task}
+  task_period%function_scope tsk chi_min%function_scope 
+  phi h%nat_scope
+@ResponseTimeAnalysisFP.jobs_of_tsk_between
+     : forall sporadic_task Job : eqType,
+       (Job -> sporadic_task) ->
+       arrival_sequence.ArrivalSequence.arrival_sequence Job ->
+       sporadic_task -> time.Time.time -> time.Time.time -> seq Job
+ResponseTimeAnalysisFP.jobs_of_tsk_between =
+fun (sporadic_task Job : eqType) (job_task : Job -> sporadic_task)
+  (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job)
+  (tsk : sporadic_task) (t1 : time.Time.time) =>
+[eta TaskArrival.arrivals_of_task_between job_task arr_seq tsk t1]
+     : forall {sporadic_task Job : eqType},
+       (Job -> sporadic_task) ->
+       arrival_sequence.ArrivalSequence.arrival_sequence Job ->
+       sporadic_task -> time.Time.time -> time.Time.time -> seq Job
+
+Arguments ResponseTimeAnalysisFP.jobs_of_tsk_between 
+  {sporadic_task Job} job_task%function_scope arr_seq 
+  tsk t1 t2
+@ResponseTimeAnalysisFP.first_h_jobs_through
+     : forall sporadic_task Job : eqType,
+       (Job -> time.Time.time) ->
+       (Job -> sporadic_task) ->
+       arrival_sequence.ArrivalSequence.arrival_sequence Job ->
+       sporadic_task -> Job -> Job -> seq Job
+ResponseTimeAnalysisFP.first_h_jobs_through =
+fun (sporadic_task Job : eqType) (job_arrival : Job -> time.Time.time)
+  (job_task : Job -> sporadic_task)
+  (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job)
+  (tsk : sporadic_task) (j j_h : Job) =>
+ResponseTimeAnalysisFP.jobs_of_tsk_between job_task arr_seq tsk
+  (job_arrival j) (job_arrival j_h).+1
+     : forall {sporadic_task Job : eqType},
+       (Job -> time.Time.time) ->
+       (Job -> sporadic_task) ->
+       arrival_sequence.ArrivalSequence.arrival_sequence Job ->
+       sporadic_task -> Job -> Job -> seq Job
+
+Arguments ResponseTimeAnalysisFP.first_h_jobs_through 
+  {sporadic_task Job} (job_arrival job_task)%function_scope 
+  arr_seq tsk j j_h
+@ResponseTimeAnalysisFP.job_finishes_at
+     : forall Job : eqType,
+       (Job -> time.Time.time) ->
+       forall num_cpus : nat,
+       Schedule.schedule Job num_cpus -> Job -> time.Time.time -> bool
+ResponseTimeAnalysisFP.job_finishes_at =
+fun (Job : eqType) (job_cost : Job -> time.Time.time) 
+  (num_cpus : nat) (sched : Schedule.schedule Job num_cpus) 
+  (j_h : Job) (f_h : time.Time.time) =>
+~~ Schedule.completed job_cost sched j_h (f_h - 1) &&
+Schedule.completed job_cost sched j_h f_h
+     : forall {Job : eqType},
+       (Job -> time.Time.time) ->
+       forall num_cpus : nat,
+       Schedule.schedule Job num_cpus -> Job -> time.Time.time -> bool
+
+Arguments ResponseTimeAnalysisFP.job_finishes_at {Job}
+  job_cost%function_scope num_cpus%nat_scope sched 
+  j_h f_h
+@ResponseTimeAnalysisFP.job_is_hth_after_j
+     : forall sporadic_task : eqType,
+       (sporadic_task -> time.Time.time) ->
+       forall Job : eqType,
+       (Job -> time.Time.time) ->
+       (Job -> sporadic_task) ->
+       arrival_sequence.ArrivalSequence.arrival_sequence Job ->
+       sporadic_task -> Job -> nat -> Job -> Prop
+ResponseTimeAnalysisFP.job_is_hth_after_j =
+fun (sporadic_task : eqType) (task_period : sporadic_task -> time.Time.time)
+  (Job : eqType) (job_arrival : Job -> time.Time.time)
+  (job_task : Job -> sporadic_task)
+  (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job)
+  (tsk : sporadic_task) (j : Job) (h : nat) (j_h : Job) =>
+0 < h /\
+arrival_sequence.ArrivalSequence.arrives_in arr_seq j_h /\
+job_task j_h = tsk /\
+job_arrival j_h = job_arrival j + (h - 1) * task_period tsk /\
+size
+  (ResponseTimeAnalysisFP.first_h_jobs_through job_arrival job_task arr_seq
+     tsk j j_h) =
+h /\
+j_h
+  \in ResponseTimeAnalysisFP.first_h_jobs_through job_arrival job_task
+        arr_seq tsk j j_h
+     : forall {sporadic_task : eqType},
+       (sporadic_task -> time.Time.time) ->
+       forall {Job : eqType},
+       (Job -> time.Time.time) ->
+       (Job -> sporadic_task) ->
+       arrival_sequence.ArrivalSequence.arrival_sequence Job ->
+       sporadic_task -> Job -> nat -> Job -> Prop
+
+Arguments ResponseTimeAnalysisFP.job_is_hth_after_j 
+  {sporadic_task} task_period%function_scope {Job}
+  (job_arrival job_task)%function_scope arr_seq tsk 
+  j h%nat_scope j_h
+@ResponseTimeAnalysisFP.preceding_jobs_are_completed_before_first_job
+     : forall sporadic_task Job : eqType,
+       (Job -> time.Time.time) ->
+       (Job -> time.Time.time) ->
+       (Job -> sporadic_task) ->
+       arrival_sequence.ArrivalSequence.arrival_sequence Job ->
+       forall num_cpus : nat,
+       Schedule.schedule Job num_cpus -> sporadic_task -> Job -> Prop
+ResponseTimeAnalysisFP.preceding_jobs_are_completed_before_first_job =
+fun (sporadic_task Job : eqType)
+  (job_arrival job_cost : Job -> time.Time.time)
+  (job_task : Job -> sporadic_task)
+  (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job)
+  (num_cpus : nat) (sched : Schedule.schedule Job num_cpus)
+  (tsk : sporadic_task) (j : Job) =>
+forall j_prev : Job,
+arrival_sequence.ArrivalSequence.arrives_in arr_seq j_prev ->
+job_task j_prev = tsk ->
+job_arrival j_prev < job_arrival j ->
+Schedule.completed job_cost sched j_prev (job_arrival j)
+     : forall {sporadic_task Job : eqType},
+       (Job -> time.Time.time) ->
+       (Job -> time.Time.time) ->
+       (Job -> sporadic_task) ->
+       arrival_sequence.ArrivalSequence.arrival_sequence Job ->
+       forall num_cpus : nat,
+       Schedule.schedule Job num_cpus -> sporadic_task -> Job -> Prop
+
+Arguments
+  ResponseTimeAnalysisFP.preceding_jobs_are_completed_before_first_job
+  {sporadic_task Job} (job_arrival job_cost job_task)%function_scope 
+  arr_seq num_cpus%nat_scope sched tsk j
+@ResponseTimeAnalysisFP.consecutive_jobs_exist_through
+     : forall sporadic_task : eqType,
+       (sporadic_task -> time.Time.time) ->
+       forall Job : eqType,
+       (Job -> time.Time.time) ->
+       (Job -> sporadic_task) ->
+       arrival_sequence.ArrivalSequence.arrival_sequence Job ->
+       sporadic_task -> Job -> nat -> Prop
+ResponseTimeAnalysisFP.consecutive_jobs_exist_through =
+fun (sporadic_task : eqType) (task_period : sporadic_task -> time.Time.time)
+  (Job : eqType) (job_arrival : Job -> time.Time.time)
+  (job_task : Job -> sporadic_task)
+  (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job)
+  (tsk : sporadic_task) (j : Job) (h_last : nat) =>
+forall h : nat,
+0 < h ->
+h <= h_last ->
+exists j_h : Job,
+  ResponseTimeAnalysisFP.job_is_hth_after_j task_period job_arrival job_task
+    arr_seq tsk j h j_h
+     : forall {sporadic_task : eqType},
+       (sporadic_task -> time.Time.time) ->
+       forall {Job : eqType},
+       (Job -> time.Time.time) ->
+       (Job -> sporadic_task) ->
+       arrival_sequence.ArrivalSequence.arrival_sequence Job ->
+       sporadic_task -> Job -> nat -> Prop
+
+Arguments ResponseTimeAnalysisFP.consecutive_jobs_exist_through
+  {sporadic_task} task_period%function_scope {Job}
+  (job_arrival job_task)%function_scope arr_seq tsk 
+  j h_last%nat_scope
+@ResponseTimeAnalysisFP.consecutive_jobs_are_tight_through
+     : forall sporadic_task : eqType,
+       (sporadic_task -> time.Time.time) ->
+       forall Job : eqType,
+       (Job -> time.Time.time) ->
+       (Job -> sporadic_task) ->
+       arrival_sequence.ArrivalSequence.arrival_sequence Job ->
+       sporadic_task -> Job -> nat -> Prop
+ResponseTimeAnalysisFP.consecutive_jobs_are_tight_through =
+fun (sporadic_task : eqType) (task_period : sporadic_task -> time.Time.time)
+  (Job : eqType) (job_arrival : Job -> time.Time.time)
+  (job_task : Job -> sporadic_task)
+  (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job)
+  (tsk : sporadic_task) (j : Job) (h_last : nat) =>
+forall (h : nat) (j_h j_next : Job),
+0 < h ->
+h < h_last ->
+ResponseTimeAnalysisFP.job_is_hth_after_j task_period job_arrival job_task
+  arr_seq tsk j h j_h ->
+ResponseTimeAnalysisFP.job_is_hth_after_j task_period job_arrival job_task
+  arr_seq tsk j h.+1 j_next ->
+job_arrival j_next = job_arrival j_h + task_period tsk
+     : forall {sporadic_task : eqType},
+       (sporadic_task -> time.Time.time) ->
+       forall {Job : eqType},
+       (Job -> time.Time.time) ->
+       (Job -> sporadic_task) ->
+       arrival_sequence.ArrivalSequence.arrival_sequence Job ->
+       sporadic_task -> Job -> nat -> Prop
+
+Arguments ResponseTimeAnalysisFP.consecutive_jobs_are_tight_through
+  {sporadic_task} task_period%function_scope {Job}
+  (job_arrival job_task)%function_scope arr_seq tsk 
+  j h_last%nat_scope
+@ResponseTimeAnalysisFP.consecutive_jobs_overlap_through
+     : forall sporadic_task : eqType,
+       (sporadic_task -> time.Time.time) ->
+       forall Job : eqType,
+       (Job -> time.Time.time) ->
+       (Job -> time.Time.time) ->
+       (Job -> sporadic_task) ->
+       arrival_sequence.ArrivalSequence.arrival_sequence Job ->
+       forall num_cpus : nat,
+       Schedule.schedule Job num_cpus -> sporadic_task -> Job -> nat -> Prop
+ResponseTimeAnalysisFP.consecutive_jobs_overlap_through =
+fun (sporadic_task : eqType) (task_period : sporadic_task -> time.Time.time)
+  (Job : eqType) (job_arrival job_cost : Job -> time.Time.time)
+  (job_task : Job -> sporadic_task)
+  (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job)
+  (num_cpus : nat) (sched : Schedule.schedule Job num_cpus)
+  (tsk : sporadic_task) (j : Job) (h_last : nat) =>
+forall (h : nat) (j_h j_next : Job),
+0 < h ->
+h < h_last ->
+ResponseTimeAnalysisFP.job_is_hth_after_j task_period job_arrival job_task
+  arr_seq tsk j h j_h ->
+ResponseTimeAnalysisFP.job_is_hth_after_j task_period job_arrival job_task
+  arr_seq tsk j h.+1 j_next ->
+~~ Schedule.completed job_cost sched j_h (job_arrival j_next)
+     : forall {sporadic_task : eqType},
+       (sporadic_task -> time.Time.time) ->
+       forall {Job : eqType},
+       (Job -> time.Time.time) ->
+       (Job -> time.Time.time) ->
+       (Job -> sporadic_task) ->
+       arrival_sequence.ArrivalSequence.arrival_sequence Job ->
+       forall num_cpus : nat,
+       Schedule.schedule Job num_cpus -> sporadic_task -> Job -> nat -> Prop
+
+Arguments ResponseTimeAnalysisFP.consecutive_jobs_overlap_through
+  {sporadic_task} task_period%function_scope {Job}
+  (job_arrival job_cost job_task)%function_scope arr_seq 
+  num_cpus%nat_scope sched tsk j h_last%nat_scope
+@ResponseTimeAnalysisFP.tight_chain_ending_at
+     : forall sporadic_task : eqType,
+       (sporadic_task -> time.Time.time) ->
+       forall Job : eqType,
+       (Job -> time.Time.time) ->
+       (Job -> time.Time.time) ->
+       (Job -> sporadic_task) ->
+       arrival_sequence.ArrivalSequence.arrival_sequence Job ->
+       forall num_cpus : nat,
+       Schedule.schedule Job num_cpus ->
+       sporadic_task -> Job -> nat -> Job -> Prop
+ResponseTimeAnalysisFP.tight_chain_ending_at =
+fun (sporadic_task : eqType) (task_period : sporadic_task -> time.Time.time)
+  (Job : eqType) (job_arrival job_cost : Job -> time.Time.time)
+  (job_task : Job -> sporadic_task)
+  (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job)
+  (num_cpus : nat) (sched : Schedule.schedule Job num_cpus)
+  (tsk : sporadic_task) (j : Job) (h_last : nat) (j_last : Job) =>
+ResponseTimeAnalysisFP.job_is_hth_after_j task_period job_arrival job_task
+  arr_seq tsk j h_last j_last /\
+ResponseTimeAnalysisFP.preceding_jobs_are_completed_before_first_job
+  job_arrival job_cost job_task arr_seq num_cpus sched tsk j /\
+ResponseTimeAnalysisFP.consecutive_jobs_exist_through task_period job_arrival
+  job_task arr_seq tsk j h_last /\
+ResponseTimeAnalysisFP.consecutive_jobs_are_tight_through task_period
+  job_arrival job_task arr_seq tsk j h_last /\
+ResponseTimeAnalysisFP.consecutive_jobs_overlap_through task_period
+  job_arrival job_cost job_task arr_seq num_cpus sched tsk j h_last
+     : forall {sporadic_task : eqType},
+       (sporadic_task -> time.Time.time) ->
+       forall {Job : eqType},
+       (Job -> time.Time.time) ->
+       (Job -> time.Time.time) ->
+       (Job -> sporadic_task) ->
+       arrival_sequence.ArrivalSequence.arrival_sequence Job ->
+       forall num_cpus : nat,
+       Schedule.schedule Job num_cpus ->
+       sporadic_task -> Job -> nat -> Job -> Prop
+
+Arguments ResponseTimeAnalysisFP.tight_chain_ending_at 
+  {sporadic_task} task_period%function_scope {Job}
+  (job_arrival job_cost job_task)%function_scope arr_seq 
+  num_cpus%nat_scope sched tsk j h_last%nat_scope 
+  j_last
+@ResponseTimeAnalysisFP.job_has_worstcase_response_time
+     : forall sporadic_task Job : eqType,
+       (Job -> time.Time.time) ->
+       (Job -> time.Time.time) ->
+       (Job -> sporadic_task) ->
+       arrival_sequence.ArrivalSequence.arrival_sequence Job ->
+       forall num_cpus : nat,
+       Schedule.schedule Job num_cpus -> sporadic_task -> Job -> Prop
+ResponseTimeAnalysisFP.job_has_worstcase_response_time =
+fun (sporadic_task Job : eqType)
+  (job_arrival job_cost : Job -> time.Time.time)
+  (job_task : Job -> sporadic_task)
+  (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job)
+  (num_cpus : nat) (sched : Schedule.schedule Job num_cpus)
+  (tsk : sporadic_task) (j_worst : Job) =>
+forall (j0 : Job) (x : nat),
+arrival_sequence.ArrivalSequence.arrives_in arr_seq j0 ->
+job_task j0 = tsk ->
+Schedule.completed job_cost sched j_worst (job_arrival j_worst + x) ->
+Schedule.completed job_cost sched j0 (job_arrival j0 + x)
+     : forall {sporadic_task Job : eqType},
+       (Job -> time.Time.time) ->
+       (Job -> time.Time.time) ->
+       (Job -> sporadic_task) ->
+       arrival_sequence.ArrivalSequence.arrival_sequence Job ->
+       forall num_cpus : nat,
+       Schedule.schedule Job num_cpus -> sporadic_task -> Job -> Prop
+
+Arguments ResponseTimeAnalysisFP.job_has_worstcase_response_time
+  {sporadic_task Job} (job_arrival job_cost job_task)%function_scope 
+  arr_seq num_cpus%nat_scope sched tsk j_worst
+@ResponseTimeAnalysisFP.worstcase_job_selected_from_tight_chain
+     : forall sporadic_task : eqType,
+       (sporadic_task -> time.Time.time) ->
+       forall Job : eqType,
+       (Job -> time.Time.time) ->
+       (Job -> time.Time.time) ->
+       (Job -> sporadic_task) ->
+       arrival_sequence.ArrivalSequence.arrival_sequence Job ->
+       forall num_cpus : nat,
+       Schedule.schedule Job num_cpus ->
+       sporadic_task -> Job -> nat -> nat -> Job -> time.Time.time -> Prop
+ResponseTimeAnalysisFP.worstcase_job_selected_from_tight_chain =
+fun (sporadic_task : eqType) (task_period : sporadic_task -> time.Time.time)
+  (Job : eqType) (job_arrival job_cost : Job -> time.Time.time)
+  (job_task : Job -> sporadic_task)
+  (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job)
+  (num_cpus : nat) (sched : Schedule.schedule Job num_cpus)
+  (tsk : sporadic_task) (j : Job) (h_last h_worst : nat) 
+  (j_worst : Job) (f_worst : time.Time.time) =>
+h_worst <= h_last /\
+ResponseTimeAnalysisFP.job_is_hth_after_j task_period job_arrival job_task
+  arr_seq tsk j h_worst j_worst /\
+ResponseTimeAnalysisFP.job_finishes_at job_cost num_cpus sched j_worst
+  f_worst /\
+job_arrival j_worst < f_worst /\
+ResponseTimeAnalysisFP.job_has_worstcase_response_time job_arrival job_cost
+  job_task arr_seq num_cpus sched tsk j_worst
+     : forall {sporadic_task : eqType},
+       (sporadic_task -> time.Time.time) ->
+       forall {Job : eqType},
+       (Job -> time.Time.time) ->
+       (Job -> time.Time.time) ->
+       (Job -> sporadic_task) ->
+       arrival_sequence.ArrivalSequence.arrival_sequence Job ->
+       forall num_cpus : nat,
+       Schedule.schedule Job num_cpus ->
+       sporadic_task -> Job -> nat -> nat -> Job -> time.Time.time -> Prop
+
+Arguments ResponseTimeAnalysisFP.worstcase_job_selected_from_tight_chain
+  {sporadic_task} task_period%function_scope {Job}
+  (job_arrival job_cost job_task)%function_scope arr_seq 
+  num_cpus%nat_scope sched tsk j (h_last h_worst)%nat_scope 
+  j_worst f_worst
+@ResponseTimeAnalysisFP.Lemma5_09
+     : forall (sporadic_task : eqType)
+         (task_cost task_period
+          task_deadline : sporadic_task -> time.Time.time)
+         (Job : eqType)
+         (job_arrival job_cost job_deadline : Job -> time.Time.time)
+         (job_task : Job -> sporadic_task)
+         (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job),
+       TaskArrival.sporadic_task_model task_period job_arrival job_task
+         arr_seq ->
+       arrival_sequence.ArrivalSequence.arrival_times_are_consistent
+         job_arrival arr_seq ->
+       arrival_sequence.ArrivalSequence.arrival_sequence_is_a_set arr_seq ->
+       (forall j : Job,
+        arrival_sequence.ArrivalSequence.arrives_in arr_seq j ->
+        Job.valid_sporadic_job task_cost task_deadline job_cost job_deadline
+          job_task j) ->
+       forall ts : SporadicTaskset.taskset_of sporadic_task,
+       SporadicTaskset.valid_sporadic_taskset task_cost task_period
+         task_deadline ts ->
+       (forall j : Job,
+        arrival_sequence.ArrivalSequence.arrives_in arr_seq j ->
+        job_task j \in ts) ->
+       forall (num_cpus : nat) (sched : Schedule.schedule Job num_cpus),
+       Schedule.jobs_come_from_arrival_sequence sched arr_seq ->
+       Schedule.sequential_jobs sched ->
+       Schedule.jobs_must_arrive_to_execute job_arrival sched ->
+       Schedule.completed_jobs_dont_execute job_cost sched ->
+       0 < num_cpus ->
+       forall higher_eq_priority : Priority.FP_policy sporadic_task,
+       Platform.work_conserving job_arrival job_cost arr_seq sched ->
+       Platform.respects_FP_policy job_arrival job_cost job_task arr_seq
+         sched higher_eq_priority ->
+       Priority.FP_is_transitive higher_eq_priority ->
+       Priority.FP_is_antisymmetric_over_task_set higher_eq_priority ts ->
+       (forall (j1 j2 : Job) (t : time.Time.time)
+          (cpu : Schedule.processor num_cpus),
+        arrival_sequence.ArrivalSequence.arrives_in arr_seq j1 ->
+        arrival_sequence.ArrivalSequence.arrives_in arr_seq j2 ->
+        job_task j1 = job_task j2 ->
+        job_arrival j1 < job_arrival j2 ->
+        Schedule.scheduled_on sched j2 cpu t ->
+        Schedule.completed job_cost sched j1 t) ->
+       forall tsk : sporadic_task,
+       tsk \in ts ->
+       forall hp_bounds : seq (sporadic_task * time.Time.time),
+       (forall (hp_tsk : sporadic_task)
+          (R : Datatypes_nat__canonical__eqtype_Equality),
+        (hp_tsk, R) \in hp_bounds ->
+        ResponseTime.is_response_time_bound_of_task job_arrival job_cost
+          job_task arr_seq sched hp_tsk R) ->
+       (forall hp_tsk : sporadic_task,
+        hp_tsk \in ts ->
+        Priority.higher_priority_task higher_eq_priority tsk hp_tsk ->
+        exists R : Datatypes_nat__canonical__eqtype_Equality,
+          (hp_tsk, R) \in hp_bounds) ->
+       (forall (hp_tsk : sporadic_task)
+          (R : Datatypes_nat__canonical__eqtype_Equality),
+        (hp_tsk, R) \in hp_bounds -> task_cost hp_tsk <= R) ->
+       (forall (hp_tsk : sporadic_task)
+          (R : Datatypes_nat__canonical__eqtype_Equality),
+        (hp_tsk, R) \in hp_bounds -> R <= task_deadline hp_tsk) ->
+       forall chi_min : nat -> time.Time.time,
+       (forall h : nat,
+        ResponseTimeAnalysisFP.chi_is_least_solution task_cost task_period
+          num_cpus tsk hp_bounds h (chi_min h)) ->
+       uniq hp_bounds ->
+       forall (j : Job)
+         (t0 : Schedule.schedule Job num_cpus -> Job -> time.Time.time),
+       t0 sched j <= job_arrival j ->
+       arrival_sequence.ArrivalSequence.arrives_in arr_seq j ->
+       job_task j = tsk ->
+       (forall j0 : Job,
+        arrival_sequence.ArrivalSequence.arrives_in arr_seq j0 ->
+        job_task j0 = tsk ->
+        job_arrival j0 < job_arrival j ->
+        Schedule.completed job_cost sched j0 (job_arrival j)) ->
+       (forall t : nat,
+        t0 sched j <= t < job_arrival j ->
+        ResponseTimeAnalysisFP.hp_busy job_task ts num_cpus sched
+          higher_eq_priority tsk t) ->
+       t0 sched j = 0 \/
+       ~
+       ResponseTimeAnalysisFP.hp_busy job_task ts num_cpus sched
+         higher_eq_priority tsk (t0 sched j - 1) ->
+       forall phi : time.Time.time,
+       phi = job_arrival j - t0 sched j ->
+       forall H_phi : nat,
+       0 < H_phi /\
+       ResponseTimeAnalysisFP.H_phi_satisfy task_period tsk chi_min phi H_phi /\
+       (forall x : nat,
+        0 < x ->
+        ResponseTimeAnalysisFP.H_phi_satisfy task_period tsk chi_min phi x ->
+        H_phi <= x) ->
+       (forall (tsk_other : sporadic_task)
+          (R_other : Datatypes_nat__canonical__eqtype_Equality)
+          (t1 : time.Time.time) (h : nat) (delta : time.Time.time),
+        (tsk_other, R_other)
+          \in ResponseTimeAnalysisFP.NC_taskset task_cost task_period tsk
+                hp_bounds delta num_cpus h ->
+        Workload.workload job_task sched tsk_other t1 (t1 + delta) <=
+        ResponseTimeAnalysisFP.W_NC task_cost task_period tsk_other delta) ->
+       (forall (tsk_other : sporadic_task)
+          (R_other : Datatypes_nat__canonical__eqtype_Equality)
+          (t1 : time.Time.time) (h : nat) (delta : time.Time.time),
+        (tsk_other, R_other)
+          \in ResponseTimeAnalysisFP.CI_taskset task_cost task_period tsk
+                hp_bounds delta num_cpus h ->
+        Workload.workload job_task sched tsk_other t1 (t1 + delta) <=
+        ResponseTimeAnalysisFP.W task_cost task_period tsk_other R_other
+          delta) ->
+       (forall (h : nat) (j_h : Job),
+        h < H_phi ->
+        ResponseTimeAnalysisFP.job_is_hth_after_j task_period job_arrival
+          job_task arr_seq tsk j h j_h ->
+        ~~
+        Schedule.completed job_cost sched j_h
+          (job_arrival j_h + task_period tsk)) ->
+       (exists j_H_phi : Job,
+          ResponseTimeAnalysisFP.job_is_hth_after_j task_period job_arrival
+            job_task arr_seq tsk j H_phi j_H_phi) ->
+       (forall (h_last : nat) (j_last : Job),
+        ResponseTimeAnalysisFP.tight_chain_ending_at task_period job_arrival
+          job_cost job_task arr_seq num_cpus sched tsk j h_last j_last ->
+        exists (h_worst : nat) (j_worst : Job) (f_worst : time.Time.time),
+          ResponseTimeAnalysisFP.worstcase_job_selected_from_tight_chain
+            task_period job_arrival job_cost job_task arr_seq num_cpus sched
+            tsk j h_last h_worst j_worst f_worst) ->
+       ResponseTime.is_response_time_bound_of_task job_arrival job_cost
+         job_task arr_seq sched tsk
+         (ResponseTimeAnalysisFP.max_R_phi_term task_period tsk chi_min phi
+            H_phi)
+with arguments constr at level 99, constr and "[ pairs ( _ , _ ) | _ <- _ ]"
+defined at level 0 with arguments constr at level 1, constr at level 1
+have incompatible prefixes. One of them will likely not work.

@@ -1,0 +1,8 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedClassicCounting.
+
+Check ImportedClassicCounting.Prosa_Classic_Util_Counting_count_or.
+Check ImportedClassicCounting.Prosa_Classic_Util_Counting_sub_in_count.
+Check ImportedClassicCounting.Prosa_Classic_Util_Counting_count_sub_uniqr.
+Check ImportedClassicCounting.Prosa_Classic_Util_Counting_count_pred_inj.
+Check ImportedClassicCounting.Prosa_Classic_Util_Counting_count_exists.

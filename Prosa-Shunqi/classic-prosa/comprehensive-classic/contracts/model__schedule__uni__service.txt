@@ -1,0 +1,157 @@
+# classic/model/schedule/uni/service.v: 18 declarations
+
+## Print Module
+
+Module service := Struct Module Service End
+
+Module
+Service
+:= Struct
+     Definition service_of_jobs : forall Job : eqtype.Equality.type, schedule.UniprocessorSchedule.schedule Job -> list (eqtype.Equality.sort Job) -> (eqtype.Equality.sort Job -> bool) -> time.Time.time -> time.Time.time -> nat.
+     Definition service_of_higher_or_equal_priority_tasks : forall Job : eqtype.Equality.type, schedule.UniprocessorSchedule.schedule Job -> list (eqtype.Equality.sort Job) -> forall Task : eqtype.Equality.type, (eqtype.Equality.sort Job -> eqtype.Equality.sort Task) -> priority.Priority.FP_policy Task -> eqtype.Equality.sort Task -> time.Time.time -> time.Time.time -> nat.
+     Definition service_of_higher_or_equal_priority_jobs : forall Job : eqtype.Equality.type, schedule.UniprocessorSchedule.schedule Job -> list (eqtype.Equality.sort Job) -> priority.Priority.JLFP_policy Job -> eqtype.Equality.sort Job -> time.Time.time -> time.Time.time -> nat.
+     Parameter service_of_jobs_le_workload : forall (Job : eqtype.Equality.type) (job_cost : eqtype.Equality.sort Job -> time.Time.time) (sched : schedule.UniprocessorSchedule.schedule Job) (jobs : list (eqtype.Equality.sort Job)) (P : eqtype.Equality.sort Job -> bool), schedule.UniprocessorSchedule.completed_jobs_dont_execute job_cost sched -> forall t1 t2 : time.Time.time, is_true (ssrnat.leq (service_of_jobs sched jobs P t1 t2) (workload.Workload.workload_of_jobs job_cost jobs P)).
+     Parameter service_of_jobs_le_delta : forall (Job : eqtype.Equality.type) (sched : schedule.UniprocessorSchedule.schedule Job) (jobs : list (eqtype.Equality.sort Job)) (P : eqtype.Equality.sort Job -> bool), is_true (seq.uniq jobs) -> forall t1 t2 : time.Time.time, is_true (ssrnat.leq (service_of_jobs sched jobs P t1 t2) (ssrnat.subn t2 t1)).
+     Definition task_service_of_jobs_received_in : forall Task Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> eqtype.Equality.sort Task) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> schedule.UniprocessorSchedule.schedule Job -> eqtype.Equality.sort Task -> time.Time.time -> time.Time.time -> time.Time.time -> time.Time.time -> nat.
+     Definition task_service_between : forall Task Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> eqtype.Equality.sort Task) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> schedule.UniprocessorSchedule.schedule Job -> eqtype.Equality.sort Task -> time.Time.time -> time.Time.time -> nat.
+     Parameter service_monotonic : forall (Job : eqtype.Equality.type) (sched : schedule.UniprocessorSchedule.schedule Job) (j : eqtype.Equality.sort Job) (t1 t2 : nat), is_true (ssrnat.leq t1 t2) -> is_true (ssrnat.leq (schedule.UniprocessorSchedule.service sched j t1) (schedule.UniprocessorSchedule.service sched j t2)).
+     Parameter service_during_cat : forall (Job : eqtype.Equality.type) (sched : schedule.UniprocessorSchedule.schedule Job) (j : eqtype.Equality.sort Job) (t t1 t2 : nat), is_true (ssrnat.leq t1 t && ssrnat.leq t t2) -> schedule.UniprocessorSchedule.service_during sched j t1 t2 = ssrnat.addn (schedule.UniprocessorSchedule.service_during sched j t1 t) (schedule.UniprocessorSchedule.service_during sched j t t2).
+     Parameter incremental_service_during : forall (Job : eqtype.Equality.type) (sched : schedule.UniprocessorSchedule.schedule Job) (j : eqtype.Equality.sort Job) (t1 t2 : time.Time.time) (k : nat), is_true (ssrnat.leq (S k) (schedule.UniprocessorSchedule.service_during sched j t1 t2)) -> exists t : nat, is_true (ssrnat.leq t1 t && ssrnat.leq (S t) t2) /\ is_true (schedule.UniprocessorSchedule.scheduled_at sched j t) /\ schedule.UniprocessorSchedule.service_during sched j t1 t = k.
+     Parameter service_of_jobs_le_1 : forall (Job : eqtype.Equality.type) (job_arrival : eqtype.Equality.sort Job -> time.Time.time) (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job), arrival_sequence.ArrivalSequence.arrival_times_are_consistent job_arrival arr_seq -> arrival_sequence.ArrivalSequence.arrival_sequence_is_a_set arr_seq -> forall (sched : schedule.UniprocessorSchedule.schedule Job) (t1 t2 t : time.Time.time) (P : eqtype.Equality.sort Job -> bool), is_true (ssrnat.leq (bigop.bigop.body 0 (arrival_sequence.ArrivalSequence.jobs_arrived_between arr_seq t1 t2) (fun j : eqtype.Equality.sort Job => bigop.BigBody j ssrnat.addn (P j) (schedule.UniprocessorSchedule.service_at sched j t))) 1).
+     Parameter total_service_of_jobs_le_delta : forall (Job : eqtype.Equality.type) (job_arrival : eqtype.Equality.sort Job -> time.Time.time) (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job), arrival_sequence.ArrivalSequence.arrival_times_are_consistent job_arrival arr_seq -> arrival_sequence.ArrivalSequence.arrival_sequence_is_a_set arr_seq -> forall (sched : schedule.UniprocessorSchedule.schedule Job) (t Δ : time.Time.time) (P : eqtype.Equality.sort Job -> bool), is_true (ssrnat.leq (bigop.bigop.body 0 (arrival_sequence.ArrivalSequence.jobs_arrived_between arr_seq t (ssrnat.addn t Δ)) (fun j : eqtype.Equality.sort Job => bigop.BigBody j ssrnat.addn (P j) (schedule.UniprocessorSchedule.service_during sched j t (ssrnat.addn t Δ)))) Δ).
+     Parameter low_service_implies_existence_of_idle_time : forall (Job : eqtype.Equality.type) (job_arrival : eqtype.Equality.sort Job -> time.Time.time) (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job), arrival_sequence.ArrivalSequence.arrival_times_are_consistent job_arrival arr_seq -> forall sched : schedule.UniprocessorSchedule.schedule Job, schedule.UniprocessorSchedule.jobs_must_arrive_to_execute job_arrival sched -> schedule.UniprocessorSchedule.jobs_come_from_arrival_sequence sched arr_seq -> forall t1 t2 : nat, is_true (ssrnat.leq t1 t2) -> is_true (ssrnat.leq (S (service_of_jobs sched (arrival_sequence.ArrivalSequence.jobs_arrived_between arr_seq 0 t2) (ssrbool.PredOfSimpl.coerce ssrbool.predT) t1 t2)) (ssrnat.subn t2 t1)) -> exists t : nat, is_true (ssrnat.leq t1 t && ssrnat.leq (S t) t2) /\ is_true (schedule.UniprocessorSchedule.is_idle sched t).
+     Parameter service_of_jobs_cat_scheduling_interval : forall (Job : eqtype.Equality.type) (job_arrival : eqtype.Equality.sort Job -> time.Time.time) (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job), arrival_sequence.ArrivalSequence.arrival_times_are_consistent job_arrival arr_seq -> forall sched : schedule.UniprocessorSchedule.schedule Job, schedule.UniprocessorSchedule.jobs_must_arrive_to_execute job_arrival sched -> forall (P : eqtype.Equality.sort Job -> bool) (t1 t2 t : nat), is_true (ssrnat.leq t1 t && ssrnat.leq t t2) -> service_of_jobs sched (arrival_sequence.ArrivalSequence.jobs_arrived_between arr_seq t1 t2) P t1 t2 = ssrnat.addn (ssrnat.addn (service_of_jobs sched (arrival_sequence.ArrivalSequence.jobs_arrived_between arr_seq t1 t) P t1 t) (service_of_jobs sched (arrival_sequence.ArrivalSequence.jobs_arrived_between arr_seq t1 t) P t t2)) (service_of_jobs sched (arrival_sequence.ArrivalSequence.jobs_arrived_between arr_seq t t2) P t t2).
+     Parameter service_of_jobs_cat_arrival_interval : forall (Job : eqtype.Equality.type) (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job) (sched : schedule.UniprocessorSchedule.schedule Job) (P : eqtype.Equality.sort Job -> bool) (t1 t2 t : nat), is_true (ssrnat.leq t1 t && ssrnat.leq t t2) -> service_of_jobs sched (arrival_sequence.ArrivalSequence.jobs_arrived_between arr_seq t1 t2) P t t2 = ssrnat.addn (service_of_jobs sched (arrival_sequence.ArrivalSequence.jobs_arrived_between arr_seq t1 t) P t t2) (service_of_jobs sched (arrival_sequence.ArrivalSequence.jobs_arrived_between arr_seq t t2) P t t2).
+     Parameter workload_eq_service_impl_all_jobs_have_completed : forall (Job : eqtype.Equality.type) (job_arrival job_cost : eqtype.Equality.sort Job -> time.Time.time) (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job), arrival_sequence.ArrivalSequence.arrival_times_are_consistent job_arrival arr_seq -> forall sched : schedule.UniprocessorSchedule.schedule Job, schedule.UniprocessorSchedule.jobs_must_arrive_to_execute job_arrival sched -> schedule.UniprocessorSchedule.completed_jobs_dont_execute job_cost sched -> forall (P : eqtype.Equality.sort Job -> bool) (t1 t2 t_compl : time.Time.time), workload.Workload.workload_of_jobs job_cost (arrival_sequence.ArrivalSequence.jobs_arrived_between arr_seq t1 t2) P = service_of_jobs sched (arrival_sequence.ArrivalSequence.jobs_arrived_between arr_seq t1 t2) P t1 t_compl -> forall j : eqtype.Equality.sort Job, is_true (ssrbool.in_mem j (ssrbool.mem (arrival_sequence.ArrivalSequence.jobs_arrived_between arr_seq t1 t2))) -> is_true (P j) -> is_true (schedule.UniprocessorSchedule.completed_by job_cost sched j t_compl).
+     Parameter all_jobs_have_completed_impl_workload_eq_service : forall (Job : eqtype.Equality.type) (job_arrival job_cost : eqtype.Equality.sort Job -> time.Time.time) (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job), arrival_sequence.ArrivalSequence.arrival_times_are_consistent job_arrival arr_seq -> forall sched : schedule.UniprocessorSchedule.schedule Job, schedule.UniprocessorSchedule.jobs_must_arrive_to_execute job_arrival sched -> schedule.UniprocessorSchedule.completed_jobs_dont_execute job_cost sched -> forall (P : eqtype.Equality.sort Job -> bool) (t1 t2 t_compl : time.Time.time), (forall j : eqtype.Equality.sort Job, is_true (ssrbool.in_mem j (ssrbool.mem (arrival_sequence.ArrivalSequence.jobs_arrived_between arr_seq t1 t2))) -> is_true (P j) -> is_true (schedule.UniprocessorSchedule.completed_by job_cost sched j t_compl)) -> workload.Workload.workload_of_jobs job_cost (arrival_sequence.ArrivalSequence.jobs_arrived_between arr_seq t1 t2) P = service_of_jobs sched (arrival_sequence.ArrivalSequence.jobs_arrived_between arr_seq t1 t2) P t1 t_compl.
+     Parameter all_jobs_have_completed_equiv_workload_eq_service : forall (Job : eqtype.Equality.type) (job_arrival job_cost : eqtype.Equality.sort Job -> time.Time.time) (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job), arrival_sequence.ArrivalSequence.arrival_times_are_consistent job_arrival arr_seq -> forall sched : schedule.UniprocessorSchedule.schedule Job, schedule.UniprocessorSchedule.jobs_must_arrive_to_execute job_arrival sched -> schedule.UniprocessorSchedule.completed_jobs_dont_execute job_cost sched -> forall (P : eqtype.Equality.sort Job -> bool) (t1 t2 t_compl : time.Time.time), (forall j : eqtype.Equality.sort Job, is_true (ssrbool.in_mem j (ssrbool.mem (arrival_sequence.ArrivalSequence.jobs_arrived_between arr_seq t1 t2))) -> is_true (P j) -> is_true (schedule.UniprocessorSchedule.completed_by job_cost sched j t_compl)) <-> workload.Workload.workload_of_jobs job_cost (arrival_sequence.ArrivalSequence.jobs_arrived_between arr_seq t1 t2) P = service_of_jobs sched (arrival_sequence.ArrivalSequence.jobs_arrived_between arr_seq t1 t2) P t1 t_compl.
+   End
+
+## About
+
+Service.service_of_jobs : forall {Job : eqtype.Equality.type}, schedule.UniprocessorSchedule.schedule Job -> list (eqtype.Equality.sort Job) -> (eqtype.Equality.sort Job -> bool) -> time.Time.time -> time.Time.time -> nat
+
+Service.service_of_jobs is not universe polymorphic
+Arguments Service.service_of_jobs {Job} sched jobs%list_scope%seq_scope P%function_scope t1 t2
+Service.service_of_jobs is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.service.Service.service_of_jobs
+Declared in library prosa.classic.model.schedule.uni.service, line 38, characters 19-34
+Service.service_of_higher_or_equal_priority_tasks : forall {Job : eqtype.Equality.type}, schedule.UniprocessorSchedule.schedule Job -> list (eqtype.Equality.sort Job) -> forall {Task : eqtype.Equality.type}, (eqtype.Equality.sort Job -> eqtype.Equality.sort Task) -> priority.Priority.FP_policy Task -> eqtype.Equality.sort Task -> time.Time.time -> time.Time.time -> nat
+
+Service.service_of_higher_or_equal_priority_tasks is not universe polymorphic
+Arguments Service.service_of_higher_or_equal_priority_tasks {Job} sched jobs%list_scope%seq_scope {Task} job_task%function_scope higher_eq_priority tsk t1 t2
+Service.service_of_higher_or_equal_priority_tasks is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.service.Service.service_of_higher_or_equal_priority_tasks
+Declared in library prosa.classic.model.schedule.uni.service, line 60, characters 19-60
+Service.service_of_higher_or_equal_priority_jobs : forall {Job : eqtype.Equality.type}, schedule.UniprocessorSchedule.schedule Job -> list (eqtype.Equality.sort Job) -> priority.Priority.JLFP_policy Job -> eqtype.Equality.sort Job -> time.Time.time -> time.Time.time -> nat
+
+Service.service_of_higher_or_equal_priority_jobs is not universe polymorphic
+Arguments Service.service_of_higher_or_equal_priority_jobs {Job} sched jobs%list_scope%seq_scope higher_eq_priority j t1 t2
+Service.service_of_higher_or_equal_priority_jobs is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.service.Service.service_of_higher_or_equal_priority_jobs
+Declared in library prosa.classic.model.schedule.uni.service, line 79, characters 19-59
+Service.service_of_jobs_le_workload : forall {Job : eqtype.Equality.type} (job_cost : eqtype.Equality.sort Job -> time.Time.time) (sched : schedule.UniprocessorSchedule.schedule Job) (jobs : list (eqtype.Equality.sort Job)) (P : eqtype.Equality.sort Job -> bool), schedule.UniprocessorSchedule.completed_jobs_dont_execute job_cost sched -> forall t1 t2 : time.Time.time, is_true (ssrnat.leq (Service.service_of_jobs sched jobs P t1 t2) (workload.Workload.workload_of_jobs job_cost jobs P))
+
+Service.service_of_jobs_le_workload is not universe polymorphic
+Arguments Service.service_of_jobs_le_workload {Job} job_cost%function_scope sched jobs%list_scope%seq_scope P%function_scope H_completed_jobs_dont_execute t1 t2
+Service.service_of_jobs_le_workload is opaque
+Expands to: Constant prosa.classic.model.schedule.uni.service.Service.service_of_jobs_le_workload
+Declared in library prosa.classic.model.schedule.uni.service, line 103, characters 14-41
+Service.service_of_jobs_le_delta : forall {Job : eqtype.Equality.type} (sched : schedule.UniprocessorSchedule.schedule Job) (jobs : list (eqtype.Equality.sort Job)) (P : eqtype.Equality.sort Job -> bool), is_true (seq.uniq jobs) -> forall t1 t2 : time.Time.time, is_true (ssrnat.leq (Service.service_of_jobs sched jobs P t1 t2) (ssrnat.subn t2 t1))
+
+Service.service_of_jobs_le_delta is not universe polymorphic
+Arguments Service.service_of_jobs_le_delta {Job} sched jobs%list_scope%seq_scope P%function_scope H_no_duplicate_jobs t1 t2
+Service.service_of_jobs_le_delta is opaque
+Expands to: Constant prosa.classic.model.schedule.uni.service.Service.service_of_jobs_le_delta
+Declared in library prosa.classic.model.schedule.uni.service, line 126, characters 14-38
+Service.task_service_of_jobs_received_in : forall {Task Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> eqtype.Equality.sort Task) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> schedule.UniprocessorSchedule.schedule Job -> eqtype.Equality.sort Task -> time.Time.time -> time.Time.time -> time.Time.time -> time.Time.time -> nat
+
+Service.task_service_of_jobs_received_in is not universe polymorphic
+Arguments Service.task_service_of_jobs_received_in {Task Job} job_task%function_scope arr_seq sched tsk ta1 ta2 t1 t2
+Service.task_service_of_jobs_received_in is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.service.Service.task_service_of_jobs_received_in
+Declared in library prosa.classic.model.schedule.uni.service, line 180, characters 15-47
+Service.task_service_between : forall {Task Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> eqtype.Equality.sort Task) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> schedule.UniprocessorSchedule.schedule Job -> eqtype.Equality.sort Task -> time.Time.time -> time.Time.time -> nat
+
+Service.task_service_between is not universe polymorphic
+Arguments Service.task_service_between {Task Job} job_task%function_scope arr_seq sched tsk t1 t2
+Service.task_service_between is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.service.Service.task_service_between
+Declared in library prosa.classic.model.schedule.uni.service, line 185, characters 15-35
+Service.service_monotonic : forall {Job : eqtype.Equality.type} (sched : schedule.UniprocessorSchedule.schedule Job) (j : eqtype.Equality.sort Job) (t1 t2 : nat), is_true (ssrnat.leq t1 t2) -> is_true (ssrnat.leq (schedule.UniprocessorSchedule.service sched j t1) (schedule.UniprocessorSchedule.service sched j t2))
+
+Service.service_monotonic is not universe polymorphic
+Arguments Service.service_monotonic {Job} sched j (t1 t2)%nat_scope _
+Service.service_monotonic is opaque
+Expands to: Constant prosa.classic.model.schedule.uni.service.Service.service_monotonic
+Declared in library prosa.classic.model.schedule.uni.service, line 214, characters 10-27
+Service.service_during_cat : forall {Job : eqtype.Equality.type} (sched : schedule.UniprocessorSchedule.schedule Job) (j : eqtype.Equality.sort Job) (t t1 t2 : nat), is_true (ssrnat.leq t1 t && ssrnat.leq t t2) -> schedule.UniprocessorSchedule.service_during sched j t1 t2 = ssrnat.addn (schedule.UniprocessorSchedule.service_during sched j t1 t) (schedule.UniprocessorSchedule.service_during sched j t t2)
+
+Service.service_during_cat is not universe polymorphic
+Arguments Service.service_during_cat {Job} sched j (t t1 t2)%nat_scope _
+Service.service_during_cat is opaque
+Expands to: Constant prosa.classic.model.schedule.uni.service.Service.service_during_cat
+Declared in library prosa.classic.model.schedule.uni.service, line 225, characters 10-28
+Service.incremental_service_during : forall {Job : eqtype.Equality.type} (sched : schedule.UniprocessorSchedule.schedule Job) (j : eqtype.Equality.sort Job) (t1 t2 : time.Time.time) (k : nat), is_true (ssrnat.leq (S k) (schedule.UniprocessorSchedule.service_during sched j t1 t2)) -> exists t : nat, is_true (ssrnat.leq t1 t && ssrnat.leq (S t) t2) /\ is_true (schedule.UniprocessorSchedule.scheduled_at sched j t) /\ schedule.UniprocessorSchedule.service_during sched j t1 t = k
+
+Service.incremental_service_during is not universe polymorphic
+Arguments Service.incremental_service_during {Job} sched j t1 t2 k%nat_scope _
+Service.incremental_service_during is opaque
+Expands to: Constant prosa.classic.model.schedule.uni.service.Service.incremental_service_during
+Declared in library prosa.classic.model.schedule.uni.service, line 238, characters 10-36
+Service.service_of_jobs_le_1 : forall {Job : eqtype.Equality.type} (job_arrival : eqtype.Equality.sort Job -> time.Time.time) (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job), arrival_sequence.ArrivalSequence.arrival_times_are_consistent job_arrival arr_seq -> arrival_sequence.ArrivalSequence.arrival_sequence_is_a_set arr_seq -> forall (sched : schedule.UniprocessorSchedule.schedule Job) (t1 t2 t : time.Time.time) (P : eqtype.Equality.sort Job -> bool), is_true (ssrnat.leq (bigop.bigop.body 0 (arrival_sequence.ArrivalSequence.jobs_arrived_between arr_seq t1 t2) (fun j : eqtype.Equality.sort Job => bigop.BigBody j ssrnat.addn (P j) (schedule.UniprocessorSchedule.service_at sched j t))) 1)
+
+Service.service_of_jobs_le_1 is not universe polymorphic
+Arguments Service.service_of_jobs_le_1 {Job} job_arrival%function_scope arr_seq H_arrival_times_are_consistent H_arr_seq_is_a_set sched t1 t2 t P%function_scope
+Service.service_of_jobs_le_1 is opaque
+Expands to: Constant prosa.classic.model.schedule.uni.service.Service.service_of_jobs_le_1
+Declared in library prosa.classic.model.schedule.uni.service, line 315, characters 10-30
+Service.total_service_of_jobs_le_delta : forall {Job : eqtype.Equality.type} (job_arrival : eqtype.Equality.sort Job -> time.Time.time) (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job), arrival_sequence.ArrivalSequence.arrival_times_are_consistent job_arrival arr_seq -> arrival_sequence.ArrivalSequence.arrival_sequence_is_a_set arr_seq -> forall (sched : schedule.UniprocessorSchedule.schedule Job) (t Δ : time.Time.time) (P : eqtype.Equality.sort Job -> bool), is_true (ssrnat.leq (bigop.bigop.body 0 (arrival_sequence.ArrivalSequence.jobs_arrived_between arr_seq t (ssrnat.addn t Δ)) (fun j : eqtype.Equality.sort Job => bigop.BigBody j ssrnat.addn (P j) (schedule.UniprocessorSchedule.service_during sched j t (ssrnat.addn t Δ)))) Δ)
+
+Service.total_service_of_jobs_le_delta is not universe polymorphic
+Arguments Service.total_service_of_jobs_le_delta {Job} job_arrival%function_scope arr_seq H_arrival_times_are_consistent H_arr_seq_is_a_set sched t Δ P%function_scope
+Service.total_service_of_jobs_le_delta is opaque
+Expands to: Constant prosa.classic.model.schedule.uni.service.Service.total_service_of_jobs_le_delta
+Declared in library prosa.classic.model.schedule.uni.service, line 354, characters 10-40
+Service.low_service_implies_existence_of_idle_time : forall {Job : eqtype.Equality.type} (job_arrival : eqtype.Equality.sort Job -> time.Time.time) (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job), arrival_sequence.ArrivalSequence.arrival_times_are_consistent job_arrival arr_seq -> forall sched : schedule.UniprocessorSchedule.schedule Job, schedule.UniprocessorSchedule.jobs_must_arrive_to_execute job_arrival sched -> schedule.UniprocessorSchedule.jobs_come_from_arrival_sequence sched arr_seq -> forall t1 t2 : nat, is_true (ssrnat.leq t1 t2) -> is_true (ssrnat.leq (S (Service.service_of_jobs sched (arrival_sequence.ArrivalSequence.jobs_arrived_between arr_seq 0 t2) (ssrbool.PredOfSimpl.coerce ssrbool.predT) t1 t2)) (ssrnat.subn t2 t1)) -> exists t : nat, is_true (ssrnat.leq t1 t && ssrnat.leq (S t) t2) /\ is_true (schedule.UniprocessorSchedule.is_idle sched t)
+
+Service.low_service_implies_existence_of_idle_time is not universe polymorphic
+Arguments Service.low_service_implies_existence_of_idle_time {Job} job_arrival%function_scope arr_seq H_arrival_times_are_consistent sched H_jobs_must_arrive_to_execute H_jobs_come_from_arrival_sequence (t1 t2)%nat_scope _ _
+Service.low_service_implies_existence_of_idle_time is opaque
+Expands to: Constant prosa.classic.model.schedule.uni.service.Service.low_service_implies_existence_of_idle_time
+Declared in library prosa.classic.model.schedule.uni.service, line 371, characters 10-52
+Service.service_of_jobs_cat_scheduling_interval : forall {Job : eqtype.Equality.type} (job_arrival : eqtype.Equality.sort Job -> time.Time.time) (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job), arrival_sequence.ArrivalSequence.arrival_times_are_consistent job_arrival arr_seq -> forall sched : schedule.UniprocessorSchedule.schedule Job, schedule.UniprocessorSchedule.jobs_must_arrive_to_execute job_arrival sched -> forall (P : eqtype.Equality.sort Job -> bool) (t1 t2 t : nat), is_true (ssrnat.leq t1 t && ssrnat.leq t t2) -> Service.service_of_jobs sched (arrival_sequence.ArrivalSequence.jobs_arrived_between arr_seq t1 t2) P t1 t2 = ssrnat.addn (ssrnat.addn (Service.service_of_jobs sched (arrival_sequence.ArrivalSequence.jobs_arrived_between arr_seq t1 t) P t1 t) (Service.service_of_jobs sched (arrival_sequence.ArrivalSequence.jobs_arrived_between arr_seq t1 t) P t t2)) (Service.service_of_jobs sched (arrival_sequence.ArrivalSequence.jobs_arrived_between arr_seq t t2) P t t2)
+
+Service.service_of_jobs_cat_scheduling_interval is not universe polymorphic
+Arguments Service.service_of_jobs_cat_scheduling_interval {Job} job_arrival%function_scope arr_seq H_arrival_times_are_consistent sched H_jobs_must_arrive_to_execute P%function_scope (t1 t2 t)%nat_scope _
+Service.service_of_jobs_cat_scheduling_interval is opaque
+Expands to: Constant prosa.classic.model.schedule.uni.service.Service.service_of_jobs_cat_scheduling_interval
+Declared in library prosa.classic.model.schedule.uni.service, line 411, characters 12-51
+Service.service_of_jobs_cat_arrival_interval : forall {Job : eqtype.Equality.type} (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job) (sched : schedule.UniprocessorSchedule.schedule Job) (P : eqtype.Equality.sort Job -> bool) (t1 t2 t : nat), is_true (ssrnat.leq t1 t && ssrnat.leq t t2) -> Service.service_of_jobs sched (arrival_sequence.ArrivalSequence.jobs_arrived_between arr_seq t1 t2) P t t2 = ssrnat.addn (Service.service_of_jobs sched (arrival_sequence.ArrivalSequence.jobs_arrived_between arr_seq t1 t) P t t2) (Service.service_of_jobs sched (arrival_sequence.ArrivalSequence.jobs_arrived_between arr_seq t t2) P t t2)
+
+Service.service_of_jobs_cat_arrival_interval is not universe polymorphic
+Arguments Service.service_of_jobs_cat_arrival_interval {Job} arr_seq sched P%function_scope (t1 t2 t)%nat_scope _
+Service.service_of_jobs_cat_arrival_interval is opaque
+Expands to: Constant prosa.classic.model.schedule.uni.service.Service.service_of_jobs_cat_arrival_interval
+Declared in library prosa.classic.model.schedule.uni.service, line 444, characters 12-48
+Service.workload_eq_service_impl_all_jobs_have_completed : forall {Job : eqtype.Equality.type} (job_arrival job_cost : eqtype.Equality.sort Job -> time.Time.time) (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job), arrival_sequence.ArrivalSequence.arrival_times_are_consistent job_arrival arr_seq -> forall sched : schedule.UniprocessorSchedule.schedule Job, schedule.UniprocessorSchedule.jobs_must_arrive_to_execute job_arrival sched -> schedule.UniprocessorSchedule.completed_jobs_dont_execute job_cost sched -> forall (P : eqtype.Equality.sort Job -> bool) (t1 t2 t_compl : time.Time.time), workload.Workload.workload_of_jobs job_cost (arrival_sequence.ArrivalSequence.jobs_arrived_between arr_seq t1 t2) P = Service.service_of_jobs sched (arrival_sequence.ArrivalSequence.jobs_arrived_between arr_seq t1 t2) P t1 t_compl -> forall j : eqtype.Equality.sort Job, is_true (ssrbool.in_mem j (ssrbool.mem (arrival_sequence.ArrivalSequence.jobs_arrived_between arr_seq t1 t2))) -> is_true (P j) -> is_true (schedule.UniprocessorSchedule.completed_by job_cost sched j t_compl)
+
+Service.workload_eq_service_impl_all_jobs_have_completed is not universe polymorphic
+Arguments Service.workload_eq_service_impl_all_jobs_have_completed {Job} (job_arrival job_cost)%function_scope arr_seq H_arrival_times_are_consistent sched H_jobs_must_arrive_to_execute H_completed_jobs_dont_execute P%function_scope t1 t2 t_compl _ j _ _
+Service.workload_eq_service_impl_all_jobs_have_completed is opaque
+Expands to: Constant prosa.classic.model.schedule.uni.service.Service.workload_eq_service_impl_all_jobs_have_completed
+Declared in library prosa.classic.model.schedule.uni.service, line 477, characters 12-60
+Service.all_jobs_have_completed_impl_workload_eq_service : forall {Job : eqtype.Equality.type} (job_arrival job_cost : eqtype.Equality.sort Job -> time.Time.time) (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job), arrival_sequence.ArrivalSequence.arrival_times_are_consistent job_arrival arr_seq -> forall sched : schedule.UniprocessorSchedule.schedule Job, schedule.UniprocessorSchedule.jobs_must_arrive_to_execute job_arrival sched -> schedule.UniprocessorSchedule.completed_jobs_dont_execute job_cost sched -> forall (P : eqtype.Equality.sort Job -> bool) (t1 t2 t_compl : time.Time.time), (forall j : eqtype.Equality.sort Job, is_true (ssrbool.in_mem j (ssrbool.mem (arrival_sequence.ArrivalSequence.jobs_arrived_between arr_seq t1 t2))) -> is_true (P j) -> is_true (schedule.UniprocessorSchedule.completed_by job_cost sched j t_compl)) -> workload.Workload.workload_of_jobs job_cost (arrival_sequence.ArrivalSequence.jobs_arrived_between arr_seq t1 t2) P = Service.service_of_jobs sched (arrival_sequence.ArrivalSequence.jobs_arrived_between arr_seq t1 t2) P t1 t_compl
+
+Service.all_jobs_have_completed_impl_workload_eq_service is not universe polymorphic
+Arguments Service.all_jobs_have_completed_impl_workload_eq_service {Job} (job_arrival job_cost)%function_scope arr_seq H_arrival_times_are_consistent sched H_jobs_must_arrive_to_execute H_completed_jobs_dont_execute P%function_scope t1 t2 t_compl _%function_scope
+Service.all_jobs_have_completed_impl_workload_eq_service is opaque
+Expands to: Constant prosa.classic.model.schedule.uni.service.Service.all_jobs_have_completed_impl_workload_eq_service
+Declared in library prosa.classic.model.schedule.uni.service, line 520, characters 12-60
+Service.all_jobs_have_completed_equiv_workload_eq_service : forall {Job : eqtype.Equality.type} (job_arrival job_cost : eqtype.Equality.sort Job -> time.Time.time) (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job), arrival_sequence.ArrivalSequence.arrival_times_are_consistent job_arrival arr_seq -> forall sched : schedule.UniprocessorSchedule.schedule Job, schedule.UniprocessorSchedule.jobs_must_arrive_to_execute job_arrival sched -> schedule.UniprocessorSchedule.completed_jobs_dont_execute job_cost sched -> forall (P : eqtype.Equality.sort Job -> bool) (t1 t2 t_compl : time.Time.time), (forall j : eqtype.Equality.sort Job, is_true (ssrbool.in_mem j (ssrbool.mem (arrival_sequence.ArrivalSequence.jobs_arrived_between arr_seq t1 t2))) -> is_true (P j) -> is_true (schedule.UniprocessorSchedule.completed_by job_cost sched j t_compl)) <-> workload.Workload.workload_of_jobs job_cost (arrival_sequence.ArrivalSequence.jobs_arrived_between arr_seq t1 t2) P = Service.service_of_jobs sched (arrival_sequence.ArrivalSequence.jobs_arrived_between arr_seq t1 t2) P t1 t_compl
+
+Service.all_jobs_have_completed_equiv_workload_eq_service is not universe polymorphic
+Arguments Service.all_jobs_have_completed_equiv_workload_eq_service {Job} (job_arrival job_cost)%function_scope arr_seq H_arrival_times_are_consistent sched H_jobs_must_arrive_to_execute H_completed_jobs_dont_execute P%function_scope t1 t2 t_compl
+Service.all_jobs_have_completed_equiv_workload_eq_service is opaque
+Expands to: Constant prosa.classic.model.schedule.uni.service.Service.all_jobs_have_completed_equiv_workload_eq_service
+Declared in library prosa.classic.model.schedule.uni.service, line 572, characters 12-61

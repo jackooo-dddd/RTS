@@ -1,0 +1,66 @@
+(* Recomputes the authoritative `Check @name` fingerprints for classic/model/arrival/basic/job.v. *)
+Set Warnings "-notation-overridden,-missing-proof-command".
+Set Printing Width 100000.
+Require Import prosa.classic.model.arrival.basic.arrival_sequence.
+Require Import prosa.classic.model.arrival.basic.job.
+Require Import prosa.classic.model.arrival.basic.task.
+Require Import prosa.classic.model.time.
+Require Import prosa.classic.util.all.
+Require Import prosa.classic.util.bigcat.
+Require Import prosa.classic.util.bigord.
+Require Import prosa.classic.util.counting.
+Require Import prosa.classic.util.div_mod.
+Require Import prosa.classic.util.fixedpoint.
+Require Import prosa.classic.util.induction.
+Require Import prosa.classic.util.list.
+Require Import prosa.classic.util.minmax.
+Require Import prosa.classic.util.nat.
+Require Import prosa.classic.util.notation.
+Require Import prosa.classic.util.ord_quantifier.
+Require Import prosa.classic.util.pick.
+Require Import prosa.classic.util.powerset.
+Require Import prosa.classic.util.seqset.
+Require Import prosa.classic.util.sorting.
+Require Import prosa.classic.util.ssromega.
+Require Import prosa.classic.util.step_function.
+Require Import prosa.classic.util.sum.
+Require Import prosa.classic.util.tactics.
+Require Import prosa.util.bigcat.
+Require Import prosa.util.div_mod.
+Require Import prosa.util.epsilon.
+Require Import prosa.util.list.
+Require Import prosa.util.minmax.
+Require Import prosa.util.nat.
+Require Import prosa.util.notation.
+Require Import prosa.util.rel.
+Require Import prosa.util.seqset.
+Require Import prosa.util.setoid.
+Require Import prosa.util.subadditivity.
+Require Import prosa.util.sum.
+Require Import prosa.util.supremum.
+Require Import prosa.util.tactics.
+From mathcomp Require Import ssreflect ssrbool ssrfun eqtype ssrnat seq fintype bigop div path.
+Goal True. idtac "BEGIN|prosa.classic.model.arrival.basic.job.Job.job_cost_positive". Abort.
+Check @prosa.classic.model.arrival.basic.job.Job.job_cost_positive.
+Goal True. idtac "END|prosa.classic.model.arrival.basic.job.Job.job_cost_positive". Abort.
+Goal True. idtac "BEGIN|prosa.classic.model.arrival.basic.job.Job.job_deadline_positive". Abort.
+Check @prosa.classic.model.arrival.basic.job.Job.job_deadline_positive.
+Goal True. idtac "END|prosa.classic.model.arrival.basic.job.Job.job_deadline_positive". Abort.
+Goal True. idtac "BEGIN|prosa.classic.model.arrival.basic.job.Job.job_cost_le_deadline". Abort.
+Check @prosa.classic.model.arrival.basic.job.Job.job_cost_le_deadline.
+Goal True. idtac "END|prosa.classic.model.arrival.basic.job.Job.job_cost_le_deadline". Abort.
+Goal True. idtac "BEGIN|prosa.classic.model.arrival.basic.job.Job.valid_realtime_job". Abort.
+Check @prosa.classic.model.arrival.basic.job.Job.valid_realtime_job.
+Goal True. idtac "END|prosa.classic.model.arrival.basic.job.Job.valid_realtime_job". Abort.
+Goal True. idtac "BEGIN|prosa.classic.model.arrival.basic.job.Job.job_cost_le_task_cost". Abort.
+Check @prosa.classic.model.arrival.basic.job.Job.job_cost_le_task_cost.
+Goal True. idtac "END|prosa.classic.model.arrival.basic.job.Job.job_cost_le_task_cost". Abort.
+Goal True. idtac "BEGIN|prosa.classic.model.arrival.basic.job.Job.job_deadline_eq_task_deadline". Abort.
+Check @prosa.classic.model.arrival.basic.job.Job.job_deadline_eq_task_deadline.
+Goal True. idtac "END|prosa.classic.model.arrival.basic.job.Job.job_deadline_eq_task_deadline". Abort.
+Goal True. idtac "BEGIN|prosa.classic.model.arrival.basic.job.Job.valid_sporadic_job". Abort.
+Check @prosa.classic.model.arrival.basic.job.Job.valid_sporadic_job.
+Goal True. idtac "END|prosa.classic.model.arrival.basic.job.Job.valid_sporadic_job". Abort.
+Goal True. idtac "BEGIN|prosa.classic.model.arrival.basic.job.Job.cost_of_jobs_from_arrival_sequence_le_task_cost". Abort.
+Check @prosa.classic.model.arrival.basic.job.Job.cost_of_jobs_from_arrival_sequence_le_task_cost.
+Goal True. idtac "END|prosa.classic.model.arrival.basic.job.Job.cost_of_jobs_from_arrival_sequence_le_task_cost". Abort.

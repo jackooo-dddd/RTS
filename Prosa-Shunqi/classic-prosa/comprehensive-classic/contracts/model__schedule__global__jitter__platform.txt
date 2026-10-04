@@ -1,0 +1,52 @@
+# classic/model/schedule/global/jitter/platform.v: 6 declarations
+
+## Print Module
+
+Module platform := Struct Module Platform End
+
+Module Platform := Struct Definition work_conserving : forall Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> forall num_cpus : nat, schedule.Schedule.schedule Job num_cpus -> Prop. Definition work_conserving_count : forall Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> forall num_cpus : nat, schedule.Schedule.schedule Job num_cpus -> Prop. Definition respects_FP_policy : forall sporadic_task Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> eqtype.Equality.sort sporadic_task) -> (eqtype.Equality.sort Job -> time.Time.time) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> forall num_cpus : nat, schedule.Schedule.schedule Job num_cpus -> priority.Priority.FP_policy sporadic_task -> Prop. Definition respects_JLFP_policy : forall Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> forall num_cpus : nat, schedule.Schedule.schedule Job num_cpus -> priority.Priority.JLFP_policy Job -> Prop. Definition respects_JLDP_policy : forall Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> forall num_cpus : nat, schedule.Schedule.schedule Job num_cpus -> priority.Priority.JLDP_policy Job -> Prop. Parameter work_conserving_eq_work_conserving_count : forall (Job : eqtype.Equality.type) (job_arrival job_cost job_jitter : eqtype.Equality.sort Job -> time.Time.time) (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job) (num_cpus : nat) (sched : schedule.Schedule.schedule Job num_cpus), work_conserving job_arrival job_cost job_jitter arr_seq sched <-> work_conserving_count job_arrival job_cost job_jitter arr_seq sched. End
+
+## About
+
+Platform.work_conserving : forall {Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> forall {num_cpus : nat}, schedule.Schedule.schedule Job num_cpus -> Prop
+
+Platform.work_conserving is not universe polymorphic
+Arguments Platform.work_conserving {Job} (job_arrival job_cost job_jitter)%function_scope arr_seq {num_cpus}%nat_scope sched
+Platform.work_conserving is transparent
+Expands to: Constant prosa.classic.model.schedule.global.jitter.platform.Platform.work_conserving
+Declared in library prosa.classic.model.schedule.global.jitter.platform, line 40, characters 17-32
+Platform.work_conserving_count : forall {Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> forall {num_cpus : nat}, schedule.Schedule.schedule Job num_cpus -> Prop
+
+Platform.work_conserving_count is not universe polymorphic
+Arguments Platform.work_conserving_count {Job} (job_arrival job_cost job_jitter)%function_scope arr_seq {num_cpus}%nat_scope sched
+Platform.work_conserving_count is transparent
+Expands to: Constant prosa.classic.model.schedule.global.jitter.platform.Platform.work_conserving_count
+Declared in library prosa.classic.model.schedule.global.jitter.platform, line 49, characters 17-38
+Platform.respects_FP_policy : forall {sporadic_task Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> eqtype.Equality.sort sporadic_task) -> (eqtype.Equality.sort Job -> time.Time.time) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> forall {num_cpus : nat}, schedule.Schedule.schedule Job num_cpus -> priority.Priority.FP_policy sporadic_task -> Prop
+
+Platform.respects_FP_policy is not universe polymorphic
+Arguments Platform.respects_FP_policy {sporadic_task Job} (job_arrival job_cost job_task job_jitter)%function_scope arr_seq {num_cpus}%nat_scope sched higher_eq_priority
+Platform.respects_FP_policy is transparent
+Expands to: Constant prosa.classic.model.schedule.global.jitter.platform.Platform.respects_FP_policy
+Declared in library prosa.classic.model.schedule.global.jitter.platform, line 64, characters 17-35
+Platform.respects_JLFP_policy : forall {Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> forall {num_cpus : nat}, schedule.Schedule.schedule Job num_cpus -> priority.Priority.JLFP_policy Job -> Prop
+
+Platform.respects_JLFP_policy is not universe polymorphic
+Arguments Platform.respects_JLFP_policy {Job} (job_arrival job_cost job_jitter)%function_scope arr_seq {num_cpus}%nat_scope sched higher_eq_priority
+Platform.respects_JLFP_policy is transparent
+Expands to: Constant prosa.classic.model.schedule.global.jitter.platform.Platform.respects_JLFP_policy
+Declared in library prosa.classic.model.schedule.global.jitter.platform, line 81, characters 17-37
+Platform.respects_JLDP_policy : forall {Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> forall {num_cpus : nat}, schedule.Schedule.schedule Job num_cpus -> priority.Priority.JLDP_policy Job -> Prop
+
+Platform.respects_JLDP_policy is not universe polymorphic
+Arguments Platform.respects_JLDP_policy {Job} (job_arrival job_cost job_jitter)%function_scope arr_seq {num_cpus}%nat_scope sched higher_eq_priority
+Platform.respects_JLDP_policy is transparent
+Expands to: Constant prosa.classic.model.schedule.global.jitter.platform.Platform.respects_JLDP_policy
+Declared in library prosa.classic.model.schedule.global.jitter.platform, line 98, characters 17-37
+Platform.work_conserving_eq_work_conserving_count : forall {Job : eqtype.Equality.type} (job_arrival job_cost job_jitter : eqtype.Equality.sort Job -> time.Time.time) (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job) {num_cpus : nat} (sched : schedule.Schedule.schedule Job num_cpus), Platform.work_conserving job_arrival job_cost job_jitter arr_seq sched <-> Platform.work_conserving_count job_arrival job_cost job_jitter arr_seq sched
+
+Platform.work_conserving_eq_work_conserving_count is not universe polymorphic
+Arguments Platform.work_conserving_eq_work_conserving_count {Job} (job_arrival job_cost job_jitter)%function_scope arr_seq {num_cpus}%nat_scope sched
+Platform.work_conserving_eq_work_conserving_count is opaque
+Expands to: Constant prosa.classic.model.schedule.global.jitter.platform.Platform.work_conserving_eq_work_conserving_count
+Declared in library prosa.classic.model.schedule.global.jitter.platform, line 118, characters 14-54

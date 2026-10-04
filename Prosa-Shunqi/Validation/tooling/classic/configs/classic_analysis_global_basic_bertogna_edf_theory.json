@@ -1,0 +1,107 @@
+{
+  "rank": 49,
+  "layer": 16,
+  "slug": "classic_analysis_global_basic_bertogna_edf_theory",
+  "tag": "CBEDF",
+  "export_name": "ClassicBertognaEdf",
+  "source": "classic/analysis/global/basic/bertogna_edf_theory.v",
+  "production": "Prosa/Classic/Analysis/Global/Basic/BertognaEdfTheory.lean",
+  "fixtures": [
+    "ClassicBertognaEdfInterface"
+  ],
+  "export_module": "Validation.fixtures.translation_order.ClassicBertognaEdfInterface",
+  "interface_theorems": [
+    "Prosa.Validation.ClassicBertognaEdfInterface.finRange_any",
+    "Prosa.Validation.ClassicBertognaEdfInterface.bigCatFin_range'",
+    "Prosa.Validation.ClassicBertognaEdfInterface.fin_sum_range'",
+    "Prosa.Validation.ClassicBertognaEdfInterface.bigCat_range'",
+    "Prosa.Validation.ClassicBertognaEdfInterface.service_at_sum",
+    "Prosa.Validation.ClassicBertognaEdfInterface.dedup_nil",
+    "Prosa.Validation.ClassicBertognaEdfInterface.dedup_cons_mem",
+    "Prosa.Validation.ClassicBertognaEdfInterface.dedup_cons_not_mem",
+    "Prosa.Validation.DivModInterface.production_div_floor_eq",
+    "Prosa.Validation.DivModInterface.production_div_ceil_eq",
+    "Prosa.Validation.DivModInterface.production_div_add_mod",
+    "Prosa.Validation.DivModInterface.production_mod_lt",
+    "Prosa.Validation.DivModInterface.production_div_zero",
+    "Prosa.Validation.DivModInterface.production_mod_zero",
+    "Prosa.Validation.DivModInterface.production_dvd_iff_mod_eq_zero"
+  ],
+  "computational": [],
+  "chain": [
+    "ClassicBertognaEdfNatSub",
+    "ClassicBertognaEdfOps",
+    "ClassicBertognaEdfBase",
+    "ClassicBertognaEdfList",
+    "ClassicBertognaEdfOrd",
+    "ClassicBertognaEdfCorrespondence"
+  ],
+  "base_run": null,
+  "base_checks": [],
+  "previous_status": "classic_analysis_global_basic_interference_bound_edf_module_status.json",
+  "input_relations": [
+    "job and task types: eqTypes identified, Lean DecidableEq instances = the eqTypes' decision procedures; job_task identified",
+    "natural numbers (time, num_cpus) by SubNatRel; processors 'I_n and Fin n by their values; schedules pointwise on related processors and times with option values by the constructor map; job and task parameters pointwise through SubNatRel; arrival sequences pointwise on related times; task sets by their underlying sequences; sequences of (task, time) pairs elementwise by the pair conversion; FP policies pointwise; affinities by their underlying sequences through the ordinal conversion, task affinities pointwise (two-way totals)"
+  ],
+  "lean_representation_note": "as for the accepted classic schedule, task, task_arrival, affinity, interference, platform, response_time, workload_bound and interference_bound_fp validations; Boolean tests in propositions are `= true`; the section-local `Let`s are unfolded",
+  "normalization": {
+    "theorem_types": [],
+    "subexpression_heads": [],
+    "definition_bodies": [],
+    "body_projections": [
+      "Prosa.Classic.Model.Schedule.Global.Basic.Schedule.Schedule.service=Prosa.Validation.ClassicBertognaEdfInterface.service_proj=Prosa.Validation.ClassicBertognaEdfInterface.service_proj_guard",
+      "Prosa.Classic.Model.Schedule.Global.Basic.Schedule.Schedule.service_during=Prosa.Validation.ClassicBertognaEdfInterface.service_during_proj=Prosa.Validation.ClassicBertognaEdfInterface.service_during_proj_guard",
+      "Prosa.Classic.Model.Schedule.Global.Basic.Interference.Interference.total_interference=Prosa.Validation.ClassicBertognaEdfInterface.total_interference_proj=Prosa.Validation.ClassicBertognaEdfInterface.total_interference_proj_guard",
+      "Prosa.Classic.Model.Schedule.Global.Basic.Interference.Interference.job_interference=Prosa.Validation.ClassicBertognaEdfInterface.job_interference_proj=Prosa.Validation.ClassicBertognaEdfInterface.job_interference_proj_guard",
+      "Prosa.Classic.Model.Schedule.Global.Basic.Interference.Interference.task_interference=Prosa.Validation.ClassicBertognaEdfInterface.task_interference_proj=Prosa.Validation.ClassicBertognaEdfInterface.task_interference_proj_guard"
+    ]
+  },
+  "kernel_guard_artifacts": [
+    "Validation/fixtures/translation_order/ClassicBertognaEdfInterface.lean"
+  ],
+  "own_qualified_in_type": [],
+  "dependency_qualified_in_type": [
+    "prosa.classic.analysis.global.basic.interference_bound_edf.InterferenceBoundEDF.edf_specific_interference_bound",
+    "prosa.classic.analysis.global.basic.interference_bound_edf.InterferenceBoundEDF.interference_bound_edf",
+    "prosa.classic.analysis.global.basic.interference_bound_edf.InterferenceBoundEDF.total_interference_bound_edf",
+    "prosa.classic.analysis.global.basic.workload_bound.WorkloadBound.W",
+    "prosa.classic.model.schedule.global.basic.interference.Interference.task_interference",
+    "prosa.classic.model.schedule.global.basic.interference.Interference.total_interference",
+    "prosa.classic.model.schedule.global.basic.platform.Platform.respects_JLFP_policy",
+    "prosa.classic.model.schedule.global.basic.platform.Platform.work_conserving",
+    "prosa.classic.model.schedule.global.response_time.ResponseTime.is_response_time_bound_of_task"
+  ],
+  "helpers": [
+    "cs_forall_ncpus_sched",
+    "cs_ico"
+  ],
+  "export_diagnosis": "as for the accepted classic schedule and APA interference exports (service_at is a filtered Finset sum over Fin num_cpus; validation-only interface theorems exported with their proof bodies); service/service_during and the interference definitions through kernel-guarded rfl body projections.",
+  "probe_extra": [],
+  "prop_sprop_foundation": [
+    "PropSPropFoundation.interpret_strict"
+  ],
+  "importer_foundation": [
+    "ImportedClassicBertognaEdf.Classical_choice",
+    "ImportedClassicBertognaEdf.Quot_sound",
+    "ImportedClassicBertognaEdf.propext",
+    "PrimInt63.eqb",
+    "PrimInt63.int",
+    "PrimInt63.land",
+    "PrimInt63.lsr"
+  ],
+  "rocq_sprop_uip": [
+    "ClassicBertognaEdfBase.I.HEq_inst1",
+    "ClassicBertognaEdfBase.I.True",
+    "ClassicBertognaEdfOrd.I.HEq",
+    "ClassicBertognaEdfOrd.I.HEq_inst1",
+    "ClassicBertognaEdfOrd.I.True",
+    "I.HEq",
+    "I.HEq_inst1",
+    "I.True",
+    "ImportedClassicBertognaEdf.HEq_inst1",
+    "ImportedClassicBertognaEdf.True",
+    "Lean.eq",
+    "Lean.eq_inst1",
+    "SubadditivityNatCorrespondence.SubNatTrue"
+  ]
+}

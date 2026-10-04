@@ -1,0 +1,96 @@
+import Validation.fixtures.translation_order.ClassicLimitedModelInterface
+set_option pp.fieldNotation false
+
+#check @Prosa.Classic.Model.Schedule.Uni.Limited.Platform.Limited.ModelWithLimitedPreemptions.lengths_of_segments
+#check @Prosa.Classic.Model.Schedule.Uni.Limited.Platform.Limited.ModelWithLimitedPreemptions.job_max_nps
+#check @Prosa.Classic.Model.Schedule.Uni.Limited.Platform.Limited.ModelWithLimitedPreemptions.job_last_nps
+#check @Prosa.Classic.Model.Schedule.Uni.Limited.Platform.Limited.ModelWithLimitedPreemptions.job_with_zero_cost_consists_of_one_empty_segment
+#check @Prosa.Classic.Model.Schedule.Uni.Limited.Platform.Limited.ModelWithLimitedPreemptions.last_segment_is_positive
+#check @Prosa.Classic.Model.Schedule.Uni.Limited.Platform.Limited.ModelWithLimitedPreemptions.beginning_of_execution_in_preemption_points
+#check @Prosa.Classic.Model.Schedule.Uni.Limited.Platform.Limited.ModelWithLimitedPreemptions.end_of_execution_in_preemption_points
+#check @Prosa.Classic.Model.Schedule.Uni.Limited.Platform.Limited.ModelWithLimitedPreemptions.preemption_points_is_nondecreasing_sequence
+#check @Prosa.Classic.Model.Schedule.Uni.Limited.Platform.Limited.ModelWithLimitedPreemptions.limited_preemptions_job_model
+#check @Prosa.Classic.Model.Schedule.Uni.Limited.Platform.Limited.ModelWithLimitedPreemptions.task_last_nps
+#check @Prosa.Classic.Model.Schedule.Uni.Limited.Platform.Limited.ModelWithLimitedPreemptions.task_max_nps
+#check @Prosa.Classic.Model.Schedule.Uni.Limited.Platform.Limited.ModelWithLimitedPreemptions.task_beginning_of_execution_in_preemption_points
+#check @Prosa.Classic.Model.Schedule.Uni.Limited.Platform.Limited.ModelWithLimitedPreemptions.task_end_of_execution_in_preemption_points
+#check @Prosa.Classic.Model.Schedule.Uni.Limited.Platform.Limited.ModelWithLimitedPreemptions.task_preemption_points_is_nondecreasing_sequence
+#check @Prosa.Classic.Model.Schedule.Uni.Limited.Platform.Limited.ModelWithLimitedPreemptions.job_consists_of_the_same_number_of_segments_as_task
+#check @Prosa.Classic.Model.Schedule.Uni.Limited.Platform.Limited.ModelWithLimitedPreemptions.lengths_of_task_segments_bound_length_of_job_segments
+#check @Prosa.Classic.Model.Schedule.Uni.Limited.Platform.Limited.ModelWithLimitedPreemptions.task_segments_are_nonempty
+#check @Prosa.Classic.Model.Schedule.Uni.Limited.Platform.Limited.ModelWithLimitedPreemptions.fixed_preemption_points_task_model
+#check @Prosa.Classic.Model.Schedule.Uni.Limited.Platform.Limited.ModelWithLimitedPreemptions.fixed_preemption_points_model
+#check @Prosa.Classic.Model.Schedule.Uni.Limited.Platform.Limited.ModelWithLimitedPreemptions.job_max_np_segment_le_task_max_np_segment
+#check @Prosa.Classic.Model.Schedule.Uni.Limited.Platform.Limited.ModelWithLimitedPreemptions.model_with_floating_nonpreemptive_regions
+#check @Prosa.Classic.Model.Schedule.Uni.Limited.Platform.Limited.ModelWithLimitedPreemptions.can_be_preempted_for_model_with_limited_preemptions
+#check @Prosa.Classic.Model.Schedule.Uni.Limited.Platform.Limited.ModelWithLimitedPreemptions.is_schedule_with_limited_preemptions
+#check @Prosa.Classic.Model.Schedule.Uni.Limited.Platform.Limited.ModelWithLimitedPreemptions.list_of_preemption_point_is_not_empty
+#check @Prosa.Classic.Model.Schedule.Uni.Limited.Platform.Limited.ModelWithLimitedPreemptions.zero_in_preemption_points
+#check @Prosa.Classic.Model.Schedule.Uni.Limited.Platform.Limited.ModelWithLimitedPreemptions.job_cost_in_nonpreemptive_points
+#check @Prosa.Classic.Model.Schedule.Uni.Limited.Platform.Limited.ModelWithLimitedPreemptions.number_of_preemption_points_at_least_two
+#check @Prosa.Classic.Model.Schedule.Uni.Limited.Platform.Limited.ModelWithLimitedPreemptions.model_with_fixed_preemption_points_is_correct
+#check @Prosa.Classic.Model.Schedule.Uni.Limited.Platform.Limited.ModelWithLimitedPreemptions.model_with_fixed_preemption_points_is_model_with_bounded_nonpreemptive_regions
+#check @Prosa.Validation.ClassicLimitedModelInterface.distances_nil
+#check @Prosa.Validation.ClassicLimitedModelInterface.distances_single
+#check @Prosa.Validation.ClassicLimitedModelInterface.distances_cons2
+#check @Prosa.Validation.ClassicLimitedModelInterface.max0_eq
+#check @Prosa.Validation.ClassicLimitedModelInterface.foldl_max_nil
+#check @Prosa.Validation.ClassicLimitedModelInterface.foldl_max_cons
+#check @Prosa.Validation.ClassicLimitedModelInterface.first0_nil
+#check @Prosa.Validation.ClassicLimitedModelInterface.first0_cons
+#check @Prosa.Validation.ClassicLimitedModelInterface.last0_nil
+#check @Prosa.Validation.ClassicLimitedModelInterface.last0_single
+#check @Prosa.Validation.ClassicLimitedModelInterface.last0_cons2
+#check @Prosa.Validation.ClassicLimitedModelInterface.getD_nil
+#check @Prosa.Validation.ClassicLimitedModelInterface.getD_cons_zero
+#check @Prosa.Validation.ClassicLimitedModelInterface.getD_cons_succ
+#check @Prosa.Validation.ClassicLimitedModelInterface.length_nil
+#check @Prosa.Validation.ClassicLimitedModelInterface.length_cons
+#check @Prosa.Validation.ClassicLimitedModelInterface.nondecreasing_sequence_eq
+
+#print axioms Prosa.Classic.Model.Schedule.Uni.Limited.Platform.Limited.ModelWithLimitedPreemptions.lengths_of_segments
+#print axioms Prosa.Classic.Model.Schedule.Uni.Limited.Platform.Limited.ModelWithLimitedPreemptions.job_max_nps
+#print axioms Prosa.Classic.Model.Schedule.Uni.Limited.Platform.Limited.ModelWithLimitedPreemptions.job_last_nps
+#print axioms Prosa.Classic.Model.Schedule.Uni.Limited.Platform.Limited.ModelWithLimitedPreemptions.job_with_zero_cost_consists_of_one_empty_segment
+#print axioms Prosa.Classic.Model.Schedule.Uni.Limited.Platform.Limited.ModelWithLimitedPreemptions.last_segment_is_positive
+#print axioms Prosa.Classic.Model.Schedule.Uni.Limited.Platform.Limited.ModelWithLimitedPreemptions.beginning_of_execution_in_preemption_points
+#print axioms Prosa.Classic.Model.Schedule.Uni.Limited.Platform.Limited.ModelWithLimitedPreemptions.end_of_execution_in_preemption_points
+#print axioms Prosa.Classic.Model.Schedule.Uni.Limited.Platform.Limited.ModelWithLimitedPreemptions.preemption_points_is_nondecreasing_sequence
+#print axioms Prosa.Classic.Model.Schedule.Uni.Limited.Platform.Limited.ModelWithLimitedPreemptions.limited_preemptions_job_model
+#print axioms Prosa.Classic.Model.Schedule.Uni.Limited.Platform.Limited.ModelWithLimitedPreemptions.task_last_nps
+#print axioms Prosa.Classic.Model.Schedule.Uni.Limited.Platform.Limited.ModelWithLimitedPreemptions.task_max_nps
+#print axioms Prosa.Classic.Model.Schedule.Uni.Limited.Platform.Limited.ModelWithLimitedPreemptions.task_beginning_of_execution_in_preemption_points
+#print axioms Prosa.Classic.Model.Schedule.Uni.Limited.Platform.Limited.ModelWithLimitedPreemptions.task_end_of_execution_in_preemption_points
+#print axioms Prosa.Classic.Model.Schedule.Uni.Limited.Platform.Limited.ModelWithLimitedPreemptions.task_preemption_points_is_nondecreasing_sequence
+#print axioms Prosa.Classic.Model.Schedule.Uni.Limited.Platform.Limited.ModelWithLimitedPreemptions.job_consists_of_the_same_number_of_segments_as_task
+#print axioms Prosa.Classic.Model.Schedule.Uni.Limited.Platform.Limited.ModelWithLimitedPreemptions.lengths_of_task_segments_bound_length_of_job_segments
+#print axioms Prosa.Classic.Model.Schedule.Uni.Limited.Platform.Limited.ModelWithLimitedPreemptions.task_segments_are_nonempty
+#print axioms Prosa.Classic.Model.Schedule.Uni.Limited.Platform.Limited.ModelWithLimitedPreemptions.fixed_preemption_points_task_model
+#print axioms Prosa.Classic.Model.Schedule.Uni.Limited.Platform.Limited.ModelWithLimitedPreemptions.fixed_preemption_points_model
+#print axioms Prosa.Classic.Model.Schedule.Uni.Limited.Platform.Limited.ModelWithLimitedPreemptions.job_max_np_segment_le_task_max_np_segment
+#print axioms Prosa.Classic.Model.Schedule.Uni.Limited.Platform.Limited.ModelWithLimitedPreemptions.model_with_floating_nonpreemptive_regions
+#print axioms Prosa.Classic.Model.Schedule.Uni.Limited.Platform.Limited.ModelWithLimitedPreemptions.can_be_preempted_for_model_with_limited_preemptions
+#print axioms Prosa.Classic.Model.Schedule.Uni.Limited.Platform.Limited.ModelWithLimitedPreemptions.is_schedule_with_limited_preemptions
+#print axioms Prosa.Classic.Model.Schedule.Uni.Limited.Platform.Limited.ModelWithLimitedPreemptions.list_of_preemption_point_is_not_empty
+#print axioms Prosa.Classic.Model.Schedule.Uni.Limited.Platform.Limited.ModelWithLimitedPreemptions.zero_in_preemption_points
+#print axioms Prosa.Classic.Model.Schedule.Uni.Limited.Platform.Limited.ModelWithLimitedPreemptions.job_cost_in_nonpreemptive_points
+#print axioms Prosa.Classic.Model.Schedule.Uni.Limited.Platform.Limited.ModelWithLimitedPreemptions.number_of_preemption_points_at_least_two
+#print axioms Prosa.Classic.Model.Schedule.Uni.Limited.Platform.Limited.ModelWithLimitedPreemptions.model_with_fixed_preemption_points_is_correct
+#print axioms Prosa.Classic.Model.Schedule.Uni.Limited.Platform.Limited.ModelWithLimitedPreemptions.model_with_fixed_preemption_points_is_model_with_bounded_nonpreemptive_regions
+#print axioms Prosa.Validation.ClassicLimitedModelInterface.distances_nil
+#print axioms Prosa.Validation.ClassicLimitedModelInterface.distances_single
+#print axioms Prosa.Validation.ClassicLimitedModelInterface.distances_cons2
+#print axioms Prosa.Validation.ClassicLimitedModelInterface.max0_eq
+#print axioms Prosa.Validation.ClassicLimitedModelInterface.foldl_max_nil
+#print axioms Prosa.Validation.ClassicLimitedModelInterface.foldl_max_cons
+#print axioms Prosa.Validation.ClassicLimitedModelInterface.first0_nil
+#print axioms Prosa.Validation.ClassicLimitedModelInterface.first0_cons
+#print axioms Prosa.Validation.ClassicLimitedModelInterface.last0_nil
+#print axioms Prosa.Validation.ClassicLimitedModelInterface.last0_single
+#print axioms Prosa.Validation.ClassicLimitedModelInterface.last0_cons2
+#print axioms Prosa.Validation.ClassicLimitedModelInterface.getD_nil
+#print axioms Prosa.Validation.ClassicLimitedModelInterface.getD_cons_zero
+#print axioms Prosa.Validation.ClassicLimitedModelInterface.getD_cons_succ
+#print axioms Prosa.Validation.ClassicLimitedModelInterface.length_nil
+#print axioms Prosa.Validation.ClassicLimitedModelInterface.length_cons
+#print axioms Prosa.Validation.ClassicLimitedModelInterface.nondecreasing_sequence_eq

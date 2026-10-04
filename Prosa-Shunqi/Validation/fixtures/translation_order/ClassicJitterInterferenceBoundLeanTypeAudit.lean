@@ -1,0 +1,30 @@
+import Validation.fixtures.translation_order.ClassicJitterInterferenceBoundInterface
+set_option pp.fieldNotation false
+
+#check @Prosa.Classic.Analysis.Global.Jitter.InterferenceBound.InterferenceBoundJitter.interference_bound_generic
+#check @Prosa.Validation.ClassicJitterInterferenceBoundInterface.production_sumSeq_nil
+#check @Prosa.Validation.ClassicJitterInterferenceBoundInterface.production_sumSeq_cons
+#check @Prosa.Validation.ClassicJitterInterferenceBoundInterface.production_sumFiltered_nil
+#check @Prosa.Validation.ClassicJitterInterferenceBoundInterface.production_sumFiltered_cons_true
+#check @Prosa.Validation.ClassicJitterInterferenceBoundInterface.production_sumFiltered_cons_false
+#check @Prosa.Validation.DivModInterface.production_div_floor_eq
+#check @Prosa.Validation.DivModInterface.production_div_ceil_eq
+#check @Prosa.Validation.DivModInterface.production_div_add_mod
+#check @Prosa.Validation.DivModInterface.production_mod_lt
+#check @Prosa.Validation.DivModInterface.production_div_zero
+#check @Prosa.Validation.DivModInterface.production_mod_zero
+#check @Prosa.Validation.DivModInterface.production_dvd_iff_mod_eq_zero
+
+#print axioms Prosa.Classic.Analysis.Global.Jitter.InterferenceBound.InterferenceBoundJitter.interference_bound_generic
+#print axioms Prosa.Validation.ClassicJitterInterferenceBoundInterface.production_sumSeq_nil
+#print axioms Prosa.Validation.ClassicJitterInterferenceBoundInterface.production_sumSeq_cons
+#print axioms Prosa.Validation.ClassicJitterInterferenceBoundInterface.production_sumFiltered_nil
+#print axioms Prosa.Validation.ClassicJitterInterferenceBoundInterface.production_sumFiltered_cons_true
+#print axioms Prosa.Validation.ClassicJitterInterferenceBoundInterface.production_sumFiltered_cons_false
+#print axioms Prosa.Validation.DivModInterface.production_div_floor_eq
+#print axioms Prosa.Validation.DivModInterface.production_div_ceil_eq
+#print axioms Prosa.Validation.DivModInterface.production_div_add_mod
+#print axioms Prosa.Validation.DivModInterface.production_mod_lt
+#print axioms Prosa.Validation.DivModInterface.production_div_zero
+#print axioms Prosa.Validation.DivModInterface.production_mod_zero
+#print axioms Prosa.Validation.DivModInterface.production_dvd_iff_mod_eq_zero

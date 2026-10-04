@@ -1,0 +1,69 @@
+{
+  "rank": 104,
+  "layer": 13,
+  "classic_scope": "full",
+  "slug": "classic_model_schedule_uni_limited_platform_nonpreemptive",
+  "tag": "CULPNP",
+  "export_name": "ClassicUniLimitedNonpreemptive",
+  "source": "classic/model/schedule/uni/limited/platform/nonpreemptive.v",
+  "production": "Prosa/Classic/Model/Schedule/Uni/Limited/Platform/Nonpreemptive.lean",
+  "fixtures": [
+    "ClassicUniLimitedNonpreemptiveInterface"
+  ],
+  "export_module": "Validation.fixtures.translation_order.ClassicUniLimitedNonpreemptiveInterface",
+  "interface_theorems": [],
+  "computational": [
+    "FullyNonPreemptivePlatform.can_be_preempted_for_fully_nonpreemptive_model"
+  ],
+  "chain": [
+    "ClassicUniLimitedNonpreemptiveBase",
+    "ClassicUniLimitedNonpreemptiveList",
+    "ClassicUniLimitedNonpreemptiveCorrespondence"
+  ],
+  "principal": {},
+  "helpers": [
+    "cnm_forall_sched",
+    "cnm_forall_par",
+    "cnm_ico"
+  ],
+  "base_run": null,
+  "base_checks": [],
+  "previous_status": "classic_model_schedule_uni_limited_platform_definitions_module_status.json",
+  "input_relations": [
+    "job and task types: eqTypes identified, Lean DecidableEq instances = the eqTypes' decision procedures; job_task identified",
+    "times by SubNatRel; job/task parameters pointwise through SubNatRel; schedules pointwise through the option map; arrival sequences pointwise on related times (two-way totals)"
+  ],
+  "lean_representation_note": "the Rocq module FullyNonPreemptivePlatform is a namespace; the section-local `job_max_nps`/`task_max_nps` are the lambdas `fun j => job_cost j` / `fun tsk => task_cost tsk`",
+  "prop_sprop_foundation": [
+    "PropSPropFoundation.interpret_strict"
+  ],
+  "importer_foundation": [],
+  "rocq_sprop_uip": [
+    "ClassicUniLimitedNonpreemptiveBase.I.HEq_inst1",
+    "ClassicUniLimitedNonpreemptiveBase.I.True",
+    "I.HEq",
+    "I.HEq_inst1",
+    "I.True",
+    "Lean.eq",
+    "Lean.eq_inst1",
+    "SubadditivityNatCorrespondence.SubNatTrue"
+  ],
+  "normalization": {
+    "theorem_types": [],
+    "subexpression_heads": [
+      "Finset.sum"
+    ],
+    "definition_bodies": [],
+    "body_projections": [
+      "Prosa.Classic.Model.Schedule.Uni.Schedule.UniprocessorSchedule.service_during=Prosa.Validation.ClassicUniLimitedNonpreemptiveInterface.service_during_proj=Prosa.Validation.ClassicUniLimitedNonpreemptiveInterface.service_during_proj_guard",
+      "Prosa.Classic.Model.Schedule.Uni.Schedule.UniprocessorSchedule.total_service_during=Prosa.Validation.ClassicUniLimitedNonpreemptiveInterface.total_service_during_proj=Prosa.Validation.ClassicUniLimitedNonpreemptiveInterface.total_service_during_proj_guard"
+    ]
+  },
+  "export_env": {
+    "LEAN4EXPORT_PRESERVE_REDUCIBLE_THEOREM_TYPES": "1",
+    "LEAN4EXPORT_NAT_INDEX_ALIASES": "Prosa.Classic.Model.Time.Time.time"
+  },
+  "kernel_guard_artifacts": [
+    "Validation/fixtures/translation_order/ClassicUniLimitedNonpreemptiveInterface.lean"
+  ]
+}

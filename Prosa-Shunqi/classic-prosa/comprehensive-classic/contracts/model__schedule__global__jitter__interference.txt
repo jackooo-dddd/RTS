@@ -1,0 +1,85 @@
+# classic/model/schedule/global/jitter/interference.v: 9 declarations
+
+## Print Module
+
+Module interference := Struct Module Interference End
+
+Module
+Interference
+:= Struct
+     Definition total_interference : forall Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> forall num_cpus : nat, schedule.Schedule.schedule Job num_cpus -> eqtype.Equality.sort Job -> time.Time.time -> time.Time.time -> nat.
+     Definition job_interference : forall Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> forall num_cpus : nat, schedule.Schedule.schedule Job num_cpus -> eqtype.Equality.sort Job -> eqtype.Equality.sort Job -> time.Time.time -> time.Time.time -> nat.
+     Definition task_interference : forall sporadic_task Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> eqtype.Equality.sort sporadic_task) -> (eqtype.Equality.sort Job -> time.Time.time) -> forall num_cpus : nat, schedule.Schedule.schedule Job num_cpus -> eqtype.Equality.sort Job -> eqtype.Equality.sort sporadic_task -> time.Time.time -> time.Time.time -> nat.
+     Definition task_interference_joblist : forall sporadic_task Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> eqtype.Equality.sort sporadic_task) -> (eqtype.Equality.sort Job -> time.Time.time) -> forall num_cpus : nat, schedule.Schedule.schedule Job num_cpus -> eqtype.Equality.sort Job -> eqtype.Equality.sort sporadic_task -> time.Time.time -> time.Time.time -> nat.
+     Parameter total_interference_le_delta : forall (Job : eqtype.Equality.type) (job_arrival job_cost job_jitter : eqtype.Equality.sort Job -> time.Time.time) (num_cpus : nat) (sched : schedule.Schedule.schedule Job num_cpus) (j : eqtype.Equality.sort Job) (t1 t2 : time.Time.time), is_true (ssrnat.leq (total_interference job_arrival job_cost job_jitter sched j t1 t2) (ssrnat.subn t2 t1)).
+     Parameter job_interference_le_service : forall (Job : eqtype.Equality.type) (job_arrival job_cost job_jitter : eqtype.Equality.sort Job -> time.Time.time) (num_cpus : nat) (sched : schedule.Schedule.schedule Job num_cpus) (j j_other : eqtype.Equality.sort Job) (t1 t2 : time.Time.time), is_true (ssrnat.leq (job_interference job_arrival job_cost job_jitter sched j j_other t1 t2) (schedule.Schedule.service_during sched j_other t1 t2)).
+     Parameter task_interference_le_workload : forall (sporadic_task Job : eqtype.Equality.type) (job_arrival job_cost : eqtype.Equality.sort Job -> time.Time.time) (job_task : eqtype.Equality.sort Job -> eqtype.Equality.sort sporadic_task) (job_jitter : eqtype.Equality.sort Job -> time.Time.time) (num_cpus : nat) (sched : schedule.Schedule.schedule Job num_cpus) (j : eqtype.Equality.sort Job) (tsk : eqtype.Equality.sort sporadic_task) (t1 t2 : time.Time.time), is_true (ssrnat.leq (task_interference job_arrival job_cost job_task job_jitter sched j tsk t1 t2) (workload.Workload.workload job_task sched tsk t1 t2)).
+     Parameter job_interference_le_delta : forall (Job : eqtype.Equality.type) (job_arrival job_cost job_jitter : eqtype.Equality.sort Job -> time.Time.time) (num_cpus : nat) (sched : schedule.Schedule.schedule Job num_cpus) (j : eqtype.Equality.sort Job), schedule.Schedule.sequential_jobs sched -> forall (j_other : eqtype.Equality.sort Job) (t1 : time.Time.time) (delta : nat), is_true (ssrnat.leq (job_interference job_arrival job_cost job_jitter sched j j_other t1 (ssrnat.addn t1 delta)) delta).
+     Parameter interference_le_interference_joblist : forall (sporadic_task Job : eqtype.Equality.type) (job_arrival job_cost : eqtype.Equality.sort Job -> time.Time.time) (job_task : eqtype.Equality.sort Job -> eqtype.Equality.sort sporadic_task) (job_jitter : eqtype.Equality.sort Job -> time.Time.time) (num_cpus : nat) (sched : schedule.Schedule.schedule Job num_cpus) (j : eqtype.Equality.sort Job) (tsk : eqtype.Equality.sort sporadic_task) (t1 t2 : time.Time.time), is_true (ssrnat.leq (task_interference job_arrival job_cost job_task job_jitter sched j tsk t1 t2) (task_interference_joblist job_arrival job_cost job_task job_jitter sched j tsk t1 t2)).
+   End
+
+## About
+
+Interference.total_interference : forall {Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> forall {num_cpus : nat}, schedule.Schedule.schedule Job num_cpus -> eqtype.Equality.sort Job -> time.Time.time -> time.Time.time -> nat
+
+Interference.total_interference is not universe polymorphic
+Arguments Interference.total_interference {Job} (job_arrival job_cost job_jitter)%function_scope {num_cpus}%nat_scope sched j t1 t2
+Interference.total_interference is transparent
+Expands to: Constant prosa.classic.model.schedule.global.jitter.interference.Interference.total_interference
+Declared in library prosa.classic.model.schedule.global.jitter.interference, line 45, characters 17-35
+Interference.job_interference : forall {Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> forall {num_cpus : nat}, schedule.Schedule.schedule Job num_cpus -> eqtype.Equality.sort Job -> eqtype.Equality.sort Job -> time.Time.time -> time.Time.time -> nat
+
+Interference.job_interference is not universe polymorphic
+Arguments Interference.job_interference {Job} (job_arrival job_cost job_jitter)%function_scope {num_cpus}%nat_scope sched j job_other t1 t2
+Interference.job_interference is transparent
+Expands to: Constant prosa.classic.model.schedule.global.jitter.interference.Interference.job_interference
+Declared in library prosa.classic.model.schedule.global.jitter.interference, line 58, characters 17-33
+Interference.task_interference : forall {sporadic_task Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> eqtype.Equality.sort sporadic_task) -> (eqtype.Equality.sort Job -> time.Time.time) -> forall {num_cpus : nat}, schedule.Schedule.schedule Job num_cpus -> eqtype.Equality.sort Job -> eqtype.Equality.sort sporadic_task -> time.Time.time -> time.Time.time -> nat
+
+Interference.task_interference is not universe polymorphic
+Arguments Interference.task_interference {sporadic_task Job} (job_arrival job_cost job_task job_jitter)%function_scope {num_cpus}%nat_scope sched j tsk_other t1 t2
+Interference.task_interference is transparent
+Expands to: Constant prosa.classic.model.schedule.global.jitter.interference.Interference.task_interference
+Declared in library prosa.classic.model.schedule.global.jitter.interference, line 74, characters 17-34
+Interference.task_interference_joblist : forall {sporadic_task Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> eqtype.Equality.sort sporadic_task) -> (eqtype.Equality.sort Job -> time.Time.time) -> forall {num_cpus : nat}, schedule.Schedule.schedule Job num_cpus -> eqtype.Equality.sort Job -> eqtype.Equality.sort sporadic_task -> time.Time.time -> time.Time.time -> nat
+
+Interference.task_interference_joblist is not universe polymorphic
+Arguments Interference.task_interference_joblist {sporadic_task Job} (job_arrival job_cost job_task job_jitter)%function_scope {num_cpus}%nat_scope sched j tsk_other t1 t2
+Interference.task_interference_joblist is transparent
+Expands to: Constant prosa.classic.model.schedule.global.jitter.interference.Interference.task_interference_joblist
+Declared in library prosa.classic.model.schedule.global.jitter.interference, line 88, characters 17-42
+Interference.total_interference_le_delta : forall {Job : eqtype.Equality.type} (job_arrival job_cost job_jitter : eqtype.Equality.sort Job -> time.Time.time) {num_cpus : nat} (sched : schedule.Schedule.schedule Job num_cpus) (j : eqtype.Equality.sort Job) (t1 t2 : time.Time.time), is_true (ssrnat.leq (Interference.total_interference job_arrival job_cost job_jitter sched j t1 t2) (ssrnat.subn t2 t1))
+
+Interference.total_interference_le_delta is not universe polymorphic
+Arguments Interference.total_interference_le_delta {Job} (job_arrival job_cost job_jitter)%function_scope {num_cpus}%nat_scope sched j t1 t2
+Interference.total_interference_le_delta is opaque
+Expands to: Constant prosa.classic.model.schedule.global.jitter.interference.Interference.total_interference_le_delta
+Declared in library prosa.classic.model.schedule.global.jitter.interference, line 98, characters 12-39
+Interference.job_interference_le_service : forall {Job : eqtype.Equality.type} (job_arrival job_cost job_jitter : eqtype.Equality.sort Job -> time.Time.time) {num_cpus : nat} (sched : schedule.Schedule.schedule Job num_cpus) (j j_other : eqtype.Equality.sort Job) (t1 t2 : time.Time.time), is_true (ssrnat.leq (Interference.job_interference job_arrival job_cost job_jitter sched j j_other t1 t2) (schedule.Schedule.service_during sched j_other t1 t2))
+
+Interference.job_interference_le_service is not universe polymorphic
+Arguments Interference.job_interference_le_service {Job} (job_arrival job_cost job_jitter)%function_scope {num_cpus}%nat_scope sched j j_other t1 t2
+Interference.job_interference_le_service is opaque
+Expands to: Constant prosa.classic.model.schedule.global.jitter.interference.Interference.job_interference_le_service
+Declared in library prosa.classic.model.schedule.global.jitter.interference, line 109, characters 12-39
+Interference.task_interference_le_workload : forall {sporadic_task Job : eqtype.Equality.type} (job_arrival job_cost : eqtype.Equality.sort Job -> time.Time.time) (job_task : eqtype.Equality.sort Job -> eqtype.Equality.sort sporadic_task) (job_jitter : eqtype.Equality.sort Job -> time.Time.time) {num_cpus : nat} (sched : schedule.Schedule.schedule Job num_cpus) (j : eqtype.Equality.sort Job) (tsk : eqtype.Equality.sort sporadic_task) (t1 t2 : time.Time.time), is_true (ssrnat.leq (Interference.task_interference job_arrival job_cost job_task job_jitter sched j tsk t1 t2) (workload.Workload.workload job_task sched tsk t1 t2))
+
+Interference.task_interference_le_workload is not universe polymorphic
+Arguments Interference.task_interference_le_workload {sporadic_task Job} (job_arrival job_cost job_task job_jitter)%function_scope {num_cpus}%nat_scope sched j tsk t1 t2
+Interference.task_interference_le_workload is opaque
+Expands to: Constant prosa.classic.model.schedule.global.jitter.interference.Interference.task_interference_le_workload
+Declared in library prosa.classic.model.schedule.global.jitter.interference, line 122, characters 12-41
+Interference.job_interference_le_delta : forall {Job : eqtype.Equality.type} (job_arrival job_cost job_jitter : eqtype.Equality.sort Job -> time.Time.time) {num_cpus : nat} (sched : schedule.Schedule.schedule Job num_cpus) (j : eqtype.Equality.sort Job), schedule.Schedule.sequential_jobs sched -> forall (j_other : eqtype.Equality.sort Job) (t1 : time.Time.time) (delta : nat), is_true (ssrnat.leq (Interference.job_interference job_arrival job_cost job_jitter sched j j_other t1 (ssrnat.addn t1 delta)) delta)
+
+Interference.job_interference_le_delta is not universe polymorphic
+Arguments Interference.job_interference_le_delta {Job} (job_arrival job_cost job_jitter)%function_scope {num_cpus}%nat_scope sched j H_sequential_jobs j_other t1 delta%nat_scope
+Interference.job_interference_le_delta is opaque
+Expands to: Constant prosa.classic.model.schedule.global.jitter.interference.Interference.job_interference_le_delta
+Declared in library prosa.classic.model.schedule.global.jitter.interference, line 144, characters 12-37
+Interference.interference_le_interference_joblist : forall {sporadic_task Job : eqtype.Equality.type} (job_arrival job_cost : eqtype.Equality.sort Job -> time.Time.time) (job_task : eqtype.Equality.sort Job -> eqtype.Equality.sort sporadic_task) (job_jitter : eqtype.Equality.sort Job -> time.Time.time) {num_cpus : nat} (sched : schedule.Schedule.schedule Job num_cpus) (j : eqtype.Equality.sort Job) (tsk : eqtype.Equality.sort sporadic_task) (t1 t2 : time.Time.time), is_true (ssrnat.leq (Interference.task_interference job_arrival job_cost job_task job_jitter sched j tsk t1 t2) (Interference.task_interference_joblist job_arrival job_cost job_task job_jitter sched j tsk t1 t2))
+
+Interference.interference_le_interference_joblist is not universe polymorphic
+Arguments Interference.interference_le_interference_joblist {sporadic_task Job} (job_arrival job_cost job_task job_jitter)%function_scope {num_cpus}%nat_scope sched j tsk t1 t2
+Interference.interference_le_interference_joblist is opaque
+Expands to: Constant prosa.classic.model.schedule.global.jitter.interference.Interference.interference_le_interference_joblist
+Declared in library prosa.classic.model.schedule.global.jitter.interference, line 179, characters 12-48

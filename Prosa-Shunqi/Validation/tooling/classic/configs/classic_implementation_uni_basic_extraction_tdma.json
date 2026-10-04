@@ -1,0 +1,111 @@
+{
+  "rank": 116,
+  "layer": 12,
+  "classic_scope": "full",
+  "slug": "classic_implementation_uni_basic_extraction_tdma",
+  "tag": "CXT",
+  "export_name": "ClassicExtractionTdma",
+  "source": "classic/implementation/uni/basic/extraction_tdma.v",
+  "production": "Prosa/Classic/Implementation/Uni/Basic/ExtractionTdma.lean",
+  "fixtures": [
+    "ClassicExtractionTdmaInterface"
+  ],
+  "export_module": "Validation.fixtures.translation_order.ClassicExtractionTdmaInterface",
+  "interface_theorems": [
+    "Prosa.Validation.ClassicExtractionTdmaInterface.production_sumSeq_nil",
+    "Prosa.Validation.ClassicExtractionTdmaInterface.production_sumSeq_cons",
+    "Prosa.Validation.ClassicExtractionTdmaInterface.production_sumFiltered_nil",
+    "Prosa.Validation.ClassicExtractionTdmaInterface.production_sumFiltered_cons_true",
+    "Prosa.Validation.ClassicExtractionTdmaInterface.production_sumFiltered_cons_false",
+    "Prosa.Validation.ClassicExtractionTdmaInterface.end_time_option_c0",
+    "Prosa.Validation.ClassicExtractionTdmaInterface.end_time_option_wf0",
+    "Prosa.Validation.ClassicExtractionTdmaInterface.end_time_option_step",
+    "Prosa.Validation.ClassicExtractionTdmaInterface.xt_get_slot_eq",
+    "Prosa.Validation.ClassicExtractionTdmaInterface.xt_get_cost_eq",
+    "Prosa.Validation.ClassicExtractionTdmaInterface.xt_get_D_eq",
+    "Prosa.Validation.ClassicExtractionTdmaInterface.xt_get_P_eq",
+    "Prosa.Validation.ClassicExtractionTdmaInterface.xt_In_nil",
+    "Prosa.Validation.ClassicExtractionTdmaInterface.xt_In_cons",
+    "Prosa.Validation.ClassicExtractionTdmaInterface.xt_test_nil",
+    "Prosa.Validation.ClassicExtractionTdmaInterface.xt_test_cons",
+    "Prosa.Validation.ClassicExtractionTdmaInterface.xt_cycle_nil",
+    "Prosa.Validation.ClassicExtractionTdmaInterface.xt_cycle_cons",
+    "Prosa.Validation.ClassicExtractionTdmaInterface.xt_schedulable_tsk_eq",
+    "Prosa.Validation.DivModInterface.production_div_floor_eq",
+    "Prosa.Validation.DivModInterface.production_div_ceil_eq",
+    "Prosa.Validation.DivModInterface.production_div_add_mod",
+    "Prosa.Validation.DivModInterface.production_mod_lt",
+    "Prosa.Validation.DivModInterface.production_div_zero",
+    "Prosa.Validation.DivModInterface.production_mod_zero",
+    "Prosa.Validation.DivModInterface.production_dvd_iff_mod_eq_zero"
+  ],
+  "computational": [
+    "get_slot",
+    "get_cost",
+    "get_D",
+    "get_P",
+    "task_eq",
+    "In",
+    "schedulable_tsk",
+    "schedulability_test",
+    "cycle",
+    "schedulability_tdma"
+  ],
+  "chain": [
+    "ClassicExtractionTdmaBase",
+    "ClassicExtractionTdmaList",
+    "ClassicExtractionTdmaCorrespondence"
+  ],
+  "principal": {},
+  "helpers": [
+    "cxt_forall_sched",
+    "cxt_forall_par",
+    "cxt_forall_set",
+    "cxt_forall_ord",
+    "cxt_forall_arr"
+  ],
+  "base_run": null,
+  "base_checks": [],
+  "previous_status": "classic_implementation_uni_basic_schedule_tdma_module_status.json",
+  "input_relations": [
+    "times/task parameters by SubNatRel",
+    "Task_T constructor-wise (field-wise SubNatRel), total both ways; task lists elementwise"
+  ],
+  "lean_representation_note": "CoInductive Task_T with one non-recursive constructor is a Lean inductive; `x == y` is `decide (x = y)`; `foldr plus 0` is `List.foldr (\u00b7 + \u00b7) 0`",
+  "prop_sprop_foundation": [
+    "PropSPropFoundation.interpret_strict"
+  ],
+  "importer_foundation": [
+    "ImportedClassicExtractionTdma.propext"
+  ],
+  "rocq_sprop_uip": [
+    "ClassicExtractionTdmaBase.I.HEq_inst1",
+    "ClassicExtractionTdmaBase.I.True",
+    "I.HEq_inst1",
+    "I.True",
+    "Lean.eq",
+    "Lean.eq_inst1",
+    "SubadditivityNatCorrespondence.SubNatTrue"
+  ],
+  "normalization": {
+    "theorem_types": [],
+    "subexpression_heads": [
+      "Finset.sum"
+    ],
+    "definition_bodies": [],
+    "body_projections": [
+      "Prosa.Classic.Model.Schedule.Uni.Schedule.UniprocessorSchedule.service_during=Prosa.Validation.ClassicExtractionTdmaInterface.service_during_proj=Prosa.Validation.ClassicExtractionTdmaInterface.service_during_proj_guard",
+      "Prosa.Classic.Model.Schedule.Uni.Schedule.UniprocessorSchedule.total_service_during=Prosa.Validation.ClassicExtractionTdmaInterface.total_service_during_proj=Prosa.Validation.ClassicExtractionTdmaInterface.total_service_during_proj_guard"
+    ]
+  },
+  "export_env": {
+    "LEAN4EXPORT_PRESERVE_REDUCIBLE_THEOREM_TYPES": "1",
+    "LEAN4EXPORT_NAT_INDEX_ALIASES": "Prosa.Classic.Model.Time.Time.time"
+  },
+  "extra_statement_only": [
+    "Prosa.Classic.Analysis.Uni.Basic.TdmaWcrtAnalysis.WCRT_OneJobTDMA.TDMA_policy_case_RT_le_Period._proof_1"
+  ],
+  "kernel_guard_artifacts": [
+    "Validation/fixtures/translation_order/ClassicExtractionTdmaInterface.lean"
+  ]
+}

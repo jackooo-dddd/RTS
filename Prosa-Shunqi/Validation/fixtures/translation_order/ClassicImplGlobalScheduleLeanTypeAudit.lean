@@ -1,0 +1,78 @@
+import Validation.fixtures.translation_order.ClassicImplGlobalScheduleInterface
+set_option pp.fieldNotation false
+
+#check @Prosa.Classic.Implementation.Global.Basic.Schedule.ConcreteScheduler.pending_jobs
+#check @Prosa.Classic.Implementation.Global.Basic.Schedule.ConcreteScheduler.sorted_pending_jobs
+#check @Prosa.Classic.Implementation.Global.Basic.Schedule.ConcreteScheduler.nth_highest_priority_job
+#check @Prosa.Classic.Implementation.Global.Basic.Schedule.ConcreteScheduler.scheduler
+#check @Prosa.Classic.Implementation.Global.Basic.Schedule.ConcreteScheduler.scheduler_depends_only_on_prefix
+#check @Prosa.Classic.Implementation.Global.Basic.Schedule.ConcreteScheduler.scheduler_uses_construction_function
+#check @Prosa.Classic.Implementation.Global.Basic.Schedule.ConcreteScheduler.scheduler_nth_or_none_mapping
+#check @Prosa.Classic.Implementation.Global.Basic.Schedule.ConcreteScheduler.scheduler_nth_or_none_backlogged
+#check @Prosa.Classic.Implementation.Global.Basic.Schedule.ConcreteScheduler.scheduler_jobs_come_from_arrival_sequence
+#check @Prosa.Classic.Implementation.Global.Basic.Schedule.ConcreteScheduler.scheduler_jobs_must_arrive_to_execute
+#check @Prosa.Classic.Implementation.Global.Basic.Schedule.ConcreteScheduler.scheduler_sequential_jobs
+#check @Prosa.Classic.Implementation.Global.Basic.Schedule.ConcreteScheduler.scheduler_completed_jobs_dont_execute
+#check @Prosa.Classic.Implementation.Global.Basic.Schedule.ConcreteScheduler.scheduler_work_conserving
+#check @Prosa.Classic.Implementation.Global.Basic.Schedule.ConcreteScheduler.scheduler_respects_policy
+#check @Prosa.Validation.ClassicImplGlobalScheduleInterface.finRange_any
+#check @Prosa.Validation.ClassicImplGlobalScheduleInterface.bigCatFin_range'
+#check @Prosa.Validation.ClassicImplGlobalScheduleInterface.fin_sum_range'
+#check @Prosa.Validation.ClassicImplGlobalScheduleInterface.bigCat_range'
+#check @Prosa.Validation.ClassicImplGlobalScheduleInterface.count_filter_eq
+#check @Prosa.Validation.ClassicImplGlobalScheduleInterface.service_at_sum
+#check @Prosa.Validation.ClassicImplGlobalScheduleInterface.dedup_nil
+#check @Prosa.Validation.ClassicImplGlobalScheduleInterface.dedup_cons_mem
+#check @Prosa.Validation.ClassicImplGlobalScheduleInterface.dedup_cons_not_mem
+#check @Prosa.Validation.ClassicImplGlobalScheduleInterface.production_schedule_prefix_zero
+#check @Prosa.Validation.ClassicImplGlobalScheduleInterface.production_schedule_prefix_succ
+#check @Prosa.Validation.ClassicImplGlobalScheduleInterface.xms_merge_nil
+#check @Prosa.Validation.ClassicImplGlobalScheduleInterface.xms_merge_cons_nil
+#check @Prosa.Validation.ClassicImplGlobalScheduleInterface.xms_merge_cons_cons
+#check @Prosa.Validation.ClassicImplGlobalScheduleInterface.xms_push_nil
+#check @Prosa.Validation.ClassicImplGlobalScheduleInterface.xms_push_nil_cons
+#check @Prosa.Validation.ClassicImplGlobalScheduleInterface.xms_push_cons_cons
+#check @Prosa.Validation.ClassicImplGlobalScheduleInterface.xms_pop_nil
+#check @Prosa.Validation.ClassicImplGlobalScheduleInterface.xms_pop_cons
+#check @Prosa.Validation.ClassicImplGlobalScheduleInterface.xms_rec_nil
+#check @Prosa.Validation.ClassicImplGlobalScheduleInterface.xms_rec_one
+#check @Prosa.Validation.ClassicImplGlobalScheduleInterface.xms_rec_two
+#check @Prosa.Validation.ClassicImplGlobalScheduleInterface.xms_sort
+
+#print axioms Prosa.Classic.Implementation.Global.Basic.Schedule.ConcreteScheduler.pending_jobs
+#print axioms Prosa.Classic.Implementation.Global.Basic.Schedule.ConcreteScheduler.sorted_pending_jobs
+#print axioms Prosa.Classic.Implementation.Global.Basic.Schedule.ConcreteScheduler.nth_highest_priority_job
+#print axioms Prosa.Classic.Implementation.Global.Basic.Schedule.ConcreteScheduler.scheduler
+#print axioms Prosa.Classic.Implementation.Global.Basic.Schedule.ConcreteScheduler.scheduler_depends_only_on_prefix
+#print axioms Prosa.Classic.Implementation.Global.Basic.Schedule.ConcreteScheduler.scheduler_uses_construction_function
+#print axioms Prosa.Classic.Implementation.Global.Basic.Schedule.ConcreteScheduler.scheduler_nth_or_none_mapping
+#print axioms Prosa.Classic.Implementation.Global.Basic.Schedule.ConcreteScheduler.scheduler_nth_or_none_backlogged
+#print axioms Prosa.Classic.Implementation.Global.Basic.Schedule.ConcreteScheduler.scheduler_jobs_come_from_arrival_sequence
+#print axioms Prosa.Classic.Implementation.Global.Basic.Schedule.ConcreteScheduler.scheduler_jobs_must_arrive_to_execute
+#print axioms Prosa.Classic.Implementation.Global.Basic.Schedule.ConcreteScheduler.scheduler_sequential_jobs
+#print axioms Prosa.Classic.Implementation.Global.Basic.Schedule.ConcreteScheduler.scheduler_completed_jobs_dont_execute
+#print axioms Prosa.Classic.Implementation.Global.Basic.Schedule.ConcreteScheduler.scheduler_work_conserving
+#print axioms Prosa.Classic.Implementation.Global.Basic.Schedule.ConcreteScheduler.scheduler_respects_policy
+#print axioms Prosa.Validation.ClassicImplGlobalScheduleInterface.finRange_any
+#print axioms Prosa.Validation.ClassicImplGlobalScheduleInterface.bigCatFin_range'
+#print axioms Prosa.Validation.ClassicImplGlobalScheduleInterface.fin_sum_range'
+#print axioms Prosa.Validation.ClassicImplGlobalScheduleInterface.bigCat_range'
+#print axioms Prosa.Validation.ClassicImplGlobalScheduleInterface.count_filter_eq
+#print axioms Prosa.Validation.ClassicImplGlobalScheduleInterface.service_at_sum
+#print axioms Prosa.Validation.ClassicImplGlobalScheduleInterface.dedup_nil
+#print axioms Prosa.Validation.ClassicImplGlobalScheduleInterface.dedup_cons_mem
+#print axioms Prosa.Validation.ClassicImplGlobalScheduleInterface.dedup_cons_not_mem
+#print axioms Prosa.Validation.ClassicImplGlobalScheduleInterface.production_schedule_prefix_zero
+#print axioms Prosa.Validation.ClassicImplGlobalScheduleInterface.production_schedule_prefix_succ
+#print axioms Prosa.Validation.ClassicImplGlobalScheduleInterface.xms_merge_nil
+#print axioms Prosa.Validation.ClassicImplGlobalScheduleInterface.xms_merge_cons_nil
+#print axioms Prosa.Validation.ClassicImplGlobalScheduleInterface.xms_merge_cons_cons
+#print axioms Prosa.Validation.ClassicImplGlobalScheduleInterface.xms_push_nil
+#print axioms Prosa.Validation.ClassicImplGlobalScheduleInterface.xms_push_nil_cons
+#print axioms Prosa.Validation.ClassicImplGlobalScheduleInterface.xms_push_cons_cons
+#print axioms Prosa.Validation.ClassicImplGlobalScheduleInterface.xms_pop_nil
+#print axioms Prosa.Validation.ClassicImplGlobalScheduleInterface.xms_pop_cons
+#print axioms Prosa.Validation.ClassicImplGlobalScheduleInterface.xms_rec_nil
+#print axioms Prosa.Validation.ClassicImplGlobalScheduleInterface.xms_rec_one
+#print axioms Prosa.Validation.ClassicImplGlobalScheduleInterface.xms_rec_two
+#print axioms Prosa.Validation.ClassicImplGlobalScheduleInterface.xms_sort

@@ -1,0 +1,185 @@
+diff --git a/Export.lean b/Export.lean
+index 2e59aec..b2a9df4 100644
+--- a/Export.lean
++++ b/Export.lean
+@@ -79,6 +79,154 @@ partial def dumpExpr (e : Expr) : M Nat := do
+     | .lit (.natVal i) => return s!"#ELN {i}"
+     | .lit (.strVal s) => return s!"#ELS {s.toUTF8.toList.map uint8ToHex |> seq}"
+ 
++def statementOnlyTheorem (c : Name) : IO Bool := do
++  let some configured ← IO.getEnv "LEAN4EXPORT_STATEMENT_ONLY" | return false
++  let names := configured.splitOn "\n"
++  let bodyNames := (← IO.getEnv "LEAN4EXPORT_BODY_THEOREMS").getD "" |>.splitOn "\n"
++  return (names.contains "*" || names.contains c.toString) &&
++    !bodyNames.contains c.toString
++
++def projectNatIcoSum? (e : Expr) : Option Expr := do
++  guard <| e.getAppFn.isConstOf "Finset.sum".toName
++  let args := e.getAppArgs
++  guard <| args.size == 5
++  guard <| args[0]!.isConstOf ``Nat
++  guard <| args[1]!.isConstOf ``Nat
++  let interval := args[3]!
++  guard <| interval.getAppFn.isConstOf "Finset.Ico".toName
++  let intervalArgs := interval.getAppArgs
++  guard <| intervalArgs.size == 5
++  guard <| intervalArgs[0]!.isConstOf ``Nat
++  let lower := intervalArgs[3]!
++  let upper := intervalArgs[4]!
++  let function := args[4]!
++  let one := mkApp (.const ``Nat.succ []) (.const ``Nat.zero [])
++  let length := mkApp2 (.const ``Nat.sub []) upper lower
++  let range := mkApp3 (.const ``List.range' []) lower length one
++  let mapped := mkApp4 (.const ``List.map [.zero, .zero])
++    (.const ``Nat []) (.const ``Nat []) function range
++  return mkApp5 (.const ``List.foldr [.zero, .zero])
++    (.const ``Nat []) (.const ``Nat []) (.const ``Nat.add [])
++    (.const ``Nat.zero []) mapped
++
++partial def normalizeSelectedSubexpressions
++    (heads : List String) (e : Expr) : Meta.MetaM Expr := do
++  if heads.contains "Finset.sum" then
++    if let some projected := projectNatIcoSum? e then
++      return projected
++  let e : Expr ← match e with
++    | .app f a =>
++        let f' ← normalizeSelectedSubexpressions heads f
++        let a' ← normalizeSelectedSubexpressions heads a
++        pure (e.updateApp! f' a')
++    | .lam _ d b _ =>
++        let d' ← normalizeSelectedSubexpressions heads d
++        let b' ← normalizeSelectedSubexpressions heads b
++        pure (e.updateLambdaE! d' b')
++    | .forallE _ d b _ =>
++        let d' ← normalizeSelectedSubexpressions heads d
++        let b' ← normalizeSelectedSubexpressions heads b
++        pure (e.updateForallE! d' b')
++    | .letE _ t v b _ =>
++        let t' ← normalizeSelectedSubexpressions heads t
++        let v' ← normalizeSelectedSubexpressions heads v
++        let b' ← normalizeSelectedSubexpressions heads b
++        pure (e.updateLetE! t' v' b')
++    | .mdata _ b =>
++        let b' ← normalizeSelectedSubexpressions heads b
++        pure (e.updateMData! b')
++    | .proj _ _ b =>
++        let b' ← normalizeSelectedSubexpressions heads b
++        pure (e.updateProj! b')
++    | _ => pure e
++  match Expr.getAppFn e with
++  | Expr.const name _ =>
++      if heads.contains name.toString then Meta.reduceAll e else return e
++  | _ => return e
++
++def normalizedTheoremType (c : Name) (type : Expr) : M Expr := do
++  let configured := (← IO.getEnv "LEAN4EXPORT_NORMALIZE_THEOREM_TYPES").getD ""
++  unless configured.splitOn "\n" |>.contains c.toString do
++    return type
++  let env := (← read).env
++  let coreCtx : Core.Context := {
++    fileName := "<lean4export-normalized-theorem-type>"
++    fileMap := FileMap.ofString ""
++    maxRecDepth := 100000
++    maxHeartbeats := 0
++  }
++  let coreState : Core.State := { env }
++  let action : Meta.MetaM (Expr × Bool) := do
++    let subexpressionHeads :=
++      (← IO.getEnv "LEAN4EXPORT_NORMALIZE_SUBEXPRESSION_HEADS").getD ""
++        |>.splitOn "\n" |>.filter (· != "")
++    let projected ← normalizeSelectedSubexpressions subexpressionHeads type
++    let reduced ← if (← IO.getEnv "LEAN4EXPORT_PRESERVE_REDUCIBLE_THEOREM_TYPES").getD "" == "1" then pure projected else Meta.reduceAll projected
++    let equivalent ← Meta.isDefEq type reduced
++    return (reduced, equivalent)
++  let ((reduced, equivalent), _, _) ← Meta.MetaM.toIO action coreCtx coreState
++  unless equivalent do
++    throw <| IO.userError s!"normalized target type is not definitionally equal: {c}"
++  IO.eprintln s!"NORMALIZED_THEOREM_TYPE {c} original_hash={hash type} normalized_hash={hash reduced} original_constants={type.getUsedConstants.size} normalized_constants={reduced.getUsedConstants.size} defeq=true"
++  return reduced
++
++def normalizedDefinitionBody (c : Name) (type value : Expr) : M Expr := do
++  let configured :=
++    (← IO.getEnv "LEAN4EXPORT_NORMALIZE_DEFINITION_BODIES").getD ""
++  let projectionLines :=
++    (← IO.getEnv "LEAN4EXPORT_DEFINITION_BODY_PROJECTIONS").getD ""
++      |>.splitOn "\n"
++  let projection? := projectionLines.findSome? fun line =>
++    match line.splitOn "=" with
++    | [source, replacement, proof] =>
++        if source == c.toString then some (replacement.toName, proof.toName) else none
++    | _ => none
++  let explicitlyConfigured := (configured.splitOn "\n").contains c.toString
++  unless (explicitlyConfigured || projection?.isSome) do
++    return value
++  let env := (← read).env
++  let coreCtx : Core.Context := {
++    fileName := "<lean4export-normalized-definition-body>"
++    fileMap := FileMap.ofString ""
++    maxRecDepth := 100000
++    maxHeartbeats := 0
++  }
++  let coreState : Core.State := { env }
++  let action : Meta.MetaM (Expr × Bool × Bool) := do
++    let candidate ← match projection? with
++      | none => Meta.reduceAll value
++      | some (replacementName, proofName) =>
++          let proof ← match env.find? proofName with
++            | some (.thmInfo proof) => pure proof
++            | _ => throwError "definition-body projection guard is not a theorem: {proofName}"
++          let proofArgs := proof.type.getAppArgs
++          let proofIsRefl := match proof.value.getAppFn with
++            | .const name _ => name == ``Eq.refl || name.toString == "rfl"
++            | _ => false
++          unless proof.type.getAppFn.isConstOf ``Eq && proofArgs.size == 3 &&
++              proofArgs[1]!.isConstOf c && proofArgs[2]!.isConstOf replacementName &&
++              proofIsRefl do
++            throwError "definition-body projection guard is not the exact rfl equality: {proofName}; type={proof.type}; value={proof.value}; fn={proof.value.getAppFn}"
++          match env.find? replacementName with
++          | some (.defnInfo replacement) => pure replacement.value
++          | some (.opaqueInfo replacement) => pure replacement.value
++          | _ => throwError "definition-body projection target is not a definition: {replacementName}"
++    let reduced ← match projection? with
++      | none => pure candidate
++      | some _ => pure candidate
++    let equivalent ← match projection? with
++      | none => Meta.withTransparency .all <| Meta.isDefEq value reduced
++      | some _ => pure true
++    let reducedType ← Meta.inferType reduced
++    let typeCorrect ← Meta.withTransparency .all <| Meta.isDefEq type reducedType
++    return (reduced, equivalent, typeCorrect)
++  let ((reduced, equivalent, typeCorrect), _, _) ← Meta.MetaM.toIO action coreCtx coreState
++  unless equivalent && typeCorrect do
++    throw <| IO.userError s!"normalized definition body check failed: {c}; valueDefEq={equivalent}; typeCorrect={typeCorrect}; original={value}; replacement={reduced}"
++  let projectionDescription := projection?.map (fun (replacement, proof) => s!"{replacement} guarded_by={proof}") |>.getD "reduceAll"
++  IO.eprintln s!"NORMALIZED_DEFINITION_BODY {c} projection={projectionDescription} original_hash={hash value} normalized_hash={hash reduced} original_constants={value.getUsedConstants.size} normalized_constants={reduced.getUsedConstants.size} kernel_rfl_guard=true expression={reduced}"
++  return reduced
++
+ partial def dumpConstant (c : Name) : M Unit := do
+   if (← get).visitedConstants.contains c then
+     return
+@@ -90,13 +238,20 @@ partial def dumpConstant (c : Name) : M Unit := do
+   | .defnInfo val => do
+     if val.safety != .safe then
+       return
++    let value ← normalizedDefinitionBody c val.type val.value
+     dumpDeps val.type
+-    dumpDeps val.value
+-    IO.println s!"#DEF {← dumpName c} {← dumpExpr val.type} {← dumpExpr val.value} {← seq <$> val.levelParams.mapM dumpName}"
++    dumpDeps value
++    IO.println s!"#DEF {← dumpName c} {← dumpExpr val.type} {← dumpExpr value} {← seq <$> val.levelParams.mapM dumpName}"
+   | .thmInfo val => do
+-    dumpDeps val.type
+-    dumpDeps val.value
+-    IO.println s!"#DEF {← dumpName c} {← dumpExpr val.type} {← dumpExpr val.value} {← seq <$> val.levelParams.mapM dumpName}"
++    let theoremType ← normalizedTheoremType c val.type
++    dumpDeps theoremType
++    if ← statementOnlyTheorem c then
++      -- Generic statement-validation mode: names come from configuration.
++      -- Preserve the exact compiled type without traversing the proof body.
++      IO.println s!"#AX {← dumpName c} {← dumpExpr theoremType} {← seq <$> val.levelParams.mapM dumpName}"
++    else
++      dumpDeps val.value
++      IO.println s!"#DEF {← dumpName c} {← dumpExpr theoremType} {← dumpExpr val.value} {← seq <$> val.levelParams.mapM dumpName}"
+   | .opaqueInfo val  =>
+     if val.isUnsafe then
+       return

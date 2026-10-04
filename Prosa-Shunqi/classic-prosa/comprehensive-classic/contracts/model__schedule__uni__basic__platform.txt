@@ -1,0 +1,45 @@
+# classic/model/schedule/uni/basic/platform.v: 5 declarations
+
+## Print Module
+
+Module platform := Struct Module Platform End
+
+Module Platform := Struct Definition work_conserving : forall Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> schedule.UniprocessorSchedule.schedule Job -> Prop. Definition respects_FP_policy : forall sporadic_task Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> eqtype.Equality.sort sporadic_task) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> schedule.UniprocessorSchedule.schedule Job -> priority.Priority.FP_policy sporadic_task -> Prop. Definition respects_JLFP_policy : forall Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> schedule.UniprocessorSchedule.schedule Job -> priority.Priority.JLFP_policy Job -> Prop. Definition respects_JLDP_policy : forall Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> schedule.UniprocessorSchedule.schedule Job -> priority.Priority.JLDP_policy Job -> Prop. Parameter job_never_backlogged_response_time_holds : forall (Job : eqtype.Equality.type) (job_arrival job_cost : eqtype.Equality.sort Job -> time.Time.time) (sched : schedule.UniprocessorSchedule.schedule Job), schedule.UniprocessorSchedule.jobs_must_arrive_to_execute job_arrival sched -> forall j : eqtype.Equality.sort Job, (forall t : nat, is_true (ssrnat.leq (job_arrival j) t && ssrnat.leq (S t) (ssrnat.addn (job_arrival j) (job_cost j))) -> ~ is_true (schedule.UniprocessorSchedule.backlogged job_arrival job_cost sched j t)) -> forall R : nat, is_true (ssrnat.leq (job_cost j) R) -> is_true (schedule.UniprocessorSchedule.completed_by job_cost sched j (ssrnat.addn (job_arrival j) R)). End
+
+## About
+
+Platform.work_conserving : forall {Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> schedule.UniprocessorSchedule.schedule Job -> Prop
+
+Platform.work_conserving is not universe polymorphic
+Arguments Platform.work_conserving {Job} (job_arrival job_cost)%function_scope arr_seq sched
+Platform.work_conserving is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.basic.platform.Platform.work_conserving
+Declared in library prosa.classic.model.schedule.uni.basic.platform, line 35, characters 17-32
+Platform.respects_FP_policy : forall {sporadic_task Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> eqtype.Equality.sort sporadic_task) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> schedule.UniprocessorSchedule.schedule Job -> priority.Priority.FP_policy sporadic_task -> Prop
+
+Platform.respects_FP_policy is not universe polymorphic
+Arguments Platform.respects_FP_policy {sporadic_task Job} (job_arrival job_cost job_task)%function_scope arr_seq sched higher_eq_priority
+Platform.respects_FP_policy is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.basic.platform.Platform.respects_FP_policy
+Declared in library prosa.classic.model.schedule.uni.basic.platform, line 51, characters 17-35
+Platform.respects_JLFP_policy : forall {Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> schedule.UniprocessorSchedule.schedule Job -> priority.Priority.JLFP_policy Job -> Prop
+
+Platform.respects_JLFP_policy is not universe polymorphic
+Arguments Platform.respects_JLFP_policy {Job} (job_arrival job_cost)%function_scope arr_seq sched higher_eq_priority
+Platform.respects_JLFP_policy is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.basic.platform.Platform.respects_JLFP_policy
+Declared in library prosa.classic.model.schedule.uni.basic.platform, line 68, characters 17-37
+Platform.respects_JLDP_policy : forall {Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> schedule.UniprocessorSchedule.schedule Job -> priority.Priority.JLDP_policy Job -> Prop
+
+Platform.respects_JLDP_policy is not universe polymorphic
+Arguments Platform.respects_JLDP_policy {Job} (job_arrival job_cost)%function_scope arr_seq sched higher_eq_priority
+Platform.respects_JLDP_policy is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.basic.platform.Platform.respects_JLDP_policy
+Declared in library prosa.classic.model.schedule.uni.basic.platform, line 85, characters 17-37
+Platform.job_never_backlogged_response_time_holds : forall {Job : eqtype.Equality.type} (job_arrival job_cost : eqtype.Equality.sort Job -> time.Time.time) (sched : schedule.UniprocessorSchedule.schedule Job), schedule.UniprocessorSchedule.jobs_must_arrive_to_execute job_arrival sched -> forall j : eqtype.Equality.sort Job, (forall t : nat, is_true (ssrnat.leq (job_arrival j) t && ssrnat.leq (S t) (ssrnat.addn (job_arrival j) (job_cost j))) -> ~ is_true (schedule.UniprocessorSchedule.backlogged job_arrival job_cost sched j t)) -> forall R : nat, is_true (ssrnat.leq (job_cost j) R) -> is_true (schedule.UniprocessorSchedule.completed_by job_cost sched j (ssrnat.addn (job_arrival j) R))
+
+Platform.job_never_backlogged_response_time_holds is not universe polymorphic
+Arguments Platform.job_never_backlogged_response_time_holds {Job} (job_arrival job_cost)%function_scope sched H_jobs_must_arrive_to_execute j H_j_is_never_backlogged%function_scope R%nat_scope _
+Platform.job_never_backlogged_response_time_holds is opaque
+Expands to: Constant prosa.classic.model.schedule.uni.basic.platform.Platform.job_never_backlogged_response_time_holds
+Declared in library prosa.classic.model.schedule.uni.basic.platform, line 145, characters 12-52

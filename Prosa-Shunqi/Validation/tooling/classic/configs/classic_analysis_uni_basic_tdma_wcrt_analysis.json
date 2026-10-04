@@ -1,0 +1,99 @@
+{
+  "rank": 92,
+  "layer": 11,
+  "classic_scope": "full",
+  "slug": "classic_analysis_uni_basic_tdma_wcrt_analysis",
+  "tag": "CTWA",
+  "export_name": "ClassicTdmaWcrt",
+  "source": "classic/analysis/uni/basic/tdma_wcrt_analysis.v",
+  "production": "Prosa/Classic/Analysis/Uni/Basic/TdmaWcrtAnalysis.lean",
+  "fixtures": [
+    "ClassicTdmaWcrtInterface"
+  ],
+  "export_module": "Validation.fixtures.translation_order.ClassicTdmaWcrtInterface",
+  "interface_theorems": [
+    "Prosa.Validation.ClassicTdmaWcrtInterface.production_sumSeq_nil",
+    "Prosa.Validation.ClassicTdmaWcrtInterface.production_sumSeq_cons",
+    "Prosa.Validation.ClassicTdmaWcrtInterface.production_sumFiltered_nil",
+    "Prosa.Validation.ClassicTdmaWcrtInterface.production_sumFiltered_cons_true",
+    "Prosa.Validation.ClassicTdmaWcrtInterface.production_sumFiltered_cons_false",
+    "Prosa.Validation.ClassicTdmaWcrtInterface.end_time_option_c0",
+    "Prosa.Validation.ClassicTdmaWcrtInterface.end_time_option_wf0",
+    "Prosa.Validation.ClassicTdmaWcrtInterface.end_time_option_step",
+    "Prosa.Validation.DivModInterface.production_div_floor_eq",
+    "Prosa.Validation.DivModInterface.production_div_ceil_eq",
+    "Prosa.Validation.DivModInterface.production_div_add_mod",
+    "Prosa.Validation.DivModInterface.production_mod_lt",
+    "Prosa.Validation.DivModInterface.production_div_zero",
+    "Prosa.Validation.DivModInterface.production_mod_zero",
+    "Prosa.Validation.DivModInterface.production_dvd_iff_mod_eq_zero"
+  ],
+  "computational": [
+    "WCRT_OneJobTDMA.formula_rt",
+    "WCRT_OneJobTDMA.job_response_time_tdma_in_at_most_one_job_is_pending",
+    "WCRT_OneJobTDMA.WCRT_formula",
+    "WCRT_OneJobTDMA.WCRT"
+  ],
+  "chain": [
+    "ClassicTdmaWcrtBase",
+    "ClassicTdmaWcrtList",
+    "ClassicTdmaWcrtCorrespondence"
+  ],
+  "principal": {},
+  "helpers": [
+    "ctw_forall_sched",
+    "ctw_forall_par",
+    "ctw_forall_set",
+    "ctw_forall_ord",
+    "ctw_forall_arr"
+  ],
+  "base_run": null,
+  "base_checks": [],
+  "previous_status": "classic_analysis_apa_bertogna_fp_comp_module_status.json",
+  "input_relations": [
+    "job and task types: eqTypes identified, Lean DecidableEq instances = the eqTypes' decision procedures; job_task identified",
+    "times by SubNatRel; job parameters pointwise through SubNatRel; schedules pointwise through the option map; arrival sequences pointwise on related times; task sets elementwise; TDMA slots/orders pointwise (two-way totals)"
+  ],
+  "lean_representation_note": "the Rocq module WCRT_OneJobTDMA is a namespace; `x %% m` is `x % m`; `x.-1` is `x - 1`; `reflect P b` is the informative `BoolReflect P b`",
+  "prop_sprop_foundation": [
+    "PropSPropFoundation.interpret_strict"
+  ],
+  "importer_foundation": [
+    "ImportedClassicTdmaWcrt.propext",
+    "PrimInt63.eqb",
+    "PrimInt63.int",
+    "PrimInt63.land",
+    "PrimInt63.lsr"
+  ],
+  "rocq_sprop_uip": [
+    "ClassicTdmaWcrtBase.I.HEq_inst1",
+    "ClassicTdmaWcrtBase.I.True",
+    "I.HEq",
+    "I.HEq_inst1",
+    "I.True",
+    "Lean.eq",
+    "Lean.eq_inst1",
+    "SubadditivityNatCorrespondence.SubNatTrue"
+  ],
+  "normalization": {
+    "theorem_types": [],
+    "subexpression_heads": [
+      "Finset.sum"
+    ],
+    "definition_bodies": [],
+    "body_projections": [
+      "Prosa.Classic.Model.Schedule.Uni.Schedule.UniprocessorSchedule.service_during=Prosa.Validation.ClassicTdmaWcrtInterface.service_during_proj=Prosa.Validation.ClassicTdmaWcrtInterface.service_during_proj_guard",
+      "Prosa.Classic.Model.Schedule.Uni.Schedule.UniprocessorSchedule.total_service_during=Prosa.Validation.ClassicTdmaWcrtInterface.total_service_during_proj=Prosa.Validation.ClassicTdmaWcrtInterface.total_service_during_proj_guard"
+    ]
+  },
+  "export_env": {
+    "LEAN4EXPORT_PRESERVE_REDUCIBLE_THEOREM_TYPES": "1",
+    "LEAN4EXPORT_NAT_INDEX_ALIASES": "Prosa.Classic.Model.Time.Time.time"
+  },
+  "extra_statement_only": [
+    "Prosa.Classic.Analysis.Uni.Basic.TdmaWcrtAnalysis.WCRT_OneJobTDMA.TDMA_policy_case_RT_le_Period._proof_1"
+  ],
+  "kernel_guard_artifacts": [
+    "Validation/fixtures/translation_order/ClassicTdmaWcrtInterface.lean"
+  ]
+}

@@ -1,0 +1,40 @@
+import Validation.fixtures.translation_order.ClassicUJPeriodicArrivalsInterface
+set_option pp.fieldNotation false
+
+#check @Prosa.Classic.Implementation.Uni.Jitter.ArrivalSequence.ConcreteArrivalSequence.add_job
+#check @Prosa.Classic.Implementation.Uni.Jitter.ArrivalSequence.ConcreteArrivalSequence.periodic_arrival_sequence
+#check @Prosa.Classic.Implementation.Uni.Jitter.ArrivalSequence.ConcreteArrivalSequence.periodic_arrivals_are_consistent
+#check @Prosa.Classic.Implementation.Uni.Jitter.ArrivalSequence.ConcreteArrivalSequence.periodic_arrivals_all_jobs_from_taskset
+#check @Prosa.Classic.Implementation.Uni.Jitter.ArrivalSequence.ConcreteArrivalSequence.periodic_arrivals_are_sporadic
+#check @Prosa.Classic.Implementation.Uni.Jitter.ArrivalSequence.ConcreteArrivalSequence.periodic_arrivals_is_a_set
+#check @Prosa.Classic.Implementation.Uni.Jitter.ArrivalSequence.ConcreteArrivalSequence.periodic_arrivals_job_cost_le_task_cost
+#check @Prosa.Classic.Implementation.Uni.Jitter.ArrivalSequence.ConcreteArrivalSequence.periodic_arrivals_job_deadline_eq_task_deadline
+#check @Prosa.Validation.ClassicUJPeriodicArrivalsInterface.filterMap_nil
+#check @Prosa.Validation.ClassicUJPeriodicArrivalsInterface.filterMap_cons_none
+#check @Prosa.Validation.ClassicUJPeriodicArrivalsInterface.filterMap_cons_some
+#check @Prosa.Validation.DivModInterface.production_div_floor_eq
+#check @Prosa.Validation.DivModInterface.production_div_ceil_eq
+#check @Prosa.Validation.DivModInterface.production_div_add_mod
+#check @Prosa.Validation.DivModInterface.production_mod_lt
+#check @Prosa.Validation.DivModInterface.production_div_zero
+#check @Prosa.Validation.DivModInterface.production_mod_zero
+#check @Prosa.Validation.DivModInterface.production_dvd_iff_mod_eq_zero
+
+#print axioms Prosa.Classic.Implementation.Uni.Jitter.ArrivalSequence.ConcreteArrivalSequence.add_job
+#print axioms Prosa.Classic.Implementation.Uni.Jitter.ArrivalSequence.ConcreteArrivalSequence.periodic_arrival_sequence
+#print axioms Prosa.Classic.Implementation.Uni.Jitter.ArrivalSequence.ConcreteArrivalSequence.periodic_arrivals_are_consistent
+#print axioms Prosa.Classic.Implementation.Uni.Jitter.ArrivalSequence.ConcreteArrivalSequence.periodic_arrivals_all_jobs_from_taskset
+#print axioms Prosa.Classic.Implementation.Uni.Jitter.ArrivalSequence.ConcreteArrivalSequence.periodic_arrivals_are_sporadic
+#print axioms Prosa.Classic.Implementation.Uni.Jitter.ArrivalSequence.ConcreteArrivalSequence.periodic_arrivals_is_a_set
+#print axioms Prosa.Classic.Implementation.Uni.Jitter.ArrivalSequence.ConcreteArrivalSequence.periodic_arrivals_job_cost_le_task_cost
+#print axioms Prosa.Classic.Implementation.Uni.Jitter.ArrivalSequence.ConcreteArrivalSequence.periodic_arrivals_job_deadline_eq_task_deadline
+#print axioms Prosa.Validation.ClassicUJPeriodicArrivalsInterface.filterMap_nil
+#print axioms Prosa.Validation.ClassicUJPeriodicArrivalsInterface.filterMap_cons_none
+#print axioms Prosa.Validation.ClassicUJPeriodicArrivalsInterface.filterMap_cons_some
+#print axioms Prosa.Validation.DivModInterface.production_div_floor_eq
+#print axioms Prosa.Validation.DivModInterface.production_div_ceil_eq
+#print axioms Prosa.Validation.DivModInterface.production_div_add_mod
+#print axioms Prosa.Validation.DivModInterface.production_mod_lt
+#print axioms Prosa.Validation.DivModInterface.production_div_zero
+#print axioms Prosa.Validation.DivModInterface.production_mod_zero
+#print axioms Prosa.Validation.DivModInterface.production_dvd_iff_mod_eq_zero

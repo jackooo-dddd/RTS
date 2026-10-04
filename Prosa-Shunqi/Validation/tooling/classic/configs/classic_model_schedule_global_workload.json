@@ -1,0 +1,90 @@
+{
+  "rank": 32,
+  "layer": 11,
+  "slug": "classic_model_schedule_global_workload",
+  "tag": "CWORK",
+  "export_name": "ClassicWorkload",
+  "source": "classic/model/schedule/global/workload.v",
+  "production": "Prosa/Classic/Model/Schedule/Global/Workload.lean",
+  "fixtures": [
+    "ClassicWorkloadInterface"
+  ],
+  "export_module": "Validation.fixtures.translation_order.ClassicWorkloadInterface",
+  "interface_theorems": [
+    "Prosa.Validation.ClassicWorkloadInterface.bigCatFin_range'",
+    "Prosa.Validation.ClassicWorkloadInterface.fin_sum_range'",
+    "Prosa.Validation.ClassicWorkloadInterface.bigCat_range'",
+    "Prosa.Validation.ClassicWorkloadInterface.service_at_sum",
+    "Prosa.Validation.ClassicWorkloadInterface.dedup_nil",
+    "Prosa.Validation.ClassicWorkloadInterface.dedup_cons_mem",
+    "Prosa.Validation.ClassicWorkloadInterface.dedup_cons_not_mem"
+  ],
+  "computational": [
+    "Workload.service_of_task",
+    "Workload.workload",
+    "Workload.workload_joblist"
+  ],
+  "chain": [
+    "ClassicWorkloadBase",
+    "ClassicWorkloadList",
+    "ClassicWorkloadOrd",
+    "ClassicWorkloadCorrespondence"
+  ],
+  "base_run": null,
+  "base_checks": [],
+  "previous_status": "classic_model_schedule_global_schedulability_module_status.json",
+  "input_relations": [
+    "job and task types: eqTypes identified, Lean DecidableEq instances = the eqTypes' decision procedures; job_task identified",
+    "natural numbers (time, num_cpus) by SubNatRel; processors 'I_n and Fin n by their values; schedules pointwise on related processors and times with option values by the constructor map; sequences elementwise (two-way totals)"
+  ],
+  "lean_representation_note": "as for the accepted classic schedule validation; `\\sum_(t1 <= t < t2) \\sum_(cpu < n) F` is `\u2211 t \u2208 Finset.Ico t1 t2, \u2211 cpu : Fin n, F`; a Boolean read as a number is `Bool.toNat`; `\\sum_(j <- s) F j` is the accepted v0.6 helper `sumSeq s F`",
+  "normalization": {
+    "theorem_types": [],
+    "subexpression_heads": [],
+    "definition_bodies": [],
+    "body_projections": [
+      "Prosa.Classic.Model.Schedule.Global.Basic.Schedule.Schedule.service=Prosa.Validation.ClassicWorkloadInterface.service_proj=Prosa.Validation.ClassicWorkloadInterface.service_proj_guard",
+      "Prosa.Classic.Model.Schedule.Global.Basic.Schedule.Schedule.service_during=Prosa.Validation.ClassicWorkloadInterface.service_during_proj=Prosa.Validation.ClassicWorkloadInterface.service_during_proj_guard",
+      "Prosa.Classic.Model.Schedule.Global.Workload.Workload.workload=Prosa.Validation.ClassicWorkloadInterface.workload_proj=Prosa.Validation.ClassicWorkloadInterface.workload_proj_guard"
+    ]
+  },
+  "kernel_guard_artifacts": [
+    "Validation/fixtures/translation_order/ClassicWorkloadInterface.lean"
+  ],
+  "helpers": [
+    "cs_forall_ncpus_sched",
+    "cs_ico",
+    "cs_undup_rel",
+    "cs_bigcat_nat_rel",
+    "cw_sumSeq"
+  ],
+  "probe_extra": [],
+  "own_qualified_in_type": [
+    "Workload.workload",
+    "Workload.workload_joblist"
+  ],
+  "export_diagnosis": "as for the accepted classic schedule export (service_at is a filtered Finset sum over Fin num_cpus, jobs_scheduled_between uses Mathlib List.dedup, validation-only interface theorems exported with their proof bodies); workload, service and service_during are exported through kernel-guarded rfl body projections, keeping Nat.instLocallyFiniteOrder and its Nat.Internal.Linear proofs out of the export.",
+  "prop_sprop_foundation": [
+    "PropSPropFoundation.interpret_strict"
+  ],
+  "importer_foundation": [
+    "ImportedClassicWorkload.Classical_choice",
+    "ImportedClassicWorkload.Quot_sound",
+    "ImportedClassicWorkload.propext",
+    "PrimInt63.eqb",
+    "PrimInt63.int",
+    "PrimInt63.land",
+    "PrimInt63.lsr"
+  ],
+  "rocq_sprop_uip": [
+    "ClassicWorkloadOrd.I.HEq",
+    "ClassicWorkloadOrd.I.HEq_inst1",
+    "ClassicWorkloadOrd.I.True",
+    "I.HEq",
+    "I.HEq_inst1",
+    "I.True",
+    "Lean.eq",
+    "Lean.eq_inst1",
+    "SubadditivityNatCorrespondence.SubNatTrue"
+  ]
+}

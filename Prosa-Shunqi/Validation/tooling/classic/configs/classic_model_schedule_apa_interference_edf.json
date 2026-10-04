@@ -1,0 +1,91 @@
+{
+  "rank": 118,
+  "layer": 13,
+  "classic_scope": "full",
+  "slug": "classic_model_schedule_apa_interference_edf",
+  "tag": "CAIEDF",
+  "export_name": "ClassicApaInterferenceEdf",
+  "source": "classic/model/schedule/apa/interference_edf.v",
+  "production": "Prosa/Classic/Model/Schedule/Apa/InterferenceEdf.lean",
+  "fixtures": [
+    "ClassicApaInterferenceEdfInterface"
+  ],
+  "export_module": "Validation.fixtures.translation_order.ClassicApaInterferenceEdfInterface",
+  "interface_theorems": [
+    "Prosa.Validation.ClassicApaInterferenceEdfInterface.finRange_any",
+    "Prosa.Validation.ClassicApaInterferenceEdfInterface.bigCatFin_range'",
+    "Prosa.Validation.ClassicApaInterferenceEdfInterface.fin_sum_range'",
+    "Prosa.Validation.ClassicApaInterferenceEdfInterface.bigCat_range'",
+    "Prosa.Validation.ClassicApaInterferenceEdfInterface.count_filter_eq",
+    "Prosa.Validation.ClassicApaInterferenceEdfInterface.service_at_sum",
+    "Prosa.Validation.ClassicApaInterferenceEdfInterface.dedup_nil",
+    "Prosa.Validation.ClassicApaInterferenceEdfInterface.dedup_cons_mem",
+    "Prosa.Validation.ClassicApaInterferenceEdfInterface.dedup_cons_not_mem"
+  ],
+  "computational": [],
+  "chain": [
+    "ClassicApaInterferenceEdfBase",
+    "ClassicApaInterferenceEdfList",
+    "ClassicApaInterferenceEdfOrd",
+    "ClassicApaInterferenceEdfList1",
+    "ClassicApaInterferenceEdfCorrespondence"
+  ],
+  "principal": {},
+  "helpers": [
+    "cap_forall_ncpus_sched",
+    "cap_forall_taff"
+  ],
+  "base_run": null,
+  "base_checks": [],
+  "previous_status": "classic_analysis_global_jitter_interference_bound_fp_module_status.json",
+  "input_relations": [
+    "job and task types: eqTypes identified, Lean DecidableEq instances = the eqTypes' decision procedures; job_task identified",
+    "times and processor counts by SubNatRel; processors by CoOrdRel; schedules pointwise through the option map; job parameters pointwise through SubNatRel; arrival sequences pointwise on related times; task affinities pointwise, affinities through their sequences elementwise (two-way totals)"
+  ],
+  "lean_representation_note": "the Rocq module InterferenceEDF (APA) is a namespace; `x != 0` is `!decide (x = 0)`; affinities as in the accepted APA validations",
+  "prop_sprop_foundation": [
+    "PropSPropFoundation.interpret_strict"
+  ],
+  "importer_foundation": [
+    "ImportedClassicApaInterferenceEdf.Classical_choice",
+    "ImportedClassicApaInterferenceEdf.Quot_sound",
+    "ImportedClassicApaInterferenceEdf.propext",
+    "PrimInt63.eqb",
+    "PrimInt63.int",
+    "PrimInt63.land",
+    "PrimInt63.lsr"
+  ],
+  "rocq_sprop_uip": [
+    "ClassicApaInterferenceEdfBase.I.HEq_inst1",
+    "ClassicApaInterferenceEdfBase.I.True",
+    "ClassicApaInterferenceEdfOrd.I.HEq",
+    "ClassicApaInterferenceEdfOrd.I.HEq_inst1",
+    "ClassicApaInterferenceEdfOrd.I.True",
+    "I.HEq",
+    "I.HEq_inst1",
+    "I.True",
+    "Lean.eq",
+    "Lean.eq_inst1",
+    "SubadditivityNatCorrespondence.SubNatTrue"
+  ],
+  "normalization": {
+    "theorem_types": [],
+    "subexpression_heads": [
+      "Finset.sum"
+    ],
+    "definition_bodies": [],
+    "body_projections": [
+      "Prosa.Classic.Model.Schedule.Global.Basic.Schedule.Schedule.service=Prosa.Validation.ClassicApaInterferenceEdfInterface.service_proj=Prosa.Validation.ClassicApaInterferenceEdfInterface.service_proj_guard",
+      "Prosa.Classic.Model.Schedule.Global.Basic.Schedule.Schedule.service_during=Prosa.Validation.ClassicApaInterferenceEdfInterface.service_during_proj=Prosa.Validation.ClassicApaInterferenceEdfInterface.service_during_proj_guard",
+      "Prosa.Classic.Model.Schedule.Apa.Interference.Interference.job_interference=Prosa.Validation.ClassicApaInterferenceEdfInterface.job_interference_proj=Prosa.Validation.ClassicApaInterferenceEdfInterface.job_interference_proj_guard"
+    ]
+  },
+  "export_env": {
+    "LEAN4EXPORT_PRESERVE_REDUCIBLE_THEOREM_TYPES": "1",
+    "LEAN4EXPORT_NAT_INDEX_ALIASES": "Prosa.Classic.Model.Time.Time.time"
+  },
+  "export_diagnosis": "as for the accepted classic APA interference / platform exports: the global service_at is a filtered Finset sum over Fin num_cpus (Mathlib Finset/Multiset/Quot closure), affinities are v0.6 seqsets over Fin num_cpus, and the restated ClassicScheduleInterface theorems are exported with their proof bodies; the half-open Finset.Ico sums (service, service_during, the APA job_interference) are kept out of the export by kernel-guarded body projections.",
+  "kernel_guard_artifacts": [
+    "Validation/fixtures/translation_order/ClassicApaInterferenceEdfInterface.lean"
+  ]
+}

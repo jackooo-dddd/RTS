@@ -1,0 +1,17 @@
+# classic/model/schedule/uni/susp/schedule.v: 1 declarations
+
+## Print Module
+
+Module schedule := Struct Module ScheduleWithSuspensions End
+
+Module ScheduleWithSuspensions := Struct Definition backlogged : forall Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> time) -> (eqtype.Equality.sort Job -> time) -> job_suspension Job -> schedule Job -> eqtype.Equality.sort Job -> time -> bool. End
+
+## About
+
+ScheduleWithSuspensions.backlogged : forall {Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> suspension.Suspension.job_suspension Job -> schedule.UniprocessorSchedule.schedule Job -> eqtype.Equality.sort Job -> time.Time.time -> bool
+
+ScheduleWithSuspensions.backlogged is not universe polymorphic
+Arguments ScheduleWithSuspensions.backlogged {Job} (job_arrival job_cost)%function_scope next_suspension sched j t
+ScheduleWithSuspensions.backlogged is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.susp.schedule.ScheduleWithSuspensions.backlogged
+Declared in library prosa.classic.model.schedule.uni.susp.schedule, line 39, characters 17-27

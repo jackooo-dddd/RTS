@@ -1,0 +1,91 @@
+{
+  "rank": 138,
+  "layer": 14,
+  "classic_scope": "full",
+  "slug": "classic_model_schedule_global_jitter_constrained_deadlines",
+  "tag": "CCDJ",
+  "export_name": "ClassicJitterConstrainedDeadlines",
+  "source": "classic/model/schedule/global/jitter/constrained_deadlines.v",
+  "production": "Prosa/Classic/Model/Schedule/Global/Jitter/ConstrainedDeadlines.lean",
+  "fixtures": [
+    "ClassicJitterConstrainedDeadlinesInterface"
+  ],
+  "export_module": "Validation.fixtures.translation_order.ClassicJitterConstrainedDeadlinesInterface",
+  "interface_theorems": [
+    "Prosa.Validation.ClassicJitterConstrainedDeadlinesInterface.finRange_any",
+    "Prosa.Validation.ClassicJitterConstrainedDeadlinesInterface.bigCatFin_range'",
+    "Prosa.Validation.ClassicJitterConstrainedDeadlinesInterface.fin_sum_range'",
+    "Prosa.Validation.ClassicJitterConstrainedDeadlinesInterface.bigCat_range'",
+    "Prosa.Validation.ClassicJitterConstrainedDeadlinesInterface.count_filter_eq",
+    "Prosa.Validation.ClassicJitterConstrainedDeadlinesInterface.service_at_sum",
+    "Prosa.Validation.ClassicJitterConstrainedDeadlinesInterface.dedup_nil",
+    "Prosa.Validation.ClassicJitterConstrainedDeadlinesInterface.dedup_cons_mem",
+    "Prosa.Validation.ClassicJitterConstrainedDeadlinesInterface.dedup_cons_not_mem"
+  ],
+  "computational": [
+    "ConstrainedDeadlines.scheduled_task_with_higher_eq_priority"
+  ],
+  "chain": [
+    "ClassicJitterConstrainedDeadlinesBase",
+    "ClassicJitterConstrainedDeadlinesList",
+    "ClassicJitterConstrainedDeadlinesOrd",
+    "ClassicJitterConstrainedDeadlinesCorrespondence"
+  ],
+  "principal": {},
+  "helpers": [
+    "cs_forall_ncpus_sched",
+    "cs_forall_sched"
+  ],
+  "base_run": null,
+  "base_checks": [],
+  "previous_status": "classic_model_schedule_apa_interference_edf_module_status.json",
+  "input_relations": [
+    "job and task types: eqTypes identified, Lean DecidableEq instances = the eqTypes' decision procedures; job_task identified",
+    "natural numbers (time, num_cpus) by SubNatRel; processors 'I_n and Fin n by their values; schedules pointwise on related processors and times with option values by the constructor map; job and task parameters pointwise through SubNatRel; arrival sequences pointwise on related times; FP policies pointwise (two-way totals)"
+  ],
+  "lean_representation_note": "as for the accepted classic schedule, task_arrival, priority validations; Boolean tests in propositions are `= true`; the section-local `hp_task_in` is unfolded; the jitter notions as in the accepted classic global jitter validations",
+  "prop_sprop_foundation": [
+    "PropSPropFoundation.interpret_strict"
+  ],
+  "importer_foundation": [
+    "ImportedClassicJitterConstrainedDeadlines.Classical_choice",
+    "ImportedClassicJitterConstrainedDeadlines.Quot_sound",
+    "ImportedClassicJitterConstrainedDeadlines.propext",
+    "PrimInt63.eqb",
+    "PrimInt63.int",
+    "PrimInt63.land",
+    "PrimInt63.lsr"
+  ],
+  "rocq_sprop_uip": [
+    "ClassicJitterConstrainedDeadlinesBase.I.HEq_inst1",
+    "ClassicJitterConstrainedDeadlinesBase.I.True",
+    "ClassicJitterConstrainedDeadlinesOrd.I.HEq",
+    "ClassicJitterConstrainedDeadlinesOrd.I.HEq_inst1",
+    "ClassicJitterConstrainedDeadlinesOrd.I.True",
+    "I.HEq",
+    "I.HEq_inst1",
+    "I.True",
+    "Lean.eq",
+    "Lean.eq_inst1",
+    "SubadditivityNatCorrespondence.SubNatTrue"
+  ],
+  "normalization": {
+    "theorem_types": [],
+    "subexpression_heads": [
+      "Finset.sum"
+    ],
+    "definition_bodies": [],
+    "body_projections": [
+      "Prosa.Classic.Model.Schedule.Global.Basic.Schedule.Schedule.service=Prosa.Validation.ClassicJitterConstrainedDeadlinesInterface.service_proj=Prosa.Validation.ClassicJitterConstrainedDeadlinesInterface.service_proj_guard",
+      "Prosa.Classic.Model.Schedule.Global.Basic.Schedule.Schedule.service_during=Prosa.Validation.ClassicJitterConstrainedDeadlinesInterface.service_during_proj=Prosa.Validation.ClassicJitterConstrainedDeadlinesInterface.service_during_proj_guard"
+    ]
+  },
+  "export_env": {
+    "LEAN4EXPORT_PRESERVE_REDUCIBLE_THEOREM_TYPES": "1",
+    "LEAN4EXPORT_NAT_INDEX_ALIASES": "Prosa.Classic.Model.Time.Time.time"
+  },
+  "export_diagnosis": "as for the accepted classic schedule export (service_at is a filtered Finset sum over Fin num_cpus; validation-only interface theorems exported with their proof bodies); service/service_during through kernel-guarded rfl body projections.",
+  "kernel_guard_artifacts": [
+    "Validation/fixtures/translation_order/ClassicJitterConstrainedDeadlinesInterface.lean"
+  ]
+}

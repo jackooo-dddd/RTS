@@ -1,0 +1,56 @@
+import Validation.fixtures.translation_order.ClassicScheduleTdmaInterface
+set_option pp.fieldNotation false
+
+#check @Prosa.Classic.Implementation.Uni.Basic.ScheduleTdma.ConcreteSchedulerTDMA.pending_jobs
+#check @Prosa.Classic.Implementation.Uni.Basic.ScheduleTdma.ConcreteSchedulerTDMA.job_to_schedule
+#check @Prosa.Classic.Implementation.Uni.Basic.ScheduleTdma.ConcreteSchedulerTDMA.pending_jobs_uniq
+#check @Prosa.Classic.Implementation.Uni.Basic.ScheduleTdma.ConcreteSchedulerTDMA.respects_FIFO
+#check @Prosa.Classic.Implementation.Uni.Basic.ScheduleTdma.ConcreteSchedulerTDMA.pending_job_in_penging_list
+#check @Prosa.Classic.Implementation.Uni.Basic.ScheduleTdma.ConcreteSchedulerTDMA.pendinglist_jobs_in_arr_seq
+#check @Prosa.Classic.Implementation.Uni.Basic.ScheduleTdma.ConcreteSchedulerTDMA.scheduler_tdma
+#check @Prosa.Classic.Implementation.Uni.Basic.ScheduleTdma.ConcreteSchedulerTDMA.scheduler_depends_only_on_prefix
+#check @Prosa.Classic.Implementation.Uni.Basic.ScheduleTdma.ConcreteSchedulerTDMA.scheduler_uses_construction_function
+#check @Prosa.Classic.Implementation.Uni.Basic.ScheduleTdma.ConcreteSchedulerTDMA.scheduler_jobs_must_arrive_to_execute
+#check @Prosa.Classic.Implementation.Uni.Basic.ScheduleTdma.ConcreteSchedulerTDMA.scheduler_completed_jobs_dont_execute
+#check @Prosa.Validation.ClassicScheduleTdmaInterface.bigCat_range'
+#check @Prosa.Validation.ClassicScheduleTdmaInterface.production_schedule_prefix_zero
+#check @Prosa.Validation.ClassicScheduleTdmaInterface.production_schedule_prefix_succ
+#check @Prosa.Validation.ClassicScheduleTdmaInterface.production_sumSeq_nil
+#check @Prosa.Validation.ClassicScheduleTdmaInterface.production_sumSeq_cons
+#check @Prosa.Validation.ClassicScheduleTdmaInterface.production_sumFiltered_nil
+#check @Prosa.Validation.ClassicScheduleTdmaInterface.production_sumFiltered_cons_true
+#check @Prosa.Validation.ClassicScheduleTdmaInterface.production_sumFiltered_cons_false
+#check @Prosa.Validation.DivModInterface.production_div_floor_eq
+#check @Prosa.Validation.DivModInterface.production_div_ceil_eq
+#check @Prosa.Validation.DivModInterface.production_div_add_mod
+#check @Prosa.Validation.DivModInterface.production_mod_lt
+#check @Prosa.Validation.DivModInterface.production_div_zero
+#check @Prosa.Validation.DivModInterface.production_mod_zero
+#check @Prosa.Validation.DivModInterface.production_dvd_iff_mod_eq_zero
+
+#print axioms Prosa.Classic.Implementation.Uni.Basic.ScheduleTdma.ConcreteSchedulerTDMA.pending_jobs
+#print axioms Prosa.Classic.Implementation.Uni.Basic.ScheduleTdma.ConcreteSchedulerTDMA.job_to_schedule
+#print axioms Prosa.Classic.Implementation.Uni.Basic.ScheduleTdma.ConcreteSchedulerTDMA.pending_jobs_uniq
+#print axioms Prosa.Classic.Implementation.Uni.Basic.ScheduleTdma.ConcreteSchedulerTDMA.respects_FIFO
+#print axioms Prosa.Classic.Implementation.Uni.Basic.ScheduleTdma.ConcreteSchedulerTDMA.pending_job_in_penging_list
+#print axioms Prosa.Classic.Implementation.Uni.Basic.ScheduleTdma.ConcreteSchedulerTDMA.pendinglist_jobs_in_arr_seq
+#print axioms Prosa.Classic.Implementation.Uni.Basic.ScheduleTdma.ConcreteSchedulerTDMA.scheduler_tdma
+#print axioms Prosa.Classic.Implementation.Uni.Basic.ScheduleTdma.ConcreteSchedulerTDMA.scheduler_depends_only_on_prefix
+#print axioms Prosa.Classic.Implementation.Uni.Basic.ScheduleTdma.ConcreteSchedulerTDMA.scheduler_uses_construction_function
+#print axioms Prosa.Classic.Implementation.Uni.Basic.ScheduleTdma.ConcreteSchedulerTDMA.scheduler_jobs_must_arrive_to_execute
+#print axioms Prosa.Classic.Implementation.Uni.Basic.ScheduleTdma.ConcreteSchedulerTDMA.scheduler_completed_jobs_dont_execute
+#print axioms Prosa.Validation.ClassicScheduleTdmaInterface.bigCat_range'
+#print axioms Prosa.Validation.ClassicScheduleTdmaInterface.production_schedule_prefix_zero
+#print axioms Prosa.Validation.ClassicScheduleTdmaInterface.production_schedule_prefix_succ
+#print axioms Prosa.Validation.ClassicScheduleTdmaInterface.production_sumSeq_nil
+#print axioms Prosa.Validation.ClassicScheduleTdmaInterface.production_sumSeq_cons
+#print axioms Prosa.Validation.ClassicScheduleTdmaInterface.production_sumFiltered_nil
+#print axioms Prosa.Validation.ClassicScheduleTdmaInterface.production_sumFiltered_cons_true
+#print axioms Prosa.Validation.ClassicScheduleTdmaInterface.production_sumFiltered_cons_false
+#print axioms Prosa.Validation.DivModInterface.production_div_floor_eq
+#print axioms Prosa.Validation.DivModInterface.production_div_ceil_eq
+#print axioms Prosa.Validation.DivModInterface.production_div_add_mod
+#print axioms Prosa.Validation.DivModInterface.production_mod_lt
+#print axioms Prosa.Validation.DivModInterface.production_div_zero
+#print axioms Prosa.Validation.DivModInterface.production_mod_zero
+#print axioms Prosa.Validation.DivModInterface.production_dvd_iff_mod_eq_zero

@@ -1,9 +1,9 @@
 # Classic Prosa → Lean: case-study translation
 
 <!-- STATUS_BEGIN -->
-**Progress: 0 / 49 classic files accepted** (40 translated, 0 in progress, 8 deferred, 0 blocked) ·
+**Progress: 49 / 49 classic files accepted** (0 translated, 0 in progress, 0 deferred, 0 blocked) ·
 tier S 38 files · tier P 11 files · v0.6 `util` dependencies: 14 / 14 already accepted ·
-next file: **rank 49** `classic/analysis/global/basic/bertogna_edf_theory.v` · last update: 2026-10-01
+all files processed · last update: 2026-10-02
 <!-- STATUS_END -->
 
 Goal: translate exactly the Classic Prosa files needed for the 22 `RTS_Papers` case studies, so
@@ -44,8 +44,11 @@ support), 12.9k lines.
   ([`file_dependencies.csv`](file_dependencies.csv)). Within a layer, tier S comes before tier
   P, then files are ordered by path. A file is **READY** when all its dependencies are ACCEPTED.
 - ¹ These files are in scope only because the case studies import `classic/util/all.v`, which
-  re-exports every classic utility. None of their declarations is used by the case studies:
-  translate them last within their layer, or mark them DEFERRED with a note.
+  re-exports every classic utility. None of their declarations is used by the case studies,
+  so they were first DEFERRED. They are now translated (2026-10-01): validation accepts a file
+  only after all its file-DAG dependencies are accepted, and every model file depends on
+  `classic/util/all.v`. Three of them (`ssromega.v`, `step_function.v`, `all.v`) have no
+  declaration; their Lean modules only mirror the source imports.
 
 **Statuses:** `TODO` → `IN_PROGRESS` → `TRANSLATED` (Lean compiles, no `sorry`/axioms) →
 `ACCEPTED` (validated against the Rocq reference). `BLOCKED` and `DEFERRED` always carry a
@@ -53,55 +56,55 @@ note. Keep the table below and `file_order.csv` in sync.
 
 | Rank | Layer | Tier | ProsaBuddy source (`classic/…`) | Decls (used) | Lines | Lean target (`Prosa/Classic/…`) | Status |
 |---:|---:|:---:|---|---:|---:|---|---|
-| 1 | 0 | S | `model/time.v` | 3 (1) | 8 | `Model/Time.lean` | TRANSLATED |
-| 2 | 0 | S | `util/pick.v` ¹ | 17 (0) | 291 | `Util/Pick.lean` | DEFERRED |
-| 3 | 0 | S | `util/ssromega.v` ¹ | 0 (0) | 31 | `Util/Ssromega.lean` | DEFERRED |
-| 4 | 1 | S | `util/notation.v` | 6 (1) | 81 | `Util/Notation.lean` | TRANSLATED |
-| 5 | 1 | S | `util/seqset.v` | 2 (1) | 29 | `Util/Seqset.lean` | TRANSLATED |
-| 6 | 1 | S | `util/tactics.v` ¹ | 13 (0) | 384 | `Util/Tactics.lean` | DEFERRED |
-| 7 | 2 | S | `util/bigord.v` | 4 (4) | 41 | `Util/Bigord.lean` | TRANSLATED |
-| 8 | 2 | S | `util/induction.v` | 2 (1) | 31 | `Util/Induction.lean` | TRANSLATED |
-| 9 | 2 | S | `util/list.v` | 44 (2) | 787 | `Util/List.lean` | TRANSLATED |
-| 10 | 2 | S | `util/nat.v` | 8 (5) | 80 | `Util/Nat.lean` | TRANSLATED |
-| 11 | 2 | S | `util/ord_quantifier.v` | 4 (2) | 101 | `Util/OrdQuantifier.lean` | TRANSLATED |
-| 12 | 2 | S | `util/powerset.v` ¹ | 2 (0) | 19 | `Util/Powerset.lean` | DEFERRED |
-| 13 | 3 | S | `util/bigcat.v` | 6 (5) | 103 | `Util/Bigcat.lean` | TRANSLATED |
-| 14 | 3 | S | `util/counting.v` | 5 (5) | 104 | `Util/Counting.lean` | TRANSLATED |
-| 15 | 3 | S | `util/div_mod.v` | 17 (4) | 237 | `Util/DivMod.lean` | TRANSLATED |
-| 16 | 3 | S | `util/fixedpoint.v` ¹ | 10 (0) | 191 | `Util/Fixedpoint.lean` | DEFERRED |
-| 17 | 3 | S | `util/sorting.v` | 6 (1) | 161 | `Util/Sorting.lean` | TRANSLATED |
-| 18 | 3 | S | `util/step_function.v` ¹ | 0 (0) | 3 | `Util/StepFunction.lean` | DEFERRED |
-| 19 | 4 | S | `util/minmax.v` ¹ | 44 (0) | 544 | `Util/Minmax.lean` | DEFERRED |
-| 20 | 4 | S | `util/sum.v` | 9 (6) | 185 | `Util/Sum.lean` | TRANSLATED |
-| 21 | 5 | S | `util/all.v` ¹ | 0 (0) | 21 | `Util/All.lean` | DEFERRED |
-| 22 | 6 | S | `model/arrival/basic/task.v` | 11 (9) | 82 | `Model/Arrival/Basic/Task.lean` | TRANSLATED |
-| 23 | 7 | S | `model/arrival/basic/arrival_sequence.v` | 20 (9) | 232 | `Model/Arrival/Basic/ArrivalSequence.lean` | TRANSLATED |
-| 24 | 8 | S | `model/arrival/basic/job.v` | 8 (7) | 94 | `Model/Arrival/Basic/Job.lean` | TRANSLATED |
-| 25 | 9 | S | `model/arrival/basic/task_arrival.v` | 11 (3) | 236 | `Model/Arrival/Basic/TaskArrival.lean` | TRANSLATED |
-| 26 | 9 | S | `model/priority.v` | 35 (10) | 356 | `Model/Priority.lean` | TRANSLATED |
-| 27 | 9 | S | `model/schedule/global/basic/schedule.v` | 39 (34) | 616 | `Model/Schedule/Global/Basic/Schedule.lean` | TRANSLATED |
-| 28 | 10 | S | `model/arrival/basic/arrival_bounds.v` | 10 (0) | 226 | `Model/Arrival/Basic/ArrivalBounds.lean` | TRANSLATED |
-| 29 | 10 | S | `model/schedule/apa/affinity.v` | 7 (7) | 102 | `Model/Schedule/Apa/Affinity.lean` | TRANSLATED |
-| 30 | 10 | S | `model/schedule/global/response_time.v` | 5 (3) | 135 | `Model/Schedule/Global/ResponseTime.lean` | TRANSLATED |
-| 31 | 10 | S | `model/schedule/global/schedulability.v` | 7 (2) | 172 | `Model/Schedule/Global/Schedulability.lean` | TRANSLATED |
-| 32 | 11 | S | `model/schedule/global/workload.v` | 4 (4) | 97 | `Model/Schedule/Global/Workload.lean` | TRANSLATED |
-| 33 | 12 | S | `model/schedule/apa/interference.v` | 11 (4) | 272 | `Model/Schedule/Apa/Interference.lean` | TRANSLATED |
-| 34 | 12 | S | `model/schedule/global/basic/interference.v` | 9 (8) | 205 | `Model/Schedule/Global/Basic/Interference.lean` | TRANSLATED |
-| 35 | 12 | P | `analysis/apa/workload_bound.v` | 21 (20) | 744 | `Analysis/Apa/WorkloadBound.lean` | TRANSLATED |
-| 36 | 12 | P | `analysis/global/basic/workload_bound.v` | 21 (20) | 743 | `Analysis/Global/Basic/WorkloadBound.lean` | TRANSLATED |
-| 37 | 13 | S | `model/schedule/apa/platform.v` | 5 (3) | 116 | `Model/Schedule/Apa/Platform.lean` | TRANSLATED |
-| 38 | 13 | S | `model/schedule/global/basic/platform.v` | 6 (6) | 189 | `Model/Schedule/Global/Basic/Platform.lean` | TRANSLATED |
-| 39 | 13 | P | `analysis/apa/interference_bound.v` | 1 (1) | 45 | `Analysis/Apa/InterferenceBound.lean` | TRANSLATED |
-| 40 | 13 | P | `analysis/global/basic/interference_bound.v` | 1 (1) | 43 | `Analysis/Global/Basic/InterferenceBound.lean` | TRANSLATED |
-| 41 | 14 | S | `model/schedule/apa/constrained_deadlines.v` | 4 (3) | 288 | `Model/Schedule/Apa/ConstrainedDeadlines.lean` | TRANSLATED |
-| 42 | 14 | S | `model/schedule/global/basic/constrained_deadlines.v` | 6 (6) | 443 | `Model/Schedule/Global/Basic/ConstrainedDeadlines.lean` | TRANSLATED |
-| 43 | 14 | P | `analysis/apa/interference_bound_fp.v` | 1 (1) | 56 | `Analysis/Apa/InterferenceBoundFp.lean` | TRANSLATED |
-| 44 | 14 | P | `analysis/global/basic/interference_bound_fp.v` | 1 (1) | 46 | `Analysis/Global/Basic/InterferenceBoundFp.lean` | TRANSLATED |
-| 45 | 14 | P | `model/schedule/global/basic/interference_edf.v` | 1 (1) | 72 | `Model/Schedule/Global/Basic/InterferenceEdf.lean` | TRANSLATED |
-| 46 | 15 | P | `analysis/apa/bertogna_fp_theory.v` | 13 (13) | 1049 | `Analysis/Apa/BertognaFpTheory.lean` | TRANSLATED |
-| 47 | 15 | P | `analysis/global/basic/bertogna_fp_theory.v` | 10 (10) | 788 | `Analysis/Global/Basic/BertognaFpTheory.lean` | TRANSLATED |
-| 48 | 15 | P | `analysis/global/basic/interference_bound_edf.v` | 41 (37) | 1200 | `Analysis/Global/Basic/InterferenceBoundEdf.lean` | TRANSLATED |
-| 49 | 16 | P | `analysis/global/basic/bertogna_edf_theory.v` | 14 (14) | 821 | `Analysis/Global/Basic/BertognaEdfTheory.lean` | TODO |
+| 1 | 0 | S | `model/time.v` | 3 (1) | 8 | `Model/Time.lean` | ACCEPTED |
+| 2 | 0 | S | `util/pick.v` | 17 (0) | 291 | `Util/Pick.lean` | ACCEPTED |
+| 3 | 0 | S | `util/ssromega.v` | 0 (0) | 31 | `Util/Ssromega.lean` | ACCEPTED |
+| 4 | 1 | S | `util/notation.v` | 6 (1) | 81 | `Util/Notation.lean` | ACCEPTED |
+| 5 | 1 | S | `util/seqset.v` | 2 (1) | 29 | `Util/Seqset.lean` | ACCEPTED |
+| 6 | 1 | S | `util/tactics.v` | 13 (0) | 384 | `Util/Tactics.lean` | ACCEPTED |
+| 7 | 2 | S | `util/bigord.v` | 4 (4) | 41 | `Util/Bigord.lean` | ACCEPTED |
+| 8 | 2 | S | `util/induction.v` | 2 (1) | 31 | `Util/Induction.lean` | ACCEPTED |
+| 9 | 2 | S | `util/list.v` | 44 (2) | 787 | `Util/List.lean` | ACCEPTED |
+| 10 | 2 | S | `util/nat.v` | 8 (5) | 80 | `Util/Nat.lean` | ACCEPTED |
+| 11 | 2 | S | `util/ord_quantifier.v` | 4 (2) | 101 | `Util/OrdQuantifier.lean` | ACCEPTED |
+| 12 | 2 | S | `util/powerset.v` | 2 (0) | 19 | `Util/Powerset.lean` | ACCEPTED |
+| 13 | 3 | S | `util/bigcat.v` | 6 (5) | 103 | `Util/Bigcat.lean` | ACCEPTED |
+| 14 | 3 | S | `util/counting.v` | 5 (5) | 104 | `Util/Counting.lean` | ACCEPTED |
+| 15 | 3 | S | `util/div_mod.v` | 17 (4) | 237 | `Util/DivMod.lean` | ACCEPTED |
+| 16 | 3 | S | `util/fixedpoint.v` | 10 (0) | 191 | `Util/Fixedpoint.lean` | ACCEPTED |
+| 17 | 3 | S | `util/sorting.v` | 6 (1) | 161 | `Util/Sorting.lean` | ACCEPTED |
+| 18 | 3 | S | `util/step_function.v` | 0 (0) | 3 | `Util/StepFunction.lean` | ACCEPTED |
+| 19 | 4 | S | `util/minmax.v` | 44 (0) | 544 | `Util/Minmax.lean` | ACCEPTED |
+| 20 | 4 | S | `util/sum.v` | 9 (6) | 185 | `Util/Sum.lean` | ACCEPTED |
+| 21 | 5 | S | `util/all.v` | 0 (0) | 21 | `Util/All.lean` | ACCEPTED |
+| 22 | 6 | S | `model/arrival/basic/task.v` | 11 (9) | 82 | `Model/Arrival/Basic/Task.lean` | ACCEPTED |
+| 23 | 7 | S | `model/arrival/basic/arrival_sequence.v` | 20 (9) | 232 | `Model/Arrival/Basic/ArrivalSequence.lean` | ACCEPTED |
+| 24 | 8 | S | `model/arrival/basic/job.v` | 8 (7) | 94 | `Model/Arrival/Basic/Job.lean` | ACCEPTED |
+| 25 | 9 | S | `model/arrival/basic/task_arrival.v` | 11 (3) | 236 | `Model/Arrival/Basic/TaskArrival.lean` | ACCEPTED |
+| 26 | 9 | S | `model/priority.v` | 35 (10) | 356 | `Model/Priority.lean` | ACCEPTED |
+| 27 | 9 | S | `model/schedule/global/basic/schedule.v` | 39 (34) | 616 | `Model/Schedule/Global/Basic/Schedule.lean` | ACCEPTED |
+| 28 | 10 | S | `model/arrival/basic/arrival_bounds.v` | 10 (0) | 226 | `Model/Arrival/Basic/ArrivalBounds.lean` | ACCEPTED |
+| 29 | 10 | S | `model/schedule/apa/affinity.v` | 7 (7) | 102 | `Model/Schedule/Apa/Affinity.lean` | ACCEPTED |
+| 30 | 10 | S | `model/schedule/global/response_time.v` | 5 (3) | 135 | `Model/Schedule/Global/ResponseTime.lean` | ACCEPTED |
+| 31 | 10 | S | `model/schedule/global/schedulability.v` | 7 (2) | 172 | `Model/Schedule/Global/Schedulability.lean` | ACCEPTED |
+| 32 | 11 | S | `model/schedule/global/workload.v` | 4 (4) | 97 | `Model/Schedule/Global/Workload.lean` | ACCEPTED |
+| 33 | 12 | S | `model/schedule/apa/interference.v` | 11 (4) | 272 | `Model/Schedule/Apa/Interference.lean` | ACCEPTED |
+| 34 | 12 | S | `model/schedule/global/basic/interference.v` | 9 (8) | 205 | `Model/Schedule/Global/Basic/Interference.lean` | ACCEPTED |
+| 35 | 12 | P | `analysis/apa/workload_bound.v` | 21 (20) | 744 | `Analysis/Apa/WorkloadBound.lean` | ACCEPTED |
+| 36 | 12 | P | `analysis/global/basic/workload_bound.v` | 21 (20) | 743 | `Analysis/Global/Basic/WorkloadBound.lean` | ACCEPTED |
+| 37 | 13 | S | `model/schedule/apa/platform.v` | 5 (3) | 116 | `Model/Schedule/Apa/Platform.lean` | ACCEPTED |
+| 38 | 13 | S | `model/schedule/global/basic/platform.v` | 6 (6) | 189 | `Model/Schedule/Global/Basic/Platform.lean` | ACCEPTED |
+| 39 | 13 | P | `analysis/apa/interference_bound.v` | 1 (1) | 45 | `Analysis/Apa/InterferenceBound.lean` | ACCEPTED |
+| 40 | 13 | P | `analysis/global/basic/interference_bound.v` | 1 (1) | 43 | `Analysis/Global/Basic/InterferenceBound.lean` | ACCEPTED |
+| 41 | 14 | S | `model/schedule/apa/constrained_deadlines.v` | 4 (3) | 288 | `Model/Schedule/Apa/ConstrainedDeadlines.lean` | ACCEPTED |
+| 42 | 14 | S | `model/schedule/global/basic/constrained_deadlines.v` | 6 (6) | 443 | `Model/Schedule/Global/Basic/ConstrainedDeadlines.lean` | ACCEPTED |
+| 43 | 14 | P | `analysis/apa/interference_bound_fp.v` | 1 (1) | 56 | `Analysis/Apa/InterferenceBoundFp.lean` | ACCEPTED |
+| 44 | 14 | P | `analysis/global/basic/interference_bound_fp.v` | 1 (1) | 46 | `Analysis/Global/Basic/InterferenceBoundFp.lean` | ACCEPTED |
+| 45 | 14 | P | `model/schedule/global/basic/interference_edf.v` | 1 (1) | 72 | `Model/Schedule/Global/Basic/InterferenceEdf.lean` | ACCEPTED |
+| 46 | 15 | P | `analysis/apa/bertogna_fp_theory.v` | 13 (13) | 1049 | `Analysis/Apa/BertognaFpTheory.lean` | ACCEPTED |
+| 47 | 15 | P | `analysis/global/basic/bertogna_fp_theory.v` | 10 (10) | 788 | `Analysis/Global/Basic/BertognaFpTheory.lean` | ACCEPTED |
+| 48 | 15 | P | `analysis/global/basic/interference_bound_edf.v` | 41 (37) | 1200 | `Analysis/Global/Basic/InterferenceBoundEdf.lean` | ACCEPTED |
+| 49 | 16 | P | `analysis/global/basic/bertogna_edf_theory.v` | 14 (14) | 821 | `Analysis/Global/Basic/BertognaEdfTheory.lean` | ACCEPTED |
 
 ### Already available (v0.6 `util`, accepted in this project)
 
@@ -142,30 +145,29 @@ variants across files). Translate those together with each case study, after ran
 
 ## Procedure
 
-### Stage 0: prerequisites (pending your approval)
+### Stage 0: classic validation family (approved 2026-10-01, implemented)
 
-1. **Validation pipeline.** `Validation/scripts/translation_file_pipeline.py` is pinned to v0.6
-   (`SOURCE_ROOT = .work/prosa-v06-414e667`, `PIN = 414e667…`). Classic validation needs:
-   - a classic source root (ProsaBuddy `f692cb7`, hashes as in `file_order.csv`);
-   - the build of `../rocq93-port/` with the prelude flags
-     `-Q <compat> Compat -ri Compat.Rocq90Compat`;
-   - a separate status chain, so v0.6 coverage numbers stay unaffected.
-
-   Do not edit the pipeline while v0.6 runs are active.
-2. **Representation addendum** for classic, extending
-   `Validation/planning/v06_current_policy/representation_policy.md` (decide at the rank where
-   each item first appears):
-   - `Context {T : eqType}` → carrier + `[DecidableEq T]`, as in v0.6 (rank 1 onwards);
-   - classic passes model parameters as **explicit functions** (`job_cost : Job → time`, …).
-     Keep them explicit, not type classes, so statements stay identical to ProsaBuddy's
-     (rank 22 onwards);
-   - `time := nat` (rank 1); `seq` → `List`, `bool` stays `Bool`, as in v0.6;
-   - global schedules: `schedule Job num_cpus`, with processors as ordinals
-     `'I_num_cpus` → `Fin num_cpus` (rank 27); APA affinities (rank 29);
-   - Ltac-only files (`ssromega.v`, most of `tactics.v`) have no Lean declarations; Lean
-     proofs use `omega`/`simp`.
-3. **Skill addendum**: the `prosa-v06-translation` skill names v0.6 as its only authority. Add
-   a classic section pointing to this README before agents translate classic files.
+1. **Pinned source and authoritative evidence.**
+   - `Validation/.work/prosabuddy-f692cb7`: a clean clone of the ProsaBuddy repository at
+     `f692cb7` (tree `24727b1…`); its `prosaworkspace/` is the classic source root.
+   - `Validation/scripts/classic_reference_evidence.py` compiles the case-study scope
+     unchanged in ProsaBuddy's own toolchain (opam switch `prosa-0.6`, Rocq 9.0.1 +
+     MathComp 2.4) and writes `Validation/planning/classic_dependency/`: file inventory, file
+     DAG, the declaration inventory of the 49 files (enumerated by `Print Module`,
+     cross-checked with the source text), `Check @name` type evidence, `scope.json` and
+     `prelude.json`.
+2. **Pipeline extension.** `Validation/scripts/translation_file_pipeline.py` accepts specs
+   with `"family": "classic"` (specs in `Validation/tooling/classic/file_specs/`). Such a run
+   uses the classic source root, planning inputs, status chain
+   (`Validation/planning/classic_pipeline/`), labels (`ACCEPTED_CLASSIC_FILE` /
+   `ACCEPTED_CLASSIC_TRANSLATION`) and publication directory
+   (`Validation/imported/classic_translation_order/`). It compiles the recorded prelude
+   `../rocq93-port/Rocq90Compat.v` into the run and loads it only for `classic/` source files.
+   The first classic file needs no base run. Reused v0.6 artifacts are still checked against
+   their v0.6 manifests. All v0.6 code paths are unchanged; a smoke test confirmed the same
+   source root, status lookups and manifest hashes for a v0.6 spec.
+3. **Representation addendum:** `Validation/planning/classic_policy/representation_addendum.md`.
+4. **Skill addendum:** section 13 of `.agents/skills/prosa-v06-translation/SKILL.md`.
 
 ### Per-file loop (same discipline as v0.6)
 
@@ -192,5 +194,26 @@ Lean file name (e.g. `Aux`) and note it in the report.
 
 ## Change log
 
-- 2026-10-01: plan created (scope, ranks, hashes, Rocq 9.3 reference build). No files
-  translated yet.
+- 2026-10-01: plan created (scope, ranks, hashes, Rocq 9.3 reference build).
+- 2026-10-01: all 41 non-deferred files translated (build clean; 545 `Prosa.Classic`
+  declarations, no `sorry`, axioms within `propext`, `Quot.sound`, `Classical.choice`).
+- 2026-10-01: the 8 deferred files translated as well (validation DAG gate), so all 49 files
+  are translated: 677 `Prosa.Classic` declarations, no `sorry`, standard axioms; each of the
+  525 Rocq-enumerated declarations exists in Lean under the same name.
+- 2026-10-01: Stage 0 approved and implemented (classic validation family); validation
+  starts with rank 1 (`classic/model/time.v`) as the pilot.
+- 2026-10-02: translation correction found by validation (rank 41, `classic/model/schedule/apa/constrained_deadlines.v`):
+  in Rocq, `ConstrainedDeadlines.scheduled_task_with_higher_eq_priority (tsk tsk_other)` uses its own
+  parameter `tsk` in `hp_task_in (alpha tsk) tsk_other` (confirmed with `Print` in the official build:
+  `hp_task_in (alpha tsk0) tsk_other`), while the Lean translation had named that parameter `_tsk` and
+  used the section `tsk`.  Fixed in `Prosa/Classic/Model/Schedule/Apa/ConstrainedDeadlines.lean`
+  (parameter `tsk'`, body `alpha tsk'`); the file builds unchanged otherwise (no other Lean file uses the
+  definition).  The global counterpart was checked the same way and is correct (its parameter is unused).
+- 2026-10-02: validation complete: all 49 files and all 525 Rocq-enumerated declarations ACCEPTED by the classic
+  validation family (manifests in `Validation/planning/classic_pipeline/`).  Ranks 46–49 (the Bertogna–Cirinei
+  FP/EDF analyses) are certified by assembling the accepted relation lemmas of the lower ranks and proving each
+  statement correspondence with a relation search tactic (`crel`, in each certificate) that only chains those
+  lemmas.  Tool and pipeline changes made for the classic family are recorded in
+  `Validation/planning/classic_policy/tool_changes.md` (lean4export: filtered `Finset.Ico` sums; `time` as sum index
+  type and as sum codomain, current pin `010c28dc…`; pipeline: module-qualified own and dependency names in the
+  source fingerprint comparison).

@@ -1,0 +1,9 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedClassicFindSeq.
+
+Check ImportedClassicFindSeq.Prosa_Classic_Util_FindSeq_findP.
+Check ImportedClassicFindSeq.Prosa_Classic_Util_FindSeq_findP_FIFO.
+Check ImportedClassicFindSeq.Prosa_Classic_Util_FindSeq_find_uniql.
+Check ImportedClassicFindSeq.Prosa_Classic_Util_FindSeq_find_uniq.
+Check ImportedClassicFindSeq.Prosa_Classic_Util_FindSeq_findP_in_seq.
+Check ImportedClassicFindSeq.Prosa_Classic_Util_FindSeq_findP_notSome_in_seq.

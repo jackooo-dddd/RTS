@@ -1,0 +1,36 @@
+import Validation.fixtures.translation_order.ClassicJitterArrivalSequenceInterface
+set_option pp.fieldNotation false
+
+#check @Prosa.Classic.Model.Arrival.Jitter.ArrivalSequence.ArrivalSequenceWithJitter.actual_arrival
+#check @Prosa.Classic.Model.Arrival.Jitter.ArrivalSequence.ArrivalSequenceWithJitter.jitter_has_passed
+#check @Prosa.Classic.Model.Arrival.Jitter.ArrivalSequence.ArrivalSequenceWithJitter.actual_arrival_before
+#check @Prosa.Classic.Model.Arrival.Jitter.ArrivalSequence.ArrivalSequenceWithJitter.actual_arrival_between
+#check @Prosa.Classic.Model.Arrival.Jitter.ArrivalSequence.ArrivalSequenceWithJitter.actual_arrivals_between
+#check @Prosa.Classic.Model.Arrival.Jitter.ArrivalSequence.ArrivalSequenceWithJitter.actual_arrivals_up_to
+#check @Prosa.Classic.Model.Arrival.Jitter.ArrivalSequence.ArrivalSequenceWithJitter.actual_arrivals_before
+#check @Prosa.Classic.Model.Arrival.Jitter.ArrivalSequence.ArrivalSequenceWithJitter.actual_arrivals_between_mem_cat
+#check @Prosa.Classic.Model.Arrival.Jitter.ArrivalSequence.ArrivalSequenceWithJitter.actual_arrivals_between_sub
+#check @Prosa.Classic.Model.Arrival.Jitter.ArrivalSequence.ArrivalSequenceWithJitter.in_actual_arrivals_between_implies_arrived
+#check @Prosa.Classic.Model.Arrival.Jitter.ArrivalSequence.ArrivalSequenceWithJitter.in_actual_arrivals_before_implies_arrived
+#check @Prosa.Classic.Model.Arrival.Jitter.ArrivalSequence.ArrivalSequenceWithJitter.in_actual_arrivals_implies_arrived_before
+#check @Prosa.Classic.Model.Arrival.Jitter.ArrivalSequence.ArrivalSequenceWithJitter.in_actual_arrivals_implies_arrived_between
+#check @Prosa.Classic.Model.Arrival.Jitter.ArrivalSequence.ArrivalSequenceWithJitter.arrived_between_implies_in_actual_arrivals
+#check @Prosa.Classic.Model.Arrival.Jitter.ArrivalSequence.ArrivalSequenceWithJitter.actual_arrivals_uniq
+#check @Prosa.Validation.ClassicJitterArrivalSequenceInterface.bigCat_range'
+
+#print axioms Prosa.Classic.Model.Arrival.Jitter.ArrivalSequence.ArrivalSequenceWithJitter.actual_arrival
+#print axioms Prosa.Classic.Model.Arrival.Jitter.ArrivalSequence.ArrivalSequenceWithJitter.jitter_has_passed
+#print axioms Prosa.Classic.Model.Arrival.Jitter.ArrivalSequence.ArrivalSequenceWithJitter.actual_arrival_before
+#print axioms Prosa.Classic.Model.Arrival.Jitter.ArrivalSequence.ArrivalSequenceWithJitter.actual_arrival_between
+#print axioms Prosa.Classic.Model.Arrival.Jitter.ArrivalSequence.ArrivalSequenceWithJitter.actual_arrivals_between
+#print axioms Prosa.Classic.Model.Arrival.Jitter.ArrivalSequence.ArrivalSequenceWithJitter.actual_arrivals_up_to
+#print axioms Prosa.Classic.Model.Arrival.Jitter.ArrivalSequence.ArrivalSequenceWithJitter.actual_arrivals_before
+#print axioms Prosa.Classic.Model.Arrival.Jitter.ArrivalSequence.ArrivalSequenceWithJitter.actual_arrivals_between_mem_cat
+#print axioms Prosa.Classic.Model.Arrival.Jitter.ArrivalSequence.ArrivalSequenceWithJitter.actual_arrivals_between_sub
+#print axioms Prosa.Classic.Model.Arrival.Jitter.ArrivalSequence.ArrivalSequenceWithJitter.in_actual_arrivals_between_implies_arrived
+#print axioms Prosa.Classic.Model.Arrival.Jitter.ArrivalSequence.ArrivalSequenceWithJitter.in_actual_arrivals_before_implies_arrived
+#print axioms Prosa.Classic.Model.Arrival.Jitter.ArrivalSequence.ArrivalSequenceWithJitter.in_actual_arrivals_implies_arrived_before
+#print axioms Prosa.Classic.Model.Arrival.Jitter.ArrivalSequence.ArrivalSequenceWithJitter.in_actual_arrivals_implies_arrived_between
+#print axioms Prosa.Classic.Model.Arrival.Jitter.ArrivalSequence.ArrivalSequenceWithJitter.arrived_between_implies_in_actual_arrivals
+#print axioms Prosa.Classic.Model.Arrival.Jitter.ArrivalSequence.ArrivalSequenceWithJitter.actual_arrivals_uniq
+#print axioms Prosa.Validation.ClassicJitterArrivalSequenceInterface.bigCat_range'

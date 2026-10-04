@@ -1,0 +1,31 @@
+# classic/model/schedule/uni/limited/rbf.v: 3 declarations
+
+## Print Module
+
+Module rbf := Struct Module RBF End
+
+Module RBF := Struct Parameter task_rbf_0_zero : forall (Task : eqtype.Equality.type) (task_cost : eqtype.Equality.sort Task -> time.Time.time) (Job : eqtype.Equality.type) (job_task : eqtype.Equality.sort Job -> eqtype.Equality.sort Task) (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job) (tsk : eqtype.Equality.sort Task) (max_arrivals : eqtype.Equality.sort Task -> time.Time.time -> nat), bounds.ArrivalCurves.proper_arrival_curve job_task arr_seq max_arrivals tsk -> workload_bound.MaxArrivalsWorkloadBound.task_request_bound_function task_cost max_arrivals tsk 0 = 0. Parameter task_rbf_monotone : forall (Task : eqtype.Equality.type) (task_cost : eqtype.Equality.sort Task -> time.Time.time) (Job : eqtype.Equality.type) (job_task : eqtype.Equality.sort Job -> eqtype.Equality.sort Task) (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job) (tsk : eqtype.Equality.sort Task) (max_arrivals : eqtype.Equality.sort Task -> time.Time.time -> nat), bounds.ArrivalCurves.proper_arrival_curve job_task arr_seq max_arrivals tsk -> rel.monotone ssrnat.leq (workload_bound.MaxArrivalsWorkloadBound.task_request_bound_function task_cost max_arrivals tsk). Parameter task_rbf_1_ge_task_cost : forall (Task : eqtype.Equality.type) (task_cost : eqtype.Equality.sort Task -> time.Time.time) (Job : eqtype.Equality.type) (job_arrival : eqtype.Equality.sort Job -> time.Time.time) (job_task : eqtype.Equality.sort Job -> eqtype.Equality.sort Task) (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job), arrival_sequence.ArrivalSequence.arrival_times_are_consistent job_arrival arr_seq -> forall (tsk : eqtype.Equality.sort Task) (max_arrivals : eqtype.Equality.sort Task -> time.Time.time -> nat), bounds.ArrivalCurves.proper_arrival_curve job_task arr_seq max_arrivals tsk -> forall j : eqtype.Equality.sort Job, arrival_sequence.ArrivalSequence.arrives_in arr_seq j -> job_task j = tsk -> is_true (ssrnat.leq (task_cost tsk) (workload_bound.MaxArrivalsWorkloadBound.task_request_bound_function task_cost max_arrivals tsk 1)). End
+
+## About
+
+RBF.task_rbf_0_zero : forall {Task : eqtype.Equality.type} (task_cost : eqtype.Equality.sort Task -> time.Time.time) {Job : eqtype.Equality.type} (job_task : eqtype.Equality.sort Job -> eqtype.Equality.sort Task) (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job) (tsk : eqtype.Equality.sort Task) (max_arrivals : eqtype.Equality.sort Task -> time.Time.time -> nat), bounds.ArrivalCurves.proper_arrival_curve job_task arr_seq max_arrivals tsk -> workload_bound.MaxArrivalsWorkloadBound.task_request_bound_function task_cost max_arrivals tsk 0 = 0
+
+RBF.task_rbf_0_zero is not universe polymorphic
+Arguments RBF.task_rbf_0_zero {Task} task_cost%function_scope {Job} job_task%function_scope arr_seq tsk max_arrivals%function_scope H_proper_arrival_curve
+RBF.task_rbf_0_zero is opaque
+Expands to: Constant prosa.classic.model.schedule.uni.limited.rbf.RBF.task_rbf_0_zero
+Declared in library prosa.classic.model.schedule.uni.limited.rbf, line 50, characters 10-25
+RBF.task_rbf_monotone : forall {Task : eqtype.Equality.type} (task_cost : eqtype.Equality.sort Task -> time.Time.time) {Job : eqtype.Equality.type} (job_task : eqtype.Equality.sort Job -> eqtype.Equality.sort Task) (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job) (tsk : eqtype.Equality.sort Task) (max_arrivals : eqtype.Equality.sort Task -> time.Time.time -> nat), bounds.ArrivalCurves.proper_arrival_curve job_task arr_seq max_arrivals tsk -> rel.monotone ssrnat.leq (workload_bound.MaxArrivalsWorkloadBound.task_request_bound_function task_cost max_arrivals tsk)
+
+RBF.task_rbf_monotone is not universe polymorphic
+Arguments RBF.task_rbf_monotone {Task} task_cost%function_scope {Job} job_task%function_scope arr_seq tsk max_arrivals%function_scope H_proper_arrival_curve x y _
+RBF.task_rbf_monotone is opaque
+Expands to: Constant prosa.classic.model.schedule.uni.limited.rbf.RBF.task_rbf_monotone
+Declared in library prosa.classic.model.schedule.uni.limited.rbf, line 59, characters 10-27
+RBF.task_rbf_1_ge_task_cost : forall {Task : eqtype.Equality.type} (task_cost : eqtype.Equality.sort Task -> time.Time.time) {Job : eqtype.Equality.type} (job_arrival : eqtype.Equality.sort Job -> time.Time.time) (job_task : eqtype.Equality.sort Job -> eqtype.Equality.sort Task) (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job), arrival_sequence.ArrivalSequence.arrival_times_are_consistent job_arrival arr_seq -> forall (tsk : eqtype.Equality.sort Task) (max_arrivals : eqtype.Equality.sort Task -> time.Time.time -> nat), bounds.ArrivalCurves.proper_arrival_curve job_task arr_seq max_arrivals tsk -> forall j : eqtype.Equality.sort Job, arrival_sequence.ArrivalSequence.arrives_in arr_seq j -> job_task j = tsk -> is_true (ssrnat.leq (task_cost tsk) (workload_bound.MaxArrivalsWorkloadBound.task_request_bound_function task_cost max_arrivals tsk 1))
+
+RBF.task_rbf_1_ge_task_cost is not universe polymorphic
+Arguments RBF.task_rbf_1_ge_task_cost {Task} task_cost%function_scope {Job} (job_arrival job_task)%function_scope arr_seq H_arrival_times_are_consistent tsk max_arrivals%function_scope H_proper_arrival_curve j H_j_arrives H_job_of_tsk
+RBF.task_rbf_1_ge_task_cost is opaque
+Expands to: Constant prosa.classic.model.schedule.uni.limited.rbf.RBF.task_rbf_1_ge_task_cost
+Declared in library prosa.classic.model.schedule.uni.limited.rbf, line 74, characters 10-33

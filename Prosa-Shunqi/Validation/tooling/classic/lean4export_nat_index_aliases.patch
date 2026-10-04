@@ -1,0 +1,43 @@
+--- a/Export.lean
++++ b/Export.lean
+@@ -86,11 +86,18 @@
+   return (names.contains "*" || names.contains c.toString) &&
+     !bodyNames.contains c.toString
+ 
+-def projectNatIcoSum? (e : Expr) : Option Expr := do
++/-- The index types accepted for projected `Finset.Ico` sums: `Nat`, and the reducible aliases of `Nat`
++listed (one fully qualified name per line) in `LEAN4EXPORT_NAT_INDEX_ALIASES` (empty by default, so the
++projection is unchanged unless a configuration opts in; every projected theorem type is still checked
++`Meta.isDefEq` against the original before it is exported). -/
++def natIndexType (aliases : List Name) (t : Expr) : Bool :=
++  t.isConstOf ``Nat || (match t with | .const n [] => aliases.contains n | _ => false)
++
++def projectNatIcoSum? (e : Expr) (aliases : List Name := []) : Option Expr := do
+   guard <| e.getAppFn.isConstOf "Finset.sum".toName
+   let args := e.getAppArgs
+   guard <| args.size == 5
+-  guard <| args[0]!.isConstOf ``Nat
++  guard <| natIndexType aliases args[0]!
+   guard <| args[1]!.isConstOf ``Nat
+   -- `Finset.Ico m n` over `Nat`, optionally filtered (`(Finset.Ico m n).filter p`):
+   -- the enumeration `List.range' m (n - m)` (filtered by `decide (p i)` with the same instance)
+@@ -101,7 +108,7 @@
+   guard <| interval.getAppFn.isConstOf "Finset.Ico".toName
+   let intervalArgs := interval.getAppArgs
+   guard <| intervalArgs.size == 5
+-  guard <| intervalArgs[0]!.isConstOf ``Nat
++  guard <| natIndexType aliases intervalArgs[0]!
+   let lower := intervalArgs[3]!
+   let upper := intervalArgs[4]!
+   let function := args[4]!
+@@ -124,7 +131,9 @@
+ partial def normalizeSelectedSubexpressions
+     (heads : List String) (e : Expr) : Meta.MetaM Expr := do
+   if heads.contains "Finset.sum" then
+-    if let some projected := projectNatIcoSum? e then
++    let aliases := ((← IO.getEnv "LEAN4EXPORT_NAT_INDEX_ALIASES").getD "").splitOn "\n"
++      |>.filter (· != "") |>.map String.toName
++    if let some projected := projectNatIcoSum? e aliases then
+       return projected
+   let e : Expr ← match e with
+     | .app f a =>

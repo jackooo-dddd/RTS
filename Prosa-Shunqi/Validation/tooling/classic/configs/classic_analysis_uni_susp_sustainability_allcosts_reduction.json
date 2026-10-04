@@ -1,0 +1,102 @@
+{
+  "rank": 132,
+  "layer": 13,
+  "classic_scope": "full",
+  "slug": "classic_analysis_uni_susp_sustainability_allcosts_reduction",
+  "tag": "CACR",
+  "export_name": "ClassicAllcostsReduction",
+  "source": "classic/analysis/uni/susp/sustainability/allcosts/reduction.v",
+  "production": "Prosa/Classic/Analysis/Uni/Susp/Sustainability/Allcosts/Reduction.lean",
+  "fixtures": [
+    "ClassicAllcostsReductionInterface"
+  ],
+  "export_module": "Validation.fixtures.translation_order.ClassicAllcostsReductionInterface",
+  "interface_theorems": [
+    "Prosa.Validation.ClassicAllcostsReductionInterface.finRange_map_shift",
+    "Prosa.Validation.ClassicAllcostsReductionInterface.finRange_map_val",
+    "Prosa.Validation.ClassicAllcostsReductionInterface.finRange_any",
+    "Prosa.Validation.ClassicAllcostsReductionInterface.map_finRange_eq_map_range'",
+    "Prosa.Validation.ClassicAllcostsReductionInterface.maxFiltered_eq_foldr_cond",
+    "Prosa.Validation.ClassicAllcostsReductionInterface.maxFiltered_finRange",
+    "Prosa.Validation.ClassicAllcostsReductionInterface.bigCat_range'",
+    "Prosa.Validation.ClassicAllcostsReductionInterface.production_schedule_prefix_zero",
+    "Prosa.Validation.ClassicAllcostsReductionInterface.production_schedule_prefix_succ"
+  ],
+  "computational": [
+    "SustainabilityAllCosts.job_is_late",
+    "SustainabilityAllCosts.jobs_that_are_late_or_scheduled_in_sched_susp",
+    "SustainabilityAllCosts.highest_priority_late_job",
+    "SustainabilityAllCosts.pending_jobs",
+    "SustainabilityAllCosts.highest_priority_job",
+    "SustainabilityAllCosts.build_schedule",
+    "SustainabilityAllCosts.sched_new",
+    "SustainabilityAllCosts.suspended_in_sched_new",
+    "SustainabilityAllCosts.reduced_suspension_duration"
+  ],
+  "chain": [
+    "ClassicAllcostsReductionBase",
+    "ClassicAllcostsReductionList",
+    "ClassicAllcostsReductionOrd",
+    "ClassicAllcostsReductionCorrespondence"
+  ],
+  "principal": {},
+  "helpers": [
+    "crc_seq_min",
+    "crc_UC_build_schedule_from_prefixes",
+    "crc_icof"
+  ],
+  "base_run": null,
+  "base_checks": [],
+  "previous_status": "classic_model_schedule_uni_susp_build_suspension_table_module_status.json",
+  "input_relations": [
+    "job type: eqType identified, Lean DecidableEq instance = the eqType's decision procedure",
+    "times by SubNatRel; job parameters pointwise through SubNatRel; uniprocessor schedules pointwise through the option map; suspension predicates pointwise on related times (two-way totals)",
+    "JLDP policies pointwise on related times; arrival sequences pointwise on related times (two-way totals)"
+  ],
+  "lean_representation_note": "the Rocq module SustainabilityAllCosts is a namespace; the section-local `Let`s are unfolded",
+  "prop_sprop_foundation": [
+    "PropSPropFoundation.interpret_strict"
+  ],
+  "importer_foundation": [
+    "ImportedClassicAllcostsReduction.Quot_sound",
+    "ImportedClassicAllcostsReduction.propext",
+    "PrimInt63.eqb",
+    "PrimInt63.int",
+    "PrimInt63.land",
+    "PrimInt63.lsr"
+  ],
+  "rocq_sprop_uip": [
+    "ClassicAllcostsReductionBase.I.HEq_inst1",
+    "ClassicAllcostsReductionBase.I.True",
+    "ClassicAllcostsReductionOrd.I.HEq",
+    "ClassicAllcostsReductionOrd.I.HEq_inst1",
+    "ClassicAllcostsReductionOrd.I.True",
+    "I.HEq",
+    "I.HEq_inst1",
+    "I.True",
+    "Lean.eq",
+    "Lean.eq_inst1",
+    "SubadditivityNatCorrespondence.SubNatTrue"
+  ],
+  "normalization": {
+    "theorem_types": [],
+    "subexpression_heads": [
+      "Finset.sum"
+    ],
+    "definition_bodies": [],
+    "body_projections": [
+      "Prosa.Classic.Model.Schedule.Uni.Schedule.UniprocessorSchedule.service_during=Prosa.Validation.ClassicAllcostsReductionInterface.service_during_proj=Prosa.Validation.ClassicAllcostsReductionInterface.service_during_proj_guard",
+      "Prosa.Classic.Model.Schedule.Uni.Schedule.UniprocessorSchedule.total_service_during=Prosa.Validation.ClassicAllcostsReductionInterface.total_service_during_proj=Prosa.Validation.ClassicAllcostsReductionInterface.total_service_during_proj_guard",
+      "Prosa.Classic.Model.Suspension.Suspension.total_suspension=Prosa.Validation.ClassicAllcostsReductionInterface.total_suspension_proj=Prosa.Validation.ClassicAllcostsReductionInterface.total_suspension_proj_guard",
+      "Prosa.Classic.Model.Schedule.Uni.Susp.SuspensionIntervals.SuspensionIntervals.cumulative_suspension_during=Prosa.Validation.ClassicAllcostsReductionInterface.cumulative_suspension_during_proj=Prosa.Validation.ClassicAllcostsReductionInterface.cumulative_suspension_during_proj_guard",
+      "Prosa.Classic.Model.Schedule.Uni.Susp.BuildSuspensionTable.SuspensionTableConstruction.build_suspension_duration=Prosa.Validation.ClassicAllcostsReductionInterface.build_suspension_duration_proj=Prosa.Validation.ClassicAllcostsReductionInterface.build_suspension_duration_proj_guard"
+    ]
+  },
+  "export_env": {
+    "LEAN4EXPORT_PRESERVE_REDUCIBLE_THEOREM_TYPES": "1",
+    "LEAN4EXPORT_NAT_INDEX_ALIASES": "Prosa.Classic.Model.Time.Time.time"
+  },
+  "kernel_guard_artifacts": [
+    "Validation/fixtures/translation_order/ClassicAllcostsReductionInterface.lean"
+  ]
+}

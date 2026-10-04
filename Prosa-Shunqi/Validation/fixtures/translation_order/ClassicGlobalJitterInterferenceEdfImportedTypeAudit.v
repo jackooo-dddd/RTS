@@ -1,0 +1,4 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedClassicGlobalJitterInterferenceEdf.
+
+Check ImportedClassicGlobalJitterInterferenceEdf.Prosa_Classic_Model_Schedule_Global_Jitter_InterferenceEdf_InterferenceEDF_interference_under_edf_implies_shorter_deadlines.

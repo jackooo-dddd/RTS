@@ -1,0 +1,84 @@
+@WorkloadBound.max_jobs
+     : forall sporadic_task : eqType,
+       (sporadic_task -> time.Time.time) ->
+       (sporadic_task -> time.Time.time) ->
+       (sporadic_task -> time.Time.time) ->
+       sporadic_task -> time.Time.time -> nat
+WorkloadBound.max_jobs =
+fun (sporadic_task : eqType)
+  (task_cost task_period task_deadline : sporadic_task -> time.Time.time)
+  (tsk : sporadic_task) (delta : time.Time.time) =>
+div_floor (delta + task_deadline tsk - task_cost tsk) (task_period tsk)
+     : forall {sporadic_task : eqType},
+       (sporadic_task -> time.Time.time) ->
+       (sporadic_task -> time.Time.time) ->
+       (sporadic_task -> time.Time.time) ->
+       sporadic_task -> time.Time.time -> nat
+
+Arguments WorkloadBound.max_jobs {sporadic_task}
+  (task_cost task_period task_deadline)%function_scope 
+  tsk delta
+@WorkloadBound.W
+     : forall sporadic_task : eqType,
+       (sporadic_task -> time.Time.time) ->
+       (sporadic_task -> time.Time.time) ->
+       (sporadic_task -> time.Time.time) ->
+       sporadic_task -> time.Time.time -> nat
+WorkloadBound.W =
+fun (sporadic_task : eqType)
+  (task_cost task_period task_deadline : sporadic_task -> time.Time.time)
+  (tsk : sporadic_task) (delta : time.Time.time) =>
+let e_k := task_cost tsk in
+let p_k := task_period tsk in
+let d_k := task_deadline tsk in
+minn e_k
+  (delta + d_k - e_k -
+   WorkloadBound.max_jobs task_cost task_period task_deadline tsk delta * p_k) +
+WorkloadBound.max_jobs task_cost task_period task_deadline tsk delta * e_k
+     : forall {sporadic_task : eqType},
+       (sporadic_task -> time.Time.time) ->
+       (sporadic_task -> time.Time.time) ->
+       (sporadic_task -> time.Time.time) ->
+       sporadic_task -> time.Time.time -> nat
+
+Arguments WorkloadBound.W {sporadic_task}
+  (task_cost task_period task_deadline)%function_scope 
+  tsk delta
+@WorkloadBound.Theorem4_07
+     : forall (sporadic_task : eqType)
+         (task_cost task_period
+          task_deadline : sporadic_task -> time.Time.time)
+         (Job : eqType) (job_arrival job_cost : Job -> time.Time.time)
+         (job_task : Job -> sporadic_task)
+         (job_deadline : Job -> time.Time.time)
+         (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job),
+       (forall j : Job,
+        arrival_sequence.ArrivalSequence.arrives_in arr_seq j ->
+        Job.valid_sporadic_job task_cost task_deadline job_cost job_deadline
+          job_task j) ->
+       forall ts : SporadicTaskset.taskset_of sporadic_task,
+       SporadicTaskset.valid_sporadic_taskset task_cost task_period
+         task_deadline ts ->
+       TaskArrival.sporadic_task_model task_period job_arrival job_task
+         arr_seq ->
+       (forall j : Job,
+        arrival_sequence.ArrivalSequence.arrives_in arr_seq j ->
+        job_task j \in ts) ->
+       forall (num_cpus : nat) (sched : Schedule.schedule Job num_cpus),
+       Schedule.jobs_must_arrive_to_execute job_arrival sched ->
+       Schedule.jobs_come_from_arrival_sequence sched arr_seq ->
+       Schedule.sequential_jobs sched ->
+       0 < num_cpus ->
+       Schedule.completed_jobs_dont_execute job_cost sched ->
+       Platform.work_conserving job_arrival job_cost arr_seq sched ->
+       forall tsk : sporadic_task,
+       tsk \in ts ->
+       task_deadline tsk <= task_period tsk ->
+       Schedulability.task_misses_no_deadline job_arrival job_cost
+         job_deadline job_task arr_seq sched tsk ->
+       forall t1 delta : time.Time.time,
+       Workload.workload job_task sched tsk t1 (t1 + delta) <=
+       WorkloadBound.W task_cost task_period task_deadline tsk delta
+with arguments constr at level 99, constr and "[ pairs ( _ , _ ) | _ <- _ ]"
+defined at level 0 with arguments constr at level 1, constr at level 1
+have incompatible prefixes. One of them will likely not work.

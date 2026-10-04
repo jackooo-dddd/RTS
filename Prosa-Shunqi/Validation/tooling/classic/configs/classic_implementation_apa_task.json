@@ -1,0 +1,57 @@
+{
+  "rank": 76,
+  "layer": 9,
+  "classic_scope": "full",
+  "slug": "classic_implementation_apa_task",
+  "tag": "CIAT",
+  "export_name": "ClassicImplApaTask",
+  "source": "classic/implementation/apa/task.v",
+  "production": "Prosa/Classic/Implementation/Apa/Task.lean",
+  "fixtures": [],
+  "export_module": "Prosa.Classic.Implementation.Apa.Task",
+  "interface_theorems": [],
+  "computational": [
+    "ConcreteTask.concrete_task",
+    "ConcreteTask.task_eqdef",
+    "ConcreteTask.concrete_taskset"
+  ],
+  "chain": [
+    "ClassicImplApaTaskBase",
+    "ClassicImplApaTaskList1",
+    "ClassicImplApaTaskOrd",
+    "ClassicImplApaTaskCorrespondence"
+  ],
+  "principal": {
+    "ConcreteTask.concrete_task": [
+      "ConcreteTask_concrete_task_source_total",
+      "ConcreteTask_concrete_task_target_total"
+    ],
+    "ConcreteTask.concrete_taskset": [
+      "ConcreteTask_concrete_taskset_source_total",
+      "ConcreteTask_concrete_taskset_target_total"
+    ]
+  },
+  "helpers": [],
+  "extra_targets": [
+    "Fin.isLt",
+    "instDecidableEqFin"
+  ],
+  "base_run": null,
+  "base_checks": [],
+  "previous_status": "classic_analysis_uni_susp_dynamic_jitter_taskset_rta_module_status.json",
+  "input_relations": [
+    "processor counts by SubNatRel; concrete tasks by their fieldwise canonical import (Nat fields by SubNatRel, the affinity by its underlying sequence through the ordinal conversion, as in the accepted APA certificates), at related processor counts, two-way totals; task sets by the elementwise image of their sequence (two-way totals)"
+  ],
+  "lean_representation_note": "the record `concrete_task` (implicit section parameter `num_cpus`) is a Lean structure with the same fields and the same implicit parameter; `==` is `decide (_ = _)`; the reflection lemma is the informative `\u2200 x y, BoolReflect (x = y) (task_eqdef x y)`; the HB `hasDecEq` registration is the derived `DecidableEq` instance; the affinity is the accepted `Affinity.affinity num_cpus` (a `Prosa.Util.Seqset.set` of processors); `concrete_taskset num_cpus` is `taskset_of concrete_task` (abbrev)",
+  "prop_sprop_foundation": [
+    "PropSPropFoundation.interpret_strict"
+  ],
+  "importer_foundation": [],
+  "rocq_sprop_uip": [
+    "I.HEq",
+    "I.HEq_inst1",
+    "Lean.eq",
+    "Lean.eq_inst1",
+    "SubadditivityNatCorrespondence.SubNatTrue"
+  ]
+}

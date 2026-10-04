@@ -1,0 +1,92 @@
+{
+  "rank": 31,
+  "layer": 10,
+  "slug": "classic_model_schedule_global_schedulability",
+  "tag": "CSCHBL",
+  "export_name": "ClassicSchedulability",
+  "source": "classic/model/schedule/global/schedulability.v",
+  "production": "Prosa/Classic/Model/Schedule/Global/Schedulability.lean",
+  "fixtures": [
+    "ClassicSchedulabilityInterface"
+  ],
+  "export_module": "Validation.fixtures.translation_order.ClassicSchedulabilityInterface",
+  "interface_theorems": [
+    "Prosa.Validation.ClassicSchedulabilityInterface.fin_sum_range'",
+    "Prosa.Validation.ClassicSchedulabilityInterface.service_at_sum"
+  ],
+  "computational": [
+    "Schedulability.job_misses_no_deadline",
+    "Schedulability.task_misses_no_deadline",
+    "Schedulability.task_misses_no_deadline_before"
+  ],
+  "chain": [
+    "ClassicSchedulabilityBase",
+    "ClassicSchedulabilityList",
+    "ClassicSchedulabilityOrd",
+    "ClassicSchedulabilityCorrespondence"
+  ],
+  "base_run": null,
+  "base_checks": [],
+  "previous_status": "classic_model_schedule_global_response_time_module_status.json",
+  "input_relations": [
+    "job and task types: eqTypes identified, Lean DecidableEq instances = the eqTypes' decision procedures; job_task identified",
+    "natural numbers (time, num_cpus) by SubNatRel; processors 'I_n and Fin n by their values; schedules pointwise on related processors and times with option values by the constructor map; job/task parameters pointwise through SubNatRel; arrival sequences pointwise on related times (two-way totals)"
+  ],
+  "lean_representation_note": "as for the accepted classic schedule validation; `\\sum_(t' <= t < t'') F t` is `\u2211 t \u2208 Finset.Ico t' t'', F t`; Boolean deadline tests are `= true` in propositions",
+  "normalization": {
+    "theorem_types": [
+      "Prosa.Classic.Model.Schedule.Global.Schedulability.Schedulability.cumulative_service_after_job_deadline_zero",
+      "Prosa.Classic.Model.Schedule.Global.Schedulability.Schedulability.cumulative_service_after_task_deadline_zero"
+    ],
+    "subexpression_heads": [
+      "Finset.sum"
+    ],
+    "definition_bodies": [],
+    "body_projections": [
+      "Prosa.Classic.Model.Schedule.Global.Basic.Schedule.Schedule.service=Prosa.Validation.ClassicSchedulabilityInterface.service_proj=Prosa.Validation.ClassicSchedulabilityInterface.service_proj_guard",
+      "Prosa.Classic.Model.Schedule.Global.Basic.Schedule.Schedule.service_during=Prosa.Validation.ClassicSchedulabilityInterface.service_during_proj=Prosa.Validation.ClassicSchedulabilityInterface.service_during_proj_guard"
+    ]
+  },
+  "kernel_guard_artifacts": [
+    "Validation/fixtures/translation_order/ClassicSchedulabilityInterface.lean"
+  ],
+  "export_env": {
+    "LEAN4EXPORT_PRESERVE_REDUCIBLE_THEOREM_TYPES": "1",
+    "LEAN4EXPORT_NAT_INDEX_ALIASES": "Prosa.Classic.Model.Time.Time.time"
+  },
+  "helpers": [
+    "cs_forall_ncpus_sched",
+    "cs_ico"
+  ],
+  "probe_extra": [],
+  "own_qualified_in_type": [
+    "Schedulability.job_misses_no_deadline",
+    "Schedulability.task_misses_no_deadline"
+  ],
+  "export_diagnosis": "as for the accepted classic response_time export: service_at is a filtered Finset sum over Fin num_cpus (the Mathlib Finset/Multiset/Quot closure) and the validation-only interface theorems are exported with their proof bodies; service/service_during through kernel-guarded rfl body projections and the two half-open Finset.Ico statements through kernel-guarded type normalization.",
+  "prop_sprop_foundation": [
+    "PropSPropFoundation.interpret_strict"
+  ],
+  "importer_foundation": [
+    "ImportedClassicSchedulability.Classical_choice",
+    "ImportedClassicSchedulability.Quot_sound",
+    "ImportedClassicSchedulability.propext",
+    "PrimInt63.eqb",
+    "PrimInt63.int",
+    "PrimInt63.land",
+    "PrimInt63.lsr"
+  ],
+  "rocq_sprop_uip": [
+    "ClassicSchedulabilityBase.I.HEq_inst1",
+    "ClassicSchedulabilityBase.I.True",
+    "ClassicSchedulabilityOrd.I.HEq",
+    "ClassicSchedulabilityOrd.I.HEq_inst1",
+    "ClassicSchedulabilityOrd.I.True",
+    "I.HEq",
+    "I.HEq_inst1",
+    "I.True",
+    "Lean.eq",
+    "Lean.eq_inst1",
+    "SubadditivityNatCorrespondence.SubNatTrue"
+  ]
+}

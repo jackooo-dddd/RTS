@@ -1,0 +1,78 @@
+{
+  "rank": 77,
+  "layer": 10,
+  "classic_scope": "full",
+  "slug": "classic_implementation_uni_basic_schedule",
+  "tag": "CIUBS",
+  "export_name": "ClassicImplUniBasicSchedule",
+  "source": "classic/implementation/uni/basic/schedule.v",
+  "production": "Prosa/Classic/Implementation/Uni/Basic/Schedule.lean",
+  "fixtures": [
+    "ClassicImplUniBasicScheduleInterface"
+  ],
+  "export_module": "Validation.fixtures.translation_order.ClassicImplUniBasicScheduleInterface",
+  "interface_theorems": [
+    "Prosa.Validation.ClassicImplUniBasicScheduleInterface.bigCat_range'",
+    "Prosa.Validation.ClassicImplUniBasicScheduleInterface.production_schedule_prefix_zero",
+    "Prosa.Validation.ClassicImplUniBasicScheduleInterface.production_schedule_prefix_succ"
+  ],
+  "computational": [
+    "ConcreteScheduler.pending_jobs",
+    "ConcreteScheduler.highest_priority_job",
+    "ConcreteScheduler.scheduler"
+  ],
+  "chain": [
+    "ClassicImplUniBasicScheduleBase",
+    "ClassicImplUniBasicScheduleList",
+    "ClassicImplUniBasicScheduleCorrespondence"
+  ],
+  "principal": {},
+  "helpers": [
+    "cub_forall_sched",
+    "cub_forall_arr",
+    "cub_forall_par",
+    "cub_forall_jldp"
+  ],
+  "base_run": null,
+  "base_checks": [],
+  "previous_status": "classic_model_schedule_global_transformation_construction_module_status.json",
+  "input_relations": [
+    "job type: eqType identified, Lean DecidableEq instance = the eqType's decision procedure",
+    "times by SubNatRel; job parameters pointwise through SubNatRel; arrival sequences pointwise on related times; JLDP policies pointwise on related times; uniprocessor schedules pointwise through the option map (two-way totals)"
+  ],
+  "lean_representation_note": "the Rocq module ConcreteScheduler is a namespace; `[seq j <- s | P j]` is `s.filter P`; `seq_min` is the classic `Prosa.Classic.Util.Minmax.seq_min`; the section-local `empty_schedule` is `fun _ => none`; `transitive`/`total` are unfolded",
+  "prop_sprop_foundation": [
+    "PropSPropFoundation.interpret_strict"
+  ],
+  "importer_foundation": [
+    "ImportedClassicImplUniBasicSchedule.propext"
+  ],
+  "rocq_sprop_uip": [
+    "ClassicImplUniBasicScheduleBase.I.HEq_inst1",
+    "ClassicImplUniBasicScheduleBase.I.True",
+    "I.HEq",
+    "I.HEq_inst1",
+    "I.True",
+    "Lean.eq",
+    "Lean.eq_inst1",
+    "SubadditivityNatCorrespondence.SubNatTrue"
+  ],
+  "normalization": {
+    "theorem_types": [],
+    "subexpression_heads": [
+      "Finset.sum"
+    ],
+    "definition_bodies": [],
+    "body_projections": [
+      "Prosa.Classic.Model.Schedule.Uni.Schedule.UniprocessorSchedule.service_during=Prosa.Validation.ClassicImplUniBasicScheduleInterface.service_during_proj=Prosa.Validation.ClassicImplUniBasicScheduleInterface.service_during_proj_guard",
+      "Prosa.Classic.Model.Schedule.Uni.Schedule.UniprocessorSchedule.total_service_during=Prosa.Validation.ClassicImplUniBasicScheduleInterface.total_service_during_proj=Prosa.Validation.ClassicImplUniBasicScheduleInterface.total_service_during_proj_guard"
+    ]
+  },
+  "export_env": {
+    "LEAN4EXPORT_PRESERVE_REDUCIBLE_THEOREM_TYPES": "1",
+    "LEAN4EXPORT_NAT_INDEX_ALIASES": "Prosa.Classic.Model.Time.Time.time"
+  },
+  "kernel_guard_artifacts": [
+    "Validation/fixtures/translation_order/ClassicImplUniBasicScheduleInterface.lean"
+  ]
+}

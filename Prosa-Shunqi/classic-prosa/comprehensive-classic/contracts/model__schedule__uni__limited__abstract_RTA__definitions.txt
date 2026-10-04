@@ -1,0 +1,73 @@
+# classic/model/schedule/uni/limited/abstract_RTA/definitions.v: 9 declarations
+
+## Print Module
+
+Module definitions := Struct Module AbstractRTADefinitions End
+
+Module AbstractRTADefinitions := Struct Definition cumul_interference : forall Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> time.Time.time -> bool) -> eqtype.Equality.sort Job -> nat -> nat -> nat. Definition cumul_interfering_workload : forall Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> time.Time.time -> time.Time.time) -> eqtype.Equality.sort Job -> nat -> nat -> nat. Definition quiet_time : forall Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> schedule.UniprocessorSchedule.schedule Job -> (eqtype.Equality.sort Job -> time.Time.time -> bool) -> (eqtype.Equality.sort Job -> time.Time.time -> time.Time.time) -> eqtype.Equality.sort Job -> time.Time.time -> Prop. Definition busy_interval_prefix : forall Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> schedule.UniprocessorSchedule.schedule Job -> (eqtype.Equality.sort Job -> time.Time.time -> bool) -> (eqtype.Equality.sort Job -> time.Time.time -> time.Time.time) -> eqtype.Equality.sort Job -> time.Time.time -> time.Time.time -> Prop. Definition busy_interval : forall Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> schedule.UniprocessorSchedule.schedule Job -> (eqtype.Equality.sort Job -> time.Time.time -> bool) -> (eqtype.Equality.sort Job -> time.Time.time -> time.Time.time) -> eqtype.Equality.sort Job -> time.Time.time -> time.Time.time -> Prop. Parameter busy_interval_is_unique : forall (Job : eqtype.Equality.type) (job_arrival job_cost : eqtype.Equality.sort Job -> time.Time.time) (sched : schedule.UniprocessorSchedule.schedule Job) (interference : eqtype.Equality.sort Job -> time.Time.time -> bool) (interfering_workload : eqtype.Equality.sort Job -> time.Time.time -> time.Time.time) (j : eqtype.Equality.sort Job) (t1 t2 t1' t2' : time.Time.time), busy_interval job_arrival job_cost sched interference interfering_workload j t1 t2 -> busy_interval job_arrival job_cost sched interference interfering_workload j t1' t2' -> t1 = t1' /\ t2 = t2'. Definition work_conserving : forall Task Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> eqtype.Equality.sort Task) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> schedule.UniprocessorSchedule.schedule Job -> eqtype.Equality.sort Task -> (eqtype.Equality.sort Job -> time.Time.time -> bool) -> (eqtype.Equality.sort Job -> time.Time.time -> time.Time.time) -> Prop. Definition busy_intervals_are_bounded_by : forall Task Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> eqtype.Equality.sort Task) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> schedule.UniprocessorSchedule.schedule Job -> eqtype.Equality.sort Task -> (eqtype.Equality.sort Job -> time.Time.time -> bool) -> (eqtype.Equality.sort Job -> time.Time.time -> time.Time.time) -> nat -> Prop. Definition job_interference_is_bounded_by : forall Task Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> eqtype.Equality.sort Task) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> schedule.UniprocessorSchedule.schedule Job -> eqtype.Equality.sort Task -> (eqtype.Equality.sort Job -> time.Time.time -> bool) -> (eqtype.Equality.sort Job -> time.Time.time -> time.Time.time) -> (eqtype.Equality.sort Task -> time.Time.time -> time.Time.time -> time.Time.time) -> Prop. End
+
+## About
+
+AbstractRTADefinitions.cumul_interference : forall {Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> time.Time.time -> bool) -> eqtype.Equality.sort Job -> nat -> nat -> nat
+
+AbstractRTADefinitions.cumul_interference is not universe polymorphic
+Arguments AbstractRTADefinitions.cumul_interference {Job} interference%function_scope j (t1 t2)%nat_scope
+AbstractRTADefinitions.cumul_interference is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.limited.abstract_RTA.definitions.AbstractRTADefinitions.cumul_interference
+Declared in library prosa.classic.model.schedule.uni.limited.abstract_RTA.definitions, line 76, characters 15-33
+AbstractRTADefinitions.cumul_interfering_workload : forall {Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> time.Time.time -> time.Time.time) -> eqtype.Equality.sort Job -> nat -> nat -> nat
+
+AbstractRTADefinitions.cumul_interfering_workload is not universe polymorphic
+Arguments AbstractRTADefinitions.cumul_interfering_workload {Job} interfering_workload%function_scope j (t1 t2)%nat_scope
+AbstractRTADefinitions.cumul_interfering_workload is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.limited.abstract_RTA.definitions.AbstractRTADefinitions.cumul_interfering_workload
+Declared in library prosa.classic.model.schedule.uni.limited.abstract_RTA.definitions, line 77, characters 15-41
+AbstractRTADefinitions.quiet_time : forall {Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> schedule.UniprocessorSchedule.schedule Job -> (eqtype.Equality.sort Job -> time.Time.time -> bool) -> (eqtype.Equality.sort Job -> time.Time.time -> time.Time.time) -> eqtype.Equality.sort Job -> time.Time.time -> Prop
+
+AbstractRTADefinitions.quiet_time is not universe polymorphic
+Arguments AbstractRTADefinitions.quiet_time {Job} (job_arrival job_cost)%function_scope sched (interference interfering_workload)%function_scope j t
+AbstractRTADefinitions.quiet_time is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.limited.abstract_RTA.definitions.AbstractRTADefinitions.quiet_time
+Declared in library prosa.classic.model.schedule.uni.limited.abstract_RTA.definitions, line 93, characters 17-27
+AbstractRTADefinitions.busy_interval_prefix : forall {Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> schedule.UniprocessorSchedule.schedule Job -> (eqtype.Equality.sort Job -> time.Time.time -> bool) -> (eqtype.Equality.sort Job -> time.Time.time -> time.Time.time) -> eqtype.Equality.sort Job -> time.Time.time -> time.Time.time -> Prop
+
+AbstractRTADefinitions.busy_interval_prefix is not universe polymorphic
+Arguments AbstractRTADefinitions.busy_interval_prefix {Job} (job_arrival job_cost)%function_scope sched (interference interfering_workload)%function_scope j t1 t2
+AbstractRTADefinitions.busy_interval_prefix is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.limited.abstract_RTA.definitions.AbstractRTADefinitions.busy_interval_prefix
+Declared in library prosa.classic.model.schedule.uni.limited.abstract_RTA.definitions, line 101, characters 17-37
+AbstractRTADefinitions.busy_interval : forall {Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> schedule.UniprocessorSchedule.schedule Job -> (eqtype.Equality.sort Job -> time.Time.time -> bool) -> (eqtype.Equality.sort Job -> time.Time.time -> time.Time.time) -> eqtype.Equality.sort Job -> time.Time.time -> time.Time.time -> Prop
+
+AbstractRTADefinitions.busy_interval is not universe polymorphic
+Arguments AbstractRTADefinitions.busy_interval {Job} (job_arrival job_cost)%function_scope sched (interference interfering_workload)%function_scope j t1 t2
+AbstractRTADefinitions.busy_interval is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.limited.abstract_RTA.definitions.AbstractRTADefinitions.busy_interval
+Declared in library prosa.classic.model.schedule.uni.limited.abstract_RTA.definitions, line 108, characters 17-30
+AbstractRTADefinitions.busy_interval_is_unique : forall {Job : eqtype.Equality.type} (job_arrival job_cost : eqtype.Equality.sort Job -> time.Time.time) (sched : schedule.UniprocessorSchedule.schedule Job) (interference : eqtype.Equality.sort Job -> time.Time.time -> bool) (interfering_workload : eqtype.Equality.sort Job -> time.Time.time -> time.Time.time) (j : eqtype.Equality.sort Job) (t1 t2 t1' t2' : time.Time.time), AbstractRTADefinitions.busy_interval job_arrival job_cost sched interference interfering_workload j t1 t2 -> AbstractRTADefinitions.busy_interval job_arrival job_cost sched interference interfering_workload j t1' t2' -> t1 = t1' /\ t2 = t2'
+
+AbstractRTADefinitions.busy_interval_is_unique is not universe polymorphic
+Arguments AbstractRTADefinitions.busy_interval_is_unique {Job} (job_arrival job_cost)%function_scope sched (interference interfering_workload)%function_scope j t1 t2 t1' t2' _ _
+AbstractRTADefinitions.busy_interval_is_unique is opaque
+Expands to: Constant prosa.classic.model.schedule.uni.limited.abstract_RTA.definitions.AbstractRTADefinitions.busy_interval_is_unique
+Declared in library prosa.classic.model.schedule.uni.limited.abstract_RTA.definitions, line 113, characters 12-35
+AbstractRTADefinitions.work_conserving : forall {Task Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> eqtype.Equality.sort Task) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> schedule.UniprocessorSchedule.schedule Job -> eqtype.Equality.sort Task -> (eqtype.Equality.sort Job -> time.Time.time -> bool) -> (eqtype.Equality.sort Job -> time.Time.time -> time.Time.time) -> Prop
+
+AbstractRTADefinitions.work_conserving is not universe polymorphic
+Arguments AbstractRTADefinitions.work_conserving {Task Job} (job_arrival job_cost job_task)%function_scope arr_seq sched tsk (interference interfering_workload)%function_scope
+AbstractRTADefinitions.work_conserving is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.limited.abstract_RTA.definitions.AbstractRTADefinitions.work_conserving
+Declared in library prosa.classic.model.schedule.uni.limited.abstract_RTA.definitions, line 168, characters 17-32
+AbstractRTADefinitions.busy_intervals_are_bounded_by : forall {Task Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> eqtype.Equality.sort Task) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> schedule.UniprocessorSchedule.schedule Job -> eqtype.Equality.sort Task -> (eqtype.Equality.sort Job -> time.Time.time -> bool) -> (eqtype.Equality.sort Job -> time.Time.time -> time.Time.time) -> nat -> Prop
+
+AbstractRTADefinitions.busy_intervals_are_bounded_by is not universe polymorphic
+Arguments AbstractRTADefinitions.busy_intervals_are_bounded_by {Task Job} (job_arrival job_cost job_task)%function_scope arr_seq sched tsk (interference interfering_workload)%function_scope L%nat_scope
+AbstractRTADefinitions.busy_intervals_are_bounded_by is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.limited.abstract_RTA.definitions.AbstractRTADefinitions.busy_intervals_are_bounded_by
+Declared in library prosa.classic.model.schedule.uni.limited.abstract_RTA.definitions, line 182, characters 17-46
+AbstractRTADefinitions.job_interference_is_bounded_by : forall {Task Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> eqtype.Equality.sort Task) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> schedule.UniprocessorSchedule.schedule Job -> eqtype.Equality.sort Task -> (eqtype.Equality.sort Job -> time.Time.time -> bool) -> (eqtype.Equality.sort Job -> time.Time.time -> time.Time.time) -> (eqtype.Equality.sort Task -> time.Time.time -> time.Time.time -> time.Time.time) -> Prop
+
+AbstractRTADefinitions.job_interference_is_bounded_by is not universe polymorphic
+Arguments AbstractRTADefinitions.job_interference_is_bounded_by {Task Job} (job_arrival job_cost job_task)%function_scope arr_seq sched tsk (interference interfering_workload interference_bound_function)%function_scope
+AbstractRTADefinitions.job_interference_is_bounded_by is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.limited.abstract_RTA.definitions.AbstractRTADefinitions.job_interference_is_bounded_by
+Declared in library prosa.classic.model.schedule.uni.limited.abstract_RTA.definitions, line 208, characters 17-47

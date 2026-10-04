@@ -1,0 +1,13 @@
+--- a/Export.lean
++++ b/Export.lean
+@@ -98,7 +98,9 @@
+   let args := e.getAppArgs
+   guard <| args.size == 5
+   guard <| natIndexType aliases args[0]!
+-  guard <| args[1]!.isConstOf ``Nat
++  -- the codomain may likewise be `Nat` or a listed reducible alias (a `time`-valued sum); the projected fold is
++  -- over `Nat` and is checked `isDefEq` to the original
++  guard <| natIndexType aliases args[1]!
+   -- `Finset.Ico m n` over `Nat`, optionally filtered (`(Finset.Ico m n).filter p`):
+   -- the enumeration `List.range' m (n - m)` (filtered by `decide (p i)` with the same instance)
+   let (interval, filt?) :=

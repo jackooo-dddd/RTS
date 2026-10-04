@@ -1,0 +1,177 @@
+{
+  "rank": 29,
+  "layer": 10,
+  "tag": "CAFF",
+  "slug": "classic_model_schedule_apa_affinity",
+  "family": "classic",
+  "source": "classic/model/schedule/apa/affinity.v",
+  "dependencies": [
+    "classic/model/arrival/basic/arrival_sequence.v",
+    "classic/model/arrival/basic/job.v",
+    "classic/model/arrival/basic/task.v",
+    "classic/model/schedule/global/basic/schedule.v",
+    "classic/util/all.v"
+  ],
+  "declaration_count": 7,
+  "base_run": null,
+  "base_checks": [],
+  "source_mode": "official_closure",
+  "official_closure": {
+    "files": "tooling/classic/closures/classic_model_schedule_apa_affinity.txt",
+    "patches": [
+      "patches/classic/rocq93-util-tactics.patch",
+      "patches/classic/rocq93-util-list.patch",
+      "patches/classic/rocq93-util-bigcat.patch",
+      "patches/classic/rocq93-util-div_mod.patch",
+      "patches/prosa-v06-rocq93-util-minmax.patch",
+      "patches/classic/rocq93-util-seqset.patch",
+      "patches/classic/rocq93-util-sum.patch"
+    ]
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/ClassicAffinityTypeFingerprintProbe.v",
+  "production": "Prosa/Classic/Model/Schedule/Apa/Affinity.lean",
+  "production_olean": "Prosa/Classic/Model/Schedule/Apa/Affinity.olean",
+  "lean_namespace": "Prosa.Classic.Model.Schedule.Apa.Affinity",
+  "fixtures": [
+    "ClassicAffinityInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/ClassicAffinityLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/classic/classic_model_schedule_apa_affinity_export_config.json",
+  "export_name": "ClassicAffinity",
+  "cert_dir": "certificates/classic_model_schedule_apa_affinity",
+  "chain": [
+    "ClassicAffinityBase",
+    "ClassicAffinityList",
+    "ClassicAffinityList1",
+    "ClassicAffinityOrd",
+    "ClassicAffinityCorrespondence"
+  ],
+  "audit_module": "ClassicAffinityAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/ClassicAffinityImportedTypeAudit.v",
+  "assumption_config": "certificates/classic_model_schedule_apa_affinity/classic_model_schedule_apa_affinity_assumption_config.json",
+  "lean_axiom_config": "certificates/classic_model_schedule_apa_affinity/classic_model_schedule_apa_affinity_lean_axiom_config.json",
+  "computational": [
+    "Affinity.affinity",
+    "Affinity.task_affinity",
+    "Affinity.can_execute_on",
+    "Affinity.task_scheduled_on_affinity",
+    "Affinity.is_subaffinity",
+    "Affinity.affinity_intersects"
+  ],
+  "principal": {},
+  "helpers": [
+    "caf_forall",
+    "caf_mem",
+    "caf_card",
+    "cs_forall_sched"
+  ],
+  "previous_status": "classic_model_arrival_basic_arrival_bounds_module_status.json",
+  "previous_files": 28,
+  "previous_decls": 336,
+  "input_relations": [
+    "job and task types: eqTypes identified, Lean DecidableEq instances = the eqTypes' decision procedures; job_task identified",
+    "natural numbers (time, num_cpus) by SubNatRel; processors 'I_n and Fin n by their values; affinities ({set 'I_n} against Prosa.Util.Seqset.set (Fin n)) by their underlying sequences elementwise through the ordinal conversion; task affinities pointwise; schedules pointwise on related processors and times (two-way totals)"
+  ],
+  "coverage_for_inner_binders": [],
+  "lean_representation_note": "`{set (processor n)}` is the accepted v0.6 `Prosa.Util.Seqset.set (Fin n)`; `[exists cpu, P cpu]` is `(List.finRange n).any P`; `{subset a <= b}` is `\u2200 x, x \u2208 a \u2192 x \u2208 b`; `#|a|` is `(Finset.univ.filter (\u00b7 \u2208 a)).card`",
+  "extra_pinned_sources": [],
+  "extra_artifacts": [],
+  "extra_olean_artifacts": [
+    {
+      "from": "analysis_abstract_abstract_rta_final/olean/Prosa/Util/Seqset.olean",
+      "to": "Prosa/Util/Seqset.olean",
+      "v06_file": "util/seqset.v"
+    },
+    {
+      "from": "classic_util_seqset_final/olean/Prosa/Classic/Util/Seqset.olean",
+      "to": "Prosa/Classic/Util/Seqset.olean",
+      "manifest": "classic_util_seqset",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_abstract_abstract_rta_final/olean/Prosa/Util/Notation.olean",
+      "to": "Prosa/Util/Notation.olean",
+      "v06_file": "util/notation.v"
+    },
+    {
+      "from": "classic_util_notation_final/olean/Prosa/Classic/Util/Notation.olean",
+      "to": "Prosa/Classic/Util/Notation.olean",
+      "manifest": "classic_util_notation",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_abstract_abstract_rta_final/olean/Prosa/Util/Supremum.olean",
+      "to": "Prosa/Util/Supremum.olean",
+      "v06_file": "util/supremum.v"
+    },
+    {
+      "from": "analysis_abstract_abstract_rta_final/olean/Prosa/Util/List.olean",
+      "to": "Prosa/Util/List.olean",
+      "v06_file": "util/list.v"
+    },
+    {
+      "from": "analysis_abstract_abstract_rta_final/olean/Prosa/Util/Tactics.olean",
+      "to": "Prosa/Util/Tactics.olean",
+      "v06_file": "util/tactics.v"
+    },
+    {
+      "from": "analysis_abstract_abstract_rta_final/olean/Prosa/Util/Bigcat.olean",
+      "to": "Prosa/Util/Bigcat.olean",
+      "v06_file": "util/bigcat.v"
+    },
+    {
+      "from": "analysis_abstract_abstract_rta_final/olean/Prosa/Util/Bigop.olean",
+      "to": "Prosa/Util/Bigop.olean",
+      "v06_file": "util/bigop.v"
+    },
+    {
+      "from": "classic_util_bigord_final/olean/Prosa/Classic/Util/Bigord.olean",
+      "to": "Prosa/Classic/Util/Bigord.olean",
+      "manifest": "classic_util_bigord",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "classic_util_bigcat_final/olean/Prosa/Classic/Util/Bigcat.olean",
+      "to": "Prosa/Classic/Util/Bigcat.olean",
+      "manifest": "classic_util_bigcat",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "classic_util_ord_quantifier_final/olean/Prosa/Classic/Util/OrdQuantifier.olean",
+      "to": "Prosa/Classic/Util/OrdQuantifier.olean",
+      "manifest": "classic_util_ord_quantifier",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "classic_model_time_final/olean/Prosa/Classic/Model/Time.olean",
+      "to": "Prosa/Classic/Model/Time.olean",
+      "manifest": "classic_model_time",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "classic_model_arrival_basic_task_final/olean/Prosa/Classic/Model/Arrival/Basic/Task.olean",
+      "to": "Prosa/Classic/Model/Arrival/Basic/Task.olean",
+      "manifest": "classic_model_arrival_basic_task",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "classic_model_arrival_basic_arrival_sequence_final/olean/Prosa/Classic/Model/Arrival/Basic/ArrivalSequence.olean",
+      "to": "Prosa/Classic/Model/Arrival/Basic/ArrivalSequence.olean",
+      "manifest": "classic_model_arrival_basic_arrival_sequence",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "classic_model_arrival_basic_job_final/olean/Prosa/Classic/Model/Arrival/Basic/Job.olean",
+      "to": "Prosa/Classic/Model/Arrival/Basic/Job.olean",
+      "manifest": "classic_model_arrival_basic_job",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "classic_model_schedule_global_basic_schedule_final/olean/Prosa/Classic/Model/Schedule/Global/Basic/Schedule.olean",
+      "to": "Prosa/Classic/Model/Schedule/Global/Basic/Schedule.olean",
+      "manifest": "classic_model_schedule_global_basic_schedule",
+      "key": "production_olean_sha256"
+    }
+  ],
+  "export_diagnosis": "152,562 lines: `#|alpha|` is the cardinality of a filtered Finset over Fin num_cpus (Finset.univ of Fin.fintype, Finset.filter, Finset.card: the Mathlib Finset/Multiset/Quot closure), affinities are the accepted v0.6 sequence-sets, and the validation-only interface theorems are exported with their proof bodies (finRange/range' lemmas; card_filter_sum by definitional unfolding and structural counting lemmas, avoiding Finset.card_filter/Finset.sum_filter whose proof closures contain Nat.Internal.Linear reflection proofs)."
+}

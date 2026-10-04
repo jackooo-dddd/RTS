@@ -1,0 +1,314 @@
+# classic/model/schedule/uni/sustainability.v: 38 declarations
+
+## Print Module
+
+Module sustainability := Struct Module Sustainability End
+
+Module
+Sustainability
+:= Struct
+     Inductive parameter_label : Set :=  JOB_ARRIVAL : parameter_label | JOB_COST : parameter_label | JOB_DEADLINE : parameter_label | JOB_JITTER : parameter_label | JOB_SUSPENSION : parameter_label.
+     Definition parameter_label_rect : forall P : parameter_label -> Type, P JOB_ARRIVAL -> P JOB_COST -> P JOB_DEADLINE -> P JOB_JITTER -> P JOB_SUSPENSION -> forall p : parameter_label, P p.
+     Definition parameter_label_ind : forall P : parameter_label -> Prop, P JOB_ARRIVAL -> P JOB_COST -> P JOB_DEADLINE -> P JOB_JITTER -> P JOB_SUSPENSION -> forall p : parameter_label, P p.
+     Definition parameter_label_rec : forall P : parameter_label -> Set, P JOB_ARRIVAL -> P JOB_COST -> P JOB_DEADLINE -> P JOB_JITTER -> P JOB_SUSPENSION -> forall p : parameter_label, P p.
+     Definition parameter_label_sind : forall P : parameter_label -> SProp, P JOB_ARRIVAL -> P JOB_COST -> P JOB_DEADLINE -> P JOB_JITTER -> P JOB_SUSPENSION -> forall p : parameter_label, P p.
+     Definition parameter_label_beq : parameter_label -> parameter_label -> bool.
+     Definition internal_parameter_label_dec_bl : forall x : parameter_label, (fun x0 : parameter_label => forall y : parameter_label, parameter_label_beq x0 y = true -> x0 = y) x.
+     Definition internal_parameter_label_dec_lb : forall x : parameter_label, (fun x0 : parameter_label => forall y : parameter_label, x0 = y -> parameter_label_beq x0 y = true) x.
+     Definition parameter_label_eq_dec : forall x y : parameter_label, {x = y} + {x <> y}.
+     Parameter eqlabelP : eqtype.eq_axiom (T:=parameter_label) parameter_label_beq.
+     Definition HB_unnamed_factory_1 : eqtype.hasDecEq.axioms_ parameter_label.
+     Definition Sustainability_parameter_label__canonical__eqtype_Equality : eqtype.Equality.type.
+     Definition type_of_label : eqtype.Equality.type -> parameter_label -> Type.
+     Definition default_val : forall (Job : eqtype.Equality.type) (l : parameter_label), type_of_label l.
+     Record job_parameter (Job : eqtype.Equality.type) : Type := param { p_label : parameter_label;  p_function : type_of_label p_label }.
+     Definition p_label : forall Job : eqtype.Equality.type, job_parameter Job -> parameter_label.
+     Definition p_function : forall (Job : eqtype.Equality.type) (j : job_parameter Job), type_of_label (p_label j).
+     Definition find_param : forall Job : eqtype.Equality.type, parameter_label -> list (job_parameter Job) -> job_parameter Job.
+     Definition get_param_function : forall (Job : eqtype.Equality.type) (l : parameter_label), job_parameter Job -> type_of_label l.
+     Definition return_param : forall (Job : eqtype.Equality.type) (l : parameter_label), list (job_parameter Job) -> type_of_label l.
+     Parameter return_param_works1 : forall (Job : eqtype.Equality.type) (example_job_cost : eqtype.Equality.sort Job -> time.Time.time) (example_job_suspension : eqtype.Equality.sort Job -> time.Time.time -> time.Time.duration), return_param JOB_COST ({| p_label := JOB_COST; p_function := example_job_cost |} :: {| p_label := JOB_SUSPENSION; p_function := example_job_suspension |} :: nil) = example_job_cost.
+     Parameter return_param_works2 : forall (Job : eqtype.Equality.type) (example_job_cost : eqtype.Equality.sort Job -> time.Time.time) (example_job_suspension : eqtype.Equality.sort Job -> time.Time.time -> time.Time.duration), return_param JOB_SUSPENSION ({| p_label := JOB_COST; p_function := example_job_cost |} :: {| p_label := JOB_SUSPENSION; p_function := example_job_suspension |} :: nil) = example_job_suspension.
+     Definition differ_only_by : forall Job : eqtype.Equality.type, list parameter_label -> list (job_parameter Job) -> list (job_parameter Job) -> Prop.
+     Definition labels_of : forall Job : eqtype.Equality.type, list (job_parameter Job) -> list parameter_label.
+     Definition has_unique_labels : forall Job : eqtype.Equality.type, list (job_parameter Job) -> bool.
+     Definition corresponding_labels : forall Job : eqtype.Equality.type, list (job_parameter Job) -> list parameter_label -> Prop.
+     Parameter found_param_label : forall (Job : eqtype.Equality.type) (params : list (job_parameter Job)) (p : job_parameter Job) (label : parameter_label), is_true (has_unique_labels params) -> List.In p params -> p_label p = label -> p = {| p_label := label; p_function := return_param label params |}.
+     Definition sustainable_param_becomes_better : forall (Job : eqtype.Equality.type) (sustainable_param : parameter_label), (type_of_label sustainable_param -> type_of_label sustainable_param -> Prop) -> list (job_parameter Job) -> list (job_parameter Job) -> Prop.
+     Definition sustainable_and_varying_params_in : forall Job : eqtype.Equality.type, parameter_label -> list parameter_label -> list (job_parameter Job) -> Prop.
+     Definition has_consistent_labels : forall Job : eqtype.Equality.type, list parameter_label -> parameter_label -> list parameter_label -> list (job_parameter Job) -> Prop.
+     Definition jobs_are_schedulable_with : forall Job : eqtype.Equality.type, (list (job_parameter Job) -> schedule.UniprocessorSchedule.schedule Job -> eqtype.Equality.sort Job -> bool) -> (list (job_parameter Job) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> schedule.UniprocessorSchedule.schedule Job -> Prop) -> list (job_parameter Job) -> Prop.
+     Definition jobs_are_V_schedulable_with : forall Job : eqtype.Equality.type, list parameter_label -> (list (job_parameter Job) -> schedule.UniprocessorSchedule.schedule Job -> eqtype.Equality.sort Job -> bool) -> (list (job_parameter Job) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> schedule.UniprocessorSchedule.schedule Job -> Prop) -> parameter_label -> list parameter_label -> list (job_parameter Job) -> Prop.
+     Definition weakly_sustainable : forall Job : eqtype.Equality.type, list parameter_label -> (list (job_parameter Job) -> schedule.UniprocessorSchedule.schedule Job -> eqtype.Equality.sort Job -> bool) -> (list (job_parameter Job) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> schedule.UniprocessorSchedule.schedule Job -> Prop) -> forall sustainable_param : parameter_label, (type_of_label sustainable_param -> type_of_label sustainable_param -> Prop) -> list parameter_label -> Prop.
+     Definition sustainable_param_becomes_worse : forall (Job : eqtype.Equality.type) (sustainable_param : parameter_label), (type_of_label sustainable_param -> type_of_label sustainable_param -> Prop) -> list (job_parameter Job) -> list (job_parameter Job) -> Prop.
+     Definition jobs_are_not_schedulable_with : forall Job : eqtype.Equality.type, (list (job_parameter Job) -> schedule.UniprocessorSchedule.schedule Job -> eqtype.Equality.sort Job -> bool) -> (list (job_parameter Job) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> schedule.UniprocessorSchedule.schedule Job -> Prop) -> list (job_parameter Job) -> Prop.
+     Definition weakly_sustainable_contrapositive : forall Job : eqtype.Equality.type, list parameter_label -> (list (job_parameter Job) -> schedule.UniprocessorSchedule.schedule Job -> eqtype.Equality.sort Job -> bool) -> (list (job_parameter Job) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> schedule.UniprocessorSchedule.schedule Job -> Prop) -> forall sustainable_param : parameter_label, (type_of_label sustainable_param -> type_of_label sustainable_param -> Prop) -> list parameter_label -> Prop.
+     Parameter weak_sustainability_equivalence : forall (Job : eqtype.Equality.type) (all_labels : list parameter_label) (is_schedulable : list (job_parameter Job) -> schedule.UniprocessorSchedule.schedule Job -> eqtype.Equality.sort Job -> bool) (belongs_to_task_model : list (job_parameter Job) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> schedule.UniprocessorSchedule.schedule Job -> Prop) (sustainable_param : parameter_label) (has_better_params : type_of_label sustainable_param -> type_of_label sustainable_param -> Prop) (variable_params : list parameter_label), (forall (T : Type) (P : T -> Prop), ~ (forall x : T, ~ P x) -> exists x : T, P x) -> (forall P Q : Prop, ~ (P /\ Q) -> ~ P \/ ~ Q) -> weakly_sustainable all_labels is_schedulable belongs_to_task_model sustainable_param has_better_params variable_params <-> weakly_sustainable_contrapositive all_labels is_schedulable belongs_to_task_model sustainable_param has_better_params variable_params.
+     Definition strongly_sustainable : forall Job : eqtype.Equality.type, list parameter_label -> (list (job_parameter Job) -> schedule.UniprocessorSchedule.schedule Job -> eqtype.Equality.sort Job -> bool) -> (list (job_parameter Job) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> schedule.UniprocessorSchedule.schedule Job -> Prop) -> forall sustainable_param : parameter_label, (type_of_label sustainable_param -> type_of_label sustainable_param -> Prop) -> Prop.
+   End
+
+## About
+
+Sustainability.parameter_label : Set
+
+Sustainability.parameter_label is not universe polymorphic
+Expands to: Inductive prosa.classic.model.schedule.uni.sustainability.Sustainability.parameter_label
+Declared in library prosa.classic.model.schedule.uni.sustainability, line 23, characters 18-33
+Sustainability.parameter_label_rect : forall P : Sustainability.parameter_label -> Type, P Sustainability.JOB_ARRIVAL -> P Sustainability.JOB_COST -> P Sustainability.JOB_DEADLINE -> P Sustainability.JOB_JITTER -> P Sustainability.JOB_SUSPENSION -> forall p : Sustainability.parameter_label, P p
+
+Sustainability.parameter_label_rect is not universe polymorphic
+Arguments Sustainability.parameter_label_rect P%function_scope f f0 f1 f2 f3 p
+Sustainability.parameter_label_rect is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.sustainability.Sustainability.parameter_label_rect
+Declared in library prosa.classic.model.schedule.uni.sustainability, line 23, characters 8-147
+Sustainability.parameter_label_ind : forall P : Sustainability.parameter_label -> Prop, P Sustainability.JOB_ARRIVAL -> P Sustainability.JOB_COST -> P Sustainability.JOB_DEADLINE -> P Sustainability.JOB_JITTER -> P Sustainability.JOB_SUSPENSION -> forall p : Sustainability.parameter_label, P p
+
+Sustainability.parameter_label_ind is not universe polymorphic
+Arguments Sustainability.parameter_label_ind P%function_scope f f0 f1 f2 f3 p
+Sustainability.parameter_label_ind is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.sustainability.Sustainability.parameter_label_ind
+Declared in library prosa.classic.model.schedule.uni.sustainability, line 23, characters 8-147
+Sustainability.parameter_label_rec : forall P : Sustainability.parameter_label -> Set, P Sustainability.JOB_ARRIVAL -> P Sustainability.JOB_COST -> P Sustainability.JOB_DEADLINE -> P Sustainability.JOB_JITTER -> P Sustainability.JOB_SUSPENSION -> forall p : Sustainability.parameter_label, P p
+
+Sustainability.parameter_label_rec is not universe polymorphic
+Arguments Sustainability.parameter_label_rec P%function_scope f f0 f1 f2 f3 p
+Sustainability.parameter_label_rec is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.sustainability.Sustainability.parameter_label_rec
+Declared in library prosa.classic.model.schedule.uni.sustainability, line 23, characters 8-147
+Sustainability.parameter_label_sind : forall P : Sustainability.parameter_label -> SProp, P Sustainability.JOB_ARRIVAL -> P Sustainability.JOB_COST -> P Sustainability.JOB_DEADLINE -> P Sustainability.JOB_JITTER -> P Sustainability.JOB_SUSPENSION -> forall p : Sustainability.parameter_label, P p
+
+Sustainability.parameter_label_sind is not universe polymorphic
+Arguments Sustainability.parameter_label_sind P%function_scope f f0 f1 f2 f3 p
+Sustainability.parameter_label_sind is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.sustainability.Sustainability.parameter_label_sind
+Declared in library prosa.classic.model.schedule.uni.sustainability, line 23, characters 8-147
+Sustainability.parameter_label_beq : Sustainability.parameter_label -> Sustainability.parameter_label -> bool
+
+Sustainability.parameter_label_beq is not universe polymorphic
+Arguments Sustainability.parameter_label_beq X Y
+Sustainability.parameter_label_beq is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.sustainability.Sustainability.parameter_label_beq
+Declared in library prosa.classic.model.schedule.uni.sustainability, line 31, characters 8-44
+Sustainability.internal_parameter_label_dec_bl : forall x : Sustainability.parameter_label, (fun x0 : Sustainability.parameter_label => forall y : Sustainability.parameter_label, Sustainability.parameter_label_beq x0 y = true -> x0 = y) x
+
+Sustainability.internal_parameter_label_dec_bl is not universe polymorphic
+Arguments Sustainability.internal_parameter_label_dec_bl x y _
+Sustainability.internal_parameter_label_dec_bl is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.sustainability.Sustainability.internal_parameter_label_dec_bl
+Declared in library prosa.classic.model.schedule.uni.sustainability, line 31, characters 8-44
+Sustainability.internal_parameter_label_dec_lb : forall x : Sustainability.parameter_label, (fun x0 : Sustainability.parameter_label => forall y : Sustainability.parameter_label, x0 = y -> Sustainability.parameter_label_beq x0 y = true) x
+
+Sustainability.internal_parameter_label_dec_lb is not universe polymorphic
+Arguments Sustainability.internal_parameter_label_dec_lb x y _
+Sustainability.internal_parameter_label_dec_lb is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.sustainability.Sustainability.internal_parameter_label_dec_lb
+Declared in library prosa.classic.model.schedule.uni.sustainability, line 31, characters 8-44
+Sustainability.parameter_label_eq_dec : forall x y : Sustainability.parameter_label, {x = y} + {x <> y}
+
+Sustainability.parameter_label_eq_dec is not universe polymorphic
+Arguments Sustainability.parameter_label_eq_dec x y
+Sustainability.parameter_label_eq_dec is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.sustainability.Sustainability.parameter_label_eq_dec
+Declared in library prosa.classic.model.schedule.uni.sustainability, line 31, characters 8-44
+Sustainability.eqlabelP : eqtype.eq_axiom (T:=Sustainability.parameter_label) Sustainability.parameter_label_beq
+
+Sustainability.eqlabelP is not universe polymorphic
+Arguments Sustainability.eqlabelP x y
+Sustainability.eqlabelP is opaque
+Expands to: Constant prosa.classic.model.schedule.uni.sustainability.Sustainability.eqlabelP
+Declared in library prosa.classic.model.schedule.uni.sustainability, line 32, characters 14-22
+Sustainability.HB_unnamed_factory_1 : eqtype.hasDecEq.axioms_ Sustainability.parameter_label
+
+Sustainability.HB_unnamed_factory_1 is not universe polymorphic
+Sustainability.HB_unnamed_factory_1 is transparent (level 1000)
+Expands to: Constant prosa.classic.model.schedule.uni.sustainability.Sustainability.HB_unnamed_factory_1
+Declared in library prosa.classic.model.schedule.uni.sustainability, line 37, characters 8-76
+Sustainability.Sustainability_parameter_label__canonical__eqtype_Equality : eqtype.Equality.type
+
+Sustainability.Sustainability_parameter_label__canonical__eqtype_Equality is not universe polymorphic
+Sustainability.Sustainability_parameter_label__canonical__eqtype_Equality is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.sustainability.Sustainability.Sustainability_parameter_label__canonical__eqtype_Equality
+Declared in library prosa.classic.model.schedule.uni.sustainability, line 37, characters 8-76
+Sustainability.type_of_label : eqtype.Equality.type -> Sustainability.parameter_label -> Type
+
+Sustainability.type_of_label is not universe polymorphic
+Arguments Sustainability.type_of_label {Job} l
+Sustainability.type_of_label is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.sustainability.Sustainability.type_of_label
+Declared in library prosa.classic.model.schedule.uni.sustainability, line 40, characters 19-32
+Sustainability.default_val : forall {Job : eqtype.Equality.type} (l : Sustainability.parameter_label), Sustainability.type_of_label l
+
+Sustainability.default_val is not universe polymorphic
+Arguments Sustainability.default_val {Job} l
+Sustainability.default_val is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.sustainability.Sustainability.default_val
+Declared in library prosa.classic.model.schedule.uni.sustainability, line 50, characters 19-30
+Sustainability.job_parameter : eqtype.Equality.type -> Type
+
+Sustainability.job_parameter is not universe polymorphic
+Arguments Sustainability.job_parameter Job
+Expands to: Inductive prosa.classic.model.schedule.uni.sustainability.Sustainability.job_parameter
+Declared in library prosa.classic.model.schedule.uni.sustainability, line 60, characters 15-28
+Sustainability.p_label : forall {Job : eqtype.Equality.type}, Sustainability.job_parameter Job -> Sustainability.parameter_label
+
+Sustainability.p_label is not universe polymorphic
+Sustainability.p_label is a projection of Sustainability.job_parameter
+Arguments Sustainability.p_label {Job} j
+Sustainability.p_label is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.sustainability.Sustainability.p_label
+Declared in library prosa.classic.model.schedule.uni.sustainability, line 60, characters 8-140
+Sustainability.p_function : forall {Job : eqtype.Equality.type} (j : Sustainability.job_parameter Job), Sustainability.type_of_label (Sustainability.p_label j)
+
+Sustainability.p_function is not universe polymorphic
+Sustainability.p_function is a projection of Sustainability.job_parameter
+Arguments Sustainability.p_function {Job} j
+Sustainability.p_function is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.sustainability.Sustainability.p_function
+Declared in library prosa.classic.model.schedule.uni.sustainability, line 60, characters 8-140
+Sustainability.find_param : forall {Job : eqtype.Equality.type}, Sustainability.parameter_label -> list (Sustainability.job_parameter Job) -> Sustainability.job_parameter Job
+
+Sustainability.find_param is not universe polymorphic
+Arguments Sustainability.find_param {Job} l s%list_scope%seq_scope
+Sustainability.find_param is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.sustainability.Sustainability.find_param
+Declared in library prosa.classic.model.schedule.uni.sustainability, line 78, characters 19-29
+Sustainability.get_param_function : forall {Job : eqtype.Equality.type} (l : Sustainability.parameter_label), Sustainability.job_parameter Job -> Sustainability.type_of_label l
+
+Sustainability.get_param_function is not universe polymorphic
+Arguments Sustainability.get_param_function {Job} l p
+Sustainability.get_param_function is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.sustainability.Sustainability.get_param_function
+Declared in library prosa.classic.model.schedule.uni.sustainability, line 90, characters 19-37
+Sustainability.return_param : forall {Job : eqtype.Equality.type} (l : Sustainability.parameter_label), list (Sustainability.job_parameter Job) -> Sustainability.type_of_label l
+
+Sustainability.return_param is not universe polymorphic
+Arguments Sustainability.return_param {Job} l s%list_scope%seq_scope
+Sustainability.return_param is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.sustainability.Sustainability.return_param
+Declared in library prosa.classic.model.schedule.uni.sustainability, line 96, characters 19-31
+Sustainability.return_param_works1 : forall {Job : eqtype.Equality.type} (example_job_cost : eqtype.Equality.sort Job -> time.Time.time) (example_job_suspension : eqtype.Equality.sort Job -> time.Time.time -> time.Time.duration), Sustainability.return_param Sustainability.JOB_COST ({| Sustainability.p_label := Sustainability.JOB_COST; Sustainability.p_function := example_job_cost |} :: {| Sustainability.p_label := Sustainability.JOB_SUSPENSION; Sustainability.p_function := example_job_suspension |} :: nil) = example_job_cost
+
+Sustainability.return_param_works1 is not universe polymorphic
+Arguments Sustainability.return_param_works1 {Job} (example_job_cost example_job_suspension)%function_scope
+Sustainability.return_param_works1 is opaque
+Expands to: Constant prosa.classic.model.schedule.uni.sustainability.Sustainability.return_param_works1
+Declared in library prosa.classic.model.schedule.uni.sustainability, line 106, characters 16-35
+Sustainability.return_param_works2 : forall {Job : eqtype.Equality.type} (example_job_cost : eqtype.Equality.sort Job -> time.Time.time) (example_job_suspension : eqtype.Equality.sort Job -> time.Time.time -> time.Time.duration), Sustainability.return_param Sustainability.JOB_SUSPENSION ({| Sustainability.p_label := Sustainability.JOB_COST; Sustainability.p_function := example_job_cost |} :: {| Sustainability.p_label := Sustainability.JOB_SUSPENSION; Sustainability.p_function := example_job_suspension |} :: nil) = example_job_suspension
+
+Sustainability.return_param_works2 is not universe polymorphic
+Arguments Sustainability.return_param_works2 {Job} (example_job_cost example_job_suspension)%function_scope
+Sustainability.return_param_works2 is opaque
+Expands to: Constant prosa.classic.model.schedule.uni.sustainability.Sustainability.return_param_works2
+Declared in library prosa.classic.model.schedule.uni.sustainability, line 111, characters 16-35
+Sustainability.differ_only_by : forall {Job : eqtype.Equality.type}, list Sustainability.parameter_label -> list (Sustainability.job_parameter Job) -> list (Sustainability.job_parameter Job) -> Prop
+
+Sustainability.differ_only_by is not universe polymorphic
+Arguments Sustainability.differ_only_by {Job} (variable_labels s1 s2)%list_scope%seq_scope
+Sustainability.differ_only_by is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.sustainability.Sustainability.differ_only_by
+Declared in library prosa.classic.model.schedule.uni.sustainability, line 123, characters 19-33
+Sustainability.labels_of : forall {Job : eqtype.Equality.type}, list (Sustainability.job_parameter Job) -> list Sustainability.parameter_label
+
+Sustainability.labels_of is not universe polymorphic
+Arguments Sustainability.labels_of {Job} params%list_scope%seq_scope
+Sustainability.labels_of is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.sustainability.Sustainability.labels_of
+Declared in library prosa.classic.model.schedule.uni.sustainability, line 132, characters 19-28
+Sustainability.has_unique_labels : forall {Job : eqtype.Equality.type}, list (Sustainability.job_parameter Job) -> bool
+
+Sustainability.has_unique_labels is not universe polymorphic
+Arguments Sustainability.has_unique_labels {Job} params%list_scope%seq_scope
+Sustainability.has_unique_labels is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.sustainability.Sustainability.has_unique_labels
+Declared in library prosa.classic.model.schedule.uni.sustainability, line 135, characters 19-36
+Sustainability.corresponding_labels : forall {Job : eqtype.Equality.type}, list (Sustainability.job_parameter Job) -> list Sustainability.parameter_label -> Prop
+
+Sustainability.corresponding_labels is not universe polymorphic
+Arguments Sustainability.corresponding_labels {Job} (params labels)%list_scope%seq_scope
+Sustainability.corresponding_labels is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.sustainability.Sustainability.corresponding_labels
+Declared in library prosa.classic.model.schedule.uni.sustainability, line 138, characters 19-39
+Sustainability.found_param_label : forall {Job : eqtype.Equality.type} (params : list (Sustainability.job_parameter Job)) (p : Sustainability.job_parameter Job) (label : Sustainability.parameter_label), is_true (Sustainability.has_unique_labels params) -> List.In p params -> Sustainability.p_label p = label -> p = {| Sustainability.p_label := label; Sustainability.p_function := Sustainability.return_param label params |}
+
+Sustainability.found_param_label is not universe polymorphic
+Arguments Sustainability.found_param_label {Job} params%list_scope%seq_scope p label _ _ _
+Sustainability.found_param_label is opaque
+Expands to: Constant prosa.classic.model.schedule.uni.sustainability.Sustainability.found_param_label
+Declared in library prosa.classic.model.schedule.uni.sustainability, line 143, characters 14-31
+Sustainability.sustainable_param_becomes_better : forall {Job : eqtype.Equality.type} (sustainable_param : Sustainability.parameter_label), (Sustainability.type_of_label sustainable_param -> Sustainability.type_of_label sustainable_param -> Prop) -> list (Sustainability.job_parameter Job) -> list (Sustainability.job_parameter Job) -> Prop
+
+Sustainability.sustainable_param_becomes_better is not universe polymorphic
+Arguments Sustainability.sustainable_param_becomes_better {Job} sustainable_param has_better_params%function_scope (params params')%list_scope%seq_scope
+Sustainability.sustainable_param_becomes_better is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.sustainability.Sustainability.sustainable_param_becomes_better
+Declared in library prosa.classic.model.schedule.uni.sustainability, line 200, characters 17-49
+Sustainability.sustainable_and_varying_params_in : forall {Job : eqtype.Equality.type}, Sustainability.parameter_label -> list Sustainability.parameter_label -> list (Sustainability.job_parameter Job) -> Prop
+
+Sustainability.sustainable_and_varying_params_in is not universe polymorphic
+Arguments Sustainability.sustainable_and_varying_params_in {Job} sustainable_param (variable_params params)%list_scope%seq_scope
+Sustainability.sustainable_and_varying_params_in is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.sustainability.Sustainability.sustainable_and_varying_params_in
+Declared in library prosa.classic.model.schedule.uni.sustainability, line 211, characters 19-52
+Sustainability.has_consistent_labels : forall {Job : eqtype.Equality.type}, list Sustainability.parameter_label -> Sustainability.parameter_label -> list Sustainability.parameter_label -> list (Sustainability.job_parameter Job) -> Prop
+
+Sustainability.has_consistent_labels is not universe polymorphic
+Arguments Sustainability.has_consistent_labels {Job} all_labels%list_scope%seq_scope sustainable_param (variable_params params)%list_scope%seq_scope
+Sustainability.has_consistent_labels is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.sustainability.Sustainability.has_consistent_labels
+Declared in library prosa.classic.model.schedule.uni.sustainability, line 219, characters 17-38
+Sustainability.jobs_are_schedulable_with : forall {Job : eqtype.Equality.type}, (list (Sustainability.job_parameter Job) -> schedule.UniprocessorSchedule.schedule Job -> eqtype.Equality.sort Job -> bool) -> (list (Sustainability.job_parameter Job) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> schedule.UniprocessorSchedule.schedule Job -> Prop) -> list (Sustainability.job_parameter Job) -> Prop
+
+Sustainability.jobs_are_schedulable_with is not universe polymorphic
+Arguments Sustainability.jobs_are_schedulable_with {Job} (is_schedulable belongs_to_task_model)%function_scope params%list_scope%seq_scope
+Sustainability.jobs_are_schedulable_with is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.sustainability.Sustainability.jobs_are_schedulable_with
+Declared in library prosa.classic.model.schedule.uni.sustainability, line 225, characters 19-44
+Sustainability.jobs_are_V_schedulable_with : forall {Job : eqtype.Equality.type}, list Sustainability.parameter_label -> (list (Sustainability.job_parameter Job) -> schedule.UniprocessorSchedule.schedule Job -> eqtype.Equality.sort Job -> bool) -> (list (Sustainability.job_parameter Job) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> schedule.UniprocessorSchedule.schedule Job -> Prop) -> Sustainability.parameter_label -> list Sustainability.parameter_label -> list (Sustainability.job_parameter Job) -> Prop
+
+Sustainability.jobs_are_V_schedulable_with is not universe polymorphic
+Arguments Sustainability.jobs_are_V_schedulable_with {Job} all_labels%list_scope%seq_scope (is_schedulable belongs_to_task_model)%function_scope sustainable_param (variable_params params)%list_scope%seq_scope
+Sustainability.jobs_are_V_schedulable_with is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.sustainability.Sustainability.jobs_are_V_schedulable_with
+Declared in library prosa.classic.model.schedule.uni.sustainability, line 232, characters 19-46
+Sustainability.weakly_sustainable : forall {Job : eqtype.Equality.type}, list Sustainability.parameter_label -> (list (Sustainability.job_parameter Job) -> schedule.UniprocessorSchedule.schedule Job -> eqtype.Equality.sort Job -> bool) -> (list (Sustainability.job_parameter Job) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> schedule.UniprocessorSchedule.schedule Job -> Prop) -> forall sustainable_param : Sustainability.parameter_label, (Sustainability.type_of_label sustainable_param -> Sustainability.type_of_label sustainable_param -> Prop) -> list Sustainability.parameter_label -> Prop
+
+Sustainability.weakly_sustainable is not universe polymorphic
+Arguments Sustainability.weakly_sustainable {Job} all_labels%list_scope%seq_scope (is_schedulable belongs_to_task_model)%function_scope sustainable_param has_better_params%function_scope variable_params%list_scope%seq_scope
+Sustainability.weakly_sustainable is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.sustainability.Sustainability.weakly_sustainable
+Declared in library prosa.classic.model.schedule.uni.sustainability, line 242, characters 19-37
+Sustainability.sustainable_param_becomes_worse : forall {Job : eqtype.Equality.type} (sustainable_param : Sustainability.parameter_label), (Sustainability.type_of_label sustainable_param -> Sustainability.type_of_label sustainable_param -> Prop) -> list (Sustainability.job_parameter Job) -> list (Sustainability.job_parameter Job) -> Prop
+
+Sustainability.sustainable_param_becomes_worse is not universe polymorphic
+Arguments Sustainability.sustainable_param_becomes_worse {Job} sustainable_param has_better_params%function_scope (params params')%list_scope%seq_scope
+Sustainability.sustainable_param_becomes_worse is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.sustainability.Sustainability.sustainable_param_becomes_worse
+Declared in library prosa.classic.model.schedule.uni.sustainability, line 257, characters 21-52
+Sustainability.jobs_are_not_schedulable_with : forall {Job : eqtype.Equality.type}, (list (Sustainability.job_parameter Job) -> schedule.UniprocessorSchedule.schedule Job -> eqtype.Equality.sort Job -> bool) -> (list (Sustainability.job_parameter Job) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> schedule.UniprocessorSchedule.schedule Job -> Prop) -> list (Sustainability.job_parameter Job) -> Prop
+
+Sustainability.jobs_are_not_schedulable_with is not universe polymorphic
+Arguments Sustainability.jobs_are_not_schedulable_with {Job} (is_schedulable belongs_to_task_model)%function_scope params%list_scope%seq_scope
+Sustainability.jobs_are_not_schedulable_with is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.sustainability.Sustainability.jobs_are_not_schedulable_with
+Declared in library prosa.classic.model.schedule.uni.sustainability, line 263, characters 21-50
+Sustainability.weakly_sustainable_contrapositive : forall {Job : eqtype.Equality.type}, list Sustainability.parameter_label -> (list (Sustainability.job_parameter Job) -> schedule.UniprocessorSchedule.schedule Job -> eqtype.Equality.sort Job -> bool) -> (list (Sustainability.job_parameter Job) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> schedule.UniprocessorSchedule.schedule Job -> Prop) -> forall sustainable_param : Sustainability.parameter_label, (Sustainability.type_of_label sustainable_param -> Sustainability.type_of_label sustainable_param -> Prop) -> list Sustainability.parameter_label -> Prop
+
+Sustainability.weakly_sustainable_contrapositive is not universe polymorphic
+Arguments Sustainability.weakly_sustainable_contrapositive {Job} all_labels%list_scope%seq_scope (is_schedulable belongs_to_task_model)%function_scope sustainable_param has_better_params%function_scope variable_params%list_scope%seq_scope
+Sustainability.weakly_sustainable_contrapositive is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.sustainability.Sustainability.weakly_sustainable_contrapositive
+Declared in library prosa.classic.model.schedule.uni.sustainability, line 269, characters 21-54
+Sustainability.weak_sustainability_equivalence : forall {Job : eqtype.Equality.type} (all_labels : list Sustainability.parameter_label) (is_schedulable : list (Sustainability.job_parameter Job) -> schedule.UniprocessorSchedule.schedule Job -> eqtype.Equality.sort Job -> bool) (belongs_to_task_model : list (Sustainability.job_parameter Job) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> schedule.UniprocessorSchedule.schedule Job -> Prop) (sustainable_param : Sustainability.parameter_label) (has_better_params : Sustainability.type_of_label sustainable_param -> Sustainability.type_of_label sustainable_param -> Prop) (variable_params : list Sustainability.parameter_label), (forall (T : Type) (P : T -> Prop), ~ (forall x : T, ~ P x) -> exists x : T, P x) -> (forall P Q : Prop, ~ (P /\ Q) -> ~ P \/ ~ Q) -> Sustainability.weakly_sustainable all_labels is_schedulable belongs_to_task_model sustainable_param has_better_params variable_params <-> Sustainability.weakly_sustainable_contrapositive all_labels is_schedulable belongs_to_task_model sustainable_param has_better_params variable_params
+
+Sustainability.weak_sustainability_equivalence is not universe polymorphic
+Arguments Sustainability.weak_sustainability_equivalence {Job} all_labels%list_scope%seq_scope (is_schedulable belongs_to_task_model)%function_scope sustainable_param has_better_params%function_scope variable_params%list_scope%seq_scope (H_classical_forall_exists H_classical_and_or)%function_scope
+Sustainability.weak_sustainability_equivalence is opaque
+Expands to: Constant prosa.classic.model.schedule.uni.sustainability.Sustainability.weak_sustainability_equivalence
+Declared in library prosa.classic.model.schedule.uni.sustainability, line 289, characters 18-49
+Sustainability.strongly_sustainable : forall {Job : eqtype.Equality.type}, list Sustainability.parameter_label -> (list (Sustainability.job_parameter Job) -> schedule.UniprocessorSchedule.schedule Job -> eqtype.Equality.sort Job -> bool) -> (list (Sustainability.job_parameter Job) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> schedule.UniprocessorSchedule.schedule Job -> Prop) -> forall sustainable_param : Sustainability.parameter_label, (Sustainability.type_of_label sustainable_param -> Sustainability.type_of_label sustainable_param -> Prop) -> Prop
+
+Sustainability.strongly_sustainable is not universe polymorphic
+Arguments Sustainability.strongly_sustainable {Job} all_labels%list_scope%seq_scope (is_schedulable belongs_to_task_model)%function_scope sustainable_param has_better_params%function_scope
+Sustainability.strongly_sustainable is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.sustainability.Sustainability.strongly_sustainable
+Declared in library prosa.classic.model.schedule.uni.sustainability, line 351, characters 17-37

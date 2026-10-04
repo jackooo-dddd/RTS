@@ -1,0 +1,83 @@
+{
+  "rank": 41,
+  "layer": 14,
+  "slug": "classic_model_schedule_apa_constrained_deadlines",
+  "tag": "CCDA",
+  "export_name": "ClassicConstrainedDeadlinesApa",
+  "source": "classic/model/schedule/apa/constrained_deadlines.v",
+  "production": "Prosa/Classic/Model/Schedule/Apa/ConstrainedDeadlines.lean",
+  "fixtures": [
+    "ClassicConstrainedDeadlinesApaInterface"
+  ],
+  "export_module": "Validation.fixtures.translation_order.ClassicConstrainedDeadlinesApaInterface",
+  "interface_theorems": [
+    "Prosa.Validation.ClassicConstrainedDeadlinesApaInterface.finRange_any",
+    "Prosa.Validation.ClassicConstrainedDeadlinesApaInterface.bigCatFin_range'",
+    "Prosa.Validation.ClassicConstrainedDeadlinesApaInterface.fin_sum_range'",
+    "Prosa.Validation.ClassicConstrainedDeadlinesApaInterface.service_at_sum"
+  ],
+  "computational": [
+    "ConstrainedDeadlines.scheduled_task_with_higher_eq_priority"
+  ],
+  "chain": [
+    "ClassicConstrainedDeadlinesApaBase",
+    "ClassicConstrainedDeadlinesApaList",
+    "ClassicConstrainedDeadlinesApaList1",
+    "ClassicConstrainedDeadlinesApaOrd",
+    "ClassicConstrainedDeadlinesApaCorrespondence"
+  ],
+  "base_run": null,
+  "base_checks": [],
+  "previous_status": "classic_analysis_global_basic_interference_bound_module_status.json",
+  "input_relations": [
+    "job and task types: eqTypes identified, Lean DecidableEq instances = the eqTypes' decision procedures; job_task identified",
+    "natural numbers (time, num_cpus) by SubNatRel; processors 'I_n and Fin n by their values; schedules pointwise on related processors and times with option values by the constructor map; job and task parameters pointwise through SubNatRel; arrival sequences pointwise on related times; FP policies pointwise; affinities by their underlying sequences through the ordinal conversion, task affinities pointwise (two-way totals)"
+  ],
+  "lean_representation_note": "as for the accepted classic schedule, task_arrival, priority, affinity and interference validations; Boolean tests in propositions are `= true`; the section-local `hp_task_in` is unfolded",
+  "normalization": {
+    "theorem_types": [],
+    "subexpression_heads": [],
+    "definition_bodies": [],
+    "body_projections": [
+      "Prosa.Classic.Model.Schedule.Global.Basic.Schedule.Schedule.service=Prosa.Validation.ClassicConstrainedDeadlinesApaInterface.service_proj=Prosa.Validation.ClassicConstrainedDeadlinesApaInterface.service_proj_guard",
+      "Prosa.Classic.Model.Schedule.Global.Basic.Schedule.Schedule.service_during=Prosa.Validation.ClassicConstrainedDeadlinesApaInterface.service_during_proj=Prosa.Validation.ClassicConstrainedDeadlinesApaInterface.service_during_proj_guard"
+    ]
+  },
+  "kernel_guard_artifacts": [
+    "Validation/fixtures/translation_order/ClassicConstrainedDeadlinesApaInterface.lean"
+  ],
+  "own_qualified_in_type": [
+    "ConstrainedDeadlines.scheduled_task_with_higher_eq_priority"
+  ],
+  "helpers": [
+    "cs_forall_ncpus_sched",
+    "cs_forall_sched"
+  ],
+  "export_diagnosis": "as for the accepted classic schedule export (service_at is a filtered Finset sum over Fin num_cpus; validation-only interface theorems exported with their proof bodies); service/service_during through kernel-guarded rfl body projections.",
+  "probe_extra": [],
+  "prop_sprop_foundation": [
+    "PropSPropFoundation.interpret_strict"
+  ],
+  "importer_foundation": [
+    "ImportedClassicConstrainedDeadlinesApa.Classical_choice",
+    "ImportedClassicConstrainedDeadlinesApa.Quot_sound",
+    "ImportedClassicConstrainedDeadlinesApa.propext",
+    "PrimInt63.eqb",
+    "PrimInt63.int",
+    "PrimInt63.land",
+    "PrimInt63.lsr"
+  ],
+  "rocq_sprop_uip": [
+    "ClassicConstrainedDeadlinesApaBase.I.HEq_inst1",
+    "ClassicConstrainedDeadlinesApaBase.I.True",
+    "ClassicConstrainedDeadlinesApaOrd.I.HEq",
+    "ClassicConstrainedDeadlinesApaOrd.I.HEq_inst1",
+    "ClassicConstrainedDeadlinesApaOrd.I.True",
+    "I.HEq",
+    "I.HEq_inst1",
+    "I.True",
+    "Lean.eq",
+    "Lean.eq_inst1",
+    "SubadditivityNatCorrespondence.SubNatTrue"
+  ]
+}

@@ -1,0 +1,40 @@
+import Validation.fixtures.translation_order.ClassicUniSuspensionIntervalsInterface
+set_option pp.fieldNotation false
+
+#check @Prosa.Classic.Model.Schedule.Uni.Susp.SuspensionIntervals.SuspensionIntervals.suspension_duration
+#check @Prosa.Classic.Model.Schedule.Uni.Susp.SuspensionIntervals.SuspensionIntervals.suspended_at
+#check @Prosa.Classic.Model.Schedule.Uni.Susp.SuspensionIntervals.SuspensionIntervals.cumulative_suspension_during
+#check @Prosa.Classic.Model.Schedule.Uni.Susp.SuspensionIntervals.SuspensionIntervals.cumulative_suspension
+#check @Prosa.Classic.Model.Schedule.Uni.Susp.SuspensionIntervals.SuspensionIntervals.respects_self_suspensions
+#check @Prosa.Classic.Model.Schedule.Uni.Susp.SuspensionIntervals.SuspensionIntervals.same_service_in_suspension_interval
+#check @Prosa.Classic.Model.Schedule.Uni.Susp.SuspensionIntervals.SuspensionIntervals.suspended_in_suspension_interval
+#check @Prosa.Classic.Model.Schedule.Uni.Susp.SuspensionIntervals.SuspensionIntervals.suspended_implies_arrived
+#check @Prosa.Classic.Model.Schedule.Uni.Susp.SuspensionIntervals.SuspensionIntervals.suspended_implies_not_completed
+#check @Prosa.Classic.Model.Schedule.Uni.Susp.SuspensionIntervals.SuspensionIntervals.cumulative_suspension_le_total_suspension
+#check @Prosa.Classic.Model.Schedule.Uni.Susp.SuspensionIntervals.SuspensionIntervals.cumulative_suspension_eq_total_suspension
+#check @Prosa.Classic.Model.Schedule.Uni.Susp.SuspensionIntervals.SuspensionIntervals.executes_before_suspension
+#check @Prosa.Validation.ClassicUniSuspensionIntervalsInterface.finRange_map_shift
+#check @Prosa.Validation.ClassicUniSuspensionIntervalsInterface.finRange_map_val
+#check @Prosa.Validation.ClassicUniSuspensionIntervalsInterface.finRange_any
+#check @Prosa.Validation.ClassicUniSuspensionIntervalsInterface.map_finRange_eq_map_range'
+#check @Prosa.Validation.ClassicUniSuspensionIntervalsInterface.maxFiltered_eq_foldr_cond
+#check @Prosa.Validation.ClassicUniSuspensionIntervalsInterface.maxFiltered_finRange
+
+#print axioms Prosa.Classic.Model.Schedule.Uni.Susp.SuspensionIntervals.SuspensionIntervals.suspension_duration
+#print axioms Prosa.Classic.Model.Schedule.Uni.Susp.SuspensionIntervals.SuspensionIntervals.suspended_at
+#print axioms Prosa.Classic.Model.Schedule.Uni.Susp.SuspensionIntervals.SuspensionIntervals.cumulative_suspension_during
+#print axioms Prosa.Classic.Model.Schedule.Uni.Susp.SuspensionIntervals.SuspensionIntervals.cumulative_suspension
+#print axioms Prosa.Classic.Model.Schedule.Uni.Susp.SuspensionIntervals.SuspensionIntervals.respects_self_suspensions
+#print axioms Prosa.Classic.Model.Schedule.Uni.Susp.SuspensionIntervals.SuspensionIntervals.same_service_in_suspension_interval
+#print axioms Prosa.Classic.Model.Schedule.Uni.Susp.SuspensionIntervals.SuspensionIntervals.suspended_in_suspension_interval
+#print axioms Prosa.Classic.Model.Schedule.Uni.Susp.SuspensionIntervals.SuspensionIntervals.suspended_implies_arrived
+#print axioms Prosa.Classic.Model.Schedule.Uni.Susp.SuspensionIntervals.SuspensionIntervals.suspended_implies_not_completed
+#print axioms Prosa.Classic.Model.Schedule.Uni.Susp.SuspensionIntervals.SuspensionIntervals.cumulative_suspension_le_total_suspension
+#print axioms Prosa.Classic.Model.Schedule.Uni.Susp.SuspensionIntervals.SuspensionIntervals.cumulative_suspension_eq_total_suspension
+#print axioms Prosa.Classic.Model.Schedule.Uni.Susp.SuspensionIntervals.SuspensionIntervals.executes_before_suspension
+#print axioms Prosa.Validation.ClassicUniSuspensionIntervalsInterface.finRange_map_shift
+#print axioms Prosa.Validation.ClassicUniSuspensionIntervalsInterface.finRange_map_val
+#print axioms Prosa.Validation.ClassicUniSuspensionIntervalsInterface.finRange_any
+#print axioms Prosa.Validation.ClassicUniSuspensionIntervalsInterface.map_finRange_eq_map_range'
+#print axioms Prosa.Validation.ClassicUniSuspensionIntervalsInterface.maxFiltered_eq_foldr_cond
+#print axioms Prosa.Validation.ClassicUniSuspensionIntervalsInterface.maxFiltered_finRange

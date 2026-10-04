@@ -1,0 +1,9 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedClassicNotation.
+
+Check ImportedClassicNotation.Prosa_Classic_Util_Notation_pair_1st.
+Check ImportedClassicNotation.Prosa_Classic_Util_Notation_pair_2nd.
+Check ImportedClassicNotation.Prosa_Classic_Util_Notation_triple_1st.
+Check ImportedClassicNotation.Prosa_Classic_Util_Notation_triple_2nd.
+Check ImportedClassicNotation.Prosa_Classic_Util_Notation_triple_3rd.
+Check ImportedClassicNotation.Prosa_Classic_Util_Notation_make_sequence.

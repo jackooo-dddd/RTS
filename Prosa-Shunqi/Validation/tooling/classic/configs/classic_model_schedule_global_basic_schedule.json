@@ -1,0 +1,119 @@
+{
+  "rank": 27,
+  "layer": 9,
+  "slug": "classic_model_schedule_global_basic_schedule",
+  "tag": "CSCHED",
+  "export_name": "ClassicSchedule",
+  "source": "classic/model/schedule/global/basic/schedule.v",
+  "production": "Prosa/Classic/Model/Schedule/Global/Basic/Schedule.lean",
+  "fixtures": [
+    "ClassicScheduleInterface"
+  ],
+  "export_module": "Validation.fixtures.translation_order.ClassicScheduleInterface",
+  "interface_theorems": [
+    "Prosa.Validation.ClassicScheduleInterface.finRange_any",
+    "Prosa.Validation.ClassicScheduleInterface.bigCatFin_range'",
+    "Prosa.Validation.ClassicScheduleInterface.fin_sum_range'",
+    "Prosa.Validation.ClassicScheduleInterface.bigCat_range'",
+    "Prosa.Validation.ClassicScheduleInterface.count_filter_eq",
+    "Prosa.Validation.ClassicScheduleInterface.service_at_sum",
+    "Prosa.Validation.ClassicScheduleInterface.dedup_nil",
+    "Prosa.Validation.ClassicScheduleInterface.dedup_cons_mem",
+    "Prosa.Validation.ClassicScheduleInterface.dedup_cons_not_mem"
+  ],
+  "computational": [
+    "Schedule.processor",
+    "Schedule.schedule",
+    "Schedule.scheduled_on",
+    "Schedule.scheduled",
+    "Schedule.is_idle",
+    "Schedule.service_at",
+    "Schedule.service",
+    "Schedule.service_during",
+    "Schedule.completed",
+    "Schedule.pending",
+    "Schedule.backlogged",
+    "Schedule.carried_in",
+    "Schedule.carried_out",
+    "Schedule.jobs_scheduled_at",
+    "Schedule.jobs_scheduled_between",
+    "Schedule.sequential_jobs",
+    "Schedule.jobs_must_arrive_to_execute",
+    "Schedule.completed_jobs_dont_execute",
+    "Schedule.jobs_come_from_arrival_sequence",
+    "ScheduleOfSporadicTask.task_scheduled_on",
+    "ScheduleOfSporadicTask.task_is_scheduled",
+    "ScheduleOfSporadicTask.jobs_of_task_scheduled_between",
+    "ScheduleOfSporadicTask.jobs_of_same_task_dont_execute_in_parallel"
+  ],
+  "chain": [
+    "ClassicScheduleBase",
+    "ClassicScheduleList",
+    "ClassicScheduleOrd",
+    "ClassicScheduleCorrespondence"
+  ],
+  "base_run": null,
+  "base_checks": [],
+  "previous_status": "classic_model_priority_module_status.json",
+  "input_relations": [
+    "job and task types: eqTypes identified, Lean DecidableEq instances = the eqTypes' decision procedures; job_task identified",
+    "natural numbers (time, num_cpus) by SubNatRel; processors 'I_n and Fin n by their values; schedules pointwise on related processors and times with option values identified; job parameters pointwise through SubNatRel; sequences elementwise; arrival sequences pointwise on related times (two-way totals)"
+  ],
+  "lean_representation_note": "`processor n` is `Fin n`; `[exists cpu, P cpu]` is `(List.finRange n).any P`; `\\sum_(cpu < n | P cpu) 1` is `\u2211 cpu \u2208 Finset.univ.filter (P \u00b7 = true), 1`; `\\sum_(t1 <= t < t2) F t` is `\u2211 t \u2208 Finset.Ico t1 t2, F t`; `\\cat_(cpu < n) F cpu` is `bigCatFin F`; `undup` is `List.dedup`",
+  "normalization": {
+    "theorem_types": [
+      "Prosa.Classic.Model.Schedule.Global.Basic.Schedule.Schedule.cumulative_service_before_job_arrival_zero",
+      "Prosa.Classic.Model.Schedule.Global.Basic.Schedule.Schedule.service_before_arrival_eq_service_during"
+    ],
+    "subexpression_heads": [
+      "Finset.sum"
+    ],
+    "definition_bodies": [],
+    "body_projections": [
+      "Prosa.Classic.Model.Schedule.Global.Basic.Schedule.Schedule.service=Prosa.Validation.ClassicScheduleInterface.service_proj=Prosa.Validation.ClassicScheduleInterface.service_proj_guard",
+      "Prosa.Classic.Model.Schedule.Global.Basic.Schedule.Schedule.service_during=Prosa.Validation.ClassicScheduleInterface.service_during_proj=Prosa.Validation.ClassicScheduleInterface.service_during_proj_guard"
+    ]
+  },
+  "kernel_guard_artifacts": [
+    "Validation/fixtures/translation_order/ClassicScheduleInterface.lean"
+  ],
+  "export_env": {
+    "LEAN4EXPORT_PRESERVE_REDUCIBLE_THEOREM_TYPES": "1",
+    "LEAN4EXPORT_NAT_INDEX_ALIASES": "Prosa.Classic.Model.Time.Time.time"
+  },
+  "probe_extra": [],
+  "helpers": [
+    "cs_forall_sched",
+    "cs_forall_ncpus_sched",
+    "cs_ico",
+    "cs_bigcat_nat_rel",
+    "cs_undup_rel",
+    "cs_forall_par"
+  ],
+  "export_diagnosis": "159,148 lines: service_at is a filtered Finset sum over Fin num_cpus (Finset.univ of Fin.fintype, Finset.filter, AddCommMonoid Nat: the Mathlib Finset/Multiset/Quot closure), jobs_scheduled_between uses Mathlib List.dedup (pwFilter), and the validation-only interface theorems are exported with their proof bodies (finRange/range' and dedup step lemmas, a structural count lemma). The half-open Finset.Ico sums are not in the export: service and service_during are exported through kernel-guarded rfl body projections and the two Ico statements through kernel-guarded type normalization (index type `time` accepted through the opt-in LEAN4EXPORT_NAT_INDEX_ALIASES), which keeps Nat.instLocallyFiniteOrder and its Nat.Internal.Linear proofs out of the export.",
+  "prop_sprop_foundation": [
+    "PropSPropFoundation.interpret_strict"
+  ],
+  "importer_foundation": [
+    "ImportedClassicSchedule.Classical_choice",
+    "ImportedClassicSchedule.Quot_sound",
+    "ImportedClassicSchedule.propext",
+    "PrimInt63.eqb",
+    "PrimInt63.int",
+    "PrimInt63.land",
+    "PrimInt63.lsr"
+  ],
+  "rocq_sprop_uip": [
+    "ClassicScheduleBase.I.HEq_inst1",
+    "ClassicScheduleBase.I.True",
+    "ClassicScheduleOrd.I.HEq",
+    "ClassicScheduleOrd.I.HEq_inst1",
+    "ClassicScheduleOrd.I.True",
+    "I.HEq",
+    "I.HEq_inst1",
+    "I.True",
+    "Lean.eq",
+    "Lean.eq_inst1",
+    "SubadditivityNatCorrespondence.SubNatTrue"
+  ]
+}

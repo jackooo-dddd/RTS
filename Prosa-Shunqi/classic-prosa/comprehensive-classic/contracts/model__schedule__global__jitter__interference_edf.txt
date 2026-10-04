@@ -1,0 +1,17 @@
+# classic/model/schedule/global/jitter/interference_edf.v: 1 declarations
+
+## Print Module
+
+Module interference_edf := Struct Module InterferenceEDF End
+
+Module InterferenceEDF := Struct Parameter interference_under_edf_implies_shorter_deadlines : forall (Job : eqtype.Equality.type) (job_arrival job_cost job_deadline job_jitter : eqtype.Equality.sort Job -> time.Time.time) (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job) (num_cpus : nat) (sched : schedule.Schedule.schedule Job num_cpus), platform.Platform.respects_JLFP_policy job_arrival job_cost job_jitter arr_seq sched (priority.Priority.EDF job_arrival job_deadline) -> forall (j j' : eqtype.Equality.sort Job) (t1 t2 : time.Time.time), arrival_sequence.ArrivalSequence.arrives_in arr_seq j -> arrival_sequence.ArrivalSequence.arrives_in arr_seq j' -> is_true (negb (eqtype.eq_op (interference.Interference.job_interference job_arrival job_cost job_jitter sched j' j t1 t2) 0)) -> is_true (ssrnat.leq (ssrnat.addn (job_arrival j) (job_deadline j)) (ssrnat.addn (job_arrival j') (job_deadline j'))). End
+
+## About
+
+InterferenceEDF.interference_under_edf_implies_shorter_deadlines : forall {Job : eqtype.Equality.type} (job_arrival job_cost job_deadline job_jitter : eqtype.Equality.sort Job -> time.Time.time) (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job) (num_cpus : nat) (sched : schedule.Schedule.schedule Job num_cpus), platform.Platform.respects_JLFP_policy job_arrival job_cost job_jitter arr_seq sched (priority.Priority.EDF job_arrival job_deadline) -> forall (j j' : eqtype.Equality.sort Job) (t1 t2 : time.Time.time), arrival_sequence.ArrivalSequence.arrives_in arr_seq j -> arrival_sequence.ArrivalSequence.arrives_in arr_seq j' -> is_true (negb (eqtype.eq_op (interference.Interference.job_interference job_arrival job_cost job_jitter sched j' j t1 t2) 0)) -> is_true (ssrnat.leq (ssrnat.addn (job_arrival j) (job_deadline j)) (ssrnat.addn (job_arrival j') (job_deadline j')))
+
+InterferenceEDF.interference_under_edf_implies_shorter_deadlines is not universe polymorphic
+Arguments InterferenceEDF.interference_under_edf_implies_shorter_deadlines {Job} (job_arrival job_cost job_deadline job_jitter)%function_scope arr_seq num_cpus%nat_scope sched H_scheduler_uses_EDF j j' t1 t2 _ _ _
+InterferenceEDF.interference_under_edf_implies_shorter_deadlines is opaque
+Expands to: Constant prosa.classic.model.schedule.global.jitter.interference_edf.InterferenceEDF.interference_under_edf_implies_shorter_deadlines
+Declared in library prosa.classic.model.schedule.global.jitter.interference_edf, line 37, characters 10-58

@@ -1,0 +1,18 @@
+import Validation.fixtures.translation_order.ClassicUniSuspScheduleInterface
+set_option pp.fieldNotation false
+
+#check @Prosa.Classic.Model.Schedule.Uni.Susp.Schedule.ScheduleWithSuspensions.backlogged
+#check @Prosa.Validation.ClassicUniSuspScheduleInterface.finRange_map_shift
+#check @Prosa.Validation.ClassicUniSuspScheduleInterface.finRange_map_val
+#check @Prosa.Validation.ClassicUniSuspScheduleInterface.finRange_any
+#check @Prosa.Validation.ClassicUniSuspScheduleInterface.map_finRange_eq_map_range'
+#check @Prosa.Validation.ClassicUniSuspScheduleInterface.maxFiltered_eq_foldr_cond
+#check @Prosa.Validation.ClassicUniSuspScheduleInterface.maxFiltered_finRange
+
+#print axioms Prosa.Classic.Model.Schedule.Uni.Susp.Schedule.ScheduleWithSuspensions.backlogged
+#print axioms Prosa.Validation.ClassicUniSuspScheduleInterface.finRange_map_shift
+#print axioms Prosa.Validation.ClassicUniSuspScheduleInterface.finRange_map_val
+#print axioms Prosa.Validation.ClassicUniSuspScheduleInterface.finRange_any
+#print axioms Prosa.Validation.ClassicUniSuspScheduleInterface.map_finRange_eq_map_range'
+#print axioms Prosa.Validation.ClassicUniSuspScheduleInterface.maxFiltered_eq_foldr_cond
+#print axioms Prosa.Validation.ClassicUniSuspScheduleInterface.maxFiltered_finRange

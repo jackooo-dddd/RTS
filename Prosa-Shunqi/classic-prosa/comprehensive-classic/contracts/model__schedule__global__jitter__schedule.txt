@@ -1,0 +1,117 @@
+# classic/model/schedule/global/jitter/schedule.v: 15 declarations
+
+## Print Module
+
+Module schedule := Struct Module ScheduleWithJitter Module ScheduleOfSporadicTaskWithJitter End
+
+Module ScheduleWithJitter := Struct Definition actual_arrival : forall Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> time) -> (eqtype.Equality.sort Job -> time) -> eqtype.Equality.sort Job -> nat. Definition jitter_has_passed : forall Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> time) -> (eqtype.Equality.sort Job -> time) -> eqtype.Equality.sort Job -> time -> bool. Definition actual_arrival_before : forall Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> time) -> (eqtype.Equality.sort Job -> time) -> eqtype.Equality.sort Job -> time -> bool. Definition pending : forall Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> time) -> (eqtype.Equality.sort Job -> time) -> (eqtype.Equality.sort Job -> time) -> forall num_cpus : nat, schedule Job num_cpus -> eqtype.Equality.sort Job -> time -> bool. Definition backlogged : forall Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> time) -> (eqtype.Equality.sort Job -> time) -> (eqtype.Equality.sort Job -> time) -> forall num_cpus : nat, schedule Job num_cpus -> eqtype.Equality.sort Job -> time -> bool. Definition jobs_execute_after_jitter : forall Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> time) -> (eqtype.Equality.sort Job -> time) -> forall num_cpus : nat, schedule Job num_cpus -> Prop. Parameter scheduled_implies_pending : forall (Job : eqtype.Equality.type) (job_arrival job_cost job_jitter : eqtype.Equality.sort Job -> time) (num_cpus : nat) (sched : schedule Job num_cpus), jobs_execute_after_jitter job_arrival job_jitter sched -> completed_jobs_dont_execute job_cost sched -> forall (j : eqtype.Equality.sort Job) (t : time), is_true (scheduled sched j t) -> is_true (pending job_arrival job_cost job_jitter sched j t). Parameter arrival_before_jitter : forall (Job : eqtype.Equality.type) (job_arrival job_jitter : eqtype.Equality.sort Job -> time) (num_cpus : nat) (sched : schedule Job num_cpus), jobs_execute_after_jitter job_arrival job_jitter sched -> jobs_must_arrive_to_execute job_arrival sched. Parameter service_before_jitter_zero : forall (Job : eqtype.Equality.type) (job_arrival job_jitter : eqtype.Equality.sort Job -> time) (num_cpus : nat) (sched : schedule Job num_cpus), jobs_execute_after_jitter job_arrival job_jitter sched -> forall (j : eqtype.Equality.sort Job) (t : nat), is_true (ssrnat.leq (S t) (ssrnat.addn (job_arrival j) (job_jitter j))) -> service_at sched j t = 0. Parameter cumulative_service_before_jitter_zero : forall (Job : eqtype.Equality.type) (job_arrival job_jitter : eqtype.Equality.sort Job -> time) (num_cpus : nat) (sched : schedule Job num_cpus), jobs_execute_after_jitter job_arrival job_jitter sched -> forall (j : eqtype.Equality.sort Job) (t1 t2 : nat), is_true (ssrnat.leq t2 (ssrnat.addn (job_arrival j) (job_jitter j))) -> bigop.bigop.body 0 (bigop.index_iota t1 t2) (fun t : nat => bigop.BigBody t ssrnat.addn true (service_at sched j t)) = 0. End
+
+Module ScheduleOfSporadicTaskWithJitter := Struct Definition task_scheduled_on : forall sporadic_task Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> eqtype.Equality.sort sporadic_task) -> forall num_cpus : nat, schedule Job num_cpus -> eqtype.Equality.sort sporadic_task -> processor num_cpus -> time -> bool. Definition task_is_scheduled : forall sporadic_task Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> eqtype.Equality.sort sporadic_task) -> forall num_cpus : nat, schedule Job num_cpus -> eqtype.Equality.sort sporadic_task -> time -> bool. Definition jobs_of_task_scheduled_between : forall sporadic_task Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> eqtype.Equality.sort sporadic_task) -> forall num_cpus : nat, schedule Job num_cpus -> eqtype.Equality.sort sporadic_task -> time -> time -> list (eqtype.Equality.sort Job). Definition jobs_of_same_task_dont_execute_in_parallel : forall sporadic_task Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> eqtype.Equality.sort sporadic_task) -> forall num_cpus : nat, schedule Job num_cpus -> Prop. Parameter cumulative_service_le_task_cost : forall (sporadic_task : eqtype.Equality.type) (task_cost task_deadline : eqtype.Equality.sort sporadic_task -> time) (Job : eqtype.Equality.type) (job_cost job_deadline : eqtype.Equality.sort Job -> time) (job_task : eqtype.Equality.sort Job -> eqtype.Equality.sort sporadic_task) (num_cpus : nat) (sched : schedule Job num_cpus), completed_jobs_dont_execute job_cost sched -> forall (tsk : eqtype.Equality.sort sporadic_task) (j : eqtype.Equality.sort Job), job_task j = tsk -> job.Job.valid_sporadic_job task_cost task_deadline job_cost job_deadline job_task j -> forall t t' : time, is_true (ssrnat.leq (service_during sched j t t') (task_cost tsk)). End
+
+## About
+
+ScheduleWithJitter.actual_arrival : forall {Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> eqtype.Equality.sort Job -> nat
+
+ScheduleWithJitter.actual_arrival is not universe polymorphic
+Arguments ScheduleWithJitter.actual_arrival {Job} (job_arrival job_jitter)%function_scope j
+ScheduleWithJitter.actual_arrival is transparent
+Expands to: Constant prosa.classic.model.schedule.global.jitter.schedule.ScheduleWithJitter.actual_arrival
+Declared in library prosa.classic.model.schedule.global.jitter.schedule, line 37, characters 17-31
+ScheduleWithJitter.jitter_has_passed : forall {Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> eqtype.Equality.sort Job -> time.Time.time -> bool
+
+ScheduleWithJitter.jitter_has_passed is not universe polymorphic
+Arguments ScheduleWithJitter.jitter_has_passed {Job} (job_arrival job_jitter)%function_scope j t
+ScheduleWithJitter.jitter_has_passed is transparent
+Expands to: Constant prosa.classic.model.schedule.global.jitter.schedule.ScheduleWithJitter.jitter_has_passed
+Declared in library prosa.classic.model.schedule.global.jitter.schedule, line 40, characters 17-34
+ScheduleWithJitter.actual_arrival_before : forall {Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> eqtype.Equality.sort Job -> time.Time.time -> bool
+
+ScheduleWithJitter.actual_arrival_before is not universe polymorphic
+Arguments ScheduleWithJitter.actual_arrival_before {Job} (job_arrival job_jitter)%function_scope j t
+ScheduleWithJitter.actual_arrival_before is transparent
+Expands to: Constant prosa.classic.model.schedule.global.jitter.schedule.ScheduleWithJitter.actual_arrival_before
+Declared in library prosa.classic.model.schedule.global.jitter.schedule, line 43, characters 17-38
+ScheduleWithJitter.pending : forall {Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> forall {num_cpus : nat}, schedule.Schedule.schedule Job num_cpus -> eqtype.Equality.sort Job -> time.Time.time -> bool
+
+ScheduleWithJitter.pending is not universe polymorphic
+Arguments ScheduleWithJitter.pending {Job} (job_arrival job_cost job_jitter)%function_scope {num_cpus}%nat_scope sched j t
+ScheduleWithJitter.pending is transparent
+Expands to: Constant prosa.classic.model.schedule.global.jitter.schedule.ScheduleWithJitter.pending
+Declared in library prosa.classic.model.schedule.global.jitter.schedule, line 46, characters 17-24
+ScheduleWithJitter.backlogged : forall {Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> forall {num_cpus : nat}, schedule.Schedule.schedule Job num_cpus -> eqtype.Equality.sort Job -> time.Time.time -> bool
+
+ScheduleWithJitter.backlogged is not universe polymorphic
+Arguments ScheduleWithJitter.backlogged {Job} (job_arrival job_cost job_jitter)%function_scope {num_cpus}%nat_scope sched j t
+ScheduleWithJitter.backlogged is transparent
+Expands to: Constant prosa.classic.model.schedule.global.jitter.schedule.ScheduleWithJitter.backlogged
+Declared in library prosa.classic.model.schedule.global.jitter.schedule, line 49, characters 17-27
+ScheduleWithJitter.jobs_execute_after_jitter : forall {Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> forall {num_cpus : nat}, schedule.Schedule.schedule Job num_cpus -> Prop
+
+ScheduleWithJitter.jobs_execute_after_jitter is not universe polymorphic
+Arguments ScheduleWithJitter.jobs_execute_after_jitter {Job} (job_arrival job_jitter)%function_scope {num_cpus}%nat_scope sched
+ScheduleWithJitter.jobs_execute_after_jitter is transparent
+Expands to: Constant prosa.classic.model.schedule.global.jitter.schedule.ScheduleWithJitter.jobs_execute_after_jitter
+Declared in library prosa.classic.model.schedule.global.jitter.schedule, line 56, characters 17-42
+ScheduleWithJitter.scheduled_implies_pending : forall {Job : eqtype.Equality.type} (job_arrival job_cost job_jitter : eqtype.Equality.sort Job -> time.Time.time) {num_cpus : nat} (sched : schedule.Schedule.schedule Job num_cpus), ScheduleWithJitter.jobs_execute_after_jitter job_arrival job_jitter sched -> schedule.Schedule.completed_jobs_dont_execute job_cost sched -> forall (j : eqtype.Equality.sort Job) (t : time.Time.time), is_true (schedule.Schedule.scheduled sched j t) -> is_true (ScheduleWithJitter.pending job_arrival job_cost job_jitter sched j t)
+
+ScheduleWithJitter.scheduled_implies_pending is not universe polymorphic
+Arguments ScheduleWithJitter.scheduled_implies_pending {Job} (job_arrival job_cost job_jitter)%function_scope {num_cpus}%nat_scope sched H_jobs_execute_after_jitter H_completed_jobs j t _
+ScheduleWithJitter.scheduled_implies_pending is opaque
+Expands to: Constant prosa.classic.model.schedule.global.jitter.schedule.ScheduleWithJitter.scheduled_implies_pending
+Declared in library prosa.classic.model.schedule.global.jitter.schedule, line 75, characters 14-39
+ScheduleWithJitter.arrival_before_jitter : forall {Job : eqtype.Equality.type} (job_arrival job_jitter : eqtype.Equality.sort Job -> time.Time.time) {num_cpus : nat} (sched : schedule.Schedule.schedule Job num_cpus), ScheduleWithJitter.jobs_execute_after_jitter job_arrival job_jitter sched -> schedule.Schedule.jobs_must_arrive_to_execute job_arrival sched
+
+ScheduleWithJitter.arrival_before_jitter is not universe polymorphic
+Arguments ScheduleWithJitter.arrival_before_jitter {Job} (job_arrival job_jitter)%function_scope {num_cpus}%nat_scope sched H_jobs_execute_after_jitter j t _
+ScheduleWithJitter.arrival_before_jitter is opaque
+Expands to: Constant prosa.classic.model.schedule.global.jitter.schedule.ScheduleWithJitter.arrival_before_jitter
+Declared in library prosa.classic.model.schedule.global.jitter.schedule, line 101, characters 14-35
+ScheduleWithJitter.service_before_jitter_zero : forall {Job : eqtype.Equality.type} (job_arrival job_jitter : eqtype.Equality.sort Job -> time.Time.time) {num_cpus : nat} (sched : schedule.Schedule.schedule Job num_cpus), ScheduleWithJitter.jobs_execute_after_jitter job_arrival job_jitter sched -> forall (j : eqtype.Equality.sort Job) (t : nat), is_true (ssrnat.leq (S t) (ssrnat.addn (job_arrival j) (job_jitter j))) -> schedule.Schedule.service_at sched j t = 0
+
+ScheduleWithJitter.service_before_jitter_zero is not universe polymorphic
+Arguments ScheduleWithJitter.service_before_jitter_zero {Job} (job_arrival job_jitter)%function_scope {num_cpus}%nat_scope sched H_jobs_execute_after_jitter j t%nat_scope _
+ScheduleWithJitter.service_before_jitter_zero is opaque
+Expands to: Constant prosa.classic.model.schedule.global.jitter.schedule.ScheduleWithJitter.service_before_jitter_zero
+Declared in library prosa.classic.model.schedule.global.jitter.schedule, line 112, characters 14-40
+ScheduleWithJitter.cumulative_service_before_jitter_zero : forall {Job : eqtype.Equality.type} (job_arrival job_jitter : eqtype.Equality.sort Job -> time.Time.time) {num_cpus : nat} (sched : schedule.Schedule.schedule Job num_cpus), ScheduleWithJitter.jobs_execute_after_jitter job_arrival job_jitter sched -> forall (j : eqtype.Equality.sort Job) (t1 t2 : nat), is_true (ssrnat.leq t2 (ssrnat.addn (job_arrival j) (job_jitter j))) -> bigop.bigop.body 0 (bigop.index_iota t1 t2) (fun t : nat => bigop.BigBody t ssrnat.addn true (schedule.Schedule.service_at sched j t)) = 0
+
+ScheduleWithJitter.cumulative_service_before_jitter_zero is not universe polymorphic
+Arguments ScheduleWithJitter.cumulative_service_before_jitter_zero {Job} (job_arrival job_jitter)%function_scope {num_cpus}%nat_scope sched H_jobs_execute_after_jitter j (t1 t2)%nat_scope _
+ScheduleWithJitter.cumulative_service_before_jitter_zero is opaque
+Expands to: Constant prosa.classic.model.schedule.global.jitter.schedule.ScheduleWithJitter.cumulative_service_before_jitter_zero
+Declared in library prosa.classic.model.schedule.global.jitter.schedule, line 123, characters 14-51
+ScheduleOfSporadicTaskWithJitter.task_scheduled_on : forall {sporadic_task Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> eqtype.Equality.sort sporadic_task) -> forall {num_cpus : nat}, schedule.Schedule.schedule Job num_cpus -> eqtype.Equality.sort sporadic_task -> schedule.Schedule.processor num_cpus -> time.Time.time -> bool
+
+ScheduleOfSporadicTaskWithJitter.task_scheduled_on is not universe polymorphic
+Arguments ScheduleOfSporadicTaskWithJitter.task_scheduled_on {sporadic_task Job} job_task%function_scope {num_cpus}%nat_scope sched tsk cpu t
+ScheduleOfSporadicTaskWithJitter.task_scheduled_on is transparent
+Expands to: Constant prosa.classic.model.schedule.global.jitter.schedule.ScheduleOfSporadicTaskWithJitter.task_scheduled_on
+Declared in library prosa.classic.model.schedule.global.jitter.schedule, line 166, characters 15-32
+ScheduleOfSporadicTaskWithJitter.task_is_scheduled : forall {sporadic_task Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> eqtype.Equality.sort sporadic_task) -> forall {num_cpus : nat}, schedule.Schedule.schedule Job num_cpus -> eqtype.Equality.sort sporadic_task -> time.Time.time -> bool
+
+ScheduleOfSporadicTaskWithJitter.task_is_scheduled is not universe polymorphic
+Arguments ScheduleOfSporadicTaskWithJitter.task_is_scheduled {sporadic_task Job} job_task%function_scope {num_cpus}%nat_scope sched tsk t
+ScheduleOfSporadicTaskWithJitter.task_is_scheduled is transparent
+Expands to: Constant prosa.classic.model.schedule.global.jitter.schedule.ScheduleOfSporadicTaskWithJitter.task_is_scheduled
+Declared in library prosa.classic.model.schedule.global.jitter.schedule, line 172, characters 17-34
+ScheduleOfSporadicTaskWithJitter.jobs_of_task_scheduled_between : forall {sporadic_task Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> eqtype.Equality.sort sporadic_task) -> forall {num_cpus : nat}, schedule.Schedule.schedule Job num_cpus -> eqtype.Equality.sort sporadic_task -> time.Time.time -> time.Time.time -> list (eqtype.Equality.sort Job)
+
+ScheduleOfSporadicTaskWithJitter.jobs_of_task_scheduled_between is not universe polymorphic
+Arguments ScheduleOfSporadicTaskWithJitter.jobs_of_task_scheduled_between {sporadic_task Job} job_task%function_scope {num_cpus}%nat_scope sched tsk t1 t2
+ScheduleOfSporadicTaskWithJitter.jobs_of_task_scheduled_between is transparent
+Expands to: Constant prosa.classic.model.schedule.global.jitter.schedule.ScheduleOfSporadicTaskWithJitter.jobs_of_task_scheduled_between
+Declared in library prosa.classic.model.schedule.global.jitter.schedule, line 176, characters 15-45
+ScheduleOfSporadicTaskWithJitter.jobs_of_same_task_dont_execute_in_parallel : forall {sporadic_task Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> eqtype.Equality.sort sporadic_task) -> forall {num_cpus : nat}, schedule.Schedule.schedule Job num_cpus -> Prop
+
+ScheduleOfSporadicTaskWithJitter.jobs_of_same_task_dont_execute_in_parallel is not universe polymorphic
+Arguments ScheduleOfSporadicTaskWithJitter.jobs_of_same_task_dont_execute_in_parallel {sporadic_task Job} job_task%function_scope {num_cpus}%nat_scope sched
+ScheduleOfSporadicTaskWithJitter.jobs_of_same_task_dont_execute_in_parallel is transparent
+Expands to: Constant prosa.classic.model.schedule.global.jitter.schedule.ScheduleOfSporadicTaskWithJitter.jobs_of_same_task_dont_execute_in_parallel
+Declared in library prosa.classic.model.schedule.global.jitter.schedule, line 195, characters 15-57
+ScheduleOfSporadicTaskWithJitter.cumulative_service_le_task_cost : forall {sporadic_task : eqtype.Equality.type} (task_cost task_deadline : eqtype.Equality.sort sporadic_task -> time.Time.time) {Job : eqtype.Equality.type} (job_cost job_deadline : eqtype.Equality.sort Job -> time.Time.time) (job_task : eqtype.Equality.sort Job -> eqtype.Equality.sort sporadic_task) {num_cpus : nat} (sched : schedule.Schedule.schedule Job num_cpus), schedule.Schedule.completed_jobs_dont_execute job_cost sched -> forall (tsk : eqtype.Equality.sort sporadic_task) (j : eqtype.Equality.sort Job), job_task j = tsk -> job.Job.valid_sporadic_job task_cost task_deadline job_cost job_deadline job_task j -> forall t t' : time.Time.time, is_true (ssrnat.leq (schedule.Schedule.service_during sched j t t') (task_cost tsk))
+
+ScheduleOfSporadicTaskWithJitter.cumulative_service_le_task_cost is not universe polymorphic
+Arguments ScheduleOfSporadicTaskWithJitter.cumulative_service_le_task_cost {sporadic_task} (task_cost task_deadline)%function_scope {Job} (job_cost job_deadline job_task)%function_scope {num_cpus}%nat_scope sched jobs_dont_execute_after_completion tsk j H_job_of_task valid_job t t'
+ScheduleOfSporadicTaskWithJitter.cumulative_service_le_task_cost is opaque
+Expands to: Constant prosa.classic.model.schedule.global.jitter.schedule.ScheduleOfSporadicTaskWithJitter.cumulative_service_le_task_cost
+Declared in library prosa.classic.model.schedule.global.jitter.schedule, line 239, characters 10-41

@@ -1,0 +1,59 @@
+# classic/model/schedule/uni/transformation/construction.v: 7 declarations
+
+## Print Module
+
+Module construction := Struct Module ScheduleConstruction End
+
+Module ScheduleConstruction := Struct Definition update_schedule : forall Job : eqtype.Equality.type, (schedule.UniprocessorSchedule.schedule Job -> time.Time.time -> option (eqtype.Equality.sort Job)) -> schedule.UniprocessorSchedule.schedule Job -> time.Time.time -> schedule.UniprocessorSchedule.schedule Job. Definition schedule_prefix : forall Job : eqtype.Equality.type, (schedule.UniprocessorSchedule.schedule Job -> time.Time.time -> option (eqtype.Equality.sort Job)) -> schedule.UniprocessorSchedule.schedule Job -> time.Time.time -> schedule.UniprocessorSchedule.schedule Job. Definition build_schedule_from_prefixes : forall Job : eqtype.Equality.type, (schedule.UniprocessorSchedule.schedule Job -> time.Time.time -> option (eqtype.Equality.sort Job)) -> schedule.UniprocessorSchedule.schedule Job -> time.Time.time -> option (eqtype.Equality.sort Job). Parameter prefix_construction_same_prefix : forall (Job : eqtype.Equality.type) (build_schedule : schedule.UniprocessorSchedule.schedule Job -> time.Time.time -> option (eqtype.Equality.sort Job)) (base_sched : schedule.UniprocessorSchedule.schedule Job) (t t_max : nat), is_true (ssrnat.leq t t_max) -> schedule_prefix build_schedule base_sched t_max t = build_schedule_from_prefixes build_schedule base_sched t. Parameter service_dependent_schedule_construction : forall (Job : eqtype.Equality.type) (build_schedule : schedule.UniprocessorSchedule.schedule Job -> time.Time.time -> option (eqtype.Equality.sort Job)) (base_sched : schedule.UniprocessorSchedule.schedule Job), (forall (sched1 sched2 : schedule.UniprocessorSchedule.schedule Job) (t : time.Time.time), (forall j : eqtype.Equality.sort Job, schedule.UniprocessorSchedule.service sched1 j t = schedule.UniprocessorSchedule.service sched2 j t) -> build_schedule sched1 t = build_schedule sched2 t) -> forall t : time.Time.time, build_schedule_from_prefixes build_schedule base_sched t = build_schedule (build_schedule_from_prefixes build_schedule base_sched) t. Parameter prefix_dependent_schedule_construction : forall (Job : eqtype.Equality.type) (build_schedule : schedule.UniprocessorSchedule.schedule Job -> time.Time.time -> option (eqtype.Equality.sort Job)) (base_sched : schedule.UniprocessorSchedule.schedule Job), (forall (sched1 sched2 : schedule.UniprocessorSchedule.schedule Job) (t : nat), (forall t0 : nat, is_true (ssrnat.leq (S t0) t) -> sched1 t0 = sched2 t0) -> build_schedule sched1 t = build_schedule sched2 t) -> forall t : time.Time.time, build_schedule_from_prefixes build_schedule base_sched t = build_schedule (build_schedule_from_prefixes build_schedule base_sched) t. Parameter immediate_property_of_schedule_construction : forall (Job : eqtype.Equality.type) (build_schedule : schedule.UniprocessorSchedule.schedule Job -> time.Time.time -> option (eqtype.Equality.sort Job)) (base_sched : schedule.UniprocessorSchedule.schedule Job) (P : option (eqtype.Equality.sort Job) -> Prop), (forall (sched_prefix : schedule.UniprocessorSchedule.schedule Job) (t : time.Time.time), P (build_schedule sched_prefix t)) -> forall t : time.Time.time, P (build_schedule_from_prefixes build_schedule base_sched t). End
+
+## About
+
+ScheduleConstruction.update_schedule : forall {Job : eqtype.Equality.type}, (schedule.UniprocessorSchedule.schedule Job -> time.Time.time -> option (eqtype.Equality.sort Job)) -> schedule.UniprocessorSchedule.schedule Job -> time.Time.time -> schedule.UniprocessorSchedule.schedule Job
+
+ScheduleConstruction.update_schedule is not universe polymorphic
+Arguments ScheduleConstruction.update_schedule {Job} build_schedule%function_scope prev_sched t_next _
+ScheduleConstruction.update_schedule is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.transformation.construction.ScheduleConstruction.update_schedule
+Declared in library prosa.classic.model.schedule.uni.transformation.construction, line 27, characters 15-30
+ScheduleConstruction.schedule_prefix : forall {Job : eqtype.Equality.type}, (schedule.UniprocessorSchedule.schedule Job -> time.Time.time -> option (eqtype.Equality.sort Job)) -> schedule.UniprocessorSchedule.schedule Job -> time.Time.time -> schedule.UniprocessorSchedule.schedule Job
+
+ScheduleConstruction.schedule_prefix is not universe polymorphic
+Arguments ScheduleConstruction.schedule_prefix {Job} build_schedule%function_scope base_sched t_max _
+ScheduleConstruction.schedule_prefix is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.transformation.construction.ScheduleConstruction.schedule_prefix
+Declared in library prosa.classic.model.schedule.uni.transformation.construction, line 35, characters 4-201
+ScheduleConstruction.build_schedule_from_prefixes : forall {Job : eqtype.Equality.type}, (schedule.UniprocessorSchedule.schedule Job -> time.Time.time -> option (eqtype.Equality.sort Job)) -> schedule.UniprocessorSchedule.schedule Job -> time.Time.time -> option (eqtype.Equality.sort Job)
+
+ScheduleConstruction.build_schedule_from_prefixes is not universe polymorphic
+Arguments ScheduleConstruction.build_schedule_from_prefixes {Job} build_schedule%function_scope base_sched t
+ScheduleConstruction.build_schedule_from_prefixes is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.transformation.construction.ScheduleConstruction.build_schedule_from_prefixes
+Declared in library prosa.classic.model.schedule.uni.transformation.construction, line 42, characters 15-43
+ScheduleConstruction.prefix_construction_same_prefix : forall {Job : eqtype.Equality.type} (build_schedule : schedule.UniprocessorSchedule.schedule Job -> time.Time.time -> option (eqtype.Equality.sort Job)) (base_sched : schedule.UniprocessorSchedule.schedule Job) (t t_max : nat), is_true (ssrnat.leq t t_max) -> ScheduleConstruction.schedule_prefix build_schedule base_sched t_max t = ScheduleConstruction.build_schedule_from_prefixes build_schedule base_sched t
+
+ScheduleConstruction.prefix_construction_same_prefix is not universe polymorphic
+Arguments ScheduleConstruction.prefix_construction_same_prefix {Job} build_schedule%function_scope base_sched (t t_max)%nat_scope _
+ScheduleConstruction.prefix_construction_same_prefix is opaque
+Expands to: Constant prosa.classic.model.schedule.uni.transformation.construction.ScheduleConstruction.prefix_construction_same_prefix
+Declared in library prosa.classic.model.schedule.uni.transformation.construction, line 51, characters 12-43
+ScheduleConstruction.service_dependent_schedule_construction : forall {Job : eqtype.Equality.type} (build_schedule : schedule.UniprocessorSchedule.schedule Job -> time.Time.time -> option (eqtype.Equality.sort Job)) (base_sched : schedule.UniprocessorSchedule.schedule Job), (forall (sched1 sched2 : schedule.UniprocessorSchedule.schedule Job) (t : time.Time.time), (forall j : eqtype.Equality.sort Job, schedule.UniprocessorSchedule.service sched1 j t = schedule.UniprocessorSchedule.service sched2 j t) -> build_schedule sched1 t = build_schedule sched2 t) -> forall t : time.Time.time, ScheduleConstruction.build_schedule_from_prefixes build_schedule base_sched t = build_schedule (ScheduleConstruction.build_schedule_from_prefixes build_schedule base_sched) t
+
+ScheduleConstruction.service_dependent_schedule_construction is not universe polymorphic
+Arguments ScheduleConstruction.service_dependent_schedule_construction {Job} build_schedule%function_scope base_sched H_depends_only_on_service%function_scope t
+ScheduleConstruction.service_dependent_schedule_construction is opaque
+Expands to: Constant prosa.classic.model.schedule.uni.transformation.construction.ScheduleConstruction.service_dependent_schedule_construction
+Declared in library prosa.classic.model.schedule.uni.transformation.construction, line 83, characters 14-53
+ScheduleConstruction.prefix_dependent_schedule_construction : forall {Job : eqtype.Equality.type} (build_schedule : schedule.UniprocessorSchedule.schedule Job -> time.Time.time -> option (eqtype.Equality.sort Job)) (base_sched : schedule.UniprocessorSchedule.schedule Job), (forall (sched1 sched2 : schedule.UniprocessorSchedule.schedule Job) (t : nat), (forall t0 : nat, is_true (ssrnat.leq (S t0) t) -> sched1 t0 = sched2 t0) -> build_schedule sched1 t = build_schedule sched2 t) -> forall t : time.Time.time, ScheduleConstruction.build_schedule_from_prefixes build_schedule base_sched t = build_schedule (ScheduleConstruction.build_schedule_from_prefixes build_schedule base_sched) t
+
+ScheduleConstruction.prefix_dependent_schedule_construction is not universe polymorphic
+Arguments ScheduleConstruction.prefix_dependent_schedule_construction {Job} build_schedule%function_scope base_sched H_depends_only_on_prefix%function_scope t
+ScheduleConstruction.prefix_dependent_schedule_construction is opaque
+Expands to: Constant prosa.classic.model.schedule.uni.transformation.construction.ScheduleConstruction.prefix_dependent_schedule_construction
+Declared in library prosa.classic.model.schedule.uni.transformation.construction, line 120, characters 14-52
+ScheduleConstruction.immediate_property_of_schedule_construction : forall {Job : eqtype.Equality.type} (build_schedule : schedule.UniprocessorSchedule.schedule Job -> time.Time.time -> option (eqtype.Equality.sort Job)) (base_sched : schedule.UniprocessorSchedule.schedule Job) (P : option (eqtype.Equality.sort Job) -> Prop), (forall (sched_prefix : schedule.UniprocessorSchedule.schedule Job) (t : time.Time.time), P (build_schedule sched_prefix t)) -> forall t : time.Time.time, P (ScheduleConstruction.build_schedule_from_prefixes build_schedule base_sched t)
+
+ScheduleConstruction.immediate_property_of_schedule_construction is not universe polymorphic
+Arguments ScheduleConstruction.immediate_property_of_schedule_construction {Job} build_schedule%function_scope base_sched (P H_immediate_property)%function_scope t
+ScheduleConstruction.immediate_property_of_schedule_construction is opaque
+Expands to: Constant prosa.classic.model.schedule.uni.transformation.construction.ScheduleConstruction.immediate_property_of_schedule_construction
+Declared in library prosa.classic.model.schedule.uni.transformation.construction, line 150, characters 14-57

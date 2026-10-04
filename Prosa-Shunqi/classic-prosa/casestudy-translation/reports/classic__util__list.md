@@ -6,8 +6,8 @@
 | sha256 | `860b96e954873f46f90dfd374f57c60e2a63b5f472e20896fa01b9676525ab85` |
 | Lean module | `Prosa/Classic/Util/List.lean` (namespace `Prosa.Classic.Util.List`) |
 | Tier / layer | S / 2 |
-| Status | **TRANSLATED**: compiles (Lean 4.33.1, pinned Mathlib), no `sorry`; `#print axioms` ⊆ {`propext`, `Quot.sound`, `Classical.choice`} |
-| Validation | pending Stage 0 (classic pipeline extension) |
+| Status | **ACCEPTED** (classic validation family; see the manifest) |
+| Validation | accepted |
 
 ## Declarations (44 source → Lean, same names)
 
@@ -35,7 +35,7 @@
 - `Lemma` `nth_or_none_nth`
 - `Lemma` `pmap_inj_in_uniq`
 - `Lemma` `pmap_inj_uniq`
-- `Definition` `set_nth_if_exists`
+- `Program Definition` `set_nth_if_exists`
 - `Fixpoint` `replace_first`
 - `Definition` `replace_first_const`
 - `Definition` `set_pair_1nd`
@@ -57,7 +57,7 @@
 - `Lemma` `subseq_leq_size`
 
 Missing in Lean: none.
-Lean-only helpers (`LEAN_HELPER`, not counted as translated declarations): `BoolReflect`, `BoolReflect.ofIff`, `getD_lt`, `getD_ge`, `filter_idxOf_lt_eq_take`.
+Lean-only helpers (`LEAN_HELPER`, not counted as translated declarations): `getD_lt`, `getD_ge`, `filter_idxOf_lt_eq_take`.
 
 ## Representation notes
 
@@ -86,3 +86,5 @@ Representation notes (following the accepted v0.6 conventions):
 ## History
 
 - 2026-10-01: translated; build and axiom check passed.
+- 2026-10-02: translated; build and axiom check passed.
+- 2026-10-02: accepted.

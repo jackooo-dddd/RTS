@@ -127,7 +127,7 @@ validation_rocq_compile() {
 
 validation_verify_tool_hashes() {
   if [[ $(validation_sha256 "$EXPORTER_ROOT/.lake/build/bin/lean4export") != \
-      c20dbe1f14951dbcb2b806395f171d3e91e9bb5ccc22fa5cb63bd592a767e49b ]]; then
+      010c28dc3233dc40fe2a732076d2a4c233dbeaffaaf3f8978bb1b342a36d8f46 ]]; then  # was ffdad67b… (before that a09f6140…, c20dbe1f…), see planning/classic_policy/tool_changes.md
     echo "lean4export binary hash mismatch" >&2; return 1
   fi
   if [[ $(validation_sha256 "$IMPORTER_ROOT/src/lean_import.cmxs") != \

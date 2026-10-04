@@ -1,0 +1,69 @@
+{
+  "rank": 115,
+  "layer": 11,
+  "classic_scope": "full",
+  "slug": "classic_implementation_apa_arrival_sequence",
+  "tag": "CIAAS",
+  "export_name": "ClassicApaPeriodicArrivals",
+  "source": "classic/implementation/apa/arrival_sequence.v",
+  "production": "Prosa/Classic/Implementation/Apa/ArrivalSequence.lean",
+  "fixtures": [
+    "ClassicApaPeriodicArrivalsInterface"
+  ],
+  "export_module": "Validation.fixtures.translation_order.ClassicApaPeriodicArrivalsInterface",
+  "interface_theorems": [
+    "Prosa.Validation.ClassicApaPeriodicArrivalsInterface.filterMap_nil",
+    "Prosa.Validation.ClassicApaPeriodicArrivalsInterface.filterMap_cons_none",
+    "Prosa.Validation.ClassicApaPeriodicArrivalsInterface.filterMap_cons_some",
+    "Prosa.Validation.DivModInterface.production_div_floor_eq",
+    "Prosa.Validation.DivModInterface.production_div_ceil_eq",
+    "Prosa.Validation.DivModInterface.production_div_add_mod",
+    "Prosa.Validation.DivModInterface.production_mod_lt",
+    "Prosa.Validation.DivModInterface.production_div_zero",
+    "Prosa.Validation.DivModInterface.production_mod_zero",
+    "Prosa.Validation.DivModInterface.production_dvd_iff_mod_eq_zero"
+  ],
+  "computational": [
+    "ConcreteArrivalSequence.add_job",
+    "ConcreteArrivalSequence.periodic_arrival_sequence"
+  ],
+  "chain": [
+    "ClassicApaPeriodicArrivalsBase",
+    "ClassicApaPeriodicArrivalsList",
+    "ClassicApaPeriodicArrivalsOrd",
+    "ClassicApaPeriodicArrivalsList1",
+    "ClassicApaPeriodicArrivalsCorrespondence"
+  ],
+  "principal": {},
+  "helpers": [],
+  "base_run": null,
+  "base_checks": [],
+  "previous_status": "classic_analysis_global_jitter_bertogna_fp_theory_module_status.json",
+  "input_relations": [
+    "processor counts by SubNatRel; concrete APA tasks/jobs by their field-wise embeddings at related processor counts (two-way totals); task sets elementwise",
+    "times by SubNatRel"
+  ],
+  "lean_representation_note": "the Rocq module ConcreteArrivalSequence is a namespace; `d %| m` is `decide (d \u2223 m)`; `%/` is `/`; `pmap` is `List.filterMap`; `Build_concrete_job` is `concrete_job.mk`; the implicit section parameter `num_cpus` is the same implicit Lean parameter",
+  "prop_sprop_foundation": [
+    "PropSPropFoundation.interpret_strict"
+  ],
+  "importer_foundation": [
+    "ImportedClassicApaPeriodicArrivals.propext"
+  ],
+  "rocq_sprop_uip": [
+    "ClassicApaPeriodicArrivalsBase.I.HEq_inst1",
+    "ClassicApaPeriodicArrivalsBase.I.True",
+    "I.HEq",
+    "I.HEq_inst1",
+    "I.True",
+    "ImportedClassicApaPeriodicArrivals.HEq_inst1",
+    "ImportedClassicApaPeriodicArrivals.True",
+    "Lean.eq",
+    "Lean.eq_inst1",
+    "SubadditivityNatCorrespondence.SubNatTrue"
+  ],
+  "extra_targets": [
+    "Fin.isLt",
+    "instDecidableEqFin"
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "rank": 25,
+  "layer": 6,
+  "classic_scope": "full",
+  "slug": "classic_implementation_global_jitter_task",
+  "tag": "CIMPLGJTASK",
+  "export_name": "ClassicImplGjTask",
+  "source": "classic/implementation/global/jitter/task.v",
+  "production": "Prosa/Classic/Implementation/Global/Jitter/Task.lean",
+  "fixtures": [],
+  "export_module": "Prosa.Classic.Implementation.Global.Jitter.Task",
+  "interface_theorems": [],
+  "computational": [
+    "ConcreteTask.concrete_task",
+    "ConcreteTask.task_eqdef",
+    "ConcreteTask.concrete_taskset"
+  ],
+  "chain": [
+    "ClassicImplGjTaskBase",
+    "ClassicImplGjTaskList1",
+    "ClassicImplGjTaskCorrespondence"
+  ],
+  "principal": {
+    "ConcreteTask.concrete_task": [
+      "ConcreteTask_concrete_task_source_total",
+      "ConcreteTask_concrete_task_target_total"
+    ],
+    "ConcreteTask.concrete_taskset": [
+      "ConcreteTask_concrete_taskset_source_total",
+      "ConcreteTask_concrete_taskset_target_total"
+    ]
+  },
+  "helpers": [],
+  "base_run": null,
+  "base_checks": [],
+  "previous_status": "classic_implementation_task_module_status.json",
+  "input_relations": [
+    "concrete tasks by their fieldwise canonical import (Nat fields by SubNatRel), two-way totals; task sets by the elementwise image of their sequence (two-way totals)"
+  ],
+  "lean_representation_note": "the record `concrete_task` is a Lean structure with the same fields; `==` on nat is `decide (_ = _)`; the reflection lemma is the informative `\u2200 x y, BoolReflect (x = y) (task_eqdef x y)`; the HB `hasDecEq` registration is the derived `DecidableEq` instance; `concrete_taskset` is `taskset_of concrete_task` (abbrev)",
+  "prop_sprop_foundation": [
+    "PropSPropFoundation.interpret_strict"
+  ],
+  "importer_foundation": [],
+  "rocq_sprop_uip": [
+    "Lean.eq"
+  ]
+}

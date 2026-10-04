@@ -51,6 +51,8 @@ def main() -> int:
     allowed_importer = set(config.get("importer_foundation", []))
     allowed_statement_only = set(config.get("statement_only_dependencies", []))
     allowed_rocq_sprop_uip = set(config.get("rocq_sprop_uip", []))
+    # opt-in (user decision 2026-10-03, classic ranks 86/166 only; the pipeline enforces the scope)
+    allowed_funext = set(config.get("rocq_functional_extensionality", []))
     report = {"audit_policy": "fail_closed", "certificates": {}}
     failed = False
     for key, spec in config["certificates"].items():
@@ -71,13 +73,14 @@ def main() -> int:
             n for n, line in entries.items()
             if n in allowed_rocq_sprop_uip and "relies on definitional UIP" in line
         )
+        funext = sorted(n for n in entries if n in allowed_funext)
         target = spec.get("target_imported_theorem")
         target_dependency = bool(target and any(n == target or n.endswith("." + target) for n in entries))
         source = spec.get("source_theorem")
         source_dependency = bool(source and any(n == source or n.endswith("." + source) for n in entries))
         semantic = sorted(token for token in spec.get("semantic_premise_tokens", []) if token in text)
         classified = (set(foundation) | set(importer) | set(statement_only)
-                      | set(rocq_sprop_uip))
+                      | set(rocq_sprop_uip) | set(funext))
         unexpected = sorted(set(entries) - classified)
         if target_dependency:
             unexpected.append(f"target theorem dependency: {target}")
@@ -92,6 +95,10 @@ def main() -> int:
             status = "CERTIFIED_WITH_PROP_SPROP_FOUNDATION_AND_STATEMENT_EXPORT"
         elif statement_only:
             status = "CERTIFIED_WITH_STATEMENT_EXPORT_BOUNDARY"
+        elif funext and foundation:
+            status = "CERTIFIED_WITH_PROP_SPROP_FOUNDATION_AND_FUNCTIONAL_EXTENSIONALITY"
+        elif funext:
+            status = "CERTIFIED_WITH_FUNCTIONAL_EXTENSIONALITY"
         elif foundation:
             status = "CERTIFIED_WITH_PROP_SPROP_FOUNDATION"
         elif closed or importer or rocq_sprop_uip:
@@ -108,6 +115,7 @@ def main() -> int:
             "importer_foundation": importer,
             "statement_only_dependencies": statement_only,
             "rocq_sprop_definitional_uip": rocq_sprop_uip,
+            "rocq_functional_extensionality": funext,
             "unexpected": unexpected,
             "target_theorem_dependency": target_dependency,
             "source_theorem_dependency": source_dependency,

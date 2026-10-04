@@ -1,0 +1,4 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedClassicAllcostsMain.
+
+Check ImportedClassicAllcostsMain.Prosa_Classic_Analysis_Uni_Susp_Sustainability_Allcosts_MainClaim_SustainabilityAllCostsProperty_policy_is_weakly_sustainable.

@@ -1,0 +1,75 @@
+{
+  "rank": 66,
+  "layer": 10,
+  "classic_scope": "full",
+  "slug": "classic_model_arrival_jitter_arrival_bounds",
+  "tag": "CJAB",
+  "export_name": "ClassicJitterArrivalBounds",
+  "source": "classic/model/arrival/jitter/arrival_bounds.v",
+  "production": "Prosa/Classic/Model/Arrival/Jitter/ArrivalBounds.lean",
+  "fixtures": [
+    "ClassicJitterArrivalBoundsInterface"
+  ],
+  "export_module": "Validation.fixtures.translation_order.ClassicJitterArrivalBoundsInterface",
+  "interface_theorems": [
+    "Prosa.Validation.ClassicJitterArrivalBoundsInterface.bigCat_range'",
+    "Prosa.Validation.ClassicJitterArrivalBoundsInterface.mergeSort_isChain",
+    "Prosa.Validation.ClassicJitterArrivalBoundsInterface.mergeSort_filter_class",
+    "Prosa.Validation.DivModInterface.production_div_floor_eq",
+    "Prosa.Validation.DivModInterface.production_div_ceil_eq",
+    "Prosa.Validation.DivModInterface.production_div_add_mod",
+    "Prosa.Validation.DivModInterface.production_mod_lt",
+    "Prosa.Validation.DivModInterface.production_div_zero",
+    "Prosa.Validation.DivModInterface.production_mod_zero",
+    "Prosa.Validation.DivModInterface.production_dvd_iff_mod_eq_zero"
+  ],
+  "computational": [],
+  "chain": [
+    "ClassicJitterArrivalBoundsBase",
+    "ClassicJitterArrivalBoundsList",
+    "ClassicJitterArrivalBoundsCorrespondence"
+  ],
+  "principal": {},
+  "helpers": [
+    "cav_sort_rel",
+    "cav_sorted_class_uniq",
+    "cav_bigcat_rel",
+    "cav_getD",
+    "cav_forall_arr",
+    "cav_forall_par"
+  ],
+  "base_run": null,
+  "base_checks": [],
+  "previous_status": "classic_model_schedule_uni_limited_rbf_module_status.json",
+  "input_relations": [
+    "job and task types: eqTypes identified, Lean DecidableEq instances = the eqTypes' decision procedures; job_task identified",
+    "times by SubNatRel; job/task parameters pointwise through SubNatRel; arrival sequences pointwise on related times (two-way totals)"
+  ],
+  "lean_representation_note": "the Rocq module ArrivalBounds is a namespace; `sort`/`nth`/`n.-1` as in the accepted jitter task_arrival certificate; `div_ceil` is the classic `Prosa.Classic.Util.DivMod.div_ceil`",
+  "prop_sprop_foundation": [
+    "PropSPropFoundation.interpret_strict"
+  ],
+  "importer_foundation": [
+    "ImportedClassicJitterArrivalBounds.Classical_choice",
+    "ImportedClassicJitterArrivalBounds.Quot_sound",
+    "ImportedClassicJitterArrivalBounds.propext",
+    "PrimInt63.eqb",
+    "PrimInt63.int",
+    "PrimInt63.land",
+    "PrimInt63.lsr"
+  ],
+  "rocq_sprop_uip": [
+    "CavTrue",
+    "ClassicJitterArrivalBoundsBase.I.HEq_inst1",
+    "ClassicJitterArrivalBoundsBase.I.True",
+    "ClassicJitterArrivalBoundsList.I.HEq_inst1",
+    "ClassicJitterArrivalBoundsList.I.True",
+    "I.HEq",
+    "I.HEq_inst1",
+    "I.True",
+    "Lean.eq",
+    "Lean.eq_inst1",
+    "SubadditivityNatCorrespondence.SubNatTrue"
+  ],
+  "export_diagnosis": "~142,000 lines: as for the accepted classic task_arrival export, the statements mention the core List.mergeSort (well-founded recursion through MergeSort.Internal.splitInTwo, whose termination proofs are `omega` certificates, exporting the Lean.Omega closure and List/getElem lemmas), and the validation-only interface theorems (restated from the accepted ClassicTaskArrivalInterface) are exported with their proof bodies (pairwise_mergeSort, mergeSort_perm, List.Pairwise/IsChain/filter lemmas); the stability fact is proved in the fixture by the recursion of mergeSort/merge instead of the core sublist_mergeSort (Nat.Internal.Linear closure)."
+}

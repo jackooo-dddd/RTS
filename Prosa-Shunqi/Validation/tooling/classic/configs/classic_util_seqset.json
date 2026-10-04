@@ -1,0 +1,62 @@
+{
+  "rank": 5,
+  "layer": 1,
+  "slug": "classic_util_seqset",
+  "tag": "CSEQSET",
+  "export_name": "ClassicSeqset",
+  "source": "classic/util/seqset.v",
+  "production": "Prosa/Classic/Util/Seqset.lean",
+  "fixtures": [],
+  "export_module": "Prosa.Classic.Util.Seqset",
+  "interface_theorems": [],
+  "computational": [],
+  "chain": [
+    "ClassicSeqsetAdapter",
+    "ClassicSeqsetCorrespondence"
+  ],
+  "base_run": null,
+  "base_checks": [],
+  "extra_olean_artifacts": [
+    {
+      "from": "analysis_abstract_abstract_rta_final/olean/Prosa/Util/Seqset.olean",
+      "to": "Prosa/Util/Seqset.olean",
+      "v06_file": "util/seqset.v"
+    }
+  ],
+  "previous_status": "classic_util_notation_module_status.json",
+  "previous_files": 4,
+  "previous_decls": 26,
+  "input_relations": [
+    "eqType T: Lean DecidableEq instance = the eqType's decision procedure (as for the accepted v0.6 util/seqset)",
+    "finType T: Lean Fintype instance built from MathComp's enumeration",
+    "sequence-sets by the accepted RocqSeqSetRel (two-way totals)"
+  ],
+  "lean_representation_note": "`#|s|` (cardinality of the set's membership predicate) is `(Finset.univ.filter (\u00b7 \u2208 s)).card`; `x \\in s` is `decide (x \u2208 s)`",
+  "helpers": [
+    "cs_seqset_target_total",
+    "cs_card_filter",
+    "cs_filter_rel",
+    "cs_size_rel"
+  ],
+  "export_diagnosis": "116,883 lines / 1,706 constants: the statement of set_card mentions Finset.card, Finset.filter and Finset.univ over a Fintype instance, which pulls Mathlib's Finset/Multiset (quotient of List by Perm) layer and the List.Perm lemmas used by Multiset.card/filter well-definedness proofs into the dependency closure. All of it is dependency closure of the two exported statements (statement_only targets); no proof body is exported.",
+  "prop_sprop_foundation": [
+    "PropSPropFoundation.interpret_strict"
+  ],
+  "importer_foundation": [
+    "ImportedClassicSeqset.Classical_choice",
+    "ImportedClassicSeqset.Quot_sound",
+    "ImportedClassicSeqset.propext",
+    "PrimInt63.eqb",
+    "PrimInt63.int",
+    "PrimInt63.land",
+    "PrimInt63.lsr"
+  ],
+  "rocq_sprop_uip": [
+    "I.HEq",
+    "I.HEq_inst1",
+    "I.True",
+    "Lean.eq",
+    "Lean.eq_inst1",
+    "ClassicSeqsetAdapter.SeqsetTrue"
+  ]
+}

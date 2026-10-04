@@ -1,0 +1,11 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedClassicNat.
+
+Check ImportedClassicNat.Prosa_Classic_Util_Nat_subh1.
+Check ImportedClassicNat.Prosa_Classic_Util_Nat_subh2.
+Check ImportedClassicNat.Prosa_Classic_Util_Nat_addnb.
+Check ImportedClassicNat.Prosa_Classic_Util_Nat_subh4.
+Check ImportedClassicNat.Prosa_Classic_Util_Nat_addmovr.
+Check ImportedClassicNat.Prosa_Classic_Util_Nat_addmovl.
+Check ImportedClassicNat.Prosa_Classic_Util_Nat_ltSnm.
+Check ImportedClassicNat.Prosa_Classic_Util_Nat_min_lt_same.

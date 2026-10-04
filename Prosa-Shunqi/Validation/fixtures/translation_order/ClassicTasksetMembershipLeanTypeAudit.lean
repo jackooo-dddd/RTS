@@ -1,0 +1,54 @@
+import Validation.fixtures.translation_order.ClassicTasksetMembershipInterface
+set_option pp.fieldNotation false
+
+#check @Prosa.Classic.Analysis.Uni.Susp.Dynamic.Jitter.TasksetMembership.TaskSetMembership.actual_response_time
+#check @Prosa.Classic.Analysis.Uni.Susp.Dynamic.Jitter.TasksetMembership.TaskSetMembership.actual_response_time_is_valid
+#check @Prosa.Classic.Analysis.Uni.Susp.Dynamic.Jitter.TasksetMembership.TaskSetMembership.actual_response_time_is_minimum
+#check @Prosa.Classic.Analysis.Uni.Susp.Dynamic.Jitter.TasksetMembership.TaskSetMembership.ts_membership_inflated_job_cost_positive
+#check @Prosa.Classic.Analysis.Uni.Susp.Dynamic.Jitter.TasksetMembership.TaskSetMembership.ts_membership_inflated_job_cost_le_inflated_task_cost
+#check @Prosa.Classic.Analysis.Uni.Susp.Dynamic.Jitter.TasksetMembership.TaskSetMembership.response_time_bound_in_sched_susp_highercost
+#check @Prosa.Classic.Analysis.Uni.Susp.Dynamic.Jitter.TasksetMembership.TaskSetMembership.ts_membership_difference_in_response_times
+#check @Prosa.Classic.Analysis.Uni.Susp.Dynamic.Jitter.TasksetMembership.TaskSetMembership.ts_membership_job_jitter_le_task_jitter
+#check @Prosa.Validation.ClassicTasksetMembershipInterface.finRange_map_shift
+#check @Prosa.Validation.ClassicTasksetMembershipInterface.finRange_map_val
+#check @Prosa.Validation.ClassicTasksetMembershipInterface.finRange_any
+#check @Prosa.Validation.ClassicTasksetMembershipInterface.map_finRange_eq_map_range'
+#check @Prosa.Validation.ClassicTasksetMembershipInterface.maxFiltered_eq_foldr_cond
+#check @Prosa.Validation.ClassicTasksetMembershipInterface.maxFiltered_finRange
+#check @Prosa.Validation.ClassicTasksetMembershipInterface.bigCat_range'
+#check @Prosa.Validation.ClassicTasksetMembershipInterface.production_schedule_prefix_zero
+#check @Prosa.Validation.ClassicTasksetMembershipInterface.production_schedule_prefix_succ
+#check @Prosa.Validation.ClassicTasksetMembershipInterface.production_sumSeq_nil
+#check @Prosa.Validation.ClassicTasksetMembershipInterface.production_sumSeq_cons
+#check @Prosa.Validation.ClassicTasksetMembershipInterface.production_sumFiltered_nil
+#check @Prosa.Validation.ClassicTasksetMembershipInterface.production_sumFiltered_cons_true
+#check @Prosa.Validation.ClassicTasksetMembershipInterface.production_sumFiltered_cons_false
+#check @Prosa.Validation.ClassicTasksetMembershipInterface.finRange_find?_map_val
+#check @Prosa.Validation.ClassicTasksetMembershipInterface.finRange_all
+#check @Prosa.Validation.ClassicTasksetMembershipInterface.default0_find?
+
+#print axioms Prosa.Classic.Analysis.Uni.Susp.Dynamic.Jitter.TasksetMembership.TaskSetMembership.actual_response_time
+#print axioms Prosa.Classic.Analysis.Uni.Susp.Dynamic.Jitter.TasksetMembership.TaskSetMembership.actual_response_time_is_valid
+#print axioms Prosa.Classic.Analysis.Uni.Susp.Dynamic.Jitter.TasksetMembership.TaskSetMembership.actual_response_time_is_minimum
+#print axioms Prosa.Classic.Analysis.Uni.Susp.Dynamic.Jitter.TasksetMembership.TaskSetMembership.ts_membership_inflated_job_cost_positive
+#print axioms Prosa.Classic.Analysis.Uni.Susp.Dynamic.Jitter.TasksetMembership.TaskSetMembership.ts_membership_inflated_job_cost_le_inflated_task_cost
+#print axioms Prosa.Classic.Analysis.Uni.Susp.Dynamic.Jitter.TasksetMembership.TaskSetMembership.response_time_bound_in_sched_susp_highercost
+#print axioms Prosa.Classic.Analysis.Uni.Susp.Dynamic.Jitter.TasksetMembership.TaskSetMembership.ts_membership_difference_in_response_times
+#print axioms Prosa.Classic.Analysis.Uni.Susp.Dynamic.Jitter.TasksetMembership.TaskSetMembership.ts_membership_job_jitter_le_task_jitter
+#print axioms Prosa.Validation.ClassicTasksetMembershipInterface.finRange_map_shift
+#print axioms Prosa.Validation.ClassicTasksetMembershipInterface.finRange_map_val
+#print axioms Prosa.Validation.ClassicTasksetMembershipInterface.finRange_any
+#print axioms Prosa.Validation.ClassicTasksetMembershipInterface.map_finRange_eq_map_range'
+#print axioms Prosa.Validation.ClassicTasksetMembershipInterface.maxFiltered_eq_foldr_cond
+#print axioms Prosa.Validation.ClassicTasksetMembershipInterface.maxFiltered_finRange
+#print axioms Prosa.Validation.ClassicTasksetMembershipInterface.bigCat_range'
+#print axioms Prosa.Validation.ClassicTasksetMembershipInterface.production_schedule_prefix_zero
+#print axioms Prosa.Validation.ClassicTasksetMembershipInterface.production_schedule_prefix_succ
+#print axioms Prosa.Validation.ClassicTasksetMembershipInterface.production_sumSeq_nil
+#print axioms Prosa.Validation.ClassicTasksetMembershipInterface.production_sumSeq_cons
+#print axioms Prosa.Validation.ClassicTasksetMembershipInterface.production_sumFiltered_nil
+#print axioms Prosa.Validation.ClassicTasksetMembershipInterface.production_sumFiltered_cons_true
+#print axioms Prosa.Validation.ClassicTasksetMembershipInterface.production_sumFiltered_cons_false
+#print axioms Prosa.Validation.ClassicTasksetMembershipInterface.finRange_find?_map_val
+#print axioms Prosa.Validation.ClassicTasksetMembershipInterface.finRange_all
+#print axioms Prosa.Validation.ClassicTasksetMembershipInterface.default0_find?

@@ -1,0 +1,46 @@
+import Validation.fixtures.translation_order.ClassicTdmaRtaTheoryInterface
+set_option pp.fieldNotation false
+
+#check @Prosa.Classic.Analysis.Uni.Basic.TdmaRtaTheory.ResponseTimeAnalysisTDMA.is_valid_tdma_bound
+#check @Prosa.Classic.Analysis.Uni.Basic.TdmaRtaTheory.ResponseTimeAnalysisTDMA.any_job_completed_before_period
+#check @Prosa.Classic.Analysis.Uni.Basic.TdmaRtaTheory.ResponseTimeAnalysisTDMA.all_previous_jobs_of_same_task_completed
+#check @Prosa.Classic.Analysis.Uni.Basic.TdmaRtaTheory.ResponseTimeAnalysisTDMA.uniprocessor_response_time_bound_TDMA
+#check @Prosa.Classic.Analysis.Uni.Basic.TdmaRtaTheory.ResponseTimeAnalysisTDMA.taskset_schedulable_by_tdma
+#check @Prosa.Classic.Analysis.Uni.Basic.TdmaRtaTheory.ResponseTimeAnalysisTDMA.jobs_schedulable_by_tdma_rta
+#check @Prosa.Validation.ClassicTdmaRtaTheoryInterface.production_sumSeq_nil
+#check @Prosa.Validation.ClassicTdmaRtaTheoryInterface.production_sumSeq_cons
+#check @Prosa.Validation.ClassicTdmaRtaTheoryInterface.production_sumFiltered_nil
+#check @Prosa.Validation.ClassicTdmaRtaTheoryInterface.production_sumFiltered_cons_true
+#check @Prosa.Validation.ClassicTdmaRtaTheoryInterface.production_sumFiltered_cons_false
+#check @Prosa.Validation.ClassicTdmaRtaTheoryInterface.end_time_option_c0
+#check @Prosa.Validation.ClassicTdmaRtaTheoryInterface.end_time_option_wf0
+#check @Prosa.Validation.ClassicTdmaRtaTheoryInterface.end_time_option_step
+#check @Prosa.Validation.DivModInterface.production_div_floor_eq
+#check @Prosa.Validation.DivModInterface.production_div_ceil_eq
+#check @Prosa.Validation.DivModInterface.production_div_add_mod
+#check @Prosa.Validation.DivModInterface.production_mod_lt
+#check @Prosa.Validation.DivModInterface.production_div_zero
+#check @Prosa.Validation.DivModInterface.production_mod_zero
+#check @Prosa.Validation.DivModInterface.production_dvd_iff_mod_eq_zero
+
+#print axioms Prosa.Classic.Analysis.Uni.Basic.TdmaRtaTheory.ResponseTimeAnalysisTDMA.is_valid_tdma_bound
+#print axioms Prosa.Classic.Analysis.Uni.Basic.TdmaRtaTheory.ResponseTimeAnalysisTDMA.any_job_completed_before_period
+#print axioms Prosa.Classic.Analysis.Uni.Basic.TdmaRtaTheory.ResponseTimeAnalysisTDMA.all_previous_jobs_of_same_task_completed
+#print axioms Prosa.Classic.Analysis.Uni.Basic.TdmaRtaTheory.ResponseTimeAnalysisTDMA.uniprocessor_response_time_bound_TDMA
+#print axioms Prosa.Classic.Analysis.Uni.Basic.TdmaRtaTheory.ResponseTimeAnalysisTDMA.taskset_schedulable_by_tdma
+#print axioms Prosa.Classic.Analysis.Uni.Basic.TdmaRtaTheory.ResponseTimeAnalysisTDMA.jobs_schedulable_by_tdma_rta
+#print axioms Prosa.Validation.ClassicTdmaRtaTheoryInterface.production_sumSeq_nil
+#print axioms Prosa.Validation.ClassicTdmaRtaTheoryInterface.production_sumSeq_cons
+#print axioms Prosa.Validation.ClassicTdmaRtaTheoryInterface.production_sumFiltered_nil
+#print axioms Prosa.Validation.ClassicTdmaRtaTheoryInterface.production_sumFiltered_cons_true
+#print axioms Prosa.Validation.ClassicTdmaRtaTheoryInterface.production_sumFiltered_cons_false
+#print axioms Prosa.Validation.ClassicTdmaRtaTheoryInterface.end_time_option_c0
+#print axioms Prosa.Validation.ClassicTdmaRtaTheoryInterface.end_time_option_wf0
+#print axioms Prosa.Validation.ClassicTdmaRtaTheoryInterface.end_time_option_step
+#print axioms Prosa.Validation.DivModInterface.production_div_floor_eq
+#print axioms Prosa.Validation.DivModInterface.production_div_ceil_eq
+#print axioms Prosa.Validation.DivModInterface.production_div_add_mod
+#print axioms Prosa.Validation.DivModInterface.production_mod_lt
+#print axioms Prosa.Validation.DivModInterface.production_div_zero
+#print axioms Prosa.Validation.DivModInterface.production_mod_zero
+#print axioms Prosa.Validation.DivModInterface.production_dvd_iff_mod_eq_zero

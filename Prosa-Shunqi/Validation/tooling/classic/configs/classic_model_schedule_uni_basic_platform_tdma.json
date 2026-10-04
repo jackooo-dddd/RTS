@@ -1,0 +1,83 @@
+{
+  "rank": 52,
+  "layer": 9,
+  "classic_scope": "full",
+  "slug": "classic_model_schedule_uni_basic_platform_tdma",
+  "tag": "CUPTDMA",
+  "export_name": "ClassicUniPlatformTdma",
+  "source": "classic/model/schedule/uni/basic/platform_tdma.v",
+  "production": "Prosa/Classic/Model/Schedule/Uni/Basic/PlatformTdma.lean",
+  "fixtures": [
+    "ClassicUniPlatformTdmaInterface"
+  ],
+  "export_module": "Validation.fixtures.translation_order.ClassicUniPlatformTdmaInterface",
+  "interface_theorems": [
+    "Prosa.Validation.ClassicUniPlatformTdmaInterface.production_sumSeq_nil",
+    "Prosa.Validation.ClassicUniPlatformTdmaInterface.production_sumSeq_cons",
+    "Prosa.Validation.ClassicUniPlatformTdmaInterface.production_sumFiltered_nil",
+    "Prosa.Validation.ClassicUniPlatformTdmaInterface.production_sumFiltered_cons_true",
+    "Prosa.Validation.ClassicUniPlatformTdmaInterface.production_sumFiltered_cons_false",
+    "Prosa.Validation.DivModInterface.production_div_add_mod",
+    "Prosa.Validation.DivModInterface.production_mod_lt",
+    "Prosa.Validation.DivModInterface.production_div_zero",
+    "Prosa.Validation.DivModInterface.production_mod_zero"
+  ],
+  "computational": [
+    "Platform_TDMA.sched_implies_in_slot",
+    "Platform_TDMA.backlogged_implies_not_in_slot_or_other_job_sched",
+    "Platform_TDMA.Respects_TDMA_policy"
+  ],
+  "chain": [
+    "ClassicUniPlatformTdmaBase",
+    "ClassicUniPlatformTdmaList",
+    "ClassicUniPlatformTdmaCorrespondence"
+  ],
+  "principal": {},
+  "helpers": [],
+  "base_run": null,
+  "base_checks": [],
+  "previous_status": "classic_model_schedule_uni_basic_platform_module_status.json",
+  "input_relations": [
+    "job and task types: eqTypes identified, Lean DecidableEq instances = the eqTypes' decision procedures; job_task identified",
+    "times by SubNatRel; job parameters pointwise through SubNatRel; schedules pointwise through the option map; arrival sequences pointwise on related times; task sets elementwise; TDMA slots/orders pointwise (two-way totals)"
+  ],
+  "lean_representation_note": "the Rocq module Platform_TDMA is a namespace; `{set T}` is `Prosa.Util.Seqset.set`; Boolean predicates in Prop positions use `= true`; `~ P` is `\u00ac P`",
+  "prop_sprop_foundation": [
+    "PropSPropFoundation.interpret_strict"
+  ],
+  "importer_foundation": [
+    "ImportedClassicUniPlatformTdma.propext",
+    "PrimInt63.eqb",
+    "PrimInt63.int",
+    "PrimInt63.land",
+    "PrimInt63.lsr"
+  ],
+  "rocq_sprop_uip": [
+    "ClassicUniPlatformTdmaBase.I.HEq_inst1",
+    "ClassicUniPlatformTdmaBase.I.True",
+    "I.HEq",
+    "I.HEq_inst1",
+    "I.True",
+    "Lean.eq",
+    "Lean.eq_inst1",
+    "SubadditivityNatCorrespondence.SubNatTrue"
+  ],
+  "normalization": {
+    "theorem_types": [],
+    "subexpression_heads": [
+      "Finset.sum"
+    ],
+    "definition_bodies": [],
+    "body_projections": [
+      "Prosa.Classic.Model.Schedule.Uni.Schedule.UniprocessorSchedule.service_during=Prosa.Validation.ClassicUniPlatformTdmaInterface.service_during_proj=Prosa.Validation.ClassicUniPlatformTdmaInterface.service_during_proj_guard",
+      "Prosa.Classic.Model.Schedule.Uni.Schedule.UniprocessorSchedule.total_service_during=Prosa.Validation.ClassicUniPlatformTdmaInterface.total_service_during_proj=Prosa.Validation.ClassicUniPlatformTdmaInterface.total_service_during_proj_guard"
+    ]
+  },
+  "export_env": {
+    "LEAN4EXPORT_PRESERVE_REDUCIBLE_THEOREM_TYPES": "1",
+    "LEAN4EXPORT_NAT_INDEX_ALIASES": "Prosa.Classic.Model.Time.Time.time"
+  },
+  "kernel_guard_artifacts": [
+    "Validation/fixtures/translation_order/ClassicUniPlatformTdmaInterface.lean"
+  ]
+}

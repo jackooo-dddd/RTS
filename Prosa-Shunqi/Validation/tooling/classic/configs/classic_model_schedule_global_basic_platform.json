@@ -1,0 +1,90 @@
+{
+  "rank": 38,
+  "layer": 13,
+  "slug": "classic_model_schedule_global_basic_platform",
+  "tag": "CPLATG",
+  "export_name": "ClassicPlatformGlobal",
+  "source": "classic/model/schedule/global/basic/platform.v",
+  "production": "Prosa/Classic/Model/Schedule/Global/Basic/Platform.lean",
+  "fixtures": [
+    "ClassicPlatformGlobalInterface"
+  ],
+  "export_module": "Validation.fixtures.translation_order.ClassicPlatformGlobalInterface",
+  "interface_theorems": [
+    "Prosa.Validation.ClassicPlatformGlobalInterface.finRange_any",
+    "Prosa.Validation.ClassicPlatformGlobalInterface.bigCatFin_range'",
+    "Prosa.Validation.ClassicPlatformGlobalInterface.fin_sum_range'",
+    "Prosa.Validation.ClassicPlatformGlobalInterface.service_at_sum"
+  ],
+  "computational": [
+    "Platform.work_conserving",
+    "Platform.work_conserving_count",
+    "Platform.respects_FP_policy",
+    "Platform.respects_JLFP_policy",
+    "Platform.respects_JLDP_policy"
+  ],
+  "chain": [
+    "ClassicPlatformGlobalBase",
+    "ClassicPlatformGlobalList",
+    "ClassicPlatformGlobalOrd",
+    "ClassicPlatformGlobalCorrespondence"
+  ],
+  "base_run": null,
+  "base_checks": [],
+  "previous_status": "classic_model_schedule_apa_platform_module_status.json",
+  "input_relations": [
+    "job and task types: eqTypes identified, Lean DecidableEq instances = the eqTypes' decision procedures; job_task identified",
+    "natural numbers (time, num_cpus) by SubNatRel; processors 'I_n and Fin n by their values; schedules pointwise on related processors and times with option values by the constructor map; job parameters pointwise through SubNatRel; arrival sequences pointwise on related times; FP/JLFP policies pointwise, JLDP policies pointwise on related times (two-way totals)"
+  ],
+  "lean_representation_note": "as for the accepted classic schedule, priority validations; Boolean tests in propositions are `= true`",
+  "normalization": {
+    "theorem_types": [],
+    "subexpression_heads": [],
+    "definition_bodies": [],
+    "body_projections": [
+      "Prosa.Classic.Model.Schedule.Global.Basic.Schedule.Schedule.service=Prosa.Validation.ClassicPlatformGlobalInterface.service_proj=Prosa.Validation.ClassicPlatformGlobalInterface.service_proj_guard",
+      "Prosa.Classic.Model.Schedule.Global.Basic.Schedule.Schedule.service_during=Prosa.Validation.ClassicPlatformGlobalInterface.service_during_proj=Prosa.Validation.ClassicPlatformGlobalInterface.service_during_proj_guard"
+    ]
+  },
+  "kernel_guard_artifacts": [
+    "Validation/fixtures/translation_order/ClassicPlatformGlobalInterface.lean"
+  ],
+  "own_qualified_in_type": [
+    "Platform.work_conserving",
+    "Platform.work_conserving_count",
+    "Platform.respects_FP_policy",
+    "Platform.respects_JLFP_policy",
+    "Platform.respects_JLDP_policy"
+  ],
+  "helpers": [
+    "cs_forall_ncpus_sched",
+    "cs_forall_sched"
+  ],
+  "export_diagnosis": "as for the accepted classic schedule export (service_at is a filtered Finset sum over Fin num_cpus; validation-only interface theorems exported with their proof bodies); service/service_during through kernel-guarded rfl body projections.",
+  "probe_extra": [],
+  "prop_sprop_foundation": [
+    "PropSPropFoundation.interpret_strict"
+  ],
+  "importer_foundation": [
+    "ImportedClassicPlatformGlobal.Classical_choice",
+    "ImportedClassicPlatformGlobal.Quot_sound",
+    "ImportedClassicPlatformGlobal.propext",
+    "PrimInt63.eqb",
+    "PrimInt63.int",
+    "PrimInt63.land",
+    "PrimInt63.lsr"
+  ],
+  "rocq_sprop_uip": [
+    "ClassicPlatformGlobalBase.I.HEq_inst1",
+    "ClassicPlatformGlobalBase.I.True",
+    "ClassicPlatformGlobalOrd.I.HEq",
+    "ClassicPlatformGlobalOrd.I.HEq_inst1",
+    "ClassicPlatformGlobalOrd.I.True",
+    "I.HEq",
+    "I.HEq_inst1",
+    "I.True",
+    "Lean.eq",
+    "Lean.eq_inst1",
+    "SubadditivityNatCorrespondence.SubNatTrue"
+  ]
+}

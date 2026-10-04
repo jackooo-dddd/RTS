@@ -1,0 +1,80 @@
+import Validation.fixtures.translation_order.ClassicApaBertognaEdfInterface
+set_option pp.fieldNotation false
+
+#check @Prosa.Classic.Analysis.Apa.BertognaEdfTheory.ResponseTimeAnalysisEDF.bertogna_edf_tsk_other_in_ts
+#check @Prosa.Classic.Analysis.Apa.BertognaEdfTheory.ResponseTimeAnalysisEDF.bertogna_edf_R_other_ge_cost
+#check @Prosa.Classic.Analysis.Apa.BertognaEdfTheory.ResponseTimeAnalysisEDF.bertogna_edf_workload_bounds_interference
+#check @Prosa.Classic.Analysis.Apa.BertognaEdfTheory.ResponseTimeAnalysisEDF.bertogna_edf_specific_bound_holds
+#check @Prosa.Classic.Analysis.Apa.BertognaEdfTheory.ResponseTimeAnalysisEDF.bertogna_edf_too_much_interference
+#check @Prosa.Classic.Analysis.Apa.BertognaEdfTheory.ResponseTimeAnalysisEDF.bertogna_edf_interference_by_different_tasks
+#check @Prosa.Classic.Analysis.Apa.BertognaEdfTheory.ResponseTimeAnalysisEDF.bertogna_edf_all_previous_jobs_complete_by_their_period
+#check @Prosa.Classic.Analysis.Apa.BertognaEdfTheory.ResponseTimeAnalysisEDF.bertogna_edf_all_cpus_in_affinity_busy
+#check @Prosa.Classic.Analysis.Apa.BertognaEdfTheory.ResponseTimeAnalysisEDF.bertogna_edf_all_cpus_in_subaffinity_busy
+#check @Prosa.Classic.Analysis.Apa.BertognaEdfTheory.ResponseTimeAnalysisEDF.bertogna_edf_alpha'_is_full
+#check @Prosa.Classic.Analysis.Apa.BertognaEdfTheory.ResponseTimeAnalysisEDF.bertogna_edf_interference_in_non_full_processors
+#check @Prosa.Classic.Analysis.Apa.BertognaEdfTheory.ResponseTimeAnalysisEDF.bertogna_edf_minimum_exceeds_interference
+#check @Prosa.Classic.Analysis.Apa.BertognaEdfTheory.ResponseTimeAnalysisEDF.bertogna_edf_interference_on_subaffinity
+#check @Prosa.Classic.Analysis.Apa.BertognaEdfTheory.ResponseTimeAnalysisEDF.bertogna_edf_sum_exceeds_total_interference
+#check @Prosa.Classic.Analysis.Apa.BertognaEdfTheory.ResponseTimeAnalysisEDF.bertogna_edf_exists_task_that_exceeds_bound
+#check @Prosa.Classic.Analysis.Apa.BertognaEdfTheory.ResponseTimeAnalysisEDF.bertogna_cirinei_response_time_bound_edf
+#check @Prosa.Validation.ClassicApaBertognaEdfInterface.finRange_any
+#check @Prosa.Validation.ClassicApaBertognaEdfInterface.bigCatFin_range'
+#check @Prosa.Validation.ClassicApaBertognaEdfInterface.fin_sum_range'
+#check @Prosa.Validation.ClassicApaBertognaEdfInterface.bigCat_range'
+#check @Prosa.Validation.ClassicApaBertognaEdfInterface.service_at_sum
+#check @Prosa.Validation.ClassicApaBertognaEdfInterface.dedup_nil
+#check @Prosa.Validation.ClassicApaBertognaEdfInterface.dedup_cons_mem
+#check @Prosa.Validation.ClassicApaBertognaEdfInterface.dedup_cons_not_mem
+#check @Prosa.Validation.ClassicApaBertognaEdfInterface.length_eq_count
+#check @Prosa.Validation.ClassicApaBertognaEdfInterface.card_filter_sum
+#check @Prosa.Validation.ClassicApaBertognaEdfInterface.le_trans'
+#check @Prosa.Validation.ClassicApaBertognaEdfInterface.le_total'
+#check @Prosa.Validation.ClassicApaBertognaEdfInterface.mergeSort_isChain
+#check @Prosa.Validation.ClassicApaBertognaEdfInterface.merge_filter_class
+#check @Prosa.Validation.ClassicApaBertognaEdfInterface.mergeSort_filter_class
+#check @Prosa.Validation.DivModInterface.production_div_floor_eq
+#check @Prosa.Validation.DivModInterface.production_div_ceil_eq
+#check @Prosa.Validation.DivModInterface.production_div_add_mod
+#check @Prosa.Validation.DivModInterface.production_mod_lt
+#check @Prosa.Validation.DivModInterface.production_div_zero
+#check @Prosa.Validation.DivModInterface.production_mod_zero
+#check @Prosa.Validation.DivModInterface.production_dvd_iff_mod_eq_zero
+
+#print axioms Prosa.Classic.Analysis.Apa.BertognaEdfTheory.ResponseTimeAnalysisEDF.bertogna_edf_tsk_other_in_ts
+#print axioms Prosa.Classic.Analysis.Apa.BertognaEdfTheory.ResponseTimeAnalysisEDF.bertogna_edf_R_other_ge_cost
+#print axioms Prosa.Classic.Analysis.Apa.BertognaEdfTheory.ResponseTimeAnalysisEDF.bertogna_edf_workload_bounds_interference
+#print axioms Prosa.Classic.Analysis.Apa.BertognaEdfTheory.ResponseTimeAnalysisEDF.bertogna_edf_specific_bound_holds
+#print axioms Prosa.Classic.Analysis.Apa.BertognaEdfTheory.ResponseTimeAnalysisEDF.bertogna_edf_too_much_interference
+#print axioms Prosa.Classic.Analysis.Apa.BertognaEdfTheory.ResponseTimeAnalysisEDF.bertogna_edf_interference_by_different_tasks
+#print axioms Prosa.Classic.Analysis.Apa.BertognaEdfTheory.ResponseTimeAnalysisEDF.bertogna_edf_all_previous_jobs_complete_by_their_period
+#print axioms Prosa.Classic.Analysis.Apa.BertognaEdfTheory.ResponseTimeAnalysisEDF.bertogna_edf_all_cpus_in_affinity_busy
+#print axioms Prosa.Classic.Analysis.Apa.BertognaEdfTheory.ResponseTimeAnalysisEDF.bertogna_edf_all_cpus_in_subaffinity_busy
+#print axioms Prosa.Classic.Analysis.Apa.BertognaEdfTheory.ResponseTimeAnalysisEDF.bertogna_edf_alpha'_is_full
+#print axioms Prosa.Classic.Analysis.Apa.BertognaEdfTheory.ResponseTimeAnalysisEDF.bertogna_edf_interference_in_non_full_processors
+#print axioms Prosa.Classic.Analysis.Apa.BertognaEdfTheory.ResponseTimeAnalysisEDF.bertogna_edf_minimum_exceeds_interference
+#print axioms Prosa.Classic.Analysis.Apa.BertognaEdfTheory.ResponseTimeAnalysisEDF.bertogna_edf_interference_on_subaffinity
+#print axioms Prosa.Classic.Analysis.Apa.BertognaEdfTheory.ResponseTimeAnalysisEDF.bertogna_edf_sum_exceeds_total_interference
+#print axioms Prosa.Classic.Analysis.Apa.BertognaEdfTheory.ResponseTimeAnalysisEDF.bertogna_edf_exists_task_that_exceeds_bound
+#print axioms Prosa.Classic.Analysis.Apa.BertognaEdfTheory.ResponseTimeAnalysisEDF.bertogna_cirinei_response_time_bound_edf
+#print axioms Prosa.Validation.ClassicApaBertognaEdfInterface.finRange_any
+#print axioms Prosa.Validation.ClassicApaBertognaEdfInterface.bigCatFin_range'
+#print axioms Prosa.Validation.ClassicApaBertognaEdfInterface.fin_sum_range'
+#print axioms Prosa.Validation.ClassicApaBertognaEdfInterface.bigCat_range'
+#print axioms Prosa.Validation.ClassicApaBertognaEdfInterface.service_at_sum
+#print axioms Prosa.Validation.ClassicApaBertognaEdfInterface.dedup_nil
+#print axioms Prosa.Validation.ClassicApaBertognaEdfInterface.dedup_cons_mem
+#print axioms Prosa.Validation.ClassicApaBertognaEdfInterface.dedup_cons_not_mem
+#print axioms Prosa.Validation.ClassicApaBertognaEdfInterface.length_eq_count
+#print axioms Prosa.Validation.ClassicApaBertognaEdfInterface.card_filter_sum
+#print axioms Prosa.Validation.ClassicApaBertognaEdfInterface.le_trans'
+#print axioms Prosa.Validation.ClassicApaBertognaEdfInterface.le_total'
+#print axioms Prosa.Validation.ClassicApaBertognaEdfInterface.mergeSort_isChain
+#print axioms Prosa.Validation.ClassicApaBertognaEdfInterface.merge_filter_class
+#print axioms Prosa.Validation.ClassicApaBertognaEdfInterface.mergeSort_filter_class
+#print axioms Prosa.Validation.DivModInterface.production_div_floor_eq
+#print axioms Prosa.Validation.DivModInterface.production_div_ceil_eq
+#print axioms Prosa.Validation.DivModInterface.production_div_add_mod
+#print axioms Prosa.Validation.DivModInterface.production_mod_lt
+#print axioms Prosa.Validation.DivModInterface.production_div_zero
+#print axioms Prosa.Validation.DivModInterface.production_mod_zero
+#print axioms Prosa.Validation.DivModInterface.production_dvd_iff_mod_eq_zero

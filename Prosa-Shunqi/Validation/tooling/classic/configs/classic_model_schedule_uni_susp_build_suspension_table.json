@@ -1,0 +1,93 @@
+{
+  "rank": 107,
+  "layer": 12,
+  "classic_scope": "full",
+  "slug": "classic_model_schedule_uni_susp_build_suspension_table",
+  "tag": "CBST",
+  "export_name": "ClassicBuildSuspensionTable",
+  "source": "classic/model/schedule/uni/susp/build_suspension_table.v",
+  "production": "Prosa/Classic/Model/Schedule/Uni/Susp/BuildSuspensionTable.lean",
+  "fixtures": [
+    "ClassicBuildSuspensionTableInterface"
+  ],
+  "export_module": "Validation.fixtures.translation_order.ClassicBuildSuspensionTableInterface",
+  "interface_theorems": [
+    "Prosa.Validation.ClassicBuildSuspensionTableInterface.finRange_map_shift",
+    "Prosa.Validation.ClassicBuildSuspensionTableInterface.finRange_map_val",
+    "Prosa.Validation.ClassicBuildSuspensionTableInterface.finRange_any",
+    "Prosa.Validation.ClassicBuildSuspensionTableInterface.map_finRange_eq_map_range'",
+    "Prosa.Validation.ClassicBuildSuspensionTableInterface.maxFiltered_eq_foldr_cond",
+    "Prosa.Validation.ClassicBuildSuspensionTableInterface.maxFiltered_finRange"
+  ],
+  "computational": [
+    "SuspensionTableConstruction.build_suspension_duration"
+  ],
+  "chain": [
+    "ClassicBuildSuspensionTableBase",
+    "ClassicBuildSuspensionTableList",
+    "ClassicBuildSuspensionTableOrd",
+    "ClassicBuildSuspensionTableCorrespondence"
+  ],
+  "principal": {},
+  "helpers": [
+    "cbt_icof",
+    "cbt_forall_spred",
+    "cbt_forall_sched",
+    "cbt_forall_par"
+  ],
+  "base_run": null,
+  "base_checks": [],
+  "previous_status": "classic_analysis_uni_susp_sustainability_singlecost_reduction_module_status.json",
+  "input_relations": [
+    "job type: eqType identified, Lean DecidableEq instance = the eqType's decision procedure",
+    "times by SubNatRel; job parameters pointwise through SubNatRel; uniprocessor schedules pointwise through the option map; suspension predicates pointwise on related times (two-way totals)"
+  ],
+  "lean_representation_note": "the Rocq module SuspensionTableConstruction is a namespace; `\\sum_(0 <= t < n | P t) F t` is `\u2211 t \u2208 (Finset.Ico 0 n).filter P, F t`; the bool-to-nat coercion is `Bool.toNat`; `a <= b < c` is `decide (a \u2264 b) && decide (b < c)`",
+  "prop_sprop_foundation": [
+    "PropSPropFoundation.interpret_strict"
+  ],
+  "importer_foundation": [
+    "ImportedClassicBuildSuspensionTable.Quot_sound",
+    "ImportedClassicBuildSuspensionTable.propext",
+    "PrimInt63.eqb",
+    "PrimInt63.int",
+    "PrimInt63.land",
+    "PrimInt63.lsr"
+  ],
+  "rocq_sprop_uip": [
+    "ClassicBuildSuspensionTableBase.I.HEq_inst1",
+    "ClassicBuildSuspensionTableBase.I.True",
+    "ClassicBuildSuspensionTableOrd.I.HEq",
+    "ClassicBuildSuspensionTableOrd.I.HEq_inst1",
+    "ClassicBuildSuspensionTableOrd.I.True",
+    "I.HEq",
+    "I.HEq_inst1",
+    "I.True",
+    "Lean.eq",
+    "Lean.eq_inst1",
+    "SubadditivityNatCorrespondence.SubNatTrue"
+  ],
+  "normalization": {
+    "theorem_types": [
+      "Prosa.Classic.Model.Schedule.Uni.Susp.BuildSuspensionTable.SuspensionTableConstruction.not_suspended_before_suspension_start"
+    ],
+    "subexpression_heads": [
+      "Finset.sum"
+    ],
+    "definition_bodies": [],
+    "body_projections": [
+      "Prosa.Classic.Model.Schedule.Uni.Schedule.UniprocessorSchedule.service_during=Prosa.Validation.ClassicBuildSuspensionTableInterface.service_during_proj=Prosa.Validation.ClassicBuildSuspensionTableInterface.service_during_proj_guard",
+      "Prosa.Classic.Model.Schedule.Uni.Schedule.UniprocessorSchedule.total_service_during=Prosa.Validation.ClassicBuildSuspensionTableInterface.total_service_during_proj=Prosa.Validation.ClassicBuildSuspensionTableInterface.total_service_during_proj_guard",
+      "Prosa.Classic.Model.Suspension.Suspension.total_suspension=Prosa.Validation.ClassicBuildSuspensionTableInterface.total_suspension_proj=Prosa.Validation.ClassicBuildSuspensionTableInterface.total_suspension_proj_guard",
+      "Prosa.Classic.Model.Schedule.Uni.Susp.SuspensionIntervals.SuspensionIntervals.cumulative_suspension_during=Prosa.Validation.ClassicBuildSuspensionTableInterface.cumulative_suspension_during_proj=Prosa.Validation.ClassicBuildSuspensionTableInterface.cumulative_suspension_during_proj_guard",
+      "Prosa.Classic.Model.Schedule.Uni.Susp.BuildSuspensionTable.SuspensionTableConstruction.build_suspension_duration=Prosa.Validation.ClassicBuildSuspensionTableInterface.build_suspension_duration_proj=Prosa.Validation.ClassicBuildSuspensionTableInterface.build_suspension_duration_proj_guard"
+    ]
+  },
+  "export_env": {
+    "LEAN4EXPORT_PRESERVE_REDUCIBLE_THEOREM_TYPES": "1",
+    "LEAN4EXPORT_NAT_INDEX_ALIASES": "Prosa.Classic.Model.Time.Time.time"
+  },
+  "kernel_guard_artifacts": [
+    "Validation/fixtures/translation_order/ClassicBuildSuspensionTableInterface.lean"
+  ]
+}

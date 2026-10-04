@@ -6,8 +6,8 @@
 | sha256 | `609b66c1b2b9d5c5aaa3937f98789f8898a33fe36fca3b67a72849af8c2b03cb` |
 | Lean module | `Prosa/Classic/Util/Seqset.lean` (namespace `Prosa.Classic.Util.Seqset`) |
 | Tier / layer | S / 1 |
-| Status | **TRANSLATED**: compiles (Lean 4.33.1, pinned Mathlib), no `sorry`; `#print axioms` ⊆ {`propext`, `Quot.sound`, `Classical.choice`} |
-| Validation | pending Stage 0 (classic pipeline extension) |
+| Status | **ACCEPTED** (classic validation family; see the manifest) |
+| Validation | accepted |
 
 ## Declarations (2 source → Lean, same names)
 
@@ -15,7 +15,7 @@
 - `Lemma` `set_card`
 
 Missing in Lean: none.
-Lean-only helpers (`LEAN_HELPER`, not counted as translated declarations): `memDecidable`.
+Lean-only helpers (`LEAN_HELPER`, not counted as translated declarations): none.
 
 ## Representation notes
 
@@ -32,3 +32,4 @@ Representation notes:
 ## History
 
 - 2026-10-01: translated; build and axiom check passed.
+- 2026-10-02: accepted.

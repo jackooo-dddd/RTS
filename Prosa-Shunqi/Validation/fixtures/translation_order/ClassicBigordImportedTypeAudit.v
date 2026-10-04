@@ -1,0 +1,7 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedClassicBigord.
+
+Check ImportedClassicBigord.Prosa_Classic_Util_Bigord_fun_ord_to_nat.
+Check ImportedClassicBigord.Prosa_Classic_Util_Bigord_eq_fun_ord_to_nat.
+Check ImportedClassicBigord.Prosa_Classic_Util_Bigord_eq_bigr_ord.
+Check ImportedClassicBigord.Prosa_Classic_Util_Bigord_big_mkord_ord.

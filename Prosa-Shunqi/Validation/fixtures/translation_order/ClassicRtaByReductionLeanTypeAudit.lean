@@ -1,0 +1,42 @@
+import Validation.fixtures.translation_order.ClassicRtaByReductionInterface
+set_option pp.fieldNotation false
+
+#check @Prosa.Classic.Analysis.Uni.Susp.Dynamic.Jitter.RtaByReduction.RTAByReduction.actual_response_time
+#check @Prosa.Classic.Analysis.Uni.Susp.Dynamic.Jitter.RtaByReduction.RTAByReduction.valid_response_time_bound_in_sched_susp
+#check @Prosa.Validation.ClassicRtaByReductionInterface.finRange_map_shift
+#check @Prosa.Validation.ClassicRtaByReductionInterface.finRange_map_val
+#check @Prosa.Validation.ClassicRtaByReductionInterface.finRange_any
+#check @Prosa.Validation.ClassicRtaByReductionInterface.map_finRange_eq_map_range'
+#check @Prosa.Validation.ClassicRtaByReductionInterface.maxFiltered_eq_foldr_cond
+#check @Prosa.Validation.ClassicRtaByReductionInterface.maxFiltered_finRange
+#check @Prosa.Validation.ClassicRtaByReductionInterface.bigCat_range'
+#check @Prosa.Validation.ClassicRtaByReductionInterface.production_schedule_prefix_zero
+#check @Prosa.Validation.ClassicRtaByReductionInterface.production_schedule_prefix_succ
+#check @Prosa.Validation.ClassicRtaByReductionInterface.production_sumSeq_nil
+#check @Prosa.Validation.ClassicRtaByReductionInterface.production_sumSeq_cons
+#check @Prosa.Validation.ClassicRtaByReductionInterface.production_sumFiltered_nil
+#check @Prosa.Validation.ClassicRtaByReductionInterface.production_sumFiltered_cons_true
+#check @Prosa.Validation.ClassicRtaByReductionInterface.production_sumFiltered_cons_false
+#check @Prosa.Validation.ClassicRtaByReductionInterface.finRange_find?_map_val
+#check @Prosa.Validation.ClassicRtaByReductionInterface.finRange_all
+#check @Prosa.Validation.ClassicRtaByReductionInterface.default0_find?
+
+#print axioms Prosa.Classic.Analysis.Uni.Susp.Dynamic.Jitter.RtaByReduction.RTAByReduction.actual_response_time
+#print axioms Prosa.Classic.Analysis.Uni.Susp.Dynamic.Jitter.RtaByReduction.RTAByReduction.valid_response_time_bound_in_sched_susp
+#print axioms Prosa.Validation.ClassicRtaByReductionInterface.finRange_map_shift
+#print axioms Prosa.Validation.ClassicRtaByReductionInterface.finRange_map_val
+#print axioms Prosa.Validation.ClassicRtaByReductionInterface.finRange_any
+#print axioms Prosa.Validation.ClassicRtaByReductionInterface.map_finRange_eq_map_range'
+#print axioms Prosa.Validation.ClassicRtaByReductionInterface.maxFiltered_eq_foldr_cond
+#print axioms Prosa.Validation.ClassicRtaByReductionInterface.maxFiltered_finRange
+#print axioms Prosa.Validation.ClassicRtaByReductionInterface.bigCat_range'
+#print axioms Prosa.Validation.ClassicRtaByReductionInterface.production_schedule_prefix_zero
+#print axioms Prosa.Validation.ClassicRtaByReductionInterface.production_schedule_prefix_succ
+#print axioms Prosa.Validation.ClassicRtaByReductionInterface.production_sumSeq_nil
+#print axioms Prosa.Validation.ClassicRtaByReductionInterface.production_sumSeq_cons
+#print axioms Prosa.Validation.ClassicRtaByReductionInterface.production_sumFiltered_nil
+#print axioms Prosa.Validation.ClassicRtaByReductionInterface.production_sumFiltered_cons_true
+#print axioms Prosa.Validation.ClassicRtaByReductionInterface.production_sumFiltered_cons_false
+#print axioms Prosa.Validation.ClassicRtaByReductionInterface.finRange_find?_map_val
+#print axioms Prosa.Validation.ClassicRtaByReductionInterface.finRange_all
+#print axioms Prosa.Validation.ClassicRtaByReductionInterface.default0_find?

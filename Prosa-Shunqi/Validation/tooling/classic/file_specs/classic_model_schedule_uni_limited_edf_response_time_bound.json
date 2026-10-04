@@ -1,0 +1,447 @@
+{
+  "rank": 168,
+  "layer": 16,
+  "tag": "CLEDFRTA",
+  "slug": "classic_model_schedule_uni_limited_edf_response_time_bound",
+  "family": "classic",
+  "classic_scope": "full",
+  "source": "classic/model/schedule/uni/limited/edf/response_time_bound.v",
+  "dependencies": [
+    "classic/analysis/uni/arrival_curves/workload_bound.v",
+    "classic/model/arrival/basic/job.v",
+    "classic/model/arrival/basic/task_arrival.v",
+    "classic/model/arrival/curves/bounds.v",
+    "classic/model/priority.v",
+    "classic/model/schedule/uni/limited/abstract_RTA/abstract_seq_rta.v",
+    "classic/model/schedule/uni/limited/abstract_RTA/definitions.v",
+    "classic/model/schedule/uni/limited/abstract_RTA/reduction_of_search_space.v",
+    "classic/model/schedule/uni/limited/busy_interval.v",
+    "classic/model/schedule/uni/limited/jlfp_instantiation.v",
+    "classic/model/schedule/uni/limited/platform/definitions.v",
+    "classic/model/schedule/uni/limited/rbf.v",
+    "classic/model/schedule/uni/limited/schedule.v",
+    "classic/model/schedule/uni/response_time.v",
+    "classic/model/schedule/uni/schedule.v",
+    "classic/model/schedule/uni/schedule_of_task.v",
+    "classic/model/schedule/uni/service.v",
+    "classic/model/schedule/uni/workload.v",
+    "classic/util/all.v"
+  ],
+  "declaration_count": 9,
+  "base_run": null,
+  "base_checks": [],
+  "source_mode": "official_closure",
+  "official_closure": {
+    "files": "tooling/classic/closures/classic_model_schedule_uni_limited_edf_response_time_bound.txt",
+    "patches": [
+      "patches/classic/rocq93-util-tactics.patch",
+      "patches/classic/rocq93-util-list.patch",
+      "patches/classic/rocq93-util-bigcat.patch",
+      "patches/classic/rocq93-util-div_mod.patch",
+      "patches/prosa-v06-rocq93-util-minmax.patch",
+      "patches/classic/rocq93-util-seqset.patch",
+      "patches/classic/rocq93-util-sum.patch",
+      "patches/classic/rocq93-util-unit_growth.patch"
+    ]
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/ClassicLimitedEdfRtaTypeFingerprintProbe.v",
+  "production": "Prosa/Classic/Model/Schedule/Uni/Limited/Edf/ResponseTimeBound.lean",
+  "production_olean": "Prosa/Classic/Model/Schedule/Uni/Limited/Edf/ResponseTimeBound.olean",
+  "lean_namespace": "Prosa.Classic.Model.Schedule.Uni.Limited.Edf.ResponseTimeBound",
+  "fixtures": [
+    "ClassicLimitedEdfRtaInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/ClassicLimitedEdfRtaLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/classic/classic_model_schedule_uni_limited_edf_response_time_bound_export_config.json",
+  "export_name": "ClassicLimitedEdfRta",
+  "cert_dir": "certificates/classic_model_schedule_uni_limited_edf_response_time_bound",
+  "chain": [
+    "ClassicLimitedEdfRtaBase",
+    "ClassicLimitedEdfRtaList",
+    "ClassicLimitedEdfRtaCorrespondence"
+  ],
+  "audit_module": "ClassicLimitedEdfRtaAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/ClassicLimitedEdfRtaImportedTypeAudit.v",
+  "assumption_config": "certificates/classic_model_schedule_uni_limited_edf_response_time_bound/classic_model_schedule_uni_limited_edf_response_time_bound_assumption_config.json",
+  "lean_axiom_config": "certificates/classic_model_schedule_uni_limited_edf_response_time_bound/classic_model_schedule_uni_limited_edf_response_time_bound_lean_axiom_config.json",
+  "computational": [
+    "AbstractRTAforEDFwithArrivalCurves.task_rbf_changes_at",
+    "AbstractRTAforEDFwithArrivalCurves.bound_on_total_hep_workload_changes_at"
+  ],
+  "principal": {},
+  "helpers": [
+    "cer_forall_sched",
+    "cer_forall_par",
+    "cer_forall_arr",
+    "cer_forall_rel",
+    "cer_forall_curve"
+  ],
+  "previous_status": "classic_implementation_apa_schedule_module_status.json",
+  "previous_files": 164,
+  "previous_decls": 1616,
+  "input_relations": [
+    "job and task types: eqTypes identified, Lean DecidableEq instances = the eqTypes' decision procedures; job_task identified",
+    "times by SubNatRel; job parameters pointwise through SubNatRel; schedules pointwise through the option map; arrival sequences pointwise on related times; interference predicates / workloads pointwise on related times (two-way totals)",
+    "arrival curves and interference bound functions pointwise on related arguments; task sequences elementwise (two-way totals)"
+  ],
+  "coverage_for_inner_binders": [],
+  "lean_representation_note": "the Rocq module JLFPInstantiation is a namespace; the section-local `Let`s are unfolded (see the Lean module header); a Boolean summed as a number is `Bool.toNat`; `\\sum_(t1 <= t < t2)` is `\u2211 t \u2208 Finset.Ico t1 t2`",
+  "extra_pinned_sources": [],
+  "extra_artifacts": [],
+  "extra_olean_artifacts": [
+    {
+      "from": "analysis_abstract_abstract_rta_final/olean/Prosa/Util/Tactics.olean",
+      "to": "Prosa/Util/Tactics.olean",
+      "v06_file": "util/tactics.v"
+    },
+    {
+      "from": "classic_util_tactics_final/olean/Prosa/Classic/Util/Tactics.olean",
+      "to": "Prosa/Classic/Util/Tactics.olean",
+      "manifest": "classic_util_tactics",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_abstract_abstract_rta_final/olean/Prosa/Util/Notation.olean",
+      "to": "Prosa/Util/Notation.olean",
+      "v06_file": "util/notation.v"
+    },
+    {
+      "from": "classic_util_notation_final/olean/Prosa/Classic/Util/Notation.olean",
+      "to": "Prosa/Classic/Util/Notation.olean",
+      "manifest": "classic_util_notation",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_abstract_abstract_rta_final/olean/Prosa/Util/Supremum.olean",
+      "to": "Prosa/Util/Supremum.olean",
+      "v06_file": "util/supremum.v"
+    },
+    {
+      "from": "analysis_abstract_abstract_rta_final/olean/Prosa/Util/List.olean",
+      "to": "Prosa/Util/List.olean",
+      "v06_file": "util/list.v"
+    },
+    {
+      "from": "analysis_abstract_abstract_rta_final/olean/Prosa/Util/Bigcat.olean",
+      "to": "Prosa/Util/Bigcat.olean",
+      "v06_file": "util/bigcat.v"
+    },
+    {
+      "from": "analysis_abstract_abstract_rta_final/olean/Prosa/Util/Bigop.olean",
+      "to": "Prosa/Util/Bigop.olean",
+      "v06_file": "util/bigop.v"
+    },
+    {
+      "from": "classic_util_bigord_final/olean/Prosa/Classic/Util/Bigord.olean",
+      "to": "Prosa/Classic/Util/Bigord.olean",
+      "manifest": "classic_util_bigord",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "classic_util_bigcat_final/olean/Prosa/Classic/Util/Bigcat.olean",
+      "to": "Prosa/Classic/Util/Bigcat.olean",
+      "manifest": "classic_util_bigcat",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "classic_util_pick_final/olean/Prosa/Classic/Util/Pick.olean",
+      "to": "Prosa/Classic/Util/Pick.olean",
+      "manifest": "classic_util_pick",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "classic_util_ord_quantifier_final/olean/Prosa/Classic/Util/OrdQuantifier.olean",
+      "to": "Prosa/Classic/Util/OrdQuantifier.olean",
+      "manifest": "classic_util_ord_quantifier",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "classic_util_counting_final/olean/Prosa/Classic/Util/Counting.olean",
+      "to": "Prosa/Classic/Util/Counting.olean",
+      "manifest": "classic_util_counting",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_abstract_abstract_rta_final/olean/Prosa/Util/Nat.olean",
+      "to": "Prosa/Util/Nat.olean",
+      "v06_file": "util/nat.v"
+    },
+    {
+      "from": "analysis_abstract_abstract_rta_final/olean/Prosa/Util/Subadditivity.olean",
+      "to": "Prosa/Util/Subadditivity.olean",
+      "v06_file": "util/subadditivity.v"
+    },
+    {
+      "from": "analysis_abstract_abstract_rta_final/olean/Prosa/Util/Div_mod.olean",
+      "to": "Prosa/Util/Div_mod.olean",
+      "v06_file": "util/div_mod.v"
+    },
+    {
+      "from": "classic_util_nat_final/olean/Prosa/Classic/Util/Nat.olean",
+      "to": "Prosa/Classic/Util/Nat.olean",
+      "manifest": "classic_util_nat",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "classic_util_div_mod_final/olean/Prosa/Classic/Util/DivMod.olean",
+      "to": "Prosa/Classic/Util/DivMod.olean",
+      "manifest": "classic_util_div_mod",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "classic_util_induction_final/olean/Prosa/Classic/Util/Induction.olean",
+      "to": "Prosa/Classic/Util/Induction.olean",
+      "manifest": "classic_util_induction",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "classic_util_fixedpoint_final/olean/Prosa/Classic/Util/Fixedpoint.olean",
+      "to": "Prosa/Classic/Util/Fixedpoint.olean",
+      "manifest": "classic_util_fixedpoint",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "classic_util_list_final/olean/Prosa/Classic/Util/List.olean",
+      "to": "Prosa/Classic/Util/List.olean",
+      "manifest": "classic_util_list",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "classic_util_powerset_final/olean/Prosa/Classic/Util/Powerset.olean",
+      "to": "Prosa/Classic/Util/Powerset.olean",
+      "manifest": "classic_util_powerset",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "classic_util_sorting_final/olean/Prosa/Classic/Util/Sorting.olean",
+      "to": "Prosa/Classic/Util/Sorting.olean",
+      "manifest": "classic_util_sorting",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_abstract_abstract_rta_final/olean/Prosa/Util/Rel.olean",
+      "to": "Prosa/Util/Rel.olean",
+      "v06_file": "util/rel.v"
+    },
+    {
+      "from": "analysis_abstract_abstract_rta_final/olean/Prosa/Util/Sum.olean",
+      "to": "Prosa/Util/Sum.olean",
+      "v06_file": "util/sum.v"
+    },
+    {
+      "from": "classic_util_sum_final/olean/Prosa/Classic/Util/Sum.olean",
+      "to": "Prosa/Classic/Util/Sum.olean",
+      "manifest": "classic_util_sum",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_abstract_abstract_rta_final/olean/Prosa/Util/Setoid.olean",
+      "to": "Prosa/Util/Setoid.olean",
+      "v06_file": "util/setoid.v"
+    },
+    {
+      "from": "analysis_abstract_abstract_rta_final/olean/Prosa/Util/Minmax.olean",
+      "to": "Prosa/Util/Minmax.olean",
+      "v06_file": "util/minmax.v"
+    },
+    {
+      "from": "classic_util_minmax_final/olean/Prosa/Classic/Util/Minmax.olean",
+      "to": "Prosa/Classic/Util/Minmax.olean",
+      "manifest": "classic_util_minmax",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_abstract_abstract_rta_final/olean/Prosa/Util/Seqset.olean",
+      "to": "Prosa/Util/Seqset.olean",
+      "v06_file": "util/seqset.v"
+    },
+    {
+      "from": "classic_util_seqset_final/olean/Prosa/Classic/Util/Seqset.olean",
+      "to": "Prosa/Classic/Util/Seqset.olean",
+      "manifest": "classic_util_seqset",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "classic_util_step_function_final/olean/Prosa/Classic/Util/StepFunction.olean",
+      "to": "Prosa/Classic/Util/StepFunction.olean",
+      "manifest": "classic_util_step_function",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_abstract_abstract_rta_final/olean/Prosa/Util/Epsilon.olean",
+      "to": "Prosa/Util/Epsilon.olean",
+      "v06_file": "util/epsilon.v"
+    },
+    {
+      "from": "classic_util_ssromega_final/olean/Prosa/Classic/Util/Ssromega.olean",
+      "to": "Prosa/Classic/Util/Ssromega.olean",
+      "manifest": "classic_util_ssromega",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "classic_util_all_final/olean/Prosa/Classic/Util/All.olean",
+      "to": "Prosa/Classic/Util/All.olean",
+      "manifest": "classic_util_all",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "classic_model_time_final/olean/Prosa/Classic/Model/Time.olean",
+      "to": "Prosa/Classic/Model/Time.olean",
+      "manifest": "classic_model_time",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "classic_model_arrival_basic_task_final/olean/Prosa/Classic/Model/Arrival/Basic/Task.olean",
+      "to": "Prosa/Classic/Model/Arrival/Basic/Task.olean",
+      "manifest": "classic_model_arrival_basic_task",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "classic_model_arrival_basic_arrival_sequence_final/olean/Prosa/Classic/Model/Arrival/Basic/ArrivalSequence.olean",
+      "to": "Prosa/Classic/Model/Arrival/Basic/ArrivalSequence.olean",
+      "manifest": "classic_model_arrival_basic_arrival_sequence",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "classic_model_arrival_basic_job_final/olean/Prosa/Classic/Model/Arrival/Basic/Job.olean",
+      "to": "Prosa/Classic/Model/Arrival/Basic/Job.olean",
+      "manifest": "classic_model_arrival_basic_job",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "classic_model_arrival_basic_task_arrival_final/olean/Prosa/Classic/Model/Arrival/Basic/TaskArrival.olean",
+      "to": "Prosa/Classic/Model/Arrival/Basic/TaskArrival.olean",
+      "manifest": "classic_model_arrival_basic_task_arrival",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "classic_model_priority_final/olean/Prosa/Classic/Model/Priority.olean",
+      "to": "Prosa/Classic/Model/Priority.olean",
+      "manifest": "classic_model_priority",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_abstract_abstract_rta_final/olean/Prosa/Util/UnitGrowth.olean",
+      "to": "Prosa/Util/UnitGrowth.olean",
+      "v06_file": "util/unit_growth.v"
+    },
+    {
+      "from": "classic_model_schedule_uni_schedule_final/olean/Prosa/Classic/Model/Schedule/Uni/Schedule.olean",
+      "to": "Prosa/Classic/Model/Schedule/Uni/Schedule.olean",
+      "manifest": "classic_model_schedule_uni_schedule",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "classic_model_schedule_uni_workload_final/olean/Prosa/Classic/Model/Schedule/Uni/Workload.olean",
+      "to": "Prosa/Classic/Model/Schedule/Uni/Workload.olean",
+      "manifest": "classic_model_schedule_uni_workload",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "classic_model_schedule_uni_service_final/olean/Prosa/Classic/Model/Schedule/Uni/Service.olean",
+      "to": "Prosa/Classic/Model/Schedule/Uni/Service.olean",
+      "manifest": "classic_model_schedule_uni_service",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "classic_model_schedule_uni_response_time_final/olean/Prosa/Classic/Model/Schedule/Uni/ResponseTime.olean",
+      "to": "Prosa/Classic/Model/Schedule/Uni/ResponseTime.olean",
+      "manifest": "classic_model_schedule_uni_response_time",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "classic_model_schedule_uni_schedule_of_task_final/olean/Prosa/Classic/Model/Schedule/Uni/ScheduleOfTask.olean",
+      "to": "Prosa/Classic/Model/Schedule/Uni/ScheduleOfTask.olean",
+      "manifest": "classic_model_schedule_uni_schedule_of_task",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "classic_model_schedule_uni_basic_platform_final/olean/Prosa/Classic/Model/Schedule/Uni/Basic/Platform.olean",
+      "to": "Prosa/Classic/Model/Schedule/Uni/Basic/Platform.olean",
+      "manifest": "classic_model_schedule_uni_basic_platform",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "classic_model_schedule_uni_nonpreemptive_schedule_final/olean/Prosa/Classic/Model/Schedule/Uni/Nonpreemptive/Schedule.olean",
+      "to": "Prosa/Classic/Model/Schedule/Uni/Nonpreemptive/Schedule.olean",
+      "manifest": "classic_model_schedule_uni_nonpreemptive_schedule",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "classic_model_schedule_uni_limited_platform_definitions_final/olean/Prosa/Classic/Model/Schedule/Uni/Limited/Platform/Definitions.olean",
+      "to": "Prosa/Classic/Model/Schedule/Uni/Limited/Platform/Definitions.olean",
+      "manifest": "classic_model_schedule_uni_limited_platform_definitions",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "classic_model_schedule_uni_limited_schedule_final/olean/Prosa/Classic/Model/Schedule/Uni/Limited/Schedule.olean",
+      "to": "Prosa/Classic/Model/Schedule/Uni/Limited/Schedule.olean",
+      "manifest": "classic_model_schedule_uni_limited_schedule",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "classic_model_arrival_curves_bounds_final/olean/Prosa/Classic/Model/Arrival/Curves/Bounds.olean",
+      "to": "Prosa/Classic/Model/Arrival/Curves/Bounds.olean",
+      "manifest": "classic_model_arrival_curves_bounds",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "classic_analysis_uni_arrival_curves_workload_bound_final/olean/Prosa/Classic/Analysis/Uni/ArrivalCurves/WorkloadBound.olean",
+      "to": "Prosa/Classic/Analysis/Uni/ArrivalCurves/WorkloadBound.olean",
+      "manifest": "classic_analysis_uni_arrival_curves_workload_bound",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "classic_model_schedule_uni_limited_rbf_final/olean/Prosa/Classic/Model/Schedule/Uni/Limited/Rbf.olean",
+      "to": "Prosa/Classic/Model/Schedule/Uni/Limited/Rbf.olean",
+      "manifest": "classic_model_schedule_uni_limited_rbf",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "classic_model_schedule_uni_limited_abstract_RTA_definitions_final/olean/Prosa/Classic/Model/Schedule/Uni/Limited/AbstractRTA/Definitions.olean",
+      "to": "Prosa/Classic/Model/Schedule/Uni/Limited/AbstractRTA/Definitions.olean",
+      "manifest": "classic_model_schedule_uni_limited_abstract_RTA_definitions",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "classic_model_schedule_uni_limited_abstract_RTA_reduction_of_search_space_final/olean/Prosa/Classic/Model/Schedule/Uni/Limited/AbstractRTA/ReductionOfSearchSpace.olean",
+      "to": "Prosa/Classic/Model/Schedule/Uni/Limited/AbstractRTA/ReductionOfSearchSpace.olean",
+      "manifest": "classic_model_schedule_uni_limited_abstract_RTA_reduction_of_search_space",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "classic_model_schedule_uni_limited_abstract_RTA_sufficient_condition_for_lock_in_service_final/olean/Prosa/Classic/Model/Schedule/Uni/Limited/AbstractRTA/SufficientConditionForLockInService.olean",
+      "to": "Prosa/Classic/Model/Schedule/Uni/Limited/AbstractRTA/SufficientConditionForLockInService.olean",
+      "manifest": "classic_model_schedule_uni_limited_abstract_RTA_sufficient_condition_for_lock_in_service",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "classic_model_schedule_uni_limited_abstract_RTA_abstract_rta_final/olean/Prosa/Classic/Model/Schedule/Uni/Limited/AbstractRTA/AbstractRta.olean",
+      "to": "Prosa/Classic/Model/Schedule/Uni/Limited/AbstractRTA/AbstractRta.olean",
+      "manifest": "classic_model_schedule_uni_limited_abstract_RTA_abstract_rta",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "classic_model_schedule_uni_limited_abstract_RTA_abstract_seq_rta_final/olean/Prosa/Classic/Model/Schedule/Uni/Limited/AbstractRTA/AbstractSeqRta.olean",
+      "to": "Prosa/Classic/Model/Schedule/Uni/Limited/AbstractRTA/AbstractSeqRta.olean",
+      "manifest": "classic_model_schedule_uni_limited_abstract_RTA_abstract_seq_rta",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "classic_model_schedule_uni_limited_busy_interval_final/olean/Prosa/Classic/Model/Schedule/Uni/Limited/BusyInterval.olean",
+      "to": "Prosa/Classic/Model/Schedule/Uni/Limited/BusyInterval.olean",
+      "manifest": "classic_model_schedule_uni_limited_busy_interval",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "classic_model_schedule_uni_limited_jlfp_instantiation_final/olean/Prosa/Classic/Model/Schedule/Uni/Limited/JlfpInstantiation.olean",
+      "to": "Prosa/Classic/Model/Schedule/Uni/Limited/JlfpInstantiation.olean",
+      "manifest": "classic_model_schedule_uni_limited_jlfp_instantiation",
+      "key": "production_olean_sha256"
+    }
+  ],
+  "export_env": {
+    "LEAN4EXPORT_PRESERVE_REDUCIBLE_THEOREM_TYPES": "1",
+    "LEAN4EXPORT_NAT_INDEX_ALIASES": "Prosa.Classic.Model.Time.Time.time"
+  }
+}

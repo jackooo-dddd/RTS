@@ -1,0 +1,4 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedClassicInterferenceEdf.
+
+Check ImportedClassicInterferenceEdf.Prosa_Classic_Model_Schedule_Global_Basic_InterferenceEdf_InterferenceEDF_interference_under_edf_implies_shorter_deadlines.

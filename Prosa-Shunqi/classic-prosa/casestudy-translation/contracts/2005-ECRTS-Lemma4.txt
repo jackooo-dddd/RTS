@@ -1,0 +1,102 @@
+@ResponseTimeAnalysisEDF.cumulative_task_interference
+     : forall sporadic_task Job : eqType,
+       (Job -> time.Time.time) ->
+       (Job -> time.Time.time) ->
+       (Job -> sporadic_task) ->
+       SporadicTaskset.taskset_of sporadic_task ->
+       forall num_cpus : nat,
+       Schedule.schedule Job num_cpus ->
+       sporadic_task -> Job -> time.Time.time -> time.Time.time -> nat
+ResponseTimeAnalysisEDF.cumulative_task_interference =
+fun (sporadic_task Job : eqType)
+  (job_arrival job_cost : Job -> time.Time.time)
+  (job_task : Job -> sporadic_task)
+  (ts : SporadicTaskset.taskset_of sporadic_task) 
+  (num_cpus : nat) (sched : Schedule.schedule Job num_cpus)
+  (tsk : sporadic_task) (j : Job) (a b : time.Time.time) =>
+\sum_(tsk_other <- ts | tsk_other != tsk)
+   Interference.task_interference job_arrival job_cost job_task sched j
+     tsk_other a b
+     : forall {sporadic_task Job : eqType},
+       (Job -> time.Time.time) ->
+       (Job -> time.Time.time) ->
+       (Job -> sporadic_task) ->
+       SporadicTaskset.taskset_of sporadic_task ->
+       forall num_cpus : nat,
+       Schedule.schedule Job num_cpus ->
+       sporadic_task -> Job -> time.Time.time -> time.Time.time -> nat
+
+Arguments ResponseTimeAnalysisEDF.cumulative_task_interference
+  {sporadic_task Job} (job_arrival job_cost job_task)%function_scope 
+  ts num_cpus%nat_scope sched tsk j a b
+@ResponseTimeAnalysisEDF.Lemma4_05
+     : forall (sporadic_task : eqType)
+         (task_cost task_period
+          task_deadline : sporadic_task -> time.Time.time)
+         (Job : eqType)
+         (job_arrival job_cost job_deadline : Job -> time.Time.time)
+         (job_task : Job -> sporadic_task)
+         (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job),
+       (forall j : Job,
+        arrival_sequence.ArrivalSequence.arrives_in arr_seq j ->
+        Job.valid_sporadic_job task_cost task_deadline job_cost job_deadline
+          job_task j) ->
+       forall ts : SporadicTaskset.taskset_of sporadic_task,
+       SporadicTaskset.valid_sporadic_taskset task_cost task_period
+         task_deadline ts ->
+       TaskArrival.sporadic_task_model task_period job_arrival job_task
+         arr_seq ->
+       (forall j : Job,
+        arrival_sequence.ArrivalSequence.arrives_in arr_seq j ->
+        job_task j \in ts) ->
+       forall (num_cpus : nat) (sched : Schedule.schedule Job num_cpus),
+       Platform.respects_JLFP_policy job_arrival job_cost arr_seq sched
+         (Priority.EDF job_arrival job_deadline) ->
+       Schedule.jobs_must_arrive_to_execute job_arrival sched ->
+       Schedule.jobs_come_from_arrival_sequence sched arr_seq ->
+       Schedule.sequential_jobs sched ->
+       (forall (j1 j2 : Job) (t : time.Time.time)
+          (cpu : Schedule.processor num_cpus),
+        arrival_sequence.ArrivalSequence.arrives_in arr_seq j1 ->
+        arrival_sequence.ArrivalSequence.arrives_in arr_seq j2 ->
+        job_task j1 = job_task j2 ->
+        job_arrival j1 < job_arrival j2 ->
+        Schedule.scheduled_on sched j2 cpu t ->
+        Schedule.completed job_cost sched j1 t) ->
+       arrival_sequence.ArrivalSequence.arrival_times_are_consistent
+         job_arrival arr_seq ->
+       arrival_sequence.ArrivalSequence.arrival_sequence_is_a_set arr_seq ->
+       0 < num_cpus ->
+       Schedule.completed_jobs_dont_execute job_cost sched ->
+       Platform.work_conserving job_arrival job_cost arr_seq sched ->
+       (forall tsk : sporadic_task,
+        tsk \in ts -> task_deadline tsk <= task_period tsk) ->
+       forall tsk : sporadic_task,
+       tsk \in ts ->
+       (forall (j0 : Job) (t : nat) (j : Job),
+        arrival_sequence.ArrivalSequence.arrives_in arr_seq j0 ->
+        arrival_sequence.ArrivalSequence.arrives_in arr_seq j ->
+        job_task j0 = tsk ->
+        job_task j = tsk ->
+        job_arrival j0 < job_arrival j ->
+        job_arrival j <= t -> Schedule.completed job_cost sched j0 t) ->
+       (forall (j : Job) (a b : time.Time.time),
+        arrival_sequence.ArrivalSequence.arrives_in arr_seq j ->
+        job_task j = tsk ->
+        ResponseTimeAnalysisEDF.cumulative_task_interference job_arrival
+          job_cost job_task ts num_cpus sched tsk j a b =
+        num_cpus *
+        Interference.total_interference job_arrival job_cost sched j a b) ->
+       forall (j : Job) (a b : time.Time.time) (c : nat),
+       arrival_sequence.ArrivalSequence.arrives_in arr_seq j ->
+       job_task j = tsk ->
+       c <= Interference.total_interference job_arrival job_cost sched j a b <->
+       num_cpus * c <=
+       \sum_(t <- ts | t != tsk)
+          PeanoNat.Nat.min
+            (Interference.task_interference job_arrival job_cost job_task
+               sched j t a b)
+            c
+with arguments constr at level 99, constr and "[ pairs ( _ , _ ) | _ <- _ ]"
+defined at level 0 with arguments constr at level 1, constr at level 1
+have incompatible prefixes. One of them will likely not work.

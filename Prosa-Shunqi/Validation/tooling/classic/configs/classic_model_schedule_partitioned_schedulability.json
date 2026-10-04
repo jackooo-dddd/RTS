@@ -1,0 +1,91 @@
+{
+  "rank": 100,
+  "layer": 12,
+  "classic_scope": "full",
+  "slug": "classic_model_schedule_partitioned_schedulability",
+  "tag": "CPSCHB",
+  "export_name": "ClassicPartitionedSchedulability",
+  "source": "classic/model/schedule/partitioned/schedulability.v",
+  "production": "Prosa/Classic/Model/Schedule/Partitioned/Schedulability.lean",
+  "fixtures": [
+    "ClassicPartitionedSchedulabilityInterface"
+  ],
+  "export_module": "Validation.fixtures.translation_order.ClassicPartitionedSchedulabilityInterface",
+  "interface_theorems": [
+    "Prosa.Validation.ClassicPartitionedSchedulabilityInterface.finRange_any",
+    "Prosa.Validation.ClassicPartitionedSchedulabilityInterface.bigCatFin_range'",
+    "Prosa.Validation.ClassicPartitionedSchedulabilityInterface.fin_sum_range'",
+    "Prosa.Validation.ClassicPartitionedSchedulabilityInterface.bigCat_range'",
+    "Prosa.Validation.ClassicPartitionedSchedulabilityInterface.count_filter_eq",
+    "Prosa.Validation.ClassicPartitionedSchedulabilityInterface.service_at_sum",
+    "Prosa.Validation.ClassicPartitionedSchedulabilityInterface.dedup_nil",
+    "Prosa.Validation.ClassicPartitionedSchedulabilityInterface.dedup_cons_mem",
+    "Prosa.Validation.ClassicPartitionedSchedulabilityInterface.dedup_cons_not_mem"
+  ],
+  "computational": [],
+  "chain": [
+    "ClassicPartitionedSchedulabilityBase",
+    "ClassicPartitionedSchedulabilityList",
+    "ClassicPartitionedSchedulabilityOrd",
+    "ClassicPartitionedSchedulabilityCorrespondence"
+  ],
+  "principal": {},
+  "helpers": [
+    "cpg_forall_ncpus_sched",
+    "cpp_forall_assign"
+  ],
+  "base_run": null,
+  "base_checks": [],
+  "previous_status": "classic_model_schedule_partitioned_schedule_module_status.json",
+  "input_relations": [
+    "job and task types: eqTypes identified, Lean DecidableEq instances = the eqTypes' decision procedures; job_task identified",
+    "times and processor counts by SubNatRel; processors by CoOrdRel; schedules pointwise through the option map; task sequences elementwise; processor assignments pointwise (two-way totals)"
+  ],
+  "lean_representation_note": "the Rocq module PartitionSchedulability is a namespace; the uniprocessor view of processor `cpu` is `sched cpu`",
+  "prop_sprop_foundation": [
+    "PropSPropFoundation.interpret_strict"
+  ],
+  "importer_foundation": [
+    "ImportedClassicPartitionedSchedulability.Classical_choice",
+    "ImportedClassicPartitionedSchedulability.Quot_sound",
+    "ImportedClassicPartitionedSchedulability.propext",
+    "PrimInt63.eqb",
+    "PrimInt63.int",
+    "PrimInt63.land",
+    "PrimInt63.lsr"
+  ],
+  "rocq_sprop_uip": [
+    "ClassicPartitionedSchedulabilityBase.I.HEq_inst1",
+    "ClassicPartitionedSchedulabilityBase.I.True",
+    "ClassicPartitionedSchedulabilityOrd.I.HEq",
+    "ClassicPartitionedSchedulabilityOrd.I.HEq_inst1",
+    "ClassicPartitionedSchedulabilityOrd.I.True",
+    "I.HEq",
+    "I.HEq_inst1",
+    "I.True",
+    "Lean.eq",
+    "Lean.eq_inst1",
+    "SubadditivityNatCorrespondence.SubNatTrue"
+  ],
+  "normalization": {
+    "theorem_types": [],
+    "subexpression_heads": [
+      "Finset.sum"
+    ],
+    "definition_bodies": [],
+    "body_projections": [
+      "Prosa.Classic.Model.Schedule.Global.Basic.Schedule.Schedule.service=Prosa.Validation.ClassicPartitionedSchedulabilityInterface.service_proj=Prosa.Validation.ClassicPartitionedSchedulabilityInterface.service_proj_guard",
+      "Prosa.Classic.Model.Schedule.Global.Basic.Schedule.Schedule.service_during=Prosa.Validation.ClassicPartitionedSchedulabilityInterface.service_during_proj=Prosa.Validation.ClassicPartitionedSchedulabilityInterface.service_during_proj_guard",
+      "Prosa.Classic.Model.Schedule.Uni.Schedule.UniprocessorSchedule.service_during=Prosa.Validation.ClassicPartitionedSchedulabilityInterface.UniProj.uni_service_during_proj=Prosa.Validation.ClassicPartitionedSchedulabilityInterface.UniProj.uni_service_during_proj_guard",
+      "Prosa.Classic.Model.Schedule.Uni.Schedule.UniprocessorSchedule.total_service_during=Prosa.Validation.ClassicPartitionedSchedulabilityInterface.UniProj.uni_total_service_during_proj=Prosa.Validation.ClassicPartitionedSchedulabilityInterface.UniProj.uni_total_service_during_proj_guard"
+    ]
+  },
+  "export_env": {
+    "LEAN4EXPORT_PRESERVE_REDUCIBLE_THEOREM_TYPES": "1",
+    "LEAN4EXPORT_NAT_INDEX_ALIASES": "Prosa.Classic.Model.Time.Time.time"
+  },
+  "export_diagnosis": "~160,000 lines: as for the accepted classic global schedule export (159,148 lines): the global service_at is a filtered Finset sum over Fin num_cpus (Mathlib Finset/Multiset/Quot closure), jobs_scheduled_between uses Mathlib List.dedup, and the restated ClassicScheduleInterface theorems are exported with their proof bodies; the half-open Finset.Ico sums (global and uniprocessor service) are kept out of the export by kernel-guarded body projections.",
+  "kernel_guard_artifacts": [
+    "Validation/fixtures/translation_order/ClassicPartitionedSchedulabilityInterface.lean"
+  ]
+}

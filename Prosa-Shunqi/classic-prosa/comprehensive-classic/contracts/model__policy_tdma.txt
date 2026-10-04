@@ -1,0 +1,133 @@
+# classic/model/policy_tdma.v: 15 declarations
+
+## Print Module
+
+Module policy_tdma := Struct Module PolicyTDMA End
+
+Module
+PolicyTDMA
+:= Struct
+     Definition TDMA_slot : eqtype.Equality.type -> Type.
+     Definition TDMA_slot_order : eqtype.Equality.type -> Type.
+     Definition slot_order_is_transitive : forall Task : eqtype.Equality.type, TDMA_slot_order Task -> Prop.
+     Definition slot_order_is_total_over_task_set : forall Task : eqtype.Equality.type, seqset.set_of (ssreflect.Phant (eqtype.Equality.sort Task)) -> TDMA_slot_order Task -> Prop.
+     Definition slot_order_is_antisymmetric_over_task_set : forall Task : eqtype.Equality.type, seqset.set_of (ssreflect.Phant (eqtype.Equality.sort Task)) -> TDMA_slot_order Task -> Prop.
+     Definition is_valid_time_slot : forall Task : eqtype.Equality.type, eqtype.Equality.sort Task -> TDMA_slot Task -> bool.
+     Definition TDMA_cycle : forall Task : eqtype.Equality.type, seqset.set_of (ssreflect.Phant (eqtype.Equality.sort Task)) -> TDMA_slot Task -> nat.
+     Definition Task_slot_offset : forall Task : eqtype.Equality.type, seqset.set_of (ssreflect.Phant (eqtype.Equality.sort Task)) -> TDMA_slot_order Task -> eqtype.Equality.sort Task -> TDMA_slot Task -> nat.
+     Definition Task_in_time_slot : forall Task : eqtype.Equality.type, seqset.set_of (ssreflect.Phant (eqtype.Equality.sort Task)) -> TDMA_slot_order Task -> eqtype.Equality.sort Task -> TDMA_slot Task -> time.Time.time -> bool.
+     Parameter TDMA_cycle_ge_each_time_slot : forall (Task : eqtype.Equality.type) (ts : seqset.set_of (ssreflect.Phant (eqtype.Equality.sort Task))) (task : eqtype.Equality.sort Task), is_true (ssrbool.in_mem task (ssrbool.mem ts)) -> forall task_time_slot : TDMA_slot Task, is_true (ssrnat.leq (task_time_slot task) (TDMA_cycle ts task_time_slot)).
+     Parameter TDMA_cycle_positive : forall (Task : eqtype.Equality.type) (ts : seqset.set_of (ssreflect.Phant (eqtype.Equality.sort Task))) (task : eqtype.Equality.sort Task), is_true (ssrbool.in_mem task (ssrbool.mem ts)) -> forall task_time_slot : TDMA_slot Task, is_true (is_valid_time_slot task task_time_slot) -> is_true (ssrnat.leq 1 (TDMA_cycle ts task_time_slot)).
+     Parameter Offset_lt_cycle : forall (Task : eqtype.Equality.type) (ts : seqset.set_of (ssreflect.Phant (eqtype.Equality.sort Task))) (slot_order : TDMA_slot_order Task) (task : eqtype.Equality.sort Task), is_true (ssrbool.in_mem task (ssrbool.mem ts)) -> forall task_time_slot : TDMA_slot Task, is_true (is_valid_time_slot task task_time_slot) -> is_true (ssrnat.leq (S (Task_slot_offset ts slot_order task task_time_slot)) (TDMA_cycle ts task_time_slot)).
+     Parameter Offset_add_slot_leq_cycle : forall (Task : eqtype.Equality.type) (ts : seqset.set_of (ssreflect.Phant (eqtype.Equality.sort Task))) (slot_order : TDMA_slot_order Task) (task : eqtype.Equality.sort Task), is_true (ssrbool.in_mem task (ssrbool.mem ts)) -> forall task_time_slot : TDMA_slot Task, is_true (ssrnat.leq (ssrnat.addn (Task_slot_offset ts slot_order task task_time_slot) (task_time_slot task)) (TDMA_cycle ts task_time_slot)).
+     Parameter relation_offset : forall (Task : eqtype.Equality.type) (ts : seqset.set_of (ssreflect.Phant (eqtype.Equality.sort Task))) (slot_order : TDMA_slot_order Task) (task_time_slot : TDMA_slot Task), slot_order_is_antisymmetric_over_task_set ts slot_order -> slot_order_is_transitive slot_order -> forall tsk1 tsk2 : eqtype.Equality.sort Task, is_true (ssrbool.in_mem tsk1 (ssrbool.mem ts)) -> is_true (ssrbool.in_mem tsk2 (ssrbool.mem ts)) -> is_true (slot_order tsk1 tsk2) -> is_true (negb (eqtype.eq_op tsk1 tsk2)) -> is_true (ssrnat.leq (ssrnat.addn (Task_slot_offset ts slot_order tsk1 task_time_slot) (task_time_slot tsk1)) (Task_slot_offset ts slot_order tsk2 task_time_slot)).
+     Parameter task_in_time_slot_uniq : forall (Task : eqtype.Equality.type) (ts : seqset.set_of (ssreflect.Phant (eqtype.Equality.sort Task))) (slot_order : TDMA_slot_order Task) (task_time_slot : TDMA_slot Task), slot_order_is_total_over_task_set ts slot_order -> slot_order_is_antisymmetric_over_task_set ts slot_order -> slot_order_is_transitive slot_order -> forall (tsk1 tsk2 : eqtype.Equality.sort Task) (t : time.Time.time), is_true (ssrbool.in_mem tsk1 (ssrbool.mem ts)) -> is_true (ssrnat.leq 1 (task_time_slot tsk1)) -> is_true (ssrbool.in_mem tsk2 (ssrbool.mem ts)) -> is_true (ssrnat.leq 1 (task_time_slot tsk2)) -> is_true (Task_in_time_slot ts slot_order tsk1 task_time_slot t) -> is_true (Task_in_time_slot ts slot_order tsk2 task_time_slot t) -> tsk1 = tsk2.
+   End
+
+## About
+
+PolicyTDMA.TDMA_slot : eqtype.Equality.type -> Type
+
+PolicyTDMA.TDMA_slot is not universe polymorphic
+Arguments PolicyTDMA.TDMA_slot Task
+PolicyTDMA.TDMA_slot is transparent
+Expands to: Constant prosa.classic.model.policy_tdma.PolicyTDMA.TDMA_slot
+Declared in library prosa.classic.model.policy_tdma, line 24, characters 15-24
+PolicyTDMA.TDMA_slot_order : eqtype.Equality.type -> Type
+
+PolicyTDMA.TDMA_slot_order is not universe polymorphic
+Arguments PolicyTDMA.TDMA_slot_order Task
+PolicyTDMA.TDMA_slot_order is transparent
+Expands to: Constant prosa.classic.model.policy_tdma.PolicyTDMA.TDMA_slot_order
+Declared in library prosa.classic.model.policy_tdma, line 26, characters 15-30
+PolicyTDMA.slot_order_is_transitive : forall {Task : eqtype.Equality.type}, PolicyTDMA.TDMA_slot_order Task -> Prop
+
+PolicyTDMA.slot_order_is_transitive is not universe polymorphic
+Arguments PolicyTDMA.slot_order_is_transitive {Task} slot_order
+PolicyTDMA.slot_order_is_transitive is transparent
+Expands to: Constant prosa.classic.model.policy_tdma.PolicyTDMA.slot_order_is_transitive
+Declared in library prosa.classic.model.policy_tdma, line 44, characters 17-41
+PolicyTDMA.slot_order_is_total_over_task_set : forall {Task : eqtype.Equality.type}, seqset.set_of (ssreflect.Phant (eqtype.Equality.sort Task)) -> PolicyTDMA.TDMA_slot_order Task -> Prop
+
+PolicyTDMA.slot_order_is_total_over_task_set is not universe polymorphic
+Arguments PolicyTDMA.slot_order_is_total_over_task_set {Task} ts slot_order
+PolicyTDMA.slot_order_is_total_over_task_set is transparent
+Expands to: Constant prosa.classic.model.policy_tdma.PolicyTDMA.slot_order_is_total_over_task_set
+Declared in library prosa.classic.model.policy_tdma, line 47, characters 17-50
+PolicyTDMA.slot_order_is_antisymmetric_over_task_set : forall {Task : eqtype.Equality.type}, seqset.set_of (ssreflect.Phant (eqtype.Equality.sort Task)) -> PolicyTDMA.TDMA_slot_order Task -> Prop
+
+PolicyTDMA.slot_order_is_antisymmetric_over_task_set is not universe polymorphic
+Arguments PolicyTDMA.slot_order_is_antisymmetric_over_task_set {Task} ts slot_order
+PolicyTDMA.slot_order_is_antisymmetric_over_task_set is transparent
+Expands to: Constant prosa.classic.model.policy_tdma.PolicyTDMA.slot_order_is_antisymmetric_over_task_set
+Declared in library prosa.classic.model.policy_tdma, line 51, characters 17-58
+PolicyTDMA.is_valid_time_slot : forall {Task : eqtype.Equality.type}, eqtype.Equality.sort Task -> PolicyTDMA.TDMA_slot Task -> bool
+
+PolicyTDMA.is_valid_time_slot is not universe polymorphic
+Arguments PolicyTDMA.is_valid_time_slot {Task} task task_time_slot
+PolicyTDMA.is_valid_time_slot is transparent
+Expands to: Constant prosa.classic.model.policy_tdma.PolicyTDMA.is_valid_time_slot
+Declared in library prosa.classic.model.policy_tdma, line 67, characters 17-35
+PolicyTDMA.TDMA_cycle : forall {Task : eqtype.Equality.type}, seqset.set_of (ssreflect.Phant (eqtype.Equality.sort Task)) -> PolicyTDMA.TDMA_slot Task -> nat
+
+PolicyTDMA.TDMA_cycle is not universe polymorphic
+Arguments PolicyTDMA.TDMA_cycle {Task} ts task_time_slot
+PolicyTDMA.TDMA_cycle is transparent
+Expands to: Constant prosa.classic.model.policy_tdma.PolicyTDMA.TDMA_cycle
+Declared in library prosa.classic.model.policy_tdma, line 71, characters 17-27
+PolicyTDMA.Task_slot_offset : forall {Task : eqtype.Equality.type}, seqset.set_of (ssreflect.Phant (eqtype.Equality.sort Task)) -> PolicyTDMA.TDMA_slot_order Task -> eqtype.Equality.sort Task -> PolicyTDMA.TDMA_slot Task -> nat
+
+PolicyTDMA.Task_slot_offset is not universe polymorphic
+Arguments PolicyTDMA.Task_slot_offset {Task} ts slot_order task task_time_slot
+PolicyTDMA.Task_slot_offset is transparent
+Expands to: Constant prosa.classic.model.policy_tdma.PolicyTDMA.Task_slot_offset
+Declared in library prosa.classic.model.policy_tdma, line 77, characters 17-33
+PolicyTDMA.Task_in_time_slot : forall {Task : eqtype.Equality.type}, seqset.set_of (ssreflect.Phant (eqtype.Equality.sort Task)) -> PolicyTDMA.TDMA_slot_order Task -> eqtype.Equality.sort Task -> PolicyTDMA.TDMA_slot Task -> time.Time.time -> bool
+
+PolicyTDMA.Task_in_time_slot is not universe polymorphic
+Arguments PolicyTDMA.Task_in_time_slot {Task} ts slot_order task task_time_slot t
+PolicyTDMA.Task_in_time_slot is transparent
+Expands to: Constant prosa.classic.model.policy_tdma.PolicyTDMA.Task_in_time_slot
+Declared in library prosa.classic.model.policy_tdma, line 81, characters 17-34
+PolicyTDMA.TDMA_cycle_ge_each_time_slot : forall {Task : eqtype.Equality.type} (ts : seqset.set_of (ssreflect.Phant (eqtype.Equality.sort Task))) (task : eqtype.Equality.sort Task), is_true (ssrbool.in_mem task (ssrbool.mem ts)) -> forall task_time_slot : PolicyTDMA.TDMA_slot Task, is_true (ssrnat.leq (task_time_slot task) (PolicyTDMA.TDMA_cycle ts task_time_slot))
+
+PolicyTDMA.TDMA_cycle_ge_each_time_slot is not universe polymorphic
+Arguments PolicyTDMA.TDMA_cycle_ge_each_time_slot {Task} ts task H_task_in_ts task_time_slot
+PolicyTDMA.TDMA_cycle_ge_each_time_slot is opaque
+Expands to: Constant prosa.classic.model.policy_tdma.PolicyTDMA.TDMA_cycle_ge_each_time_slot
+Declared in library prosa.classic.model.policy_tdma, line 93, characters 14-42
+PolicyTDMA.TDMA_cycle_positive : forall {Task : eqtype.Equality.type} (ts : seqset.set_of (ssreflect.Phant (eqtype.Equality.sort Task))) (task : eqtype.Equality.sort Task), is_true (ssrbool.in_mem task (ssrbool.mem ts)) -> forall task_time_slot : PolicyTDMA.TDMA_slot Task, is_true (PolicyTDMA.is_valid_time_slot task task_time_slot) -> is_true (ssrnat.leq 1 (PolicyTDMA.TDMA_cycle ts task_time_slot))
+
+PolicyTDMA.TDMA_cycle_positive is not universe polymorphic
+Arguments PolicyTDMA.TDMA_cycle_positive {Task} ts task H_task_in_ts task_time_slot time_slot_positive
+PolicyTDMA.TDMA_cycle_positive is opaque
+Expands to: Constant prosa.classic.model.policy_tdma.PolicyTDMA.TDMA_cycle_positive
+Declared in library prosa.classic.model.policy_tdma, line 102, characters 14-33
+PolicyTDMA.Offset_lt_cycle : forall {Task : eqtype.Equality.type} (ts : seqset.set_of (ssreflect.Phant (eqtype.Equality.sort Task))) (slot_order : PolicyTDMA.TDMA_slot_order Task) (task : eqtype.Equality.sort Task), is_true (ssrbool.in_mem task (ssrbool.mem ts)) -> forall task_time_slot : PolicyTDMA.TDMA_slot Task, is_true (PolicyTDMA.is_valid_time_slot task task_time_slot) -> is_true (ssrnat.leq (S (PolicyTDMA.Task_slot_offset ts slot_order task task_time_slot)) (PolicyTDMA.TDMA_cycle ts task_time_slot))
+
+PolicyTDMA.Offset_lt_cycle is not universe polymorphic
+Arguments PolicyTDMA.Offset_lt_cycle {Task} ts slot_order task H_task_in_ts task_time_slot time_slot_positive
+PolicyTDMA.Offset_lt_cycle is opaque
+Expands to: Constant prosa.classic.model.policy_tdma.PolicyTDMA.Offset_lt_cycle
+Declared in library prosa.classic.model.policy_tdma, line 109, characters 14-29
+PolicyTDMA.Offset_add_slot_leq_cycle : forall {Task : eqtype.Equality.type} (ts : seqset.set_of (ssreflect.Phant (eqtype.Equality.sort Task))) (slot_order : PolicyTDMA.TDMA_slot_order Task) (task : eqtype.Equality.sort Task), is_true (ssrbool.in_mem task (ssrbool.mem ts)) -> forall task_time_slot : PolicyTDMA.TDMA_slot Task, is_true (ssrnat.leq (ssrnat.addn (PolicyTDMA.Task_slot_offset ts slot_order task task_time_slot) (task_time_slot task)) (PolicyTDMA.TDMA_cycle ts task_time_slot))
+
+PolicyTDMA.Offset_add_slot_leq_cycle is not universe polymorphic
+Arguments PolicyTDMA.Offset_add_slot_leq_cycle {Task} ts slot_order task H_task_in_ts task_time_slot
+PolicyTDMA.Offset_add_slot_leq_cycle is opaque
+Expands to: Constant prosa.classic.model.policy_tdma.PolicyTDMA.Offset_add_slot_leq_cycle
+Declared in library prosa.classic.model.policy_tdma, line 122, characters 14-39
+PolicyTDMA.relation_offset : forall {Task : eqtype.Equality.type} (ts : seqset.set_of (ssreflect.Phant (eqtype.Equality.sort Task))) (slot_order : PolicyTDMA.TDMA_slot_order Task) (task_time_slot : PolicyTDMA.TDMA_slot Task), PolicyTDMA.slot_order_is_antisymmetric_over_task_set ts slot_order -> PolicyTDMA.slot_order_is_transitive slot_order -> forall tsk1 tsk2 : eqtype.Equality.sort Task, is_true (ssrbool.in_mem tsk1 (ssrbool.mem ts)) -> is_true (ssrbool.in_mem tsk2 (ssrbool.mem ts)) -> is_true (slot_order tsk1 tsk2) -> is_true (negb (eqtype.eq_op tsk1 tsk2)) -> is_true (ssrnat.leq (ssrnat.addn (PolicyTDMA.Task_slot_offset ts slot_order tsk1 task_time_slot) (task_time_slot tsk1)) (PolicyTDMA.Task_slot_offset ts slot_order tsk2 task_time_slot))
+
+PolicyTDMA.relation_offset is not universe polymorphic
+Arguments PolicyTDMA.relation_offset {Task} ts slot_order task_time_slot slot_order_antisymmetric slot_order_transitive tsk1 tsk2 _ _ _ _
+PolicyTDMA.relation_offset is opaque
+Expands to: Constant prosa.classic.model.policy_tdma.PolicyTDMA.relation_offset
+Declared in library prosa.classic.model.policy_tdma, line 159, characters 12-27
+PolicyTDMA.task_in_time_slot_uniq : forall {Task : eqtype.Equality.type} (ts : seqset.set_of (ssreflect.Phant (eqtype.Equality.sort Task))) (slot_order : PolicyTDMA.TDMA_slot_order Task) (task_time_slot : PolicyTDMA.TDMA_slot Task), PolicyTDMA.slot_order_is_total_over_task_set ts slot_order -> PolicyTDMA.slot_order_is_antisymmetric_over_task_set ts slot_order -> PolicyTDMA.slot_order_is_transitive slot_order -> forall (tsk1 tsk2 : eqtype.Equality.sort Task) (t : time.Time.time), is_true (ssrbool.in_mem tsk1 (ssrbool.mem ts)) -> is_true (ssrnat.leq 1 (task_time_slot tsk1)) -> is_true (ssrbool.in_mem tsk2 (ssrbool.mem ts)) -> is_true (ssrnat.leq 1 (task_time_slot tsk2)) -> is_true (PolicyTDMA.Task_in_time_slot ts slot_order tsk1 task_time_slot t) -> is_true (PolicyTDMA.Task_in_time_slot ts slot_order tsk2 task_time_slot t) -> tsk1 = tsk2
+
+PolicyTDMA.task_in_time_slot_uniq is not universe polymorphic
+Arguments PolicyTDMA.task_in_time_slot_uniq {Task} ts slot_order task_time_slot slot_order_total slot_order_antisymmetric slot_order_transitive tsk1 tsk2 t _ _ _ _ _ _
+PolicyTDMA.task_in_time_slot_uniq is opaque
+Expands to: Constant prosa.classic.model.policy_tdma.PolicyTDMA.task_in_time_slot_uniq
+Declared in library prosa.classic.model.policy_tdma, line 181, characters 12-34

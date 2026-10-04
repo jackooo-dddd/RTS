@@ -1,0 +1,72 @@
+{
+  "rank": 45,
+  "layer": 9,
+  "classic_scope": "full",
+  "slug": "classic_model_arrival_jitter_task_arrival",
+  "tag": "CJTARR",
+  "export_name": "ClassicJitterTaskArrival",
+  "source": "classic/model/arrival/jitter/task_arrival.v",
+  "production": "Prosa/Classic/Model/Arrival/Jitter/TaskArrival.lean",
+  "fixtures": [
+    "ClassicJitterTaskArrivalInterface"
+  ],
+  "export_module": "Validation.fixtures.translation_order.ClassicJitterTaskArrivalInterface",
+  "interface_theorems": [
+    "Prosa.Validation.ClassicJitterTaskArrivalInterface.bigCat_range'",
+    "Prosa.Validation.ClassicJitterTaskArrivalInterface.mergeSort_isChain",
+    "Prosa.Validation.ClassicJitterTaskArrivalInterface.mergeSort_filter_class"
+  ],
+  "computational": [
+    "TaskArrivalWithJitter.is_job_of_tsk",
+    "TaskArrivalWithJitter.actual_arrivals_of_task_between",
+    "TaskArrivalWithJitter.num_actual_arrivals_of_task"
+  ],
+  "chain": [
+    "ClassicJitterTaskArrivalBase",
+    "ClassicJitterTaskArrivalList",
+    "ClassicJitterTaskArrivalCorrespondence"
+  ],
+  "principal": {},
+  "helpers": [
+    "cjt_sort_rel",
+    "cjt_sorted_class_uniq",
+    "cjt_bigcat_rel",
+    "cjt_getD",
+    "cjt_forall_arr",
+    "cjt_forall_par"
+  ],
+  "base_run": null,
+  "base_checks": [],
+  "previous_status": "classic_model_arrival_curves_bounds_module_status.json",
+  "input_relations": [
+    "job and task types: eqTypes identified, Lean DecidableEq instances = the eqTypes' decision procedures; job_task identified",
+    "times by SubNatRel; job/task parameters pointwise through SubNatRel; sequences elementwise; arrival sequences pointwise on related times (two-way totals)"
+  ],
+  "lean_representation_note": "the Rocq module TaskArrivalWithJitter is a namespace; `[seq j <- s | p j]` is `List.filter`; `sort (fun j j' => f j <= f j')` is `List.mergeSort` with `decide (f j \u2264 f j')`; `nth x0 s i` is `List.getD s i x0`; `n.-1` is `n - 1`; Boolean conjunctions in Prop positions use `= true`",
+  "prop_sprop_foundation": [
+    "PropSPropFoundation.interpret_strict"
+  ],
+  "importer_foundation": [
+    "ImportedClassicJitterTaskArrival.Classical_choice",
+    "ImportedClassicJitterTaskArrival.Quot_sound",
+    "ImportedClassicJitterTaskArrival.propext",
+    "PrimInt63.eqb",
+    "PrimInt63.int",
+    "PrimInt63.land",
+    "PrimInt63.lsr"
+  ],
+  "rocq_sprop_uip": [
+    "CjtTrue",
+    "ClassicJitterTaskArrivalBase.I.HEq_inst1",
+    "ClassicJitterTaskArrivalBase.I.True",
+    "ClassicJitterTaskArrivalList.I.HEq_inst1",
+    "ClassicJitterTaskArrivalList.I.True",
+    "I.HEq",
+    "I.HEq_inst1",
+    "I.True",
+    "Lean.eq",
+    "Lean.eq_inst1",
+    "SubadditivityNatCorrespondence.SubNatTrue"
+  ],
+  "export_diagnosis": "~142,000 lines: as for the accepted classic task_arrival export, the statements mention the core List.mergeSort (well-founded recursion through MergeSort.Internal.splitInTwo, whose termination proofs are `omega` certificates, exporting the Lean.Omega closure and List/getElem lemmas), and the validation-only interface theorems (restated from the accepted ClassicTaskArrivalInterface) are exported with their proof bodies (pairwise_mergeSort, mergeSort_perm, List.Pairwise/IsChain/filter lemmas); the stability fact is proved in the fixture by the recursion of mergeSort/merge instead of the core sublist_mergeSort (Nat.Internal.Linear closure)."
+}

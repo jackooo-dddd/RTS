@@ -1,0 +1,73 @@
+{
+  "rank": 68,
+  "layer": 10,
+  "classic_scope": "full",
+  "slug": "classic_model_schedule_uni_end_time",
+  "tag": "CET",
+  "export_name": "ClassicEndTime",
+  "source": "classic/model/schedule/uni/end_time.v",
+  "production": "Prosa/Classic/Model/Schedule/Uni/EndTime.lean",
+  "fixtures": [
+    "ClassicEndTimeInterface"
+  ],
+  "export_module": "Validation.fixtures.translation_order.ClassicEndTimeInterface",
+  "interface_theorems": [
+    "Prosa.Validation.ClassicEndTimeInterface.end_time_option_c0",
+    "Prosa.Validation.ClassicEndTimeInterface.end_time_option_wf0",
+    "Prosa.Validation.ClassicEndTimeInterface.end_time_option_step"
+  ],
+  "computational": [
+    "end_time.end_time_option",
+    "end_time.completes_at"
+  ],
+  "chain": [
+    "ClassicEndTimeBase",
+    "ClassicEndTimeList",
+    "ClassicEndTimeCorrespondence"
+  ],
+  "principal": {},
+  "helpers": [
+    "cet_forall_sched",
+    "cet_forall_par"
+  ],
+  "base_run": null,
+  "base_checks": [],
+  "previous_status": "classic_model_schedule_uni_limited_platform_limited_module_status.json",
+  "input_relations": [
+    "job type: eqType identified (Lean DecidableEq = eqType decision procedure)",
+    "times/costs/fuel by SubNatRel; job parameters pointwise; schedules pointwise through the option map (two-way totals)"
+  ],
+  "lean_representation_note": "the Rocq module end_time is a namespace; `c.+1` is `c + 1`; `x.-1` is `x - 1`; the section-local Lets are unfolded",
+  "prop_sprop_foundation": [
+    "PropSPropFoundation.interpret_strict"
+  ],
+  "importer_foundation": [],
+  "rocq_sprop_uip": [
+    "ClassicEndTimeBase.I.HEq_inst1",
+    "ClassicEndTimeBase.I.True",
+    "I.HEq",
+    "I.HEq_inst1",
+    "I.True",
+    "Lean.eq",
+    "Lean.eq_inst1",
+    "SubadditivityNatCorrespondence.SubNatTrue"
+  ],
+  "normalization": {
+    "theorem_types": [],
+    "subexpression_heads": [
+      "Finset.sum"
+    ],
+    "definition_bodies": [],
+    "body_projections": [
+      "Prosa.Classic.Model.Schedule.Uni.Schedule.UniprocessorSchedule.service_during=Prosa.Validation.ClassicEndTimeInterface.service_during_proj=Prosa.Validation.ClassicEndTimeInterface.service_during_proj_guard",
+      "Prosa.Classic.Model.Schedule.Uni.Schedule.UniprocessorSchedule.total_service_during=Prosa.Validation.ClassicEndTimeInterface.total_service_during_proj=Prosa.Validation.ClassicEndTimeInterface.total_service_during_proj_guard"
+    ]
+  },
+  "export_env": {
+    "LEAN4EXPORT_PRESERVE_REDUCIBLE_THEOREM_TYPES": "1",
+    "LEAN4EXPORT_NAT_INDEX_ALIASES": "Prosa.Classic.Model.Time.Time.time"
+  },
+  "kernel_guard_artifacts": [
+    "Validation/fixtures/translation_order/ClassicEndTimeInterface.lean"
+  ]
+}

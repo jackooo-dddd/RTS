@@ -1,0 +1,73 @@
+{
+  "rank": 57,
+  "layer": 9,
+  "classic_scope": "full",
+  "slug": "classic_model_schedule_uni_response_time",
+  "tag": "CURT",
+  "export_name": "ClassicUniResponseTime",
+  "source": "classic/model/schedule/uni/response_time.v",
+  "production": "Prosa/Classic/Model/Schedule/Uni/ResponseTime.lean",
+  "fixtures": [
+    "ClassicUniResponseTimeInterface"
+  ],
+  "export_module": "Validation.fixtures.translation_order.ClassicUniResponseTimeInterface",
+  "interface_theorems": [],
+  "computational": [
+    "ResponseTime.is_response_time_bound_of_job",
+    "ResponseTime.is_response_time_bound_of_task"
+  ],
+  "chain": [
+    "ClassicUniResponseTimeBase",
+    "ClassicUniResponseTimeList",
+    "ClassicUniResponseTimeCorrespondence"
+  ],
+  "principal": {},
+  "helpers": [
+    "crt_forall_sched",
+    "crt_forall_par",
+    "crt_ico"
+  ],
+  "base_run": null,
+  "base_checks": [],
+  "previous_status": "classic_model_schedule_uni_jitter_schedule_module_status.json",
+  "input_relations": [
+    "job and task types: eqTypes identified, Lean DecidableEq instances = the eqTypes' decision procedures; job_task identified",
+    "times by SubNatRel; job parameters pointwise through SubNatRel; schedules pointwise through the option map; arrival sequences pointwise on related times (two-way totals)"
+  ],
+  "lean_representation_note": "the Rocq module ResponseTime is a namespace; `\\sum_(t1 <= t < t2) F t` is `\u2211 t \u2208 Finset.Ico t1 t2, F t` (normalization guards); Boolean predicates in Prop positions use `= true`",
+  "prop_sprop_foundation": [
+    "PropSPropFoundation.interpret_strict"
+  ],
+  "importer_foundation": [],
+  "rocq_sprop_uip": [
+    "ClassicUniResponseTimeBase.I.HEq_inst1",
+    "ClassicUniResponseTimeBase.I.True",
+    "I.HEq",
+    "I.HEq_inst1",
+    "I.True",
+    "Lean.eq",
+    "Lean.eq_inst1",
+    "SubadditivityNatCorrespondence.SubNatTrue"
+  ],
+  "normalization": {
+    "theorem_types": [
+      "Prosa.Classic.Model.Schedule.Uni.ResponseTime.ResponseTime.cumulative_service_after_job_rt_zero",
+      "Prosa.Classic.Model.Schedule.Uni.ResponseTime.ResponseTime.cumulative_service_after_task_rt_zero"
+    ],
+    "subexpression_heads": [
+      "Finset.sum"
+    ],
+    "definition_bodies": [],
+    "body_projections": [
+      "Prosa.Classic.Model.Schedule.Uni.Schedule.UniprocessorSchedule.service_during=Prosa.Validation.ClassicUniResponseTimeInterface.service_during_proj=Prosa.Validation.ClassicUniResponseTimeInterface.service_during_proj_guard",
+      "Prosa.Classic.Model.Schedule.Uni.Schedule.UniprocessorSchedule.total_service_during=Prosa.Validation.ClassicUniResponseTimeInterface.total_service_during_proj=Prosa.Validation.ClassicUniResponseTimeInterface.total_service_during_proj_guard"
+    ]
+  },
+  "export_env": {
+    "LEAN4EXPORT_PRESERVE_REDUCIBLE_THEOREM_TYPES": "1",
+    "LEAN4EXPORT_NAT_INDEX_ALIASES": "Prosa.Classic.Model.Time.Time.time"
+  },
+  "kernel_guard_artifacts": [
+    "Validation/fixtures/translation_order/ClassicUniResponseTimeInterface.lean"
+  ]
+}

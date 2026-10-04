@@ -1,0 +1,109 @@
+{
+  "rank": 13,
+  "layer": 3,
+  "tag": "CBIGCAT",
+  "slug": "classic_util_bigcat",
+  "family": "classic",
+  "source": "classic/util/bigcat.v",
+  "dependencies": [
+    "classic/util/bigord.v",
+    "classic/util/notation.v",
+    "classic/util/tactics.v",
+    "util/bigcat.v"
+  ],
+  "declaration_count": 6,
+  "base_run": null,
+  "base_checks": [],
+  "source_mode": "official_closure",
+  "official_closure": {
+    "files": "tooling/classic/closures/classic_util_bigcat.txt",
+    "patches": [
+      "patches/classic/rocq93-util-tactics.patch",
+      "patches/classic/rocq93-util-list.patch",
+      "patches/classic/rocq93-util-bigcat.patch"
+    ]
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/ClassicBigcatTypeFingerprintProbe.v",
+  "production": "Prosa/Classic/Util/Bigcat.lean",
+  "production_olean": "Prosa/Classic/Util/Bigcat.olean",
+  "lean_namespace": "Prosa.Classic.Util.Bigcat",
+  "fixtures": [
+    "ClassicBigcatInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/ClassicBigcatLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/classic/classic_util_bigcat_export_config.json",
+  "export_name": "ClassicBigcat",
+  "cert_dir": "certificates/classic_util_bigcat",
+  "chain": [
+    "ClassicBigcatBase",
+    "ClassicBigcatList",
+    "ClassicBigcatCorrespondence"
+  ],
+  "audit_module": "ClassicBigcatAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/ClassicBigcatImportedTypeAudit.v",
+  "assumption_config": "certificates/classic_util_bigcat/classic_util_bigcat_assumption_config.json",
+  "lean_axiom_config": "certificates/classic_util_bigcat/classic_util_bigcat_lean_axiom_config.json",
+  "computational": [],
+  "principal": {},
+  "helpers": [
+    "co_bigcat_rel",
+    "co_sum_rel"
+  ],
+  "previous_status": "classic_util_powerset_module_status.json",
+  "previous_files": 12,
+  "previous_decls": 105,
+  "input_relations": [
+    "type parameters and elements identified; eqType T: Lean DecidableEq instance = the eqType's decision procedure",
+    "natural numbers by SubNatRel; ordinals 'I_n and Fin n by their values; sequences elementwise",
+    "ordinal-indexed families of sequences pointwise on related ordinals (two-way totals)"
+  ],
+  "coverage_for_inner_binders": [],
+  "lean_representation_note": "`\\cat_(i<n) f i` is the accepted v0.6 helper `Prosa.Util.Bigcat.bigCatFin f`; `\\sum_(i < n) F i` is `\u2211 i : Fin n, F i`",
+  "extra_pinned_sources": [],
+  "extra_artifacts": [],
+  "extra_olean_artifacts": [
+    {
+      "from": "analysis_abstract_abstract_rta_final/olean/Prosa/Util/Supremum.olean",
+      "to": "Prosa/Util/Supremum.olean",
+      "v06_file": "util/supremum.v"
+    },
+    {
+      "from": "analysis_abstract_abstract_rta_final/olean/Prosa/Util/List.olean",
+      "to": "Prosa/Util/List.olean",
+      "v06_file": "util/list.v"
+    },
+    {
+      "from": "analysis_abstract_abstract_rta_final/olean/Prosa/Util/Notation.olean",
+      "to": "Prosa/Util/Notation.olean",
+      "v06_file": "util/notation.v"
+    },
+    {
+      "from": "analysis_abstract_abstract_rta_final/olean/Prosa/Util/Tactics.olean",
+      "to": "Prosa/Util/Tactics.olean",
+      "v06_file": "util/tactics.v"
+    },
+    {
+      "from": "analysis_abstract_abstract_rta_final/olean/Prosa/Util/Bigcat.olean",
+      "to": "Prosa/Util/Bigcat.olean",
+      "v06_file": "util/bigcat.v"
+    },
+    {
+      "from": "classic_util_notation_final/olean/Prosa/Classic/Util/Notation.olean",
+      "to": "Prosa/Classic/Util/Notation.olean",
+      "manifest": "classic_util_notation",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_abstract_abstract_rta_final/olean/Prosa/Util/Bigop.olean",
+      "to": "Prosa/Util/Bigop.olean",
+      "v06_file": "util/bigop.v"
+    },
+    {
+      "from": "classic_util_bigord_final/olean/Prosa/Classic/Util/Bigord.olean",
+      "to": "Prosa/Classic/Util/Bigord.olean",
+      "manifest": "classic_util_bigord",
+      "key": "production_olean_sha256"
+    }
+  ],
+  "export_diagnosis": "148,186 lines: the size statement mentions the Finset sum over `Fin n` (Finset.univ of Fin.fintype, AddCommMonoid Nat), whose Mathlib Finset/Multiset closure is exported; the validation-only interface theorems (bigCatFin and the Fin sum as folds over List.range') are exported with their proof bodies (List.ext_getElem, getElem/finRange simp lemmas), as for the accepted v0.6 MultiprocessorComputationInterface."
+}

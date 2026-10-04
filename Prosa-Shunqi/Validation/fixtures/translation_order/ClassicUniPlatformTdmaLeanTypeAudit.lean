@@ -1,0 +1,28 @@
+import Validation.fixtures.translation_order.ClassicUniPlatformTdmaInterface
+set_option pp.fieldNotation false
+
+#check @Prosa.Classic.Model.Schedule.Uni.Basic.PlatformTdma.Platform_TDMA.sched_implies_in_slot
+#check @Prosa.Classic.Model.Schedule.Uni.Basic.PlatformTdma.Platform_TDMA.backlogged_implies_not_in_slot_or_other_job_sched
+#check @Prosa.Classic.Model.Schedule.Uni.Basic.PlatformTdma.Platform_TDMA.Respects_TDMA_policy
+#check @Prosa.Validation.ClassicUniPlatformTdmaInterface.production_sumSeq_nil
+#check @Prosa.Validation.ClassicUniPlatformTdmaInterface.production_sumSeq_cons
+#check @Prosa.Validation.ClassicUniPlatformTdmaInterface.production_sumFiltered_nil
+#check @Prosa.Validation.ClassicUniPlatformTdmaInterface.production_sumFiltered_cons_true
+#check @Prosa.Validation.ClassicUniPlatformTdmaInterface.production_sumFiltered_cons_false
+#check @Prosa.Validation.DivModInterface.production_div_add_mod
+#check @Prosa.Validation.DivModInterface.production_mod_lt
+#check @Prosa.Validation.DivModInterface.production_div_zero
+#check @Prosa.Validation.DivModInterface.production_mod_zero
+
+#print axioms Prosa.Classic.Model.Schedule.Uni.Basic.PlatformTdma.Platform_TDMA.sched_implies_in_slot
+#print axioms Prosa.Classic.Model.Schedule.Uni.Basic.PlatformTdma.Platform_TDMA.backlogged_implies_not_in_slot_or_other_job_sched
+#print axioms Prosa.Classic.Model.Schedule.Uni.Basic.PlatformTdma.Platform_TDMA.Respects_TDMA_policy
+#print axioms Prosa.Validation.ClassicUniPlatformTdmaInterface.production_sumSeq_nil
+#print axioms Prosa.Validation.ClassicUniPlatformTdmaInterface.production_sumSeq_cons
+#print axioms Prosa.Validation.ClassicUniPlatformTdmaInterface.production_sumFiltered_nil
+#print axioms Prosa.Validation.ClassicUniPlatformTdmaInterface.production_sumFiltered_cons_true
+#print axioms Prosa.Validation.ClassicUniPlatformTdmaInterface.production_sumFiltered_cons_false
+#print axioms Prosa.Validation.DivModInterface.production_div_add_mod
+#print axioms Prosa.Validation.DivModInterface.production_mod_lt
+#print axioms Prosa.Validation.DivModInterface.production_div_zero
+#print axioms Prosa.Validation.DivModInterface.production_mod_zero

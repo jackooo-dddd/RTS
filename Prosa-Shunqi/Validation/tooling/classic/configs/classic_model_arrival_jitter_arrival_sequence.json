@@ -1,0 +1,60 @@
+{
+  "rank": 30,
+  "layer": 7,
+  "classic_scope": "full",
+  "slug": "classic_model_arrival_jitter_arrival_sequence",
+  "tag": "CJARRSEQ",
+  "export_name": "ClassicJitterArrivalSequence",
+  "source": "classic/model/arrival/jitter/arrival_sequence.v",
+  "production": "Prosa/Classic/Model/Arrival/Jitter/ArrivalSequence.lean",
+  "fixtures": [
+    "ClassicJitterArrivalSequenceInterface"
+  ],
+  "export_module": "Validation.fixtures.translation_order.ClassicJitterArrivalSequenceInterface",
+  "interface_theorems": [
+    "Prosa.Validation.ClassicJitterArrivalSequenceInterface.bigCat_range'"
+  ],
+  "computational": [
+    "ArrivalSequenceWithJitter.actual_arrival",
+    "ArrivalSequenceWithJitter.jitter_has_passed",
+    "ArrivalSequenceWithJitter.actual_arrival_before",
+    "ArrivalSequenceWithJitter.actual_arrival_between",
+    "ArrivalSequenceWithJitter.actual_arrivals_between",
+    "ArrivalSequenceWithJitter.actual_arrivals_up_to",
+    "ArrivalSequenceWithJitter.actual_arrivals_before"
+  ],
+  "chain": [
+    "ClassicJitterArrivalSequenceBase",
+    "ClassicJitterArrivalSequenceList",
+    "ClassicJitterArrivalSequenceCorrespondence"
+  ],
+  "principal": {},
+  "helpers": [
+    "cja_bigcat_rel",
+    "cja_forall_arr",
+    "cja_forall_par"
+  ],
+  "base_run": null,
+  "base_checks": [],
+  "previous_status": "classic_implementation_uni_susp_dynamic_job_module_status.json",
+  "input_relations": [
+    "job types: eqType identified, Lean DecidableEq instance = the eqType's decision procedure",
+    "natural numbers (time) by SubNatRel; sequences elementwise; arrival sequences pointwise on related times; job_arrival/job_jitter pointwise through SubNatRel (two-way totals)"
+  ],
+  "lean_representation_note": "`arrival_sequence Job` is `time \u2192 List Job`; `\\cat_(t1 <= t < t2) F t` is the accepted v0.6 helper `Prosa.Util.Notation.bigCat t1 t2 F`; `[seq j <- s | p j]` is `List.filter`; `j \\in s` as a proposition is `j \u2208 s`, as a Boolean `decide (j \u2208 s)`; Boolean range tests are `decide` of the Nat orders",
+  "prop_sprop_foundation": [
+    "PropSPropFoundation.interpret_strict"
+  ],
+  "importer_foundation": [
+    "ImportedClassicJitterArrivalSequence.propext"
+  ],
+  "rocq_sprop_uip": [
+    "ClassicJitterArrivalSequenceBase.I.HEq_inst1",
+    "ClassicJitterArrivalSequenceBase.I.True",
+    "I.HEq_inst1",
+    "I.True",
+    "Lean.eq",
+    "Lean.eq_inst1",
+    "SubadditivityNatCorrespondence.SubNatTrue"
+  ]
+}

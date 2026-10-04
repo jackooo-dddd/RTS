@@ -1,0 +1,12 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedClassicSum.
+
+Check ImportedClassicSum.Prosa_Classic_Util_Sum_sum_seq_diff.
+Check ImportedClassicSum.Prosa_Classic_Util_Sum_sum_diff.
+Check ImportedClassicSum.Prosa_Classic_Util_Sum_extend_sum.
+Check ImportedClassicSum.Prosa_Classic_Util_Sum_leq_sum_nat.
+Check ImportedClassicSum.Prosa_Classic_Util_Sum_leq_sum1_smaller_range.
+Check ImportedClassicSum.Prosa_Classic_Util_Sum_leq_pred_sum.
+Check ImportedClassicSum.Prosa_Classic_Util_Sum_sum_le_summation_range.
+Check ImportedClassicSum.Prosa_Classic_Util_Sum_telescoping_sum.
+Check ImportedClassicSum.Prosa_Classic_Util_Sum_leq_sum_sub_uniq.

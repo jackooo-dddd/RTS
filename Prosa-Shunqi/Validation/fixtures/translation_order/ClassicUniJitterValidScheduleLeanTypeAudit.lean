@@ -1,0 +1,6 @@
+import Validation.fixtures.translation_order.ClassicUniJitterValidScheduleInterface
+set_option pp.fieldNotation false
+
+#check @Prosa.Classic.Model.Schedule.Uni.Jitter.ValidSchedule.ValidJitterAwareSchedule.valid_jitter_aware_schedule
+
+#print axioms Prosa.Classic.Model.Schedule.Uni.Jitter.ValidSchedule.ValidJitterAwareSchedule.valid_jitter_aware_schedule

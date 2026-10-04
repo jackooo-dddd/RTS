@@ -6,8 +6,8 @@
 | sha256 | `6627a5c91214c8d7887f60021ed015ef3e62b80b31dbe8ca0d39ccdaea102a76` |
 | Lean module | `Prosa/Classic/Util/Notation.lean` (namespace `Prosa.Classic.Util.Notation`) |
 | Tier / layer | S / 1 |
-| Status | **TRANSLATED**: compiles (Lean 4.33.1, pinned Mathlib), no `sorry`; `#print axioms` ⊆ {`propext`, `Quot.sound`, `Classical.choice`} |
-| Validation | pending Stage 0 (classic pipeline extension) |
+| Status | **ACCEPTED** (classic validation family; see the manifest) |
+| Validation | accepted |
 
 ## Declarations (6 source → Lean, same names)
 
@@ -19,7 +19,7 @@
 - `Definition` `make_sequence`
 
 Missing in Lean: none.
-Lean-only helpers (`LEAN_HELPER`, not counted as translated declarations): `sumPairs`, `sumPairsCond`, `maxPairs`, `maxPairsCond`, `pairsFilter`, `pairsMap`, `optIn`.
+Lean-only helpers (`LEAN_HELPER`, not counted as translated declarations): none.
 
 ## Representation notes
 
@@ -36,3 +36,4 @@ to the right, so triples are written `(A × B) × C`.
 ## History
 
 - 2026-10-01: translated; build and axiom check passed.
+- 2026-10-02: accepted.

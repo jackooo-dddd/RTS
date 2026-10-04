@@ -1,0 +1,26 @@
+import Validation.fixtures.translation_order.ClassicPartitionedSchedulabilityInterface
+set_option pp.fieldNotation false
+
+#check @Prosa.Classic.Model.Schedule.Partitioned.Schedulability.PartitionSchedulability.same_per_processor_service
+#check @Prosa.Classic.Model.Schedule.Partitioned.Schedulability.PartitionSchedulability.schedulable_at_system_level
+#check @Prosa.Validation.ClassicPartitionedSchedulabilityInterface.finRange_any
+#check @Prosa.Validation.ClassicPartitionedSchedulabilityInterface.bigCatFin_range'
+#check @Prosa.Validation.ClassicPartitionedSchedulabilityInterface.fin_sum_range'
+#check @Prosa.Validation.ClassicPartitionedSchedulabilityInterface.bigCat_range'
+#check @Prosa.Validation.ClassicPartitionedSchedulabilityInterface.count_filter_eq
+#check @Prosa.Validation.ClassicPartitionedSchedulabilityInterface.service_at_sum
+#check @Prosa.Validation.ClassicPartitionedSchedulabilityInterface.dedup_nil
+#check @Prosa.Validation.ClassicPartitionedSchedulabilityInterface.dedup_cons_mem
+#check @Prosa.Validation.ClassicPartitionedSchedulabilityInterface.dedup_cons_not_mem
+
+#print axioms Prosa.Classic.Model.Schedule.Partitioned.Schedulability.PartitionSchedulability.same_per_processor_service
+#print axioms Prosa.Classic.Model.Schedule.Partitioned.Schedulability.PartitionSchedulability.schedulable_at_system_level
+#print axioms Prosa.Validation.ClassicPartitionedSchedulabilityInterface.finRange_any
+#print axioms Prosa.Validation.ClassicPartitionedSchedulabilityInterface.bigCatFin_range'
+#print axioms Prosa.Validation.ClassicPartitionedSchedulabilityInterface.fin_sum_range'
+#print axioms Prosa.Validation.ClassicPartitionedSchedulabilityInterface.bigCat_range'
+#print axioms Prosa.Validation.ClassicPartitionedSchedulabilityInterface.count_filter_eq
+#print axioms Prosa.Validation.ClassicPartitionedSchedulabilityInterface.service_at_sum
+#print axioms Prosa.Validation.ClassicPartitionedSchedulabilityInterface.dedup_nil
+#print axioms Prosa.Validation.ClassicPartitionedSchedulabilityInterface.dedup_cons_mem
+#print axioms Prosa.Validation.ClassicPartitionedSchedulabilityInterface.dedup_cons_not_mem

@@ -1,0 +1,5 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedClassicPowerset.
+
+Check ImportedClassicPowerset.Prosa_Classic_Util_Powerset_powerset.
+Check ImportedClassicPowerset.Prosa_Classic_Util_Powerset_mem_powerset.

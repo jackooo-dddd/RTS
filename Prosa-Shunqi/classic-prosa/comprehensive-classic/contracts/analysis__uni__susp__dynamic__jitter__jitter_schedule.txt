@@ -1,0 +1,52 @@
+# classic/analysis/uni/susp/dynamic/jitter/jitter_schedule.v: 6 declarations
+
+## Print Module
+
+Module jitter_schedule := Struct Module JitterScheduleConstruction End
+
+Module JitterScheduleConstruction := Struct Definition inflated_job_cost : forall Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> time.Time.time) -> suspension.Suspension.job_suspension Job -> eqtype.Equality.sort Job -> eqtype.Equality.sort Job -> nat. Definition job_jitter : forall Task Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> eqtype.Equality.sort Task) -> priority.Priority.FP_policy Task -> (eqtype.Equality.sort Job -> time.Time.time) -> eqtype.Equality.sort Job -> (eqtype.Equality.sort Job -> time.Time.time) -> eqtype.Equality.sort Job -> nat. Definition pending_jobs_other_than_j : forall Task Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> eqtype.Equality.sort Task) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> priority.Priority.FP_policy Task -> (eqtype.Equality.sort Job -> time.Time.time) -> suspension.Suspension.job_suspension Job -> eqtype.Equality.sort Job -> (eqtype.Equality.sort Job -> time.Time.time) -> schedule.UniprocessorSchedule.schedule Job -> time.Time.time -> list (eqtype.Equality.sort Job). Definition highest_priority_job_other_than_j : forall Task Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> eqtype.Equality.sort Task) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> priority.Priority.FP_policy Task -> (eqtype.Equality.sort Job -> time.Time.time) -> suspension.Suspension.job_suspension Job -> eqtype.Equality.sort Job -> (eqtype.Equality.sort Job -> time.Time.time) -> schedule.UniprocessorSchedule.schedule Job -> time.Time.time -> option (eqtype.Equality.sort Job). Definition build_schedule : forall Task Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> eqtype.Equality.sort Task) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> priority.Priority.FP_policy Task -> (eqtype.Equality.sort Job -> time.Time.time) -> suspension.Suspension.job_suspension Job -> eqtype.Equality.sort Job -> (eqtype.Equality.sort Job -> time.Time.time) -> schedule.UniprocessorSchedule.schedule Job -> time.Time.time -> option (eqtype.Equality.sort Job). Definition sched_jitter : forall Task Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> eqtype.Equality.sort Task) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> priority.Priority.FP_policy Task -> (eqtype.Equality.sort Job -> time.Time.time) -> suspension.Suspension.job_suspension Job -> eqtype.Equality.sort Job -> (eqtype.Equality.sort Job -> time.Time.time) -> time.Time.time -> option (eqtype.Equality.sort Job). End
+
+## About
+
+JitterScheduleConstruction.inflated_job_cost : forall {Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> time.Time.time) -> suspension.Suspension.job_suspension Job -> eqtype.Equality.sort Job -> eqtype.Equality.sort Job -> nat
+
+JitterScheduleConstruction.inflated_job_cost is not universe polymorphic
+Arguments JitterScheduleConstruction.inflated_job_cost {Job} job_cost%function_scope job_suspension_duration j any_j
+JitterScheduleConstruction.inflated_job_cost is transparent
+Expands to: Constant prosa.classic.analysis.uni.susp.dynamic.jitter.jitter_schedule.JitterScheduleConstruction.inflated_job_cost
+Declared in library prosa.classic.analysis.uni.susp.dynamic.jitter.jitter_schedule, line 69, characters 19-36
+JitterScheduleConstruction.job_jitter : forall {Task Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> eqtype.Equality.sort Task) -> priority.Priority.FP_policy Task -> (eqtype.Equality.sort Job -> time.Time.time) -> eqtype.Equality.sort Job -> (eqtype.Equality.sort Job -> time.Time.time) -> eqtype.Equality.sort Job -> nat
+
+JitterScheduleConstruction.job_jitter is not universe polymorphic
+Arguments JitterScheduleConstruction.job_jitter {Task Job} (job_arrival job_task)%function_scope higher_eq_priority job_cost%function_scope j R%function_scope any_j
+JitterScheduleConstruction.job_jitter is transparent
+Expands to: Constant prosa.classic.analysis.uni.susp.dynamic.jitter.jitter_schedule.JitterScheduleConstruction.job_jitter
+Declared in library prosa.classic.analysis.uni.susp.dynamic.jitter.jitter_schedule, line 97, characters 19-29
+JitterScheduleConstruction.pending_jobs_other_than_j : forall {Task Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> eqtype.Equality.sort Task) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> priority.Priority.FP_policy Task -> (eqtype.Equality.sort Job -> time.Time.time) -> suspension.Suspension.job_suspension Job -> eqtype.Equality.sort Job -> (eqtype.Equality.sort Job -> time.Time.time) -> schedule.UniprocessorSchedule.schedule Job -> time.Time.time -> list (eqtype.Equality.sort Job)
+
+JitterScheduleConstruction.pending_jobs_other_than_j is not universe polymorphic
+Arguments JitterScheduleConstruction.pending_jobs_other_than_j {Task Job} (job_arrival job_task)%function_scope arr_seq higher_eq_priority job_cost%function_scope job_suspension_duration j R%function_scope sched_prefix t
+JitterScheduleConstruction.pending_jobs_other_than_j is transparent
+Expands to: Constant prosa.classic.analysis.uni.susp.dynamic.jitter.jitter_schedule.JitterScheduleConstruction.pending_jobs_other_than_j
+Declared in library prosa.classic.analysis.uni.susp.dynamic.jitter.jitter_schedule, line 129, characters 19-44
+JitterScheduleConstruction.highest_priority_job_other_than_j : forall {Task Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> eqtype.Equality.sort Task) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> priority.Priority.FP_policy Task -> (eqtype.Equality.sort Job -> time.Time.time) -> suspension.Suspension.job_suspension Job -> eqtype.Equality.sort Job -> (eqtype.Equality.sort Job -> time.Time.time) -> schedule.UniprocessorSchedule.schedule Job -> time.Time.time -> option (eqtype.Equality.sort Job)
+
+JitterScheduleConstruction.highest_priority_job_other_than_j is not universe polymorphic
+Arguments JitterScheduleConstruction.highest_priority_job_other_than_j {Task Job} (job_arrival job_task)%function_scope arr_seq higher_eq_priority job_cost%function_scope job_suspension_duration j R%function_scope sched_prefix t
+JitterScheduleConstruction.highest_priority_job_other_than_j is transparent
+Expands to: Constant prosa.classic.analysis.uni.susp.dynamic.jitter.jitter_schedule.JitterScheduleConstruction.highest_priority_job_other_than_j
+Declared in library prosa.classic.analysis.uni.susp.dynamic.jitter.jitter_schedule, line 134, characters 19-52
+JitterScheduleConstruction.build_schedule : forall {Task Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> eqtype.Equality.sort Task) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> priority.Priority.FP_policy Task -> (eqtype.Equality.sort Job -> time.Time.time) -> suspension.Suspension.job_suspension Job -> eqtype.Equality.sort Job -> (eqtype.Equality.sort Job -> time.Time.time) -> schedule.UniprocessorSchedule.schedule Job -> time.Time.time -> option (eqtype.Equality.sort Job)
+
+JitterScheduleConstruction.build_schedule is not universe polymorphic
+Arguments JitterScheduleConstruction.build_schedule {Task Job} (job_arrival job_task)%function_scope arr_seq higher_eq_priority job_cost%function_scope job_suspension_duration j R%function_scope sched_prefix t
+JitterScheduleConstruction.build_schedule is transparent
+Expands to: Constant prosa.classic.analysis.uni.susp.dynamic.jitter.jitter_schedule.JitterScheduleConstruction.build_schedule
+Declared in library prosa.classic.analysis.uni.susp.dynamic.jitter.jitter_schedule, line 141, characters 19-33
+JitterScheduleConstruction.sched_jitter : forall {Task Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> eqtype.Equality.sort Task) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> priority.Priority.FP_policy Task -> (eqtype.Equality.sort Job -> time.Time.time) -> suspension.Suspension.job_suspension Job -> eqtype.Equality.sort Job -> (eqtype.Equality.sort Job -> time.Time.time) -> time.Time.time -> option (eqtype.Equality.sort Job)
+
+JitterScheduleConstruction.sched_jitter is not universe polymorphic
+Arguments JitterScheduleConstruction.sched_jitter {Task Job} (job_arrival job_task)%function_scope arr_seq higher_eq_priority job_cost%function_scope job_suspension_duration j R%function_scope t
+JitterScheduleConstruction.sched_jitter is transparent
+Expands to: Constant prosa.classic.analysis.uni.susp.dynamic.jitter.jitter_schedule.JitterScheduleConstruction.sched_jitter
+Declared in library prosa.classic.analysis.uni.susp.dynamic.jitter.jitter_schedule, line 156, characters 17-29

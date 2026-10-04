@@ -157,9 +157,9 @@ def print_module_names(module: str, work: Path, cache: dict) -> list[str]:
     out = log.read_text()
     names = []
     path = module.split("|")[1]
-    m = re.search(r":= Struct (.*) End\s*$", out, re.S)
+    m = re.search(r":=\s*Struct\s(.*)\sEnd\s*$", out, re.S)
     body = m.group(1) if m else ""
-    for kw, name in re.findall(r"(?:^|\. |Struct )(Definition|Parameter|Inductive|Module)\s+([A-Za-z_][\w']*)", body):
+    for kw, name in re.findall(r"(?<![\w.'])(Definition|Parameter|Inductive|Module)\s+([A-Za-z_][\w']*)", body):
         if kw == "Module":
             names += print_module_names(f"{module.split('|')[0]}|{path}.{name}", work, cache)
         else:
@@ -194,8 +194,11 @@ def evidence() -> None:
             raise SystemExit(f"REJECTED: classic file differs from file_order.csv: {rel}")
         text = strip_comments((SOURCE_ROOT / rel).read_text())
         deps = []
-        for stmt in re.findall(r"(?:From\s+\S+\s+)?Require\s+(?:Import\s+|Export\s+)?((?:[\w.']+\s*)+)\.(?=\s)", text):
-            for mod in stmt.split():
+        # a Require command runs to the first `.` followed by whitespace (module names contain dots)
+        for m in re.finditer(r"\bRequire\b", text):
+            end = re.search(r"\.(\s|$)", text[m.end():])
+            command = text[m.end(): m.end() + (end.start() if end else 0)]
+            for mod in command.split():
                 if mod in module_to_file:
                     deps.append(mod)
         for mod in dict.fromkeys(deps):

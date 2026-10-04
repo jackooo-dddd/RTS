@@ -1,0 +1,242 @@
+{
+  "rank": 33,
+  "layer": 12,
+  "tag": "CAPAINT",
+  "slug": "classic_model_schedule_apa_interference",
+  "family": "classic",
+  "source": "classic/model/schedule/apa/interference.v",
+  "dependencies": [
+    "classic/model/arrival/basic/job.v",
+    "classic/model/arrival/basic/task.v",
+    "classic/model/priority.v",
+    "classic/model/schedule/apa/affinity.v",
+    "classic/model/schedule/global/basic/schedule.v",
+    "classic/model/schedule/global/workload.v",
+    "classic/util/all.v"
+  ],
+  "declaration_count": 11,
+  "base_run": null,
+  "base_checks": [],
+  "source_mode": "official_closure",
+  "official_closure": {
+    "files": "tooling/classic/closures/classic_model_schedule_apa_interference.txt",
+    "patches": [
+      "patches/classic/rocq93-util-tactics.patch",
+      "patches/classic/rocq93-util-list.patch",
+      "patches/classic/rocq93-util-bigcat.patch",
+      "patches/classic/rocq93-util-div_mod.patch",
+      "patches/prosa-v06-rocq93-util-minmax.patch",
+      "patches/classic/rocq93-util-seqset.patch",
+      "patches/classic/rocq93-util-sum.patch"
+    ]
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/ClassicApaInterferenceTypeFingerprintProbe.v",
+  "production": "Prosa/Classic/Model/Schedule/Apa/Interference.lean",
+  "production_olean": "Prosa/Classic/Model/Schedule/Apa/Interference.olean",
+  "lean_namespace": "Prosa.Classic.Model.Schedule.Apa.Interference",
+  "fixtures": [
+    "ClassicApaInterferenceInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/ClassicApaInterferenceLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/classic/classic_model_schedule_apa_interference_export_config.json",
+  "export_name": "ClassicApaInterference",
+  "cert_dir": "certificates/classic_model_schedule_apa_interference",
+  "chain": [
+    "ClassicApaInterferenceBase",
+    "ClassicApaInterferenceList",
+    "ClassicApaInterferenceList1",
+    "ClassicApaInterferenceOrd",
+    "ClassicApaInterferenceCorrespondence"
+  ],
+  "audit_module": "ClassicApaInterferenceAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/ClassicApaInterferenceImportedTypeAudit.v",
+  "assumption_config": "certificates/classic_model_schedule_apa_interference/classic_model_schedule_apa_interference_assumption_config.json",
+  "lean_axiom_config": "certificates/classic_model_schedule_apa_interference/classic_model_schedule_apa_interference_lean_axiom_config.json",
+  "computational": [
+    "Interference.higher_priority_task_in",
+    "Interference.different_task_in",
+    "Interference.total_interference",
+    "Interference.job_interference",
+    "Interference.task_interference",
+    "Interference.task_interference_joblist"
+  ],
+  "principal": {},
+  "helpers": [
+    "cs_forall_ncpus_sched",
+    "cs_ico",
+    "caf_forall",
+    "cai_forall_taff"
+  ],
+  "previous_status": "classic_model_schedule_global_workload_module_status.json",
+  "previous_files": 32,
+  "previous_decls": 359,
+  "input_relations": [
+    "job and task types: eqTypes identified, Lean DecidableEq instances = the eqTypes' decision procedures; job_task identified",
+    "natural numbers (time, num_cpus) by SubNatRel; processors 'I_n and Fin n by their values; schedules pointwise on related processors and times with option values by the constructor map; affinities by their underlying sequences through the ordinal conversion, task affinities pointwise; FP policies pointwise; job parameters pointwise through SubNatRel (two-way totals)"
+  ],
+  "coverage_for_inner_binders": [],
+  "lean_representation_note": "as for the accepted classic schedule, affinity and workload validations; a Boolean read as a number is `Bool.toNat`; `\\sum_(j <- s | P j) F j` is the accepted v0.6 helper `sumFiltered s P F`",
+  "extra_pinned_sources": [],
+  "extra_artifacts": [],
+  "extra_olean_artifacts": [
+    {
+      "from": "analysis_abstract_abstract_rta_final/olean/Prosa/Util/Notation.olean",
+      "to": "Prosa/Util/Notation.olean",
+      "v06_file": "util/notation.v"
+    },
+    {
+      "from": "analysis_abstract_abstract_rta_final/olean/Prosa/Util/Rel.olean",
+      "to": "Prosa/Util/Rel.olean",
+      "v06_file": "util/rel.v"
+    },
+    {
+      "from": "analysis_abstract_abstract_rta_final/olean/Prosa/Util/Tactics.olean",
+      "to": "Prosa/Util/Tactics.olean",
+      "v06_file": "util/tactics.v"
+    },
+    {
+      "from": "analysis_abstract_abstract_rta_final/olean/Prosa/Util/Nat.olean",
+      "to": "Prosa/Util/Nat.olean",
+      "v06_file": "util/nat.v"
+    },
+    {
+      "from": "analysis_abstract_abstract_rta_final/olean/Prosa/Util/Sum.olean",
+      "to": "Prosa/Util/Sum.olean",
+      "v06_file": "util/sum.v"
+    },
+    {
+      "from": "classic_model_time_final/olean/Prosa/Classic/Model/Time.olean",
+      "to": "Prosa/Classic/Model/Time.olean",
+      "manifest": "classic_model_time",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_abstract_abstract_rta_final/olean/Prosa/Util/Seqset.olean",
+      "to": "Prosa/Util/Seqset.olean",
+      "v06_file": "util/seqset.v"
+    },
+    {
+      "from": "classic_model_arrival_basic_task_final/olean/Prosa/Classic/Model/Arrival/Basic/Task.olean",
+      "to": "Prosa/Classic/Model/Arrival/Basic/Task.olean",
+      "manifest": "classic_model_arrival_basic_task",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_abstract_abstract_rta_final/olean/Prosa/Util/Supremum.olean",
+      "to": "Prosa/Util/Supremum.olean",
+      "v06_file": "util/supremum.v"
+    },
+    {
+      "from": "analysis_abstract_abstract_rta_final/olean/Prosa/Util/List.olean",
+      "to": "Prosa/Util/List.olean",
+      "v06_file": "util/list.v"
+    },
+    {
+      "from": "analysis_abstract_abstract_rta_final/olean/Prosa/Util/Bigcat.olean",
+      "to": "Prosa/Util/Bigcat.olean",
+      "v06_file": "util/bigcat.v"
+    },
+    {
+      "from": "classic_model_arrival_basic_arrival_sequence_final/olean/Prosa/Classic/Model/Arrival/Basic/ArrivalSequence.olean",
+      "to": "Prosa/Classic/Model/Arrival/Basic/ArrivalSequence.olean",
+      "manifest": "classic_model_arrival_basic_arrival_sequence",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "classic_model_arrival_basic_job_final/olean/Prosa/Classic/Model/Arrival/Basic/Job.olean",
+      "to": "Prosa/Classic/Model/Arrival/Basic/Job.olean",
+      "manifest": "classic_model_arrival_basic_job",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "classic_util_list_final/olean/Prosa/Classic/Util/List.olean",
+      "to": "Prosa/Classic/Util/List.olean",
+      "manifest": "classic_util_list",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "classic_model_priority_final/olean/Prosa/Classic/Model/Priority.olean",
+      "to": "Prosa/Classic/Model/Priority.olean",
+      "manifest": "classic_model_priority",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "classic_model_arrival_basic_task_arrival_final/olean/Prosa/Classic/Model/Arrival/Basic/TaskArrival.olean",
+      "to": "Prosa/Classic/Model/Arrival/Basic/TaskArrival.olean",
+      "manifest": "classic_model_arrival_basic_task_arrival",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "classic_util_notation_final/olean/Prosa/Classic/Util/Notation.olean",
+      "to": "Prosa/Classic/Util/Notation.olean",
+      "manifest": "classic_util_notation",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_abstract_abstract_rta_final/olean/Prosa/Util/Bigop.olean",
+      "to": "Prosa/Util/Bigop.olean",
+      "v06_file": "util/bigop.v"
+    },
+    {
+      "from": "classic_util_bigord_final/olean/Prosa/Classic/Util/Bigord.olean",
+      "to": "Prosa/Classic/Util/Bigord.olean",
+      "manifest": "classic_util_bigord",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "classic_util_bigcat_final/olean/Prosa/Classic/Util/Bigcat.olean",
+      "to": "Prosa/Classic/Util/Bigcat.olean",
+      "manifest": "classic_util_bigcat",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "classic_util_ord_quantifier_final/olean/Prosa/Classic/Util/OrdQuantifier.olean",
+      "to": "Prosa/Classic/Util/OrdQuantifier.olean",
+      "manifest": "classic_util_ord_quantifier",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "classic_model_schedule_global_basic_schedule_final/olean/Prosa/Classic/Model/Schedule/Global/Basic/Schedule.olean",
+      "to": "Prosa/Classic/Model/Schedule/Global/Basic/Schedule.olean",
+      "manifest": "classic_model_schedule_global_basic_schedule",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "classic_model_schedule_global_response_time_final/olean/Prosa/Classic/Model/Schedule/Global/ResponseTime.olean",
+      "to": "Prosa/Classic/Model/Schedule/Global/ResponseTime.olean",
+      "manifest": "classic_model_schedule_global_response_time",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "classic_model_schedule_global_schedulability_final/olean/Prosa/Classic/Model/Schedule/Global/Schedulability.olean",
+      "to": "Prosa/Classic/Model/Schedule/Global/Schedulability.olean",
+      "manifest": "classic_model_schedule_global_schedulability",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "classic_model_schedule_global_workload_final/olean/Prosa/Classic/Model/Schedule/Global/Workload.olean",
+      "to": "Prosa/Classic/Model/Schedule/Global/Workload.olean",
+      "manifest": "classic_model_schedule_global_workload",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "classic_util_seqset_final/olean/Prosa/Classic/Util/Seqset.olean",
+      "to": "Prosa/Classic/Util/Seqset.olean",
+      "manifest": "classic_util_seqset",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "classic_model_schedule_apa_affinity_final/olean/Prosa/Classic/Model/Schedule/Apa/Affinity.olean",
+      "to": "Prosa/Classic/Model/Schedule/Apa/Affinity.olean",
+      "manifest": "classic_model_schedule_apa_affinity",
+      "key": "production_olean_sha256"
+    }
+  ],
+  "export_diagnosis": "159,416 lines: as for the accepted classic schedule/workload/affinity exports (service_at and workload as Finset sums over Fin num_cpus, jobs_scheduled_between with Mathlib List.dedup, affinities as sequence-sets, validation-only interface theorems exported with their proof bodies); the three interference sums, workload, service and service_during through kernel-guarded rfl body projections.",
+  "own_qualified_in_type": [
+    "Interference.total_interference",
+    "Interference.job_interference",
+    "Interference.task_interference",
+    "Interference.task_interference_joblist"
+  ]
+}

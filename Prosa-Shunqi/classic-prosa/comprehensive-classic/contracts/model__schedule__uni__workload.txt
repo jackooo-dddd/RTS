@@ -1,0 +1,52 @@
+# classic/model/schedule/uni/workload.v: 6 declarations
+
+## Print Module
+
+Module workload := Struct Module Workload End
+
+Module Workload := Struct Definition workload_of_jobs : forall Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> time.Time.time) -> list (eqtype.Equality.sort Job) -> (eqtype.Equality.sort Job -> bool) -> nat. Definition workload_of_higher_or_equal_priority_tasks : forall Task Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> eqtype.Equality.sort Task) -> list (eqtype.Equality.sort Job) -> priority.Priority.FP_policy Task -> eqtype.Equality.sort Task -> nat. Definition workload_of_higher_or_equal_priority_jobs : forall Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> time.Time.time) -> list (eqtype.Equality.sort Job) -> priority.Priority.JLFP_policy Job -> eqtype.Equality.sort Job -> nat. Definition task_workload : forall Task Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> eqtype.Equality.sort Task) -> eqtype.Equality.sort Task -> list (eqtype.Equality.sort Job) -> nat. Definition task_workload_between : forall Task Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> eqtype.Equality.sort Task) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> eqtype.Equality.sort Task -> time.Time.time -> time.Time.time -> nat. Parameter workload_of_jobs_cat : forall (Job : eqtype.Equality.type) (job_cost : eqtype.Equality.sort Job -> time.Time.time) (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job) (t t1 t2 : nat) (P : eqtype.Equality.sort Job -> bool), is_true (ssrnat.leq t1 t && ssrnat.leq t t2) -> workload_of_jobs job_cost (arrival_sequence.ArrivalSequence.jobs_arrived_between arr_seq t1 t2) P = ssrnat.addn (workload_of_jobs job_cost (arrival_sequence.ArrivalSequence.jobs_arrived_between arr_seq t1 t) P) (workload_of_jobs job_cost (arrival_sequence.ArrivalSequence.jobs_arrived_between arr_seq t t2) P). End
+
+## About
+
+Workload.workload_of_jobs : forall {Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> time.Time.time) -> list (eqtype.Equality.sort Job) -> (eqtype.Equality.sort Job -> bool) -> nat
+
+Workload.workload_of_jobs is not universe polymorphic
+Arguments Workload.workload_of_jobs {Job} job_cost%function_scope jobs%list_scope%seq_scope P%function_scope
+Workload.workload_of_jobs is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.workload.Workload.workload_of_jobs
+Declared in library prosa.classic.model.schedule.uni.workload, line 32, characters 17-33
+Workload.workload_of_higher_or_equal_priority_tasks : forall {Task Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> eqtype.Equality.sort Task) -> list (eqtype.Equality.sort Job) -> priority.Priority.FP_policy Task -> eqtype.Equality.sort Task -> nat
+
+Workload.workload_of_higher_or_equal_priority_tasks is not universe polymorphic
+Arguments Workload.workload_of_higher_or_equal_priority_tasks {Task Job} (job_cost job_task)%function_scope jobs%list_scope%seq_scope higher_eq_priority tsk
+Workload.workload_of_higher_or_equal_priority_tasks is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.workload.Workload.workload_of_higher_or_equal_priority_tasks
+Declared in library prosa.classic.model.schedule.uni.workload, line 53, characters 17-59
+Workload.workload_of_higher_or_equal_priority_jobs : forall {Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> time.Time.time) -> list (eqtype.Equality.sort Job) -> priority.Priority.JLFP_policy Job -> eqtype.Equality.sort Job -> nat
+
+Workload.workload_of_higher_or_equal_priority_jobs is not universe polymorphic
+Arguments Workload.workload_of_higher_or_equal_priority_jobs {Job} job_cost%function_scope jobs%list_scope%seq_scope higher_eq_priority j
+Workload.workload_of_higher_or_equal_priority_jobs is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.workload.Workload.workload_of_higher_or_equal_priority_jobs
+Declared in library prosa.classic.model.schedule.uni.workload, line 74, characters 17-58
+Workload.task_workload : forall {Task Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> eqtype.Equality.sort Task) -> eqtype.Equality.sort Task -> list (eqtype.Equality.sort Job) -> nat
+
+Workload.task_workload is not universe polymorphic
+Arguments Workload.task_workload {Task Job} (job_cost job_task)%function_scope tsk jobs%list_scope%seq_scope
+Workload.task_workload is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.workload.Workload.task_workload
+Declared in library prosa.classic.model.schedule.uni.workload, line 100, characters 15-28
+Workload.task_workload_between : forall {Task Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> eqtype.Equality.sort Task) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> eqtype.Equality.sort Task -> time.Time.time -> time.Time.time -> nat
+
+Workload.task_workload_between is not universe polymorphic
+Arguments Workload.task_workload_between {Task Job} (job_cost job_task)%function_scope arr_seq tsk t1 t2
+Workload.task_workload_between is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.workload.Workload.task_workload_between
+Declared in library prosa.classic.model.schedule.uni.workload, line 103, characters 15-36
+Workload.workload_of_jobs_cat : forall {Job : eqtype.Equality.type} (job_cost : eqtype.Equality.sort Job -> time.Time.time) (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job) (t t1 t2 : nat) (P : eqtype.Equality.sort Job -> bool), is_true (ssrnat.leq t1 t && ssrnat.leq t t2) -> Workload.workload_of_jobs job_cost (arrival_sequence.ArrivalSequence.jobs_arrived_between arr_seq t1 t2) P = ssrnat.addn (Workload.workload_of_jobs job_cost (arrival_sequence.ArrivalSequence.jobs_arrived_between arr_seq t1 t) P) (Workload.workload_of_jobs job_cost (arrival_sequence.ArrivalSequence.jobs_arrived_between arr_seq t t2) P)
+
+Workload.workload_of_jobs_cat is not universe polymorphic
+Arguments Workload.workload_of_jobs_cat {Job} job_cost%function_scope arr_seq (t t1 t2)%nat_scope P%function_scope _
+Workload.workload_of_jobs_cat is opaque
+Expands to: Constant prosa.classic.model.schedule.uni.workload.Workload.workload_of_jobs_cat
+Declared in library prosa.classic.model.schedule.uni.workload, line 122, characters 10-30

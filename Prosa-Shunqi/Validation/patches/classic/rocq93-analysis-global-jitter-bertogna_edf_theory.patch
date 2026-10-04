@@ -1,0 +1,17 @@
+Rocq 9.3 compatibility (proof script only), classic/analysis/global/jitter/bertogna_edf_theory.v: under Rocq 9.3 +
+MathComp 2.6 the rewrite chain at line 332 no longer reaches the ltn_add2r redex; the goal is closed by
+`by rewrite !ltn_add2r.` (from classic-prosa/rocq93-port/prosabuddy-classic-rocq93.patch).  Module patch allowed only
+with spec official_closure.module_change = proof_only_patch (user decision 2026-10-03).
+
+--- a/classic/analysis/global/jitter/bertogna_edf_theory.v	2026-10-01 19:29:35
++++ b/classic/analysis/global/jitter/bertogna_edf_theory.v	2026-10-01 19:29:35
+@@ -328,8 +328,7 @@
+             move: (BEFOREother) => LT; rewrite -(ltn_add2r R) in LT.
+             exploit (BEFOREok j_other tsk R ARRother SAMEtsk INbounds).
+             {
+-              rewrite -addnA [_ + R]addnC addnA -[(_ + _) + R]addnA [_ tsk + R]addnC addnA.
+-              by rewrite ltn_add2r.
++              by rewrite !ltn_add2r.
+             }
+             intros COMP.
+             move: PENDING => /andP [_ /negP NOTCOMP]; apply NOTCOMP.

@@ -1,0 +1,50 @@
+# classic/util/find_seq.v: 6 declarations
+
+## Print Module
+
+Module find_seq := Struct Definition findP : forall T : eqtype.Equality.type, (eqtype.Equality.sort T -> bool) -> list (eqtype.Equality.sort T) -> option (eqtype.Equality.sort T). Parameter findP_FIFO : forall (T : eqtype.Equality.type) (P : eqtype.Equality.sort T -> bool) (l : list (eqtype.Equality.sort T)) (x y : eqtype.Equality.sort T), P y = true -> is_true (ssrbool.in_mem y (ssrbool.mem l)) -> x <> y -> findP P l = Some x -> is_true (ssrnat.leq (S (seq.find (fun j : eqtype.Equality.sort T => eqtype.eq_op j x) l)) (seq.find (fun j : eqtype.Equality.sort T => eqtype.eq_op j y) l)). Parameter find_uniql : forall (T : eqtype.Equality.type) (x : eqtype.Equality.sort T) (l1 l2 : list (eqtype.Equality.sort T)), is_true (seq.uniq (seq.cat l1 l2)) -> is_true (ssrbool.in_mem x (ssrbool.mem l2)) -> ~ is_true (ssrbool.in_mem x (ssrbool.mem l1)). Parameter find_uniq : forall (T : eqtype.Equality.type) (x : eqtype.Equality.sort T) (l1 l2 : list (eqtype.Equality.sort T)), is_true (seq.uniq (seq.cat l1 l2)) -> is_true (ssrbool.in_mem x (ssrbool.mem l2)) -> seq.has (fun x' : eqtype.Equality.sort T => eqtype.eq_op x' x) l1 = false. Parameter findP_in_seq : forall (T : eqtype.Equality.type) (P : eqtype.Equality.sort T -> bool) (l : list (eqtype.Equality.sort T)) (x : eqtype.Equality.sort T), findP P l = Some x -> is_true (P x) /\ is_true (ssrbool.in_mem x (ssrbool.mem l)). Parameter findP_notSome_in_seq : forall (T : eqtype.Equality.type) (P : eqtype.Equality.sort T -> bool) (l : list (eqtype.Equality.sort T)) (x : eqtype.Equality.sort T), is_true (negb (eqtype.eq_op (findP P l) (Some x))) -> is_true (ssrbool.in_mem x (ssrbool.mem l)) -> ~ is_true (P x) \/ (exists y : eqtype.Equality.sort T, findP P l = Some y). End
+
+## About
+
+findP : forall {T : eqtype.Equality.type}, (eqtype.Equality.sort T -> bool) -> list (eqtype.Equality.sort T) -> option (eqtype.Equality.sort T)
+
+findP is not universe polymorphic
+Arguments findP {T} P%function_scope l%list_scope%seq_scope
+findP is transparent
+Expands to: Constant prosa.classic.util.find_seq.findP
+Declared in library prosa.classic.util.find_seq, line 7, characters 2-112
+findP_FIFO : forall {T : eqtype.Equality.type} (P : eqtype.Equality.sort T -> bool) (l : list (eqtype.Equality.sort T)) (x y : eqtype.Equality.sort T), P y = true -> is_true (ssrbool.in_mem y (ssrbool.mem l)) -> x <> y -> findP P l = Some x -> is_true (ssrnat.leq (S (seq.find (fun j : eqtype.Equality.sort T => eqtype.eq_op j x) l)) (seq.find (fun j : eqtype.Equality.sort T => eqtype.eq_op j y) l))
+
+findP_FIFO is not universe polymorphic
+Arguments findP_FIFO {T} P%function_scope l%list_scope%seq_scope x y _ _ _ _
+findP_FIFO is opaque
+Expands to: Constant prosa.classic.util.find_seq.findP_FIFO
+Declared in library prosa.classic.util.find_seq, line 13, characters 8-18
+find_uniql : forall {T : eqtype.Equality.type} (x : eqtype.Equality.sort T) (l1 l2 : list (eqtype.Equality.sort T)), is_true (seq.uniq (seq.cat l1 l2)) -> is_true (ssrbool.in_mem x (ssrbool.mem l2)) -> ~ is_true (ssrbool.in_mem x (ssrbool.mem l1))
+
+find_uniql is not universe polymorphic
+Arguments find_uniql {T} x (l1 l2)%list_scope%seq_scope _ _ _
+find_uniql is opaque
+Expands to: Constant prosa.classic.util.find_seq.find_uniql
+Declared in library prosa.classic.util.find_seq, line 33, characters 8-18
+find_uniq : forall {T : eqtype.Equality.type} (x : eqtype.Equality.sort T) (l1 l2 : list (eqtype.Equality.sort T)), is_true (seq.uniq (seq.cat l1 l2)) -> is_true (ssrbool.in_mem x (ssrbool.mem l2)) -> seq.has (fun x' : eqtype.Equality.sort T => eqtype.eq_op x' x) l1 = false
+
+find_uniq is not universe polymorphic
+Arguments find_uniq {T} x (l1 l2)%list_scope%seq_scope _ _
+find_uniq is opaque
+Expands to: Constant prosa.classic.util.find_seq.find_uniq
+Declared in library prosa.classic.util.find_seq, line 51, characters 8-17
+findP_in_seq : forall {T : eqtype.Equality.type} (P : eqtype.Equality.sort T -> bool) (l : list (eqtype.Equality.sort T)) (x : eqtype.Equality.sort T), findP P l = Some x -> is_true (P x) /\ is_true (ssrbool.in_mem x (ssrbool.mem l))
+
+findP_in_seq is not universe polymorphic
+Arguments findP_in_seq {T} P%function_scope l%list_scope%seq_scope x _
+findP_in_seq is opaque
+Expands to: Constant prosa.classic.util.find_seq.findP_in_seq
+Declared in library prosa.classic.util.find_seq, line 66, characters 8-20
+findP_notSome_in_seq : forall {T : eqtype.Equality.type} (P : eqtype.Equality.sort T -> bool) (l : list (eqtype.Equality.sort T)) (x : eqtype.Equality.sort T), is_true (negb (eqtype.eq_op (findP P l) (Some x))) -> is_true (ssrbool.in_mem x (ssrbool.mem l)) -> ~ is_true (P x) \/ (exists y : eqtype.Equality.sort T, findP P l = Some y)
+
+findP_notSome_in_seq is not universe polymorphic
+Arguments findP_notSome_in_seq {T} P%function_scope l%list_scope%seq_scope x _ _
+findP_notSome_in_seq is opaque
+Expands to: Constant prosa.classic.util.find_seq.findP_notSome_in_seq
+Declared in library prosa.classic.util.find_seq, line 88, characters 8-28

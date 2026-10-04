@@ -1,0 +1,123 @@
+{
+  "rank": 134,
+  "layer": 13,
+  "classic_scope": "full",
+  "slug": "classic_implementation_apa_schedule",
+  "tag": "CIAS",
+  "export_name": "ClassicImplApaSchedule",
+  "source": "classic/implementation/apa/schedule.v",
+  "production": "Prosa/Classic/Implementation/Apa/Schedule.lean",
+  "fixtures": [
+    "ClassicImplApaScheduleInterface"
+  ],
+  "export_module": "Validation.fixtures.translation_order.ClassicImplApaScheduleInterface",
+  "interface_theorems": [
+    "Prosa.Validation.ClassicImplApaScheduleInterface.finRange_any",
+    "Prosa.Validation.ClassicImplApaScheduleInterface.bigCatFin_range'",
+    "Prosa.Validation.ClassicImplApaScheduleInterface.fin_sum_range'",
+    "Prosa.Validation.ClassicImplApaScheduleInterface.bigCat_range'",
+    "Prosa.Validation.ClassicImplApaScheduleInterface.count_filter_eq",
+    "Prosa.Validation.ClassicImplApaScheduleInterface.service_at_sum",
+    "Prosa.Validation.ClassicImplApaScheduleInterface.dedup_nil",
+    "Prosa.Validation.ClassicImplApaScheduleInterface.dedup_cons_mem",
+    "Prosa.Validation.ClassicImplApaScheduleInterface.dedup_cons_not_mem",
+    "Prosa.Validation.ClassicImplApaScheduleInterface.production_schedule_prefix_zero",
+    "Prosa.Validation.ClassicImplApaScheduleInterface.production_schedule_prefix_succ",
+    "Prosa.Validation.ClassicImplApaScheduleInterface.xms_merge_nil",
+    "Prosa.Validation.ClassicImplApaScheduleInterface.xms_merge_cons_nil",
+    "Prosa.Validation.ClassicImplApaScheduleInterface.xms_merge_cons_cons",
+    "Prosa.Validation.ClassicImplApaScheduleInterface.xms_push_nil",
+    "Prosa.Validation.ClassicImplApaScheduleInterface.xms_push_nil_cons",
+    "Prosa.Validation.ClassicImplApaScheduleInterface.xms_push_cons_cons",
+    "Prosa.Validation.ClassicImplApaScheduleInterface.xms_pop_nil",
+    "Prosa.Validation.ClassicImplApaScheduleInterface.xms_pop_cons",
+    "Prosa.Validation.ClassicImplApaScheduleInterface.xms_rec_nil",
+    "Prosa.Validation.ClassicImplApaScheduleInterface.xms_rec_one",
+    "Prosa.Validation.ClassicImplApaScheduleInterface.xms_rec_two",
+    "Prosa.Validation.ClassicImplApaScheduleInterface.xms_sort"
+  ],
+  "computational": [
+    "ConcreteScheduler.pending_jobs",
+    "ConcreteScheduler.sorted_pending_jobs",
+    "ConcreteScheduler.should_be_scheduled",
+    "ConcreteScheduler.update_available_cpu",
+    "ConcreteScheduler.schedule_jobs_from_list",
+    "ConcreteScheduler.apa_schedule",
+    "ConcreteScheduler.scheduler"
+  ],
+  "chain": [
+    "ClassicImplApaScheduleBase",
+    "ClassicImplApaScheduleList",
+    "ClassicImplApaScheduleOrd",
+    "ClassicImplApaScheduleList1",
+    "ClassicImplApaScheduleCorrespondence"
+  ],
+  "principal": {},
+  "helpers": [
+    "cs_forall_sched",
+    "cs_forall_jldp"
+  ],
+  "base_run": null,
+  "base_checks": [],
+  "previous_status": "classic_analysis_global_jitter_bertogna_fp_comp_module_status.json",
+  "input_relations": [
+    "job type: eqType identified, Lean DecidableEq instance = the eqType's decision procedure",
+    "times and processor counts by SubNatRel; processors by CoOrdRel; global schedules pointwise through the option map (two-way totals); construction functions mapping related schedules to related schedules and base schedules related pointwise (specialised at related inputs, as in the accepted v0.6 generic_schedule certificate)"
+  ],
+  "lean_representation_note": "the Rocq module ConcreteScheduler is a namespace; MathComp `sort` (path.v: merge, merge_sort_push, merge_sort_pop, merge_sort_rec) is restated equation by equation as the structurally recursive LEAN_HELPER definitions mc_merge_s1/mc_merge/mc_merge_sort_push/mc_merge_sort_pop/mc_merge_sort_rec/mc_sort (exported with their bodies); `[seq j <- s | P j]` is `s.filter P`; `nth_or_none` is the accepted Prosa.Classic.Util.List one, a processor index is its value",
+  "prop_sprop_foundation": [
+    "PropSPropFoundation.interpret_strict"
+  ],
+  "importer_foundation": [
+    "ImportedClassicImplApaSchedule.Classical_choice",
+    "ImportedClassicImplApaSchedule.Quot_sound",
+    "ImportedClassicImplApaSchedule.propext",
+    "PrimInt63.eqb",
+    "PrimInt63.int",
+    "PrimInt63.land",
+    "PrimInt63.lsr"
+  ],
+  "rocq_sprop_uip": [
+    "ClassicImplApaScheduleBase.I.HEq_inst1",
+    "ClassicImplApaScheduleBase.I.True",
+    "ClassicImplApaScheduleList.I.HEq_inst1",
+    "ClassicImplApaScheduleList.I.True",
+    "ClassicImplApaScheduleOrd.I.HEq",
+    "ClassicImplApaScheduleOrd.I.HEq_inst1",
+    "ClassicImplApaScheduleOrd.I.True",
+    "CtaTrue",
+    "I.HEq",
+    "I.HEq_inst1",
+    "I.True",
+    "Lean.eq",
+    "Lean.eq_inst1",
+    "SubadditivityNatCorrespondence.SubNatTrue"
+  ],
+  "normalization": {
+    "theorem_types": [],
+    "subexpression_heads": [
+      "Finset.sum"
+    ],
+    "definition_bodies": [],
+    "body_projections": [
+      "Prosa.Classic.Model.Schedule.Global.Basic.Schedule.Schedule.service=Prosa.Validation.ClassicImplApaScheduleInterface.service_proj=Prosa.Validation.ClassicImplApaScheduleInterface.service_proj_guard",
+      "Prosa.Classic.Model.Schedule.Global.Basic.Schedule.Schedule.service_during=Prosa.Validation.ClassicImplApaScheduleInterface.service_during_proj=Prosa.Validation.ClassicImplApaScheduleInterface.service_during_proj_guard"
+    ]
+  },
+  "export_env": {
+    "LEAN4EXPORT_PRESERVE_REDUCIBLE_THEOREM_TYPES": "1",
+    "LEAN4EXPORT_NAT_INDEX_ALIASES": "Prosa.Classic.Model.Time.Time.time"
+  },
+  "export_diagnosis": "as for the accepted classic global schedule export: service_at is a filtered Finset sum over Fin num_cpus (Mathlib Finset/Multiset/Quot closure), jobs_scheduled_between uses Mathlib List.dedup, and the restated ClassicScheduleInterface theorems are exported with their proof bodies; service/service_during through kernel-guarded rfl body projections.",
+  "extra_targets": [
+    "Prosa.Classic.Implementation.Apa.Schedule.ConcreteScheduler.mc_merge_s1",
+    "Prosa.Classic.Implementation.Apa.Schedule.ConcreteScheduler.mc_merge",
+    "Prosa.Classic.Implementation.Apa.Schedule.ConcreteScheduler.mc_merge_sort_push",
+    "Prosa.Classic.Implementation.Apa.Schedule.ConcreteScheduler.mc_merge_sort_pop",
+    "Prosa.Classic.Implementation.Apa.Schedule.ConcreteScheduler.mc_merge_sort_rec",
+    "Prosa.Classic.Implementation.Apa.Schedule.ConcreteScheduler.mc_sort"
+  ],
+  "kernel_guard_artifacts": [
+    "Validation/fixtures/translation_order/ClassicImplApaScheduleInterface.lean"
+  ]
+}

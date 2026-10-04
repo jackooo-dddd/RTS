@@ -1,0 +1,40 @@
+import Validation.fixtures.translation_order.ClassicAllcostsReductionInterface
+set_option pp.fieldNotation false
+
+#check @Prosa.Classic.Analysis.Uni.Susp.Sustainability.Allcosts.Reduction.SustainabilityAllCosts.job_is_late
+#check @Prosa.Classic.Analysis.Uni.Susp.Sustainability.Allcosts.Reduction.SustainabilityAllCosts.jobs_that_are_late_or_scheduled_in_sched_susp
+#check @Prosa.Classic.Analysis.Uni.Susp.Sustainability.Allcosts.Reduction.SustainabilityAllCosts.highest_priority_late_job
+#check @Prosa.Classic.Analysis.Uni.Susp.Sustainability.Allcosts.Reduction.SustainabilityAllCosts.pending_jobs
+#check @Prosa.Classic.Analysis.Uni.Susp.Sustainability.Allcosts.Reduction.SustainabilityAllCosts.highest_priority_job
+#check @Prosa.Classic.Analysis.Uni.Susp.Sustainability.Allcosts.Reduction.SustainabilityAllCosts.build_schedule
+#check @Prosa.Classic.Analysis.Uni.Susp.Sustainability.Allcosts.Reduction.SustainabilityAllCosts.sched_new
+#check @Prosa.Classic.Analysis.Uni.Susp.Sustainability.Allcosts.Reduction.SustainabilityAllCosts.suspended_in_sched_new
+#check @Prosa.Classic.Analysis.Uni.Susp.Sustainability.Allcosts.Reduction.SustainabilityAllCosts.reduced_suspension_duration
+#check @Prosa.Validation.ClassicAllcostsReductionInterface.finRange_map_shift
+#check @Prosa.Validation.ClassicAllcostsReductionInterface.finRange_map_val
+#check @Prosa.Validation.ClassicAllcostsReductionInterface.finRange_any
+#check @Prosa.Validation.ClassicAllcostsReductionInterface.map_finRange_eq_map_range'
+#check @Prosa.Validation.ClassicAllcostsReductionInterface.maxFiltered_eq_foldr_cond
+#check @Prosa.Validation.ClassicAllcostsReductionInterface.maxFiltered_finRange
+#check @Prosa.Validation.ClassicAllcostsReductionInterface.bigCat_range'
+#check @Prosa.Validation.ClassicAllcostsReductionInterface.production_schedule_prefix_zero
+#check @Prosa.Validation.ClassicAllcostsReductionInterface.production_schedule_prefix_succ
+
+#print axioms Prosa.Classic.Analysis.Uni.Susp.Sustainability.Allcosts.Reduction.SustainabilityAllCosts.job_is_late
+#print axioms Prosa.Classic.Analysis.Uni.Susp.Sustainability.Allcosts.Reduction.SustainabilityAllCosts.jobs_that_are_late_or_scheduled_in_sched_susp
+#print axioms Prosa.Classic.Analysis.Uni.Susp.Sustainability.Allcosts.Reduction.SustainabilityAllCosts.highest_priority_late_job
+#print axioms Prosa.Classic.Analysis.Uni.Susp.Sustainability.Allcosts.Reduction.SustainabilityAllCosts.pending_jobs
+#print axioms Prosa.Classic.Analysis.Uni.Susp.Sustainability.Allcosts.Reduction.SustainabilityAllCosts.highest_priority_job
+#print axioms Prosa.Classic.Analysis.Uni.Susp.Sustainability.Allcosts.Reduction.SustainabilityAllCosts.build_schedule
+#print axioms Prosa.Classic.Analysis.Uni.Susp.Sustainability.Allcosts.Reduction.SustainabilityAllCosts.sched_new
+#print axioms Prosa.Classic.Analysis.Uni.Susp.Sustainability.Allcosts.Reduction.SustainabilityAllCosts.suspended_in_sched_new
+#print axioms Prosa.Classic.Analysis.Uni.Susp.Sustainability.Allcosts.Reduction.SustainabilityAllCosts.reduced_suspension_duration
+#print axioms Prosa.Validation.ClassicAllcostsReductionInterface.finRange_map_shift
+#print axioms Prosa.Validation.ClassicAllcostsReductionInterface.finRange_map_val
+#print axioms Prosa.Validation.ClassicAllcostsReductionInterface.finRange_any
+#print axioms Prosa.Validation.ClassicAllcostsReductionInterface.map_finRange_eq_map_range'
+#print axioms Prosa.Validation.ClassicAllcostsReductionInterface.maxFiltered_eq_foldr_cond
+#print axioms Prosa.Validation.ClassicAllcostsReductionInterface.maxFiltered_finRange
+#print axioms Prosa.Validation.ClassicAllcostsReductionInterface.bigCat_range'
+#print axioms Prosa.Validation.ClassicAllcostsReductionInterface.production_schedule_prefix_zero
+#print axioms Prosa.Validation.ClassicAllcostsReductionInterface.production_schedule_prefix_succ

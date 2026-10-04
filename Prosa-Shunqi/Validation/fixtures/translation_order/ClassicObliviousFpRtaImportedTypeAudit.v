@@ -1,0 +1,4 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedClassicObliviousFpRta.
+
+Check ImportedClassicObliviousFpRta.Prosa_Classic_Analysis_Uni_Susp_Dynamic_Oblivious_FpRta_SuspensionObliviousFP_suspension_oblivious_fp_rta_implies_schedulability.

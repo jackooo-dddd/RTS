@@ -1,0 +1,96 @@
+{
+  "rank": 112,
+  "layer": 12,
+  "classic_scope": "full",
+  "slug": "classic_analysis_uni_basic_tdma_rta_theory",
+  "tag": "CTRT",
+  "export_name": "ClassicTdmaRtaTheory",
+  "source": "classic/analysis/uni/basic/tdma_rta_theory.v",
+  "production": "Prosa/Classic/Analysis/Uni/Basic/TdmaRtaTheory.lean",
+  "fixtures": [
+    "ClassicTdmaRtaTheoryInterface"
+  ],
+  "export_module": "Validation.fixtures.translation_order.ClassicTdmaRtaTheoryInterface",
+  "interface_theorems": [
+    "Prosa.Validation.ClassicTdmaRtaTheoryInterface.production_sumSeq_nil",
+    "Prosa.Validation.ClassicTdmaRtaTheoryInterface.production_sumSeq_cons",
+    "Prosa.Validation.ClassicTdmaRtaTheoryInterface.production_sumFiltered_nil",
+    "Prosa.Validation.ClassicTdmaRtaTheoryInterface.production_sumFiltered_cons_true",
+    "Prosa.Validation.ClassicTdmaRtaTheoryInterface.production_sumFiltered_cons_false",
+    "Prosa.Validation.ClassicTdmaRtaTheoryInterface.end_time_option_c0",
+    "Prosa.Validation.ClassicTdmaRtaTheoryInterface.end_time_option_wf0",
+    "Prosa.Validation.ClassicTdmaRtaTheoryInterface.end_time_option_step",
+    "Prosa.Validation.DivModInterface.production_div_floor_eq",
+    "Prosa.Validation.DivModInterface.production_div_ceil_eq",
+    "Prosa.Validation.DivModInterface.production_div_add_mod",
+    "Prosa.Validation.DivModInterface.production_mod_lt",
+    "Prosa.Validation.DivModInterface.production_div_zero",
+    "Prosa.Validation.DivModInterface.production_mod_zero",
+    "Prosa.Validation.DivModInterface.production_dvd_iff_mod_eq_zero"
+  ],
+  "computational": [
+    "ResponseTimeAnalysisTDMA.is_valid_tdma_bound"
+  ],
+  "chain": [
+    "ClassicTdmaRtaTheoryBase",
+    "ClassicTdmaRtaTheoryList",
+    "ClassicTdmaRtaTheoryCorrespondence"
+  ],
+  "principal": {},
+  "helpers": [
+    "ctr_forall_sched",
+    "ctr_forall_par",
+    "ctr_forall_arr",
+    "ctr_forall_set",
+    "ctr_forall_ord"
+  ],
+  "base_run": null,
+  "base_checks": [],
+  "previous_status": "classic_analysis_uni_basic_tdma_wcrt_analysis_module_status.json",
+  "input_relations": [
+    "job and task types: eqTypes identified, Lean DecidableEq instances = the eqTypes' decision procedures; job_task identified",
+    "times by SubNatRel; job parameters pointwise through SubNatRel; schedules pointwise through the option map; arrival sequences pointwise on related times; task sets elementwise; TDMA slots/orders pointwise (two-way totals)"
+  ],
+  "lean_representation_note": "the Rocq module WCRT_OneJobTDMA is a namespace; `x %% m` is `x % m`; `x.-1` is `x - 1`; `reflect P b` is the informative `BoolReflect P b`",
+  "prop_sprop_foundation": [
+    "PropSPropFoundation.interpret_strict"
+  ],
+  "importer_foundation": [
+    "ImportedClassicTdmaRtaTheory.propext",
+    "PrimInt63.eqb",
+    "PrimInt63.int",
+    "PrimInt63.land",
+    "PrimInt63.lsr"
+  ],
+  "rocq_sprop_uip": [
+    "ClassicTdmaRtaTheoryBase.I.HEq_inst1",
+    "ClassicTdmaRtaTheoryBase.I.True",
+    "I.HEq",
+    "I.HEq_inst1",
+    "I.True",
+    "Lean.eq",
+    "Lean.eq_inst1",
+    "SubadditivityNatCorrespondence.SubNatTrue"
+  ],
+  "normalization": {
+    "theorem_types": [],
+    "subexpression_heads": [
+      "Finset.sum"
+    ],
+    "definition_bodies": [],
+    "body_projections": [
+      "Prosa.Classic.Model.Schedule.Uni.Schedule.UniprocessorSchedule.service_during=Prosa.Validation.ClassicTdmaRtaTheoryInterface.service_during_proj=Prosa.Validation.ClassicTdmaRtaTheoryInterface.service_during_proj_guard",
+      "Prosa.Classic.Model.Schedule.Uni.Schedule.UniprocessorSchedule.total_service_during=Prosa.Validation.ClassicTdmaRtaTheoryInterface.total_service_during_proj=Prosa.Validation.ClassicTdmaRtaTheoryInterface.total_service_during_proj_guard"
+    ]
+  },
+  "export_env": {
+    "LEAN4EXPORT_PRESERVE_REDUCIBLE_THEOREM_TYPES": "1",
+    "LEAN4EXPORT_NAT_INDEX_ALIASES": "Prosa.Classic.Model.Time.Time.time"
+  },
+  "extra_statement_only": [
+    "Prosa.Classic.Analysis.Uni.Basic.TdmaWcrtAnalysis.WCRT_OneJobTDMA.TDMA_policy_case_RT_le_Period._proof_1"
+  ],
+  "kernel_guard_artifacts": [
+    "Validation/fixtures/translation_order/ClassicTdmaRtaTheoryInterface.lean"
+  ]
+}

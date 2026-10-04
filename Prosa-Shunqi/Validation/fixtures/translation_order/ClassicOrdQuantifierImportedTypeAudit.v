@@ -1,0 +1,7 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedClassicOrdQuantifier.
+
+Check ImportedClassicOrdQuantifier.Prosa_Classic_Util_OrdQuantifier_exists_ord0.
+Check ImportedClassicOrdQuantifier.Prosa_Classic_Util_OrdQuantifier_exists_recr.
+Check ImportedClassicOrdQuantifier.Prosa_Classic_Util_OrdQuantifier_forall_ord0.
+Check ImportedClassicOrdQuantifier.Prosa_Classic_Util_OrdQuantifier_forall_recr.

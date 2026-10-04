@@ -1,0 +1,52 @@
+{
+  "rank": 95,
+  "layer": 10,
+  "classic_scope": "full",
+  "slug": "classic_implementation_apa_job",
+  "tag": "CIAJ",
+  "export_name": "ClassicImplApaJob",
+  "source": "classic/implementation/apa/job.v",
+  "production": "Prosa/Classic/Implementation/Apa/Job.lean",
+  "fixtures": [],
+  "export_module": "Prosa.Classic.Implementation.Apa.Job",
+  "interface_theorems": [],
+  "computational": [
+    "ConcreteJob.concrete_job",
+    "ConcreteJob.job_eqdef"
+  ],
+  "chain": [
+    "ClassicImplApaJobBase",
+    "ClassicImplApaJobList1",
+    "ClassicImplApaJobOrd",
+    "ClassicImplApaJobCorrespondence"
+  ],
+  "principal": {
+    "ConcreteJob.concrete_job": [
+      "ConcreteJob_concrete_job_source_total",
+      "ConcreteJob_concrete_job_target_total"
+    ]
+  },
+  "helpers": [],
+  "extra_targets": [
+    "Fin.isLt",
+    "instDecidableEqFin"
+  ],
+  "base_run": null,
+  "base_checks": [],
+  "previous_status": "classic_implementation_apa_task_module_status.json",
+  "input_relations": [
+    "processor counts by SubNatRel; concrete jobs by their fieldwise canonical import (Nat fields by SubNatRel, the job task by the accepted APA concrete-task relation re-bound to this export: Nat fields by SubNatRel, the affinity through the ordinal conversion), at related processor counts, two-way totals"
+  ],
+  "lean_representation_note": "the record `concrete_job` (implicit section parameter `num_cpus`) is a Lean structure with the same fields and the same implicit parameter; `==` is `decide (_ = _)` (on concrete tasks with the derived instance); the reflection lemma is the informative `\u2200 x y, BoolReflect (x = y) (job_eqdef x y)`; the HB `hasDecEq` registration is the derived `DecidableEq` instance",
+  "prop_sprop_foundation": [
+    "PropSPropFoundation.interpret_strict"
+  ],
+  "importer_foundation": [],
+  "rocq_sprop_uip": [
+    "I.HEq",
+    "I.HEq_inst1",
+    "Lean.eq",
+    "Lean.eq_inst1",
+    "SubadditivityNatCorrespondence.SubNatTrue"
+  ]
+}

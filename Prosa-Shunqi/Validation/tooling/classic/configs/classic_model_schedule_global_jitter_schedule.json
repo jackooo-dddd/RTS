@@ -1,0 +1,106 @@
+{
+  "rank": 47,
+  "layer": 9,
+  "classic_scope": "full",
+  "slug": "classic_model_schedule_global_jitter_schedule",
+  "tag": "CGJSCHED",
+  "export_name": "ClassicGlobalJitterSchedule",
+  "source": "classic/model/schedule/global/jitter/schedule.v",
+  "production": "Prosa/Classic/Model/Schedule/Global/Jitter/Schedule.lean",
+  "fixtures": [
+    "ClassicGlobalJitterScheduleInterface"
+  ],
+  "export_module": "Validation.fixtures.translation_order.ClassicGlobalJitterScheduleInterface",
+  "interface_theorems": [
+    "Prosa.Validation.ClassicGlobalJitterScheduleInterface.finRange_any",
+    "Prosa.Validation.ClassicGlobalJitterScheduleInterface.bigCatFin_range'",
+    "Prosa.Validation.ClassicGlobalJitterScheduleInterface.fin_sum_range'",
+    "Prosa.Validation.ClassicGlobalJitterScheduleInterface.bigCat_range'",
+    "Prosa.Validation.ClassicGlobalJitterScheduleInterface.count_filter_eq",
+    "Prosa.Validation.ClassicGlobalJitterScheduleInterface.service_at_sum",
+    "Prosa.Validation.ClassicGlobalJitterScheduleInterface.dedup_nil",
+    "Prosa.Validation.ClassicGlobalJitterScheduleInterface.dedup_cons_mem",
+    "Prosa.Validation.ClassicGlobalJitterScheduleInterface.dedup_cons_not_mem"
+  ],
+  "computational": [
+    "ScheduleWithJitter.actual_arrival",
+    "ScheduleWithJitter.jitter_has_passed",
+    "ScheduleWithJitter.actual_arrival_before",
+    "ScheduleWithJitter.pending",
+    "ScheduleWithJitter.backlogged",
+    "ScheduleWithJitter.jobs_execute_after_jitter",
+    "ScheduleOfSporadicTaskWithJitter.task_scheduled_on",
+    "ScheduleOfSporadicTaskWithJitter.task_is_scheduled",
+    "ScheduleOfSporadicTaskWithJitter.jobs_of_task_scheduled_between",
+    "ScheduleOfSporadicTaskWithJitter.jobs_of_same_task_dont_execute_in_parallel"
+  ],
+  "chain": [
+    "ClassicGlobalJitterScheduleBase",
+    "ClassicGlobalJitterScheduleList",
+    "ClassicGlobalJitterScheduleOrd",
+    "ClassicGlobalJitterScheduleCorrespondence"
+  ],
+  "principal": {},
+  "helpers": [
+    "cgj_forall_sched",
+    "cgj_forall_ncpus_sched",
+    "cgj_ico",
+    "cgj_bigcat_nat_rel",
+    "cgj_undup_rel",
+    "cgj_forall_par"
+  ],
+  "base_run": null,
+  "base_checks": [],
+  "previous_status": "classic_model_arrival_jitter_task_arrival_module_status.json",
+  "input_relations": [
+    "job and task types: eqTypes identified, Lean DecidableEq instances = the eqTypes' decision procedures; job_task identified",
+    "times and processor counts by SubNatRel; processors by CoOrdRel; schedules pointwise through the option map; job/task parameters pointwise through SubNatRel (two-way totals)"
+  ],
+  "lean_representation_note": "the Rocq modules ScheduleWithJitter / ScheduleOfSporadicTaskWithJitter are namespaces; `[exists cpu, P cpu]` is `(List.finRange n).any P`; `\\sum_(t1 <= t < t2) F t` is `\u2211 t \u2208 Finset.Ico t1 t2, F t` (normalization guard); Boolean conjunctions in Prop positions use `= true`",
+  "prop_sprop_foundation": [
+    "PropSPropFoundation.interpret_strict"
+  ],
+  "importer_foundation": [
+    "ImportedClassicGlobalJitterSchedule.Classical_choice",
+    "ImportedClassicGlobalJitterSchedule.Quot_sound",
+    "ImportedClassicGlobalJitterSchedule.propext",
+    "PrimInt63.eqb",
+    "PrimInt63.int",
+    "PrimInt63.land",
+    "PrimInt63.lsr"
+  ],
+  "rocq_sprop_uip": [
+    "ClassicGlobalJitterScheduleBase.I.HEq_inst1",
+    "ClassicGlobalJitterScheduleBase.I.True",
+    "ClassicGlobalJitterScheduleOrd.I.HEq",
+    "ClassicGlobalJitterScheduleOrd.I.HEq_inst1",
+    "ClassicGlobalJitterScheduleOrd.I.True",
+    "I.HEq",
+    "I.HEq_inst1",
+    "I.True",
+    "Lean.eq",
+    "Lean.eq_inst1",
+    "SubadditivityNatCorrespondence.SubNatTrue"
+  ],
+  "normalization": {
+    "theorem_types": [
+      "Prosa.Classic.Model.Schedule.Global.Jitter.Schedule.ScheduleWithJitter.cumulative_service_before_jitter_zero"
+    ],
+    "subexpression_heads": [
+      "Finset.sum"
+    ],
+    "definition_bodies": [],
+    "body_projections": [
+      "Prosa.Classic.Model.Schedule.Global.Basic.Schedule.Schedule.service=Prosa.Validation.ClassicGlobalJitterScheduleInterface.service_proj=Prosa.Validation.ClassicGlobalJitterScheduleInterface.service_proj_guard",
+      "Prosa.Classic.Model.Schedule.Global.Basic.Schedule.Schedule.service_during=Prosa.Validation.ClassicGlobalJitterScheduleInterface.service_during_proj=Prosa.Validation.ClassicGlobalJitterScheduleInterface.service_during_proj_guard"
+    ]
+  },
+  "export_env": {
+    "LEAN4EXPORT_PRESERVE_REDUCIBLE_THEOREM_TYPES": "1",
+    "LEAN4EXPORT_NAT_INDEX_ALIASES": "Prosa.Classic.Model.Time.Time.time"
+  },
+  "kernel_guard_artifacts": [
+    "Validation/fixtures/translation_order/ClassicGlobalJitterScheduleInterface.lean"
+  ],
+  "export_diagnosis": "~158,700 lines: as for the accepted classic global schedule export (159,148 lines), service_at is a filtered Finset sum over Fin num_cpus (Finset.univ of Fin.fintype, Finset.filter, AddCommMonoid Nat: the Mathlib Finset/Multiset/Quot closure), jobs_scheduled_between uses Mathlib List.dedup (pwFilter), and the validation-only interface theorems restated from ClassicScheduleInterface are exported with their proof bodies; the half-open Finset.Ico sums are kept out of the export by the kernel-guarded service/service_during body projections and the kernel-checked normalization guard of cumulative_service_before_jitter_zero."
+}

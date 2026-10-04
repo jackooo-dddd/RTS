@@ -1,0 +1,85 @@
+{
+  "rank": 123,
+  "layer": 13,
+  "classic_scope": "full",
+  "slug": "classic_model_schedule_uni_limited_platform_priority_inversion_is_bounded",
+  "tag": "CPIB",
+  "export_name": "ClassicPriorityInversionBounded",
+  "source": "classic/model/schedule/uni/limited/platform/priority_inversion_is_bounded.v",
+  "production": "Prosa/Classic/Model/Schedule/Uni/Limited/Platform/PriorityInversionIsBounded.lean",
+  "fixtures": [
+    "ClassicPriorityInversionBoundedInterface"
+  ],
+  "export_module": "Validation.fixtures.translation_order.ClassicPriorityInversionBoundedInterface",
+  "interface_theorems": [
+    "Prosa.Validation.ClassicPriorityInversionBoundedInterface.bigCat_range'",
+    "Prosa.Validation.ClassicPriorityInversionBoundedInterface.production_sumSeq_nil",
+    "Prosa.Validation.ClassicPriorityInversionBoundedInterface.production_sumSeq_cons",
+    "Prosa.Validation.ClassicPriorityInversionBoundedInterface.production_sumFiltered_nil",
+    "Prosa.Validation.ClassicPriorityInversionBoundedInterface.production_sumFiltered_cons_true",
+    "Prosa.Validation.ClassicPriorityInversionBoundedInterface.production_sumFiltered_cons_false",
+    "Prosa.Validation.ClassicPriorityInversionBoundedInterface.maxFiltered_eq_foldr_cond"
+  ],
+  "computational": [
+    "PriorityInversionIsBounded.max_length_of_priority_inversion"
+  ],
+  "chain": [
+    "ClassicPriorityInversionBoundedBase",
+    "ClassicPriorityInversionBoundedList",
+    "ClassicPriorityInversionBoundedCorrespondence"
+  ],
+  "principal": {},
+  "helpers": [
+    "cqi_forall_sched",
+    "cqi_forall_arr",
+    "cqi_forall_par",
+    "cqi_forall_rel",
+    "cqi_forall_pm",
+    "cqi_max_filtered_rel"
+  ],
+  "base_run": null,
+  "base_checks": [],
+  "previous_status": "classic_model_schedule_uni_limited_abstract_rta_abstract_rta_module_status.json",
+  "input_relations": [
+    "job and task types: eqTypes identified, Lean DecidableEq instances = the eqTypes' decision procedures; job_task identified",
+    "times by SubNatRel; job parameters pointwise through SubNatRel; schedules pointwise through the option map; arrival sequences pointwise on related times; job sequences elementwise; predicates / policies pointwise on Booleans (two-way totals)",
+    "preemption predicates pointwise on related times; task maximum non-preemptive segments pointwise (two-way totals)"
+  ],
+  "lean_representation_note": "the Rocq module PriorityInversionIsBounded is a namespace; `\\max_(x <- s | P x) F x` is `maxFiltered s P F`; `\u03b5` is `1`; the limited busy-interval and platform notions as in the accepted validations",
+  "prop_sprop_foundation": [
+    "PropSPropFoundation.interpret_strict"
+  ],
+  "importer_foundation": [
+    "ImportedClassicPriorityInversionBounded.propext"
+  ],
+  "rocq_sprop_uip": [
+    "ClassicPriorityInversionBoundedBase.I.HEq_inst1",
+    "ClassicPriorityInversionBoundedBase.I.True",
+    "I.HEq",
+    "I.HEq_inst1",
+    "I.True",
+    "Lean.eq",
+    "Lean.eq_inst1",
+    "SubadditivityNatCorrespondence.SubNatTrue"
+  ],
+  "normalization": {
+    "theorem_types": [],
+    "subexpression_heads": [
+      "Finset.sum"
+    ],
+    "definition_bodies": [],
+    "body_projections": [
+      "Prosa.Classic.Model.Schedule.Uni.Schedule.UniprocessorSchedule.service_during=Prosa.Validation.ClassicPriorityInversionBoundedInterface.service_during_proj=Prosa.Validation.ClassicPriorityInversionBoundedInterface.service_during_proj_guard",
+      "Prosa.Classic.Model.Schedule.Uni.Schedule.UniprocessorSchedule.total_service_during=Prosa.Validation.ClassicPriorityInversionBoundedInterface.total_service_during_proj=Prosa.Validation.ClassicPriorityInversionBoundedInterface.total_service_during_proj_guard",
+      "Prosa.Classic.Model.Schedule.Uni.Limited.BusyInterval.BusyIntervalJLFP.cumulative_priority_inversion=Prosa.Validation.ClassicPriorityInversionBoundedInterface.cumulative_priority_inversion_proj=Prosa.Validation.ClassicPriorityInversionBoundedInterface.cumulative_priority_inversion_proj_guard"
+    ]
+  },
+  "export_env": {
+    "LEAN4EXPORT_PRESERVE_REDUCIBLE_THEOREM_TYPES": "1",
+    "LEAN4EXPORT_NAT_INDEX_ALIASES": "Prosa.Classic.Model.Time.Time.time"
+  },
+  "export_diagnosis": "~101,000 lines: the BusyInterval module's statements mention the uniprocessor service/workload sums (v0.6 sumFiltered over List.filter, with the Lean core List/BEq closure), the classic Prosa.Classic.Util.List.BoolReflect informative reflection and the limited-preemption platform; the restated interface theorems (finRange/maxFiltered, sumSeq/sumFiltered constructor equations, bigCat_range') are exported with their proof bodies; the half-open Finset.Ico sums (service_during, total_service_during, cumulative_priority_inversion) are kept out of the export by kernel-guarded rfl body projections.",
+  "kernel_guard_artifacts": [
+    "Validation/fixtures/translation_order/ClassicPriorityInversionBoundedInterface.lean"
+  ]
+}

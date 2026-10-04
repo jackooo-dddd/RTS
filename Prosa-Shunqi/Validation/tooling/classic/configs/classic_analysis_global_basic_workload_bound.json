@@ -1,0 +1,120 @@
+{
+  "rank": 36,
+  "layer": 12,
+  "slug": "classic_analysis_global_basic_workload_bound",
+  "tag": "CWBG",
+  "export_name": "ClassicWorkloadBoundGlobal",
+  "source": "classic/analysis/global/basic/workload_bound.v",
+  "production": "Prosa/Classic/Analysis/Global/Basic/WorkloadBound.lean",
+  "fixtures": [
+    "ClassicWorkloadBoundGlobalInterface"
+  ],
+  "export_module": "Validation.fixtures.translation_order.ClassicWorkloadBoundGlobalInterface",
+  "interface_theorems": [
+    "Prosa.Validation.ClassicWorkloadBoundGlobalInterface.finRange_any",
+    "Prosa.Validation.ClassicWorkloadBoundGlobalInterface.bigCatFin_range'",
+    "Prosa.Validation.ClassicWorkloadBoundGlobalInterface.fin_sum_range'",
+    "Prosa.Validation.ClassicWorkloadBoundGlobalInterface.bigCat_range'",
+    "Prosa.Validation.ClassicWorkloadBoundGlobalInterface.service_at_sum",
+    "Prosa.Validation.ClassicWorkloadBoundGlobalInterface.dedup_nil",
+    "Prosa.Validation.ClassicWorkloadBoundGlobalInterface.dedup_cons_mem",
+    "Prosa.Validation.ClassicWorkloadBoundGlobalInterface.dedup_cons_not_mem",
+    "Prosa.Validation.ClassicWorkloadBoundGlobalInterface.mergeSort_isChain",
+    "Prosa.Validation.ClassicWorkloadBoundGlobalInterface.mergeSort_filter_class",
+    "Prosa.Validation.DivModInterface.production_div_floor_eq",
+    "Prosa.Validation.DivModInterface.production_div_ceil_eq",
+    "Prosa.Validation.DivModInterface.production_div_add_mod",
+    "Prosa.Validation.DivModInterface.production_mod_lt",
+    "Prosa.Validation.DivModInterface.production_div_zero",
+    "Prosa.Validation.DivModInterface.production_mod_zero",
+    "Prosa.Validation.DivModInterface.production_dvd_iff_mod_eq_zero"
+  ],
+  "computational": [
+    "WorkloadBound.max_jobs",
+    "WorkloadBound.W"
+  ],
+  "chain": [
+    "ClassicWorkloadBoundGlobalNatSub",
+    "ClassicWorkloadBoundGlobalOps",
+    "ClassicWorkloadBoundGlobalBase",
+    "ClassicWorkloadBoundGlobalList",
+    "ClassicWorkloadBoundGlobalOrd",
+    "ClassicWorkloadBoundGlobalCorrespondence"
+  ],
+  "base_run": null,
+  "base_checks": [],
+  "previous_status": "classic_analysis_apa_workload_bound_module_status.json",
+  "input_relations": [
+    "job and task types: eqTypes identified, Lean DecidableEq instances = the eqTypes' decision procedures; job_task identified",
+    "natural numbers (time, num_cpus) by SubNatRel; processors 'I_n and Fin n by their values; schedules pointwise on related processors and times with option values by the constructor map; job/task parameters pointwise through SubNatRel; sequences elementwise; arrival sequences pointwise on related times (two-way totals)"
+  ],
+  "lean_representation_note": "as for the accepted classic schedule, workload and task_arrival validations: `sort (fun x y => job_arrival x <= job_arrival y) s` is `s.mergeSort (fun x y => decide (job_arrival x \u2264 job_arrival y))`, `nth elem s i` is `s.getD i elem`, `n.-1` is `n - 1`, `n.+2` is `n + 2`; `\\sum_(i <- s) F i` is `sumSeq s F`; `\\sum_(0 <= i < n) F i` is `\u2211 i \u2208 Finset.Ico 0 n, F i`",
+  "normalization": {
+    "theorem_types": [
+      "Prosa.Classic.Analysis.Global.Basic.WorkloadBound.WorkloadBound.workload_bound_holds_for_a_single_job",
+      "Prosa.Classic.Analysis.Global.Basic.WorkloadBound.WorkloadBound.workload_bound_service_of_middle_jobs",
+      "Prosa.Classic.Analysis.Global.Basic.WorkloadBound.WorkloadBound.workload_bound_n_k_equals_num_mid_jobs",
+      "Prosa.Classic.Analysis.Global.Basic.WorkloadBound.WorkloadBound.workload_bound_n_k_equals_num_mid_jobs_plus_1"
+    ],
+    "subexpression_heads": [
+      "Finset.sum"
+    ],
+    "definition_bodies": [],
+    "body_projections": [
+      "Prosa.Classic.Model.Schedule.Global.Basic.Schedule.Schedule.service=Prosa.Validation.ClassicWorkloadBoundGlobalInterface.service_proj=Prosa.Validation.ClassicWorkloadBoundGlobalInterface.service_proj_guard",
+      "Prosa.Classic.Model.Schedule.Global.Basic.Schedule.Schedule.service_during=Prosa.Validation.ClassicWorkloadBoundGlobalInterface.service_during_proj=Prosa.Validation.ClassicWorkloadBoundGlobalInterface.service_during_proj_guard",
+      "Prosa.Classic.Model.Schedule.Global.Workload.Workload.workload=Prosa.Validation.ClassicWorkloadBoundGlobalInterface.workload_proj=Prosa.Validation.ClassicWorkloadBoundGlobalInterface.workload_proj_guard"
+    ]
+  },
+  "kernel_guard_artifacts": [
+    "Validation/fixtures/translation_order/ClassicWorkloadBoundGlobalInterface.lean"
+  ],
+  "export_env": {
+    "LEAN4EXPORT_PRESERVE_REDUCIBLE_THEOREM_TYPES": "1",
+    "LEAN4EXPORT_NAT_INDEX_ALIASES": "Prosa.Classic.Model.Time.Time.time"
+  },
+  "own_qualified_in_type": [
+    "WorkloadBound.max_jobs",
+    "WorkloadBound.W"
+  ],
+  "helpers": [
+    "cs_forall_ncpus_sched",
+    "cs_ico",
+    "cta_sort_rel",
+    "cta_sorted_class_uniq",
+    "cwb_sorted",
+    "cai_workload"
+  ],
+  "export_diagnosis": "as for the accepted classic workload and task_arrival exports: service_at is a filtered Finset sum over Fin num_cpus, jobs_scheduled_between uses Mathlib List.dedup, the statements mention the core List.mergeSort (its termination proofs are `omega` certificates), and the validation-only interface theorems are exported with their proof bodies (stability of mergeSort proved by its recursion, avoiding the Nat.Internal.Linear closure of sublist_mergeSort); workload/service/service_during through kernel-guarded rfl body projections and the four Finset.Ico statements through kernel-guarded type normalization.",
+  "probe_extra": [],
+  "prop_sprop_foundation": [
+    "PropSPropFoundation.interpret_strict"
+  ],
+  "importer_foundation": [
+    "ImportedClassicWorkloadBoundGlobal.Classical_choice",
+    "ImportedClassicWorkloadBoundGlobal.Quot_sound",
+    "ImportedClassicWorkloadBoundGlobal.propext",
+    "PrimInt63.eqb",
+    "PrimInt63.int",
+    "PrimInt63.land",
+    "PrimInt63.lsr"
+  ],
+  "rocq_sprop_uip": [
+    "ClassicWorkloadBoundGlobalBase.I.HEq_inst1",
+    "ClassicWorkloadBoundGlobalBase.I.True",
+    "ClassicWorkloadBoundGlobalList.I.HEq_inst1",
+    "ClassicWorkloadBoundGlobalList.I.True",
+    "ClassicWorkloadBoundGlobalOrd.I.HEq",
+    "ClassicWorkloadBoundGlobalOrd.I.HEq_inst1",
+    "ClassicWorkloadBoundGlobalOrd.I.True",
+    "CtaTrue",
+    "I.HEq",
+    "I.HEq_inst1",
+    "I.True",
+    "ImportedClassicWorkloadBoundGlobal.HEq_inst1",
+    "ImportedClassicWorkloadBoundGlobal.True",
+    "Lean.eq",
+    "Lean.eq_inst1",
+    "SubadditivityNatCorrespondence.SubNatTrue"
+  ]
+}

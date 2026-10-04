@@ -1,0 +1,13 @@
+Verbatim `util/tactics.v` section of patches/prosa-v06-rocq93-official-proof-closure-common.patch
+(sha256 6819bfa9ac0bb9cfd6bfc7182d57e22463cf7a57b38ce9af89c8e7de96868050), split out for classic official closures.
+--- a/util/tactics.v
++++ b/util/tactics.v
+@@ -122,7 +122,7 @@
+ #[deprecated(since="prosa-0.6", note="use by or // instead")]
+ Ltac rt_eauto := eauto 4 with basic_rt_facts.
+ 
+-Ltac done := solve [ ssreflect.done | eauto 4 with basic_rt_facts ].
++Ltac done := solve [ Corelib.ssr.ssreflect_rw.done | eauto 4 with basic_rt_facts ].
+ #[export] Hint Resolve I : basic_rt_facts.
+ 
+ (** Note: [idtac] is a no-op. However, it suppresses the default obligation tactic,

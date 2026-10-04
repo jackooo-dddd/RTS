@@ -1,0 +1,38 @@
+import Validation.fixtures.translation_order.ClassicGlobalConstructionInterface
+set_option pp.fieldNotation false
+
+#check @Prosa.Classic.Model.Schedule.Global.Transformation.Construction.ScheduleConstruction.update_schedule
+#check @Prosa.Classic.Model.Schedule.Global.Transformation.Construction.ScheduleConstruction.schedule_prefix
+#check @Prosa.Classic.Model.Schedule.Global.Transformation.Construction.ScheduleConstruction.build_schedule_from_prefixes
+#check @Prosa.Classic.Model.Schedule.Global.Transformation.Construction.ScheduleConstruction.prefix_construction_same_prefix
+#check @Prosa.Classic.Model.Schedule.Global.Transformation.Construction.ScheduleConstruction.service_dependent_schedule_construction
+#check @Prosa.Classic.Model.Schedule.Global.Transformation.Construction.ScheduleConstruction.prefix_dependent_schedule_construction
+#check @Prosa.Validation.ClassicGlobalConstructionInterface.finRange_any
+#check @Prosa.Validation.ClassicGlobalConstructionInterface.bigCatFin_range'
+#check @Prosa.Validation.ClassicGlobalConstructionInterface.fin_sum_range'
+#check @Prosa.Validation.ClassicGlobalConstructionInterface.bigCat_range'
+#check @Prosa.Validation.ClassicGlobalConstructionInterface.count_filter_eq
+#check @Prosa.Validation.ClassicGlobalConstructionInterface.service_at_sum
+#check @Prosa.Validation.ClassicGlobalConstructionInterface.dedup_nil
+#check @Prosa.Validation.ClassicGlobalConstructionInterface.dedup_cons_mem
+#check @Prosa.Validation.ClassicGlobalConstructionInterface.dedup_cons_not_mem
+#check @Prosa.Validation.ClassicGlobalConstructionInterface.production_schedule_prefix_zero
+#check @Prosa.Validation.ClassicGlobalConstructionInterface.production_schedule_prefix_succ
+
+#print axioms Prosa.Classic.Model.Schedule.Global.Transformation.Construction.ScheduleConstruction.update_schedule
+#print axioms Prosa.Classic.Model.Schedule.Global.Transformation.Construction.ScheduleConstruction.schedule_prefix
+#print axioms Prosa.Classic.Model.Schedule.Global.Transformation.Construction.ScheduleConstruction.build_schedule_from_prefixes
+#print axioms Prosa.Classic.Model.Schedule.Global.Transformation.Construction.ScheduleConstruction.prefix_construction_same_prefix
+#print axioms Prosa.Classic.Model.Schedule.Global.Transformation.Construction.ScheduleConstruction.service_dependent_schedule_construction
+#print axioms Prosa.Classic.Model.Schedule.Global.Transformation.Construction.ScheduleConstruction.prefix_dependent_schedule_construction
+#print axioms Prosa.Validation.ClassicGlobalConstructionInterface.finRange_any
+#print axioms Prosa.Validation.ClassicGlobalConstructionInterface.bigCatFin_range'
+#print axioms Prosa.Validation.ClassicGlobalConstructionInterface.fin_sum_range'
+#print axioms Prosa.Validation.ClassicGlobalConstructionInterface.bigCat_range'
+#print axioms Prosa.Validation.ClassicGlobalConstructionInterface.count_filter_eq
+#print axioms Prosa.Validation.ClassicGlobalConstructionInterface.service_at_sum
+#print axioms Prosa.Validation.ClassicGlobalConstructionInterface.dedup_nil
+#print axioms Prosa.Validation.ClassicGlobalConstructionInterface.dedup_cons_mem
+#print axioms Prosa.Validation.ClassicGlobalConstructionInterface.dedup_cons_not_mem
+#print axioms Prosa.Validation.ClassicGlobalConstructionInterface.production_schedule_prefix_zero
+#print axioms Prosa.Validation.ClassicGlobalConstructionInterface.production_schedule_prefix_succ

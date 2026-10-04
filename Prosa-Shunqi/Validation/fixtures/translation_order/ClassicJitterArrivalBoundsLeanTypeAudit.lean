@@ -1,0 +1,44 @@
+import Validation.fixtures.translation_order.ClassicJitterArrivalBoundsInterface
+set_option pp.fieldNotation false
+
+#check @Prosa.Classic.Model.Arrival.Jitter.ArrivalBounds.ArrivalBounds.sporadic_arrival_bound_no_jobs
+#check @Prosa.Classic.Model.Arrival.Jitter.ArrivalBounds.ArrivalBounds.sporadic_arrival_bound_more_than_one_point
+#check @Prosa.Classic.Model.Arrival.Jitter.ArrivalBounds.ArrivalBounds.sporadic_arrival_bound_one_job
+#check @Prosa.Classic.Model.Arrival.Jitter.ArrivalBounds.ArrivalBounds.sporadic_arrival_bound_properties_of_nth
+#check @Prosa.Classic.Model.Arrival.Jitter.ArrivalBounds.ArrivalBounds.sporadic_arrival_bound_distance_between_first_and_last
+#check @Prosa.Classic.Model.Arrival.Jitter.ArrivalBounds.ArrivalBounds.sporadic_arrival_bound_last_job_too_far
+#check @Prosa.Classic.Model.Arrival.Jitter.ArrivalBounds.ArrivalBounds.sporadic_arrival_bound_last_arrives_too_late
+#check @Prosa.Classic.Model.Arrival.Jitter.ArrivalBounds.ArrivalBounds.sporadic_arrival_bound_case_3_contradiction
+#check @Prosa.Classic.Model.Arrival.Jitter.ArrivalBounds.ArrivalBounds.sporadic_task_arrival_bound_at_least_two_jobs
+#check @Prosa.Classic.Model.Arrival.Jitter.ArrivalBounds.ArrivalBounds.sporadic_task_with_jitter_arrival_bound
+#check @Prosa.Validation.ClassicJitterArrivalBoundsInterface.bigCat_range'
+#check @Prosa.Validation.ClassicJitterArrivalBoundsInterface.mergeSort_isChain
+#check @Prosa.Validation.ClassicJitterArrivalBoundsInterface.mergeSort_filter_class
+#check @Prosa.Validation.DivModInterface.production_div_floor_eq
+#check @Prosa.Validation.DivModInterface.production_div_ceil_eq
+#check @Prosa.Validation.DivModInterface.production_div_add_mod
+#check @Prosa.Validation.DivModInterface.production_mod_lt
+#check @Prosa.Validation.DivModInterface.production_div_zero
+#check @Prosa.Validation.DivModInterface.production_mod_zero
+#check @Prosa.Validation.DivModInterface.production_dvd_iff_mod_eq_zero
+
+#print axioms Prosa.Classic.Model.Arrival.Jitter.ArrivalBounds.ArrivalBounds.sporadic_arrival_bound_no_jobs
+#print axioms Prosa.Classic.Model.Arrival.Jitter.ArrivalBounds.ArrivalBounds.sporadic_arrival_bound_more_than_one_point
+#print axioms Prosa.Classic.Model.Arrival.Jitter.ArrivalBounds.ArrivalBounds.sporadic_arrival_bound_one_job
+#print axioms Prosa.Classic.Model.Arrival.Jitter.ArrivalBounds.ArrivalBounds.sporadic_arrival_bound_properties_of_nth
+#print axioms Prosa.Classic.Model.Arrival.Jitter.ArrivalBounds.ArrivalBounds.sporadic_arrival_bound_distance_between_first_and_last
+#print axioms Prosa.Classic.Model.Arrival.Jitter.ArrivalBounds.ArrivalBounds.sporadic_arrival_bound_last_job_too_far
+#print axioms Prosa.Classic.Model.Arrival.Jitter.ArrivalBounds.ArrivalBounds.sporadic_arrival_bound_last_arrives_too_late
+#print axioms Prosa.Classic.Model.Arrival.Jitter.ArrivalBounds.ArrivalBounds.sporadic_arrival_bound_case_3_contradiction
+#print axioms Prosa.Classic.Model.Arrival.Jitter.ArrivalBounds.ArrivalBounds.sporadic_task_arrival_bound_at_least_two_jobs
+#print axioms Prosa.Classic.Model.Arrival.Jitter.ArrivalBounds.ArrivalBounds.sporadic_task_with_jitter_arrival_bound
+#print axioms Prosa.Validation.ClassicJitterArrivalBoundsInterface.bigCat_range'
+#print axioms Prosa.Validation.ClassicJitterArrivalBoundsInterface.mergeSort_isChain
+#print axioms Prosa.Validation.ClassicJitterArrivalBoundsInterface.mergeSort_filter_class
+#print axioms Prosa.Validation.DivModInterface.production_div_floor_eq
+#print axioms Prosa.Validation.DivModInterface.production_div_ceil_eq
+#print axioms Prosa.Validation.DivModInterface.production_div_add_mod
+#print axioms Prosa.Validation.DivModInterface.production_mod_lt
+#print axioms Prosa.Validation.DivModInterface.production_div_zero
+#print axioms Prosa.Validation.DivModInterface.production_mod_zero
+#print axioms Prosa.Validation.DivModInterface.production_dvd_iff_mod_eq_zero

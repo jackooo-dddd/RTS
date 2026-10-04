@@ -1,0 +1,26 @@
+import Validation.fixtures.translation_order.ClassicUniNonpreemptiveScheduleInterface
+set_option pp.fieldNotation false
+
+#check @Prosa.Classic.Model.Schedule.Uni.Nonpreemptive.Schedule.NonpreemptiveSchedule.is_nonpreemptive_schedule
+#check @Prosa.Classic.Model.Schedule.Uni.Nonpreemptive.Schedule.NonpreemptiveSchedule.subh3
+#check @Prosa.Classic.Model.Schedule.Uni.Nonpreemptive.Schedule.NonpreemptiveSchedule.continuity_of_nonpreemptive_scheduling
+#check @Prosa.Classic.Model.Schedule.Uni.Nonpreemptive.Schedule.NonpreemptiveSchedule.in_nonpreemption_schedule_preemption_implies_completeness
+#check @Prosa.Classic.Model.Schedule.Uni.Nonpreemptive.Schedule.NonpreemptiveSchedule.job_completes_after_remaining_cost
+#check @Prosa.Classic.Model.Schedule.Uni.Nonpreemptive.Schedule.NonpreemptiveSchedule.j_is_scheduled_at_t_minus_service
+#check @Prosa.Classic.Model.Schedule.Uni.Nonpreemptive.Schedule.NonpreemptiveSchedule.j_is_not_scheduled_at_t_minus_service_minus_one
+#check @Prosa.Classic.Model.Schedule.Uni.Nonpreemptive.Schedule.NonpreemptiveSchedule.j_is_not_scheduled_earlier_t_minus_service
+#check @Prosa.Classic.Model.Schedule.Uni.Nonpreemptive.Schedule.NonpreemptiveSchedule.j_is_scheduled_at_t_plus_remaining_cost_minus_one
+#check @Prosa.Classic.Model.Schedule.Uni.Nonpreemptive.Schedule.NonpreemptiveSchedule.j_is_not_scheduled_after_t_plus_remaining_cost_minus_one
+#check @Prosa.Classic.Model.Schedule.Uni.Nonpreemptive.Schedule.NonpreemptiveSchedule.nonpreemptive_executing_interval
+
+#print axioms Prosa.Classic.Model.Schedule.Uni.Nonpreemptive.Schedule.NonpreemptiveSchedule.is_nonpreemptive_schedule
+#print axioms Prosa.Classic.Model.Schedule.Uni.Nonpreemptive.Schedule.NonpreemptiveSchedule.subh3
+#print axioms Prosa.Classic.Model.Schedule.Uni.Nonpreemptive.Schedule.NonpreemptiveSchedule.continuity_of_nonpreemptive_scheduling
+#print axioms Prosa.Classic.Model.Schedule.Uni.Nonpreemptive.Schedule.NonpreemptiveSchedule.in_nonpreemption_schedule_preemption_implies_completeness
+#print axioms Prosa.Classic.Model.Schedule.Uni.Nonpreemptive.Schedule.NonpreemptiveSchedule.job_completes_after_remaining_cost
+#print axioms Prosa.Classic.Model.Schedule.Uni.Nonpreemptive.Schedule.NonpreemptiveSchedule.j_is_scheduled_at_t_minus_service
+#print axioms Prosa.Classic.Model.Schedule.Uni.Nonpreemptive.Schedule.NonpreemptiveSchedule.j_is_not_scheduled_at_t_minus_service_minus_one
+#print axioms Prosa.Classic.Model.Schedule.Uni.Nonpreemptive.Schedule.NonpreemptiveSchedule.j_is_not_scheduled_earlier_t_minus_service
+#print axioms Prosa.Classic.Model.Schedule.Uni.Nonpreemptive.Schedule.NonpreemptiveSchedule.j_is_scheduled_at_t_plus_remaining_cost_minus_one
+#print axioms Prosa.Classic.Model.Schedule.Uni.Nonpreemptive.Schedule.NonpreemptiveSchedule.j_is_not_scheduled_after_t_plus_remaining_cost_minus_one
+#print axioms Prosa.Classic.Model.Schedule.Uni.Nonpreemptive.Schedule.NonpreemptiveSchedule.nonpreemptive_executing_interval

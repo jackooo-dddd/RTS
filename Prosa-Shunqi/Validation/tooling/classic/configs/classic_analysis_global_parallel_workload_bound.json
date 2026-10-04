@@ -1,0 +1,117 @@
+{
+  "rank": 90,
+  "layer": 11,
+  "classic_scope": "full",
+  "slug": "classic_analysis_global_parallel_workload_bound",
+  "tag": "CPWB",
+  "export_name": "ClassicParallelWorkloadBound",
+  "source": "classic/analysis/global/parallel/workload_bound.v",
+  "production": "Prosa/Classic/Analysis/Global/Parallel/WorkloadBound.lean",
+  "fixtures": [
+    "ClassicParallelWorkloadBoundInterface"
+  ],
+  "export_module": "Validation.fixtures.translation_order.ClassicParallelWorkloadBoundInterface",
+  "interface_theorems": [
+    "Prosa.Validation.ClassicParallelWorkloadBoundInterface.finRange_any",
+    "Prosa.Validation.ClassicParallelWorkloadBoundInterface.bigCatFin_range'",
+    "Prosa.Validation.ClassicParallelWorkloadBoundInterface.fin_sum_range'",
+    "Prosa.Validation.ClassicParallelWorkloadBoundInterface.bigCat_range'",
+    "Prosa.Validation.ClassicParallelWorkloadBoundInterface.service_at_sum",
+    "Prosa.Validation.ClassicParallelWorkloadBoundInterface.dedup_nil",
+    "Prosa.Validation.ClassicParallelWorkloadBoundInterface.dedup_cons_mem",
+    "Prosa.Validation.ClassicParallelWorkloadBoundInterface.dedup_cons_not_mem",
+    "Prosa.Validation.ClassicParallelWorkloadBoundInterface.mergeSort_isChain",
+    "Prosa.Validation.ClassicParallelWorkloadBoundInterface.mergeSort_filter_class",
+    "Prosa.Validation.ClassicParallelWorkloadBoundInterface.production_sumSeq_nil",
+    "Prosa.Validation.ClassicParallelWorkloadBoundInterface.production_sumSeq_cons",
+    "Prosa.Validation.ClassicParallelWorkloadBoundInterface.production_sumFiltered_nil",
+    "Prosa.Validation.ClassicParallelWorkloadBoundInterface.production_sumFiltered_cons_true",
+    "Prosa.Validation.ClassicParallelWorkloadBoundInterface.production_sumFiltered_cons_false",
+    "Prosa.Validation.DivModInterface.production_div_floor_eq",
+    "Prosa.Validation.DivModInterface.production_div_ceil_eq",
+    "Prosa.Validation.DivModInterface.production_div_add_mod",
+    "Prosa.Validation.DivModInterface.production_mod_lt",
+    "Prosa.Validation.DivModInterface.production_div_zero",
+    "Prosa.Validation.DivModInterface.production_mod_zero",
+    "Prosa.Validation.DivModInterface.production_dvd_iff_mod_eq_zero"
+  ],
+  "computational": [
+    "WorkloadBound.max_jobs",
+    "WorkloadBound.W"
+  ],
+  "chain": [
+    "ClassicParallelWorkloadBoundBase",
+    "ClassicParallelWorkloadBoundList",
+    "ClassicParallelWorkloadBoundOrd",
+    "ClassicParallelWorkloadBoundCorrespondence"
+  ],
+  "principal": {},
+  "helpers": [
+    "cpw_forall_ncpus_sched",
+    "cpw_ico",
+    "cpg_sort_rel",
+    "cpg_sorted_class_uniq",
+    "cpw_sorted",
+    "cpw_workload"
+  ],
+  "base_run": null,
+  "base_checks": [],
+  "previous_status": "classic_model_schedule_global_jitter_interference_edf_module_status.json",
+  "input_relations": [
+    "job and task types: eqTypes identified, Lean DecidableEq instances = the eqTypes' decision procedures; job_task identified",
+    "natural numbers (time, num_cpus) by SubNatRel; processors 'I_n and Fin n by their values; schedules pointwise on related processors and times with option values by the constructor map; job/task parameters pointwise through SubNatRel; sequences elementwise; arrival sequences pointwise on related times (two-way totals)"
+  ],
+  "lean_representation_note": "as for the accepted classic global workload_bound validation: `sort` is `List.mergeSort` with the `decide (\u2264)` key, `nth elem s i` is `s.getD i elem`, `n.-1` is `n - 1`, `n.+2` is `n + 2`; `\\sum_(i <- s) F i` is `sumSeq s F`; `\\sum_(0 <= i < n) F i` is `\u2211 i \u2208 Finset.Ico 0 n, F i`; `div_ceil` is the classic `Prosa.Classic.Util.DivMod.div_ceil`",
+  "prop_sprop_foundation": [
+    "PropSPropFoundation.interpret_strict"
+  ],
+  "importer_foundation": [
+    "ImportedClassicParallelWorkloadBound.Classical_choice",
+    "ImportedClassicParallelWorkloadBound.Quot_sound",
+    "ImportedClassicParallelWorkloadBound.propext",
+    "PrimInt63.eqb",
+    "PrimInt63.int",
+    "PrimInt63.land",
+    "PrimInt63.lsr"
+  ],
+  "rocq_sprop_uip": [
+    "ClassicParallelWorkloadBoundBase.I.HEq_inst1",
+    "ClassicParallelWorkloadBoundBase.I.True",
+    "ClassicParallelWorkloadBoundList.I.HEq_inst1",
+    "ClassicParallelWorkloadBoundList.I.True",
+    "ClassicParallelWorkloadBoundOrd.I.HEq",
+    "ClassicParallelWorkloadBoundOrd.I.HEq_inst1",
+    "ClassicParallelWorkloadBoundOrd.I.True",
+    "CpgTrue",
+    "I.HEq",
+    "I.HEq_inst1",
+    "I.True",
+    "Lean.eq",
+    "Lean.eq_inst1",
+    "SubadditivityNatCorrespondence.SubNatTrue"
+  ],
+  "normalization": {
+    "theorem_types": [
+      "Prosa.Classic.Analysis.Global.Parallel.WorkloadBound.WorkloadBound.workload_bound_holds_for_a_single_job",
+      "Prosa.Classic.Analysis.Global.Parallel.WorkloadBound.WorkloadBound.workload_bound_service_of_middle_jobs",
+      "Prosa.Classic.Analysis.Global.Parallel.WorkloadBound.WorkloadBound.workload_bound_holds"
+    ],
+    "subexpression_heads": [
+      "Finset.sum"
+    ],
+    "definition_bodies": [],
+    "body_projections": [
+      "Prosa.Classic.Model.Schedule.Global.Basic.Schedule.Schedule.service=Prosa.Validation.ClassicParallelWorkloadBoundInterface.service_proj=Prosa.Validation.ClassicParallelWorkloadBoundInterface.service_proj_guard",
+      "Prosa.Classic.Model.Schedule.Global.Basic.Schedule.Schedule.service_during=Prosa.Validation.ClassicParallelWorkloadBoundInterface.service_during_proj=Prosa.Validation.ClassicParallelWorkloadBoundInterface.service_during_proj_guard",
+      "Prosa.Classic.Model.Schedule.Global.Workload.Workload.workload=Prosa.Validation.ClassicParallelWorkloadBoundInterface.workload_proj=Prosa.Validation.ClassicParallelWorkloadBoundInterface.workload_proj_guard"
+    ]
+  },
+  "export_env": {
+    "LEAN4EXPORT_PRESERVE_REDUCIBLE_THEOREM_TYPES": "1",
+    "LEAN4EXPORT_NAT_INDEX_ALIASES": "Prosa.Classic.Model.Time.Time.time"
+  },
+  "export_diagnosis": "as for the accepted classic workload and task_arrival exports: service_at is a filtered Finset sum over Fin num_cpus, jobs_scheduled_between uses Mathlib List.dedup, the statements mention the core List.mergeSort (its termination proofs are `omega` certificates), and the validation-only interface theorems are exported with their proof bodies (stability of mergeSort proved by its recursion, avoiding the Nat.Internal.Linear closure of sublist_mergeSort); workload/service/service_during through kernel-guarded rfl body projections and the four Finset.Ico statements through kernel-guarded type normalization. The parallel module also imports the accepted basic workload_bound module (several of its proofs are the basic lemmas), so the basic statements and proofs are exported too.",
+  "kernel_guard_artifacts": [
+    "Validation/fixtures/translation_order/ClassicParallelWorkloadBoundInterface.lean"
+  ]
+}

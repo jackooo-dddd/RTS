@@ -1,0 +1,40 @@
+import Validation.fixtures.translation_order.ClassicJitterSchedPropsInterface
+set_option pp.fieldNotation false
+
+#check @Prosa.Classic.Analysis.Uni.Susp.Dynamic.Jitter.JitterScheduleProperties.JitterScheduleProperties.sched_jitter_depends_only_on_service
+#check @Prosa.Classic.Analysis.Uni.Susp.Dynamic.Jitter.JitterScheduleProperties.JitterScheduleProperties.sched_jitter_uses_construction_function
+#check @Prosa.Classic.Analysis.Uni.Susp.Dynamic.Jitter.JitterScheduleProperties.JitterScheduleProperties.sched_jitter_jobs_come_from_arrival_sequence
+#check @Prosa.Classic.Analysis.Uni.Susp.Dynamic.Jitter.JitterScheduleProperties.JitterScheduleProperties.sched_jitter_jobs_execute_after_jitter
+#check @Prosa.Classic.Analysis.Uni.Susp.Dynamic.Jitter.JitterScheduleProperties.JitterScheduleProperties.sched_jitter_completed_jobs_dont_execute
+#check @Prosa.Classic.Analysis.Uni.Susp.Dynamic.Jitter.JitterScheduleProperties.JitterScheduleProperties.sched_jitter_work_conserving
+#check @Prosa.Classic.Analysis.Uni.Susp.Dynamic.Jitter.JitterScheduleProperties.JitterScheduleProperties.sched_jitter_respects_policy
+#check @Prosa.Classic.Analysis.Uni.Susp.Dynamic.Jitter.JitterScheduleProperties.JitterScheduleProperties.sched_jitter_is_valid
+#check @Prosa.Classic.Analysis.Uni.Susp.Dynamic.Jitter.JitterScheduleProperties.JitterScheduleProperties.sched_jitter_does_not_pick_j
+#check @Prosa.Validation.ClassicJitterSchedPropsInterface.finRange_map_shift
+#check @Prosa.Validation.ClassicJitterSchedPropsInterface.finRange_map_val
+#check @Prosa.Validation.ClassicJitterSchedPropsInterface.finRange_any
+#check @Prosa.Validation.ClassicJitterSchedPropsInterface.map_finRange_eq_map_range'
+#check @Prosa.Validation.ClassicJitterSchedPropsInterface.maxFiltered_eq_foldr_cond
+#check @Prosa.Validation.ClassicJitterSchedPropsInterface.maxFiltered_finRange
+#check @Prosa.Validation.ClassicJitterSchedPropsInterface.bigCat_range'
+#check @Prosa.Validation.ClassicJitterSchedPropsInterface.production_schedule_prefix_zero
+#check @Prosa.Validation.ClassicJitterSchedPropsInterface.production_schedule_prefix_succ
+
+#print axioms Prosa.Classic.Analysis.Uni.Susp.Dynamic.Jitter.JitterScheduleProperties.JitterScheduleProperties.sched_jitter_depends_only_on_service
+#print axioms Prosa.Classic.Analysis.Uni.Susp.Dynamic.Jitter.JitterScheduleProperties.JitterScheduleProperties.sched_jitter_uses_construction_function
+#print axioms Prosa.Classic.Analysis.Uni.Susp.Dynamic.Jitter.JitterScheduleProperties.JitterScheduleProperties.sched_jitter_jobs_come_from_arrival_sequence
+#print axioms Prosa.Classic.Analysis.Uni.Susp.Dynamic.Jitter.JitterScheduleProperties.JitterScheduleProperties.sched_jitter_jobs_execute_after_jitter
+#print axioms Prosa.Classic.Analysis.Uni.Susp.Dynamic.Jitter.JitterScheduleProperties.JitterScheduleProperties.sched_jitter_completed_jobs_dont_execute
+#print axioms Prosa.Classic.Analysis.Uni.Susp.Dynamic.Jitter.JitterScheduleProperties.JitterScheduleProperties.sched_jitter_work_conserving
+#print axioms Prosa.Classic.Analysis.Uni.Susp.Dynamic.Jitter.JitterScheduleProperties.JitterScheduleProperties.sched_jitter_respects_policy
+#print axioms Prosa.Classic.Analysis.Uni.Susp.Dynamic.Jitter.JitterScheduleProperties.JitterScheduleProperties.sched_jitter_is_valid
+#print axioms Prosa.Classic.Analysis.Uni.Susp.Dynamic.Jitter.JitterScheduleProperties.JitterScheduleProperties.sched_jitter_does_not_pick_j
+#print axioms Prosa.Validation.ClassicJitterSchedPropsInterface.finRange_map_shift
+#print axioms Prosa.Validation.ClassicJitterSchedPropsInterface.finRange_map_val
+#print axioms Prosa.Validation.ClassicJitterSchedPropsInterface.finRange_any
+#print axioms Prosa.Validation.ClassicJitterSchedPropsInterface.map_finRange_eq_map_range'
+#print axioms Prosa.Validation.ClassicJitterSchedPropsInterface.maxFiltered_eq_foldr_cond
+#print axioms Prosa.Validation.ClassicJitterSchedPropsInterface.maxFiltered_finRange
+#print axioms Prosa.Validation.ClassicJitterSchedPropsInterface.bigCat_range'
+#print axioms Prosa.Validation.ClassicJitterSchedPropsInterface.production_schedule_prefix_zero
+#print axioms Prosa.Validation.ClassicJitterSchedPropsInterface.production_schedule_prefix_succ

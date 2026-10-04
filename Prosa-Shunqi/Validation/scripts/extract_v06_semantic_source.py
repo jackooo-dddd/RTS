@@ -148,7 +148,7 @@ def active_context(text: str, stop: int, self_named_instance_context: bool = Fal
 def theorem_statement(name: str, block: str) -> str:
     header = re.split(r"(?m)^[ \t]*Proof\.", block, maxsplit=1)[0].strip()
     match = re.match(
-        rf"(?s)^(?:Lemma|Theorem|Fact|Corollary|Remark|Proposition)\s+"
+        rf"(?s)^(?:Local\s+)?(?:Lemma|Theorem|Fact|Corollary|Remark|Proposition)\s+"
         rf"{re.escape(name)}{IDENTIFIER_BOUNDARY_RE}(.*)\.\s*$",
         header,
     )
@@ -247,6 +247,11 @@ def main() -> None:
         help="emit the requested blocks in source-file order rather than request order "
              "(needed when a helper block depends on a later-requested declaration)",
     )
+    parser.add_argument(
+        "--local-declarations", default="",
+        help=("comma-separated names of source `Local Lemma`/`Local Theorem` declarations to extract (opt-in; each "
+              "must occur exactly once and must not clash with a public declaration); recorded in metadata"),
+    )
     parser.add_argument("--output", required=True, type=Path)
     parser.add_argument("--metadata", required=True, type=Path)
     args = parser.parse_args()
@@ -273,6 +278,14 @@ def main() -> None:
     source_bytes = source.read_bytes()
     text = source_bytes.decode()
     declarations = blocks(text)
+    local_names = [name for name in args.local_declarations.split(",") if name]
+    for name in local_names:
+        found = list(re.finditer(
+            r"(?ms)^[ \t]*Local[ \t]+(?:Lemma|Theorem|Fact|Corollary|Remark|Proposition)\s+"
+            rf"({re.escape(name)}){IDENTIFIER_BOUNDARY_RE}.*?^[^\n]*(?:Qed|Defined)\.[ \t]*$", text))
+        if len(found) != 1 or name in declarations:
+            raise SystemExit(f"--local-declarations {name}: not a unique source-local lemma")
+        declarations[name] = (found[0].start(), "theorem", found[0].group(0).lstrip("\n"))
     elaborated_evidence = None
     if args.elaborated_evidence is not None:
         if not args.qualified_prefix:
@@ -331,6 +344,7 @@ def main() -> None:
             "added_validation_imports": args.add_import,
             **({"printer_repairs": args.printer_repair} if args.printer_repair else {}),
             **({"self_named_instance_context": True} if args.self_named_instance_context else {}),
+            **({"local_declarations": local_names} if local_names else {}),
             **({"omitted_context_lets": args.omit_context_let} if args.omit_context_let else {}),
             **({"body_parenthesizations": {n: {"old": o, "new": w} for n, (o, w) in parenthesizations.items()}}
                if parenthesizations else {}),

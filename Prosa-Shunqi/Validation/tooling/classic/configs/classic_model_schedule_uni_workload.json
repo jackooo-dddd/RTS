@@ -1,0 +1,68 @@
+{
+  "rank": 61,
+  "layer": 9,
+  "classic_scope": "full",
+  "slug": "classic_model_schedule_uni_workload",
+  "tag": "CUWL",
+  "export_name": "ClassicUniWorkload",
+  "source": "classic/model/schedule/uni/workload.v",
+  "production": "Prosa/Classic/Model/Schedule/Uni/Workload.lean",
+  "fixtures": [
+    "ClassicUniWorkloadInterface"
+  ],
+  "export_module": "Validation.fixtures.translation_order.ClassicUniWorkloadInterface",
+  "interface_theorems": [
+    "Prosa.Validation.ClassicUniWorkloadInterface.bigCat_range'",
+    "Prosa.Validation.ClassicUniWorkloadInterface.production_sumSeq_nil",
+    "Prosa.Validation.ClassicUniWorkloadInterface.production_sumSeq_cons",
+    "Prosa.Validation.ClassicUniWorkloadInterface.production_sumFiltered_nil",
+    "Prosa.Validation.ClassicUniWorkloadInterface.production_sumFiltered_cons_true",
+    "Prosa.Validation.ClassicUniWorkloadInterface.production_sumFiltered_cons_false"
+  ],
+  "computational": [
+    "Workload.workload_of_jobs",
+    "Workload.workload_of_higher_or_equal_priority_tasks",
+    "Workload.workload_of_higher_or_equal_priority_jobs",
+    "Workload.task_workload",
+    "Workload.task_workload_between"
+  ],
+  "chain": [
+    "ClassicUniWorkloadBase",
+    "ClassicUniWorkloadList",
+    "ClassicUniWorkloadCorrespondence"
+  ],
+  "principal": {},
+  "helpers": [
+    "cwl_bigcat_rel",
+    "cwl_forall_arr",
+    "cwl_forall_par",
+    "cwl_sum_filtered_rel"
+  ],
+  "base_run": null,
+  "base_checks": [],
+  "previous_status": "classic_model_schedule_uni_schedule_of_task_module_status.json",
+  "input_relations": [
+    "job and task types: eqTypes identified, Lean DecidableEq instances = the eqTypes' decision procedures; job_task identified",
+    "times by SubNatRel; job costs pointwise through SubNatRel; job sequences elementwise; predicates / policies pointwise on Booleans; arrival sequences pointwise on related times (two-way totals)"
+  ],
+  "lean_representation_note": "the Rocq module Workload is a namespace; `\\sum_(j <- s | P j) F j` is `sumFiltered s P F`",
+  "prop_sprop_foundation": [
+    "PropSPropFoundation.interpret_strict"
+  ],
+  "importer_foundation": [
+    "ImportedClassicUniWorkload.propext",
+    "PrimInt63.eqb",
+    "PrimInt63.int",
+    "PrimInt63.land",
+    "PrimInt63.lsr"
+  ],
+  "rocq_sprop_uip": [
+    "ClassicUniWorkloadBase.I.HEq_inst1",
+    "ClassicUniWorkloadBase.I.True",
+    "I.HEq_inst1",
+    "I.True",
+    "Lean.eq",
+    "Lean.eq_inst1",
+    "SubadditivityNatCorrespondence.SubNatTrue"
+  ]
+}

@@ -1,0 +1,90 @@
+{
+  "rank": 72,
+  "layer": 11,
+  "classic_scope": "full",
+  "slug": "classic_model_schedule_uni_service",
+  "tag": "CUSERV",
+  "export_name": "ClassicUniService",
+  "source": "classic/model/schedule/uni/service.v",
+  "production": "Prosa/Classic/Model/Schedule/Uni/Service.lean",
+  "fixtures": [
+    "ClassicUniServiceInterface"
+  ],
+  "export_module": "Validation.fixtures.translation_order.ClassicUniServiceInterface",
+  "interface_theorems": [
+    "Prosa.Validation.ClassicUniServiceInterface.bigCat_range'",
+    "Prosa.Validation.ClassicUniServiceInterface.production_sumSeq_nil",
+    "Prosa.Validation.ClassicUniServiceInterface.production_sumSeq_cons",
+    "Prosa.Validation.ClassicUniServiceInterface.production_sumFiltered_nil",
+    "Prosa.Validation.ClassicUniServiceInterface.production_sumFiltered_cons_true",
+    "Prosa.Validation.ClassicUniServiceInterface.production_sumFiltered_cons_false"
+  ],
+  "computational": [
+    "Service.service_of_jobs",
+    "Service.service_of_higher_or_equal_priority_tasks",
+    "Service.service_of_higher_or_equal_priority_jobs",
+    "Service.task_service_of_jobs_received_in",
+    "Service.task_service_between"
+  ],
+  "chain": [
+    "ClassicUniServiceBase",
+    "ClassicUniServiceList",
+    "ClassicUniServiceCorrespondence"
+  ],
+  "principal": {},
+  "helpers": [
+    "csv_forall_sched",
+    "csv_forall_par",
+    "csv_ico",
+    "csv_sum_filtered_rel",
+    "csv_bigcat_rel",
+    "csv_forall_pred",
+    "csv_forall_list"
+  ],
+  "base_run": null,
+  "base_checks": [],
+  "previous_status": "classic_model_schedule_uni_schedulability_module_status.json",
+  "input_relations": [
+    "job and task types: eqTypes identified, Lean DecidableEq instances = the eqTypes' decision procedures; job_task identified",
+    "times by SubNatRel; job parameters pointwise through SubNatRel; schedules pointwise through the option map; arrival sequences pointwise on related times; job sequences elementwise; predicates / policies pointwise on Booleans (two-way totals)"
+  ],
+  "lean_representation_note": "the Rocq module Service is a namespace; `\\sum_(j <- s | P j) F j` is `sumFiltered s P F`; `predT` is `fun _ => true`; Boolean predicates in Prop positions use `= true`",
+  "prop_sprop_foundation": [
+    "PropSPropFoundation.interpret_strict"
+  ],
+  "importer_foundation": [
+    "ImportedClassicUniService.propext",
+    "PrimInt63.eqb",
+    "PrimInt63.int",
+    "PrimInt63.land",
+    "PrimInt63.lsr"
+  ],
+  "rocq_sprop_uip": [
+    "ClassicUniServiceBase.I.HEq_inst1",
+    "ClassicUniServiceBase.I.True",
+    "I.HEq",
+    "I.HEq_inst1",
+    "I.True",
+    "Lean.eq",
+    "Lean.eq_inst1",
+    "SubadditivityNatCorrespondence.SubNatTrue"
+  ],
+  "normalization": {
+    "theorem_types": [],
+    "subexpression_heads": [
+      "Finset.sum"
+    ],
+    "definition_bodies": [],
+    "body_projections": [
+      "Prosa.Classic.Model.Schedule.Uni.Schedule.UniprocessorSchedule.service_during=Prosa.Validation.ClassicUniServiceInterface.service_during_proj=Prosa.Validation.ClassicUniServiceInterface.service_during_proj_guard",
+      "Prosa.Classic.Model.Schedule.Uni.Schedule.UniprocessorSchedule.total_service_during=Prosa.Validation.ClassicUniServiceInterface.total_service_during_proj=Prosa.Validation.ClassicUniServiceInterface.total_service_during_proj_guard"
+    ]
+  },
+  "export_env": {
+    "LEAN4EXPORT_PRESERVE_REDUCIBLE_THEOREM_TYPES": "1",
+    "LEAN4EXPORT_NAT_INDEX_ALIASES": "Prosa.Classic.Model.Time.Time.time"
+  },
+  "kernel_guard_artifacts": [
+    "Validation/fixtures/translation_order/ClassicUniServiceInterface.lean"
+  ]
+}

@@ -1,0 +1,38 @@
+From FoundationCertificates Require Import ClassicNonprFpRtaCorrespondence.
+Set Printing Width 1000.
+
+Goal Logic.True. idtac "AUDIT_BEGIN RTAforFPwithBoundedNonpreemptiveSegmentsWithArrivalCurves_blocking_bound_correspondence". exact Logic.I. Qed.
+Print Assumptions RTAforFPwithBoundedNonpreemptiveSegmentsWithArrivalCurves_blocking_bound_correspondence.
+Goal Logic.True. idtac "AUDIT_END RTAforFPwithBoundedNonpreemptiveSegmentsWithArrivalCurves_blocking_bound_correspondence". exact Logic.I. Qed.
+
+Goal Logic.True. idtac "AUDIT_BEGIN RTAforFPwithBoundedNonpreemptiveSegmentsWithArrivalCurves_priority_inversion_is_bounded_by_blocking_correspondence". exact Logic.I. Qed.
+Print Assumptions RTAforFPwithBoundedNonpreemptiveSegmentsWithArrivalCurves_priority_inversion_is_bounded_by_blocking_correspondence.
+Goal Logic.True. idtac "AUDIT_END RTAforFPwithBoundedNonpreemptiveSegmentsWithArrivalCurves_priority_inversion_is_bounded_by_blocking_correspondence". exact Logic.I. Qed.
+
+Goal Logic.True. idtac "AUDIT_BEGIN RTAforFPwithBoundedNonpreemptiveSegmentsWithArrivalCurves_priority_inversion_is_bounded_correspondence". exact Logic.I. Qed.
+Print Assumptions RTAforFPwithBoundedNonpreemptiveSegmentsWithArrivalCurves_priority_inversion_is_bounded_correspondence.
+Goal Logic.True. idtac "AUDIT_END RTAforFPwithBoundedNonpreemptiveSegmentsWithArrivalCurves_priority_inversion_is_bounded_correspondence". exact Logic.I. Qed.
+
+Goal Logic.True. idtac "AUDIT_BEGIN RTAforFPwithBoundedNonpreemptiveSegmentsWithArrivalCurves_uniprocessor_response_time_bound_fp_with_bounded_nonpreemptive_segments_correspondence". exact Logic.I. Qed.
+Print Assumptions RTAforFPwithBoundedNonpreemptiveSegmentsWithArrivalCurves_uniprocessor_response_time_bound_fp_with_bounded_nonpreemptive_segments_correspondence.
+Goal Logic.True. idtac "AUDIT_END RTAforFPwithBoundedNonpreemptiveSegmentsWithArrivalCurves_uniprocessor_response_time_bound_fp_with_bounded_nonpreemptive_segments_correspondence". exact Logic.I. Qed.
+
+Goal Logic.True. idtac "AUDIT_BEGIN cnf_forall_sched". exact Logic.I. Qed.
+Print Assumptions cnf_forall_sched.
+Goal Logic.True. idtac "AUDIT_END cnf_forall_sched". exact Logic.I. Qed.
+
+Goal Logic.True. idtac "AUDIT_BEGIN cnf_forall_par". exact Logic.I. Qed.
+Print Assumptions cnf_forall_par.
+Goal Logic.True. idtac "AUDIT_END cnf_forall_par". exact Logic.I. Qed.
+
+Goal Logic.True. idtac "AUDIT_BEGIN cnf_forall_arr". exact Logic.I. Qed.
+Print Assumptions cnf_forall_arr.
+Goal Logic.True. idtac "AUDIT_END cnf_forall_arr". exact Logic.I. Qed.
+
+Goal Logic.True. idtac "AUDIT_BEGIN cnf_forall_rel". exact Logic.I. Qed.
+Print Assumptions cnf_forall_rel.
+Goal Logic.True. idtac "AUDIT_END cnf_forall_rel". exact Logic.I. Qed.
+
+Goal Logic.True. idtac "AUDIT_BEGIN cnf_forall_curve". exact Logic.I. Qed.
+Print Assumptions cnf_forall_curve.
+Goal Logic.True. idtac "AUDIT_END cnf_forall_curve". exact Logic.I. Qed.

@@ -1,0 +1,30 @@
+import Validation.fixtures.translation_order.ClassicImplUniJitterScheduleInterface
+set_option pp.fieldNotation false
+
+#check @Prosa.Classic.Implementation.Uni.Jitter.Schedule.ConcreteScheduler.pending_jobs
+#check @Prosa.Classic.Implementation.Uni.Jitter.Schedule.ConcreteScheduler.highest_priority_job
+#check @Prosa.Classic.Implementation.Uni.Jitter.Schedule.ConcreteScheduler.scheduler
+#check @Prosa.Classic.Implementation.Uni.Jitter.Schedule.ConcreteScheduler.scheduler_depends_only_on_prefix
+#check @Prosa.Classic.Implementation.Uni.Jitter.Schedule.ConcreteScheduler.scheduler_uses_construction_function
+#check @Prosa.Classic.Implementation.Uni.Jitter.Schedule.ConcreteScheduler.scheduler_jobs_come_from_arrival_sequence
+#check @Prosa.Classic.Implementation.Uni.Jitter.Schedule.ConcreteScheduler.scheduler_jobs_execute_after_jitter
+#check @Prosa.Classic.Implementation.Uni.Jitter.Schedule.ConcreteScheduler.scheduler_completed_jobs_dont_execute
+#check @Prosa.Classic.Implementation.Uni.Jitter.Schedule.ConcreteScheduler.scheduler_work_conserving
+#check @Prosa.Classic.Implementation.Uni.Jitter.Schedule.ConcreteScheduler.scheduler_respects_policy
+#check @Prosa.Validation.ClassicImplUniJitterScheduleInterface.bigCat_range'
+#check @Prosa.Validation.ClassicImplUniJitterScheduleInterface.production_schedule_prefix_zero
+#check @Prosa.Validation.ClassicImplUniJitterScheduleInterface.production_schedule_prefix_succ
+
+#print axioms Prosa.Classic.Implementation.Uni.Jitter.Schedule.ConcreteScheduler.pending_jobs
+#print axioms Prosa.Classic.Implementation.Uni.Jitter.Schedule.ConcreteScheduler.highest_priority_job
+#print axioms Prosa.Classic.Implementation.Uni.Jitter.Schedule.ConcreteScheduler.scheduler
+#print axioms Prosa.Classic.Implementation.Uni.Jitter.Schedule.ConcreteScheduler.scheduler_depends_only_on_prefix
+#print axioms Prosa.Classic.Implementation.Uni.Jitter.Schedule.ConcreteScheduler.scheduler_uses_construction_function
+#print axioms Prosa.Classic.Implementation.Uni.Jitter.Schedule.ConcreteScheduler.scheduler_jobs_come_from_arrival_sequence
+#print axioms Prosa.Classic.Implementation.Uni.Jitter.Schedule.ConcreteScheduler.scheduler_jobs_execute_after_jitter
+#print axioms Prosa.Classic.Implementation.Uni.Jitter.Schedule.ConcreteScheduler.scheduler_completed_jobs_dont_execute
+#print axioms Prosa.Classic.Implementation.Uni.Jitter.Schedule.ConcreteScheduler.scheduler_work_conserving
+#print axioms Prosa.Classic.Implementation.Uni.Jitter.Schedule.ConcreteScheduler.scheduler_respects_policy
+#print axioms Prosa.Validation.ClassicImplUniJitterScheduleInterface.bigCat_range'
+#print axioms Prosa.Validation.ClassicImplUniJitterScheduleInterface.production_schedule_prefix_zero
+#print axioms Prosa.Validation.ClassicImplUniJitterScheduleInterface.production_schedule_prefix_succ

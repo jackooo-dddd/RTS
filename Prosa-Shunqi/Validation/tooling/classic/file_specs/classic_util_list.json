@@ -1,0 +1,85 @@
+{
+  "rank": 9,
+  "layer": 2,
+  "tag": "CLIST",
+  "slug": "classic_util_list",
+  "family": "classic",
+  "source": "classic/util/list.v",
+  "dependencies": [
+    "classic/util/tactics.v",
+    "util/list.v"
+  ],
+  "declaration_count": 44,
+  "base_run": null,
+  "base_checks": [],
+  "source_mode": "official_closure",
+  "official_closure": {
+    "files": "tooling/classic/closures/classic_util_list.txt",
+    "patches": [
+      "patches/classic/rocq93-util-tactics.patch",
+      "patches/classic/rocq93-util-list.patch"
+    ]
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/ClassicListTypeFingerprintProbe.v",
+  "production": "Prosa/Classic/Util/List.lean",
+  "production_olean": "Prosa/Classic/Util/List.olean",
+  "lean_namespace": "Prosa.Classic.Util.List",
+  "fixtures": [],
+  "lean_type_audit": "Validation/fixtures/translation_order/ClassicListLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/classic/classic_util_list_export_config.json",
+  "export_name": "ClassicList",
+  "cert_dir": "certificates/classic_util_list",
+  "chain": [
+    "ClassicListBase",
+    "ClassicListOps",
+    "ClassicListCorrespondence"
+  ],
+  "audit_module": "ClassicListAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/ClassicListImportedTypeAudit.v",
+  "assumption_config": "certificates/classic_util_list/classic_util_list_assumption_config.json",
+  "lean_axiom_config": "certificates/classic_util_list/classic_util_list_lean_axiom_config.json",
+  "computational": [
+    "nth_or_none",
+    "set_nth_if_exists",
+    "replace_first",
+    "replace_first_const",
+    "set_pair_1nd",
+    "set_pair_2nd",
+    "pairs_to_function",
+    "total_over_list",
+    "antisymmetric_over_list"
+  ],
+  "principal": {},
+  "helpers": [
+    "ClassicListOps.cl_mem_rel",
+    "ClassicListOps.cl_uniq_rel",
+    "ClassicListOps.cl_index",
+    "cc_in_rel",
+    "cc_maxn"
+  ],
+  "previous_status": "classic_util_induction_module_status.json",
+  "previous_files": 8,
+  "previous_decls": 47,
+  "input_relations": [
+    "type parameters and elements identified; eqType T: Lean DecidableEq instance = the eqType's decision procedure",
+    "sequences, options and pairs structurally (two-way totals); natural numbers by SubNatRel; Booleans constructor-wise",
+    "functions and predicates pointwise on related arguments (two-way totals)"
+  ],
+  "coverage_for_inner_binders": [],
+  "lean_representation_note": "seq is List; size length; uniq Nodup; index idxOf; nth x0 l i is l.getD i x0; rcons s x is s ++ [x]; nseq replicate; pmap filterMap; unzip1/unzip2 map Prod.fst/Prod.snd; reflect is the LEAN_HELPER BoolReflect",
+  "extra_pinned_sources": [],
+  "extra_artifacts": [],
+  "extra_olean_artifacts": [
+    {
+      "from": "analysis_abstract_abstract_rta_final/olean/Prosa/Util/Supremum.olean",
+      "to": "Prosa/Util/Supremum.olean",
+      "v06_file": "util/supremum.v"
+    },
+    {
+      "from": "analysis_abstract_abstract_rta_final/olean/Prosa/Util/List.olean",
+      "to": "Prosa/Util/List.olean",
+      "v06_file": "util/list.v"
+    }
+  ],
+  "export_diagnosis": "102,556 lines: the 44 statements mention List.Nodup/Pairwise, List.idxOf/findIdx, List.getD, List.filterMap, List.zip/replicate/set and the LawfulBEq/DecidableEq-derived membership decision procedures (including the product instances), whose Init/Std dependency closure is exported; the accepted v0.6 Prosa.Util.List and Prosa.Util.Supremum modules are imported as dependencies. Statement-only targets; no proof body is exported."
+}

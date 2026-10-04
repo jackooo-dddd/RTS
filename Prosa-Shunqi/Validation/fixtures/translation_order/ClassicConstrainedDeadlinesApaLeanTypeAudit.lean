@@ -1,0 +1,20 @@
+import Validation.fixtures.translation_order.ClassicConstrainedDeadlinesApaInterface
+set_option pp.fieldNotation false
+
+#check @Prosa.Classic.Model.Schedule.Apa.ConstrainedDeadlines.ConstrainedDeadlines.platform_at_most_one_pending_job_of_each_task
+#check @Prosa.Classic.Model.Schedule.Apa.ConstrainedDeadlines.ConstrainedDeadlines.scheduled_task_with_higher_eq_priority
+#check @Prosa.Classic.Model.Schedule.Apa.ConstrainedDeadlines.ConstrainedDeadlines.platform_fp_no_multiple_jobs_of_interfering_tasks
+#check @Prosa.Classic.Model.Schedule.Apa.ConstrainedDeadlines.ConstrainedDeadlines.platform_fp_no_multiple_jobs_of_tsk
+#check @Prosa.Validation.ClassicConstrainedDeadlinesApaInterface.finRange_any
+#check @Prosa.Validation.ClassicConstrainedDeadlinesApaInterface.bigCatFin_range'
+#check @Prosa.Validation.ClassicConstrainedDeadlinesApaInterface.fin_sum_range'
+#check @Prosa.Validation.ClassicConstrainedDeadlinesApaInterface.service_at_sum
+
+#print axioms Prosa.Classic.Model.Schedule.Apa.ConstrainedDeadlines.ConstrainedDeadlines.platform_at_most_one_pending_job_of_each_task
+#print axioms Prosa.Classic.Model.Schedule.Apa.ConstrainedDeadlines.ConstrainedDeadlines.scheduled_task_with_higher_eq_priority
+#print axioms Prosa.Classic.Model.Schedule.Apa.ConstrainedDeadlines.ConstrainedDeadlines.platform_fp_no_multiple_jobs_of_interfering_tasks
+#print axioms Prosa.Classic.Model.Schedule.Apa.ConstrainedDeadlines.ConstrainedDeadlines.platform_fp_no_multiple_jobs_of_tsk
+#print axioms Prosa.Validation.ClassicConstrainedDeadlinesApaInterface.finRange_any
+#print axioms Prosa.Validation.ClassicConstrainedDeadlinesApaInterface.bigCatFin_range'
+#print axioms Prosa.Validation.ClassicConstrainedDeadlinesApaInterface.fin_sum_range'
+#print axioms Prosa.Validation.ClassicConstrainedDeadlinesApaInterface.service_at_sum

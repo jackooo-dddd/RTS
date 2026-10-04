@@ -1,0 +1,59 @@
+{
+  "rank": 22,
+  "layer": 6,
+  "slug": "classic_model_arrival_basic_task",
+  "tag": "CTASK",
+  "export_name": "ClassicTask",
+  "source": "classic/model/arrival/basic/task.v",
+  "production": "Prosa/Classic/Model/Arrival/Basic/Task.lean",
+  "fixtures": [],
+  "export_module": "Prosa.Classic.Model.Arrival.Basic.Task",
+  "interface_theorems": [],
+  "computational": [
+    "SporadicTask.task_cost_positive",
+    "SporadicTask.task_period_positive",
+    "SporadicTask.task_deadline_positive",
+    "SporadicTask.task_cost_le_deadline",
+    "SporadicTask.task_cost_le_period",
+    "SporadicTask.is_valid_sporadic_task",
+    "SporadicTaskset.taskset_of",
+    "SporadicTaskset.valid_sporadic_taskset",
+    "SporadicTaskset.implicit_deadline_model",
+    "SporadicTaskset.constrained_deadline_model",
+    "SporadicTaskset.arbitrary_deadline_model"
+  ],
+  "chain": [
+    "ClassicTaskBase",
+    "ClassicTaskList",
+    "ClassicTaskSeqset",
+    "ClassicTaskCorrespondence"
+  ],
+  "base_run": null,
+  "base_checks": [],
+  "previous_status": "classic_util_all_module_status.json",
+  "input_relations": [
+    "task types: eqType identified, Lean DecidableEq instance = the eqType's decision procedure",
+    "task parameters Task -> time pointwise through SubNatRel; task sequences elementwise; task sets by the accepted RocqSeqSetRel (two-way totals)"
+  ],
+  "lean_representation_note": "the Rocq modules SporadicTask/SporadicTaskset are nested namespaces; `{set Task}` is the accepted v0.6 `Prosa.Util.Seqset.set Task`; Boolean parameters are `decide` of the Nat orders",
+  "extra_targets": [
+    "Prosa.Util.Seqset.set.val"
+  ],
+  "prop_sprop_foundation": [
+    "PropSPropFoundation.interpret_strict"
+  ],
+  "importer_foundation": [],
+  "rocq_sprop_uip": [
+    "ClassicTaskBase.I.HEq_inst1",
+    "ClassicTaskBase.I.True",
+    "ClassicTaskSeqset.SeqsetTrue",
+    "I.HEq_inst1",
+    "I.True",
+    "Lean.eq",
+    "Lean.eq_inst1",
+    "SubadditivityNatCorrespondence.SubNatTrue"
+  ],
+  "probe_extra": [
+    "From prosa Require Import classic.model.time."
+  ]
+}

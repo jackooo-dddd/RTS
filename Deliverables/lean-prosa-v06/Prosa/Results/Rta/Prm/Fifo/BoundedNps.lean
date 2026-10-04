@@ -1,0 +1,182 @@
+-- Authoritative source:
+-- Prosa v0.6
+-- commit: 414e66760333eaa4ef78c685bcf53291c527a548
+-- source: results/rta/prm/fifo/bounded_nps.v
+
+import Prosa.Analysis.Facts.Readiness.Basic
+import Prosa.Model.Composite.ValidTaskArrivalSequence
+import Prosa.Analysis.Facts.Model.Sbf.Periodic
+import Prosa.Analysis.Abstract.RestrictedSupply.BoundedBi.Jlfp
+import Prosa.Analysis.Abstract.RestrictedSupply.SearchSpace.Fifo
+import Prosa.Analysis.Abstract.RestrictedSupply.SearchSpace.FifoFixpoint
+import Prosa.Analysis.Facts.Priority.Fifo
+import Prosa.Analysis.Facts.Priority.FifoAhepBound
+import Prosa.Model.Schedule.WorkConserving
+import Prosa.Analysis.Abstract.RestrictedSupply.AbstractRta
+
+namespace Prosa.Results.Rta.Prm.Fifo.BoundedNps
+
+open Prosa.Behavior.Arrival_sequence
+open Prosa.Behavior.Job
+open Prosa.Behavior.Ready
+open Prosa.Behavior.Schedule
+open Prosa.Behavior.Service
+open Prosa.Behavior.Time
+open Prosa.Model.Job.Properties
+open Prosa.Model.Task.Concept
+open Prosa.Model.Task.Arrival.Curves
+open Prosa.Model.Task.Preemption.Parameters
+open Prosa.Model.Preemption.Parameter
+open Prosa.Model.Priority.Definitions
+open Prosa.Model.Priority.Coercion
+open Prosa.Model.Priority.Fifo
+open Prosa.Model.Readiness.Basic
+open Prosa.Model.Schedule.PriorityDriven
+open Prosa.Model.Processor.PlatformProperties
+open Prosa.Util.Sum
+open Prosa.Analysis.Definitions.RequestBoundFunction
+open Prosa.Analysis.Definitions.Sbf
+open Prosa.Analysis.Definitions.Sbf.Pred
+open Prosa.Analysis.Definitions.Schedulability
+open Prosa.Analysis.Definitions.Interference
+open Prosa.Analysis.Abstract.RestrictedSupply.IwInstantiation
+open Prosa.Analysis.Abstract.RestrictedSupply.SearchSpace.Fifo
+open Prosa.Analysis.Facts.Readiness.Basic
+open Prosa.Model.Composite.ValidTaskArrivalSequence
+open Prosa.Analysis.Definitions.Sbf.Periodic
+open Prosa.Analysis.Facts.Model.Sbf.Periodic
+open Prosa.Analysis.Facts.Behavior.Arrivals
+open Prosa.Analysis.Facts.Behavior.Completion
+open Prosa.Analysis.Facts.Model.ArrivalCurves
+open Prosa.Analysis.Facts.Priority.Fifo
+
+/-! Response-time analysis for FIFO scheduling of sporadic tasks with
+arbitrary arrival curves on a uniprocessor with the periodic resource model, by instantiating the accepted (non-sequential) abstract
+restricted-supply analysis.
+
+Binders follow the elaborated source types: each declaration takes the
+section inputs and hypotheses it uses, in their elaborated order (the unused
+`TaskMaxNonpreemptiveSegment` context and bounded-segments hypothesis are
+absent, as in the elaborated type). The source's section-local readiness
+instance is the accepted `basic_ready_instance`, passed explicitly where the
+elaborated statement uses it implicitly; the JLFP policy is the accepted
+global FIFO instance. The supply bound function is the accepted `prm_sbf`; `is_in_search_space` is the accepted FIFO
+search space. Representation: a Boolean in `Prop` position is `= true`;
+`x \in xs` is `decide (x ∈ xs) = true`; `a >= b` is `b ≤ a`; `ε` is `1`. -/
+
+/-- `L` is a positive solution of the busy-window recurrence. -/
+def busy_window_recurrence_solution {Task : TaskType} [DecidableEq Task] [TaskCost Task] [MaxArrivals Task]
+    (ts : List Task) (Pi γ : duration) (L : duration) : Prop :=
+  0 < L ∧ total_request_bound_function ts L ≤ prm_sbf Pi γ L
+
+/-- `R` solves the response-time recurrence for every offset of the search space. -/
+def rta_recurrence_solution {Task : TaskType} [DecidableEq Task] [TaskCost Task] [MaxArrivals Task]
+    (ts : List Task) (Pi γ : duration) (L : duration) (R : Nat) : Prop :=
+  ∀ A : duration, is_in_search_space ts L A = true →
+    ∃ F : duration,
+      total_request_bound_function ts (A + 1) ≤ prm_sbf Pi γ F ∧
+      F ≤ A + R
+
+theorem uniprocessor_response_time_bound_fifo {Task : TaskType} [DecidableEq Task]
+    [TaskCost Task] [MaxArrivals Task] [TaskRunToCompletionThreshold Task] {Job : JobType} [DecidableEq Job]
+    [JobTask Job Task] [JobCost Job] [JobArrival Job] [JobPreemptable Job] (ts : List Task) (tsk : Task) :
+    decide (tsk ∈ ts) = true →
+    ∀ {PState : ProcessorState Job},
+    uniprocessor_model PState → unit_supply_proc_model PState → fully_consuming_proc_model PState →
+    ∀ arr_seq : arrival_sequence Job, valid_task_arrival_sequence ts arr_seq →
+      valid_task_run_to_completion_threshold arr_seq tsk →
+    ∀ sched : schedule PState,
+      @valid_schedule Job _ _ PState sched _ basic_ready_instance arr_seq →
+      @Prosa.Model.Schedule.WorkConserving.work_conserving Job _ _ _ PState basic_ready_instance arr_seq sched →
+      valid_preemption_model arr_seq sched →
+      @respects_JLFP_policy_at_preemption_point Job _ _ _ PState _ basic_ready_instance arr_seq sched
+        (FIFO Job) →
+    ∀ Pi γ : duration, periodic_resource_model Pi γ sched →
+    ∀ L : duration, busy_window_recurrence_solution ts Pi γ L →
+    ∀ R : duration, rta_recurrence_solution ts Pi γ L R →
+      task_response_time_bound arr_seq sched tsk R := by
+  intro hin PState huni hsup hcons arr_seq hvtas hrtc sched hvs hwc hvpm hrespF Pi γ harm L hbw R hsol
+  have hva := valid_task_arrival_sequence_valid_arrivals ts arr_seq hvtas
+  have hcost := valid_task_arrival_sequence_valid_costs ts arr_seq hvtas
+  have hall := valid_task_arrival_sequence_from_taskset ts arr_seq hvtas
+  have hresp := valid_task_arrival_sequence_respects_max ts arr_seq hvtas
+  have hvalid := valid_task_arrival_sequence_valid_curve ts arr_seq hvtas
+  let SBF : SupplyBoundFunction := ⟨prm_sbf Pi γ⟩
+  have hmono : sbf_is_monotone SBF.supply_bound_function := prm_sbf_monotone sched Pi γ harm
+  have hunit : unit_supply_bound_function SBF.supply_bound_function := prm_sbf_unit sched Pi γ harm
+  have hsbf : @Prosa.Analysis.Definitions.Sbf.Busy.valid_busy_sbf Task _ Job _ _ _ _ PState arr_seq sched
+      (FIFO Job) tsk SBF.supply_bound_function :=
+    Prosa.Analysis.Facts.SBF.valid_pred_sbf_switch_predicate arr_seq sched _ _ (fun _ _ _ _ _ => trivial)
+      (prm_sbf_valid hsup arr_seq sched Pi γ harm)
+  obtain ⟨hL, hfix⟩ := hbw
+  intro js harrs hjobs
+  by_cases hzero : job_cost js = 0
+  · unfold job_response_time_bound completed_by
+    apply decide_eq_true; rw [hzero]; exact Nat.zero_le _
+  have hjpos : 0 < job_cost js := Nat.pos_of_ne_zero hzero
+  let _ : JobReady Job PState := basic_ready_instance
+  let _ : JLFP_policy Job := FIFO Job
+  let _ := rs_jlfp_interference arr_seq sched
+  let _ := rs_jlfp_interfering_workload arr_seq sched
+  have hmust := valid_schedule_implies_jobs_must_arrive_to_execute sched arr_seq hvs
+  have hfrom := valid_schedule_jobs_come_from_arrival_sequence sched arr_seq hvs
+  have hcde := valid_schedule_implies_completed_jobs_dont_execute sched arr_seq hvs
+  have hreflJ := FIFO_is_reflexive (Job := Job)
+  have hwb := basic_readiness_is_work_bearing_readiness arr_seq sched hreflJ
+  have hwcA := instantiated_i_and_w_are_coherent_with_schedule huni hsup hcons arr_seq hva sched hfrom hmust hcde
+    hreflJ hwb hvs hwc
+  have htsk : job_task (Task := Task) js = tsk := of_decide_eq_true hjobs
+  have hresp_tsk := hresp tsk hin
+  have hma := non_pathological_max_arrivals tsk arr_seq hresp_tsk js hjobs harrs
+  have hcpos : 0 < task_cost tsk := by
+    have hv := hcost js harrs
+    unfold valid_job_cost at hv
+    rw [htsk] at hv
+    exact Nat.lt_of_lt_of_le hjpos (of_decide_eq_true hv)
+  -- FIFO has no service inversion
+  have hSI0 := FIFO_implies_no_service_inversion arr_seq hva PState huni sched hvs hvpm hrespF tsk hvs
+  have hbounded := Prosa.Analysis.Abstract.RestrictedSupply.BoundedBi.Jlfp.busy_intervals_are_bounded_rs_jlfp
+    huni hsup hcons hreflJ arr_seq hva sched hvs hwcA ts hall hcost hresp tsk hin SBF hsbf hunit
+    (Prosa.Util.Notation.constant 0) hSI0 (fun _ => Nat.le_refl _) L hL
+    (by show 0 + total_request_bound_function ts L ≤ prm_sbf Pi γ L; omega)
+  have hsbfA : Prosa.Analysis.Abstract.RestrictedSupply.BusySbf.valid_busy_sbf arr_seq sched tsk
+      SBF.supply_bound_function :=
+    Prosa.Analysis.Facts.SBF.valid_pred_sbf_switch_predicate arr_seq sched _ _
+      (fun j t1 t2 harr hP => ⟨hP.1, (instantiated_busy_interval_prefix_equivalent_busy_interval_prefix huni hsup
+        hcons arr_seq hva sched hfrom hmust hcde hreflJ j harr t1 t2).mpr hP.2⟩) hsbf
+  -- the intra-supply interference bound
+  have hintra : Prosa.Analysis.Abstract.IBF.Supply.intra_interference_is_bounded_by arr_seq sched tsk
+      (fun A _ => total_request_bound_function ts (A + 1) - task_cost tsk) := by
+    intro t1 t2 Δ j harr hjob hbusy hlt hncomp A hA
+    have hEQ := hA t1 t2 hbusy
+    subst hEQ
+    have hbusyC := (instantiated_busy_interval_equivalent_busy_interval huni hsup hcons arr_seq hva sched hfrom
+      hmust hcde hreflJ j harr t1 t2).mpr hbusy
+    have hjpos' : 0 < job_cost j := by
+      rcases Nat.eq_zero_or_pos (job_cost j) with hz | hp
+      · exfalso
+        unfold completed_by at hncomp
+        rw [hz] at hncomp
+        simp at hncomp
+      · exact hp
+    have hsplit := cumulative_intra_interference_split arr_seq sched j t1 (t1 + Δ)
+    have hwiden := Prosa.Analysis.Facts.BusyInterval.ServiceInversion.service_inversion_widen arr_seq sched
+      (JLFP_to_JLDP (JLFP := FIFO Job)) j t1 (t1 + Δ) t1 t2 (Nat.le_refl _) (Nat.le_of_lt hlt)
+    have hsi := hSI0 j harr hjob hjpos' t1 t2 hbusyC.1
+    have hahep := Prosa.Analysis.Facts.Priority.FifoAhepBound.bound_on_hep_workload huni hsup arr_seq hva hcost
+      ts hall hresp hvalid tsk hin sched hmust hcde j hjob harr
+      (by unfold job_cost_positive; exact decide_eq_true hjpos') t1 t2 hbusyC Δ hlt
+    show Prosa.Analysis.Abstract.Definitions.cumul_cond_interference _ j t1 (t1 + Δ) ≤
+      total_request_bound_function ts (job_arrival j - t1 + 1) - task_cost tsk
+    unfold total_request_bound_function
+    have h0 : Prosa.Util.Notation.constant 0 (job_arrival j - t1) = (0 : Nat) := rfl
+    omega'
+  refine Prosa.Analysis.Abstract.RestrictedSupply.AbstractRta.uniprocessor_response_time_bound_restricted_supply
+    hsup hcons arr_seq sched hmust hcde hcost ts tsk hin hvpm hrtc hwcA L hbounded SBF hsbfA hunit
+    (fun A _ => total_request_bound_function ts (A + 1) - task_cost tsk) hintra R ?_ js harrs hjobs
+  intro A hA
+  exact Prosa.Analysis.Abstract.RestrictedSupply.SearchSpace.FifoFixpoint.soln_abstract_response_time_recurrence
+    SBF hmono hunit ts tsk hin arr_seq hvalid sched hsbf hrtc L hL hcpos hma R
+    (fun A' hA' => hsol A' hA') A hA
+
+end Prosa.Results.Rta.Prm.Fifo.BoundedNps

@@ -1,0 +1,93 @@
+# classic/implementation/uni/jitter/schedule.v: 10 declarations
+
+## Print Module
+
+Module schedule := Struct Module ConcreteScheduler End
+
+Module
+ConcreteScheduler
+:= Struct
+     Definition pending_jobs : forall Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> schedule.UniprocessorSchedule.schedule Job -> time.Time.time -> list (eqtype.Equality.sort Job).
+     Definition highest_priority_job : forall Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> priority.Priority.JLDP_policy Job -> schedule.UniprocessorSchedule.schedule Job -> time.Time.time -> option (eqtype.Equality.sort Job).
+     Definition scheduler : forall Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> priority.Priority.JLDP_policy Job -> time.Time.time -> option (eqtype.Equality.sort Job).
+     Parameter scheduler_depends_only_on_prefix : forall (Job : eqtype.Equality.type) (job_arrival job_cost job_jitter : eqtype.Equality.sort Job -> time.Time.time) (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job) (higher_eq_priority : priority.Priority.JLDP_policy Job) (sched1 sched2 : nat -> option (eqtype.Equality.sort Job)) (t : nat), (forall t0 : nat, is_true (ssrnat.leq (S t0) t) -> sched1 t0 = sched2 t0) -> highest_priority_job job_arrival job_cost job_jitter arr_seq higher_eq_priority sched1 t = highest_priority_job job_arrival job_cost job_jitter arr_seq higher_eq_priority sched2 t.
+     Parameter scheduler_uses_construction_function : forall (Job : eqtype.Equality.type) (job_arrival job_cost job_jitter : eqtype.Equality.sort Job -> time.Time.time) (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job) (higher_eq_priority : priority.Priority.JLDP_policy Job) (t : time.Time.time), scheduler job_arrival job_cost job_jitter arr_seq higher_eq_priority t = highest_priority_job job_arrival job_cost job_jitter arr_seq higher_eq_priority (scheduler job_arrival job_cost job_jitter arr_seq higher_eq_priority) t.
+     Parameter scheduler_jobs_come_from_arrival_sequence : forall (Job : eqtype.Equality.type) (job_arrival job_cost job_jitter : eqtype.Equality.sort Job -> time.Time.time) (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job) (higher_eq_priority : priority.Priority.JLDP_policy Job), schedule.UniprocessorSchedule.jobs_come_from_arrival_sequence (scheduler job_arrival job_cost job_jitter arr_seq higher_eq_priority) arr_seq.
+     Parameter scheduler_jobs_execute_after_jitter : forall (Job : eqtype.Equality.type) (job_arrival job_cost job_jitter : eqtype.Equality.sort Job -> time.Time.time) (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job) (higher_eq_priority : priority.Priority.JLDP_policy Job), schedule.UniprocessorScheduleWithJitter.jobs_execute_after_jitter job_arrival job_jitter (scheduler job_arrival job_cost job_jitter arr_seq higher_eq_priority).
+     Parameter scheduler_completed_jobs_dont_execute : forall (Job : eqtype.Equality.type) (job_arrival job_cost job_jitter : eqtype.Equality.sort Job -> time.Time.time) (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job) (higher_eq_priority : priority.Priority.JLDP_policy Job), schedule.UniprocessorSchedule.completed_jobs_dont_execute job_cost (scheduler job_arrival job_cost job_jitter arr_seq higher_eq_priority).
+     Parameter scheduler_work_conserving : forall (Job : eqtype.Equality.type) (job_arrival job_cost job_jitter : eqtype.Equality.sort Job -> time.Time.time) (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job), arrival_sequence.ArrivalSequence.arrival_times_are_consistent job_arrival arr_seq -> forall higher_eq_priority : priority.Priority.JLDP_policy Job, platform.Platform.work_conserving job_arrival job_cost job_jitter arr_seq (scheduler job_arrival job_cost job_jitter arr_seq higher_eq_priority).
+     Parameter scheduler_respects_policy : forall (Job : eqtype.Equality.type) (job_arrival job_cost job_jitter : eqtype.Equality.sort Job -> time.Time.time) (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job), arrival_sequence.ArrivalSequence.arrival_times_are_consistent job_arrival arr_seq -> forall higher_eq_priority : priority.Priority.JLDP_policy Job, priority.Priority.JLDP_is_transitive higher_eq_priority -> priority.Priority.JLDP_is_total arr_seq higher_eq_priority -> platform.Platform.respects_JLDP_policy job_arrival job_cost job_jitter arr_seq (scheduler job_arrival job_cost job_jitter arr_seq higher_eq_priority) higher_eq_priority.
+   End
+
+## About
+
+ConcreteScheduler.pending_jobs : forall {Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> schedule.UniprocessorSchedule.schedule Job -> time.Time.time -> list (eqtype.Equality.sort Job)
+
+ConcreteScheduler.pending_jobs is not universe polymorphic
+Arguments ConcreteScheduler.pending_jobs {Job} (job_arrival job_cost job_jitter)%function_scope arr_seq sched_prefix t
+ConcreteScheduler.pending_jobs is transparent
+Expands to: Constant prosa.classic.implementation.uni.jitter.schedule.ConcreteScheduler.pending_jobs
+Declared in library prosa.classic.implementation.uni.jitter.schedule, line 39, characters 17-29
+ConcreteScheduler.highest_priority_job : forall {Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> priority.Priority.JLDP_policy Job -> schedule.UniprocessorSchedule.schedule Job -> time.Time.time -> option (eqtype.Equality.sort Job)
+
+ConcreteScheduler.highest_priority_job is not universe polymorphic
+Arguments ConcreteScheduler.highest_priority_job {Job} (job_arrival job_cost job_jitter)%function_scope arr_seq higher_eq_priority sched_prefix t
+ConcreteScheduler.highest_priority_job is transparent
+Expands to: Constant prosa.classic.implementation.uni.jitter.schedule.ConcreteScheduler.highest_priority_job
+Declared in library prosa.classic.implementation.uni.jitter.schedule, line 44, characters 17-37
+ConcreteScheduler.scheduler : forall {Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> priority.Priority.JLDP_policy Job -> time.Time.time -> option (eqtype.Equality.sort Job)
+
+ConcreteScheduler.scheduler is not universe polymorphic
+Arguments ConcreteScheduler.scheduler {Job} (job_arrival job_cost job_jitter)%function_scope arr_seq higher_eq_priority t
+ConcreteScheduler.scheduler is transparent
+Expands to: Constant prosa.classic.implementation.uni.jitter.schedule.ConcreteScheduler.scheduler
+Declared in library prosa.classic.implementation.uni.jitter.schedule, line 52, characters 15-24
+ConcreteScheduler.scheduler_depends_only_on_prefix : forall {Job : eqtype.Equality.type} (job_arrival job_cost job_jitter : eqtype.Equality.sort Job -> time.Time.time) (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job) (higher_eq_priority : priority.Priority.JLDP_policy Job) (sched1 sched2 : nat -> option (eqtype.Equality.sort Job)) (t : nat), (forall t0 : nat, is_true (ssrnat.leq (S t0) t) -> sched1 t0 = sched2 t0) -> ConcreteScheduler.highest_priority_job job_arrival job_cost job_jitter arr_seq higher_eq_priority sched1 t = ConcreteScheduler.highest_priority_job job_arrival job_cost job_jitter arr_seq higher_eq_priority sched2 t
+
+ConcreteScheduler.scheduler_depends_only_on_prefix is not universe polymorphic
+Arguments ConcreteScheduler.scheduler_depends_only_on_prefix {Job} (job_arrival job_cost job_jitter)%function_scope arr_seq higher_eq_priority (sched1 sched2)%function_scope t%nat_scope _%function_scope
+ConcreteScheduler.scheduler_depends_only_on_prefix is opaque
+Expands to: Constant prosa.classic.implementation.uni.jitter.schedule.ConcreteScheduler.scheduler_depends_only_on_prefix
+Declared in library prosa.classic.implementation.uni.jitter.schedule, line 56, characters 10-42
+ConcreteScheduler.scheduler_uses_construction_function : forall {Job : eqtype.Equality.type} (job_arrival job_cost job_jitter : eqtype.Equality.sort Job -> time.Time.time) (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job) (higher_eq_priority : priority.Priority.JLDP_policy Job) (t : time.Time.time), ConcreteScheduler.scheduler job_arrival job_cost job_jitter arr_seq higher_eq_priority t = ConcreteScheduler.highest_priority_job job_arrival job_cost job_jitter arr_seq higher_eq_priority (ConcreteScheduler.scheduler job_arrival job_cost job_jitter arr_seq higher_eq_priority) t
+
+ConcreteScheduler.scheduler_uses_construction_function is not universe polymorphic
+Arguments ConcreteScheduler.scheduler_uses_construction_function {Job} (job_arrival job_cost job_jitter)%function_scope arr_seq higher_eq_priority t
+ConcreteScheduler.scheduler_uses_construction_function is opaque
+Expands to: Constant prosa.classic.implementation.uni.jitter.schedule.ConcreteScheduler.scheduler_uses_construction_function
+Declared in library prosa.classic.implementation.uni.jitter.schedule, line 75, characters 14-50
+ConcreteScheduler.scheduler_jobs_come_from_arrival_sequence : forall {Job : eqtype.Equality.type} (job_arrival job_cost job_jitter : eqtype.Equality.sort Job -> time.Time.time) (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job) (higher_eq_priority : priority.Priority.JLDP_policy Job), schedule.UniprocessorSchedule.jobs_come_from_arrival_sequence (ConcreteScheduler.scheduler job_arrival job_cost job_jitter arr_seq higher_eq_priority) arr_seq
+
+ConcreteScheduler.scheduler_jobs_come_from_arrival_sequence is not universe polymorphic
+Arguments ConcreteScheduler.scheduler_jobs_come_from_arrival_sequence {Job} (job_arrival job_cost job_jitter)%function_scope arr_seq higher_eq_priority j t _
+ConcreteScheduler.scheduler_jobs_come_from_arrival_sequence is opaque
+Expands to: Constant prosa.classic.implementation.uni.jitter.schedule.ConcreteScheduler.scheduler_jobs_come_from_arrival_sequence
+Declared in library prosa.classic.implementation.uni.jitter.schedule, line 110, characters 12-53
+ConcreteScheduler.scheduler_jobs_execute_after_jitter : forall {Job : eqtype.Equality.type} (job_arrival job_cost job_jitter : eqtype.Equality.sort Job -> time.Time.time) (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job) (higher_eq_priority : priority.Priority.JLDP_policy Job), schedule.UniprocessorScheduleWithJitter.jobs_execute_after_jitter job_arrival job_jitter (ConcreteScheduler.scheduler job_arrival job_cost job_jitter arr_seq higher_eq_priority)
+
+ConcreteScheduler.scheduler_jobs_execute_after_jitter is not universe polymorphic
+Arguments ConcreteScheduler.scheduler_jobs_execute_after_jitter {Job} (job_arrival job_cost job_jitter)%function_scope arr_seq higher_eq_priority j t _
+ConcreteScheduler.scheduler_jobs_execute_after_jitter is opaque
+Expands to: Constant prosa.classic.implementation.uni.jitter.schedule.ConcreteScheduler.scheduler_jobs_execute_after_jitter
+Declared in library prosa.classic.implementation.uni.jitter.schedule, line 123, characters 12-47
+ConcreteScheduler.scheduler_completed_jobs_dont_execute : forall {Job : eqtype.Equality.type} (job_arrival job_cost job_jitter : eqtype.Equality.sort Job -> time.Time.time) (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job) (higher_eq_priority : priority.Priority.JLDP_policy Job), schedule.UniprocessorSchedule.completed_jobs_dont_execute job_cost (ConcreteScheduler.scheduler job_arrival job_cost job_jitter arr_seq higher_eq_priority)
+
+ConcreteScheduler.scheduler_completed_jobs_dont_execute is not universe polymorphic
+Arguments ConcreteScheduler.scheduler_completed_jobs_dont_execute {Job} (job_arrival job_cost job_jitter)%function_scope arr_seq higher_eq_priority j t
+ConcreteScheduler.scheduler_completed_jobs_dont_execute is opaque
+Expands to: Constant prosa.classic.implementation.uni.jitter.schedule.ConcreteScheduler.scheduler_completed_jobs_dont_execute
+Declared in library prosa.classic.implementation.uni.jitter.schedule, line 134, characters 12-49
+ConcreteScheduler.scheduler_work_conserving : forall {Job : eqtype.Equality.type} (job_arrival job_cost job_jitter : eqtype.Equality.sort Job -> time.Time.time) (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job), arrival_sequence.ArrivalSequence.arrival_times_are_consistent job_arrival arr_seq -> forall higher_eq_priority : priority.Priority.JLDP_policy Job, platform.Platform.work_conserving job_arrival job_cost job_jitter arr_seq (ConcreteScheduler.scheduler job_arrival job_cost job_jitter arr_seq higher_eq_priority)
+
+ConcreteScheduler.scheduler_work_conserving is not universe polymorphic
+Arguments ConcreteScheduler.scheduler_work_conserving {Job} (job_arrival job_cost job_jitter)%function_scope arr_seq H_arrival_times_are_consistent higher_eq_priority j t _ _
+ConcreteScheduler.scheduler_work_conserving is opaque
+Expands to: Constant prosa.classic.implementation.uni.jitter.schedule.ConcreteScheduler.scheduler_work_conserving
+Declared in library prosa.classic.implementation.uni.jitter.schedule, line 155, characters 12-37
+ConcreteScheduler.scheduler_respects_policy : forall {Job : eqtype.Equality.type} (job_arrival job_cost job_jitter : eqtype.Equality.sort Job -> time.Time.time) (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job), arrival_sequence.ArrivalSequence.arrival_times_are_consistent job_arrival arr_seq -> forall higher_eq_priority : priority.Priority.JLDP_policy Job, priority.Priority.JLDP_is_transitive higher_eq_priority -> priority.Priority.JLDP_is_total arr_seq higher_eq_priority -> platform.Platform.respects_JLDP_policy job_arrival job_cost job_jitter arr_seq (ConcreteScheduler.scheduler job_arrival job_cost job_jitter arr_seq higher_eq_priority) higher_eq_priority
+
+ConcreteScheduler.scheduler_respects_policy is not universe polymorphic
+Arguments ConcreteScheduler.scheduler_respects_policy {Job} (job_arrival job_cost job_jitter)%function_scope arr_seq H_arrival_times_are_consistent higher_eq_priority H_priority_is_transitive H_priority_is_total j j_hp t _ _ _
+ConcreteScheduler.scheduler_respects_policy is opaque
+Expands to: Constant prosa.classic.implementation.uni.jitter.schedule.ConcreteScheduler.scheduler_respects_policy
+Declared in library prosa.classic.implementation.uni.jitter.schedule, line 171, characters 12-37

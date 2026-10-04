@@ -1,0 +1,245 @@
+# classic/model/schedule/uni/limited/platform/limited.v: 29 declarations
+
+## Print Module
+
+Module limited := Struct Module ModelWithLimitedPreemptions End
+
+Module
+ModelWithLimitedPreemptions
+:= Struct
+     Definition lengths_of_segments : forall Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> list time.Time.time) -> eqtype.Equality.sort Job -> list nat.
+     Definition job_max_nps : forall Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> list time.Time.time) -> eqtype.Equality.sort Job -> nat.
+     Definition job_last_nps : forall Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> list time.Time.time) -> eqtype.Equality.sort Job -> nat.
+     Definition job_with_zero_cost_consists_of_one_empty_segment : forall Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> time.Time.time) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> (eqtype.Equality.sort Job -> list time.Time.time) -> Prop.
+     Definition last_segment_is_positive : forall Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> time.Time.time) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> (eqtype.Equality.sort Job -> list time.Time.time) -> Prop.
+     Definition beginning_of_execution_in_preemption_points : forall Job : eqtype.Equality.type, arrival_sequence.ArrivalSequence.arrival_sequence Job -> (eqtype.Equality.sort Job -> list time.Time.time) -> Prop.
+     Definition end_of_execution_in_preemption_points : forall Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> time.Time.time) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> (eqtype.Equality.sort Job -> list time.Time.time) -> Prop.
+     Definition preemption_points_is_nondecreasing_sequence : forall Job : eqtype.Equality.type, arrival_sequence.ArrivalSequence.arrival_sequence Job -> (eqtype.Equality.sort Job -> list time.Time.time) -> Prop.
+     Definition limited_preemptions_job_model : forall Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> time.Time.time) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> (eqtype.Equality.sort Job -> list time.Time.time) -> Prop.
+     Definition task_last_nps : forall Task : eqtype.Equality.type, (eqtype.Equality.sort Task -> list time.Time.time) -> eqtype.Equality.sort Task -> nat.
+     Definition task_max_nps : forall Task : eqtype.Equality.type, (eqtype.Equality.sort Task -> list time.Time.time) -> eqtype.Equality.sort Task -> nat.
+     Definition task_beginning_of_execution_in_preemption_points : forall Task : eqtype.Equality.type, (eqtype.Equality.sort Task -> list time.Time.time) -> list (eqtype.Equality.sort Task) -> Prop.
+     Definition task_end_of_execution_in_preemption_points : forall Task : eqtype.Equality.type, (eqtype.Equality.sort Task -> time.Time.time) -> (eqtype.Equality.sort Task -> list time.Time.time) -> list (eqtype.Equality.sort Task) -> Prop.
+     Definition task_preemption_points_is_nondecreasing_sequence : forall Task : eqtype.Equality.type, (eqtype.Equality.sort Task -> list time.Time.time) -> list (eqtype.Equality.sort Task) -> Prop.
+     Definition job_consists_of_the_same_number_of_segments_as_task : forall Task Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> eqtype.Equality.sort Task) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> (eqtype.Equality.sort Job -> list time.Time.time) -> (eqtype.Equality.sort Task -> list time.Time.time) -> Prop.
+     Definition lengths_of_task_segments_bound_length_of_job_segments : forall Task Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> eqtype.Equality.sort Task) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> (eqtype.Equality.sort Job -> list time.Time.time) -> (eqtype.Equality.sort Task -> list time.Time.time) -> Prop.
+     Definition task_segments_are_nonempty : forall Task : eqtype.Equality.type, (eqtype.Equality.sort Task -> list time.Time.time) -> list (eqtype.Equality.sort Task) -> Prop.
+     Definition fixed_preemption_points_task_model : forall Task : eqtype.Equality.type, (eqtype.Equality.sort Task -> time.Time.time) -> forall Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> eqtype.Equality.sort Task) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> (eqtype.Equality.sort Job -> list time.Time.time) -> (eqtype.Equality.sort Task -> list time.Time.time) -> list (eqtype.Equality.sort Task) -> Prop.
+     Definition fixed_preemption_points_model : forall Task : eqtype.Equality.type, (eqtype.Equality.sort Task -> time.Time.time) -> forall Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> eqtype.Equality.sort Task) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> (eqtype.Equality.sort Job -> list time.Time.time) -> (eqtype.Equality.sort Task -> list time.Time.time) -> list (eqtype.Equality.sort Task) -> Prop.
+     Definition job_max_np_segment_le_task_max_np_segment : forall Task Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> eqtype.Equality.sort Task) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> (eqtype.Equality.sort Job -> list time.Time.time) -> (eqtype.Equality.sort Task -> time.Time.time) -> Prop.
+     Definition model_with_floating_nonpreemptive_regions : forall Task Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> eqtype.Equality.sort Task) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> (eqtype.Equality.sort Job -> list time.Time.time) -> (eqtype.Equality.sort Task -> time.Time.time) -> Prop.
+     Definition can_be_preempted_for_model_with_limited_preemptions : forall Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> list time.Time.time) -> eqtype.Equality.sort Job -> time.Time.time -> bool.
+     Definition is_schedule_with_limited_preemptions : forall Job : eqtype.Equality.type, arrival_sequence.ArrivalSequence.arrival_sequence Job -> (eqtype.Equality.sort Job -> list time.Time.time) -> schedule.UniprocessorSchedule.schedule Job -> Prop.
+     Parameter list_of_preemption_point_is_not_empty : forall (Job : eqtype.Equality.type) (job_cost : eqtype.Equality.sort Job -> time.Time.time) (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job) (job_preemption_points : eqtype.Equality.sort Job -> list time.Time.time), limited_preemptions_job_model job_cost arr_seq job_preemption_points -> forall j : eqtype.Equality.sort Job, arrival_sequence.ArrivalSequence.arrives_in arr_seq j -> is_true (ssrnat.leq 1 (seq.size (job_preemption_points j))).
+     Parameter zero_in_preemption_points : forall (Job : eqtype.Equality.type) (job_cost : eqtype.Equality.sort Job -> time.Time.time) (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job) (job_preemption_points : eqtype.Equality.sort Job -> list time.Time.time), limited_preemptions_job_model job_cost arr_seq job_preemption_points -> forall j : eqtype.Equality.sort Job, arrival_sequence.ArrivalSequence.arrives_in arr_seq j -> is_true (ssrbool.in_mem 0 (ssrbool.mem (job_preemption_points j))).
+     Parameter job_cost_in_nonpreemptive_points : forall (Job : eqtype.Equality.type) (job_cost : eqtype.Equality.sort Job -> time.Time.time) (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job) (job_preemption_points : eqtype.Equality.sort Job -> list time.Time.time), limited_preemptions_job_model job_cost arr_seq job_preemption_points -> forall j : eqtype.Equality.sort Job, arrival_sequence.ArrivalSequence.arrives_in arr_seq j -> is_true (ssrbool.in_mem (job_cost j) (ssrbool.mem (job_preemption_points j))).
+     Parameter number_of_preemption_points_at_least_two : forall (Job : eqtype.Equality.type) (job_cost : eqtype.Equality.sort Job -> time.Time.time) (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job) (job_preemption_points : eqtype.Equality.sort Job -> list time.Time.time), limited_preemptions_job_model job_cost arr_seq job_preemption_points -> forall j : eqtype.Equality.sort Job, arrival_sequence.ArrivalSequence.arrives_in arr_seq j -> is_true (ssrnat.leq 2 (seq.size (job_preemption_points j))).
+     Parameter model_with_fixed_preemption_points_is_correct : forall (Job : eqtype.Equality.type) (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job) (job_preemption_points : eqtype.Equality.sort Job -> list time.Time.time) (sched : schedule.UniprocessorSchedule.schedule Job), is_schedule_with_limited_preemptions arr_seq job_preemption_points sched -> LimitedPreemptionPlatform.correct_preemption_model arr_seq sched (can_be_preempted_for_model_with_limited_preemptions job_preemption_points).
+     Parameter model_with_fixed_preemption_points_is_model_with_bounded_nonpreemptive_regions : forall (Task Job : eqtype.Equality.type) (job_cost : eqtype.Equality.sort Job -> time.Time.time) (job_task : eqtype.Equality.sort Job -> eqtype.Equality.sort Task) (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job) (job_preemption_points : eqtype.Equality.sort Job -> list time.Time.time) (sched : schedule.UniprocessorSchedule.schedule Job), is_schedule_with_limited_preemptions arr_seq job_preemption_points sched -> forall task_max_nps : eqtype.Equality.sort Task -> time.Time.time, limited_preemptions_job_model job_cost arr_seq job_preemption_points -> job_max_np_segment_le_task_max_np_segment job_task arr_seq job_preemption_points task_max_nps -> LimitedPreemptionPlatform.model_with_bounded_nonpreemptive_segments job_cost job_task arr_seq (can_be_preempted_for_model_with_limited_preemptions job_preemption_points) (job_max_nps job_preemption_points) task_max_nps.
+   End
+
+## About
+
+ModelWithLimitedPreemptions.lengths_of_segments : forall {Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> list time.Time.time) -> eqtype.Equality.sort Job -> list nat
+
+ModelWithLimitedPreemptions.lengths_of_segments is not universe polymorphic
+Arguments ModelWithLimitedPreemptions.lengths_of_segments {Job} job_preemption_points%function_scope j
+ModelWithLimitedPreemptions.lengths_of_segments is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.limited.platform.limited.ModelWithLimitedPreemptions.lengths_of_segments
+Declared in library prosa.classic.model.schedule.uni.limited.platform.limited, line 45, characters 19-38
+ModelWithLimitedPreemptions.job_max_nps : forall {Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> list time.Time.time) -> eqtype.Equality.sort Job -> nat
+
+ModelWithLimitedPreemptions.job_max_nps is not universe polymorphic
+Arguments ModelWithLimitedPreemptions.job_max_nps {Job} job_preemption_points%function_scope j
+ModelWithLimitedPreemptions.job_max_nps is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.limited.platform.limited.ModelWithLimitedPreemptions.job_max_nps
+Declared in library prosa.classic.model.schedule.uni.limited.platform.limited, line 49, characters 19-30
+ModelWithLimitedPreemptions.job_last_nps : forall {Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> list time.Time.time) -> eqtype.Equality.sort Job -> nat
+
+ModelWithLimitedPreemptions.job_last_nps is not universe polymorphic
+Arguments ModelWithLimitedPreemptions.job_last_nps {Job} job_preemption_points%function_scope j
+ModelWithLimitedPreemptions.job_last_nps is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.limited.platform.limited.ModelWithLimitedPreemptions.job_last_nps
+Declared in library prosa.classic.model.schedule.uni.limited.platform.limited, line 53, characters 19-31
+ModelWithLimitedPreemptions.job_with_zero_cost_consists_of_one_empty_segment : forall {Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> time.Time.time) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> (eqtype.Equality.sort Job -> list time.Time.time) -> Prop
+
+ModelWithLimitedPreemptions.job_with_zero_cost_consists_of_one_empty_segment is not universe polymorphic
+Arguments ModelWithLimitedPreemptions.job_with_zero_cost_consists_of_one_empty_segment {Job} job_cost%function_scope arr_seq job_preemption_points%function_scope
+ModelWithLimitedPreemptions.job_with_zero_cost_consists_of_one_empty_segment is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.limited.platform.limited.ModelWithLimitedPreemptions.job_with_zero_cost_consists_of_one_empty_segment
+Declared in library prosa.classic.model.schedule.uni.limited.platform.limited, line 59, characters 19-67
+ModelWithLimitedPreemptions.last_segment_is_positive : forall {Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> time.Time.time) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> (eqtype.Equality.sort Job -> list time.Time.time) -> Prop
+
+ModelWithLimitedPreemptions.last_segment_is_positive is not universe polymorphic
+Arguments ModelWithLimitedPreemptions.last_segment_is_positive {Job} job_cost%function_scope arr_seq job_preemption_points%function_scope
+ModelWithLimitedPreemptions.last_segment_is_positive is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.limited.platform.limited.ModelWithLimitedPreemptions.last_segment_is_positive
+Declared in library prosa.classic.model.schedule.uni.limited.platform.limited, line 63, characters 19-43
+ModelWithLimitedPreemptions.beginning_of_execution_in_preemption_points : forall {Job : eqtype.Equality.type}, arrival_sequence.ArrivalSequence.arrival_sequence Job -> (eqtype.Equality.sort Job -> list time.Time.time) -> Prop
+
+ModelWithLimitedPreemptions.beginning_of_execution_in_preemption_points is not universe polymorphic
+Arguments ModelWithLimitedPreemptions.beginning_of_execution_in_preemption_points {Job} arr_seq job_preemption_points%function_scope
+ModelWithLimitedPreemptions.beginning_of_execution_in_preemption_points is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.limited.platform.limited.ModelWithLimitedPreemptions.beginning_of_execution_in_preemption_points
+Declared in library prosa.classic.model.schedule.uni.limited.platform.limited, line 67, characters 19-62
+ModelWithLimitedPreemptions.end_of_execution_in_preemption_points : forall {Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> time.Time.time) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> (eqtype.Equality.sort Job -> list time.Time.time) -> Prop
+
+ModelWithLimitedPreemptions.end_of_execution_in_preemption_points is not universe polymorphic
+Arguments ModelWithLimitedPreemptions.end_of_execution_in_preemption_points {Job} job_cost%function_scope arr_seq job_preemption_points%function_scope
+ModelWithLimitedPreemptions.end_of_execution_in_preemption_points is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.limited.platform.limited.ModelWithLimitedPreemptions.end_of_execution_in_preemption_points
+Declared in library prosa.classic.model.schedule.uni.limited.platform.limited, line 71, characters 19-56
+ModelWithLimitedPreemptions.preemption_points_is_nondecreasing_sequence : forall {Job : eqtype.Equality.type}, arrival_sequence.ArrivalSequence.arrival_sequence Job -> (eqtype.Equality.sort Job -> list time.Time.time) -> Prop
+
+ModelWithLimitedPreemptions.preemption_points_is_nondecreasing_sequence is not universe polymorphic
+Arguments ModelWithLimitedPreemptions.preemption_points_is_nondecreasing_sequence {Job} arr_seq job_preemption_points%function_scope
+ModelWithLimitedPreemptions.preemption_points_is_nondecreasing_sequence is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.limited.platform.limited.ModelWithLimitedPreemptions.preemption_points_is_nondecreasing_sequence
+Declared in library prosa.classic.model.schedule.uni.limited.platform.limited, line 75, characters 19-62
+ModelWithLimitedPreemptions.limited_preemptions_job_model : forall {Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> time.Time.time) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> (eqtype.Equality.sort Job -> list time.Time.time) -> Prop
+
+ModelWithLimitedPreemptions.limited_preemptions_job_model is not universe polymorphic
+Arguments ModelWithLimitedPreemptions.limited_preemptions_job_model {Job} job_cost%function_scope arr_seq job_preemption_points%function_scope
+ModelWithLimitedPreemptions.limited_preemptions_job_model is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.limited.platform.limited.ModelWithLimitedPreemptions.limited_preemptions_job_model
+Declared in library prosa.classic.model.schedule.uni.limited.platform.limited, line 82, characters 19-48
+ModelWithLimitedPreemptions.task_last_nps : forall {Task : eqtype.Equality.type}, (eqtype.Equality.sort Task -> list time.Time.time) -> eqtype.Equality.sort Task -> nat
+
+ModelWithLimitedPreemptions.task_last_nps is not universe polymorphic
+Arguments ModelWithLimitedPreemptions.task_last_nps {Task} task_preemption_points%function_scope tsk
+ModelWithLimitedPreemptions.task_last_nps is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.limited.platform.limited.ModelWithLimitedPreemptions.task_last_nps
+Declared in library prosa.classic.model.schedule.uni.limited.platform.limited, line 99, characters 19-32
+ModelWithLimitedPreemptions.task_max_nps : forall {Task : eqtype.Equality.type}, (eqtype.Equality.sort Task -> list time.Time.time) -> eqtype.Equality.sort Task -> nat
+
+ModelWithLimitedPreemptions.task_max_nps is not universe polymorphic
+Arguments ModelWithLimitedPreemptions.task_max_nps {Task} task_preemption_points%function_scope tsk
+ModelWithLimitedPreemptions.task_max_nps is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.limited.platform.limited.ModelWithLimitedPreemptions.task_max_nps
+Declared in library prosa.classic.model.schedule.uni.limited.platform.limited, line 100, characters 19-31
+ModelWithLimitedPreemptions.task_beginning_of_execution_in_preemption_points : forall {Task : eqtype.Equality.type}, (eqtype.Equality.sort Task -> list time.Time.time) -> list (eqtype.Equality.sort Task) -> Prop
+
+ModelWithLimitedPreemptions.task_beginning_of_execution_in_preemption_points is not universe polymorphic
+Arguments ModelWithLimitedPreemptions.task_beginning_of_execution_in_preemption_points {Task} task_preemption_points%function_scope ts%list_scope%seq_scope
+ModelWithLimitedPreemptions.task_beginning_of_execution_in_preemption_points is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.limited.platform.limited.ModelWithLimitedPreemptions.task_beginning_of_execution_in_preemption_points
+Declared in library prosa.classic.model.schedule.uni.limited.platform.limited, line 109, characters 19-67
+ModelWithLimitedPreemptions.task_end_of_execution_in_preemption_points : forall {Task : eqtype.Equality.type}, (eqtype.Equality.sort Task -> time.Time.time) -> (eqtype.Equality.sort Task -> list time.Time.time) -> list (eqtype.Equality.sort Task) -> Prop
+
+ModelWithLimitedPreemptions.task_end_of_execution_in_preemption_points is not universe polymorphic
+Arguments ModelWithLimitedPreemptions.task_end_of_execution_in_preemption_points {Task} (task_cost task_preemption_points)%function_scope ts%list_scope%seq_scope
+ModelWithLimitedPreemptions.task_end_of_execution_in_preemption_points is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.limited.platform.limited.ModelWithLimitedPreemptions.task_end_of_execution_in_preemption_points
+Declared in library prosa.classic.model.schedule.uni.limited.platform.limited, line 113, characters 19-61
+ModelWithLimitedPreemptions.task_preemption_points_is_nondecreasing_sequence : forall {Task : eqtype.Equality.type}, (eqtype.Equality.sort Task -> list time.Time.time) -> list (eqtype.Equality.sort Task) -> Prop
+
+ModelWithLimitedPreemptions.task_preemption_points_is_nondecreasing_sequence is not universe polymorphic
+Arguments ModelWithLimitedPreemptions.task_preemption_points_is_nondecreasing_sequence {Task} task_preemption_points%function_scope ts%list_scope%seq_scope
+ModelWithLimitedPreemptions.task_preemption_points_is_nondecreasing_sequence is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.limited.platform.limited.ModelWithLimitedPreemptions.task_preemption_points_is_nondecreasing_sequence
+Declared in library prosa.classic.model.schedule.uni.limited.platform.limited, line 118, characters 19-67
+ModelWithLimitedPreemptions.job_consists_of_the_same_number_of_segments_as_task : forall {Task Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> eqtype.Equality.sort Task) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> (eqtype.Equality.sort Job -> list time.Time.time) -> (eqtype.Equality.sort Task -> list time.Time.time) -> Prop
+
+ModelWithLimitedPreemptions.job_consists_of_the_same_number_of_segments_as_task is not universe polymorphic
+Arguments ModelWithLimitedPreemptions.job_consists_of_the_same_number_of_segments_as_task {Task Job} job_task%function_scope arr_seq (job_preemption_points task_preemption_points)%function_scope
+ModelWithLimitedPreemptions.job_consists_of_the_same_number_of_segments_as_task is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.limited.platform.limited.ModelWithLimitedPreemptions.job_consists_of_the_same_number_of_segments_as_task
+Declared in library prosa.classic.model.schedule.uni.limited.platform.limited, line 125, characters 19-70
+ModelWithLimitedPreemptions.lengths_of_task_segments_bound_length_of_job_segments : forall {Task Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> eqtype.Equality.sort Task) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> (eqtype.Equality.sort Job -> list time.Time.time) -> (eqtype.Equality.sort Task -> list time.Time.time) -> Prop
+
+ModelWithLimitedPreemptions.lengths_of_task_segments_bound_length_of_job_segments is not universe polymorphic
+Arguments ModelWithLimitedPreemptions.lengths_of_task_segments_bound_length_of_job_segments {Task Job} job_task%function_scope arr_seq (job_preemption_points task_preemption_points)%function_scope
+ModelWithLimitedPreemptions.lengths_of_task_segments_bound_length_of_job_segments is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.limited.platform.limited.ModelWithLimitedPreemptions.lengths_of_task_segments_bound_length_of_job_segments
+Declared in library prosa.classic.model.schedule.uni.limited.platform.limited, line 132, characters 19-72
+ModelWithLimitedPreemptions.task_segments_are_nonempty : forall {Task : eqtype.Equality.type}, (eqtype.Equality.sort Task -> list time.Time.time) -> list (eqtype.Equality.sort Task) -> Prop
+
+ModelWithLimitedPreemptions.task_segments_are_nonempty is not universe polymorphic
+Arguments ModelWithLimitedPreemptions.task_segments_are_nonempty {Task} task_preemption_points%function_scope ts%list_scope%seq_scope
+ModelWithLimitedPreemptions.task_segments_are_nonempty is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.limited.platform.limited.ModelWithLimitedPreemptions.task_segments_are_nonempty
+Declared in library prosa.classic.model.schedule.uni.limited.platform.limited, line 139, characters 19-45
+ModelWithLimitedPreemptions.fixed_preemption_points_task_model : forall {Task : eqtype.Equality.type}, (eqtype.Equality.sort Task -> time.Time.time) -> forall {Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> eqtype.Equality.sort Task) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> (eqtype.Equality.sort Job -> list time.Time.time) -> (eqtype.Equality.sort Task -> list time.Time.time) -> list (eqtype.Equality.sort Task) -> Prop
+
+ModelWithLimitedPreemptions.fixed_preemption_points_task_model is not universe polymorphic
+Arguments ModelWithLimitedPreemptions.fixed_preemption_points_task_model {Task} task_cost%function_scope {Job} job_task%function_scope arr_seq (job_preemption_points task_preemption_points)%function_scope ts%list_scope%seq_scope
+ModelWithLimitedPreemptions.fixed_preemption_points_task_model is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.limited.platform.limited.ModelWithLimitedPreemptions.fixed_preemption_points_task_model
+Declared in library prosa.classic.model.schedule.uni.limited.platform.limited, line 147, characters 19-53
+ModelWithLimitedPreemptions.fixed_preemption_points_model : forall {Task : eqtype.Equality.type}, (eqtype.Equality.sort Task -> time.Time.time) -> forall {Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> eqtype.Equality.sort Task) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> (eqtype.Equality.sort Job -> list time.Time.time) -> (eqtype.Equality.sort Task -> list time.Time.time) -> list (eqtype.Equality.sort Task) -> Prop
+
+ModelWithLimitedPreemptions.fixed_preemption_points_model is not universe polymorphic
+Arguments ModelWithLimitedPreemptions.fixed_preemption_points_model {Task} task_cost%function_scope {Job} (job_cost job_task)%function_scope arr_seq (job_preemption_points task_preemption_points)%function_scope ts%list_scope%seq_scope
+ModelWithLimitedPreemptions.fixed_preemption_points_model is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.limited.platform.limited.ModelWithLimitedPreemptions.fixed_preemption_points_model
+Declared in library prosa.classic.model.schedule.uni.limited.platform.limited, line 158, characters 19-48
+ModelWithLimitedPreemptions.job_max_np_segment_le_task_max_np_segment : forall {Task Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> eqtype.Equality.sort Task) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> (eqtype.Equality.sort Job -> list time.Time.time) -> (eqtype.Equality.sort Task -> time.Time.time) -> Prop
+
+ModelWithLimitedPreemptions.job_max_np_segment_le_task_max_np_segment is not universe polymorphic
+Arguments ModelWithLimitedPreemptions.job_max_np_segment_le_task_max_np_segment {Task Job} job_task%function_scope arr_seq (job_preemption_points task_max_nps)%function_scope
+ModelWithLimitedPreemptions.job_max_np_segment_le_task_max_np_segment is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.limited.platform.limited.ModelWithLimitedPreemptions.job_max_np_segment_le_task_max_np_segment
+Declared in library prosa.classic.model.schedule.uni.limited.platform.limited, line 173, characters 19-60
+ModelWithLimitedPreemptions.model_with_floating_nonpreemptive_regions : forall {Task Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> eqtype.Equality.sort Task) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> (eqtype.Equality.sort Job -> list time.Time.time) -> (eqtype.Equality.sort Task -> time.Time.time) -> Prop
+
+ModelWithLimitedPreemptions.model_with_floating_nonpreemptive_regions is not universe polymorphic
+Arguments ModelWithLimitedPreemptions.model_with_floating_nonpreemptive_regions {Task Job} (job_cost job_task)%function_scope arr_seq (job_preemption_points task_max_nps)%function_scope
+ModelWithLimitedPreemptions.model_with_floating_nonpreemptive_regions is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.limited.platform.limited.ModelWithLimitedPreemptions.model_with_floating_nonpreemptive_regions
+Declared in library prosa.classic.model.schedule.uni.limited.platform.limited, line 181, characters 19-60
+ModelWithLimitedPreemptions.can_be_preempted_for_model_with_limited_preemptions : forall {Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> list time.Time.time) -> eqtype.Equality.sort Job -> time.Time.time -> bool
+
+ModelWithLimitedPreemptions.can_be_preempted_for_model_with_limited_preemptions is not universe polymorphic
+Arguments ModelWithLimitedPreemptions.can_be_preempted_for_model_with_limited_preemptions {Job} job_preemption_points%function_scope j progr
+ModelWithLimitedPreemptions.can_be_preempted_for_model_with_limited_preemptions is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.limited.platform.limited.ModelWithLimitedPreemptions.can_be_preempted_for_model_with_limited_preemptions
+Declared in library prosa.classic.model.schedule.uni.limited.platform.limited, line 191, characters 17-68
+ModelWithLimitedPreemptions.is_schedule_with_limited_preemptions : forall {Job : eqtype.Equality.type}, arrival_sequence.ArrivalSequence.arrival_sequence Job -> (eqtype.Equality.sort Job -> list time.Time.time) -> schedule.UniprocessorSchedule.schedule Job -> Prop
+
+ModelWithLimitedPreemptions.is_schedule_with_limited_preemptions is not universe polymorphic
+Arguments ModelWithLimitedPreemptions.is_schedule_with_limited_preemptions {Job} arr_seq job_preemption_points%function_scope sched
+ModelWithLimitedPreemptions.is_schedule_with_limited_preemptions is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.limited.platform.limited.ModelWithLimitedPreemptions.is_schedule_with_limited_preemptions
+Declared in library prosa.classic.model.schedule.uni.limited.platform.limited, line 196, characters 17-53
+ModelWithLimitedPreemptions.list_of_preemption_point_is_not_empty : forall {Job : eqtype.Equality.type} (job_cost : eqtype.Equality.sort Job -> time.Time.time) (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job) (job_preemption_points : eqtype.Equality.sort Job -> list time.Time.time), ModelWithLimitedPreemptions.limited_preemptions_job_model job_cost arr_seq job_preemption_points -> forall j : eqtype.Equality.sort Job, arrival_sequence.ArrivalSequence.arrives_in arr_seq j -> is_true (ssrnat.leq 1 (seq.size (job_preemption_points j)))
+
+ModelWithLimitedPreemptions.list_of_preemption_point_is_not_empty is not universe polymorphic
+Arguments ModelWithLimitedPreemptions.list_of_preemption_point_is_not_empty {Job} job_cost%function_scope arr_seq job_preemption_points%function_scope H_limited_preemptions_job_model j H_j_arrives
+ModelWithLimitedPreemptions.list_of_preemption_point_is_not_empty is opaque
+Expands to: Constant prosa.classic.model.schedule.uni.limited.platform.limited.ModelWithLimitedPreemptions.list_of_preemption_point_is_not_empty
+Declared in library prosa.classic.model.schedule.uni.limited.platform.limited, line 234, characters 14-51
+ModelWithLimitedPreemptions.zero_in_preemption_points : forall {Job : eqtype.Equality.type} (job_cost : eqtype.Equality.sort Job -> time.Time.time) (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job) (job_preemption_points : eqtype.Equality.sort Job -> list time.Time.time), ModelWithLimitedPreemptions.limited_preemptions_job_model job_cost arr_seq job_preemption_points -> forall j : eqtype.Equality.sort Job, arrival_sequence.ArrivalSequence.arrives_in arr_seq j -> is_true (ssrbool.in_mem 0 (ssrbool.mem (job_preemption_points j)))
+
+ModelWithLimitedPreemptions.zero_in_preemption_points is not universe polymorphic
+Arguments ModelWithLimitedPreemptions.zero_in_preemption_points {Job} job_cost%function_scope arr_seq job_preemption_points%function_scope H_limited_preemptions_job_model j H_j_arrives
+ModelWithLimitedPreemptions.zero_in_preemption_points is opaque
+Expands to: Constant prosa.classic.model.schedule.uni.limited.platform.limited.ModelWithLimitedPreemptions.zero_in_preemption_points
+Declared in library prosa.classic.model.schedule.uni.limited.platform.limited, line 248, characters 14-39
+ModelWithLimitedPreemptions.job_cost_in_nonpreemptive_points : forall {Job : eqtype.Equality.type} (job_cost : eqtype.Equality.sort Job -> time.Time.time) (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job) (job_preemption_points : eqtype.Equality.sort Job -> list time.Time.time), ModelWithLimitedPreemptions.limited_preemptions_job_model job_cost arr_seq job_preemption_points -> forall j : eqtype.Equality.sort Job, arrival_sequence.ArrivalSequence.arrives_in arr_seq j -> is_true (ssrbool.in_mem (job_cost j) (ssrbool.mem (job_preemption_points j)))
+
+ModelWithLimitedPreemptions.job_cost_in_nonpreemptive_points is not universe polymorphic
+Arguments ModelWithLimitedPreemptions.job_cost_in_nonpreemptive_points {Job} job_cost%function_scope arr_seq job_preemption_points%function_scope H_limited_preemptions_job_model j H_j_arrives
+ModelWithLimitedPreemptions.job_cost_in_nonpreemptive_points is opaque
+Expands to: Constant prosa.classic.model.schedule.uni.limited.platform.limited.ModelWithLimitedPreemptions.job_cost_in_nonpreemptive_points
+Declared in library prosa.classic.model.schedule.uni.limited.platform.limited, line 261, characters 14-46
+ModelWithLimitedPreemptions.number_of_preemption_points_at_least_two : forall {Job : eqtype.Equality.type} (job_cost : eqtype.Equality.sort Job -> time.Time.time) (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job) (job_preemption_points : eqtype.Equality.sort Job -> list time.Time.time), ModelWithLimitedPreemptions.limited_preemptions_job_model job_cost arr_seq job_preemption_points -> forall j : eqtype.Equality.sort Job, arrival_sequence.ArrivalSequence.arrives_in arr_seq j -> is_true (ssrnat.leq 2 (seq.size (job_preemption_points j)))
+
+ModelWithLimitedPreemptions.number_of_preemption_points_at_least_two is not universe polymorphic
+Arguments ModelWithLimitedPreemptions.number_of_preemption_points_at_least_two {Job} job_cost%function_scope arr_seq job_preemption_points%function_scope H_limited_preemptions_job_model j H_j_arrives
+ModelWithLimitedPreemptions.number_of_preemption_points_at_least_two is opaque
+Expands to: Constant prosa.classic.model.schedule.uni.limited.platform.limited.ModelWithLimitedPreemptions.number_of_preemption_points_at_least_two
+Declared in library prosa.classic.model.schedule.uni.limited.platform.limited, line 274, characters 18-58
+ModelWithLimitedPreemptions.model_with_fixed_preemption_points_is_correct : forall {Job : eqtype.Equality.type} (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job) (job_preemption_points : eqtype.Equality.sort Job -> list time.Time.time) (sched : schedule.UniprocessorSchedule.schedule Job), ModelWithLimitedPreemptions.is_schedule_with_limited_preemptions arr_seq job_preemption_points sched -> LimitedPreemptionPlatform.correct_preemption_model arr_seq sched (ModelWithLimitedPreemptions.can_be_preempted_for_model_with_limited_preemptions job_preemption_points)
+
+ModelWithLimitedPreemptions.model_with_fixed_preemption_points_is_correct is not universe polymorphic
+Arguments ModelWithLimitedPreemptions.model_with_fixed_preemption_points_is_correct {Job} arr_seq job_preemption_points%function_scope sched H_is_schedule_with_limited_preemptions j _
+ModelWithLimitedPreemptions.model_with_fixed_preemption_points_is_correct is opaque
+Expands to: Constant prosa.classic.model.schedule.uni.limited.platform.limited.ModelWithLimitedPreemptions.model_with_fixed_preemption_points_is_correct
+Declared in library prosa.classic.model.schedule.uni.limited.platform.limited, line 299, characters 12-57
+ModelWithLimitedPreemptions.model_with_fixed_preemption_points_is_model_with_bounded_nonpreemptive_regions : forall {Task Job : eqtype.Equality.type} (job_cost : eqtype.Equality.sort Job -> time.Time.time) (job_task : eqtype.Equality.sort Job -> eqtype.Equality.sort Task) (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job) (job_preemption_points : eqtype.Equality.sort Job -> list time.Time.time) (sched : schedule.UniprocessorSchedule.schedule Job), ModelWithLimitedPreemptions.is_schedule_with_limited_preemptions arr_seq job_preemption_points sched -> forall task_max_nps : eqtype.Equality.sort Task -> time.Time.time, ModelWithLimitedPreemptions.limited_preemptions_job_model job_cost arr_seq job_preemption_points -> ModelWithLimitedPreemptions.job_max_np_segment_le_task_max_np_segment job_task arr_seq job_preemption_points task_max_nps -> LimitedPreemptionPlatform.model_with_bounded_nonpreemptive_segments job_cost job_task arr_seq (ModelWithLimitedPreemptions.can_be_preempted_for_model_with_limited_preemptions job_preemption_points) (ModelWithLimitedPreemptions.job_max_nps job_preemption_points) task_max_nps
+
+ModelWithLimitedPreemptions.model_with_fixed_preemption_points_is_model_with_bounded_nonpreemptive_regions is not universe polymorphic
+Arguments ModelWithLimitedPreemptions.model_with_fixed_preemption_points_is_model_with_bounded_nonpreemptive_regions {Task Job} (job_cost job_task)%function_scope arr_seq job_preemption_points%function_scope sched H_is_schedule_with_limited_preemptions task_max_nps%function_scope H_limited_preemptions_job_model H_job_max_np_segment_le_task_max_np_segment j _
+ModelWithLimitedPreemptions.model_with_fixed_preemption_points_is_model_with_bounded_nonpreemptive_regions is opaque
+Expands to: Constant prosa.classic.model.schedule.uni.limited.platform.limited.ModelWithLimitedPreemptions.model_with_fixed_preemption_points_is_model_with_bounded_nonpreemptive_regions
+Declared in library prosa.classic.model.schedule.uni.limited.platform.limited, line 321, characters 12-90

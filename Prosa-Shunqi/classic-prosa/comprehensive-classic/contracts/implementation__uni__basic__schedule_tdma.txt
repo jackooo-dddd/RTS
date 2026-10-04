@@ -1,0 +1,101 @@
+# classic/implementation/uni/basic/schedule_tdma.v: 11 declarations
+
+## Print Module
+
+Module schedule_tdma := Struct Module ConcreteSchedulerTDMA End
+
+Module
+ConcreteSchedulerTDMA
+:= Struct
+     Definition pending_jobs : forall Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> schedule.UniprocessorSchedule.schedule Job -> time.Time.time -> list (eqtype.Equality.sort Job).
+     Definition job_to_schedule : forall Task Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> eqtype.Equality.sort Task) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> seqset.set_of (ssreflect.Phant (eqtype.Equality.sort Task)) -> policy_tdma.PolicyTDMA.TDMA_slot Task -> policy_tdma.PolicyTDMA.TDMA_slot_order Task -> schedule.UniprocessorSchedule.schedule Job -> time.Time.time -> option (eqtype.Equality.sort Job).
+     Parameter pending_jobs_uniq : forall (Job : eqtype.Equality.type) (job_arrival job_cost : eqtype.Equality.sort Job -> time.Time.time) (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job), arrival_sequence.ArrivalSequence.arrival_times_are_consistent job_arrival arr_seq -> forall (sched : schedule.UniprocessorSchedule.schedule Job) (t : time.Time.time), arrival_sequence.ArrivalSequence.arrival_sequence_is_a_set arr_seq -> is_true (seq.uniq (pending_jobs job_arrival job_cost arr_seq sched t)).
+     Parameter respects_FIFO : forall (Job : eqtype.Equality.type) (job_arrival job_cost : eqtype.Equality.sort Job -> time.Time.time) (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job), arrival_sequence.ArrivalSequence.arrival_times_are_consistent job_arrival arr_seq -> forall (sched : schedule.UniprocessorSchedule.schedule Job) (t : time.Time.time), arrival_sequence.ArrivalSequence.arrival_sequence_is_a_set arr_seq -> forall j j' : eqtype.Equality.sort Job, is_true (ssrbool.in_mem j (ssrbool.mem (pending_jobs job_arrival job_cost arr_seq sched t))) -> is_true (ssrbool.in_mem j' (ssrbool.mem (pending_jobs job_arrival job_cost arr_seq sched t))) -> is_true (ssrnat.leq (S (seq.find (fun job : eqtype.Equality.sort Job => eqtype.eq_op job j') (pending_jobs job_arrival job_cost arr_seq sched t))) (seq.find (fun job : eqtype.Equality.sort Job => eqtype.eq_op job j) (pending_jobs job_arrival job_cost arr_seq sched t))) -> is_true (ssrnat.leq (job_arrival j') (job_arrival j)).
+     Parameter pending_job_in_penging_list : forall (Job : eqtype.Equality.type) (job_arrival job_cost : eqtype.Equality.sort Job -> time.Time.time) (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job), arrival_sequence.ArrivalSequence.arrival_times_are_consistent job_arrival arr_seq -> forall (sched : schedule.UniprocessorSchedule.schedule Job) (t : time.Time.time) (j : eqtype.Equality.sort Job), arrival_sequence.ArrivalSequence.arrives_in arr_seq j -> is_true (schedule.UniprocessorSchedule.pending job_arrival job_cost sched j t) -> is_true (ssrbool.in_mem j (ssrbool.mem (pending_jobs job_arrival job_cost arr_seq sched t))).
+     Parameter pendinglist_jobs_in_arr_seq : forall (Job : eqtype.Equality.type) (job_arrival job_cost : eqtype.Equality.sort Job -> time.Time.time) (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job) (sched : schedule.UniprocessorSchedule.schedule Job) (t : time.Time.time) (j : eqtype.Equality.sort Job), is_true (ssrbool.in_mem j (ssrbool.mem (pending_jobs job_arrival job_cost arr_seq sched t))) -> arrival_sequence.ArrivalSequence.arrives_in arr_seq j.
+     Definition scheduler_tdma : forall Task Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> eqtype.Equality.sort Task) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> seqset.set_of (ssreflect.Phant (eqtype.Equality.sort Task)) -> policy_tdma.PolicyTDMA.TDMA_slot Task -> policy_tdma.PolicyTDMA.TDMA_slot_order Task -> time.Time.time -> option (eqtype.Equality.sort Job).
+     Parameter scheduler_depends_only_on_prefix : forall (Task Job : eqtype.Equality.type) (job_arrival job_cost : eqtype.Equality.sort Job -> time.Time.time) (job_task : eqtype.Equality.sort Job -> eqtype.Equality.sort Task) (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job) (ts : seqset.set_of (ssreflect.Phant (eqtype.Equality.sort Task))) (time_slot : policy_tdma.PolicyTDMA.TDMA_slot Task) (slot_order : policy_tdma.PolicyTDMA.TDMA_slot_order Task) (sched1 sched2 : nat -> option (eqtype.Equality.sort Job)) (t : nat), (forall t0 : nat, is_true (ssrnat.leq (S t0) t) -> sched1 t0 = sched2 t0) -> job_to_schedule job_arrival job_cost job_task arr_seq ts time_slot slot_order sched1 t = job_to_schedule job_arrival job_cost job_task arr_seq ts time_slot slot_order sched2 t.
+     Parameter scheduler_uses_construction_function : forall (Task Job : eqtype.Equality.type) (job_arrival job_cost : eqtype.Equality.sort Job -> time.Time.time) (job_task : eqtype.Equality.sort Job -> eqtype.Equality.sort Task) (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job) (ts : seqset.set_of (ssreflect.Phant (eqtype.Equality.sort Task))) (time_slot : policy_tdma.PolicyTDMA.TDMA_slot Task) (slot_order : policy_tdma.PolicyTDMA.TDMA_slot_order Task) (t : time.Time.time), scheduler_tdma job_arrival job_cost job_task arr_seq ts time_slot slot_order t = job_to_schedule job_arrival job_cost job_task arr_seq ts time_slot slot_order (scheduler_tdma job_arrival job_cost job_task arr_seq ts time_slot slot_order) t.
+     Parameter scheduler_jobs_must_arrive_to_execute : forall (Task Job : eqtype.Equality.type) (job_arrival job_cost : eqtype.Equality.sort Job -> time.Time.time) (job_task : eqtype.Equality.sort Job -> eqtype.Equality.sort Task) (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job) (ts : seqset.set_of (ssreflect.Phant (eqtype.Equality.sort Task))) (time_slot : policy_tdma.PolicyTDMA.TDMA_slot Task) (slot_order : policy_tdma.PolicyTDMA.TDMA_slot_order Task), schedule.UniprocessorSchedule.jobs_must_arrive_to_execute job_arrival (scheduler_tdma job_arrival job_cost job_task arr_seq ts time_slot slot_order).
+     Parameter scheduler_completed_jobs_dont_execute : forall (Task Job : eqtype.Equality.type) (job_arrival job_cost : eqtype.Equality.sort Job -> time.Time.time) (job_task : eqtype.Equality.sort Job -> eqtype.Equality.sort Task) (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job) (ts : seqset.set_of (ssreflect.Phant (eqtype.Equality.sort Task))) (time_slot : policy_tdma.PolicyTDMA.TDMA_slot Task) (slot_order : policy_tdma.PolicyTDMA.TDMA_slot_order Task), schedule.UniprocessorSchedule.completed_jobs_dont_execute job_cost (scheduler_tdma job_arrival job_cost job_task arr_seq ts time_slot slot_order).
+   End
+
+## About
+
+ConcreteSchedulerTDMA.pending_jobs : forall {Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> schedule.UniprocessorSchedule.schedule Job -> time.Time.time -> list (eqtype.Equality.sort Job)
+
+ConcreteSchedulerTDMA.pending_jobs is not universe polymorphic
+Arguments ConcreteSchedulerTDMA.pending_jobs {Job} (job_arrival job_cost)%function_scope arr_seq sched t
+ConcreteSchedulerTDMA.pending_jobs is transparent
+Expands to: Constant prosa.classic.implementation.uni.basic.schedule_tdma.ConcreteSchedulerTDMA.pending_jobs
+Declared in library prosa.classic.implementation.uni.basic.schedule_tdma, line 50, characters 19-31
+ConcreteSchedulerTDMA.job_to_schedule : forall {Task Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> eqtype.Equality.sort Task) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> seqset.set_of (ssreflect.Phant (eqtype.Equality.sort Task)) -> policy_tdma.PolicyTDMA.TDMA_slot Task -> policy_tdma.PolicyTDMA.TDMA_slot_order Task -> schedule.UniprocessorSchedule.schedule Job -> time.Time.time -> option (eqtype.Equality.sort Job)
+
+ConcreteSchedulerTDMA.job_to_schedule is not universe polymorphic
+Arguments ConcreteSchedulerTDMA.job_to_schedule {Task Job} (job_arrival job_cost job_task)%function_scope arr_seq ts time_slot slot_order sched t
+ConcreteSchedulerTDMA.job_to_schedule is transparent
+Expands to: Constant prosa.classic.implementation.uni.basic.schedule_tdma.ConcreteSchedulerTDMA.job_to_schedule
+Declared in library prosa.classic.implementation.uni.basic.schedule_tdma, line 58, characters 19-34
+ConcreteSchedulerTDMA.pending_jobs_uniq : forall {Job : eqtype.Equality.type} (job_arrival job_cost : eqtype.Equality.sort Job -> time.Time.time) (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job), arrival_sequence.ArrivalSequence.arrival_times_are_consistent job_arrival arr_seq -> forall (sched : schedule.UniprocessorSchedule.schedule Job) (t : time.Time.time), arrival_sequence.ArrivalSequence.arrival_sequence_is_a_set arr_seq -> is_true (seq.uniq (ConcreteSchedulerTDMA.pending_jobs job_arrival job_cost arr_seq sched t))
+
+ConcreteSchedulerTDMA.pending_jobs_uniq is not universe polymorphic
+Arguments ConcreteSchedulerTDMA.pending_jobs_uniq {Job} (job_arrival job_cost)%function_scope arr_seq H_arrival_times_are_consistent sched t arr_seq_is_a_set
+ConcreteSchedulerTDMA.pending_jobs_uniq is opaque
+Expands to: Constant prosa.classic.implementation.uni.basic.schedule_tdma.ConcreteSchedulerTDMA.pending_jobs_uniq
+Declared in library prosa.classic.implementation.uni.basic.schedule_tdma, line 67, characters 14-31
+ConcreteSchedulerTDMA.respects_FIFO : forall {Job : eqtype.Equality.type} (job_arrival job_cost : eqtype.Equality.sort Job -> time.Time.time) (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job), arrival_sequence.ArrivalSequence.arrival_times_are_consistent job_arrival arr_seq -> forall (sched : schedule.UniprocessorSchedule.schedule Job) (t : time.Time.time), arrival_sequence.ArrivalSequence.arrival_sequence_is_a_set arr_seq -> forall j j' : eqtype.Equality.sort Job, is_true (ssrbool.in_mem j (ssrbool.mem (ConcreteSchedulerTDMA.pending_jobs job_arrival job_cost arr_seq sched t))) -> is_true (ssrbool.in_mem j' (ssrbool.mem (ConcreteSchedulerTDMA.pending_jobs job_arrival job_cost arr_seq sched t))) -> is_true (ssrnat.leq (S (seq.find (fun job : eqtype.Equality.sort Job => eqtype.eq_op job j') (ConcreteSchedulerTDMA.pending_jobs job_arrival job_cost arr_seq sched t))) (seq.find (fun job : eqtype.Equality.sort Job => eqtype.eq_op job j) (ConcreteSchedulerTDMA.pending_jobs job_arrival job_cost arr_seq sched t))) -> is_true (ssrnat.leq (job_arrival j') (job_arrival j))
+
+ConcreteSchedulerTDMA.respects_FIFO is not universe polymorphic
+Arguments ConcreteSchedulerTDMA.respects_FIFO {Job} (job_arrival job_cost)%function_scope arr_seq H_arrival_times_are_consistent sched t arr_seq_is_a_set j j' _ _ _
+ConcreteSchedulerTDMA.respects_FIFO is opaque
+Expands to: Constant prosa.classic.implementation.uni.basic.schedule_tdma.ConcreteSchedulerTDMA.respects_FIFO
+Declared in library prosa.classic.implementation.uni.basic.schedule_tdma, line 75, characters 14-27
+ConcreteSchedulerTDMA.pending_job_in_penging_list : forall {Job : eqtype.Equality.type} (job_arrival job_cost : eqtype.Equality.sort Job -> time.Time.time) (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job), arrival_sequence.ArrivalSequence.arrival_times_are_consistent job_arrival arr_seq -> forall (sched : schedule.UniprocessorSchedule.schedule Job) (t : time.Time.time) (j : eqtype.Equality.sort Job), arrival_sequence.ArrivalSequence.arrives_in arr_seq j -> is_true (schedule.UniprocessorSchedule.pending job_arrival job_cost sched j t) -> is_true (ssrbool.in_mem j (ssrbool.mem (ConcreteSchedulerTDMA.pending_jobs job_arrival job_cost arr_seq sched t)))
+
+ConcreteSchedulerTDMA.pending_job_in_penging_list is not universe polymorphic
+Arguments ConcreteSchedulerTDMA.pending_job_in_penging_list {Job} (job_arrival job_cost)%function_scope arr_seq H_arrival_times_are_consistent sched t j _ _
+ConcreteSchedulerTDMA.pending_job_in_penging_list is opaque
+Expands to: Constant prosa.classic.implementation.uni.basic.schedule_tdma.ConcreteSchedulerTDMA.pending_job_in_penging_list
+Declared in library prosa.classic.implementation.uni.basic.schedule_tdma, line 128, characters 14-41
+ConcreteSchedulerTDMA.pendinglist_jobs_in_arr_seq : forall {Job : eqtype.Equality.type} (job_arrival job_cost : eqtype.Equality.sort Job -> time.Time.time) (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job) (sched : schedule.UniprocessorSchedule.schedule Job) (t : time.Time.time) (j : eqtype.Equality.sort Job), is_true (ssrbool.in_mem j (ssrbool.mem (ConcreteSchedulerTDMA.pending_jobs job_arrival job_cost arr_seq sched t))) -> arrival_sequence.ArrivalSequence.arrives_in arr_seq j
+
+ConcreteSchedulerTDMA.pendinglist_jobs_in_arr_seq is not universe polymorphic
+Arguments ConcreteSchedulerTDMA.pendinglist_jobs_in_arr_seq {Job} (job_arrival job_cost)%function_scope arr_seq sched t j _
+ConcreteSchedulerTDMA.pendinglist_jobs_in_arr_seq is opaque
+Expands to: Constant prosa.classic.implementation.uni.basic.schedule_tdma.ConcreteSchedulerTDMA.pendinglist_jobs_in_arr_seq
+Declared in library prosa.classic.implementation.uni.basic.schedule_tdma, line 143, characters 14-41
+ConcreteSchedulerTDMA.scheduler_tdma : forall {Task Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> eqtype.Equality.sort Task) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> seqset.set_of (ssreflect.Phant (eqtype.Equality.sort Task)) -> policy_tdma.PolicyTDMA.TDMA_slot Task -> policy_tdma.PolicyTDMA.TDMA_slot_order Task -> time.Time.time -> option (eqtype.Equality.sort Job)
+
+ConcreteSchedulerTDMA.scheduler_tdma is not universe polymorphic
+Arguments ConcreteSchedulerTDMA.scheduler_tdma {Task Job} (job_arrival job_cost job_task)%function_scope arr_seq ts time_slot slot_order t
+ConcreteSchedulerTDMA.scheduler_tdma is transparent
+Expands to: Constant prosa.classic.implementation.uni.basic.schedule_tdma.ConcreteSchedulerTDMA.scheduler_tdma
+Declared in library prosa.classic.implementation.uni.basic.schedule_tdma, line 161, characters 19-33
+ConcreteSchedulerTDMA.scheduler_depends_only_on_prefix : forall {Task Job : eqtype.Equality.type} (job_arrival job_cost : eqtype.Equality.sort Job -> time.Time.time) (job_task : eqtype.Equality.sort Job -> eqtype.Equality.sort Task) (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job) (ts : seqset.set_of (ssreflect.Phant (eqtype.Equality.sort Task))) (time_slot : policy_tdma.PolicyTDMA.TDMA_slot Task) (slot_order : policy_tdma.PolicyTDMA.TDMA_slot_order Task) (sched1 sched2 : nat -> option (eqtype.Equality.sort Job)) (t : nat), (forall t0 : nat, is_true (ssrnat.leq (S t0) t) -> sched1 t0 = sched2 t0) -> ConcreteSchedulerTDMA.job_to_schedule job_arrival job_cost job_task arr_seq ts time_slot slot_order sched1 t = ConcreteSchedulerTDMA.job_to_schedule job_arrival job_cost job_task arr_seq ts time_slot slot_order sched2 t
+
+ConcreteSchedulerTDMA.scheduler_depends_only_on_prefix is not universe polymorphic
+Arguments ConcreteSchedulerTDMA.scheduler_depends_only_on_prefix {Task Job} (job_arrival job_cost job_task)%function_scope arr_seq ts time_slot slot_order (sched1 sched2)%function_scope t%nat_scope _%function_scope
+ConcreteSchedulerTDMA.scheduler_depends_only_on_prefix is opaque
+Expands to: Constant prosa.classic.implementation.uni.basic.schedule_tdma.ConcreteSchedulerTDMA.scheduler_depends_only_on_prefix
+Declared in library prosa.classic.implementation.uni.basic.schedule_tdma, line 164, characters 14-46
+ConcreteSchedulerTDMA.scheduler_uses_construction_function : forall {Task Job : eqtype.Equality.type} (job_arrival job_cost : eqtype.Equality.sort Job -> time.Time.time) (job_task : eqtype.Equality.sort Job -> eqtype.Equality.sort Task) (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job) (ts : seqset.set_of (ssreflect.Phant (eqtype.Equality.sort Task))) (time_slot : policy_tdma.PolicyTDMA.TDMA_slot Task) (slot_order : policy_tdma.PolicyTDMA.TDMA_slot_order Task) (t : time.Time.time), ConcreteSchedulerTDMA.scheduler_tdma job_arrival job_cost job_task arr_seq ts time_slot slot_order t = ConcreteSchedulerTDMA.job_to_schedule job_arrival job_cost job_task arr_seq ts time_slot slot_order (ConcreteSchedulerTDMA.scheduler_tdma job_arrival job_cost job_task arr_seq ts time_slot slot_order) t
+
+ConcreteSchedulerTDMA.scheduler_uses_construction_function is not universe polymorphic
+Arguments ConcreteSchedulerTDMA.scheduler_uses_construction_function {Task Job} (job_arrival job_cost job_task)%function_scope arr_seq ts time_slot slot_order t
+ConcreteSchedulerTDMA.scheduler_uses_construction_function is opaque
+Expands to: Constant prosa.classic.implementation.uni.basic.schedule_tdma.ConcreteSchedulerTDMA.scheduler_uses_construction_function
+Declared in library prosa.classic.implementation.uni.basic.schedule_tdma, line 190, characters 12-48
+ConcreteSchedulerTDMA.scheduler_jobs_must_arrive_to_execute : forall {Task Job : eqtype.Equality.type} (job_arrival job_cost : eqtype.Equality.sort Job -> time.Time.time) (job_task : eqtype.Equality.sort Job -> eqtype.Equality.sort Task) (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job) (ts : seqset.set_of (ssreflect.Phant (eqtype.Equality.sort Task))) (time_slot : policy_tdma.PolicyTDMA.TDMA_slot Task) (slot_order : policy_tdma.PolicyTDMA.TDMA_slot_order Task), schedule.UniprocessorSchedule.jobs_must_arrive_to_execute job_arrival (ConcreteSchedulerTDMA.scheduler_tdma job_arrival job_cost job_task arr_seq ts time_slot slot_order)
+
+ConcreteSchedulerTDMA.scheduler_jobs_must_arrive_to_execute is not universe polymorphic
+Arguments ConcreteSchedulerTDMA.scheduler_jobs_must_arrive_to_execute {Task Job} (job_arrival job_cost job_task)%function_scope arr_seq ts time_slot slot_order j t _
+ConcreteSchedulerTDMA.scheduler_jobs_must_arrive_to_execute is opaque
+Expands to: Constant prosa.classic.implementation.uni.basic.schedule_tdma.ConcreteSchedulerTDMA.scheduler_jobs_must_arrive_to_execute
+Declared in library prosa.classic.implementation.uni.basic.schedule_tdma, line 204, characters 12-49
+ConcreteSchedulerTDMA.scheduler_completed_jobs_dont_execute : forall {Task Job : eqtype.Equality.type} (job_arrival job_cost : eqtype.Equality.sort Job -> time.Time.time) (job_task : eqtype.Equality.sort Job -> eqtype.Equality.sort Task) (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job) (ts : seqset.set_of (ssreflect.Phant (eqtype.Equality.sort Task))) (time_slot : policy_tdma.PolicyTDMA.TDMA_slot Task) (slot_order : policy_tdma.PolicyTDMA.TDMA_slot_order Task), schedule.UniprocessorSchedule.completed_jobs_dont_execute job_cost (ConcreteSchedulerTDMA.scheduler_tdma job_arrival job_cost job_task arr_seq ts time_slot slot_order)
+
+ConcreteSchedulerTDMA.scheduler_completed_jobs_dont_execute is not universe polymorphic
+Arguments ConcreteSchedulerTDMA.scheduler_completed_jobs_dont_execute {Task Job} (job_arrival job_cost job_task)%function_scope arr_seq ts time_slot slot_order j t
+ConcreteSchedulerTDMA.scheduler_completed_jobs_dont_execute is opaque
+Expands to: Constant prosa.classic.implementation.uni.basic.schedule_tdma.ConcreteSchedulerTDMA.scheduler_completed_jobs_dont_execute
+Declared in library prosa.classic.implementation.uni.basic.schedule_tdma, line 223, characters 12-49

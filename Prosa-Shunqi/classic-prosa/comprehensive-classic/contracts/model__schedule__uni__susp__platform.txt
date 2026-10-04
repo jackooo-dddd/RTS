@@ -1,0 +1,38 @@
+# classic/model/schedule/uni/susp/platform.v: 4 declarations
+
+## Print Module
+
+Module platform := Struct Module PlatformWithSuspensions End
+
+Module PlatformWithSuspensions := Struct Definition work_conserving : forall Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> time) -> (eqtype.Equality.sort Job -> time) -> job_suspension Job -> arrival_sequence Job -> schedule Job -> Prop. Definition respects_FP_policy : forall Task Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> time) -> (eqtype.Equality.sort Job -> time) -> (eqtype.Equality.sort Job -> eqtype.Equality.sort Task) -> job_suspension Job -> arrival_sequence Job -> schedule Job -> FP_policy Task -> Prop. Definition respects_JLFP_policy : forall Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> time) -> (eqtype.Equality.sort Job -> time) -> job_suspension Job -> arrival_sequence Job -> schedule Job -> JLFP_policy Job -> Prop. Definition respects_JLDP_policy : forall Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> time) -> (eqtype.Equality.sort Job -> time) -> job_suspension Job -> arrival_sequence Job -> schedule Job -> JLDP_policy Job -> Prop. End
+
+## About
+
+PlatformWithSuspensions.work_conserving : forall {Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> suspension.Suspension.job_suspension Job -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> schedule.UniprocessorSchedule.schedule Job -> Prop
+
+PlatformWithSuspensions.work_conserving is not universe polymorphic
+Arguments PlatformWithSuspensions.work_conserving {Job} (job_arrival job_cost)%function_scope next_suspension arr_seq sched
+PlatformWithSuspensions.work_conserving is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.susp.platform.PlatformWithSuspensions.work_conserving
+Declared in library prosa.classic.model.schedule.uni.susp.platform, line 42, characters 19-34
+PlatformWithSuspensions.respects_FP_policy : forall {Task Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> eqtype.Equality.sort Task) -> suspension.Suspension.job_suspension Job -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> schedule.UniprocessorSchedule.schedule Job -> priority.Priority.FP_policy Task -> Prop
+
+PlatformWithSuspensions.respects_FP_policy is not universe polymorphic
+Arguments PlatformWithSuspensions.respects_FP_policy {Task Job} (job_arrival job_cost job_task)%function_scope next_suspension arr_seq sched higher_eq_priority
+PlatformWithSuspensions.respects_FP_policy is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.susp.platform.PlatformWithSuspensions.respects_FP_policy
+Declared in library prosa.classic.model.schedule.uni.susp.platform, line 58, characters 19-37
+PlatformWithSuspensions.respects_JLFP_policy : forall {Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> suspension.Suspension.job_suspension Job -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> schedule.UniprocessorSchedule.schedule Job -> priority.Priority.JLFP_policy Job -> Prop
+
+PlatformWithSuspensions.respects_JLFP_policy is not universe polymorphic
+Arguments PlatformWithSuspensions.respects_JLFP_policy {Job} (job_arrival job_cost)%function_scope next_suspension arr_seq sched higher_eq_priority
+PlatformWithSuspensions.respects_JLFP_policy is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.susp.platform.PlatformWithSuspensions.respects_JLFP_policy
+Declared in library prosa.classic.model.schedule.uni.susp.platform, line 75, characters 19-39
+PlatformWithSuspensions.respects_JLDP_policy : forall {Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> suspension.Suspension.job_suspension Job -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> schedule.UniprocessorSchedule.schedule Job -> priority.Priority.JLDP_policy Job -> Prop
+
+PlatformWithSuspensions.respects_JLDP_policy is not universe polymorphic
+Arguments PlatformWithSuspensions.respects_JLDP_policy {Job} (job_arrival job_cost)%function_scope next_suspension arr_seq sched higher_eq_priority
+PlatformWithSuspensions.respects_JLDP_policy is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.susp.platform.PlatformWithSuspensions.respects_JLDP_policy
+Declared in library prosa.classic.model.schedule.uni.susp.platform, line 92, characters 19-39

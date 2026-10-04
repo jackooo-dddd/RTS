@@ -1,0 +1,78 @@
+{
+  "rank": 28,
+  "layer": 10,
+  "slug": "classic_model_arrival_basic_arrival_bounds",
+  "tag": "CARRBND",
+  "export_name": "ClassicArrivalBounds",
+  "source": "classic/model/arrival/basic/arrival_bounds.v",
+  "production": "Prosa/Classic/Model/Arrival/Basic/ArrivalBounds.lean",
+  "fixtures": [
+    "ClassicArrivalBoundsInterface"
+  ],
+  "export_module": "Validation.fixtures.translation_order.ClassicArrivalBoundsInterface",
+  "interface_theorems": [
+    "Prosa.Validation.ClassicArrivalBoundsInterface.bigCat_range'",
+    "Prosa.Validation.ClassicArrivalBoundsInterface.mergeSort_isChain",
+    "Prosa.Validation.ClassicArrivalBoundsInterface.mergeSort_filter_class",
+    "Prosa.Validation.DivModInterface.production_div_floor_eq",
+    "Prosa.Validation.DivModInterface.production_div_ceil_eq",
+    "Prosa.Validation.DivModInterface.production_div_add_mod",
+    "Prosa.Validation.DivModInterface.production_mod_lt",
+    "Prosa.Validation.DivModInterface.production_div_zero",
+    "Prosa.Validation.DivModInterface.production_mod_zero",
+    "Prosa.Validation.DivModInterface.production_dvd_iff_mod_eq_zero"
+  ],
+  "computational": [],
+  "chain": [
+    "ClassicArrivalBoundsNatSub",
+    "ClassicArrivalBoundsOps",
+    "ClassicArrivalBoundsBase",
+    "ClassicArrivalBoundsList",
+    "ClassicArrivalBoundsCorrespondence"
+  ],
+  "base_run": null,
+  "base_checks": [],
+  "previous_status": "classic_model_schedule_global_basic_schedule_module_status.json",
+  "input_relations": [
+    "job and task types: eqTypes identified, Lean DecidableEq instances = the eqTypes' decision procedures; job_task identified",
+    "natural numbers (time) by SubNatRel; job/task parameters pointwise through SubNatRel; sequences elementwise; arrival sequences pointwise on related times (two-way totals)"
+  ],
+  "lean_representation_note": "as for task_arrival: `sort (fun j j' => job_arrival j <= job_arrival j') s` is `s.mergeSort (fun j j' => decide (job_arrival j \u2264 job_arrival j'))`, `nth elem s i` is `s.getD i elem`, `n.-1` is `n - 1`; `1 < n` is `2 \u2264 n`; `div_ceil` is the classic `Prosa.Classic.Util.DivMod.div_ceil`",
+  "probe_extra": [],
+  "helpers": [
+    "cta_sort_rel",
+    "cta_sorted_class_uniq",
+    "cta_bigcat_rel",
+    "cta_getD",
+    "cab_bound",
+    "cab_hyps"
+  ],
+  "export_diagnosis": "143,199 lines: as for the accepted classic task_arrival export (the statements mention the core List.mergeSort, whose termination proofs are `omega` certificates, and the validation-only interface theorems are exported with their proof bodies; the stability fact is proved by the mergeSort/merge recursion, avoiding the Nat.Internal.Linear closure of the core sublist_mergeSort), plus the classic div_ceil and the Nat.div/Nat.mod Euclidean interface equations of the accepted div_mod validation.",
+  "prop_sprop_foundation": [
+    "PropSPropFoundation.interpret_strict"
+  ],
+  "importer_foundation": [
+    "ImportedClassicArrivalBounds.Classical_choice",
+    "ImportedClassicArrivalBounds.Quot_sound",
+    "ImportedClassicArrivalBounds.propext",
+    "PrimInt63.eqb",
+    "PrimInt63.int",
+    "PrimInt63.land",
+    "PrimInt63.lsr"
+  ],
+  "rocq_sprop_uip": [
+    "ClassicArrivalBoundsBase.I.HEq_inst1",
+    "ClassicArrivalBoundsBase.I.True",
+    "ClassicArrivalBoundsList.I.HEq_inst1",
+    "ClassicArrivalBoundsList.I.True",
+    "CtaTrue",
+    "I.HEq",
+    "I.HEq_inst1",
+    "I.True",
+    "ImportedClassicArrivalBounds.HEq_inst1",
+    "ImportedClassicArrivalBounds.True",
+    "Lean.eq",
+    "Lean.eq_inst1",
+    "SubadditivityNatCorrespondence.SubNatTrue"
+  ]
+}

@@ -1,0 +1,5 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedClassicSeqset.
+
+Check ImportedClassicSeqset.Prosa_Classic_Util_Seqset_set_mem.
+Check ImportedClassicSeqset.Prosa_Classic_Util_Seqset_set_card.

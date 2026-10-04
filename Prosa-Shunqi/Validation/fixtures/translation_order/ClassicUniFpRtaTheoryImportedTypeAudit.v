@@ -1,0 +1,4 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedClassicUniFpRtaTheory.
+
+Check ImportedClassicUniFpRtaTheory.Prosa_Classic_Analysis_Uni_Basic_FpRtaTheory_ResponseTimeAnalysisFP_uniprocessor_response_time_bound_fp.

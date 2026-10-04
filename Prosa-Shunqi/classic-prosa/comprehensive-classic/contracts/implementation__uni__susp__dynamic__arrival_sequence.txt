@@ -1,0 +1,59 @@
+# classic/implementation/uni/susp/dynamic/arrival_sequence.v: 7 declarations
+
+## Print Module
+
+Module arrival_sequence := Struct Module ConcreteArrivalSequence End
+
+Module ConcreteArrivalSequence := Struct Definition add_job : time.Time.time -> task.ConcreteTask.concrete_task -> option job.ConcreteJob.concrete_job. Definition periodic_arrival_sequence : task.ConcreteTask.concrete_taskset -> time.Time.time -> list job.ConcreteJob.concrete_job. Parameter periodic_arrivals_are_consistent : forall ts : task.ConcreteTask.concrete_taskset, arrival_sequence.ArrivalSequence.arrival_times_are_consistent job.ConcreteJob.job_arrival (periodic_arrival_sequence ts). Parameter periodic_arrivals_all_jobs_from_taskset : forall (ts : task.ConcreteTask.concrete_taskset) (j : eqtype.Equality.sort job.ConcreteJob.ConcreteJob_concrete_job__canonical__eqtype_Equality), arrival_sequence.ArrivalSequence.arrives_in (periodic_arrival_sequence ts) j -> is_true (ssrbool.in_mem (job.ConcreteJob.job_task j) (ssrbool.mem ts)). Parameter periodic_arrivals_valid_job_parameters : forall ts : task.ConcreteTask.concrete_taskset, task.SporadicTaskset.valid_sporadic_taskset task.ConcreteTask.task_cost task.ConcreteTask.task_period task.ConcreteTask.task_deadline (seqset._set_seq ts) -> forall j : eqtype.Equality.sort job.ConcreteJob.ConcreteJob_concrete_job__canonical__eqtype_Equality, arrival_sequence.ArrivalSequence.arrives_in (periodic_arrival_sequence ts) j -> job.Job.valid_sporadic_job task.ConcreteTask.task_cost task.ConcreteTask.task_deadline job.ConcreteJob.job_cost job.ConcreteJob.job_deadline job.ConcreteJob.job_task j. Parameter periodic_arrivals_are_sporadic : forall ts : task.ConcreteTask.concrete_taskset, task_arrival.TaskArrival.sporadic_task_model task.ConcreteTask.task_period job.ConcreteJob.job_arrival job.ConcreteJob.job_task (periodic_arrival_sequence ts). Parameter periodic_arrivals_is_a_set : forall ts : task.ConcreteTask.concrete_taskset, task.SporadicTaskset.valid_sporadic_taskset task.ConcreteTask.task_cost task.ConcreteTask.task_period task.ConcreteTask.task_deadline (seqset._set_seq ts) -> arrival_sequence.ArrivalSequence.arrival_sequence_is_a_set (periodic_arrival_sequence ts). End
+
+## About
+
+ConcreteArrivalSequence.add_job : time.Time.time -> task.ConcreteTask.concrete_task -> option job.ConcreteJob.concrete_job
+
+ConcreteArrivalSequence.add_job is not universe polymorphic
+Arguments ConcreteArrivalSequence.add_job arr_time tsk
+ConcreteArrivalSequence.add_job is transparent
+Expands to: Constant prosa.classic.implementation.uni.susp.dynamic.arrival_sequence.ConcreteArrivalSequence.add_job
+Declared in library prosa.classic.implementation.uni.susp.dynamic.arrival_sequence, line 17, characters 15-22
+ConcreteArrivalSequence.periodic_arrival_sequence : task.ConcreteTask.concrete_taskset -> time.Time.time -> list job.ConcreteJob.concrete_job
+
+ConcreteArrivalSequence.periodic_arrival_sequence is not universe polymorphic
+Arguments ConcreteArrivalSequence.periodic_arrival_sequence ts t
+ConcreteArrivalSequence.periodic_arrival_sequence is transparent
+Expands to: Constant prosa.classic.implementation.uni.susp.dynamic.arrival_sequence.ConcreteArrivalSequence.periodic_arrival_sequence
+Declared in library prosa.classic.implementation.uni.susp.dynamic.arrival_sequence, line 25, characters 15-40
+ConcreteArrivalSequence.periodic_arrivals_are_consistent : forall ts : task.ConcreteTask.concrete_taskset, arrival_sequence.ArrivalSequence.arrival_times_are_consistent job.ConcreteJob.job_arrival (ConcreteArrivalSequence.periodic_arrival_sequence ts)
+
+ConcreteArrivalSequence.periodic_arrivals_are_consistent is not universe polymorphic
+Arguments ConcreteArrivalSequence.periodic_arrivals_are_consistent ts j t _
+ConcreteArrivalSequence.periodic_arrivals_are_consistent is opaque
+Expands to: Constant prosa.classic.implementation.uni.susp.dynamic.arrival_sequence.ConcreteArrivalSequence.periodic_arrivals_are_consistent
+Declared in library prosa.classic.implementation.uni.susp.dynamic.arrival_sequence, line 40, characters 12-44
+ConcreteArrivalSequence.periodic_arrivals_all_jobs_from_taskset : forall (ts : task.ConcreteTask.concrete_taskset) (j : eqtype.Equality.sort job.ConcreteJob.ConcreteJob_concrete_job__canonical__eqtype_Equality), arrival_sequence.ArrivalSequence.arrives_in (ConcreteArrivalSequence.periodic_arrival_sequence ts) j -> is_true (ssrbool.in_mem (job.ConcreteJob.job_task j) (ssrbool.mem ts))
+
+ConcreteArrivalSequence.periodic_arrivals_all_jobs_from_taskset is not universe polymorphic
+Arguments ConcreteArrivalSequence.periodic_arrivals_all_jobs_from_taskset ts j _
+ConcreteArrivalSequence.periodic_arrivals_all_jobs_from_taskset is opaque
+Expands to: Constant prosa.classic.implementation.uni.susp.dynamic.arrival_sequence.ConcreteArrivalSequence.periodic_arrivals_all_jobs_from_taskset
+Declared in library prosa.classic.implementation.uni.susp.dynamic.arrival_sequence, line 50, characters 12-51
+ConcreteArrivalSequence.periodic_arrivals_valid_job_parameters : forall ts : task.ConcreteTask.concrete_taskset, task.SporadicTaskset.valid_sporadic_taskset task.ConcreteTask.task_cost task.ConcreteTask.task_period task.ConcreteTask.task_deadline (seqset._set_seq ts) -> forall j : eqtype.Equality.sort job.ConcreteJob.ConcreteJob_concrete_job__canonical__eqtype_Equality, arrival_sequence.ArrivalSequence.arrives_in (ConcreteArrivalSequence.periodic_arrival_sequence ts) j -> job.Job.valid_sporadic_job task.ConcreteTask.task_cost task.ConcreteTask.task_deadline job.ConcreteJob.job_cost job.ConcreteJob.job_deadline job.ConcreteJob.job_task j
+
+ConcreteArrivalSequence.periodic_arrivals_valid_job_parameters is not universe polymorphic
+Arguments ConcreteArrivalSequence.periodic_arrivals_valid_job_parameters ts H_valid_task_parameters j _
+ConcreteArrivalSequence.periodic_arrivals_valid_job_parameters is opaque
+Expands to: Constant prosa.classic.implementation.uni.susp.dynamic.arrival_sequence.ConcreteArrivalSequence.periodic_arrivals_valid_job_parameters
+Declared in library prosa.classic.implementation.uni.susp.dynamic.arrival_sequence, line 62, characters 12-50
+ConcreteArrivalSequence.periodic_arrivals_are_sporadic : forall ts : task.ConcreteTask.concrete_taskset, task_arrival.TaskArrival.sporadic_task_model task.ConcreteTask.task_period job.ConcreteJob.job_arrival job.ConcreteJob.job_task (ConcreteArrivalSequence.periodic_arrival_sequence ts)
+
+ConcreteArrivalSequence.periodic_arrivals_are_sporadic is not universe polymorphic
+Arguments ConcreteArrivalSequence.periodic_arrivals_are_sporadic ts j j' _ _ _ _ _
+ConcreteArrivalSequence.periodic_arrivals_are_sporadic is opaque
+Expands to: Constant prosa.classic.implementation.uni.susp.dynamic.arrival_sequence.ConcreteArrivalSequence.periodic_arrivals_are_sporadic
+Declared in library prosa.classic.implementation.uni.susp.dynamic.arrival_sequence, line 78, characters 12-42
+ConcreteArrivalSequence.periodic_arrivals_is_a_set : forall ts : task.ConcreteTask.concrete_taskset, task.SporadicTaskset.valid_sporadic_taskset task.ConcreteTask.task_cost task.ConcreteTask.task_period task.ConcreteTask.task_deadline (seqset._set_seq ts) -> arrival_sequence.ArrivalSequence.arrival_sequence_is_a_set (ConcreteArrivalSequence.periodic_arrival_sequence ts)
+
+ConcreteArrivalSequence.periodic_arrivals_is_a_set is not universe polymorphic
+Arguments ConcreteArrivalSequence.periodic_arrivals_is_a_set ts H_valid_task_parameters t
+ConcreteArrivalSequence.periodic_arrivals_is_a_set is opaque
+Expands to: Constant prosa.classic.implementation.uni.susp.dynamic.arrival_sequence.ConcreteArrivalSequence.periodic_arrivals_is_a_set
+Declared in library prosa.classic.implementation.uni.susp.dynamic.arrival_sequence, line 100, characters 12-38

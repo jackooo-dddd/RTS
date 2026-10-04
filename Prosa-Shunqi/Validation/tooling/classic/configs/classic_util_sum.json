@@ -1,0 +1,70 @@
+{
+  "rank": 20,
+  "layer": 4,
+  "slug": "classic_util_sum",
+  "tag": "CSUM",
+  "export_name": "ClassicSum",
+  "source": "classic/util/sum.v",
+  "production": "Prosa/Classic/Util/Sum.lean",
+  "fixtures": [
+    "ClassicSumInterface"
+  ],
+  "export_module": "Validation.fixtures.translation_order.ClassicSumInterface",
+  "interface_theorems": [],
+  "computational": [],
+  "chain": [
+    "ClassicSumBase",
+    "ClassicSumList",
+    "ClassicSumCorrespondence"
+  ],
+  "base_run": null,
+  "base_checks": [],
+  "previous_status": "classic_util_minmax_module_status.json",
+  "input_relations": [
+    "elements of eqTypes identified; their Lean DecidableEq instances are the eqTypes' decision procedures",
+    "sequences elementwise; natural numbers by SubNatRel; Boolean predicates and functions to nat pointwise (two-way totals)"
+  ],
+  "lean_representation_note": "`\\sum_(i <- r) F i` is the accepted v0.6 helper `sumSeq r F`, `\\sum_(i <- r | P i) F i` is `sumFiltered r P F`; `\\sum_(m <= i < n) F i` is `\u2211 i \u2208 Finset.Ico m n, F i` and `\\sum_(m <= i < n | P i) F i` is `\u2211 i \u2208 (Finset.Ico m n).filter (fun i => P i = true), F i`",
+  "normalization": {
+    "theorem_types": [
+      "Prosa.Classic.Util.Sum.sum_diff",
+      "Prosa.Classic.Util.Sum.extend_sum",
+      "Prosa.Classic.Util.Sum.leq_sum_nat",
+      "Prosa.Classic.Util.Sum.leq_sum1_smaller_range",
+      "Prosa.Classic.Util.Sum.sum_le_summation_range",
+      "Prosa.Classic.Util.Sum.telescoping_sum"
+    ],
+    "subexpression_heads": [
+      "Finset.sum"
+    ],
+    "definition_bodies": [],
+    "body_projections": []
+  },
+  "kernel_guard_artifacts": [
+    "Validation/fixtures/translation_order/ClassicSumInterface.lean"
+  ],
+  "export_env": {
+    "LEAN4EXPORT_PRESERVE_REDUCIBLE_THEOREM_TYPES": "1"
+  },
+  "prop_sprop_foundation": [
+    "PropSPropFoundation.interpret_strict"
+  ],
+  "importer_foundation": [
+    "ImportedClassicSum.propext",
+    "PrimInt63.eqb",
+    "PrimInt63.int",
+    "PrimInt63.land",
+    "PrimInt63.lsr"
+  ],
+  "rocq_sprop_uip": [
+    "ClassicSumBase.I.HEq_inst1",
+    "ClassicSumBase.I.True",
+    "ClassicSumList.I.HEq_inst1",
+    "ClassicSumList.I.True",
+    "I.HEq_inst1",
+    "I.True",
+    "Lean.eq",
+    "Lean.eq_inst1",
+    "SubadditivityNatCorrespondence.SubNatTrue"
+  ]
+}

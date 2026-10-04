@@ -1,0 +1,4 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedClassicParallelInterferenceBoundFp.
+
+Check ImportedClassicParallelInterferenceBoundFp.Prosa_Classic_Analysis_Global_Parallel_InterferenceBoundFp_InterferenceBoundFP_total_interference_bound_fp.

@@ -1,0 +1,31 @@
+# classic/model/suspension.v: 3 declarations
+
+## Print Module
+
+Module suspension := Struct Module Suspension End
+
+Module Suspension := Struct Definition job_suspension : eqtype.Equality.type -> Type. Definition total_suspension : forall Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> time.Time.time) -> job_suspension Job -> eqtype.Equality.sort Job -> nat. Definition dynamic_suspension_model : forall Task Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> eqtype.Equality.sort Task) -> job_suspension Job -> (eqtype.Equality.sort Task -> time.Time.duration) -> Prop. End
+
+## About
+
+Suspension.job_suspension : eqtype.Equality.type -> Type
+
+Suspension.job_suspension is not universe polymorphic
+Arguments Suspension.job_suspension Job
+Suspension.job_suspension is transparent
+Expands to: Constant prosa.classic.model.suspension.Suspension.job_suspension
+Declared in library prosa.classic.model.suspension, line 18, characters 15-29
+Suspension.total_suspension : forall {Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> time.Time.time) -> Suspension.job_suspension Job -> eqtype.Equality.sort Job -> nat
+
+Suspension.total_suspension is not universe polymorphic
+Arguments Suspension.total_suspension {Job} job_cost%function_scope next_suspension j
+Suspension.total_suspension is transparent
+Expands to: Constant prosa.classic.model.suspension.Suspension.total_suspension
+Declared in library prosa.classic.model.suspension, line 38, characters 15-31
+Suspension.dynamic_suspension_model : forall {Task Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> eqtype.Equality.sort Task) -> Suspension.job_suspension Job -> (eqtype.Equality.sort Task -> time.Time.duration) -> Prop
+
+Suspension.dynamic_suspension_model is not universe polymorphic
+Arguments Suspension.dynamic_suspension_model {Task Job} (job_cost job_task)%function_scope next_suspension suspension_bound%function_scope
+Suspension.dynamic_suspension_model is transparent
+Expands to: Constant prosa.classic.model.suspension.Suspension.dynamic_suspension_model
+Declared in library prosa.classic.model.suspension, line 64, characters 15-39

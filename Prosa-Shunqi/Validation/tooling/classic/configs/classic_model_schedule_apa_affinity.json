@@ -1,0 +1,72 @@
+{
+  "rank": 29,
+  "layer": 10,
+  "slug": "classic_model_schedule_apa_affinity",
+  "tag": "CAFF",
+  "export_name": "ClassicAffinity",
+  "source": "classic/model/schedule/apa/affinity.v",
+  "production": "Prosa/Classic/Model/Schedule/Apa/Affinity.lean",
+  "fixtures": [
+    "ClassicAffinityInterface"
+  ],
+  "export_module": "Validation.fixtures.translation_order.ClassicAffinityInterface",
+  "interface_theorems": [
+    "Prosa.Validation.ClassicAffinityInterface.finRange_any",
+    "Prosa.Validation.ClassicAffinityInterface.fin_sum_range'",
+    "Prosa.Validation.ClassicAffinityInterface.card_filter_sum"
+  ],
+  "computational": [
+    "Affinity.affinity",
+    "Affinity.task_affinity",
+    "Affinity.can_execute_on",
+    "Affinity.task_scheduled_on_affinity",
+    "Affinity.is_subaffinity",
+    "Affinity.affinity_intersects"
+  ],
+  "chain": [
+    "ClassicAffinityBase",
+    "ClassicAffinityList",
+    "ClassicAffinityList1",
+    "ClassicAffinityOrd",
+    "ClassicAffinityCorrespondence"
+  ],
+  "base_run": null,
+  "base_checks": [],
+  "previous_status": "classic_model_arrival_basic_arrival_bounds_module_status.json",
+  "input_relations": [
+    "job and task types: eqTypes identified, Lean DecidableEq instances = the eqTypes' decision procedures; job_task identified",
+    "natural numbers (time, num_cpus) by SubNatRel; processors 'I_n and Fin n by their values; affinities ({set 'I_n} against Prosa.Util.Seqset.set (Fin n)) by their underlying sequences elementwise through the ordinal conversion; task affinities pointwise; schedules pointwise on related processors and times (two-way totals)"
+  ],
+  "lean_representation_note": "`{set (processor n)}` is the accepted v0.6 `Prosa.Util.Seqset.set (Fin n)`; `[exists cpu, P cpu]` is `(List.finRange n).any P`; `{subset a <= b}` is `\u2200 x, x \u2208 a \u2192 x \u2208 b`; `#|a|` is `(Finset.univ.filter (\u00b7 \u2208 a)).card`",
+  "probe_extra": [],
+  "helpers": [
+    "caf_forall",
+    "caf_mem",
+    "caf_card",
+    "cs_forall_sched"
+  ],
+  "export_diagnosis": "152,562 lines: `#|alpha|` is the cardinality of a filtered Finset over Fin num_cpus (Finset.univ of Fin.fintype, Finset.filter, Finset.card: the Mathlib Finset/Multiset/Quot closure), affinities are the accepted v0.6 sequence-sets, and the validation-only interface theorems are exported with their proof bodies (finRange/range' lemmas; card_filter_sum by definitional unfolding and structural counting lemmas, avoiding Finset.card_filter/Finset.sum_filter whose proof closures contain Nat.Internal.Linear reflection proofs).",
+  "prop_sprop_foundation": [
+    "PropSPropFoundation.interpret_strict"
+  ],
+  "importer_foundation": [
+    "ImportedClassicAffinity.Classical_choice",
+    "ImportedClassicAffinity.Quot_sound",
+    "ImportedClassicAffinity.propext",
+    "PrimInt63.eqb",
+    "PrimInt63.int",
+    "PrimInt63.land",
+    "PrimInt63.lsr"
+  ],
+  "rocq_sprop_uip": [
+    "ClassicAffinityOrd.I.HEq",
+    "ClassicAffinityOrd.I.HEq_inst1",
+    "ClassicAffinityOrd.I.True",
+    "I.HEq",
+    "I.HEq_inst1",
+    "I.True",
+    "Lean.eq",
+    "Lean.eq_inst1",
+    "SubadditivityNatCorrespondence.SubNatTrue"
+  ]
+}

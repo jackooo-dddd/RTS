@@ -1,0 +1,38 @@
+import Validation.fixtures.translation_order.ClassicAbstractSeqRtaInterface
+set_option pp.fieldNotation false
+
+#check @Prosa.Classic.Model.Schedule.Uni.Limited.AbstractRTA.AbstractSeqRta.AbstractSeqRTA.interference_and_workload_consistent_with_sequential_jobs
+#check @Prosa.Classic.Model.Schedule.Uni.Limited.AbstractRTA.AbstractSeqRta.AbstractSeqRTA.task_interference_received_before
+#check @Prosa.Classic.Model.Schedule.Uni.Limited.AbstractRTA.AbstractSeqRta.AbstractSeqRTA.cumul_task_interference
+#check @Prosa.Classic.Model.Schedule.Uni.Limited.AbstractRTA.AbstractSeqRta.AbstractSeqRTA.task_interference_is_bounded_by
+#check @Prosa.Classic.Model.Schedule.Uni.Limited.AbstractRTA.AbstractSeqRta.AbstractSeqRTA.completed_before_beginning_of_busy_interval
+#check @Prosa.Classic.Model.Schedule.Uni.Limited.AbstractRTA.AbstractSeqRta.AbstractSeqRTA.arrives_after_beginning_of_busy_interval
+#check @Prosa.Classic.Model.Schedule.Uni.Limited.AbstractRTA.AbstractSeqRta.AbstractSeqRTA.bound_for_cumulative_job_interference_actual
+#check @Prosa.Classic.Model.Schedule.Uni.Limited.AbstractRTA.AbstractSeqRta.AbstractSeqRTA.task_rbf_excl_tsk_bounds_task_workload_excl_j
+#check @Prosa.Classic.Model.Schedule.Uni.Limited.AbstractRTA.AbstractSeqRta.AbstractSeqRTA.bound_for_cumulative_job_interference
+#check @Prosa.Classic.Model.Schedule.Uni.Limited.AbstractRTA.AbstractSeqRta.AbstractSeqRTA.max_in_seq_hypothesis_implies_max_in_nonseq_hypothesis
+#check @Prosa.Classic.Model.Schedule.Uni.Limited.AbstractRTA.AbstractSeqRta.AbstractSeqRTA.uniprocessor_response_time_bound_seq
+#check @Prosa.Validation.ClassicAbstractSeqRtaInterface.bigCat_range'
+#check @Prosa.Validation.ClassicAbstractSeqRtaInterface.production_sumSeq_nil
+#check @Prosa.Validation.ClassicAbstractSeqRtaInterface.production_sumSeq_cons
+#check @Prosa.Validation.ClassicAbstractSeqRtaInterface.production_sumFiltered_nil
+#check @Prosa.Validation.ClassicAbstractSeqRtaInterface.production_sumFiltered_cons_true
+#check @Prosa.Validation.ClassicAbstractSeqRtaInterface.production_sumFiltered_cons_false
+
+#print axioms Prosa.Classic.Model.Schedule.Uni.Limited.AbstractRTA.AbstractSeqRta.AbstractSeqRTA.interference_and_workload_consistent_with_sequential_jobs
+#print axioms Prosa.Classic.Model.Schedule.Uni.Limited.AbstractRTA.AbstractSeqRta.AbstractSeqRTA.task_interference_received_before
+#print axioms Prosa.Classic.Model.Schedule.Uni.Limited.AbstractRTA.AbstractSeqRta.AbstractSeqRTA.cumul_task_interference
+#print axioms Prosa.Classic.Model.Schedule.Uni.Limited.AbstractRTA.AbstractSeqRta.AbstractSeqRTA.task_interference_is_bounded_by
+#print axioms Prosa.Classic.Model.Schedule.Uni.Limited.AbstractRTA.AbstractSeqRta.AbstractSeqRTA.completed_before_beginning_of_busy_interval
+#print axioms Prosa.Classic.Model.Schedule.Uni.Limited.AbstractRTA.AbstractSeqRta.AbstractSeqRTA.arrives_after_beginning_of_busy_interval
+#print axioms Prosa.Classic.Model.Schedule.Uni.Limited.AbstractRTA.AbstractSeqRta.AbstractSeqRTA.bound_for_cumulative_job_interference_actual
+#print axioms Prosa.Classic.Model.Schedule.Uni.Limited.AbstractRTA.AbstractSeqRta.AbstractSeqRTA.task_rbf_excl_tsk_bounds_task_workload_excl_j
+#print axioms Prosa.Classic.Model.Schedule.Uni.Limited.AbstractRTA.AbstractSeqRta.AbstractSeqRTA.bound_for_cumulative_job_interference
+#print axioms Prosa.Classic.Model.Schedule.Uni.Limited.AbstractRTA.AbstractSeqRta.AbstractSeqRTA.max_in_seq_hypothesis_implies_max_in_nonseq_hypothesis
+#print axioms Prosa.Classic.Model.Schedule.Uni.Limited.AbstractRTA.AbstractSeqRta.AbstractSeqRTA.uniprocessor_response_time_bound_seq
+#print axioms Prosa.Validation.ClassicAbstractSeqRtaInterface.bigCat_range'
+#print axioms Prosa.Validation.ClassicAbstractSeqRtaInterface.production_sumSeq_nil
+#print axioms Prosa.Validation.ClassicAbstractSeqRtaInterface.production_sumSeq_cons
+#print axioms Prosa.Validation.ClassicAbstractSeqRtaInterface.production_sumFiltered_nil
+#print axioms Prosa.Validation.ClassicAbstractSeqRtaInterface.production_sumFiltered_cons_true
+#print axioms Prosa.Validation.ClassicAbstractSeqRtaInterface.production_sumFiltered_cons_false

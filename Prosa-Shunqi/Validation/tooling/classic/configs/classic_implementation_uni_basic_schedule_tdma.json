@@ -1,0 +1,95 @@
+{
+  "rank": 136,
+  "layer": 13,
+  "classic_scope": "full",
+  "slug": "classic_implementation_uni_basic_schedule_tdma",
+  "tag": "CIUST",
+  "export_name": "ClassicScheduleTdma",
+  "source": "classic/implementation/uni/basic/schedule_tdma.v",
+  "production": "Prosa/Classic/Implementation/Uni/Basic/ScheduleTdma.lean",
+  "fixtures": [
+    "ClassicScheduleTdmaInterface"
+  ],
+  "export_module": "Validation.fixtures.translation_order.ClassicScheduleTdmaInterface",
+  "interface_theorems": [
+    "Prosa.Validation.ClassicScheduleTdmaInterface.bigCat_range'",
+    "Prosa.Validation.ClassicScheduleTdmaInterface.production_schedule_prefix_zero",
+    "Prosa.Validation.ClassicScheduleTdmaInterface.production_schedule_prefix_succ",
+    "Prosa.Validation.ClassicScheduleTdmaInterface.production_sumSeq_nil",
+    "Prosa.Validation.ClassicScheduleTdmaInterface.production_sumSeq_cons",
+    "Prosa.Validation.ClassicScheduleTdmaInterface.production_sumFiltered_nil",
+    "Prosa.Validation.ClassicScheduleTdmaInterface.production_sumFiltered_cons_true",
+    "Prosa.Validation.ClassicScheduleTdmaInterface.production_sumFiltered_cons_false",
+    "Prosa.Validation.DivModInterface.production_div_floor_eq",
+    "Prosa.Validation.DivModInterface.production_div_ceil_eq",
+    "Prosa.Validation.DivModInterface.production_div_add_mod",
+    "Prosa.Validation.DivModInterface.production_mod_lt",
+    "Prosa.Validation.DivModInterface.production_div_zero",
+    "Prosa.Validation.DivModInterface.production_mod_zero",
+    "Prosa.Validation.DivModInterface.production_dvd_iff_mod_eq_zero"
+  ],
+  "computational": [
+    "ConcreteSchedulerTDMA.pending_jobs",
+    "ConcreteSchedulerTDMA.job_to_schedule",
+    "ConcreteSchedulerTDMA.scheduler_tdma"
+  ],
+  "chain": [
+    "ClassicScheduleTdmaBase",
+    "ClassicScheduleTdmaList",
+    "ClassicScheduleTdmaCorrespondence"
+  ],
+  "principal": {},
+  "helpers": [
+    "cst_forall_sched",
+    "cst_forall_arr",
+    "cst_forall_par",
+    "cst_forall_set",
+    "cst_forall_ord"
+  ],
+  "base_run": null,
+  "base_checks": [],
+  "previous_status": "classic_analysis_uni_basic_tdma_rta_theory_module_status.json",
+  "input_relations": [
+    "job type: eqType identified, Lean DecidableEq instance = the eqType's decision procedure",
+    "times by SubNatRel; job parameters pointwise through SubNatRel; arrival sequences pointwise on related times; JLDP policies pointwise on related times; uniprocessor schedules pointwise through the option map (two-way totals)"
+  ],
+  "lean_representation_note": "the Rocq module ConcreteSchedulerTDMA is a namespace; `[seq j <- s | P j]` is `s.filter P`; `ohead s` is `s.head?`; `find p s` is `List.findIdx p s`; `{set T}` is `Prosa.Util.Seqset.set`; the section-local `Let`s are unfolded",
+  "prop_sprop_foundation": [
+    "PropSPropFoundation.interpret_strict"
+  ],
+  "importer_foundation": [
+    "ImportedClassicScheduleTdma.propext",
+    "PrimInt63.eqb",
+    "PrimInt63.int",
+    "PrimInt63.land",
+    "PrimInt63.lsr"
+  ],
+  "rocq_sprop_uip": [
+    "ClassicScheduleTdmaBase.I.HEq_inst1",
+    "ClassicScheduleTdmaBase.I.True",
+    "I.HEq",
+    "I.HEq_inst1",
+    "I.True",
+    "Lean.eq",
+    "Lean.eq_inst1",
+    "SubadditivityNatCorrespondence.SubNatTrue"
+  ],
+  "normalization": {
+    "theorem_types": [],
+    "subexpression_heads": [
+      "Finset.sum"
+    ],
+    "definition_bodies": [],
+    "body_projections": [
+      "Prosa.Classic.Model.Schedule.Uni.Schedule.UniprocessorSchedule.service_during=Prosa.Validation.ClassicScheduleTdmaInterface.service_during_proj=Prosa.Validation.ClassicScheduleTdmaInterface.service_during_proj_guard",
+      "Prosa.Classic.Model.Schedule.Uni.Schedule.UniprocessorSchedule.total_service_during=Prosa.Validation.ClassicScheduleTdmaInterface.total_service_during_proj=Prosa.Validation.ClassicScheduleTdmaInterface.total_service_during_proj_guard"
+    ]
+  },
+  "export_env": {
+    "LEAN4EXPORT_PRESERVE_REDUCIBLE_THEOREM_TYPES": "1",
+    "LEAN4EXPORT_NAT_INDEX_ALIASES": "Prosa.Classic.Model.Time.Time.time"
+  },
+  "kernel_guard_artifacts": [
+    "Validation/fixtures/translation_order/ClassicScheduleTdmaInterface.lean"
+  ]
+}

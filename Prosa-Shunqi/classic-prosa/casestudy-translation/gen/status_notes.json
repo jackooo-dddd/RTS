@@ -1,0 +1,76 @@
+{
+  "2005-ECRTS-Theorem6": {
+    "note": "Stated as an equivalence (schedulable ⟺ condition), whereas the paper's Theorem 6 is a sufficient test. The equivalence is nevertheless provable from the case study's hypotheses: jobs have exactly their task's cost, the worst-case job is given, and Lemmas 4/5 are assumed. A job meets its deadline iff its interference is at most its slack, and the assumed Lemma 4 then characterises that exactly. Both directions are proved.",
+    "proof": "Both directions: a job meets its deadline iff its interference is ≤ its slack; worst-case job transfer; the assumed Lemmas 4/5 pin down the truncated-sum condition exactly."
+  },
+  "2007-RTSS-Theorem3": {
+    "note": "Hypothesis `constrained_deadline_model task_deadline task_period ts` has period/deadline swapped in the source; translated as written.",
+    "proof": "From the assumed `Lemma1` equivalence and `j_has_max_interference`: an incomplete job suffers ≥ R − e + 1 interference."
+  },
+  "2009-RTSS-Extend1_10": {
+    "note": "Source does not compile as written (`[seq fst p <- hp_bounds]`, line 232); translated with the map `[seq fst p | p <- hp_bounds]` as in 2009-RTSS-Method1.",
+    "proof": "`hp_bounds` is a permutation of CI ++ NC; termwise bounds contradict `Method1_9`."
+  },
+  "2015-RTAS-Lemma8": {
+    "note": "Local `W` uses the interfering task's deadline instead of its response-time bound (differs from the classic APA analysis).",
+    "proof": "Classic APA Bertogna–Cirinei theorem applied to `hp_bounds` with every bound replaced by the task's deadline."
+  },
+  "2009-RTSS-Theorem2": {
+    "note": "In the source, `f_chi` passes `h` and `num_cpus` to `total_interference_bound_gn_arbitrary` in swapped positions; translated as written.",
+    "proof": "From the assumed Lemma 5: `H_phi ≤ H` by minimality, and each φ-shifted term is at most the unshifted one (`max_R_phi_term ≤ max_R_term`, monotone in the number of jobs)."
+  },
+  "2009-RTSS-Lemma2-2": {
+    "note": "`Non_CI` compares the relative `job_deadline j0` with the instant `t0 sched j`, as written.",
+    "proof": "Carry-in job (remaining ≤ e − 1 by the assumed Lemma 1, completes within R) plus later jobs ≥ p apart ⇒ `W_CI`."
+  },
+  "2014-RTCSA-Lemma4": {
+    "note": "The conclusion binds its own `tsk_other`, `R_other` (the chain hypotheses are about the section variables of the same names).",
+    "proof": "As in the paper: the assumed 2014 Lemma 1 chain ends at `ci + x_p` with no carry-in; before it ≤ K e − 1 (assumed 2009 Lemma 1); after it the assumed Lemma 2; the case R = e directly."
+  },
+  "2014-RTCSA-Theorem3": {
+    "note": "Hypothesis `exist_j_released_at_criticalinstant` parses as `∃ j, (arrives ∧ task) → arrival = critical_instant`, as written.",
+    "proof": "Instantiates the assumed global bound with an empty (valid) carry-in set."
+  },
+  "2005-ECRTS-Lemma3": {
+    "proof": "Direct: at a backlogged instant of `j` every processor runs a job of another task of `ts` (EDF, earlier jobs of `tsk` complete, sporadic arrivals); counting per instant."
+  },
+  "2005-ECRTS-Lemma4": {
+    "proof": "From the assumed Lemma 3 (`Lemma_05`): each task interferes at most the total interference (sequential tasks), then a sum-of-minima inequality."
+  },
+  "2007-RTSS-Theorem2": {
+    "proof": "Classic `task_interference_le_workload`."
+  },
+  "2007-RTSS-Theorem4": {
+    "proof": "Classic `workload_bounded_by_W` with response-time bound `d_tsk` (deadlines are met)."
+  },
+  "2009-RTSS-Lemma1": {
+    "proof": "Carry-in jobs are scheduled at `t0 − 1` (not hp-busy, work-conserving FP), so at most `m − 1` tasks have one."
+  },
+  "2009-RTSS-Lemma1_2": {
+    "proof": "The carry-in job is scheduled at `t0 − 1`, hence has received service."
+  },
+  "2009-RTSS-Lemma2-1": {
+    "proof": "Job-level workload: contributing jobs arrive in the window, pairwise ≥ p apart ⇒ `W_NC`."
+  },
+  "2009-RTSS-Lemma3": {
+    "proof": "Busy-window core (`BusyWindow.lean`) plus the assumed Lemma 2 workload bounds on the CI/NC partition."
+  },
+  "2009-RTSS-Lemma4": {
+    "proof": "From the assumed Lemma 3: `f − t0 ≤ χ`; worst-case response-time transfer."
+  },
+  "2009-RTSS-Lemma5": {
+    "proof": "The one-job chain `(1, j)` is tight; the assumed selection lemma gives the worst-case job; busy-window core bounds it by `χ_min(1)`."
+  },
+  "2009-RTSS-Method1": {
+    "proof": "Induction over the jobs of `tsk` using the assumed `Method1_10_09` and per-task bounds."
+  },
+  "2009-RTSS-Theorem1": {
+    "proof": "From the assumed Lemma 4 and the least solution."
+  },
+  "2014-RTCSA-Lemma5": {
+    "proof": "Classic Bertogna–Cirinei FP core (`CommonFp.lean`, recurrence not needed) with the assumed Lemma 2/4 per-task bounds."
+  },
+  "2015-BOOK-Lemma18.1": {
+    "proof": "With fewer than `m` higher-priority tasks both interference bounds at `δ = e` are below `m`, so `e` solves both recurrences; least solutions ⇒ `R1 = R2 = e`."
+  }
+}

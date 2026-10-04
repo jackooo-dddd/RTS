@@ -1,0 +1,74 @@
+{
+  "rank": 38,
+  "layer": 8,
+  "classic_scope": "full",
+  "slug": "classic_model_policy_tdma",
+  "tag": "CTDMA",
+  "export_name": "ClassicPolicyTdma",
+  "source": "classic/model/policy_tdma.v",
+  "production": "Prosa/Classic/Model/PolicyTdma.lean",
+  "fixtures": [
+    "ClassicPolicyTdmaInterface"
+  ],
+  "export_module": "Validation.fixtures.translation_order.ClassicPolicyTdmaInterface",
+  "interface_theorems": [
+    "Prosa.Validation.ClassicPolicyTdmaInterface.production_sumSeq_nil",
+    "Prosa.Validation.ClassicPolicyTdmaInterface.production_sumSeq_cons",
+    "Prosa.Validation.ClassicPolicyTdmaInterface.production_sumFiltered_nil",
+    "Prosa.Validation.ClassicPolicyTdmaInterface.production_sumFiltered_cons_true",
+    "Prosa.Validation.ClassicPolicyTdmaInterface.production_sumFiltered_cons_false",
+    "Prosa.Validation.DivModInterface.production_div_add_mod",
+    "Prosa.Validation.DivModInterface.production_mod_lt",
+    "Prosa.Validation.DivModInterface.production_div_zero",
+    "Prosa.Validation.DivModInterface.production_mod_zero"
+  ],
+  "computational": [
+    "PolicyTDMA.TDMA_slot",
+    "PolicyTDMA.TDMA_slot_order",
+    "PolicyTDMA.slot_order_is_transitive",
+    "PolicyTDMA.slot_order_is_total_over_task_set",
+    "PolicyTDMA.slot_order_is_antisymmetric_over_task_set",
+    "PolicyTDMA.is_valid_time_slot",
+    "PolicyTDMA.TDMA_cycle",
+    "PolicyTDMA.Task_slot_offset",
+    "PolicyTDMA.Task_in_time_slot"
+  ],
+  "chain": [
+    "ClassicPolicyTdmaBase",
+    "ClassicPolicyTdmaList",
+    "ClassicPolicyTdmaCorrespondence"
+  ],
+  "principal": {},
+  "helpers": [
+    "ctd_sum_rel",
+    "ctd_sum_filtered_rel",
+    "dm_mod_correspondence"
+  ],
+  "base_run": null,
+  "base_checks": [],
+  "previous_status": "classic_model_schedule_global_jitter_job_module_status.json",
+  "input_relations": [
+    "task type: eqType identified, Lean DecidableEq instance = the eqType's decision procedure",
+    "task sets elementwise (two-way totals); TDMA slots pointwise through SubNatRel; slot orders pointwise on Booleans (two-way totals); times by SubNatRel"
+  ],
+  "lean_representation_note": "`TDMA_slot Task` is `Task \u2192 duration` and `TDMA_slot_order Task` is `Task \u2192 Task \u2192 Bool` (abbrevs); `{set Task}` is the v0.6 `Prosa.Util.Seqset.set`, read through `.val`; `\\sum_(x <- s) F x` is `sumSeq`, the filtered sum `sumFiltered`; `transitive r` is `\u2200 y x z, r x y = true \u2192 r y z = true \u2192 r x z = true`",
+  "prop_sprop_foundation": [
+    "PropSPropFoundation.interpret_strict"
+  ],
+  "importer_foundation": [
+    "ImportedClassicPolicyTdma.propext",
+    "PrimInt63.eqb",
+    "PrimInt63.int",
+    "PrimInt63.land",
+    "PrimInt63.lsr"
+  ],
+  "rocq_sprop_uip": [
+    "ClassicPolicyTdmaBase.I.HEq_inst1",
+    "ClassicPolicyTdmaBase.I.True",
+    "I.HEq_inst1",
+    "I.True",
+    "Lean.eq",
+    "Lean.eq_inst1",
+    "SubadditivityNatCorrespondence.SubNatTrue"
+  ]
+}

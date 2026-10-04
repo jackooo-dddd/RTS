@@ -1,0 +1,24 @@
+# classic/model/arrival/jitter/job.v: 2 declarations
+
+## Print Module
+
+Module job := Struct Module JobWithJitter End
+
+Module JobWithJitter := Struct Definition job_jitter_leq_task_jitter : forall sporadic_task : eqtype.Equality.type, (eqtype.Equality.sort sporadic_task -> time.Time.time) -> forall Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> eqtype.Equality.sort sporadic_task) -> eqtype.Equality.sort Job -> bool. Definition valid_sporadic_job_with_jitter : forall sporadic_task : eqtype.Equality.type, (eqtype.Equality.sort sporadic_task -> time.Time.time) -> (eqtype.Equality.sort sporadic_task -> time.Time.time) -> (eqtype.Equality.sort sporadic_task -> time.Time.time) -> forall Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> eqtype.Equality.sort sporadic_task) -> eqtype.Equality.sort Job -> Prop. End
+
+## About
+
+JobWithJitter.job_jitter_leq_task_jitter : forall {sporadic_task : eqtype.Equality.type}, (eqtype.Equality.sort sporadic_task -> time.Time.time) -> forall {Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> eqtype.Equality.sort sporadic_task) -> eqtype.Equality.sort Job -> bool
+
+JobWithJitter.job_jitter_leq_task_jitter is not universe polymorphic
+Arguments JobWithJitter.job_jitter_leq_task_jitter {sporadic_task} task_jitter%function_scope {Job} (job_jitter job_task)%function_scope j
+JobWithJitter.job_jitter_leq_task_jitter is transparent
+Expands to: Constant prosa.classic.model.arrival.jitter.job.JobWithJitter.job_jitter_leq_task_jitter
+Declared in library prosa.classic.model.arrival.jitter.job, line 30, characters 15-41
+JobWithJitter.valid_sporadic_job_with_jitter : forall {sporadic_task : eqtype.Equality.type}, (eqtype.Equality.sort sporadic_task -> time.Time.time) -> (eqtype.Equality.sort sporadic_task -> time.Time.time) -> (eqtype.Equality.sort sporadic_task -> time.Time.time) -> forall {Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> eqtype.Equality.sort sporadic_task) -> eqtype.Equality.sort Job -> Prop
+
+JobWithJitter.valid_sporadic_job_with_jitter is not universe polymorphic
+Arguments JobWithJitter.valid_sporadic_job_with_jitter {sporadic_task} (task_cost task_deadline task_jitter)%function_scope {Job} (job_cost job_deadline job_jitter job_task)%function_scope j
+JobWithJitter.valid_sporadic_job_with_jitter is transparent
+Expands to: Constant prosa.classic.model.arrival.jitter.job.JobWithJitter.valid_sporadic_job_with_jitter
+Declared in library prosa.classic.model.arrival.jitter.job, line 38, characters 15-45

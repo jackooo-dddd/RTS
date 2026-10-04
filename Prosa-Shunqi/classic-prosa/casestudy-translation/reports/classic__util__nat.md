@@ -6,8 +6,8 @@
 | sha256 | `2b58a32d71e0036ae81f0d3cc251ed8125df8fd4c9bbfa1889878da737321b52` |
 | Lean module | `Prosa/Classic/Util/Nat.lean` (namespace `Prosa.Classic.Util.Nat`) |
 | Tier / layer | S / 2 |
-| Status | **TRANSLATED**: compiles (Lean 4.33.1, pinned Mathlib), no `sorry`; `#print axioms` ⊆ {`propext`, `Quot.sound`, `Classical.choice`} |
-| Validation | pending Stage 0 (classic pipeline extension) |
+| Status | **ACCEPTED** (classic validation family; see the manifest) |
+| Validation | accepted |
 
 ## Declarations (8 source → Lean, same names)
 
@@ -35,3 +35,5 @@ Representation notes: Boolean equalities `(a == b)` in a Boolean equation are
 ## History
 
 - 2026-10-01: translated; build and axiom check passed.
+- 2026-10-02: translated; build and axiom check passed.
+- 2026-10-02: accepted.

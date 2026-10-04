@@ -1,0 +1,80 @@
+{
+  "rank": 45,
+  "layer": 14,
+  "slug": "classic_model_schedule_global_basic_interference_edf",
+  "tag": "CIEDF",
+  "export_name": "ClassicInterferenceEdf",
+  "source": "classic/model/schedule/global/basic/interference_edf.v",
+  "production": "Prosa/Classic/Model/Schedule/Global/Basic/InterferenceEdf.lean",
+  "fixtures": [
+    "ClassicInterferenceEdfInterface"
+  ],
+  "export_module": "Validation.fixtures.translation_order.ClassicInterferenceEdfInterface",
+  "interface_theorems": [
+    "Prosa.Validation.ClassicInterferenceEdfInterface.finRange_any",
+    "Prosa.Validation.ClassicInterferenceEdfInterface.fin_sum_range'",
+    "Prosa.Validation.ClassicInterferenceEdfInterface.service_at_sum"
+  ],
+  "computational": [],
+  "chain": [
+    "ClassicInterferenceEdfBase",
+    "ClassicInterferenceEdfList",
+    "ClassicInterferenceEdfOrd",
+    "ClassicInterferenceEdfCorrespondence"
+  ],
+  "base_run": null,
+  "base_checks": [],
+  "previous_status": "classic_analysis_global_basic_interference_bound_fp_module_status.json",
+  "input_relations": [
+    "job types: eqTypes identified, Lean DecidableEq instances = the eqTypes' decision procedures",
+    "natural numbers (time, num_cpus) by SubNatRel; processors 'I_n and Fin n by their values; schedules pointwise on related processors and times with option values by the constructor map; job parameters pointwise through SubNatRel; arrival sequences pointwise on related times (two-way totals)"
+  ],
+  "lean_representation_note": "as for the accepted classic schedule, priority, platform and global interference validations",
+  "normalization": {
+    "theorem_types": [],
+    "subexpression_heads": [],
+    "definition_bodies": [],
+    "body_projections": [
+      "Prosa.Classic.Model.Schedule.Global.Basic.Schedule.Schedule.service=Prosa.Validation.ClassicInterferenceEdfInterface.service_proj=Prosa.Validation.ClassicInterferenceEdfInterface.service_proj_guard",
+      "Prosa.Classic.Model.Schedule.Global.Basic.Schedule.Schedule.service_during=Prosa.Validation.ClassicInterferenceEdfInterface.service_during_proj=Prosa.Validation.ClassicInterferenceEdfInterface.service_during_proj_guard",
+      "Prosa.Classic.Model.Schedule.Global.Basic.Interference.Interference.job_interference=Prosa.Validation.ClassicInterferenceEdfInterface.job_interference_proj=Prosa.Validation.ClassicInterferenceEdfInterface.job_interference_proj_guard"
+    ]
+  },
+  "kernel_guard_artifacts": [
+    "Validation/fixtures/translation_order/ClassicInterferenceEdfInterface.lean"
+  ],
+  "helpers": [
+    "cs_forall_ncpus_sched"
+  ],
+  "export_diagnosis": "as for the accepted classic global interference export (service_at is a filtered Finset sum over Fin num_cpus; validation-only interface theorems with their proof bodies); job_interference, service and service_during through kernel-guarded rfl body projections.",
+  "probe_extra": [],
+  "prop_sprop_foundation": [
+    "PropSPropFoundation.interpret_strict"
+  ],
+  "importer_foundation": [
+    "ImportedClassicInterferenceEdf.Classical_choice",
+    "ImportedClassicInterferenceEdf.Quot_sound",
+    "ImportedClassicInterferenceEdf.propext",
+    "PrimInt63.eqb",
+    "PrimInt63.int",
+    "PrimInt63.land",
+    "PrimInt63.lsr"
+  ],
+  "rocq_sprop_uip": [
+    "ClassicInterferenceEdfBase.I.HEq_inst1",
+    "ClassicInterferenceEdfBase.I.True",
+    "ClassicInterferenceEdfOrd.I.HEq",
+    "ClassicInterferenceEdfOrd.I.HEq_inst1",
+    "ClassicInterferenceEdfOrd.I.True",
+    "I.HEq",
+    "I.HEq_inst1",
+    "I.True",
+    "Lean.eq",
+    "Lean.eq_inst1",
+    "SubadditivityNatCorrespondence.SubNatTrue"
+  ],
+  "dependency_qualified_in_type": [
+    "prosa.classic.model.schedule.global.basic.platform.Platform.respects_JLFP_policy",
+    "prosa.classic.model.schedule.global.basic.interference.Interference.job_interference"
+  ]
+}

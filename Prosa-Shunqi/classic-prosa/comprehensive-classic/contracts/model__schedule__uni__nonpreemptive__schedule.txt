@@ -1,0 +1,101 @@
+# classic/model/schedule/uni/nonpreemptive/schedule.v: 11 declarations
+
+## Print Module
+
+Module schedule := Struct Module NonpreemptiveSchedule End
+
+Module
+NonpreemptiveSchedule
+:= Struct
+     Definition is_nonpreemptive_schedule : forall Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> time) -> schedule Job -> Prop.
+     Parameter subh3 : forall m n p : nat, is_true (ssrnat.leq (ssrnat.addn m p) n) -> is_true (ssrnat.leq m (ssrnat.subn n p)).
+     Parameter continuity_of_nonpreemptive_scheduling : forall (Job : eqtype.Equality.type) (job_cost : eqtype.Equality.sort Job -> time) (sched : schedule Job), is_nonpreemptive_schedule job_cost sched -> forall j : eqtype.Equality.sort Job, completed_jobs_dont_execute job_cost sched -> forall t t1 t2 : nat, is_true (ssrnat.leq t1 t && ssrnat.leq t t2) -> is_true (scheduled_at sched j t1) -> is_true (scheduled_at sched j t2) -> is_true (scheduled_at sched j t).
+     Parameter in_nonpreemption_schedule_preemption_implies_completeness : forall (Job : eqtype.Equality.type) (job_cost : eqtype.Equality.sort Job -> time) (sched : schedule Job), is_nonpreemptive_schedule job_cost sched -> forall (j : eqtype.Equality.sort Job) (t t' : nat), is_true (ssrnat.leq t t') -> is_true (scheduled_at sched j t) -> is_true (negb (scheduled_at sched j t')) -> is_true (completed_by job_cost sched j t').
+     Parameter job_completes_after_remaining_cost : forall (Job : eqtype.Equality.type) (job_cost : eqtype.Equality.sort Job -> time) (sched : schedule Job), is_nonpreemptive_schedule job_cost sched -> completed_jobs_dont_execute job_cost sched -> forall (j : eqtype.Equality.sort Job) (t : time), is_true (scheduled_at sched j t) -> is_true (completed_by job_cost sched j (ssrnat.addn t ((fun (j0 : eqtype.Equality.sort Job) (t0 : time) => remaining_cost job_cost sched j0 t0) j t))).
+     Parameter j_is_scheduled_at_t_minus_service : forall (Job : eqtype.Equality.type) (job_cost : eqtype.Equality.sort Job -> time) (sched : schedule Job), is_nonpreemptive_schedule job_cost sched -> completed_jobs_dont_execute job_cost sched -> forall (j : eqtype.Equality.sort Job) (t : time), is_true (scheduled_at sched j t) -> is_true (scheduled_at sched j (ssrnat.subn t (service sched j t))).
+     Parameter j_is_not_scheduled_at_t_minus_service_minus_one : forall (Job : eqtype.Equality.type) (job_cost : eqtype.Equality.sort Job -> time) (sched : schedule Job), is_nonpreemptive_schedule job_cost sched -> completed_jobs_dont_execute job_cost sched -> forall (j : eqtype.Equality.sort Job) (t : time), is_true (scheduled_at sched j t) -> is_true (ssrnat.leq 1 (ssrnat.subn t (service sched j t))) -> is_true (negb (scheduled_at sched j (ssrnat.subn (ssrnat.subn t (service sched j t)) 1))).
+     Parameter j_is_not_scheduled_earlier_t_minus_service : forall (Job : eqtype.Equality.type) (job_cost : eqtype.Equality.sort Job -> time) (sched : schedule Job), is_nonpreemptive_schedule job_cost sched -> completed_jobs_dont_execute job_cost sched -> forall (j : eqtype.Equality.sort Job) (t : time), is_true (scheduled_at sched j t) -> forall t' : nat, is_true (ssrnat.leq (S t') (ssrnat.subn t (service sched j t))) -> is_true (negb (scheduled_at sched j t')).
+     Parameter j_is_scheduled_at_t_plus_remaining_cost_minus_one : forall (Job : eqtype.Equality.type) (job_cost : eqtype.Equality.sort Job -> time) (sched : schedule Job), is_nonpreemptive_schedule job_cost sched -> completed_jobs_dont_execute job_cost sched -> forall (j : eqtype.Equality.sort Job) (t : time), is_true (scheduled_at sched j t) -> is_true (scheduled_at sched j (ssrnat.subn (ssrnat.addn t ((fun (j0 : eqtype.Equality.sort Job) (t0 : time) => remaining_cost job_cost sched j0 t0) j t)) 1)).
+     Parameter j_is_not_scheduled_after_t_plus_remaining_cost_minus_one : forall (Job : eqtype.Equality.type) (job_cost : eqtype.Equality.sort Job -> time) (sched : schedule Job), is_nonpreemptive_schedule job_cost sched -> completed_jobs_dont_execute job_cost sched -> forall (j : eqtype.Equality.sort Job) (t : time), is_true (scheduled_at sched j t) -> forall t' : nat, is_true (ssrnat.leq (ssrnat.addn t ((fun (j0 : eqtype.Equality.sort Job) (t0 : time) => remaining_cost job_cost sched j0 t0) j t)) t') -> is_true (negb (scheduled_at sched j t')).
+     Parameter nonpreemptive_executing_interval : forall (Job : eqtype.Equality.type) (job_cost : eqtype.Equality.sort Job -> time) (sched : schedule Job), is_nonpreemptive_schedule job_cost sched -> completed_jobs_dont_execute job_cost sched -> forall (j : eqtype.Equality.sort Job) (t : time), is_true (scheduled_at sched j t) -> forall t' : nat, is_true (ssrnat.leq (ssrnat.subn t (service sched j t)) t' && ssrnat.leq (S t') (ssrnat.addn t ((fun (j0 : eqtype.Equality.sort Job) (t0 : time) => remaining_cost job_cost sched j0 t0) j t))) -> is_true (scheduled_at sched j t').
+   End
+
+## About
+
+NonpreemptiveSchedule.is_nonpreemptive_schedule : forall {Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> time.Time.time) -> schedule.UniprocessorSchedule.schedule Job -> Prop
+
+NonpreemptiveSchedule.is_nonpreemptive_schedule is not universe polymorphic
+Arguments NonpreemptiveSchedule.is_nonpreemptive_schedule {Job} job_cost%function_scope sched
+NonpreemptiveSchedule.is_nonpreemptive_schedule is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.nonpreemptive.schedule.NonpreemptiveSchedule.is_nonpreemptive_schedule
+Declared in library prosa.classic.model.schedule.uni.nonpreemptive.schedule, line 24, characters 15-40
+NonpreemptiveSchedule.subh3 : forall m n p : nat, is_true (ssrnat.leq (ssrnat.addn m p) n) -> is_true (ssrnat.leq m (ssrnat.subn n p))
+
+NonpreemptiveSchedule.subh3 is not universe polymorphic
+Arguments NonpreemptiveSchedule.subh3 (m n p)%nat_scope _
+NonpreemptiveSchedule.subh3 is opaque
+Expands to: Constant prosa.classic.model.schedule.uni.nonpreemptive.schedule.NonpreemptiveSchedule.subh3
+Declared in library prosa.classic.model.schedule.uni.nonpreemptive.schedule, line 38, characters 12-17
+NonpreemptiveSchedule.continuity_of_nonpreemptive_scheduling : forall {Job : eqtype.Equality.type} (job_cost : eqtype.Equality.sort Job -> time.Time.time) (sched : schedule.UniprocessorSchedule.schedule Job), NonpreemptiveSchedule.is_nonpreemptive_schedule job_cost sched -> forall j : eqtype.Equality.sort Job, schedule.UniprocessorSchedule.completed_jobs_dont_execute job_cost sched -> forall t t1 t2 : nat, is_true (ssrnat.leq t1 t && ssrnat.leq t t2) -> is_true (schedule.UniprocessorSchedule.scheduled_at sched j t1) -> is_true (schedule.UniprocessorSchedule.scheduled_at sched j t2) -> is_true (schedule.UniprocessorSchedule.scheduled_at sched j t)
+
+NonpreemptiveSchedule.continuity_of_nonpreemptive_scheduling is not universe polymorphic
+Arguments NonpreemptiveSchedule.continuity_of_nonpreemptive_scheduling {Job} job_cost%function_scope sched H_nonpreemptive j H_completed_jobs_dont_execute (t t1 t2)%nat_scope _ _ _
+NonpreemptiveSchedule.continuity_of_nonpreemptive_scheduling is opaque
+Expands to: Constant prosa.classic.model.schedule.uni.nonpreemptive.schedule.NonpreemptiveSchedule.continuity_of_nonpreemptive_scheduling
+Declared in library prosa.classic.model.schedule.uni.nonpreemptive.schedule, line 52, characters 14-52
+NonpreemptiveSchedule.in_nonpreemption_schedule_preemption_implies_completeness : forall {Job : eqtype.Equality.type} (job_cost : eqtype.Equality.sort Job -> time.Time.time) (sched : schedule.UniprocessorSchedule.schedule Job), NonpreemptiveSchedule.is_nonpreemptive_schedule job_cost sched -> forall (j : eqtype.Equality.sort Job) (t t' : nat), is_true (ssrnat.leq t t') -> is_true (schedule.UniprocessorSchedule.scheduled_at sched j t) -> is_true (negb (schedule.UniprocessorSchedule.scheduled_at sched j t')) -> is_true (schedule.UniprocessorSchedule.completed_by job_cost sched j t')
+
+NonpreemptiveSchedule.in_nonpreemption_schedule_preemption_implies_completeness is not universe polymorphic
+Arguments NonpreemptiveSchedule.in_nonpreemption_schedule_preemption_implies_completeness {Job} job_cost%function_scope sched H_nonpreemptive j (t t')%nat_scope _ _ _
+NonpreemptiveSchedule.in_nonpreemption_schedule_preemption_implies_completeness is opaque
+Expands to: Constant prosa.classic.model.schedule.uni.nonpreemptive.schedule.NonpreemptiveSchedule.in_nonpreemption_schedule_preemption_implies_completeness
+Declared in library prosa.classic.model.schedule.uni.nonpreemptive.schedule, line 70, characters 14-71
+NonpreemptiveSchedule.job_completes_after_remaining_cost : forall {Job : eqtype.Equality.type} (job_cost : eqtype.Equality.sort Job -> time.Time.time) (sched : schedule.UniprocessorSchedule.schedule Job), NonpreemptiveSchedule.is_nonpreemptive_schedule job_cost sched -> schedule.UniprocessorSchedule.completed_jobs_dont_execute job_cost sched -> forall (j : eqtype.Equality.sort Job) (t : time.Time.time), is_true (schedule.UniprocessorSchedule.scheduled_at sched j t) -> is_true (schedule.UniprocessorSchedule.completed_by job_cost sched j (ssrnat.addn t ((fun (j0 : eqtype.Equality.sort Job) (t0 : time.Time.time) => schedule.UniprocessorSchedule.remaining_cost job_cost sched j0 t0) j t)))
+
+NonpreemptiveSchedule.job_completes_after_remaining_cost is not universe polymorphic
+Arguments NonpreemptiveSchedule.job_completes_after_remaining_cost {Job} job_cost%function_scope sched H_nonpreemptive H_completed_jobs_dont_execute j t _
+NonpreemptiveSchedule.job_completes_after_remaining_cost is opaque
+Expands to: Constant prosa.classic.model.schedule.uni.nonpreemptive.schedule.NonpreemptiveSchedule.job_completes_after_remaining_cost
+Declared in library prosa.classic.model.schedule.uni.nonpreemptive.schedule, line 91, characters 14-48
+NonpreemptiveSchedule.j_is_scheduled_at_t_minus_service : forall {Job : eqtype.Equality.type} (job_cost : eqtype.Equality.sort Job -> time.Time.time) (sched : schedule.UniprocessorSchedule.schedule Job), NonpreemptiveSchedule.is_nonpreemptive_schedule job_cost sched -> schedule.UniprocessorSchedule.completed_jobs_dont_execute job_cost sched -> forall (j : eqtype.Equality.sort Job) (t : time.Time.time), is_true (schedule.UniprocessorSchedule.scheduled_at sched j t) -> is_true (schedule.UniprocessorSchedule.scheduled_at sched j (ssrnat.subn t (schedule.UniprocessorSchedule.service sched j t)))
+
+NonpreemptiveSchedule.j_is_scheduled_at_t_minus_service is not universe polymorphic
+Arguments NonpreemptiveSchedule.j_is_scheduled_at_t_minus_service {Job} job_cost%function_scope sched H_nonpreemptive H_completed_jobs_dont_execute j t H_j_is_scheduled_at_t
+NonpreemptiveSchedule.j_is_scheduled_at_t_minus_service is opaque
+Expands to: Constant prosa.classic.model.schedule.uni.nonpreemptive.schedule.NonpreemptiveSchedule.j_is_scheduled_at_t_minus_service
+Declared in library prosa.classic.model.schedule.uni.nonpreemptive.schedule, line 142, characters 17-50
+NonpreemptiveSchedule.j_is_not_scheduled_at_t_minus_service_minus_one : forall {Job : eqtype.Equality.type} (job_cost : eqtype.Equality.sort Job -> time.Time.time) (sched : schedule.UniprocessorSchedule.schedule Job), NonpreemptiveSchedule.is_nonpreemptive_schedule job_cost sched -> schedule.UniprocessorSchedule.completed_jobs_dont_execute job_cost sched -> forall (j : eqtype.Equality.sort Job) (t : time.Time.time), is_true (schedule.UniprocessorSchedule.scheduled_at sched j t) -> is_true (ssrnat.leq 1 (ssrnat.subn t (schedule.UniprocessorSchedule.service sched j t))) -> is_true (negb (schedule.UniprocessorSchedule.scheduled_at sched j (ssrnat.subn (ssrnat.subn t (schedule.UniprocessorSchedule.service sched j t)) 1)))
+
+NonpreemptiveSchedule.j_is_not_scheduled_at_t_minus_service_minus_one is not universe polymorphic
+Arguments NonpreemptiveSchedule.j_is_not_scheduled_at_t_minus_service_minus_one {Job} job_cost%function_scope sched H_nonpreemptive H_completed_jobs_dont_execute j t H_j_is_scheduled_at_t _
+NonpreemptiveSchedule.j_is_not_scheduled_at_t_minus_service_minus_one is opaque
+Expands to: Constant prosa.classic.model.schedule.uni.nonpreemptive.schedule.NonpreemptiveSchedule.j_is_not_scheduled_at_t_minus_service_minus_one
+Declared in library prosa.classic.model.schedule.uni.nonpreemptive.schedule, line 219, characters 16-63
+NonpreemptiveSchedule.j_is_not_scheduled_earlier_t_minus_service : forall {Job : eqtype.Equality.type} (job_cost : eqtype.Equality.sort Job -> time.Time.time) (sched : schedule.UniprocessorSchedule.schedule Job), NonpreemptiveSchedule.is_nonpreemptive_schedule job_cost sched -> schedule.UniprocessorSchedule.completed_jobs_dont_execute job_cost sched -> forall (j : eqtype.Equality.sort Job) (t : time.Time.time), is_true (schedule.UniprocessorSchedule.scheduled_at sched j t) -> forall t' : nat, is_true (ssrnat.leq (S t') (ssrnat.subn t (schedule.UniprocessorSchedule.service sched j t))) -> is_true (negb (schedule.UniprocessorSchedule.scheduled_at sched j t'))
+
+NonpreemptiveSchedule.j_is_not_scheduled_earlier_t_minus_service is not universe polymorphic
+Arguments NonpreemptiveSchedule.j_is_not_scheduled_earlier_t_minus_service {Job} job_cost%function_scope sched H_nonpreemptive H_completed_jobs_dont_execute j t H_j_is_scheduled_at_t t'%nat_scope _
+NonpreemptiveSchedule.j_is_not_scheduled_earlier_t_minus_service is opaque
+Expands to: Constant prosa.classic.model.schedule.uni.nonpreemptive.schedule.NonpreemptiveSchedule.j_is_not_scheduled_earlier_t_minus_service
+Declared in library prosa.classic.model.schedule.uni.nonpreemptive.schedule, line 280, characters 16-58
+NonpreemptiveSchedule.j_is_scheduled_at_t_plus_remaining_cost_minus_one : forall {Job : eqtype.Equality.type} (job_cost : eqtype.Equality.sort Job -> time.Time.time) (sched : schedule.UniprocessorSchedule.schedule Job), NonpreemptiveSchedule.is_nonpreemptive_schedule job_cost sched -> schedule.UniprocessorSchedule.completed_jobs_dont_execute job_cost sched -> forall (j : eqtype.Equality.sort Job) (t : time.Time.time), is_true (schedule.UniprocessorSchedule.scheduled_at sched j t) -> is_true (schedule.UniprocessorSchedule.scheduled_at sched j (ssrnat.subn (ssrnat.addn t ((fun (j0 : eqtype.Equality.sort Job) (t0 : time.Time.time) => schedule.UniprocessorSchedule.remaining_cost job_cost sched j0 t0) j t)) 1))
+
+NonpreemptiveSchedule.j_is_scheduled_at_t_plus_remaining_cost_minus_one is not universe polymorphic
+Arguments NonpreemptiveSchedule.j_is_scheduled_at_t_plus_remaining_cost_minus_one {Job} job_cost%function_scope sched H_nonpreemptive H_completed_jobs_dont_execute j t H_j_is_scheduled_at_t
+NonpreemptiveSchedule.j_is_scheduled_at_t_plus_remaining_cost_minus_one is opaque
+Expands to: Constant prosa.classic.model.schedule.uni.nonpreemptive.schedule.NonpreemptiveSchedule.j_is_scheduled_at_t_plus_remaining_cost_minus_one
+Declared in library prosa.classic.model.schedule.uni.nonpreemptive.schedule, line 303, characters 16-65
+NonpreemptiveSchedule.j_is_not_scheduled_after_t_plus_remaining_cost_minus_one : forall {Job : eqtype.Equality.type} (job_cost : eqtype.Equality.sort Job -> time.Time.time) (sched : schedule.UniprocessorSchedule.schedule Job), NonpreemptiveSchedule.is_nonpreemptive_schedule job_cost sched -> schedule.UniprocessorSchedule.completed_jobs_dont_execute job_cost sched -> forall (j : eqtype.Equality.sort Job) (t : time.Time.time), is_true (schedule.UniprocessorSchedule.scheduled_at sched j t) -> forall t' : nat, is_true (ssrnat.leq (ssrnat.addn t ((fun (j0 : eqtype.Equality.sort Job) (t0 : time.Time.time) => schedule.UniprocessorSchedule.remaining_cost job_cost sched j0 t0) j t)) t') -> is_true (negb (schedule.UniprocessorSchedule.scheduled_at sched j t'))
+
+NonpreemptiveSchedule.j_is_not_scheduled_after_t_plus_remaining_cost_minus_one is not universe polymorphic
+Arguments NonpreemptiveSchedule.j_is_not_scheduled_after_t_plus_remaining_cost_minus_one {Job} job_cost%function_scope sched H_nonpreemptive H_completed_jobs_dont_execute j t H_j_is_scheduled_at_t t'%nat_scope _
+NonpreemptiveSchedule.j_is_not_scheduled_after_t_plus_remaining_cost_minus_one is opaque
+Expands to: Constant prosa.classic.model.schedule.uni.nonpreemptive.schedule.NonpreemptiveSchedule.j_is_not_scheduled_after_t_plus_remaining_cost_minus_one
+Declared in library prosa.classic.model.schedule.uni.nonpreemptive.schedule, line 317, characters 16-72
+NonpreemptiveSchedule.nonpreemptive_executing_interval : forall {Job : eqtype.Equality.type} (job_cost : eqtype.Equality.sort Job -> time.Time.time) (sched : schedule.UniprocessorSchedule.schedule Job), NonpreemptiveSchedule.is_nonpreemptive_schedule job_cost sched -> schedule.UniprocessorSchedule.completed_jobs_dont_execute job_cost sched -> forall (j : eqtype.Equality.sort Job) (t : time.Time.time), is_true (schedule.UniprocessorSchedule.scheduled_at sched j t) -> forall t' : nat, is_true (ssrnat.leq (ssrnat.subn t (schedule.UniprocessorSchedule.service sched j t)) t' && ssrnat.leq (S t') (ssrnat.addn t ((fun (j0 : eqtype.Equality.sort Job) (t0 : time.Time.time) => schedule.UniprocessorSchedule.remaining_cost job_cost sched j0 t0) j t))) -> is_true (schedule.UniprocessorSchedule.scheduled_at sched j t')
+
+NonpreemptiveSchedule.nonpreemptive_executing_interval is not universe polymorphic
+Arguments NonpreemptiveSchedule.nonpreemptive_executing_interval {Job} job_cost%function_scope sched H_nonpreemptive H_completed_jobs_dont_execute j t H_j_is_scheduled_at_t t'%nat_scope _
+NonpreemptiveSchedule.nonpreemptive_executing_interval is opaque
+Expands to: Constant prosa.classic.model.schedule.uni.nonpreemptive.schedule.NonpreemptiveSchedule.nonpreemptive_executing_interval
+Declared in library prosa.classic.model.schedule.uni.nonpreemptive.schedule, line 333, characters 14-46

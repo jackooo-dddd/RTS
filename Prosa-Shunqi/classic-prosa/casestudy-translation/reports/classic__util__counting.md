@@ -6,8 +6,8 @@
 | sha256 | `73dab4e21056ece3aaded263fa5997802a3ca019cdc9e554ff33b83adb6bef31` |
 | Lean module | `Prosa/Classic/Util/Counting.lean` (namespace `Prosa.Classic.Util.Counting`) |
 | Tier / layer | S / 3 |
-| Status | **TRANSLATED**: compiles (Lean 4.33.1, pinned Mathlib), no `sorry`; `#print axioms` ⊆ {`propext`, `Quot.sound`, `Classical.choice`} |
-| Validation | pending Stage 0 (classic pipeline extension) |
+| Status | **ACCEPTED** (classic validation family; see the manifest) |
+| Validation | accepted |
 
 ## Declarations (5 source → Lean, same names)
 
@@ -33,3 +33,5 @@ in `ord_quantifier`), and `widen_ord (leqnSn n)` / `ord_max` are
 ## History
 
 - 2026-10-01: translated; build and axiom check passed.
+- 2026-10-02: translated; build and axiom check passed.
+- 2026-10-02: accepted.

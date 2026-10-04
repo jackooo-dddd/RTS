@@ -1,0 +1,109 @@
+{
+  "rank": 147,
+  "layer": 14,
+  "classic_scope": "full",
+  "slug": "classic_analysis_global_parallel_interference_bound_edf",
+  "tag": "CGPIBE",
+  "export_name": "ClassicParallelIbEdf",
+  "source": "classic/analysis/global/parallel/interference_bound_edf.v",
+  "production": "Prosa/Classic/Analysis/Global/Parallel/InterferenceBoundEdf.lean",
+  "fixtures": [
+    "ClassicParallelIbEdfInterface"
+  ],
+  "export_module": "Validation.fixtures.translation_order.ClassicParallelIbEdfInterface",
+  "interface_theorems": [
+    "Prosa.Validation.ClassicParallelIbEdfInterface.finRange_any",
+    "Prosa.Validation.ClassicParallelIbEdfInterface.bigCatFin_range'",
+    "Prosa.Validation.ClassicParallelIbEdfInterface.fin_sum_range'",
+    "Prosa.Validation.ClassicParallelIbEdfInterface.bigCat_range'",
+    "Prosa.Validation.ClassicParallelIbEdfInterface.service_at_sum",
+    "Prosa.Validation.ClassicParallelIbEdfInterface.dedup_nil",
+    "Prosa.Validation.ClassicParallelIbEdfInterface.dedup_cons_mem",
+    "Prosa.Validation.ClassicParallelIbEdfInterface.dedup_cons_not_mem",
+    "Prosa.Validation.ClassicParallelIbEdfInterface.mergeSort_isChain",
+    "Prosa.Validation.ClassicParallelIbEdfInterface.mergeSort_filter_class",
+    "Prosa.Validation.DivModInterface.production_div_floor_eq",
+    "Prosa.Validation.DivModInterface.production_div_ceil_eq",
+    "Prosa.Validation.DivModInterface.production_div_add_mod",
+    "Prosa.Validation.DivModInterface.production_mod_lt",
+    "Prosa.Validation.DivModInterface.production_div_zero",
+    "Prosa.Validation.DivModInterface.production_mod_zero",
+    "Prosa.Validation.DivModInterface.production_dvd_iff_mod_eq_zero"
+  ],
+  "computational": [
+    "InterferenceBoundEDF.edf_specific_interference_bound",
+    "InterferenceBoundEDF.interference_bound_edf",
+    "InterferenceBoundEDF.total_interference_bound_edf"
+  ],
+  "chain": [
+    "ClassicParallelIbEdfBase",
+    "ClassicParallelIbEdfList",
+    "ClassicParallelIbEdfOrd",
+    "ClassicParallelIbEdfCorrespondence"
+  ],
+  "principal": {},
+  "helpers": [
+    "cs_forall_ncpus_sched",
+    "cs_ico"
+  ],
+  "base_run": null,
+  "base_checks": [],
+  "previous_status": "classic_analysis_global_parallel_bertogna_fp_theory_module_status.json",
+  "input_relations": [
+    "job and task types: eqTypes identified, Lean DecidableEq instances = the eqTypes' decision procedures; job_task identified",
+    "natural numbers (time, num_cpus) by SubNatRel; processors 'I_n and Fin n by their values; schedules pointwise on related processors and times with option values by the constructor map; job and task parameters pointwise through SubNatRel; arrival sequences pointwise on related times; task sets by their underlying sequences; sequences of (task, time) pairs elementwise by the pair conversion; FP policies pointwise; affinities by their underlying sequences through the ordinal conversion, task affinities pointwise (two-way totals)"
+  ],
+  "lean_representation_note": "as for the accepted classic schedule, task, task_arrival, affinity, interference, platform, response_time, workload_bound and interference_bound_fp validations; Boolean tests in propositions are `= true`; the section-local `Let`s are unfolded",
+  "prop_sprop_foundation": [
+    "PropSPropFoundation.interpret_strict"
+  ],
+  "importer_foundation": [
+    "ImportedClassicParallelIbEdf.Classical_choice",
+    "ImportedClassicParallelIbEdf.Quot_sound",
+    "ImportedClassicParallelIbEdf.propext",
+    "PrimInt63.eqb",
+    "PrimInt63.int",
+    "PrimInt63.land",
+    "PrimInt63.lsr"
+  ],
+  "rocq_sprop_uip": [
+    "ClassicParallelIbEdfBase.I.HEq_inst1",
+    "ClassicParallelIbEdfBase.I.True",
+    "ClassicParallelIbEdfList.I.HEq_inst1",
+    "ClassicParallelIbEdfList.I.True",
+    "ClassicParallelIbEdfOrd.I.HEq",
+    "ClassicParallelIbEdfOrd.I.HEq_inst1",
+    "ClassicParallelIbEdfOrd.I.True",
+    "CtaTrue",
+    "I.HEq",
+    "I.HEq_inst1",
+    "I.True",
+    "Lean.eq",
+    "Lean.eq_inst1",
+    "SubadditivityNatCorrespondence.SubNatTrue"
+  ],
+  "normalization": {
+    "theorem_types": [
+      "Prosa.Classic.Analysis.Global.Parallel.InterferenceBoundEdf.InterferenceBoundEDF.interference_bound_edf_holds_for_multiple_jobs"
+    ],
+    "subexpression_heads": [
+      "Finset.sum"
+    ],
+    "definition_bodies": [],
+    "body_projections": [
+      "Prosa.Classic.Model.Schedule.Global.Basic.Schedule.Schedule.service=Prosa.Validation.ClassicParallelIbEdfInterface.service_proj=Prosa.Validation.ClassicParallelIbEdfInterface.service_proj_guard",
+      "Prosa.Classic.Model.Schedule.Global.Basic.Schedule.Schedule.service_during=Prosa.Validation.ClassicParallelIbEdfInterface.service_during_proj=Prosa.Validation.ClassicParallelIbEdfInterface.service_during_proj_guard",
+      "Prosa.Classic.Model.Schedule.Global.Basic.Interference.Interference.total_interference=Prosa.Validation.ClassicParallelIbEdfInterface.total_interference_proj=Prosa.Validation.ClassicParallelIbEdfInterface.total_interference_proj_guard",
+      "Prosa.Classic.Model.Schedule.Global.Basic.Interference.Interference.job_interference=Prosa.Validation.ClassicParallelIbEdfInterface.job_interference_proj=Prosa.Validation.ClassicParallelIbEdfInterface.job_interference_proj_guard",
+      "Prosa.Classic.Model.Schedule.Global.Basic.Interference.Interference.task_interference=Prosa.Validation.ClassicParallelIbEdfInterface.task_interference_proj=Prosa.Validation.ClassicParallelIbEdfInterface.task_interference_proj_guard"
+    ]
+  },
+  "export_env": {
+    "LEAN4EXPORT_PRESERVE_REDUCIBLE_THEOREM_TYPES": "1",
+    "LEAN4EXPORT_NAT_INDEX_ALIASES": "Prosa.Classic.Model.Time.Time.time"
+  },
+  "export_diagnosis": "as for the accepted classic schedule and APA interference exports (service_at is a filtered Finset sum over Fin num_cpus; validation-only interface theorems exported with their proof bodies); service/service_during and the interference definitions through kernel-guarded rfl body projections.",
+  "kernel_guard_artifacts": [
+    "Validation/fixtures/translation_order/ClassicParallelIbEdfInterface.lean"
+  ]
+}

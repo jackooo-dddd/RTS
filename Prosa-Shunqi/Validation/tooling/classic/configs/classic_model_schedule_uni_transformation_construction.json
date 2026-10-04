@@ -1,0 +1,68 @@
+{
+  "rank": 60,
+  "layer": 9,
+  "classic_scope": "full",
+  "slug": "classic_model_schedule_uni_transformation_construction",
+  "tag": "CUCON",
+  "export_name": "ClassicUniConstruction",
+  "source": "classic/model/schedule/uni/transformation/construction.v",
+  "production": "Prosa/Classic/Model/Schedule/Uni/Transformation/Construction.lean",
+  "fixtures": [
+    "ClassicUniConstructionInterface"
+  ],
+  "export_module": "Validation.fixtures.translation_order.ClassicUniConstructionInterface",
+  "interface_theorems": [
+    "Prosa.Validation.ClassicUniConstructionInterface.production_schedule_prefix_zero",
+    "Prosa.Validation.ClassicUniConstructionInterface.production_schedule_prefix_succ"
+  ],
+  "computational": [
+    "ScheduleConstruction.update_schedule",
+    "ScheduleConstruction.schedule_prefix",
+    "ScheduleConstruction.build_schedule_from_prefixes"
+  ],
+  "chain": [
+    "ClassicUniConstructionBase",
+    "ClassicUniConstructionList",
+    "ClassicUniConstructionCorrespondence"
+  ],
+  "principal": {},
+  "helpers": [
+    "ccn_forall_sched",
+    "ccn_opt_rel_eq"
+  ],
+  "base_run": null,
+  "base_checks": [],
+  "previous_status": "classic_model_schedule_global_jitter_constrained_deadlines_module_status.json",
+  "input_relations": [
+    "job type: eqType identified, Lean DecidableEq instance = the eqType's decision procedure",
+    "times by SubNatRel; uniprocessor schedules pointwise through the option map (two-way totals); construction functions related on related schedules and instants, base schedules and option predicates related pointwise (specialised at related inputs, as in the accepted v0.6 generic_schedule certificate)"
+  ],
+  "lean_representation_note": "the Rocq module ScheduleConstruction is a namespace; `if t == t_next` is `if decide (t = t_next)`; the Fixpoint `schedule_prefix` is a structurally recursive Lean definition",
+  "prop_sprop_foundation": [
+    "PropSPropFoundation.interpret_strict"
+  ],
+  "importer_foundation": [],
+  "rocq_sprop_uip": [
+    "I.HEq",
+    "Lean.eq",
+    "SubadditivityNatCorrespondence.SubNatTrue"
+  ],
+  "normalization": {
+    "theorem_types": [],
+    "subexpression_heads": [
+      "Finset.sum"
+    ],
+    "definition_bodies": [],
+    "body_projections": [
+      "Prosa.Classic.Model.Schedule.Uni.Schedule.UniprocessorSchedule.service_during=Prosa.Validation.ClassicUniConstructionInterface.service_during_proj=Prosa.Validation.ClassicUniConstructionInterface.service_during_proj_guard",
+      "Prosa.Classic.Model.Schedule.Uni.Schedule.UniprocessorSchedule.total_service_during=Prosa.Validation.ClassicUniConstructionInterface.total_service_during_proj=Prosa.Validation.ClassicUniConstructionInterface.total_service_during_proj_guard"
+    ]
+  },
+  "export_env": {
+    "LEAN4EXPORT_PRESERVE_REDUCIBLE_THEOREM_TYPES": "1",
+    "LEAN4EXPORT_NAT_INDEX_ALIASES": "Prosa.Classic.Model.Time.Time.time"
+  },
+  "kernel_guard_artifacts": [
+    "Validation/fixtures/translation_order/ClassicUniConstructionInterface.lean"
+  ]
+}

@@ -1,0 +1,6 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedClassicImplApaJob.
+
+Check ImportedClassicImplApaJob.Prosa_Classic_Implementation_Apa_Job_ConcreteJob_concrete_job.
+Check ImportedClassicImplApaJob.Prosa_Classic_Implementation_Apa_Job_ConcreteJob_job_eqdef.
+Check ImportedClassicImplApaJob.Prosa_Classic_Implementation_Apa_Job_ConcreteJob_eqn_job.

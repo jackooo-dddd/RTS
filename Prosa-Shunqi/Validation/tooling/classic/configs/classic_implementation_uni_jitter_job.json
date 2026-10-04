@@ -1,0 +1,42 @@
+{
+  "rank": 34,
+  "layer": 7,
+  "classic_scope": "full",
+  "slug": "classic_implementation_uni_jitter_job",
+  "tag": "CIMPLUJJOB",
+  "export_name": "ClassicImplUjJob",
+  "source": "classic/implementation/uni/jitter/job.v",
+  "production": "Prosa/Classic/Implementation/Uni/Jitter/Job.lean",
+  "fixtures": [],
+  "export_module": "Prosa.Classic.Implementation.Uni.Jitter.Job",
+  "interface_theorems": [],
+  "computational": [
+    "ConcreteJob.concrete_job",
+    "ConcreteJob.job_eqdef"
+  ],
+  "chain": [
+    "ClassicImplUjJobBase",
+    "ClassicImplUjJobCorrespondence"
+  ],
+  "principal": {
+    "ConcreteJob.concrete_job": [
+      "ConcreteJob_concrete_job_source_total",
+      "ConcreteJob_concrete_job_target_total"
+    ]
+  },
+  "helpers": [],
+  "base_run": null,
+  "base_checks": [],
+  "previous_status": "classic_implementation_global_jitter_job_module_status.json",
+  "input_relations": [
+    "concrete jobs by their fieldwise canonical import (Nat fields by SubNatRel, the job task by the concrete-task relation), two-way totals"
+  ],
+  "lean_representation_note": "the record `concrete_job` is a Lean structure with the same fields; `==` on nat is `decide (_ = _)` and on concrete tasks `decide (_ = _)` with the derived instance; the reflection lemma is the informative `\u2200 x y, BoolReflect (x = y) (job_eqdef x y)`; the HB `hasDecEq` registration is the derived `DecidableEq` instance",
+  "prop_sprop_foundation": [
+    "PropSPropFoundation.interpret_strict"
+  ],
+  "importer_foundation": [],
+  "rocq_sprop_uip": [
+    "Lean.eq"
+  ]
+}

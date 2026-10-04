@@ -1,0 +1,78 @@
+import Validation.fixtures.translation_order.ClassicImplGlobalJitterScheduleInterface
+set_option pp.fieldNotation false
+
+#check @Prosa.Classic.Implementation.Global.Jitter.Schedule.ConcreteScheduler.pending_jobs
+#check @Prosa.Classic.Implementation.Global.Jitter.Schedule.ConcreteScheduler.sorted_pending_jobs
+#check @Prosa.Classic.Implementation.Global.Jitter.Schedule.ConcreteScheduler.nth_highest_priority_job
+#check @Prosa.Classic.Implementation.Global.Jitter.Schedule.ConcreteScheduler.scheduler
+#check @Prosa.Classic.Implementation.Global.Jitter.Schedule.ConcreteScheduler.scheduler_depends_only_on_prefix
+#check @Prosa.Classic.Implementation.Global.Jitter.Schedule.ConcreteScheduler.scheduler_uses_construction_function
+#check @Prosa.Classic.Implementation.Global.Jitter.Schedule.ConcreteScheduler.scheduler_nth_or_none_mapping
+#check @Prosa.Classic.Implementation.Global.Jitter.Schedule.ConcreteScheduler.scheduler_nth_or_none_backlogged
+#check @Prosa.Classic.Implementation.Global.Jitter.Schedule.ConcreteScheduler.scheduler_jobs_come_from_arrival_sequence
+#check @Prosa.Classic.Implementation.Global.Jitter.Schedule.ConcreteScheduler.scheduler_jobs_execute_after_jitter
+#check @Prosa.Classic.Implementation.Global.Jitter.Schedule.ConcreteScheduler.scheduler_sequential_jobs
+#check @Prosa.Classic.Implementation.Global.Jitter.Schedule.ConcreteScheduler.scheduler_completed_jobs_dont_execute
+#check @Prosa.Classic.Implementation.Global.Jitter.Schedule.ConcreteScheduler.scheduler_work_conserving
+#check @Prosa.Classic.Implementation.Global.Jitter.Schedule.ConcreteScheduler.scheduler_respects_policy
+#check @Prosa.Validation.ClassicImplGlobalJitterScheduleInterface.finRange_any
+#check @Prosa.Validation.ClassicImplGlobalJitterScheduleInterface.bigCatFin_range'
+#check @Prosa.Validation.ClassicImplGlobalJitterScheduleInterface.fin_sum_range'
+#check @Prosa.Validation.ClassicImplGlobalJitterScheduleInterface.bigCat_range'
+#check @Prosa.Validation.ClassicImplGlobalJitterScheduleInterface.count_filter_eq
+#check @Prosa.Validation.ClassicImplGlobalJitterScheduleInterface.service_at_sum
+#check @Prosa.Validation.ClassicImplGlobalJitterScheduleInterface.dedup_nil
+#check @Prosa.Validation.ClassicImplGlobalJitterScheduleInterface.dedup_cons_mem
+#check @Prosa.Validation.ClassicImplGlobalJitterScheduleInterface.dedup_cons_not_mem
+#check @Prosa.Validation.ClassicImplGlobalJitterScheduleInterface.production_schedule_prefix_zero
+#check @Prosa.Validation.ClassicImplGlobalJitterScheduleInterface.production_schedule_prefix_succ
+#check @Prosa.Validation.ClassicImplGlobalJitterScheduleInterface.xms_merge_nil
+#check @Prosa.Validation.ClassicImplGlobalJitterScheduleInterface.xms_merge_cons_nil
+#check @Prosa.Validation.ClassicImplGlobalJitterScheduleInterface.xms_merge_cons_cons
+#check @Prosa.Validation.ClassicImplGlobalJitterScheduleInterface.xms_push_nil
+#check @Prosa.Validation.ClassicImplGlobalJitterScheduleInterface.xms_push_nil_cons
+#check @Prosa.Validation.ClassicImplGlobalJitterScheduleInterface.xms_push_cons_cons
+#check @Prosa.Validation.ClassicImplGlobalJitterScheduleInterface.xms_pop_nil
+#check @Prosa.Validation.ClassicImplGlobalJitterScheduleInterface.xms_pop_cons
+#check @Prosa.Validation.ClassicImplGlobalJitterScheduleInterface.xms_rec_nil
+#check @Prosa.Validation.ClassicImplGlobalJitterScheduleInterface.xms_rec_one
+#check @Prosa.Validation.ClassicImplGlobalJitterScheduleInterface.xms_rec_two
+#check @Prosa.Validation.ClassicImplGlobalJitterScheduleInterface.xms_sort
+
+#print axioms Prosa.Classic.Implementation.Global.Jitter.Schedule.ConcreteScheduler.pending_jobs
+#print axioms Prosa.Classic.Implementation.Global.Jitter.Schedule.ConcreteScheduler.sorted_pending_jobs
+#print axioms Prosa.Classic.Implementation.Global.Jitter.Schedule.ConcreteScheduler.nth_highest_priority_job
+#print axioms Prosa.Classic.Implementation.Global.Jitter.Schedule.ConcreteScheduler.scheduler
+#print axioms Prosa.Classic.Implementation.Global.Jitter.Schedule.ConcreteScheduler.scheduler_depends_only_on_prefix
+#print axioms Prosa.Classic.Implementation.Global.Jitter.Schedule.ConcreteScheduler.scheduler_uses_construction_function
+#print axioms Prosa.Classic.Implementation.Global.Jitter.Schedule.ConcreteScheduler.scheduler_nth_or_none_mapping
+#print axioms Prosa.Classic.Implementation.Global.Jitter.Schedule.ConcreteScheduler.scheduler_nth_or_none_backlogged
+#print axioms Prosa.Classic.Implementation.Global.Jitter.Schedule.ConcreteScheduler.scheduler_jobs_come_from_arrival_sequence
+#print axioms Prosa.Classic.Implementation.Global.Jitter.Schedule.ConcreteScheduler.scheduler_jobs_execute_after_jitter
+#print axioms Prosa.Classic.Implementation.Global.Jitter.Schedule.ConcreteScheduler.scheduler_sequential_jobs
+#print axioms Prosa.Classic.Implementation.Global.Jitter.Schedule.ConcreteScheduler.scheduler_completed_jobs_dont_execute
+#print axioms Prosa.Classic.Implementation.Global.Jitter.Schedule.ConcreteScheduler.scheduler_work_conserving
+#print axioms Prosa.Classic.Implementation.Global.Jitter.Schedule.ConcreteScheduler.scheduler_respects_policy
+#print axioms Prosa.Validation.ClassicImplGlobalJitterScheduleInterface.finRange_any
+#print axioms Prosa.Validation.ClassicImplGlobalJitterScheduleInterface.bigCatFin_range'
+#print axioms Prosa.Validation.ClassicImplGlobalJitterScheduleInterface.fin_sum_range'
+#print axioms Prosa.Validation.ClassicImplGlobalJitterScheduleInterface.bigCat_range'
+#print axioms Prosa.Validation.ClassicImplGlobalJitterScheduleInterface.count_filter_eq
+#print axioms Prosa.Validation.ClassicImplGlobalJitterScheduleInterface.service_at_sum
+#print axioms Prosa.Validation.ClassicImplGlobalJitterScheduleInterface.dedup_nil
+#print axioms Prosa.Validation.ClassicImplGlobalJitterScheduleInterface.dedup_cons_mem
+#print axioms Prosa.Validation.ClassicImplGlobalJitterScheduleInterface.dedup_cons_not_mem
+#print axioms Prosa.Validation.ClassicImplGlobalJitterScheduleInterface.production_schedule_prefix_zero
+#print axioms Prosa.Validation.ClassicImplGlobalJitterScheduleInterface.production_schedule_prefix_succ
+#print axioms Prosa.Validation.ClassicImplGlobalJitterScheduleInterface.xms_merge_nil
+#print axioms Prosa.Validation.ClassicImplGlobalJitterScheduleInterface.xms_merge_cons_nil
+#print axioms Prosa.Validation.ClassicImplGlobalJitterScheduleInterface.xms_merge_cons_cons
+#print axioms Prosa.Validation.ClassicImplGlobalJitterScheduleInterface.xms_push_nil
+#print axioms Prosa.Validation.ClassicImplGlobalJitterScheduleInterface.xms_push_nil_cons
+#print axioms Prosa.Validation.ClassicImplGlobalJitterScheduleInterface.xms_push_cons_cons
+#print axioms Prosa.Validation.ClassicImplGlobalJitterScheduleInterface.xms_pop_nil
+#print axioms Prosa.Validation.ClassicImplGlobalJitterScheduleInterface.xms_pop_cons
+#print axioms Prosa.Validation.ClassicImplGlobalJitterScheduleInterface.xms_rec_nil
+#print axioms Prosa.Validation.ClassicImplGlobalJitterScheduleInterface.xms_rec_one
+#print axioms Prosa.Validation.ClassicImplGlobalJitterScheduleInterface.xms_rec_two
+#print axioms Prosa.Validation.ClassicImplGlobalJitterScheduleInterface.xms_sort

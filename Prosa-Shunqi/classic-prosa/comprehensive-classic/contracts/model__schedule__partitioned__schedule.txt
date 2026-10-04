@@ -1,0 +1,45 @@
+# classic/model/schedule/partitioned/schedule.v: 5 declarations
+
+## Print Module
+
+Module schedule := Struct Module Partitioned End
+
+Module Partitioned := Struct Module uni Module uni_sched Definition never_migrates : forall (Job : eqtype.Equality.type) (num_cpus : nat), schedule.Schedule.schedule Job num_cpus -> eqtype.Equality.sort Job -> Prop. Definition job_local_to_processor : forall (Job : eqtype.Equality.type) (num_cpus : nat), schedule.Schedule.schedule Job num_cpus -> eqtype.Equality.sort Job -> schedule.Schedule.processor num_cpus -> Prop. Definition task_local_to_processor : forall Task Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> eqtype.Equality.sort Task) -> forall num_cpus : nat, schedule.Schedule.schedule Job num_cpus -> eqtype.Equality.sort Task -> schedule.Schedule.processor num_cpus -> Prop. Definition partitioned_schedule : forall Task Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> eqtype.Equality.sort Task) -> forall num_cpus : nat, schedule.Schedule.schedule Job num_cpus -> list (eqtype.Equality.sort Task) -> (eqtype.Equality.sort Task -> schedule.Schedule.processor num_cpus) -> Prop. Parameter local_jobs_dont_migrate : forall (Job : eqtype.Equality.type) (num_cpus : nat) (sched : schedule.Schedule.schedule Job num_cpus) (j : eqtype.Equality.sort Job) (cpu : schedule.Schedule.processor num_cpus), job_local_to_processor sched j cpu -> never_migrates sched j. End
+
+## About
+
+Partitioned.never_migrates : forall {Job : eqtype.Equality.type} {num_cpus : nat}, schedule.Schedule.schedule Job num_cpus -> eqtype.Equality.sort Job -> Prop
+
+Partitioned.never_migrates is not universe polymorphic
+Arguments Partitioned.never_migrates {Job} {num_cpus}%nat_scope sched j
+Partitioned.never_migrates is transparent
+Expands to: Constant prosa.classic.model.schedule.partitioned.schedule.Partitioned.never_migrates
+Declared in library prosa.classic.model.schedule.partitioned.schedule, line 40, characters 17-31
+Partitioned.job_local_to_processor : forall {Job : eqtype.Equality.type} {num_cpus : nat}, schedule.Schedule.schedule Job num_cpus -> eqtype.Equality.sort Job -> schedule.Schedule.processor num_cpus -> Prop
+
+Partitioned.job_local_to_processor is not universe polymorphic
+Arguments Partitioned.job_local_to_processor {Job} {num_cpus}%nat_scope sched j assigned_cpu
+Partitioned.job_local_to_processor is transparent
+Expands to: Constant prosa.classic.model.schedule.partitioned.schedule.Partitioned.job_local_to_processor
+Declared in library prosa.classic.model.schedule.partitioned.schedule, line 57, characters 17-39
+Partitioned.task_local_to_processor : forall {Task Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> eqtype.Equality.sort Task) -> forall {num_cpus : nat}, schedule.Schedule.schedule Job num_cpus -> eqtype.Equality.sort Task -> schedule.Schedule.processor num_cpus -> Prop
+
+Partitioned.task_local_to_processor is not universe polymorphic
+Arguments Partitioned.task_local_to_processor {Task Job} job_task%function_scope {num_cpus}%nat_scope sched tsk assigned_cpu
+Partitioned.task_local_to_processor is transparent
+Expands to: Constant prosa.classic.model.schedule.partitioned.schedule.Partitioned.task_local_to_processor
+Declared in library prosa.classic.model.schedule.partitioned.schedule, line 75, characters 17-40
+Partitioned.partitioned_schedule : forall {Task Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> eqtype.Equality.sort Task) -> forall {num_cpus : nat}, schedule.Schedule.schedule Job num_cpus -> list (eqtype.Equality.sort Task) -> (eqtype.Equality.sort Task -> schedule.Schedule.processor num_cpus) -> Prop
+
+Partitioned.partitioned_schedule is not universe polymorphic
+Arguments Partitioned.partitioned_schedule {Task Job} job_task%function_scope {num_cpus}%nat_scope sched ts%list_scope%seq_scope assigned_cpu%function_scope
+Partitioned.partitioned_schedule is transparent
+Expands to: Constant prosa.classic.model.schedule.partitioned.schedule.Partitioned.partitioned_schedule
+Declared in library prosa.classic.model.schedule.partitioned.schedule, line 94, characters 17-37
+Partitioned.local_jobs_dont_migrate : forall {Job : eqtype.Equality.type} {num_cpus : nat} (sched : schedule.Schedule.schedule Job num_cpus) (j : eqtype.Equality.sort Job) (cpu : schedule.Schedule.processor num_cpus), Partitioned.job_local_to_processor sched j cpu -> Partitioned.never_migrates sched j
+
+Partitioned.local_jobs_dont_migrate is not universe polymorphic
+Arguments Partitioned.local_jobs_dont_migrate {Job} {num_cpus}%nat_scope sched j cpu _ t cpu _ t' cpu' _
+Partitioned.local_jobs_dont_migrate is opaque
+Expands to: Constant prosa.classic.model.schedule.partitioned.schedule.Partitioned.local_jobs_dont_migrate
+Declared in library prosa.classic.model.schedule.partitioned.schedule, line 114, characters 12-35

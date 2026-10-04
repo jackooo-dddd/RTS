@@ -1,0 +1,116 @@
+{
+  "rank": 174,
+  "layer": 16,
+  "classic_scope": "full",
+  "slug": "classic_analysis_global_parallel_bertogna_edf_comp",
+  "tag": "CGPEDFC",
+  "export_name": "ClassicParallelBertognaEdfComp",
+  "source": "classic/analysis/global/parallel/bertogna_edf_comp.v",
+  "production": "Prosa/Classic/Analysis/Global/Parallel/BertognaEdfComp.lean",
+  "fixtures": [
+    "ClassicParallelBertognaEdfCompInterface"
+  ],
+  "export_module": "Validation.fixtures.translation_order.ClassicParallelBertognaEdfCompInterface",
+  "interface_theorems": [
+    "Prosa.Validation.ClassicParallelBertognaEdfCompInterface.finRange_any",
+    "Prosa.Validation.ClassicParallelBertognaEdfCompInterface.bigCatFin_range'",
+    "Prosa.Validation.ClassicParallelBertognaEdfCompInterface.fin_sum_range'",
+    "Prosa.Validation.ClassicParallelBertognaEdfCompInterface.bigCat_range'",
+    "Prosa.Validation.ClassicParallelBertognaEdfCompInterface.service_at_sum",
+    "Prosa.Validation.ClassicParallelBertognaEdfCompInterface.dedup_nil",
+    "Prosa.Validation.ClassicParallelBertognaEdfCompInterface.dedup_cons_mem",
+    "Prosa.Validation.ClassicParallelBertognaEdfCompInterface.dedup_cons_not_mem",
+    "Prosa.Validation.ClassicParallelBertognaEdfCompInterface.xfe_iter_zero",
+    "Prosa.Validation.ClassicParallelBertognaEdfCompInterface.xfe_iter_succ",
+    "Prosa.Validation.ClassicParallelBertognaEdfCompInterface.xfe_update_bound",
+    "Prosa.Validation.ClassicParallelBertognaEdfCompInterface.xfe_R_le_deadline",
+    "Prosa.Validation.ClassicParallelBertognaEdfCompInterface.xfe_edf_claimed_bounds",
+    "Prosa.Validation.DivModInterface.production_div_floor_eq",
+    "Prosa.Validation.DivModInterface.production_div_ceil_eq",
+    "Prosa.Validation.DivModInterface.production_div_add_mod",
+    "Prosa.Validation.DivModInterface.production_mod_lt",
+    "Prosa.Validation.DivModInterface.production_div_zero",
+    "Prosa.Validation.DivModInterface.production_mod_zero",
+    "Prosa.Validation.DivModInterface.production_dvd_iff_mod_eq_zero"
+  ],
+  "computational": [
+    "ResponseTimeIterationEDF.edf_response_time_bound",
+    "ResponseTimeIterationEDF.R_le_deadline",
+    "ResponseTimeIterationEDF.update_bound",
+    "ResponseTimeIterationEDF.edf_rta_iteration",
+    "ResponseTimeIterationEDF.edf_claimed_bounds",
+    "ResponseTimeIterationEDF.edf_schedulable",
+    "ResponseTimeIterationEDF.no_deadline_missed_by_task",
+    "ResponseTimeIterationEDF.no_deadline_missed_by_job"
+  ],
+  "chain": [
+    "ClassicParallelBertognaEdfCompBase",
+    "ClassicParallelBertognaEdfCompList",
+    "ClassicParallelBertognaEdfCompOrd",
+    "ClassicParallelBertognaEdfCompCorrespondence"
+  ],
+  "principal": {},
+  "helpers": [
+    "cs_forall_ncpus_sched",
+    "cs_ico"
+  ],
+  "base_run": null,
+  "base_checks": [],
+  "previous_status": "classic_analysis_uni_susp_dynamic_jitter_jitter_schedule_properties_module_status.json",
+  "input_relations": [
+    "job and task types: eqTypes identified, Lean DecidableEq instances = the eqTypes' decision procedures; job_task identified",
+    "natural numbers (time, num_cpus) by SubNatRel; processors 'I_n and Fin n by their values; schedules pointwise on related processors and times with option values by the constructor map; job and task parameters pointwise through SubNatRel; arrival sequences pointwise on related times; task sets by their underlying sequences; sequences of (task, time) pairs elementwise by the pair conversion; FP policies pointwise; affinities by their underlying sequences through the ordinal conversion, task affinities pointwise (two-way totals)"
+  ],
+  "lean_representation_note": "as for the accepted classic schedule, task, task_arrival, affinity, interference, platform, response_time, workload_bound and interference_bound_fp validations; Boolean tests in propositions are `= true`; the section-local `Let`s are unfolded; MathComp `iter` is `Prosa.Classic.Util.Fixedpoint.iter`; the section-local `Let`s initial_state, max_steps, all_le and one_lt are LEAN_HELPER definitions",
+  "prop_sprop_foundation": [
+    "PropSPropFoundation.interpret_strict"
+  ],
+  "importer_foundation": [
+    "ImportedClassicParallelBertognaEdfComp.Classical_choice",
+    "ImportedClassicParallelBertognaEdfComp.Quot_sound",
+    "ImportedClassicParallelBertognaEdfComp.propext",
+    "PrimInt63.eqb",
+    "PrimInt63.int",
+    "PrimInt63.land",
+    "PrimInt63.lsr"
+  ],
+  "rocq_sprop_uip": [
+    "ClassicParallelBertognaEdfCompBase.I.HEq_inst1",
+    "ClassicParallelBertognaEdfCompBase.I.True",
+    "ClassicParallelBertognaEdfCompOrd.I.HEq",
+    "ClassicParallelBertognaEdfCompOrd.I.HEq_inst1",
+    "ClassicParallelBertognaEdfCompOrd.I.True",
+    "I.HEq",
+    "I.HEq_inst1",
+    "I.True",
+    "Lean.eq",
+    "Lean.eq_inst1",
+    "SubadditivityNatCorrespondence.SubNatTrue"
+  ],
+  "normalization": {
+    "theorem_types": [],
+    "subexpression_heads": [],
+    "definition_bodies": [],
+    "body_projections": [
+      "Prosa.Classic.Model.Schedule.Global.Basic.Schedule.Schedule.service=Prosa.Validation.ClassicParallelBertognaEdfCompInterface.service_proj=Prosa.Validation.ClassicParallelBertognaEdfCompInterface.service_proj_guard",
+      "Prosa.Classic.Model.Schedule.Global.Basic.Schedule.Schedule.service_during=Prosa.Validation.ClassicParallelBertognaEdfCompInterface.service_during_proj=Prosa.Validation.ClassicParallelBertognaEdfCompInterface.service_during_proj_guard",
+      "Prosa.Classic.Model.Schedule.Global.Basic.Interference.Interference.total_interference=Prosa.Validation.ClassicParallelBertognaEdfCompInterface.total_interference_proj=Prosa.Validation.ClassicParallelBertognaEdfCompInterface.total_interference_proj_guard",
+      "Prosa.Classic.Model.Schedule.Global.Basic.Interference.Interference.job_interference=Prosa.Validation.ClassicParallelBertognaEdfCompInterface.job_interference_proj=Prosa.Validation.ClassicParallelBertognaEdfCompInterface.job_interference_proj_guard",
+      "Prosa.Classic.Model.Schedule.Global.Basic.Interference.Interference.task_interference=Prosa.Validation.ClassicParallelBertognaEdfCompInterface.task_interference_proj=Prosa.Validation.ClassicParallelBertognaEdfCompInterface.task_interference_proj_guard"
+    ]
+  },
+  "export_env": {
+    "LEAN4EXPORT_PRESERVE_REDUCIBLE_THEOREM_TYPES": "1",
+    "LEAN4EXPORT_NAT_INDEX_ALIASES": "Prosa.Classic.Model.Time.Time.time"
+  },
+  "export_diagnosis": "as for the accepted classic schedule and APA interference exports (service_at is a filtered Finset sum over Fin num_cpus; validation-only interface theorems exported with their proof bodies); service/service_during and the interference definitions through kernel-guarded rfl body projections.",
+  "extra_targets": [
+    "Prosa.Classic.Analysis.Global.Parallel.BertognaEdfComp.ResponseTimeIterationEDF.initial_state",
+    "Prosa.Classic.Analysis.Global.Parallel.BertognaEdfComp.ResponseTimeIterationEDF.max_steps",
+    "Prosa.Classic.Analysis.Global.Parallel.BertognaEdfComp.ResponseTimeIterationEDF.all_le",
+    "Prosa.Classic.Analysis.Global.Parallel.BertognaEdfComp.ResponseTimeIterationEDF.one_lt"
+  ],
+  "kernel_guard_artifacts": [
+    "Validation/fixtures/translation_order/ClassicParallelBertognaEdfCompInterface.lean"
+  ]
+}

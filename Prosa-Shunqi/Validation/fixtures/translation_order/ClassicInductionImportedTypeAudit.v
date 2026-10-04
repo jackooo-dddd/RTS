@@ -1,0 +1,5 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedClassicInduction.
+
+Check ImportedClassicInduction.Prosa_Classic_Util_Induction_strong_ind.
+Check ImportedClassicInduction.Prosa_Classic_Util_Induction_leq_as_delta.

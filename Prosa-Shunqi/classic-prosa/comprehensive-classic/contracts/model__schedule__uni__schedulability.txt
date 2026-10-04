@@ -1,0 +1,38 @@
+# classic/model/schedule/uni/schedulability.v: 4 declarations
+
+## Print Module
+
+Module schedulability := Struct Module Schedulability End
+
+Module Schedulability := Struct Definition job_misses_no_deadline : forall Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> schedule.UniprocessorSchedule.schedule Job -> eqtype.Equality.sort Job -> bool. Definition task_misses_no_deadline : forall Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> forall Task : eqtype.Equality.type, (eqtype.Equality.sort Job -> eqtype.Equality.sort Task) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> schedule.UniprocessorSchedule.schedule Job -> eqtype.Equality.sort Task -> Prop. Definition taskset_misses_no_deadline : forall Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> forall Task : eqtype.Equality.type, (eqtype.Equality.sort Job -> eqtype.Equality.sort Task) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> schedule.UniprocessorSchedule.schedule Job -> list (eqtype.Equality.sort Task) -> Prop. Parameter task_completes_before_deadline : forall (Job : eqtype.Equality.type) (job_arrival job_cost job_deadline : eqtype.Equality.sort Job -> time.Time.time) (Task : eqtype.Equality.type) (job_task : eqtype.Equality.sort Job -> eqtype.Equality.sort Task) (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job) (sched : schedule.UniprocessorSchedule.schedule Job) (task_deadline : eqtype.Equality.sort Task -> time.Time.time), (forall j : eqtype.Equality.sort Job, arrival_sequence.ArrivalSequence.arrives_in arr_seq j -> job.Job.job_deadline_eq_task_deadline task_deadline job_deadline job_task j) -> forall (tsk : eqtype.Equality.sort Task) (R : time.Time.time), is_true (ssrnat.leq R (task_deadline tsk)) -> response_time.ResponseTime.is_response_time_bound_of_task job_arrival job_cost job_task arr_seq sched tsk R -> task_misses_no_deadline job_arrival job_cost job_deadline job_task arr_seq sched tsk. End
+
+## About
+
+Schedulability.job_misses_no_deadline : forall {Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> schedule.UniprocessorSchedule.schedule Job -> eqtype.Equality.sort Job -> bool
+
+Schedulability.job_misses_no_deadline is not universe polymorphic
+Arguments Schedulability.job_misses_no_deadline {Job} (job_arrival job_cost job_deadline)%function_scope sched j
+Schedulability.job_misses_no_deadline is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.schedulability.Schedulability.job_misses_no_deadline
+Declared in library prosa.classic.model.schedule.uni.schedulability, line 41, characters 19-41
+Schedulability.task_misses_no_deadline : forall {Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> forall {Task : eqtype.Equality.type}, (eqtype.Equality.sort Job -> eqtype.Equality.sort Task) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> schedule.UniprocessorSchedule.schedule Job -> eqtype.Equality.sort Task -> Prop
+
+Schedulability.task_misses_no_deadline is not universe polymorphic
+Arguments Schedulability.task_misses_no_deadline {Job} (job_arrival job_cost job_deadline)%function_scope {Task} job_task%function_scope arr_seq sched tsk
+Schedulability.task_misses_no_deadline is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.schedulability.Schedulability.task_misses_no_deadline
+Declared in library prosa.classic.model.schedule.uni.schedulability, line 53, characters 19-42
+Schedulability.taskset_misses_no_deadline : forall {Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> forall {Task : eqtype.Equality.type}, (eqtype.Equality.sort Job -> eqtype.Equality.sort Task) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> schedule.UniprocessorSchedule.schedule Job -> list (eqtype.Equality.sort Task) -> Prop
+
+Schedulability.taskset_misses_no_deadline is not universe polymorphic
+Arguments Schedulability.taskset_misses_no_deadline {Job} (job_arrival job_cost job_deadline)%function_scope {Task} job_task%function_scope arr_seq sched ts%list_scope%seq_scope
+Schedulability.taskset_misses_no_deadline is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.schedulability.Schedulability.taskset_misses_no_deadline
+Declared in library prosa.classic.model.schedule.uni.schedulability, line 68, characters 19-45
+Schedulability.task_completes_before_deadline : forall {Job : eqtype.Equality.type} (job_arrival job_cost job_deadline : eqtype.Equality.sort Job -> time.Time.time) {Task : eqtype.Equality.type} (job_task : eqtype.Equality.sort Job -> eqtype.Equality.sort Task) (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job) (sched : schedule.UniprocessorSchedule.schedule Job) (task_deadline : eqtype.Equality.sort Task -> time.Time.time), (forall j : eqtype.Equality.sort Job, arrival_sequence.ArrivalSequence.arrives_in arr_seq j -> job.Job.job_deadline_eq_task_deadline task_deadline job_deadline job_task j) -> forall (tsk : eqtype.Equality.sort Task) (R : time.Time.time), is_true (ssrnat.leq R (task_deadline tsk)) -> response_time.ResponseTime.is_response_time_bound_of_task job_arrival job_cost job_task arr_seq sched tsk R -> Schedulability.task_misses_no_deadline job_arrival job_cost job_deadline job_task arr_seq sched tsk
+
+Schedulability.task_completes_before_deadline is not universe polymorphic
+Arguments Schedulability.task_completes_before_deadline {Job} (job_arrival job_cost job_deadline)%function_scope {Task} job_task%function_scope arr_seq sched (task_deadline H_job_deadline_eq_task_deadline)%function_scope tsk R H_R_le_deadline H_response_time_bounded j _ _
+Schedulability.task_completes_before_deadline is opaque
+Expands to: Constant prosa.classic.model.schedule.uni.schedulability.Schedulability.task_completes_before_deadline
+Declared in library prosa.classic.model.schedule.uni.schedulability, line 105, characters 14-44

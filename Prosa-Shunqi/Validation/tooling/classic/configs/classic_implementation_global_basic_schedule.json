@@ -1,0 +1,116 @@
+{
+  "rank": 135,
+  "layer": 13,
+  "classic_scope": "full",
+  "slug": "classic_implementation_global_basic_schedule",
+  "tag": "CIGBS",
+  "export_name": "ClassicImplGlobalSchedule",
+  "source": "classic/implementation/global/basic/schedule.v",
+  "production": "Prosa/Classic/Implementation/Global/Basic/Schedule.lean",
+  "fixtures": [
+    "ClassicImplGlobalScheduleInterface"
+  ],
+  "export_module": "Validation.fixtures.translation_order.ClassicImplGlobalScheduleInterface",
+  "interface_theorems": [
+    "Prosa.Validation.ClassicImplGlobalScheduleInterface.finRange_any",
+    "Prosa.Validation.ClassicImplGlobalScheduleInterface.bigCatFin_range'",
+    "Prosa.Validation.ClassicImplGlobalScheduleInterface.fin_sum_range'",
+    "Prosa.Validation.ClassicImplGlobalScheduleInterface.bigCat_range'",
+    "Prosa.Validation.ClassicImplGlobalScheduleInterface.count_filter_eq",
+    "Prosa.Validation.ClassicImplGlobalScheduleInterface.service_at_sum",
+    "Prosa.Validation.ClassicImplGlobalScheduleInterface.dedup_nil",
+    "Prosa.Validation.ClassicImplGlobalScheduleInterface.dedup_cons_mem",
+    "Prosa.Validation.ClassicImplGlobalScheduleInterface.dedup_cons_not_mem",
+    "Prosa.Validation.ClassicImplGlobalScheduleInterface.production_schedule_prefix_zero",
+    "Prosa.Validation.ClassicImplGlobalScheduleInterface.production_schedule_prefix_succ",
+    "Prosa.Validation.ClassicImplGlobalScheduleInterface.xms_merge_nil",
+    "Prosa.Validation.ClassicImplGlobalScheduleInterface.xms_merge_cons_nil",
+    "Prosa.Validation.ClassicImplGlobalScheduleInterface.xms_merge_cons_cons",
+    "Prosa.Validation.ClassicImplGlobalScheduleInterface.xms_push_nil",
+    "Prosa.Validation.ClassicImplGlobalScheduleInterface.xms_push_nil_cons",
+    "Prosa.Validation.ClassicImplGlobalScheduleInterface.xms_push_cons_cons",
+    "Prosa.Validation.ClassicImplGlobalScheduleInterface.xms_pop_nil",
+    "Prosa.Validation.ClassicImplGlobalScheduleInterface.xms_pop_cons",
+    "Prosa.Validation.ClassicImplGlobalScheduleInterface.xms_rec_nil",
+    "Prosa.Validation.ClassicImplGlobalScheduleInterface.xms_rec_one",
+    "Prosa.Validation.ClassicImplGlobalScheduleInterface.xms_rec_two",
+    "Prosa.Validation.ClassicImplGlobalScheduleInterface.xms_sort"
+  ],
+  "computational": [
+    "ConcreteScheduler.pending_jobs",
+    "ConcreteScheduler.sorted_pending_jobs",
+    "ConcreteScheduler.nth_highest_priority_job",
+    "ConcreteScheduler.scheduler"
+  ],
+  "chain": [
+    "ClassicImplGlobalScheduleBase",
+    "ClassicImplGlobalScheduleList",
+    "ClassicImplGlobalScheduleOrd",
+    "ClassicImplGlobalScheduleCorrespondence"
+  ],
+  "principal": {},
+  "helpers": [
+    "cgb_forall_sched",
+    "cgb_forall_jldp"
+  ],
+  "base_run": null,
+  "base_checks": [],
+  "previous_status": "classic_implementation_apa_arrival_sequence_module_status.json",
+  "input_relations": [
+    "job type: eqType identified, Lean DecidableEq instance = the eqType's decision procedure",
+    "times and processor counts by SubNatRel; processors by CoOrdRel; global schedules pointwise through the option map (two-way totals); construction functions mapping related schedules to related schedules and base schedules related pointwise (specialised at related inputs, as in the accepted v0.6 generic_schedule certificate)"
+  ],
+  "lean_representation_note": "the Rocq module ConcreteScheduler is a namespace; MathComp `sort` (path.v: merge, merge_sort_push, merge_sort_pop, merge_sort_rec) is restated equation by equation as the structurally recursive LEAN_HELPER definitions mc_merge_s1/mc_merge/mc_merge_sort_push/mc_merge_sort_pop/mc_merge_sort_rec/mc_sort (exported with their bodies); `[seq j <- s | P j]` is `s.filter P`; `nth_or_none` is the accepted Prosa.Classic.Util.List one, a processor index is its value",
+  "prop_sprop_foundation": [
+    "PropSPropFoundation.interpret_strict"
+  ],
+  "importer_foundation": [
+    "ImportedClassicImplGlobalSchedule.Classical_choice",
+    "ImportedClassicImplGlobalSchedule.Quot_sound",
+    "ImportedClassicImplGlobalSchedule.propext",
+    "PrimInt63.eqb",
+    "PrimInt63.int",
+    "PrimInt63.land",
+    "PrimInt63.lsr"
+  ],
+  "rocq_sprop_uip": [
+    "ClassicImplGlobalScheduleBase.I.HEq_inst1",
+    "ClassicImplGlobalScheduleBase.I.True",
+    "ClassicImplGlobalScheduleOrd.I.HEq",
+    "ClassicImplGlobalScheduleOrd.I.HEq_inst1",
+    "ClassicImplGlobalScheduleOrd.I.True",
+    "I.HEq",
+    "I.HEq_inst1",
+    "I.True",
+    "Lean.eq",
+    "Lean.eq_inst1",
+    "SubadditivityNatCorrespondence.SubNatTrue"
+  ],
+  "normalization": {
+    "theorem_types": [],
+    "subexpression_heads": [
+      "Finset.sum"
+    ],
+    "definition_bodies": [],
+    "body_projections": [
+      "Prosa.Classic.Model.Schedule.Global.Basic.Schedule.Schedule.service=Prosa.Validation.ClassicImplGlobalScheduleInterface.service_proj=Prosa.Validation.ClassicImplGlobalScheduleInterface.service_proj_guard",
+      "Prosa.Classic.Model.Schedule.Global.Basic.Schedule.Schedule.service_during=Prosa.Validation.ClassicImplGlobalScheduleInterface.service_during_proj=Prosa.Validation.ClassicImplGlobalScheduleInterface.service_during_proj_guard"
+    ]
+  },
+  "export_env": {
+    "LEAN4EXPORT_PRESERVE_REDUCIBLE_THEOREM_TYPES": "1",
+    "LEAN4EXPORT_NAT_INDEX_ALIASES": "Prosa.Classic.Model.Time.Time.time"
+  },
+  "export_diagnosis": "as for the accepted classic global schedule export: service_at is a filtered Finset sum over Fin num_cpus (Mathlib Finset/Multiset/Quot closure), jobs_scheduled_between uses Mathlib List.dedup, and the restated ClassicScheduleInterface theorems are exported with their proof bodies; service/service_during through kernel-guarded rfl body projections.",
+  "extra_targets": [
+    "Prosa.Classic.Implementation.Global.Basic.Schedule.ConcreteScheduler.mc_merge_s1",
+    "Prosa.Classic.Implementation.Global.Basic.Schedule.ConcreteScheduler.mc_merge",
+    "Prosa.Classic.Implementation.Global.Basic.Schedule.ConcreteScheduler.mc_merge_sort_push",
+    "Prosa.Classic.Implementation.Global.Basic.Schedule.ConcreteScheduler.mc_merge_sort_pop",
+    "Prosa.Classic.Implementation.Global.Basic.Schedule.ConcreteScheduler.mc_merge_sort_rec",
+    "Prosa.Classic.Implementation.Global.Basic.Schedule.ConcreteScheduler.mc_sort"
+  ],
+  "kernel_guard_artifacts": [
+    "Validation/fixtures/translation_order/ClassicImplGlobalScheduleInterface.lean"
+  ]
+}

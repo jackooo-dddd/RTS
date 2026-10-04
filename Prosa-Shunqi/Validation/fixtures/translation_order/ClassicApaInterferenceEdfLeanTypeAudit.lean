@@ -1,0 +1,24 @@
+import Validation.fixtures.translation_order.ClassicApaInterferenceEdfInterface
+set_option pp.fieldNotation false
+
+#check @Prosa.Classic.Model.Schedule.Apa.InterferenceEdf.InterferenceEDF.interference_under_edf_implies_shorter_deadlines
+#check @Prosa.Validation.ClassicApaInterferenceEdfInterface.finRange_any
+#check @Prosa.Validation.ClassicApaInterferenceEdfInterface.bigCatFin_range'
+#check @Prosa.Validation.ClassicApaInterferenceEdfInterface.fin_sum_range'
+#check @Prosa.Validation.ClassicApaInterferenceEdfInterface.bigCat_range'
+#check @Prosa.Validation.ClassicApaInterferenceEdfInterface.count_filter_eq
+#check @Prosa.Validation.ClassicApaInterferenceEdfInterface.service_at_sum
+#check @Prosa.Validation.ClassicApaInterferenceEdfInterface.dedup_nil
+#check @Prosa.Validation.ClassicApaInterferenceEdfInterface.dedup_cons_mem
+#check @Prosa.Validation.ClassicApaInterferenceEdfInterface.dedup_cons_not_mem
+
+#print axioms Prosa.Classic.Model.Schedule.Apa.InterferenceEdf.InterferenceEDF.interference_under_edf_implies_shorter_deadlines
+#print axioms Prosa.Validation.ClassicApaInterferenceEdfInterface.finRange_any
+#print axioms Prosa.Validation.ClassicApaInterferenceEdfInterface.bigCatFin_range'
+#print axioms Prosa.Validation.ClassicApaInterferenceEdfInterface.fin_sum_range'
+#print axioms Prosa.Validation.ClassicApaInterferenceEdfInterface.bigCat_range'
+#print axioms Prosa.Validation.ClassicApaInterferenceEdfInterface.count_filter_eq
+#print axioms Prosa.Validation.ClassicApaInterferenceEdfInterface.service_at_sum
+#print axioms Prosa.Validation.ClassicApaInterferenceEdfInterface.dedup_nil
+#print axioms Prosa.Validation.ClassicApaInterferenceEdfInterface.dedup_cons_mem
+#print axioms Prosa.Validation.ClassicApaInterferenceEdfInterface.dedup_cons_not_mem

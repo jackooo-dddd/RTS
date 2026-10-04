@@ -1,0 +1,73 @@
+# classic/model/schedule/uni/susp/last_execution.v: 9 declarations
+
+## Print Module
+
+Module last_execution := Struct Module LastExecution End
+
+Module LastExecution := Struct Definition time_after_last_execution : forall Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> time) -> schedule Job -> eqtype.Equality.sort Job -> time -> nat. Parameter last_execution_after_arrival : forall (Job : eqtype.Equality.type) (job_arrival : eqtype.Equality.sort Job -> time) (sched : schedule Job), jobs_must_arrive_to_execute job_arrival sched -> forall (j : eqtype.Equality.sort Job) (t : time), is_true (has_arrived job_arrival j (time_after_last_execution job_arrival sched j t)). Parameter last_execution_monotonic : forall (Job : eqtype.Equality.type) (job_arrival : eqtype.Equality.sort Job -> time) (sched : schedule Job), jobs_must_arrive_to_execute job_arrival sched -> forall (j : eqtype.Equality.sort Job) (t1 : time) (t2 : nat), is_true (ssrnat.leq t1 t2) -> is_true (ssrnat.leq (time_after_last_execution job_arrival sched j t1) (time_after_last_execution job_arrival sched j t2)). Parameter last_execution_idempotent : forall (Job : eqtype.Equality.type) (job_arrival : eqtype.Equality.sort Job -> time) (sched : schedule Job), jobs_must_arrive_to_execute job_arrival sched -> forall (j : eqtype.Equality.sort Job) (t : time), time_after_last_execution job_arrival sched j (time_after_last_execution job_arrival sched j t) = time_after_last_execution job_arrival sched j t. Parameter last_execution_bounded_by_identity : forall (Job : eqtype.Equality.type) (job_arrival : eqtype.Equality.sort Job -> time) (sched : schedule Job) (j : eqtype.Equality.sort Job) (t : time), is_true (has_arrived job_arrival j t) -> is_true (ssrnat.leq (time_after_last_execution job_arrival sched j t) t). Parameter same_service_implies_same_last_execution : forall (Job : eqtype.Equality.type) (job_arrival : eqtype.Equality.sort Job -> time) (sched : schedule Job) (j : eqtype.Equality.sort Job) (t t' : time), service sched j t = service sched j t' -> time_after_last_execution job_arrival sched j t = time_after_last_execution job_arrival sched j t'. Parameter same_service_since_last_execution : forall (Job : eqtype.Equality.type) (job_arrival : eqtype.Equality.sort Job -> time) (sched : schedule Job), jobs_must_arrive_to_execute job_arrival sched -> forall (j : eqtype.Equality.sort Job) (t : time), service sched j (time_after_last_execution job_arrival sched j t) = service sched j t. Parameter exists_last_execution_with_smaller_service : forall (Job : eqtype.Equality.type) (job_arrival job_cost : eqtype.Equality.sort Job -> time) (sched : schedule Job), jobs_must_arrive_to_execute job_arrival sched -> forall (j : eqtype.Equality.sort Job) (t : time), is_true (completed_by job_cost sched j t) -> forall s : time, is_true (ssrnat.leq (S s) (job_cost j)) -> exists t0 : time, service sched j (time_after_last_execution job_arrival sched j t0) = s. Parameter less_service_before_start_of_suspension : forall (Job : eqtype.Equality.type) (job_arrival : eqtype.Equality.sort Job -> time) (sched : schedule Job) (j : eqtype.Equality.sort Job) (t t0 : time), is_true (has_arrived job_arrival j t0) -> is_true (ssrnat.leq (S t0) (time_after_last_execution job_arrival sched j t)) -> is_true (ssrnat.leq (S (service sched j t0)) (service sched j t)). End
+
+## About
+
+LastExecution.time_after_last_execution : forall {Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> time.Time.time) -> schedule.UniprocessorSchedule.schedule Job -> eqtype.Equality.sort Job -> time.Time.time -> nat
+
+LastExecution.time_after_last_execution is not universe polymorphic
+Arguments LastExecution.time_after_last_execution {Job} job_arrival%function_scope sched j t
+LastExecution.time_after_last_execution is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.susp.last_execution.LastExecution.time_after_last_execution
+Declared in library prosa.classic.model.schedule.uni.susp.last_execution, line 50, characters 17-42
+LastExecution.last_execution_after_arrival : forall {Job : eqtype.Equality.type} (job_arrival : eqtype.Equality.sort Job -> time.Time.time) (sched : schedule.UniprocessorSchedule.schedule Job), schedule.UniprocessorSchedule.jobs_must_arrive_to_execute job_arrival sched -> forall (j : eqtype.Equality.sort Job) (t : time.Time.time), is_true (arrival_sequence.ArrivalSequence.has_arrived job_arrival j (LastExecution.time_after_last_execution job_arrival sched j t))
+
+LastExecution.last_execution_after_arrival is not universe polymorphic
+Arguments LastExecution.last_execution_after_arrival {Job} job_arrival%function_scope sched H_jobs_must_arrive_to_execute j t
+LastExecution.last_execution_after_arrival is opaque
+Expands to: Constant prosa.classic.model.schedule.uni.susp.last_execution.LastExecution.last_execution_after_arrival
+Declared in library prosa.classic.model.schedule.uni.susp.last_execution, line 73, characters 14-42
+LastExecution.last_execution_monotonic : forall {Job : eqtype.Equality.type} (job_arrival : eqtype.Equality.sort Job -> time.Time.time) (sched : schedule.UniprocessorSchedule.schedule Job), schedule.UniprocessorSchedule.jobs_must_arrive_to_execute job_arrival sched -> forall (j : eqtype.Equality.sort Job) (t1 : time.Time.time) (t2 : nat), is_true (ssrnat.leq t1 t2) -> is_true (ssrnat.leq (LastExecution.time_after_last_execution job_arrival sched j t1) (LastExecution.time_after_last_execution job_arrival sched j t2))
+
+LastExecution.last_execution_monotonic is not universe polymorphic
+Arguments LastExecution.last_execution_monotonic {Job} job_arrival%function_scope sched H_jobs_must_arrive_to_execute j t1 t2%nat_scope _
+LastExecution.last_execution_monotonic is opaque
+Expands to: Constant prosa.classic.model.schedule.uni.susp.last_execution.LastExecution.last_execution_monotonic
+Declared in library prosa.classic.model.schedule.uni.susp.last_execution, line 97, characters 14-38
+LastExecution.last_execution_idempotent : forall {Job : eqtype.Equality.type} (job_arrival : eqtype.Equality.sort Job -> time.Time.time) (sched : schedule.UniprocessorSchedule.schedule Job), schedule.UniprocessorSchedule.jobs_must_arrive_to_execute job_arrival sched -> forall (j : eqtype.Equality.sort Job) (t : time.Time.time), LastExecution.time_after_last_execution job_arrival sched j (LastExecution.time_after_last_execution job_arrival sched j t) = LastExecution.time_after_last_execution job_arrival sched j t
+
+LastExecution.last_execution_idempotent is not universe polymorphic
+Arguments LastExecution.last_execution_idempotent {Job} job_arrival%function_scope sched H_jobs_must_arrive_to_execute j t
+LastExecution.last_execution_idempotent is opaque
+Expands to: Constant prosa.classic.model.schedule.uni.susp.last_execution.LastExecution.last_execution_idempotent
+Declared in library prosa.classic.model.schedule.uni.susp.last_execution, line 139, characters 14-39
+LastExecution.last_execution_bounded_by_identity : forall {Job : eqtype.Equality.type} (job_arrival : eqtype.Equality.sort Job -> time.Time.time) (sched : schedule.UniprocessorSchedule.schedule Job) (j : eqtype.Equality.sort Job) (t : time.Time.time), is_true (arrival_sequence.ArrivalSequence.has_arrived job_arrival j t) -> is_true (ssrnat.leq (LastExecution.time_after_last_execution job_arrival sched j t) t)
+
+LastExecution.last_execution_bounded_by_identity is not universe polymorphic
+Arguments LastExecution.last_execution_bounded_by_identity {Job} job_arrival%function_scope sched j t H_after_arrival
+LastExecution.last_execution_bounded_by_identity is opaque
+Expands to: Constant prosa.classic.model.schedule.uni.susp.last_execution.LastExecution.last_execution_bounded_by_identity
+Declared in library prosa.classic.model.schedule.uni.susp.last_execution, line 198, characters 14-48
+LastExecution.same_service_implies_same_last_execution : forall {Job : eqtype.Equality.type} (job_arrival : eqtype.Equality.sort Job -> time.Time.time) (sched : schedule.UniprocessorSchedule.schedule Job) (j : eqtype.Equality.sort Job) (t t' : time.Time.time), schedule.UniprocessorSchedule.service sched j t = schedule.UniprocessorSchedule.service sched j t' -> LastExecution.time_after_last_execution job_arrival sched j t = LastExecution.time_after_last_execution job_arrival sched j t'
+
+LastExecution.same_service_implies_same_last_execution is not universe polymorphic
+Arguments LastExecution.same_service_implies_same_last_execution {Job} job_arrival%function_scope sched j t t' H_same_service
+LastExecution.same_service_implies_same_last_execution is opaque
+Expands to: Constant prosa.classic.model.schedule.uni.susp.last_execution.LastExecution.same_service_implies_same_last_execution
+Declared in library prosa.classic.model.schedule.uni.susp.last_execution, line 221, characters 14-54
+LastExecution.same_service_since_last_execution : forall {Job : eqtype.Equality.type} (job_arrival : eqtype.Equality.sort Job -> time.Time.time) (sched : schedule.UniprocessorSchedule.schedule Job), schedule.UniprocessorSchedule.jobs_must_arrive_to_execute job_arrival sched -> forall (j : eqtype.Equality.sort Job) (t : time.Time.time), schedule.UniprocessorSchedule.service sched j (LastExecution.time_after_last_execution job_arrival sched j t) = schedule.UniprocessorSchedule.service sched j t
+
+LastExecution.same_service_since_last_execution is not universe polymorphic
+Arguments LastExecution.same_service_since_last_execution {Job} job_arrival%function_scope sched H_jobs_must_arrive_to_execute j t
+LastExecution.same_service_since_last_execution is opaque
+Expands to: Constant prosa.classic.model.schedule.uni.susp.last_execution.LastExecution.same_service_since_last_execution
+Declared in library prosa.classic.model.schedule.uni.susp.last_execution, line 284, characters 14-47
+LastExecution.exists_last_execution_with_smaller_service : forall {Job : eqtype.Equality.type} (job_arrival job_cost : eqtype.Equality.sort Job -> time.Time.time) (sched : schedule.UniprocessorSchedule.schedule Job), schedule.UniprocessorSchedule.jobs_must_arrive_to_execute job_arrival sched -> forall (j : eqtype.Equality.sort Job) (t : time.Time.time), is_true (schedule.UniprocessorSchedule.completed_by job_cost sched j t) -> forall s : time.Time.time, is_true (ssrnat.leq (S s) (job_cost j)) -> exists t0 : time.Time.time, schedule.UniprocessorSchedule.service sched j (LastExecution.time_after_last_execution job_arrival sched j t0) = s
+
+LastExecution.exists_last_execution_with_smaller_service is not universe polymorphic
+Arguments LastExecution.exists_last_execution_with_smaller_service {Job} (job_arrival job_cost)%function_scope sched H_jobs_must_arrive_to_execute j t H_j_has_completed s H_less_than_cost
+LastExecution.exists_last_execution_with_smaller_service is opaque
+Expands to: Constant prosa.classic.model.schedule.uni.susp.last_execution.LastExecution.exists_last_execution_with_smaller_service
+Declared in library prosa.classic.model.schedule.uni.susp.last_execution, line 331, characters 14-56
+LastExecution.less_service_before_start_of_suspension : forall {Job : eqtype.Equality.type} (job_arrival : eqtype.Equality.sort Job -> time.Time.time) (sched : schedule.UniprocessorSchedule.schedule Job) (j : eqtype.Equality.sort Job) (t t0 : time.Time.time), is_true (arrival_sequence.ArrivalSequence.has_arrived job_arrival j t0) -> is_true (ssrnat.leq (S t0) (LastExecution.time_after_last_execution job_arrival sched j t)) -> is_true (ssrnat.leq (S (schedule.UniprocessorSchedule.service sched j t0)) (schedule.UniprocessorSchedule.service sched j t))
+
+LastExecution.less_service_before_start_of_suspension is not universe polymorphic
+Arguments LastExecution.less_service_before_start_of_suspension {Job} job_arrival%function_scope sched j t t0 H_no_earlier_than_arrival H_before_last_execution
+LastExecution.less_service_before_start_of_suspension is opaque
+Expands to: Constant prosa.classic.model.schedule.uni.susp.last_execution.LastExecution.less_service_before_start_of_suspension
+Declared in library prosa.classic.model.schedule.uni.susp.last_execution, line 377, characters 14-53

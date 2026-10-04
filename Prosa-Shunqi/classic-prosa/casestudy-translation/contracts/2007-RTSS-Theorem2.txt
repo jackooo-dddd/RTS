@@ -1,0 +1,19 @@
+@ResponseTimeAnalysisFP.theorem_2
+     : forall sporadic_task : eqType,
+       (sporadic_task -> time.Time.time) ->
+       (sporadic_task -> time.Time.time) ->
+       (sporadic_task -> time.Time.time) ->
+       forall (Job : eqType) (job_arrival job_cost : Job -> time.Time.time),
+       (Job -> time.Time.time) ->
+       forall (job_task : Job -> sporadic_task)
+         (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job)
+         (num_cpus : nat) (sched : Schedule.schedule Job num_cpus) 
+         (j : Job),
+       arrival_sequence.ArrivalSequence.arrives_in arr_seq j ->
+       forall (tsk : sporadic_task) (t1 t2 : time.Time.time),
+       Interference.task_interference job_arrival job_cost job_task sched j
+         tsk t1 t2 <=
+       Workload.workload job_task sched tsk t1 t2
+with arguments constr at level 99, constr and "[ pairs ( _ , _ ) | _ <- _ ]"
+defined at level 0 with arguments constr at level 1, constr at level 1
+have incompatible prefixes. One of them will likely not work.

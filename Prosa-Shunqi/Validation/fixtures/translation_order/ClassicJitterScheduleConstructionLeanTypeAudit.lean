@@ -1,0 +1,22 @@
+import Validation.fixtures.translation_order.ClassicJitterScheduleConstructionInterface
+set_option pp.fieldNotation false
+
+#check @Prosa.Classic.Analysis.Uni.Susp.Dynamic.Jitter.JitterSchedule.JitterScheduleConstruction.inflated_job_cost
+#check @Prosa.Classic.Analysis.Uni.Susp.Dynamic.Jitter.JitterSchedule.JitterScheduleConstruction.job_jitter
+#check @Prosa.Classic.Analysis.Uni.Susp.Dynamic.Jitter.JitterSchedule.JitterScheduleConstruction.pending_jobs_other_than_j
+#check @Prosa.Classic.Analysis.Uni.Susp.Dynamic.Jitter.JitterSchedule.JitterScheduleConstruction.highest_priority_job_other_than_j
+#check @Prosa.Classic.Analysis.Uni.Susp.Dynamic.Jitter.JitterSchedule.JitterScheduleConstruction.build_schedule
+#check @Prosa.Classic.Analysis.Uni.Susp.Dynamic.Jitter.JitterSchedule.JitterScheduleConstruction.sched_jitter
+#check @Prosa.Validation.ClassicJitterScheduleConstructionInterface.bigCat_range'
+#check @Prosa.Validation.ClassicJitterScheduleConstructionInterface.production_schedule_prefix_zero
+#check @Prosa.Validation.ClassicJitterScheduleConstructionInterface.production_schedule_prefix_succ
+
+#print axioms Prosa.Classic.Analysis.Uni.Susp.Dynamic.Jitter.JitterSchedule.JitterScheduleConstruction.inflated_job_cost
+#print axioms Prosa.Classic.Analysis.Uni.Susp.Dynamic.Jitter.JitterSchedule.JitterScheduleConstruction.job_jitter
+#print axioms Prosa.Classic.Analysis.Uni.Susp.Dynamic.Jitter.JitterSchedule.JitterScheduleConstruction.pending_jobs_other_than_j
+#print axioms Prosa.Classic.Analysis.Uni.Susp.Dynamic.Jitter.JitterSchedule.JitterScheduleConstruction.highest_priority_job_other_than_j
+#print axioms Prosa.Classic.Analysis.Uni.Susp.Dynamic.Jitter.JitterSchedule.JitterScheduleConstruction.build_schedule
+#print axioms Prosa.Classic.Analysis.Uni.Susp.Dynamic.Jitter.JitterSchedule.JitterScheduleConstruction.sched_jitter
+#print axioms Prosa.Validation.ClassicJitterScheduleConstructionInterface.bigCat_range'
+#print axioms Prosa.Validation.ClassicJitterScheduleConstructionInterface.production_schedule_prefix_zero
+#print axioms Prosa.Validation.ClassicJitterScheduleConstructionInterface.production_schedule_prefix_succ

@@ -80,6 +80,9 @@ CLASSIC = {
     "tree": "24727b135eda27b7234119bf8d931d962d7c3593",
     "pipe": V / "planning/classic_pipeline",
     "dep": V / "planning/classic_dependency",
+    # opt-in `classic_scope: "full"` (comprehensive classic validation, 2026-10-03): the planning inputs of the
+    # whole classic folder (scripts/classic_full_reference_evidence.py); specs without the field are unchanged
+    "full_dep": V / "planning/classic_full_dependency",
     "prelude_source": PROJECT / "classic-prosa/rocq93-port/Rocq90Compat.v",
     "prelude_sha256": "",   # bound at configuration time to planning/classic_dependency/prelude.json
 }
@@ -94,6 +97,9 @@ def configure_family(spec: "Spec") -> None:
     require(not spec.get("coqeal"), "classic family has no CoqEAL", spec.tag)
     FAMILY = "classic"
     PIPE, DEP, SOURCE_ROOT = CLASSIC["pipe"], CLASSIC["dep"], CLASSIC["source_root"]
+    require(spec.get("classic_scope") in (None, "full"), "unknown classic_scope", spec.tag)
+    if spec.get("classic_scope") == "full":
+        DEP = CLASSIC["full_dep"]
     PIN, TREE = CLASSIC["pin"], CLASSIC["tree"]
     ACCEPT_FILE, ACCEPT_DECL = "ACCEPTED_CLASSIC_FILE", "ACCEPTED_CLASSIC_TRANSLATION"
     PUBLISH_DIR = V / "imported/classic_translation_order"
@@ -124,6 +130,26 @@ class Rejected(SystemExit):
 def require(cond: bool, msg: str, tag: str = "PIPELINE") -> None:
     if not cond:
         raise Rejected(f"{tag}_REJECTED: {msg}")
+
+
+def ssr_fun_body_unparen(text: str) -> str:
+    """Rocq 9.0 (official evidence) prints a lambda that is the body of ssreflect's `fun=>` (`fun _ => ...`)
+    with parentheses (`fun=> (fun R : T => e)`, also when that body is itself a wildcard lambda:
+    `fun=> (fun=> (fun R : T => e))`); Rocq 9.3 (the validation toolchain) prints the same term without them.
+    Remove exactly those parentheses, nothing else."""
+    while True:
+        openers = [k for k in (text.find("fun=> (fun "), text.find("fun=> (fun=>")) if k >= 0]
+        if not openers:
+            return text
+        start, depth, close = min(openers) + 6, 0, None
+        for k in range(start, len(text)):
+            depth += {"(": 1, ")": -1}.get(text[k], 0)
+            if depth == 0:
+                close = k
+                break
+        if close is None:
+            return text
+        text = text[:start] + text[start + 1:close] + text[close + 1:]
 
 
 def sha(path: Path) -> str:
@@ -188,6 +214,33 @@ def accepted_status(source_file: str) -> str:
     raise Rejected(f"PIPELINE_REJECTED: dependency not accepted: {source_file}")
 
 
+def v06_file_olean_hash(source_file: str) -> str:
+    """Classic runs only: the olean hash recorded for an accepted v0.6 file by the publication that accepted it
+    (module manifests: `production_olean_sha256`; the early slice manifests: `files[f].fresh_olean_sha256` or the
+    per-declaration `fresh_olean_sha256`, which must agree)."""
+    require(FAMILY == "classic", "v06_file olean artifacts are a classic-run feature")
+    status = accepted_status(source_file)
+    require(status.startswith(V06_PIPE.name + "/"), f"{source_file} is not accepted by the v0.6 chain")
+    name = status.split("/", 1)[1]
+    man = read(V06_PIPE / (name[:-len("status.json")] + "manifest.json"))
+    found: set[str] = set()
+    if man.get("source_file") == source_file and man.get("production_olean_sha256"):
+        found.add(man["production_olean_sha256"])
+    if isinstance(man.get("files"), dict) and isinstance(man["files"].get(source_file), dict):
+        found.add(man["files"][source_file].get("fresh_olean_sha256"))
+    for entry in _manifest_entries(man):
+        if entry.get("source_file") == source_file and entry.get("fresh_olean_sha256"):
+            found.add(entry["fresh_olean_sha256"])
+    found.discard(None)
+    require(len(found) == 1 and len(next(iter(found))) == 64,
+            f"no unique accepted olean hash for {source_file}: {sorted(found)}")
+    return next(iter(found))
+
+
+def extra_olean_hash(art: dict) -> str:
+    return v06_file_olean_hash(art["v06_file"]) if art.get("v06_file") else manifest_hash(art["manifest"], art["key"])
+
+
 def manifest_hash(stem: str, key: str) -> str:
     path, label = PIPE / f"{stem}_module_manifest.json", ACCEPT_FILE
     if FAMILY == "classic" and not path.is_file():   # an accepted v0.6 artifact reused by a classic run
@@ -212,7 +265,8 @@ class Spec:
         self.tag = d["tag"]
         self.slug = d["slug"]
         self.source = d["source"]
-        self.work = EXP / f"{self.slug}_final"
+        # opt-in (amendments of an accepted file): a separate run directory, so the accepted run is left untouched
+        self.work = EXP / f"{self.slug}{d['amendment']['work_suffix']}" if d.get("amendment") else EXP / f"{self.slug}_final"
         self.cert_dir = V / d["cert_dir"]
         self.fixtures = "Validation/fixtures/translation_order"
 
@@ -223,9 +277,46 @@ class Spec:
         return self.d.get(key, default)
 
 
+LOCAL_INVENTORY = "local_declaration_inventory.csv"
+LOCAL_EVIDENCE = "local_declaration_type_evidence.json"
+
+
 def inventory(spec: Spec) -> list[dict]:
     with (DEP / "declaration_inventory.csv").open() as stream:
-        return [r for r in csv.DictReader(stream) if r["source_file"] == spec.source]
+        rows = [r for r in csv.DictReader(stream) if r["source_file"] == spec.source]
+    # opt-in (v0.6 specs, user decision 2026-10-04): source-`Local` lemmas, which the authoritative inventory omits,
+    # certified like the inventory declarations.  Their rows and official-toolchain `Check` evidence are recorded in
+    # the separate files LOCAL_INVENTORY / LOCAL_EVIDENCE (scripts/elaborate_local_declaration_types.py); the
+    # authoritative inventory and evidence files are not modified.
+    local = spec.get("local_declarations", [])
+    if local:
+        require(FAMILY == "v06", "local_declarations is a v0.6 feature", spec.tag)
+        with (DEP / LOCAL_INVENTORY).open() as stream:
+            extra = [r for r in csv.DictReader(stream) if r["source_file"] == spec.source
+                     and r["declaration_name"] in local]
+        require(sorted(r["declaration_name"] for r in extra) == sorted(local)
+                and not {r["declaration_name"] for r in rows} & set(local),
+                "local declarations not uniquely recorded in the local inventory", spec.tag)
+        rows = sorted(rows + extra, key=lambda r: int(r["source_line"]))
+    return rows
+
+
+def type_evidence(spec: Spec) -> dict:
+    """`Check` evidence by qualified name: the authoritative file, plus (opt-in) the recorded evidence of this
+    spec's local declarations."""
+    evidence = dict(read(DEP / "declaration_type_evidence.json"))
+    local = spec.get("local_declarations", [])
+    if local:
+        recorded = read(DEP / LOCAL_EVIDENCE)["declarations"]
+        for r in inventory(spec):
+            if r["declaration_name"] in local:
+                item = recorded.get(r["qualified_name"])
+                require(item is not None and item["source_file"] == spec.source
+                        and r["final_type_or_type_fingerprint"] == "rocq-check-sha256:" + item["sha256"]
+                        and r["qualified_name"] not in evidence,
+                        f"local declaration evidence not bound to its inventory row: {r['qualified_name']}", spec.tag)
+                evidence[r["qualified_name"]] = item
+    return evidence
 
 
 def stamp(spec: Spec, stage: str, seconds: float, mode: str = "FRESH") -> None:
@@ -404,14 +495,51 @@ def official_closure_files(spec: Spec) -> tuple[list[str], set[str]]:
         require(all(t in closure for t in touched), f"patch touches a file outside the closure: {patch}", spec.tag)
         # opt-in (`module_change`): the module may receive exactly the file-local rewrite-order flag, checked
         # line by line in `module_flag_only`; every other spec keeps the module unpatched
+        # opt-in `proof_only_patch` (user decision 2026-10-03, classic rank 172): the module may receive a recorded
+        # patch that changes only proof scripts, checked in `module_proof_only`
         require(spec.source not in touched
-                or spec["official_closure"].get("module_change") == "rewrite_goals_order_flag",
+                or spec["official_closure"].get("module_change") in ("rewrite_goals_order_flag", "proof_only_patch"),
                 "the module itself must not be patched", spec.tag)
         patched |= set(touched)
     return closure, patched
 
 
 REWRITE_ORDER_FLAG = "Set SsrOldRewriteGoalsOrder."
+# the only files whose certificates may use Rocq functional extensionality (user decision 2026-10-03)
+FUNEXT_FILES = {"classic/model/schedule/uni/sustainability.v",
+                "classic/analysis/uni/susp/sustainability/allcosts/main_claim.v"}
+
+
+PROOF_START = re.compile(r"^\s*Proof\b[^.]*\.\s*$")
+PROOF_END = re.compile(r"^\s*(Qed|Defined)\.\s*$")
+PROOF_FORBIDDEN = re.compile(r"\b(Admitted|admit|Abort|Axiom|Axioms|Parameter|Parameters|Conjecture|Hypothesis)\b")
+
+
+def _proof_interiors_blanked(lines: list[str]) -> list[str]:
+    out, inside = [], False
+    for line in lines:
+        if inside:
+            if PROOF_END.match(line):
+                inside = False
+                out.append(line)
+            continue
+        out.append(line)
+        if PROOF_START.match(line):
+            inside = True
+            out.append("(* proof script *)")
+    return out
+
+
+def module_proof_only(official: Path, compiled: Path) -> bool:
+    """`compiled` differs from `official` only inside proof scripts: with every proof interior (the lines between a
+    `Proof.` line and its `Qed.`/`Defined.` line) blanked the two files are identical, and no changed or added line
+    contains `Admitted`, `admit`, `Abort` or an axiom/parameter command.  Statements, definitions and all other
+    vernacular are byte-identical; the statement types are in addition checked against the official evidence."""
+    a, b = official.read_text().splitlines(), compiled.read_text().splitlines()
+    if _proof_interiors_blanked(a) != _proof_interiors_blanked(b):
+        return False
+    ops = [op for op in difflib.SequenceMatcher(a=a, b=b, autojunk=False).get_opcodes() if op[0] != "equal"]
+    return bool(ops) and not any(PROOF_FORBIDDEN.search(line) for op in ops for line in b[op[3]:op[4]])
 
 
 def module_flag_only(official: Path, compiled: Path) -> bool:
@@ -478,8 +606,12 @@ def build_official_closure(spec: Spec, src: Path, log: Path) -> None:
         require((sha(src / rel) == sha(SOURCE_ROOT / rel)) == (rel not in patched),
                 f"closure file differs from the pinned file without a recorded patch: {rel}", spec.tag)
     if spec.source in patched:
-        require(module_flag_only(SOURCE_ROOT / spec.source, src / spec.source),
-                "module change is not exactly the rewrite-order flag", spec.tag)
+        if spec["official_closure"].get("module_change") == "proof_only_patch":
+            require(module_proof_only(SOURCE_ROOT / spec.source, src / spec.source),
+                    "module change is not confined to proof scripts", spec.tag)
+        else:
+            require(module_flag_only(SOURCE_ROOT / spec.source, src / spec.source),
+                    "module change is not exactly the rewrite-order flag", spec.tag)
     for rel in closure:
         require(rocq(["-R", str(src), "prosa", *source_flags(rel), rel], log, src, append=True) == 0,
                 f"official closure compile failed: {rel}", spec.tag)
@@ -594,10 +726,14 @@ def prepare(spec: Spec) -> None:
         # they must be byte-identical computational blocks (checked at publication)
         helper_blocks = x.get("helper_blocks", [])
         names = helper_blocks + names
+        evidence_path = DEP / "declaration_type_evidence.json"
+        if spec.get("local_declarations"):   # opt-in: authoritative evidence + the recorded local evidence
+            evidence_path = work / "type_evidence_with_local.json"
+            evidence_path.write_text(json.dumps(type_evidence(spec), indent=2, sort_keys=True) + "\n")
         cmd = [sys.executable, str(V / "scripts/extract_v06_semantic_source.py"),
                "--source-root", str(SOURCE_ROOT), "--source-file", spec.source,
                "--module", x["module"], "--declarations", ",".join(names),
-               "--elaborated-evidence", str(DEP / "declaration_type_evidence.json"),
+               "--elaborated-evidence", str(evidence_path),
                "--qualified-prefix", "prosa." + spec.source[:-2].replace("/", "."),
                "--output", str(src / f"{x['module']}.v"),
                "--metadata", str(work / "source_extraction.json")]
@@ -611,6 +747,8 @@ def prepare(spec: Spec) -> None:
                 cmd += [flag, item]
         if x.get("source_order"):
             cmd.append("--source-order")
+        if spec.get("local_declarations"):
+            cmd += ["--local-declarations", ",".join(spec["local_declarations"])]
         if x.get("self_named_instance_context"):
             cmd.append("--self-named-instance-context")
         for item in x.get("omit_context_lets", []):
@@ -641,7 +779,7 @@ def prepare(spec: Spec) -> None:
         dest = olean / art["to"]
         dest.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(EXP / art["from"], dest)
-        require(sha(dest) == manifest_hash(art["manifest"], art["key"]), f"olean artifact changed: {art['to']}", tag)
+        require(sha(dest) == extra_olean_hash(art), f"olean artifact changed: {art['to']}", tag)
     env = lean_env(olean)
     for lean_src, out, stem, *key in spec.get("extra_lean", []):
         (olean / out).parent.mkdir(parents=True, exist_ok=True)
@@ -670,7 +808,9 @@ def prepare(spec: Spec) -> None:
     export_env = dict(env)
     # optional exporter switches recorded in the spec (e.g. keep theorem types
     # un-reduced when a kernel-guarded Finset.Ico projection is configured)
-    allowed_export_env = {"LEAN4EXPORT_PRESERVE_REDUCIBLE_THEOREM_TYPES"}
+    # LEAN4EXPORT_NAT_INDEX_ALIASES: reducible aliases of Nat accepted as Finset.Ico sum index types by the
+    # projector (planning/classic_policy/tool_changes.md; still kernel-guarded in the export root)
+    allowed_export_env = {"LEAN4EXPORT_PRESERVE_REDUCIBLE_THEOREM_TYPES", "LEAN4EXPORT_NAT_INDEX_ALIASES"}
     for k, v in spec.get("export_env", {}).items():
         require(k in allowed_export_env, f"export_env key not allowed: {k}", tag)
         export_env[k] = v
@@ -749,7 +889,22 @@ def checkpoint_valid(entry: dict | None, key: str, vo: Path, log: Path) -> bool:
 
 def exported_names(imported: Path) -> set[str]:
     """Rocq-side names (`A_B_c`) of every Lean name declared in the actual export files."""
-    mangle = lambda n: "".join(c if c.isascii() else f"_UU{ord(c):04x}_" for c in n)
+    # mirrors rocq-lean-import's LeanName.clean_string: Unicode.ascii_of_ident, then the `toclean` table
+    toclean = [("@", "__at__"), ("?", "__q"), ("!", "__B"), ("#", "__hash"), ("$", "__dollar"),
+               ("%", "__pct"), ("&", "__amp"), ("\\", "__bs"), ("/", "__fs"), ("^", "__v"), ("(", "__o"),
+               (")", "__c"), ("*", "__star"), ("+", "__plus"), (",", "__comma"), ("-", "__dash"),
+               (":", "__co"), (";", "__semi"), ("<", "__lt"), ("=", "__eq"), (">", "__gt"),
+               ("[", "__lbrack"), ("]", "__rbrack"), ("{", "__lbrace"), ("|", "__bar"), ("}", "__rbrace"),
+               ("~", "__tilde")]
+
+    def mangle(n: str) -> str:
+        parts = []
+        for comp in n.split("."):
+            comp = "".join(c if c.isascii() else f"_UU{ord(c):04x}_" for c in comp)
+            for c, r in toclean:
+                comp = comp.replace(c, r)
+            parts.append(comp)
+        return ".".join(parts)
     names: set[str] = set()
     for out in sorted(imported.glob("*.out")):
         table = {0: ""}
@@ -853,7 +1008,7 @@ def check(spec: Spec) -> None:
 # --------------------------------------------------------------------------- publish
 
 def fingerprint_matches(spec: Spec, rows: list[dict]) -> dict:
-    evidence = read(DEP / "declaration_type_evidence.json")
+    evidence = type_evidence(spec)
     # opt-in (CoqEAL specs): official-toolchain evidence for the declarations the inventory marks as the CoqEAL
     # build boundary, produced by scripts/elaborate_coqeal_declaration_types.py (see its docstring)
     coqeal_evidence = (read(DEP / "coqeal_declaration_type_evidence.json")["declarations"]
@@ -889,6 +1044,24 @@ def fingerprint_matches(spec: Spec, rows: list[dict]) -> dict:
         # files named `busy_prefix` declare `x`); it still names this file only
         path = name.split(".")[1:-1]
         own_qualifiers = [".".join(path[i:]) for i in range(len(path) - 1, -1, -1)]
+        # classic family: a declaration name carries its Rocq module path (`ResponseTime.x`), which the validation
+        # context displays (`@ResponseTime.x`); the official context may prefix it with a trailing suffix of the
+        # file's own logical path (`@global.response_time.ResponseTime.x`, when another loaded file declares the same
+        # `Module`).  Accept exactly those file-path qualifiers in front of exactly this declaration name.
+        dname = row["declaration_name"]
+        if spec.get("family", "v06") == "classic" and "." in dname and name.endswith("." + dname):
+            fpath = name[: -len(dname) - 1].split(".")[1:]
+            for qual in [".".join(fpath[i:]) for i in range(len(fpath) - 1, -1, -1)]:
+                for prefix in ("@", ""):
+                    head = f"{prefix}{qual}.{dname} : "
+                    if item["normalized_check"].startswith(head) and \
+                            got == f"{prefix}{dname} : " + item["normalized_check"][len(head):]:
+                        result[name] = "EXACT_MODULO_OWN_MODULE_QUALIFIER"
+                        break
+                if name in result:
+                    break
+            if name in result:
+                continue
         matched_qualifier = False
         for qual in own_qualifiers:
             qualified = f"@{qual}.{short} : "
@@ -918,6 +1091,24 @@ def fingerprint_matches(spec: Spec, rows: list[dict]) -> dict:
             for qual in own_qualifiers:
                 for own in own_in_type:
                     repaired = re.sub(r"(?<![\w.'])" + re.escape(f"{qual}.{own}") + r"(?![\w'])", own, repaired)
+            # classic family: an own name carrying its Rocq module path (`ResponseTime.x`) is qualified by trailing
+            # suffixes of its file's logical path (`global.response_time.ResponseTime.x`)
+            if spec.get("family", "v06") == "classic":
+                for own in own_in_type:
+                    if "." not in own:
+                        continue
+                    full = [r["qualified_name"] for r in rows if r["declaration_name"] == own]
+                    require(len(full) == 1, f"own_qualified_in_type: ambiguous own name {own}", spec.tag)
+                    fpath = full[0][: -len(own) - 1].split(".")[1:]
+                    for qual in [".".join(fpath[i:]) for i in range(len(fpath) - 1, -1, -1)]:
+                        repaired = re.sub(r"(?<![\w.'])" + re.escape(f"{qual}.{own}") + r"(?![\w'])", own, repaired)
+                # together with the file-path display qualifier of this declaration's own head (as accepted above)
+                if "." in dname and name.endswith("." + dname):
+                    fpath = name[: -len(dname) - 1].split(".")[1:]
+                    for qual in [".".join(fpath[i:]) for i in range(len(fpath) - 1, -1, -1)]:
+                        for prefix in ("@", ""):
+                            if repaired.startswith(f"{prefix}{qual}.{dname} : "):
+                                repaired = prefix + repaired[len(prefix + qual + "."):]
             if repaired != item["normalized_check"] and got == repaired:
                 result[name] = "EXACT_MODULO_OWN_MODULE_QUALIFIER"
                 continue
@@ -928,7 +1119,46 @@ def fingerprint_matches(spec: Spec, rows: list[dict]) -> dict:
         # exactly the listed declarations, and only when no other declaration of the closure has the same short name
         # (so the unqualified name of the validation context denotes that declaration); nothing else.
         dep_in_type = spec.get("dependency_qualified_in_type", [])
-        if dep_in_type:
+        # classic family: a closure dependency's name carries its Rocq module path (`Platform.work_conserving`), which
+        # the validation context displays; the official context prefixes it with a trailing suffix of its file's
+        # logical path (`global.basic.platform.Platform.work_conserving`) when another loaded file declares the same
+        # `Module` (e.g. `apa/platform.v`).  Accept exactly those qualifiers on exactly the listed closure declarations
+        # (whose module-path name must be unique among the closure's declarations), together with exactly the own
+        # qualifiers accepted above (the head, and the `own_qualified_in_type` names inside the type); nothing else.
+        if dep_in_type and spec.get("family", "v06") == "classic":
+            closure = set(official_closure_files(spec)[0])
+            with (DEP / "declaration_inventory.csv").open() as stream:
+                closure_rows = [r for r in csv.DictReader(stream) if r["source_file"] in closure]
+            repaired = item["normalized_check"]
+            for full in dep_in_type:
+                hits = [r for r in closure_rows if r["qualified_name"] == full]
+                require(len(hits) == 1 and hits[0]["source_file"] != spec.source,
+                        f"dependency_qualified_in_type: not a closure dependency declaration: {full}", spec.tag)
+                dname_dep = hits[0]["declaration_name"]
+                require([r["qualified_name"] for r in closure_rows if r["declaration_name"] == dname_dep] == [full],
+                        f"dependency_qualified_in_type: module-path name not unique in the closure: {full}", spec.tag)
+                fpath = full[: -len(dname_dep) - 1].split(".")[1:]
+                for qual in [".".join(fpath[i:]) for i in range(len(fpath) - 1, -1, -1)]:
+                    repaired = re.sub(r"(?<![\w.'])" + re.escape(f"{qual}.{dname_dep}") + r"(?![\w'])", dname_dep,
+                                      repaired)
+            for own in own_in_type:
+                if "." not in own:
+                    continue
+                full_own = [r["qualified_name"] for r in rows if r["declaration_name"] == own]
+                require(len(full_own) == 1, f"own_qualified_in_type: ambiguous own name {own}", spec.tag)
+                fpath = full_own[0][: -len(own) - 1].split(".")[1:]
+                for qual in [".".join(fpath[i:]) for i in range(len(fpath) - 1, -1, -1)]:
+                    repaired = re.sub(r"(?<![\w.'])" + re.escape(f"{qual}.{own}") + r"(?![\w'])", own, repaired)
+            if "." in dname and name.endswith("." + dname):
+                fpath = name[: -len(dname) - 1].split(".")[1:]
+                for qual in [".".join(fpath[i:]) for i in range(len(fpath) - 1, -1, -1)]:
+                    for prefix in ("@", ""):
+                        if repaired.startswith(f"{prefix}{qual}.{dname} : "):
+                            repaired = prefix + repaired[len(prefix + qual + "."):]
+            if repaired != item["normalized_check"] and got == repaired:
+                result[name] = "EXACT_MODULO_DEPENDENCY_AND_OWN_MODULE_QUALIFIER"
+                continue
+        if dep_in_type and spec.get("family", "v06") != "classic":
             closure = set(official_closure_files(spec)[0])
             with (DEP / "declaration_inventory.csv").open() as stream:
                 closure_rows = list(csv.DictReader(stream))
@@ -981,6 +1211,23 @@ def fingerprint_matches(spec: Spec, rows: list[dict]) -> dict:
                 for q in [f"@{short} : "] + [f"@{qual}.{short} : " for qual in own_qualifiers]):
             result[name] = "TYPE_EQUAL_MODULO_MATHCOMP_INT_CARRIER_DISPLAY"
             continue
+        # the accepted Rocq 9.0/9.3 display difference of a final parenthesised `exists` operand of `\/`, `<->`
+        # or `~` (`TYPE_EQUAL_MODULO_EXISTS_PARENS`, below for extracted statement bodies), on the `Check @name`
+        # output of an official-closure source: exactly that removal, nothing else
+        # the accepted Rocq 9.0/9.3 display difference of a parenthesised `fun=>` body lambda
+        # (`TYPE_EQUAL_MODULO_SSR_FUN_WILDCARD_BODY_PARENS`, below for extracted statement bodies), on the
+        # `Check @name` output of an official-closure source (optionally with the own-module display qualifier):
+        # exactly that removal, nothing else
+        ssr_check = ssr_fun_body_unparen(item["normalized_check"])
+        if ssr_check != item["normalized_check"] and (got == ssr_check or any(
+                ssr_check.startswith(q) and got == f"@{short} : " + ssr_check[len(q):]
+                for q in [f"@{short} : "] + [f"@{qual}.{short} : " for qual in own_qualifiers])):
+            result[name] = "TYPE_EQUAL_MODULO_SSR_FUN_WILDCARD_BODY_PARENS"
+            continue
+        unparen_check = re.sub(r"(\\/|<->|~) \((exists .*)\)$", r"\1 \2", item["normalized_check"])
+        if unparen_check != item["normalized_check"] and got == unparen_check:
+            result[name] = "TYPE_EQUAL_MODULO_EXISTS_PARENS"
+            continue
         m = re.match(r"statement_\S+ = (.*) : (Prop|Type)$", got)
         ref = item["normalized_check"].split(" : ", 1)[1]
         body = m.group(1) if m else None
@@ -1021,17 +1268,7 @@ def fingerprint_matches(spec: Spec, rows: list[dict]) -> dict:
         # (`fun=> (fun R : T => e)`); Rocq 9.3 (the validation toolchain) prints
         # the same term without them (`fun=> fun R : T => e`).  Accept exactly the
         # removal of the parentheses around such a `fun=>` body lambda, nothing else.
-        ssr_fun = ref
-        while (opener := ssr_fun.find("fun=> (fun ")) >= 0:
-            start, depth, close = opener + 6, 0, None
-            for k in range(start, len(ssr_fun)):
-                depth += {"(": 1, ")": -1}.get(ssr_fun[k], 0)
-                if depth == 0:
-                    close = k
-                    break
-            if close is None:
-                break
-            ssr_fun = ssr_fun[:start] + ssr_fun[start + 1:close] + ssr_fun[close + 1:]
+        ssr_fun = ssr_fun_body_unparen(ref)
         # declarations of this same file: its inventory declarations and its
         # source-local helper blocks (extracted byte-identically from this file)
         own_names = {r["declaration_name"] for r in inventory(spec)} | \
@@ -1110,14 +1347,21 @@ def publish(spec: Spec) -> None:
             for rel in closure:
                 require(sha(work / "source" / rel) == sha(Path(tmp) / rel),
                         f"closure file is not official + recorded patches: {rel}", tag)
-        if spec.source in patched:
+        if spec.source in patched and spec["official_closure"].get("module_change") == "proof_only_patch":
+            require(module_proof_only(official, copied), "module change is not confined to proof scripts", tag)
+            compat["module_change"] = ("recorded proof-only patch (lines inside Proof ... Qed only; no Admitted/admit/"
+                                       "axiom; user decision 2026-10-03)")
+        elif spec.source in patched:
             require(module_flag_only(official, copied), "module change is not exactly the rewrite-order flag", tag)
             compat["module_change"] = "one added line `" + REWRITE_ORDER_FLAG + "` (file-local rewrite-order flag)"
         else:
             require(sha(copied) == sha(official), "compiled module is not byte-identical", tag)
         source_vo = copied.with_suffix(".vo")
         compat.update(note="official proof closure (pinned files + recorded compatibility patches); module "
-                           "compiled byte-identically" + (" except the recorded rewrite-order flag"
+                           "compiled byte-identically" + ((" except the recorded proof-only patch"
+                                                          if spec["official_closure"].get("module_change") ==
+                                                          "proof_only_patch" else
+                                                          " except the recorded rewrite-order flag")
                                                          if spec.source in patched else ""),
                       closure_files=closure, closure_list_sha256=sha(V / spec["official_closure"]["files"]),
                       patches={p: sha(V / p) for p in spec["official_closure"]["patches"]},
@@ -1197,7 +1441,7 @@ def publish(spec: Spec) -> None:
     for art in spec.get("extra_artifacts", []):
         require(sha(work / art["to"]) == manifest_hash(art["manifest"], art["key"]), f"artifact changed: {art['to']}", tag)
     for art in spec.get("extra_olean_artifacts", []):
-        require(sha(work / "olean" / art["to"]) == manifest_hash(art["manifest"], art["key"]),
+        require(sha(work / "olean" / art["to"]) == extra_olean_hash(art),
                 f"olean artifact changed: {art['to']}", tag)
     for lean_src, out, stem, *key in spec.get("extra_lean", []):
         if stem:
@@ -1252,7 +1496,9 @@ def publish(spec: Spec) -> None:
     imported_vo = work / f"imported/Imported{name}.vo"
     metadata = read(work / "export_metadata.json")
     config = read(export_config)
-    statement_only = [ns + n for n in targets if n not in computational]
+    # opt-in (classic configs): auxiliary theorems exported statement-only as well (e.g. `_proof_N` of an informative
+    # definition); they are part of the recorded statement-only export boundary
+    statement_only = [ns + n for n in targets if n not in computational] + list(spec.get("extra_statement_only", []))
     require(config["statement_only"] == statement_only
             and metadata["statement_only_count"] == len(statement_only)
             and all(ns + n in config["targets"] for n in targets)
@@ -1266,7 +1512,22 @@ def publish(spec: Spec) -> None:
     type_audit = (work / "imported_type_audit.log").read_text()
     prefix = spec["lean_namespace"].replace(".", "_") + "_"
     # the Rocq importer spells non-ASCII identifier characters as `_UU<hex4>_`
-    mangle = lambda n: "".join(c if c.isascii() else f"_UU{ord(c):04x}_" for c in n)
+    # mirrors rocq-lean-import's LeanName.clean_string: Unicode.ascii_of_ident, then the `toclean` table
+    toclean = [("@", "__at__"), ("?", "__q"), ("!", "__B"), ("#", "__hash"), ("$", "__dollar"),
+               ("%", "__pct"), ("&", "__amp"), ("\\", "__bs"), ("/", "__fs"), ("^", "__v"), ("(", "__o"),
+               (")", "__c"), ("*", "__star"), ("+", "__plus"), (",", "__comma"), ("-", "__dash"),
+               (":", "__co"), (";", "__semi"), ("<", "__lt"), ("=", "__eq"), (">", "__gt"),
+               ("[", "__lbrack"), ("]", "__rbrack"), ("{", "__lbrace"), ("|", "__bar"), ("}", "__rbrace"),
+               ("~", "__tilde")]
+
+    def mangle(n: str) -> str:
+        parts = []
+        for comp in n.split("."):
+            comp = "".join(c if c.isascii() else f"_UU{ord(c):04x}_" for c in comp)
+            for c, r in toclean:
+                comp = comp.replace(c, r)
+            parts.append(comp)
+        return ".".join(parts)
     require("Error" not in type_audit and all(prefix + mangle(n).replace(".", "_") in type_audit for n in targets),
             "imported type audit failed", tag)
 
@@ -1292,12 +1553,21 @@ def publish(spec: Spec) -> None:
     summary = read(work / "assumption_summary.json")
     aconf = read(V / spec["assumption_config"])
     principal = spec["principal"]
+    # Rocq functional extensionality: opt-in for exactly the two files of the user decision 2026-10-03
+    funext_names = set(aconf.get("rocq_functional_extensionality", []))
+    funext_statuses: set[str] = set()
+    if funext_names:
+        require(FAMILY == "classic" and spec.get("rocq_funext_scope") is True and spec.source in FUNEXT_FILES
+                and funext_names <= {"FunctionalExtensionality.functional_extensionality_dep"},
+                "functional extensionality outside its approved scope", tag)
+        funext_statuses = {"CERTIFIED_WITH_FUNCTIONAL_EXTENSIONALITY",
+                           "CERTIFIED_WITH_PROP_SPROP_FOUNDATION_AND_FUNCTIONAL_EXTENSIONALITY"}
     expected = {c for n in targets for c in principal.get(n, [cert_name(n)])} | set(spec["helpers"])
     require(summary["audit_policy"] == "fail_closed"
             and set(summary["certificates"]) == set(aconf["certificates"]) == expected
             and aconf["statement_only_dependencies"] == [], "assumption summary incomplete", tag)
     for item in summary["certificates"].values():
-        require(item["status"] in {"CERTIFIED", "CERTIFIED_WITH_PROP_SPROP_FOUNDATION"}
+        require(item["status"] in {"CERTIFIED", "CERTIFIED_WITH_PROP_SPROP_FOUNDATION"} | funext_statuses
                 and not item["semantic_premises"] and not item["statement_only_dependencies"]
                 and not item["unexpected"] and not item["source_theorem_dependency"]
                 and not item["target_theorem_dependency"], "Rocq semantic gate failed", tag)
@@ -1328,8 +1598,9 @@ def publish(spec: Spec) -> None:
         statuses = {summary["certificates"][c]["status"] for c in certs}
         declarations.append({
             "source_declaration": r["qualified_name"], "lean_declaration": ns + n,
-            "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION"
-            if "CERTIFIED_WITH_PROP_SPROP_FOUNDATION" in statuses else "CERTIFIED",
+            "semantic_status": (sorted(statuses & funext_statuses)[0] if statuses & funext_statuses else
+                                "CERTIFIED_WITH_PROP_SPROP_FOUNDATION"
+                                if "CERTIFIED_WITH_PROP_SPROP_FOUNDATION" in statuses else "CERTIFIED"),
             "certificates": certs, "semantic_premises": [],
             "source_theorem_dependency": False, "target_theorem_dependency": False,
             "acceptance": ACCEPT_DECL})
@@ -1343,6 +1614,10 @@ def publish(spec: Spec) -> None:
         "pipeline": "Validation/scripts/translation_file_pipeline.py",
         "spec": str(spec.path.relative_to(PROJECT)), "spec_sha256": sha(spec.path),
         "source_compatibility": compat, "source_type_evidence": matches,
+        **({"classic_scope": {"scope": "full", "planning": str(DEP.relative_to(PROJECT)),
+                              "type_evidence_sha256": sha(DEP / "declaration_type_evidence.json"),
+                              "declaration_inventory_sha256": sha(DEP / "declaration_inventory.csv")}}
+           if spec.get("classic_scope") == "full" else {}),
         "statement_only_export_boundary": statement_only,
         **{k: spec[k] for k in ("input_relations", "coverage_for_inner_binders",
                                 "lean_representation_note") if spec.get(k) is not None},
@@ -1366,28 +1641,68 @@ def publish(spec: Spec) -> None:
         **({"lean_fixture_provenance_sha256": sha(provenance)} if provenance.is_file() else {}),
         "declarations": declarations, "acceptance": ACCEPT_FILE,
     }
-    manifest_path = PIPE / f"{spec.slug}_module_manifest.json"
-    status_path = PIPE / f"{spec.slug}_module_status.json"
+    amendment = spec.get("amendment")
+    n = len(targets)
+    if amendment:
+        # opt-in (user decision 2026-10-04): an amendment of an accepted file whose production file was changed.  The
+        # accepted manifest/status (and the status chain built on them) are left untouched; the amendment re-runs every
+        # stage above and is published next to them.  It must name the records it supersedes by hash and keep every
+        # declaration they certified.
+        aid = amendment["id"]
+        require(re.fullmatch(r"amendment[0-9]+", aid) is not None, "amendment id", tag)
+        old_manifest = PIPE / f"{spec.slug}_module_manifest.json"
+        old_status = PIPE / f"{spec.slug}_module_status.json"
+        require(sha(old_manifest) == amendment["supersedes_manifest_sha256"]
+                and sha(old_status) == amendment["supersedes_status_sha256"],
+                "superseded publication changed", tag)
+        kept = {d["source_declaration"] for d in read(old_manifest)["declarations"]}
+        require(kept <= {d["source_declaration"] for d in declarations}, "amendment drops a certified declaration", tag)
+        local = set(spec.get("local_declarations", []))
+        manifest["amendment"] = {
+            "id": aid, "reason": amendment["reason"], "user_decision": amendment["user_decision"],
+            "supersedes_manifest": old_manifest.name, "supersedes_manifest_sha256": sha(old_manifest),
+            "supersedes_status": old_status.name, "supersedes_status_sha256": sha(old_status),
+            "added_declarations": sorted({d["source_declaration"] for d in declarations} - kept),
+            "local_declarations": sorted(r["qualified_name"] for r in rows if r["declaration_name"] in local)}
+        manifest_path = PIPE / f"{spec.slug}_module_{aid}_manifest.json"
+        status_path = PIPE / f"{spec.slug}_module_{aid}_status.json"
+        destination = PUBLISH_DIR / f"{spec.slug}__{aid}"
+    else:
+        manifest_path = PIPE / f"{spec.slug}_module_manifest.json"
+        status_path = PIPE / f"{spec.slug}_module_status.json"
+        destination = PUBLISH_DIR / spec.slug
     require(not manifest_path.exists() and not status_path.exists(), "publication already exists", tag)
-    destination = PUBLISH_DIR / spec.slug
     require(not destination.exists(), "publication destination exists", tag)
     manifest_path.write_text(json.dumps(manifest, indent=2) + "\n")
-    n = len(targets)
-    status = {
-        "slice": manifest["slice"], "status": "PASS", "source_file": spec.source,
-        "per_file": {spec.source: {
-            "public_declarations": n, "translated": n, "proof_clean": n,
-            "semantic_proof_compiled": n, "certified": n,
-            "status": ACCEPT_FILE, "published_at": now.isoformat()}},
-        "coverage": {
-            "accepted_files": spec["previous_files"] + 1, "authoritative_files": AUTHORITATIVE["files"],
-            "accepted_declarations": spec["previous_decls"] + n,
-            "authoritative_declarations": AUTHORITATIVE["declarations"],
-            "translated_but_not_certified": previous["coverage"]["translated_but_not_certified"],
-            "deferred_external_boundary": previous["coverage"]["deferred_external_boundary"]},
-        "previous_status_sha256": sha(previous_path) if previous_path else None,
-        "manifest_sha256": sha(manifest_path),
-    }
+    if amendment:
+        n_local = len(manifest["amendment"]["local_declarations"])
+        status = {
+            "slice": manifest["slice"], "status": "PASS", "source_file": spec.source,
+            "per_file": {spec.source: {
+                "public_declarations": n - n_local, "local_declarations": n_local, "translated": n,
+                "proof_clean": n, "semantic_proof_compiled": n, "certified": n,
+                "status": ACCEPT_FILE, "published_at": now.isoformat()}},
+            # no cumulative coverage: the public-declaration coverage of the chain is unchanged (a source-`Local`
+            # lemma is not a public declaration)
+            "amends_status": old_status.name, "amends_status_sha256": sha(old_status),
+            "manifest_sha256": sha(manifest_path),
+        }
+    else:
+        status = {
+            "slice": manifest["slice"], "status": "PASS", "source_file": spec.source,
+            "per_file": {spec.source: {
+                "public_declarations": n, "translated": n, "proof_clean": n,
+                "semantic_proof_compiled": n, "certified": n,
+                "status": ACCEPT_FILE, "published_at": now.isoformat()}},
+            "coverage": {
+                "accepted_files": spec["previous_files"] + 1, "authoritative_files": AUTHORITATIVE["files"],
+                "accepted_declarations": spec["previous_decls"] + n,
+                "authoritative_declarations": AUTHORITATIVE["declarations"],
+                "translated_but_not_certified": previous["coverage"]["translated_but_not_certified"],
+                "deferred_external_boundary": previous["coverage"]["deferred_external_boundary"]},
+            "previous_status_sha256": sha(previous_path) if previous_path else None,
+            "manifest_sha256": sha(manifest_path),
+        }
     status_path.write_text(json.dumps(status, indent=2) + "\n")
     (destination / "certificates").mkdir(parents=True)
     extra = [work / "source_extraction.json"] if mode == "extract" else []
@@ -1400,7 +1715,8 @@ def publish(spec: Spec) -> None:
     for m in modules:
         for suffix in (".v", ".vo"):
             shutil.copy2(work / "certificates" / f"{m}{suffix}", destination / "certificates" / f"{m}{suffix}")
-    print(json.dumps({"manifest": str(manifest_path), "coverage": status["coverage"]}, indent=2))
+    print(json.dumps({"manifest": str(manifest_path), "coverage": status.get("coverage", "unchanged (amendment)")},
+                     indent=2))
 
 
 def reprobe(spec: Spec) -> None:

@@ -6,8 +6,8 @@
 | sha256 | `4cb2c3a2f476d36f2283a97777addc4ec00784bbaf2feea802d196590a7257bf` |
 | Lean module | `Prosa/Classic/Util/OrdQuantifier.lean` (namespace `Prosa.Classic.Util.OrdQuantifier`) |
 | Tier / layer | S / 2 |
-| Status | **TRANSLATED**: compiles (Lean 4.33.1, pinned Mathlib), no `sorry`; `#print axioms` ⊆ {`propext`, `Quot.sound`, `Classical.choice`} |
-| Validation | pending Stage 0 (classic pipeline extension) |
+| Status | **ACCEPTED** (classic validation family; see the manifest) |
+| Validation | accepted |
 
 ## Declarations (4 source → Lean, same names)
 
@@ -32,3 +32,5 @@ Ltac helpers `simpl_exists_ord` / `simpl_forall_ord` have no Lean counterpart.
 ## History
 
 - 2026-10-01: translated; build and axiom check passed.
+- 2026-10-02: translated; build and axiom check passed.
+- 2026-10-02: accepted.

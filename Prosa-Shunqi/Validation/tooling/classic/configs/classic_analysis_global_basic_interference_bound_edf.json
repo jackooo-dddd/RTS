@@ -1,0 +1,125 @@
+{
+  "rank": 48,
+  "layer": 15,
+  "slug": "classic_analysis_global_basic_interference_bound_edf",
+  "tag": "CIBE",
+  "export_name": "ClassicInterferenceBoundEdf",
+  "source": "classic/analysis/global/basic/interference_bound_edf.v",
+  "production": "Prosa/Classic/Analysis/Global/Basic/InterferenceBoundEdf.lean",
+  "fixtures": [
+    "ClassicInterferenceBoundEdfInterface"
+  ],
+  "export_module": "Validation.fixtures.translation_order.ClassicInterferenceBoundEdfInterface",
+  "interface_theorems": [
+    "Prosa.Validation.ClassicInterferenceBoundEdfInterface.finRange_any",
+    "Prosa.Validation.ClassicInterferenceBoundEdfInterface.bigCatFin_range'",
+    "Prosa.Validation.ClassicInterferenceBoundEdfInterface.fin_sum_range'",
+    "Prosa.Validation.ClassicInterferenceBoundEdfInterface.bigCat_range'",
+    "Prosa.Validation.ClassicInterferenceBoundEdfInterface.service_at_sum",
+    "Prosa.Validation.ClassicInterferenceBoundEdfInterface.dedup_nil",
+    "Prosa.Validation.ClassicInterferenceBoundEdfInterface.dedup_cons_mem",
+    "Prosa.Validation.ClassicInterferenceBoundEdfInterface.dedup_cons_not_mem",
+    "Prosa.Validation.ClassicInterferenceBoundEdfInterface.mergeSort_isChain",
+    "Prosa.Validation.ClassicInterferenceBoundEdfInterface.mergeSort_filter_class",
+    "Prosa.Validation.DivModInterface.production_div_floor_eq",
+    "Prosa.Validation.DivModInterface.production_div_ceil_eq",
+    "Prosa.Validation.DivModInterface.production_div_add_mod",
+    "Prosa.Validation.DivModInterface.production_mod_lt",
+    "Prosa.Validation.DivModInterface.production_div_zero",
+    "Prosa.Validation.DivModInterface.production_mod_zero",
+    "Prosa.Validation.DivModInterface.production_dvd_iff_mod_eq_zero"
+  ],
+  "computational": [
+    "InterferenceBoundEDF.edf_specific_interference_bound",
+    "InterferenceBoundEDF.interference_bound_edf",
+    "InterferenceBoundEDF.total_interference_bound_edf"
+  ],
+  "chain": [
+    "ClassicInterferenceBoundEdfNatSub",
+    "ClassicInterferenceBoundEdfOps",
+    "ClassicInterferenceBoundEdfBase",
+    "ClassicInterferenceBoundEdfList",
+    "ClassicInterferenceBoundEdfOrd",
+    "ClassicInterferenceBoundEdfCorrespondence"
+  ],
+  "base_run": null,
+  "base_checks": [],
+  "previous_status": "classic_analysis_global_basic_bertogna_fp_theory_module_status.json",
+  "input_relations": [
+    "job and task types: eqTypes identified, Lean DecidableEq instances = the eqTypes' decision procedures; job_task identified",
+    "natural numbers (time, num_cpus) by SubNatRel; processors 'I_n and Fin n by their values; schedules pointwise on related processors and times with option values by the constructor map; job and task parameters pointwise through SubNatRel; arrival sequences pointwise on related times; task sets by their underlying sequences; sequences of (task, time) pairs elementwise by the pair conversion; FP policies pointwise; affinities by their underlying sequences through the ordinal conversion, task affinities pointwise (two-way totals)"
+  ],
+  "lean_representation_note": "as for the accepted classic schedule, task, task_arrival, affinity, interference, platform, response_time, workload_bound and interference_bound_fp validations; Boolean tests in propositions are `= true`; the section-local `Let`s are unfolded",
+  "normalization": {
+    "theorem_types": [
+      "Prosa.Classic.Analysis.Global.Basic.InterferenceBoundEdf.InterferenceBoundEDF.interference_bound_edf_holds_for_middle_and_last_jobs",
+      "Prosa.Classic.Analysis.Global.Basic.InterferenceBoundEdf.InterferenceBoundEDF.interference_bound_edf_interference_of_j_fst_bounded_by_response_time",
+      "Prosa.Classic.Analysis.Global.Basic.InterferenceBoundEdf.InterferenceBoundEDF.interference_bound_edf_bounding_interference_with_interval_lengths",
+      "Prosa.Classic.Analysis.Global.Basic.InterferenceBoundEdf.InterferenceBoundEDF.interference_bound_edf_simpl_by_concatenation_of_intervals",
+      "Prosa.Classic.Analysis.Global.Basic.InterferenceBoundEdf.InterferenceBoundEDF.interference_bound_edf_holds_for_multiple_jobs"
+    ],
+    "subexpression_heads": [
+      "Finset.sum"
+    ],
+    "definition_bodies": [],
+    "body_projections": [
+      "Prosa.Classic.Model.Schedule.Global.Basic.Schedule.Schedule.service=Prosa.Validation.ClassicInterferenceBoundEdfInterface.service_proj=Prosa.Validation.ClassicInterferenceBoundEdfInterface.service_proj_guard",
+      "Prosa.Classic.Model.Schedule.Global.Basic.Schedule.Schedule.service_during=Prosa.Validation.ClassicInterferenceBoundEdfInterface.service_during_proj=Prosa.Validation.ClassicInterferenceBoundEdfInterface.service_during_proj_guard",
+      "Prosa.Classic.Model.Schedule.Global.Basic.Interference.Interference.total_interference=Prosa.Validation.ClassicInterferenceBoundEdfInterface.total_interference_proj=Prosa.Validation.ClassicInterferenceBoundEdfInterface.total_interference_proj_guard",
+      "Prosa.Classic.Model.Schedule.Global.Basic.Interference.Interference.job_interference=Prosa.Validation.ClassicInterferenceBoundEdfInterface.job_interference_proj=Prosa.Validation.ClassicInterferenceBoundEdfInterface.job_interference_proj_guard",
+      "Prosa.Classic.Model.Schedule.Global.Basic.Interference.Interference.task_interference=Prosa.Validation.ClassicInterferenceBoundEdfInterface.task_interference_proj=Prosa.Validation.ClassicInterferenceBoundEdfInterface.task_interference_proj_guard"
+    ]
+  },
+  "kernel_guard_artifacts": [
+    "Validation/fixtures/translation_order/ClassicInterferenceBoundEdfInterface.lean"
+  ],
+  "export_env": {
+    "LEAN4EXPORT_PRESERVE_REDUCIBLE_THEOREM_TYPES": "1",
+    "LEAN4EXPORT_NAT_INDEX_ALIASES": "Prosa.Classic.Model.Time.Time.time"
+  },
+  "own_qualified_in_type": [
+    "InterferenceBoundEDF.edf_specific_interference_bound",
+    "InterferenceBoundEDF.interference_bound_edf"
+  ],
+  "dependency_qualified_in_type": [
+    "prosa.classic.model.schedule.global.basic.interference.Interference.job_interference",
+    "prosa.classic.model.schedule.global.basic.interference.Interference.task_interference",
+    "prosa.classic.model.schedule.global.basic.platform.Platform.respects_JLFP_policy"
+  ],
+  "helpers": [
+    "cs_forall_ncpus_sched",
+    "cs_ico"
+  ],
+  "export_diagnosis": "as for the accepted classic schedule and APA interference exports (service_at is a filtered Finset sum over Fin num_cpus; validation-only interface theorems exported with their proof bodies); service/service_during and the interference definitions through kernel-guarded rfl body projections.",
+  "probe_extra": [],
+  "prop_sprop_foundation": [
+    "PropSPropFoundation.interpret_strict"
+  ],
+  "importer_foundation": [
+    "ImportedClassicInterferenceBoundEdf.Classical_choice",
+    "ImportedClassicInterferenceBoundEdf.Quot_sound",
+    "ImportedClassicInterferenceBoundEdf.propext",
+    "PrimInt63.eqb",
+    "PrimInt63.int",
+    "PrimInt63.land",
+    "PrimInt63.lsr"
+  ],
+  "rocq_sprop_uip": [
+    "ClassicInterferenceBoundEdfBase.I.HEq_inst1",
+    "ClassicInterferenceBoundEdfBase.I.True",
+    "ClassicInterferenceBoundEdfList.I.HEq_inst1",
+    "ClassicInterferenceBoundEdfList.I.True",
+    "ClassicInterferenceBoundEdfOrd.I.HEq",
+    "ClassicInterferenceBoundEdfOrd.I.HEq_inst1",
+    "ClassicInterferenceBoundEdfOrd.I.True",
+    "CtaTrue",
+    "I.HEq",
+    "I.HEq_inst1",
+    "I.True",
+    "ImportedClassicInterferenceBoundEdf.HEq_inst1",
+    "ImportedClassicInterferenceBoundEdf.True",
+    "Lean.eq",
+    "Lean.eq_inst1",
+    "SubadditivityNatCorrespondence.SubNatTrue"
+  ]
+}

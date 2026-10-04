@@ -1,0 +1,73 @@
+# classic/model/schedule/uni/jitter/schedule.v: 9 declarations
+
+## Print Module
+
+Module schedule := Struct Module UniprocessorScheduleWithJitter End
+
+Module UniprocessorScheduleWithJitter := Struct Definition pending : forall Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> time) -> (eqtype.Equality.sort Job -> time) -> (eqtype.Equality.sort Job -> time) -> schedule Job -> eqtype.Equality.sort Job -> time -> bool. Definition backlogged : forall Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> time) -> (eqtype.Equality.sort Job -> time) -> (eqtype.Equality.sort Job -> time) -> schedule Job -> eqtype.Equality.sort Job -> time -> bool. Definition jobs_execute_after_jitter : forall Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> time) -> (eqtype.Equality.sort Job -> time) -> schedule Job -> Prop. Parameter jobs_with_jitter_must_arrive_to_execute : forall (Job : eqtype.Equality.type) (job_arrival job_jitter : eqtype.Equality.sort Job -> time) (sched : schedule Job), jobs_execute_after_jitter job_arrival job_jitter sched -> jobs_must_arrive_to_execute job_arrival sched. Parameter jitter_has_passed_implies_arrived : forall (Job : eqtype.Equality.type) (job_arrival job_jitter : eqtype.Equality.sort Job -> time) (j : eqtype.Equality.sort Job) (t : time), is_true (jitter_has_passed job_arrival job_jitter j t) -> is_true (has_arrived job_arrival j t). Parameter service_before_jitter_is_zero : forall (Job : eqtype.Equality.type) (job_arrival job_jitter : eqtype.Equality.sort Job -> time) (sched : schedule Job), jobs_execute_after_jitter job_arrival job_jitter sched -> forall (j : eqtype.Equality.sort Job) (t : nat), is_true (ssrnat.leq (S t) (actual_arrival job_arrival job_jitter j)) -> service_at sched j t = 0. Parameter cumulative_service_before_jitter_is_zero : forall (Job : eqtype.Equality.type) (job_arrival job_jitter : eqtype.Equality.sort Job -> time) (sched : schedule Job), jobs_execute_after_jitter job_arrival job_jitter sched -> forall (j : eqtype.Equality.sort Job) (t1 t2 : nat), is_true (ssrnat.leq t2 (actual_arrival job_arrival job_jitter j)) -> bigop.bigop.body 0 (bigop.index_iota t1 t2) (fun i : nat => bigop.BigBody i ssrnat.addn true (service_at sched j i)) = 0. Parameter ignore_service_before_jitter : forall (Job : eqtype.Equality.type) (job_arrival job_jitter : eqtype.Equality.sort Job -> time) (sched : schedule Job), jobs_execute_after_jitter job_arrival job_jitter sched -> forall (j : eqtype.Equality.sort Job) (t1 t2 : nat), is_true (ssrnat.leq t1 (actual_arrival job_arrival job_jitter j) && ssrnat.leq (actual_arrival job_arrival job_jitter j) t2) -> bigop.bigop.body 0 (bigop.index_iota t1 t2) (fun t : nat => bigop.BigBody t ssrnat.addn true (service_at sched j t)) = bigop.bigop.body 0 (bigop.index_iota (actual_arrival job_arrival job_jitter j) t2) (fun t : nat => bigop.BigBody t ssrnat.addn true (service_at sched j t)). Parameter scheduled_implies_pending : forall (Job : eqtype.Equality.type) (job_arrival job_cost job_jitter : eqtype.Equality.sort Job -> time) (sched : schedule Job), jobs_execute_after_jitter job_arrival job_jitter sched -> completed_jobs_dont_execute job_cost sched -> forall (j : eqtype.Equality.sort Job) (t : time), is_true (scheduled_at sched j t) -> is_true (pending job_arrival job_cost job_jitter sched j t). End
+
+## About
+
+UniprocessorScheduleWithJitter.pending : forall {Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> schedule.UniprocessorSchedule.schedule Job -> eqtype.Equality.sort Job -> time.Time.time -> bool
+
+UniprocessorScheduleWithJitter.pending is not universe polymorphic
+Arguments UniprocessorScheduleWithJitter.pending {Job} (job_arrival job_cost job_jitter)%function_scope sched j t
+UniprocessorScheduleWithJitter.pending is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.jitter.schedule.UniprocessorScheduleWithJitter.pending
+Declared in library prosa.classic.model.schedule.uni.jitter.schedule, line 34, characters 17-24
+UniprocessorScheduleWithJitter.backlogged : forall {Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> schedule.UniprocessorSchedule.schedule Job -> eqtype.Equality.sort Job -> time.Time.time -> bool
+
+UniprocessorScheduleWithJitter.backlogged is not universe polymorphic
+Arguments UniprocessorScheduleWithJitter.backlogged {Job} (job_arrival job_cost job_jitter)%function_scope sched j t
+UniprocessorScheduleWithJitter.backlogged is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.jitter.schedule.UniprocessorScheduleWithJitter.backlogged
+Declared in library prosa.classic.model.schedule.uni.jitter.schedule, line 38, characters 17-27
+UniprocessorScheduleWithJitter.jobs_execute_after_jitter : forall {Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> schedule.UniprocessorSchedule.schedule Job -> Prop
+
+UniprocessorScheduleWithJitter.jobs_execute_after_jitter is not universe polymorphic
+Arguments UniprocessorScheduleWithJitter.jobs_execute_after_jitter {Job} (job_arrival job_jitter)%function_scope sched
+UniprocessorScheduleWithJitter.jobs_execute_after_jitter is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.jitter.schedule.UniprocessorScheduleWithJitter.jobs_execute_after_jitter
+Declared in library prosa.classic.model.schedule.uni.jitter.schedule, line 48, characters 17-42
+UniprocessorScheduleWithJitter.jobs_with_jitter_must_arrive_to_execute : forall {Job : eqtype.Equality.type} (job_arrival job_jitter : eqtype.Equality.sort Job -> time.Time.time) (sched : schedule.UniprocessorSchedule.schedule Job), UniprocessorScheduleWithJitter.jobs_execute_after_jitter job_arrival job_jitter sched -> schedule.UniprocessorSchedule.jobs_must_arrive_to_execute job_arrival sched
+
+UniprocessorScheduleWithJitter.jobs_with_jitter_must_arrive_to_execute is not universe polymorphic
+Arguments UniprocessorScheduleWithJitter.jobs_with_jitter_must_arrive_to_execute {Job} (job_arrival job_jitter)%function_scope sched H_jobs_execute_after_jitter j t _
+UniprocessorScheduleWithJitter.jobs_with_jitter_must_arrive_to_execute is opaque
+Expands to: Constant prosa.classic.model.schedule.uni.jitter.schedule.UniprocessorScheduleWithJitter.jobs_with_jitter_must_arrive_to_execute
+Declared in library prosa.classic.model.schedule.uni.jitter.schedule, line 68, characters 14-53
+UniprocessorScheduleWithJitter.jitter_has_passed_implies_arrived : forall {Job : eqtype.Equality.type} (job_arrival job_jitter : eqtype.Equality.sort Job -> time.Time.time) (j : eqtype.Equality.sort Job) (t : time.Time.time), is_true (arrival_sequence.ArrivalSequenceWithJitter.jitter_has_passed job_arrival job_jitter j t) -> is_true (arrival_sequence.ArrivalSequence.has_arrived job_arrival j t)
+
+UniprocessorScheduleWithJitter.jitter_has_passed_implies_arrived is not universe polymorphic
+Arguments UniprocessorScheduleWithJitter.jitter_has_passed_implies_arrived {Job} (job_arrival job_jitter)%function_scope j t _
+UniprocessorScheduleWithJitter.jitter_has_passed_implies_arrived is opaque
+Expands to: Constant prosa.classic.model.schedule.uni.jitter.schedule.UniprocessorScheduleWithJitter.jitter_has_passed_implies_arrived
+Declared in library prosa.classic.model.schedule.uni.jitter.schedule, line 81, characters 14-47
+UniprocessorScheduleWithJitter.service_before_jitter_is_zero : forall {Job : eqtype.Equality.type} (job_arrival job_jitter : eqtype.Equality.sort Job -> time.Time.time) (sched : schedule.UniprocessorSchedule.schedule Job), UniprocessorScheduleWithJitter.jobs_execute_after_jitter job_arrival job_jitter sched -> forall (j : eqtype.Equality.sort Job) (t : nat), is_true (ssrnat.leq (S t) (arrival_sequence.ArrivalSequenceWithJitter.actual_arrival job_arrival job_jitter j)) -> schedule.UniprocessorSchedule.service_at sched j t = 0
+
+UniprocessorScheduleWithJitter.service_before_jitter_is_zero is not universe polymorphic
+Arguments UniprocessorScheduleWithJitter.service_before_jitter_is_zero {Job} (job_arrival job_jitter)%function_scope sched H_jobs_execute_after_jitter j t%nat_scope _
+UniprocessorScheduleWithJitter.service_before_jitter_is_zero is opaque
+Expands to: Constant prosa.classic.model.schedule.uni.jitter.schedule.UniprocessorScheduleWithJitter.service_before_jitter_is_zero
+Declared in library prosa.classic.model.schedule.uni.jitter.schedule, line 91, characters 14-43
+UniprocessorScheduleWithJitter.cumulative_service_before_jitter_is_zero : forall {Job : eqtype.Equality.type} (job_arrival job_jitter : eqtype.Equality.sort Job -> time.Time.time) (sched : schedule.UniprocessorSchedule.schedule Job), UniprocessorScheduleWithJitter.jobs_execute_after_jitter job_arrival job_jitter sched -> forall (j : eqtype.Equality.sort Job) (t1 t2 : nat), is_true (ssrnat.leq t2 (arrival_sequence.ArrivalSequenceWithJitter.actual_arrival job_arrival job_jitter j)) -> bigop.bigop.body 0 (bigop.index_iota t1 t2) (fun i : nat => bigop.BigBody i ssrnat.addn true (schedule.UniprocessorSchedule.service_at sched j i)) = 0
+
+UniprocessorScheduleWithJitter.cumulative_service_before_jitter_is_zero is not universe polymorphic
+Arguments UniprocessorScheduleWithJitter.cumulative_service_before_jitter_is_zero {Job} (job_arrival job_jitter)%function_scope sched H_jobs_execute_after_jitter j (t1 t2)%nat_scope _
+UniprocessorScheduleWithJitter.cumulative_service_before_jitter_is_zero is opaque
+Expands to: Constant prosa.classic.model.schedule.uni.jitter.schedule.UniprocessorScheduleWithJitter.cumulative_service_before_jitter_is_zero
+Declared in library prosa.classic.model.schedule.uni.jitter.schedule, line 105, characters 14-54
+UniprocessorScheduleWithJitter.ignore_service_before_jitter : forall {Job : eqtype.Equality.type} (job_arrival job_jitter : eqtype.Equality.sort Job -> time.Time.time) (sched : schedule.UniprocessorSchedule.schedule Job), UniprocessorScheduleWithJitter.jobs_execute_after_jitter job_arrival job_jitter sched -> forall (j : eqtype.Equality.sort Job) (t1 t2 : nat), is_true (ssrnat.leq t1 (arrival_sequence.ArrivalSequenceWithJitter.actual_arrival job_arrival job_jitter j) && ssrnat.leq (arrival_sequence.ArrivalSequenceWithJitter.actual_arrival job_arrival job_jitter j) t2) -> bigop.bigop.body 0 (bigop.index_iota t1 t2) (fun t : nat => bigop.BigBody t ssrnat.addn true (schedule.UniprocessorSchedule.service_at sched j t)) = bigop.bigop.body 0 (bigop.index_iota (arrival_sequence.ArrivalSequenceWithJitter.actual_arrival job_arrival job_jitter j) t2) (fun t : nat => bigop.BigBody t ssrnat.addn true (schedule.UniprocessorSchedule.service_at sched j t))
+
+UniprocessorScheduleWithJitter.ignore_service_before_jitter is not universe polymorphic
+Arguments UniprocessorScheduleWithJitter.ignore_service_before_jitter {Job} (job_arrival job_jitter)%function_scope sched H_jobs_execute_after_jitter j (t1 t2)%nat_scope _
+UniprocessorScheduleWithJitter.ignore_service_before_jitter is opaque
+Expands to: Constant prosa.classic.model.schedule.uni.jitter.schedule.UniprocessorScheduleWithJitter.ignore_service_before_jitter
+Declared in library prosa.classic.model.schedule.uni.jitter.schedule, line 120, characters 14-42
+UniprocessorScheduleWithJitter.scheduled_implies_pending : forall {Job : eqtype.Equality.type} (job_arrival job_cost job_jitter : eqtype.Equality.sort Job -> time.Time.time) (sched : schedule.UniprocessorSchedule.schedule Job), UniprocessorScheduleWithJitter.jobs_execute_after_jitter job_arrival job_jitter sched -> schedule.UniprocessorSchedule.completed_jobs_dont_execute job_cost sched -> forall (j : eqtype.Equality.sort Job) (t : time.Time.time), is_true (schedule.UniprocessorSchedule.scheduled_at sched j t) -> is_true (UniprocessorScheduleWithJitter.pending job_arrival job_cost job_jitter sched j t)
+
+UniprocessorScheduleWithJitter.scheduled_implies_pending is not universe polymorphic
+Arguments UniprocessorScheduleWithJitter.scheduled_implies_pending {Job} (job_arrival job_cost job_jitter)%function_scope sched H_jobs_execute_after_jitter H_completed_jobs j t _
+UniprocessorScheduleWithJitter.scheduled_implies_pending is opaque
+Expands to: Constant prosa.classic.model.schedule.uni.jitter.schedule.UniprocessorScheduleWithJitter.scheduled_implies_pending
+Declared in library prosa.classic.model.schedule.uni.jitter.schedule, line 147, characters 14-39

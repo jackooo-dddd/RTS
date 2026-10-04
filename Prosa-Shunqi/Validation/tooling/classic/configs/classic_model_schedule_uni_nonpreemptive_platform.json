@@ -1,0 +1,73 @@
+{
+  "rank": 70,
+  "layer": 11,
+  "classic_scope": "full",
+  "slug": "classic_model_schedule_uni_nonpreemptive_platform",
+  "tag": "CUNPPLAT",
+  "export_name": "ClassicUniNonpreemptivePlatform",
+  "source": "classic/model/schedule/uni/nonpreemptive/platform.v",
+  "production": "Prosa/Classic/Model/Schedule/Uni/Nonpreemptive/Platform.lean",
+  "fixtures": [
+    "ClassicUniNonpreemptivePlatformInterface"
+  ],
+  "export_module": "Validation.fixtures.translation_order.ClassicUniNonpreemptivePlatformInterface",
+  "interface_theorems": [],
+  "computational": [
+    "NonpreemptivePlatform.is_preemption_point'",
+    "NonpreemptivePlatform.is_preemption_point",
+    "NonpreemptivePlatform.work_conserving",
+    "NonpreemptivePlatform.respects_FP_policy_at_preemption_point",
+    "NonpreemptivePlatform.respects_JLFP_policy_at_preemption_point"
+  ],
+  "chain": [
+    "ClassicUniNonpreemptivePlatformBase",
+    "ClassicUniNonpreemptivePlatformList",
+    "ClassicUniNonpreemptivePlatformCorrespondence"
+  ],
+  "principal": {},
+  "helpers": [
+    "cnpl_forall_sched",
+    "cnpl_forall_par",
+    "cnpl_ico"
+  ],
+  "base_run": null,
+  "base_checks": [],
+  "previous_status": "classic_model_schedule_uni_jitter_platform_module_status.json",
+  "input_relations": [
+    "job and task types: eqTypes identified, Lean DecidableEq instances = the eqTypes' decision procedures; job_task identified",
+    "times by SubNatRel; job parameters pointwise through SubNatRel; schedules pointwise through the option map; arrival sequences pointwise on related times; priority policies pointwise on Booleans (two-way totals)"
+  ],
+  "lean_representation_note": "the Rocq module NonpreemptivePlatform is a namespace; `sched t = None` is the Lean `sched t = none`; Boolean predicates in Prop positions use `= true`",
+  "prop_sprop_foundation": [
+    "PropSPropFoundation.interpret_strict"
+  ],
+  "importer_foundation": [],
+  "rocq_sprop_uip": [
+    "ClassicUniNonpreemptivePlatformBase.I.HEq_inst1",
+    "ClassicUniNonpreemptivePlatformBase.I.True",
+    "I.HEq",
+    "I.HEq_inst1",
+    "I.True",
+    "Lean.eq",
+    "Lean.eq_inst1",
+    "SubadditivityNatCorrespondence.SubNatTrue"
+  ],
+  "normalization": {
+    "theorem_types": [],
+    "subexpression_heads": [
+      "Finset.sum"
+    ],
+    "definition_bodies": [],
+    "body_projections": [
+      "Prosa.Classic.Model.Schedule.Uni.Schedule.UniprocessorSchedule.service_during=Prosa.Validation.ClassicUniNonpreemptivePlatformInterface.service_during_proj=Prosa.Validation.ClassicUniNonpreemptivePlatformInterface.service_during_proj_guard",
+      "Prosa.Classic.Model.Schedule.Uni.Schedule.UniprocessorSchedule.total_service_during=Prosa.Validation.ClassicUniNonpreemptivePlatformInterface.total_service_during_proj=Prosa.Validation.ClassicUniNonpreemptivePlatformInterface.total_service_during_proj_guard"
+    ]
+  },
+  "export_env": {
+    "LEAN4EXPORT_PRESERVE_REDUCIBLE_THEOREM_TYPES": "1",
+    "LEAN4EXPORT_NAT_INDEX_ALIASES": "Prosa.Classic.Model.Time.Time.time"
+  },
+  "kernel_guard_artifacts": [
+    "Validation/fixtures/translation_order/ClassicUniNonpreemptivePlatformInterface.lean"
+  ]
+}

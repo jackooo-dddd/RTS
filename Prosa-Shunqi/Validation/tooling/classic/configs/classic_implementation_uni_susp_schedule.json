@@ -1,0 +1,97 @@
+{
+  "rank": 137,
+  "layer": 13,
+  "classic_scope": "full",
+  "slug": "classic_implementation_uni_susp_schedule",
+  "tag": "CIUSS",
+  "export_name": "ClassicImplUniSuspSchedule",
+  "source": "classic/implementation/uni/susp/schedule.v",
+  "production": "Prosa/Classic/Implementation/Uni/Susp/Schedule.lean",
+  "fixtures": [
+    "ClassicImplUniSuspScheduleInterface"
+  ],
+  "export_module": "Validation.fixtures.translation_order.ClassicImplUniSuspScheduleInterface",
+  "interface_theorems": [
+    "Prosa.Validation.ClassicImplUniSuspScheduleInterface.finRange_map_shift",
+    "Prosa.Validation.ClassicImplUniSuspScheduleInterface.finRange_map_val",
+    "Prosa.Validation.ClassicImplUniSuspScheduleInterface.finRange_any",
+    "Prosa.Validation.ClassicImplUniSuspScheduleInterface.map_finRange_eq_map_range'",
+    "Prosa.Validation.ClassicImplUniSuspScheduleInterface.maxFiltered_eq_foldr_cond",
+    "Prosa.Validation.ClassicImplUniSuspScheduleInterface.maxFiltered_finRange",
+    "Prosa.Validation.ClassicImplUniSuspScheduleInterface.bigCat_range'",
+    "Prosa.Validation.ClassicImplUniSuspScheduleInterface.production_schedule_prefix_zero",
+    "Prosa.Validation.ClassicImplUniSuspScheduleInterface.production_schedule_prefix_succ"
+  ],
+  "computational": [
+    "ConcreteScheduler.pending_jobs",
+    "ConcreteScheduler.highest_priority_job",
+    "ConcreteScheduler.scheduler"
+  ],
+  "chain": [
+    "ClassicImplUniSuspScheduleBase",
+    "ClassicImplUniSuspScheduleList",
+    "ClassicImplUniSuspScheduleOrd",
+    "ClassicImplUniSuspScheduleCorrespondence"
+  ],
+  "principal": {},
+  "helpers": [
+    "cus_forall_sched",
+    "cus_forall_arr",
+    "cus_forall_par",
+    "cus_forall_jldp",
+    "cus_forall_susp"
+  ],
+  "base_run": null,
+  "base_checks": [],
+  "previous_status": "classic_implementation_uni_jitter_schedule_module_status.json",
+  "input_relations": [
+    "job type: eqType identified, Lean DecidableEq instance = the eqType's decision procedure",
+    "times by SubNatRel; job parameters pointwise through SubNatRel; arrival sequences pointwise on related times; JLDP policies pointwise on related times; uniprocessor schedules pointwise through the option map (two-way totals)",
+    "suspension functions pointwise on related times (two-way totals)"
+  ],
+  "lean_representation_note": "the Rocq module ConcreteScheduler is a namespace; `[seq j <- s | P j]` is `s.filter P`; `seq_min` is the classic `Prosa.Classic.Util.Minmax.seq_min`; the section-local `empty_schedule` is `fun _ => none`; `transitive`/`total` are unfolded; suspension notions as in the accepted classic uniprocessor suspension validations",
+  "prop_sprop_foundation": [
+    "PropSPropFoundation.interpret_strict"
+  ],
+  "importer_foundation": [
+    "ImportedClassicImplUniSuspSchedule.Quot_sound",
+    "ImportedClassicImplUniSuspSchedule.propext",
+    "PrimInt63.eqb",
+    "PrimInt63.int",
+    "PrimInt63.land",
+    "PrimInt63.lsr"
+  ],
+  "rocq_sprop_uip": [
+    "ClassicImplUniSuspScheduleBase.I.HEq_inst1",
+    "ClassicImplUniSuspScheduleBase.I.True",
+    "ClassicImplUniSuspScheduleOrd.I.HEq",
+    "ClassicImplUniSuspScheduleOrd.I.HEq_inst1",
+    "ClassicImplUniSuspScheduleOrd.I.True",
+    "I.HEq",
+    "I.HEq_inst1",
+    "I.True",
+    "Lean.eq",
+    "Lean.eq_inst1",
+    "SubadditivityNatCorrespondence.SubNatTrue"
+  ],
+  "normalization": {
+    "theorem_types": [],
+    "subexpression_heads": [
+      "Finset.sum"
+    ],
+    "definition_bodies": [],
+    "body_projections": [
+      "Prosa.Classic.Model.Schedule.Uni.Schedule.UniprocessorSchedule.service_during=Prosa.Validation.ClassicImplUniSuspScheduleInterface.service_during_proj=Prosa.Validation.ClassicImplUniSuspScheduleInterface.service_during_proj_guard",
+      "Prosa.Classic.Model.Schedule.Uni.Schedule.UniprocessorSchedule.total_service_during=Prosa.Validation.ClassicImplUniSuspScheduleInterface.total_service_during_proj=Prosa.Validation.ClassicImplUniSuspScheduleInterface.total_service_during_proj_guard",
+      "Prosa.Classic.Model.Suspension.Suspension.total_suspension=Prosa.Validation.ClassicImplUniSuspScheduleInterface.total_suspension_proj=Prosa.Validation.ClassicImplUniSuspScheduleInterface.total_suspension_proj_guard",
+      "Prosa.Classic.Model.Schedule.Uni.Susp.SuspensionIntervals.SuspensionIntervals.cumulative_suspension_during=Prosa.Validation.ClassicImplUniSuspScheduleInterface.cumulative_suspension_during_proj=Prosa.Validation.ClassicImplUniSuspScheduleInterface.cumulative_suspension_during_proj_guard"
+    ]
+  },
+  "export_env": {
+    "LEAN4EXPORT_PRESERVE_REDUCIBLE_THEOREM_TYPES": "1",
+    "LEAN4EXPORT_NAT_INDEX_ALIASES": "Prosa.Classic.Model.Time.Time.time"
+  },
+  "kernel_guard_artifacts": [
+    "Validation/fixtures/translation_order/ClassicImplUniSuspScheduleInterface.lean"
+  ]
+}

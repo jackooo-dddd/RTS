@@ -6,8 +6,8 @@
 | sha256 | `b7f0caba7bec38b1971a99cebd0b07088868400186bde58a7d64cd8be6db011d` |
 | Lean module | `Prosa/Classic/Util/Bigcat.lean` (namespace `Prosa.Classic.Util.Bigcat`) |
 | Tier / layer | S / 3 |
-| Status | **TRANSLATED**: compiles (Lean 4.33.1, pinned Mathlib), no `sorry`; `#print axioms` ⊆ {`propext`, `Quot.sound`, `Classical.choice`} |
-| Validation | pending Stage 0 (classic pipeline extension) |
+| Status | **ACCEPTED** (classic validation family; see the manifest) |
+| Validation | accepted |
 
 ## Declarations (6 source → Lean, same names)
 
@@ -28,10 +28,12 @@ Lemmas about big concatenation over ordinals.  The source re-exports
 
 Representation notes: `'I_n` is `Fin n`; MathComp's `\cat_(i < n) f i`
 (`\big[cat/nil]` over `'I_n` in increasing order) is
-`((List.finRange n).map f).flatten`, the map-then-flatten form also used for the
+`Prosa.Util.Bigcat.bigCatFin f`, the map-then-flatten form also used for the
 v0.6 big-concatenation helpers; `\sum_(i < n) F i` over ordinals is Mathlib's
 `∑ i : Fin n, F i`.
 
 ## History
 
 - 2026-10-01: translated; build and axiom check passed.
+- 2026-10-02: translated; build and axiom check passed.
+- 2026-10-02: accepted.

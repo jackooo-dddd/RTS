@@ -1,0 +1,24 @@
+import Validation.fixtures.translation_order.ClassicGlobalJitterInterferenceEdfInterface
+set_option pp.fieldNotation false
+
+#check @Prosa.Classic.Model.Schedule.Global.Jitter.InterferenceEdf.InterferenceEDF.interference_under_edf_implies_shorter_deadlines
+#check @Prosa.Validation.ClassicGlobalJitterInterferenceEdfInterface.finRange_any
+#check @Prosa.Validation.ClassicGlobalJitterInterferenceEdfInterface.bigCatFin_range'
+#check @Prosa.Validation.ClassicGlobalJitterInterferenceEdfInterface.fin_sum_range'
+#check @Prosa.Validation.ClassicGlobalJitterInterferenceEdfInterface.bigCat_range'
+#check @Prosa.Validation.ClassicGlobalJitterInterferenceEdfInterface.count_filter_eq
+#check @Prosa.Validation.ClassicGlobalJitterInterferenceEdfInterface.service_at_sum
+#check @Prosa.Validation.ClassicGlobalJitterInterferenceEdfInterface.dedup_nil
+#check @Prosa.Validation.ClassicGlobalJitterInterferenceEdfInterface.dedup_cons_mem
+#check @Prosa.Validation.ClassicGlobalJitterInterferenceEdfInterface.dedup_cons_not_mem
+
+#print axioms Prosa.Classic.Model.Schedule.Global.Jitter.InterferenceEdf.InterferenceEDF.interference_under_edf_implies_shorter_deadlines
+#print axioms Prosa.Validation.ClassicGlobalJitterInterferenceEdfInterface.finRange_any
+#print axioms Prosa.Validation.ClassicGlobalJitterInterferenceEdfInterface.bigCatFin_range'
+#print axioms Prosa.Validation.ClassicGlobalJitterInterferenceEdfInterface.fin_sum_range'
+#print axioms Prosa.Validation.ClassicGlobalJitterInterferenceEdfInterface.bigCat_range'
+#print axioms Prosa.Validation.ClassicGlobalJitterInterferenceEdfInterface.count_filter_eq
+#print axioms Prosa.Validation.ClassicGlobalJitterInterferenceEdfInterface.service_at_sum
+#print axioms Prosa.Validation.ClassicGlobalJitterInterferenceEdfInterface.dedup_nil
+#print axioms Prosa.Validation.ClassicGlobalJitterInterferenceEdfInterface.dedup_cons_mem
+#print axioms Prosa.Validation.ClassicGlobalJitterInterferenceEdfInterface.dedup_cons_not_mem

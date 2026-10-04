@@ -1,0 +1,5 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedClassicJitterJob.
+
+Check ImportedClassicJitterJob.Prosa_Classic_Model_Arrival_Jitter_Job_JobWithJitter_job_jitter_leq_task_jitter.
+Check ImportedClassicJitterJob.Prosa_Classic_Model_Arrival_Jitter_Job_JobWithJitter_valid_sporadic_job_with_jitter.

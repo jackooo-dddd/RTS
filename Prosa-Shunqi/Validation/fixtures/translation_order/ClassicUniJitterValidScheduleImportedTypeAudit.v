@@ -1,0 +1,4 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedClassicUniJitterValidSchedule.
+
+Check ImportedClassicUniJitterValidSchedule.Prosa_Classic_Model_Schedule_Uni_Jitter_ValidSchedule_ValidJitterAwareSchedule_valid_jitter_aware_schedule.

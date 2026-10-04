@@ -1,0 +1,30 @@
+import Validation.fixtures.translation_order.ClassicSinglecostReductionInterface
+set_option pp.fieldNotation false
+
+#check @Prosa.Classic.Analysis.Uni.Susp.Sustainability.Singlecost.Reduction.SustainabilitySingleCost.ready_jobs
+#check @Prosa.Classic.Analysis.Uni.Susp.Sustainability.Singlecost.Reduction.SustainabilitySingleCost.highest_priority_job
+#check @Prosa.Classic.Analysis.Uni.Susp.Sustainability.Singlecost.Reduction.SustainabilitySingleCost.build_schedule
+#check @Prosa.Classic.Analysis.Uni.Susp.Sustainability.Singlecost.Reduction.SustainabilitySingleCost.sched_susp_highercost
+#check @Prosa.Validation.ClassicSinglecostReductionInterface.finRange_map_shift
+#check @Prosa.Validation.ClassicSinglecostReductionInterface.finRange_map_val
+#check @Prosa.Validation.ClassicSinglecostReductionInterface.finRange_any
+#check @Prosa.Validation.ClassicSinglecostReductionInterface.map_finRange_eq_map_range'
+#check @Prosa.Validation.ClassicSinglecostReductionInterface.maxFiltered_eq_foldr_cond
+#check @Prosa.Validation.ClassicSinglecostReductionInterface.maxFiltered_finRange
+#check @Prosa.Validation.ClassicSinglecostReductionInterface.bigCat_range'
+#check @Prosa.Validation.ClassicSinglecostReductionInterface.production_schedule_prefix_zero
+#check @Prosa.Validation.ClassicSinglecostReductionInterface.production_schedule_prefix_succ
+
+#print axioms Prosa.Classic.Analysis.Uni.Susp.Sustainability.Singlecost.Reduction.SustainabilitySingleCost.ready_jobs
+#print axioms Prosa.Classic.Analysis.Uni.Susp.Sustainability.Singlecost.Reduction.SustainabilitySingleCost.highest_priority_job
+#print axioms Prosa.Classic.Analysis.Uni.Susp.Sustainability.Singlecost.Reduction.SustainabilitySingleCost.build_schedule
+#print axioms Prosa.Classic.Analysis.Uni.Susp.Sustainability.Singlecost.Reduction.SustainabilitySingleCost.sched_susp_highercost
+#print axioms Prosa.Validation.ClassicSinglecostReductionInterface.finRange_map_shift
+#print axioms Prosa.Validation.ClassicSinglecostReductionInterface.finRange_map_val
+#print axioms Prosa.Validation.ClassicSinglecostReductionInterface.finRange_any
+#print axioms Prosa.Validation.ClassicSinglecostReductionInterface.map_finRange_eq_map_range'
+#print axioms Prosa.Validation.ClassicSinglecostReductionInterface.maxFiltered_eq_foldr_cond
+#print axioms Prosa.Validation.ClassicSinglecostReductionInterface.maxFiltered_finRange
+#print axioms Prosa.Validation.ClassicSinglecostReductionInterface.bigCat_range'
+#print axioms Prosa.Validation.ClassicSinglecostReductionInterface.production_schedule_prefix_zero
+#print axioms Prosa.Validation.ClassicSinglecostReductionInterface.production_schedule_prefix_succ

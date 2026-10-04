@@ -6,8 +6,8 @@
 | sha256 | `5f7b93e97c6c71e8b22cec68c54f0a80b3e4952c78e287cb14e409ad773fef67` |
 | Lean module | `Prosa/Classic/Util/Bigord.lean` (namespace `Prosa.Classic.Util.Bigord`) |
 | Tier / layer | S / 2 |
-| Status | **TRANSLATED**: compiles (Lean 4.33.1, pinned Mathlib), no `sorry`; `#print axioms` ⊆ {`propext`, `Quot.sound`, `Classical.choice`} |
-| Validation | pending Stage 0 (classic pipeline extension) |
+| Status | **ACCEPTED** (classic validation family; see the manifest) |
+| Validation | accepted |
 
 ## Declarations (4 source → Lean, same names)
 
@@ -33,3 +33,4 @@ Representation notes:
 ## History
 
 - 2026-10-01: translated; build and axiom check passed.
+- 2026-10-02: accepted.

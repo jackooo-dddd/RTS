@@ -1,0 +1,64 @@
+import Validation.fixtures.translation_order.ClassicBertognaFpApaInterface
+set_option pp.fieldNotation false
+
+#check @Prosa.Classic.Analysis.Apa.BertognaFpTheory.ResponseTimeAnalysisFP.bertogna_fp_workload_bounds_interference
+#check @Prosa.Classic.Analysis.Apa.BertognaFpTheory.ResponseTimeAnalysisFP.bertogna_fp_too_much_interference
+#check @Prosa.Classic.Analysis.Apa.BertognaFpTheory.ResponseTimeAnalysisFP.bertogna_fp_interference_by_different_tasks
+#check @Prosa.Classic.Analysis.Apa.BertognaFpTheory.ResponseTimeAnalysisFP.bertogna_fp_previous_interfering_jobs_complete_by_their_period
+#check @Prosa.Classic.Analysis.Apa.BertognaFpTheory.ResponseTimeAnalysisFP.bertogna_fp_all_cpus_in_affinity_busy
+#check @Prosa.Classic.Analysis.Apa.BertognaFpTheory.ResponseTimeAnalysisFP.bertogna_fp_all_cpus_in_subaffinity_busy
+#check @Prosa.Classic.Analysis.Apa.BertognaFpTheory.ResponseTimeAnalysisFP.bertogna_fp_alpha'_is_full
+#check @Prosa.Classic.Analysis.Apa.BertognaFpTheory.ResponseTimeAnalysisFP.bertogna_fp_interference_in_non_full_processors
+#check @Prosa.Classic.Analysis.Apa.BertognaFpTheory.ResponseTimeAnalysisFP.bertogna_fp_minimum_exceeds_interference
+#check @Prosa.Classic.Analysis.Apa.BertognaFpTheory.ResponseTimeAnalysisFP.bertogna_fp_interference_on_subaffinity
+#check @Prosa.Classic.Analysis.Apa.BertognaFpTheory.ResponseTimeAnalysisFP.bertogna_fp_sum_exceeds_total_interference
+#check @Prosa.Classic.Analysis.Apa.BertognaFpTheory.ResponseTimeAnalysisFP.bertogna_fp_exists_task_that_exceeds_bound
+#check @Prosa.Classic.Analysis.Apa.BertognaFpTheory.ResponseTimeAnalysisFP.bertogna_cirinei_response_time_bound_fp
+#check @Prosa.Validation.ClassicBertognaFpApaInterface.finRange_any
+#check @Prosa.Validation.ClassicBertognaFpApaInterface.bigCatFin_range'
+#check @Prosa.Validation.ClassicBertognaFpApaInterface.fin_sum_range'
+#check @Prosa.Validation.ClassicBertognaFpApaInterface.bigCat_range'
+#check @Prosa.Validation.ClassicBertognaFpApaInterface.service_at_sum
+#check @Prosa.Validation.ClassicBertognaFpApaInterface.dedup_nil
+#check @Prosa.Validation.ClassicBertognaFpApaInterface.dedup_cons_mem
+#check @Prosa.Validation.ClassicBertognaFpApaInterface.dedup_cons_not_mem
+#check @Prosa.Validation.ClassicBertognaFpApaInterface.length_eq_count
+#check @Prosa.Validation.ClassicBertognaFpApaInterface.card_filter_sum
+#check @Prosa.Validation.DivModInterface.production_div_floor_eq
+#check @Prosa.Validation.DivModInterface.production_div_ceil_eq
+#check @Prosa.Validation.DivModInterface.production_div_add_mod
+#check @Prosa.Validation.DivModInterface.production_mod_lt
+#check @Prosa.Validation.DivModInterface.production_div_zero
+#check @Prosa.Validation.DivModInterface.production_mod_zero
+#check @Prosa.Validation.DivModInterface.production_dvd_iff_mod_eq_zero
+
+#print axioms Prosa.Classic.Analysis.Apa.BertognaFpTheory.ResponseTimeAnalysisFP.bertogna_fp_workload_bounds_interference
+#print axioms Prosa.Classic.Analysis.Apa.BertognaFpTheory.ResponseTimeAnalysisFP.bertogna_fp_too_much_interference
+#print axioms Prosa.Classic.Analysis.Apa.BertognaFpTheory.ResponseTimeAnalysisFP.bertogna_fp_interference_by_different_tasks
+#print axioms Prosa.Classic.Analysis.Apa.BertognaFpTheory.ResponseTimeAnalysisFP.bertogna_fp_previous_interfering_jobs_complete_by_their_period
+#print axioms Prosa.Classic.Analysis.Apa.BertognaFpTheory.ResponseTimeAnalysisFP.bertogna_fp_all_cpus_in_affinity_busy
+#print axioms Prosa.Classic.Analysis.Apa.BertognaFpTheory.ResponseTimeAnalysisFP.bertogna_fp_all_cpus_in_subaffinity_busy
+#print axioms Prosa.Classic.Analysis.Apa.BertognaFpTheory.ResponseTimeAnalysisFP.bertogna_fp_alpha'_is_full
+#print axioms Prosa.Classic.Analysis.Apa.BertognaFpTheory.ResponseTimeAnalysisFP.bertogna_fp_interference_in_non_full_processors
+#print axioms Prosa.Classic.Analysis.Apa.BertognaFpTheory.ResponseTimeAnalysisFP.bertogna_fp_minimum_exceeds_interference
+#print axioms Prosa.Classic.Analysis.Apa.BertognaFpTheory.ResponseTimeAnalysisFP.bertogna_fp_interference_on_subaffinity
+#print axioms Prosa.Classic.Analysis.Apa.BertognaFpTheory.ResponseTimeAnalysisFP.bertogna_fp_sum_exceeds_total_interference
+#print axioms Prosa.Classic.Analysis.Apa.BertognaFpTheory.ResponseTimeAnalysisFP.bertogna_fp_exists_task_that_exceeds_bound
+#print axioms Prosa.Classic.Analysis.Apa.BertognaFpTheory.ResponseTimeAnalysisFP.bertogna_cirinei_response_time_bound_fp
+#print axioms Prosa.Validation.ClassicBertognaFpApaInterface.finRange_any
+#print axioms Prosa.Validation.ClassicBertognaFpApaInterface.bigCatFin_range'
+#print axioms Prosa.Validation.ClassicBertognaFpApaInterface.fin_sum_range'
+#print axioms Prosa.Validation.ClassicBertognaFpApaInterface.bigCat_range'
+#print axioms Prosa.Validation.ClassicBertognaFpApaInterface.service_at_sum
+#print axioms Prosa.Validation.ClassicBertognaFpApaInterface.dedup_nil
+#print axioms Prosa.Validation.ClassicBertognaFpApaInterface.dedup_cons_mem
+#print axioms Prosa.Validation.ClassicBertognaFpApaInterface.dedup_cons_not_mem
+#print axioms Prosa.Validation.ClassicBertognaFpApaInterface.length_eq_count
+#print axioms Prosa.Validation.ClassicBertognaFpApaInterface.card_filter_sum
+#print axioms Prosa.Validation.DivModInterface.production_div_floor_eq
+#print axioms Prosa.Validation.DivModInterface.production_div_ceil_eq
+#print axioms Prosa.Validation.DivModInterface.production_div_add_mod
+#print axioms Prosa.Validation.DivModInterface.production_mod_lt
+#print axioms Prosa.Validation.DivModInterface.production_div_zero
+#print axioms Prosa.Validation.DivModInterface.production_mod_zero
+#print axioms Prosa.Validation.DivModInterface.production_dvd_iff_mod_eq_zero

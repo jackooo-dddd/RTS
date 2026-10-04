@@ -6,8 +6,8 @@
 | sha256 | `6ed53c42fe02f421299fdfd603b17e5ebf18bcc913c01bc673ea36f5f51c7c95` |
 | Lean module | `Prosa/Classic/Util/Sum.lean` (namespace `Prosa.Classic.Util.Sum`) |
 | Tier / layer | S / 4 |
-| Status | **TRANSLATED**: compiles (Lean 4.33.1, pinned Mathlib), no `sorry`; `#print axioms` ⊆ {`propext`, `Quot.sound`, `Classical.choice`} |
-| Validation | pending Stage 0 (classic pipeline extension) |
+| Status | **ACCEPTED** (classic validation family; see the manifest) |
+| Validation | accepted |
 
 ## Declarations (9 source → Lean, same names)
 
@@ -35,9 +35,12 @@ Representation notes (as in the accepted v0.6 translation):
   `\sum_(i <- r | P i) F i` is `Prosa.Util.Sum.sumFiltered r P F`;
 * `\sum_(m <= i < n) F i` is `∑ i ∈ Finset.Ico m n, F i`, and
   `\sum_(m <= i < n | P i) F i` is `∑ i ∈ (Finset.Ico m n).filter (P · = true), F i`;
-* `m <= i < n` in proposition position is `m ≤ i ∧ i < n`; `nth x0 r i` is
+* a Boolean chain `m <= i < n` in proposition position is
+  `(decide (m ≤ i) && decide (i < n)) = true`; `nth x0 r i` is
   `r.getD i x0`; `{subset r1 <= r2}` is `∀ x, x ∈ r1 → x ∈ r2`.
 
 ## History
 
 - 2026-10-01: translated; build and axiom check passed.
+- 2026-10-02: translated; build and axiom check passed.
+- 2026-10-02: accepted.

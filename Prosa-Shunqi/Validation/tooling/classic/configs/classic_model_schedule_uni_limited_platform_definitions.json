@@ -1,0 +1,81 @@
+{
+  "rank": 83,
+  "layer": 12,
+  "classic_scope": "full",
+  "slug": "classic_model_schedule_uni_limited_platform_definitions",
+  "tag": "CULPDEF",
+  "export_name": "ClassicUniLimitedPlatform",
+  "source": "classic/model/schedule/uni/limited/platform/definitions.v",
+  "production": "Prosa/Classic/Model/Schedule/Uni/Limited/Platform/Definitions.lean",
+  "fixtures": [
+    "ClassicUniLimitedPlatformInterface"
+  ],
+  "export_module": "Validation.fixtures.translation_order.ClassicUniLimitedPlatformInterface",
+  "interface_theorems": [],
+  "computational": [
+    "LimitedPreemptionPlatform.preemption_time",
+    "LimitedPreemptionPlatform.not_preemptive_implies_scheduled",
+    "LimitedPreemptionPlatform.execution_starts_with_preemption_point",
+    "LimitedPreemptionPlatform.correct_preemption_model",
+    "LimitedPreemptionPlatform.job_cannot_become_nonpreemptive_before_execution",
+    "LimitedPreemptionPlatform.job_cannot_be_nonpreemptive_after_completion",
+    "LimitedPreemptionPlatform.job_max_nonpreemptive_segment_le_task_max_nonpreemptive_segment",
+    "LimitedPreemptionPlatform.nonpreemptive_regions_have_bounded_length",
+    "LimitedPreemptionPlatform.model_with_bounded_nonpreemptive_segments",
+    "LimitedPreemptionPlatform.work_conserving",
+    "LimitedPreemptionPlatform.respects_FP_policy_at_preemption_point",
+    "LimitedPreemptionPlatform.respects_JLFP_policy_at_preemption_point"
+  ],
+  "chain": [
+    "ClassicUniLimitedPlatformBase",
+    "ClassicUniLimitedPlatformList",
+    "ClassicUniLimitedPlatformCorrespondence"
+  ],
+  "principal": {},
+  "helpers": [
+    "cdp_forall_sched",
+    "cdp_forall_par",
+    "cdp_ico",
+    "cdp_forall_pm"
+  ],
+  "base_run": null,
+  "base_checks": [],
+  "previous_status": "classic_model_schedule_uni_limited_schedule_module_status.json",
+  "input_relations": [
+    "job and task types: eqTypes identified, Lean DecidableEq instances = the eqTypes' decision procedures; job_task identified",
+    "times by SubNatRel; job/task parameters pointwise through SubNatRel; preemption models pointwise; schedules pointwise through the option map; arrival sequences pointwise on related times; priority policies pointwise (two-way totals)"
+  ],
+  "lean_representation_note": "the Rocq module LimitedPreemptionPlatform is a namespace; `t.+1` is `t + 1`; `\u03b5` is the numeral one; Boolean predicates in Prop positions use `= true`",
+  "prop_sprop_foundation": [
+    "PropSPropFoundation.interpret_strict"
+  ],
+  "importer_foundation": [],
+  "rocq_sprop_uip": [
+    "ClassicUniLimitedPlatformBase.I.HEq_inst1",
+    "ClassicUniLimitedPlatformBase.I.True",
+    "I.HEq",
+    "I.HEq_inst1",
+    "I.True",
+    "Lean.eq",
+    "Lean.eq_inst1",
+    "SubadditivityNatCorrespondence.SubNatTrue"
+  ],
+  "normalization": {
+    "theorem_types": [],
+    "subexpression_heads": [
+      "Finset.sum"
+    ],
+    "definition_bodies": [],
+    "body_projections": [
+      "Prosa.Classic.Model.Schedule.Uni.Schedule.UniprocessorSchedule.service_during=Prosa.Validation.ClassicUniLimitedPlatformInterface.service_during_proj=Prosa.Validation.ClassicUniLimitedPlatformInterface.service_during_proj_guard",
+      "Prosa.Classic.Model.Schedule.Uni.Schedule.UniprocessorSchedule.total_service_during=Prosa.Validation.ClassicUniLimitedPlatformInterface.total_service_during_proj=Prosa.Validation.ClassicUniLimitedPlatformInterface.total_service_during_proj_guard"
+    ]
+  },
+  "export_env": {
+    "LEAN4EXPORT_PRESERVE_REDUCIBLE_THEOREM_TYPES": "1",
+    "LEAN4EXPORT_NAT_INDEX_ALIASES": "Prosa.Classic.Model.Time.Time.time"
+  },
+  "kernel_guard_artifacts": [
+    "Validation/fixtures/translation_order/ClassicUniLimitedPlatformInterface.lean"
+  ]
+}

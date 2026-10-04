@@ -1,0 +1,101 @@
+{
+  "rank": 33,
+  "layer": 12,
+  "slug": "classic_model_schedule_apa_interference",
+  "tag": "CAPAINT",
+  "export_name": "ClassicApaInterference",
+  "source": "classic/model/schedule/apa/interference.v",
+  "production": "Prosa/Classic/Model/Schedule/Apa/Interference.lean",
+  "fixtures": [
+    "ClassicApaInterferenceInterface"
+  ],
+  "export_module": "Validation.fixtures.translation_order.ClassicApaInterferenceInterface",
+  "interface_theorems": [
+    "Prosa.Validation.ClassicApaInterferenceInterface.finRange_any",
+    "Prosa.Validation.ClassicApaInterferenceInterface.bigCatFin_range'",
+    "Prosa.Validation.ClassicApaInterferenceInterface.fin_sum_range'",
+    "Prosa.Validation.ClassicApaInterferenceInterface.bigCat_range'",
+    "Prosa.Validation.ClassicApaInterferenceInterface.service_at_sum",
+    "Prosa.Validation.ClassicApaInterferenceInterface.dedup_nil",
+    "Prosa.Validation.ClassicApaInterferenceInterface.dedup_cons_mem",
+    "Prosa.Validation.ClassicApaInterferenceInterface.dedup_cons_not_mem"
+  ],
+  "computational": [
+    "Interference.higher_priority_task_in",
+    "Interference.different_task_in",
+    "Interference.total_interference",
+    "Interference.job_interference",
+    "Interference.task_interference",
+    "Interference.task_interference_joblist"
+  ],
+  "chain": [
+    "ClassicApaInterferenceBase",
+    "ClassicApaInterferenceList",
+    "ClassicApaInterferenceList1",
+    "ClassicApaInterferenceOrd",
+    "ClassicApaInterferenceCorrespondence"
+  ],
+  "base_run": null,
+  "base_checks": [],
+  "previous_status": "classic_model_schedule_global_workload_module_status.json",
+  "input_relations": [
+    "job and task types: eqTypes identified, Lean DecidableEq instances = the eqTypes' decision procedures; job_task identified",
+    "natural numbers (time, num_cpus) by SubNatRel; processors 'I_n and Fin n by their values; schedules pointwise on related processors and times with option values by the constructor map; affinities by their underlying sequences through the ordinal conversion, task affinities pointwise; FP policies pointwise; job parameters pointwise through SubNatRel (two-way totals)"
+  ],
+  "lean_representation_note": "as for the accepted classic schedule, affinity and workload validations; a Boolean read as a number is `Bool.toNat`; `\\sum_(j <- s | P j) F j` is the accepted v0.6 helper `sumFiltered s P F`",
+  "normalization": {
+    "theorem_types": [],
+    "subexpression_heads": [],
+    "definition_bodies": [],
+    "body_projections": [
+      "Prosa.Classic.Model.Schedule.Global.Basic.Schedule.Schedule.service=Prosa.Validation.ClassicApaInterferenceInterface.service_proj=Prosa.Validation.ClassicApaInterferenceInterface.service_proj_guard",
+      "Prosa.Classic.Model.Schedule.Global.Basic.Schedule.Schedule.service_during=Prosa.Validation.ClassicApaInterferenceInterface.service_during_proj=Prosa.Validation.ClassicApaInterferenceInterface.service_during_proj_guard",
+      "Prosa.Classic.Model.Schedule.Global.Workload.Workload.workload=Prosa.Validation.ClassicApaInterferenceInterface.workload_proj=Prosa.Validation.ClassicApaInterferenceInterface.workload_proj_guard",
+      "Prosa.Classic.Model.Schedule.Apa.Interference.Interference.total_interference=Prosa.Validation.ClassicApaInterferenceInterface.total_interference_proj=Prosa.Validation.ClassicApaInterferenceInterface.total_interference_proj_guard",
+      "Prosa.Classic.Model.Schedule.Apa.Interference.Interference.job_interference=Prosa.Validation.ClassicApaInterferenceInterface.job_interference_proj=Prosa.Validation.ClassicApaInterferenceInterface.job_interference_proj_guard",
+      "Prosa.Classic.Model.Schedule.Apa.Interference.Interference.task_interference=Prosa.Validation.ClassicApaInterferenceInterface.task_interference_proj=Prosa.Validation.ClassicApaInterferenceInterface.task_interference_proj_guard"
+    ]
+  },
+  "kernel_guard_artifacts": [
+    "Validation/fixtures/translation_order/ClassicApaInterferenceInterface.lean"
+  ],
+  "own_qualified_in_type": [
+    "Interference.total_interference",
+    "Interference.job_interference",
+    "Interference.task_interference",
+    "Interference.task_interference_joblist"
+  ],
+  "helpers": [
+    "cs_forall_ncpus_sched",
+    "cs_ico",
+    "caf_forall",
+    "cai_forall_taff"
+  ],
+  "probe_extra": [],
+  "export_diagnosis": "159,416 lines: as for the accepted classic schedule/workload/affinity exports (service_at and workload as Finset sums over Fin num_cpus, jobs_scheduled_between with Mathlib List.dedup, affinities as sequence-sets, validation-only interface theorems exported with their proof bodies); the three interference sums, workload, service and service_during through kernel-guarded rfl body projections.",
+  "prop_sprop_foundation": [
+    "PropSPropFoundation.interpret_strict"
+  ],
+  "importer_foundation": [
+    "ImportedClassicApaInterference.Classical_choice",
+    "ImportedClassicApaInterference.Quot_sound",
+    "ImportedClassicApaInterference.propext",
+    "PrimInt63.eqb",
+    "PrimInt63.int",
+    "PrimInt63.land",
+    "PrimInt63.lsr"
+  ],
+  "rocq_sprop_uip": [
+    "ClassicApaInterferenceBase.I.HEq_inst1",
+    "ClassicApaInterferenceBase.I.True",
+    "ClassicApaInterferenceOrd.I.HEq",
+    "ClassicApaInterferenceOrd.I.HEq_inst1",
+    "ClassicApaInterferenceOrd.I.True",
+    "I.HEq",
+    "I.HEq_inst1",
+    "I.True",
+    "Lean.eq",
+    "Lean.eq_inst1",
+    "SubadditivityNatCorrespondence.SubNatTrue"
+  ]
+}

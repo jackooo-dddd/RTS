@@ -1,0 +1,44 @@
+import Validation.fixtures.translation_order.ClassicImplUniSuspScheduleInterface
+set_option pp.fieldNotation false
+
+#check @Prosa.Classic.Implementation.Uni.Susp.Schedule.ConcreteScheduler.pending_jobs
+#check @Prosa.Classic.Implementation.Uni.Susp.Schedule.ConcreteScheduler.highest_priority_job
+#check @Prosa.Classic.Implementation.Uni.Susp.Schedule.ConcreteScheduler.scheduler
+#check @Prosa.Classic.Implementation.Uni.Susp.Schedule.ConcreteScheduler.scheduler_depends_only_on_prefix
+#check @Prosa.Classic.Implementation.Uni.Susp.Schedule.ConcreteScheduler.scheduler_uses_construction_function
+#check @Prosa.Classic.Implementation.Uni.Susp.Schedule.ConcreteScheduler.scheduler_jobs_come_from_arrival_sequence
+#check @Prosa.Classic.Implementation.Uni.Susp.Schedule.ConcreteScheduler.scheduler_jobs_must_arrive_to_execute
+#check @Prosa.Classic.Implementation.Uni.Susp.Schedule.ConcreteScheduler.scheduler_completed_jobs_dont_execute
+#check @Prosa.Classic.Implementation.Uni.Susp.Schedule.ConcreteScheduler.scheduler_work_conserving
+#check @Prosa.Classic.Implementation.Uni.Susp.Schedule.ConcreteScheduler.scheduler_respects_policy
+#check @Prosa.Classic.Implementation.Uni.Susp.Schedule.ConcreteScheduler.scheduler_respects_self_suspensions
+#check @Prosa.Validation.ClassicImplUniSuspScheduleInterface.finRange_map_shift
+#check @Prosa.Validation.ClassicImplUniSuspScheduleInterface.finRange_map_val
+#check @Prosa.Validation.ClassicImplUniSuspScheduleInterface.finRange_any
+#check @Prosa.Validation.ClassicImplUniSuspScheduleInterface.map_finRange_eq_map_range'
+#check @Prosa.Validation.ClassicImplUniSuspScheduleInterface.maxFiltered_eq_foldr_cond
+#check @Prosa.Validation.ClassicImplUniSuspScheduleInterface.maxFiltered_finRange
+#check @Prosa.Validation.ClassicImplUniSuspScheduleInterface.bigCat_range'
+#check @Prosa.Validation.ClassicImplUniSuspScheduleInterface.production_schedule_prefix_zero
+#check @Prosa.Validation.ClassicImplUniSuspScheduleInterface.production_schedule_prefix_succ
+
+#print axioms Prosa.Classic.Implementation.Uni.Susp.Schedule.ConcreteScheduler.pending_jobs
+#print axioms Prosa.Classic.Implementation.Uni.Susp.Schedule.ConcreteScheduler.highest_priority_job
+#print axioms Prosa.Classic.Implementation.Uni.Susp.Schedule.ConcreteScheduler.scheduler
+#print axioms Prosa.Classic.Implementation.Uni.Susp.Schedule.ConcreteScheduler.scheduler_depends_only_on_prefix
+#print axioms Prosa.Classic.Implementation.Uni.Susp.Schedule.ConcreteScheduler.scheduler_uses_construction_function
+#print axioms Prosa.Classic.Implementation.Uni.Susp.Schedule.ConcreteScheduler.scheduler_jobs_come_from_arrival_sequence
+#print axioms Prosa.Classic.Implementation.Uni.Susp.Schedule.ConcreteScheduler.scheduler_jobs_must_arrive_to_execute
+#print axioms Prosa.Classic.Implementation.Uni.Susp.Schedule.ConcreteScheduler.scheduler_completed_jobs_dont_execute
+#print axioms Prosa.Classic.Implementation.Uni.Susp.Schedule.ConcreteScheduler.scheduler_work_conserving
+#print axioms Prosa.Classic.Implementation.Uni.Susp.Schedule.ConcreteScheduler.scheduler_respects_policy
+#print axioms Prosa.Classic.Implementation.Uni.Susp.Schedule.ConcreteScheduler.scheduler_respects_self_suspensions
+#print axioms Prosa.Validation.ClassicImplUniSuspScheduleInterface.finRange_map_shift
+#print axioms Prosa.Validation.ClassicImplUniSuspScheduleInterface.finRange_map_val
+#print axioms Prosa.Validation.ClassicImplUniSuspScheduleInterface.finRange_any
+#print axioms Prosa.Validation.ClassicImplUniSuspScheduleInterface.map_finRange_eq_map_range'
+#print axioms Prosa.Validation.ClassicImplUniSuspScheduleInterface.maxFiltered_eq_foldr_cond
+#print axioms Prosa.Validation.ClassicImplUniSuspScheduleInterface.maxFiltered_finRange
+#print axioms Prosa.Validation.ClassicImplUniSuspScheduleInterface.bigCat_range'
+#print axioms Prosa.Validation.ClassicImplUniSuspScheduleInterface.production_schedule_prefix_zero
+#print axioms Prosa.Validation.ClassicImplUniSuspScheduleInterface.production_schedule_prefix_succ

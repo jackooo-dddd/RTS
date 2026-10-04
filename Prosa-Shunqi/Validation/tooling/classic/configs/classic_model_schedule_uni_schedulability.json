@@ -1,0 +1,71 @@
+{
+  "rank": 71,
+  "layer": 11,
+  "classic_scope": "full",
+  "slug": "classic_model_schedule_uni_schedulability",
+  "tag": "CUSCHB",
+  "export_name": "ClassicUniSchedulability",
+  "source": "classic/model/schedule/uni/schedulability.v",
+  "production": "Prosa/Classic/Model/Schedule/Uni/Schedulability.lean",
+  "fixtures": [
+    "ClassicUniSchedulabilityInterface"
+  ],
+  "export_module": "Validation.fixtures.translation_order.ClassicUniSchedulabilityInterface",
+  "interface_theorems": [],
+  "computational": [
+    "Schedulability.job_misses_no_deadline",
+    "Schedulability.task_misses_no_deadline",
+    "Schedulability.taskset_misses_no_deadline"
+  ],
+  "chain": [
+    "ClassicUniSchedulabilityBase",
+    "ClassicUniSchedulabilityList",
+    "ClassicUniSchedulabilityCorrespondence"
+  ],
+  "principal": {},
+  "helpers": [
+    "csc_forall_sched",
+    "csc_forall_par",
+    "csc_ico"
+  ],
+  "base_run": null,
+  "base_checks": [],
+  "previous_status": "classic_model_schedule_uni_nonpreemptive_platform_module_status.json",
+  "input_relations": [
+    "job and task types: eqTypes identified, Lean DecidableEq instances = the eqTypes' decision procedures; job_task identified",
+    "times by SubNatRel; job/task parameters pointwise through SubNatRel; schedules pointwise through the option map; arrival sequences pointwise on related times; task sequences elementwise (two-way totals)"
+  ],
+  "lean_representation_note": "the Rocq module Schedulability is a namespace; Boolean predicates in Prop positions use `= true`",
+  "prop_sprop_foundation": [
+    "PropSPropFoundation.interpret_strict"
+  ],
+  "importer_foundation": [],
+  "rocq_sprop_uip": [
+    "ClassicUniSchedulabilityBase.I.HEq_inst1",
+    "ClassicUniSchedulabilityBase.I.True",
+    "I.HEq",
+    "I.HEq_inst1",
+    "I.True",
+    "Lean.eq",
+    "Lean.eq_inst1",
+    "SubadditivityNatCorrespondence.SubNatTrue"
+  ],
+  "normalization": {
+    "theorem_types": [],
+    "subexpression_heads": [
+      "Finset.sum"
+    ],
+    "definition_bodies": [],
+    "body_projections": [
+      "Prosa.Classic.Model.Schedule.Uni.Schedule.UniprocessorSchedule.service_during=Prosa.Validation.ClassicUniSchedulabilityInterface.service_during_proj=Prosa.Validation.ClassicUniSchedulabilityInterface.service_during_proj_guard",
+      "Prosa.Classic.Model.Schedule.Uni.Schedule.UniprocessorSchedule.total_service_during=Prosa.Validation.ClassicUniSchedulabilityInterface.total_service_during_proj=Prosa.Validation.ClassicUniSchedulabilityInterface.total_service_during_proj_guard"
+    ]
+  },
+  "export_env": {
+    "LEAN4EXPORT_PRESERVE_REDUCIBLE_THEOREM_TYPES": "1",
+    "LEAN4EXPORT_NAT_INDEX_ALIASES": "Prosa.Classic.Model.Time.Time.time"
+  },
+  "kernel_guard_artifacts": [
+    "Validation/fixtures/translation_order/ClassicUniSchedulabilityInterface.lean"
+  ]
+}

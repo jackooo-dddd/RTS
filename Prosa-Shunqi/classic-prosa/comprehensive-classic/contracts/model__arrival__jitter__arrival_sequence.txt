@@ -1,0 +1,133 @@
+# classic/model/arrival/jitter/arrival_sequence.v: 15 declarations
+
+## Print Module
+
+Module arrival_sequence := Struct Module ArrivalSequenceWithJitter End
+
+Module
+ArrivalSequenceWithJitter
+:= Struct
+     Definition actual_arrival : forall Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> time) -> (eqtype.Equality.sort Job -> time) -> eqtype.Equality.sort Job -> nat.
+     Definition jitter_has_passed : forall Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> time) -> (eqtype.Equality.sort Job -> time) -> eqtype.Equality.sort Job -> time -> bool.
+     Definition actual_arrival_before : forall Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> time) -> (eqtype.Equality.sort Job -> time) -> eqtype.Equality.sort Job -> time -> bool.
+     Definition actual_arrival_between : forall Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> time) -> (eqtype.Equality.sort Job -> time) -> eqtype.Equality.sort Job -> time -> time -> bool.
+     Definition actual_arrivals_between : forall Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> time) -> (eqtype.Equality.sort Job -> time) -> arrival_sequence Job -> time -> time -> list (eqtype.Equality.sort Job).
+     Definition actual_arrivals_up_to : forall Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> time) -> (eqtype.Equality.sort Job -> time) -> arrival_sequence Job -> time -> list (eqtype.Equality.sort Job).
+     Definition actual_arrivals_before : forall Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> time) -> (eqtype.Equality.sort Job -> time) -> arrival_sequence Job -> time -> list (eqtype.Equality.sort Job).
+     Parameter actual_arrivals_between_mem_cat : forall (Job : eqtype.Equality.type) (job_arrival job_jitter : eqtype.Equality.sort Job -> time) (arr_seq : arrival_sequence Job), arrival_times_are_consistent job_arrival arr_seq -> forall (j : eqtype.Equality.sort Job) (t1 t t2 : nat), is_true (ssrnat.leq t1 t) -> is_true (ssrnat.leq t t2) -> ssrbool.in_mem j (ssrbool.mem (actual_arrivals_between job_arrival job_jitter arr_seq t1 t2)) = ssrbool.in_mem j (ssrbool.mem (seq.cat (actual_arrivals_between job_arrival job_jitter arr_seq t1 t) (actual_arrivals_between job_arrival job_jitter arr_seq t t2))).
+     Parameter actual_arrivals_between_sub : forall (Job : eqtype.Equality.type) (job_arrival job_jitter : eqtype.Equality.sort Job -> time) (arr_seq : arrival_sequence Job), arrival_times_are_consistent job_arrival arr_seq -> forall (j : eqtype.Equality.sort Job) (t1 t1' t2 t2' : nat), is_true (ssrnat.leq t1' t1) -> is_true (ssrnat.leq t2 t2') -> is_true (ssrbool.in_mem j (ssrbool.mem (actual_arrivals_between job_arrival job_jitter arr_seq t1 t2))) -> is_true (ssrbool.in_mem j (ssrbool.mem (actual_arrivals_between job_arrival job_jitter arr_seq t1' t2'))).
+     Parameter in_actual_arrivals_between_implies_arrived : forall (Job : eqtype.Equality.type) (job_arrival job_jitter : eqtype.Equality.sort Job -> time) (arr_seq : arrival_sequence Job) (j : eqtype.Equality.sort Job) (t1 t2 : time), is_true (ssrbool.in_mem j (ssrbool.mem (actual_arrivals_between job_arrival job_jitter arr_seq t1 t2))) -> arrives_in arr_seq j.
+     Parameter in_actual_arrivals_before_implies_arrived : forall (Job : eqtype.Equality.type) (job_arrival job_jitter : eqtype.Equality.sort Job -> time) (arr_seq : arrival_sequence Job) (j : eqtype.Equality.sort Job) (t : time), is_true (ssrbool.in_mem j (ssrbool.mem (actual_arrivals_before job_arrival job_jitter arr_seq t))) -> arrives_in arr_seq j.
+     Parameter in_actual_arrivals_implies_arrived_before : forall (Job : eqtype.Equality.type) (job_arrival job_jitter : eqtype.Equality.sort Job -> time) (arr_seq : arrival_sequence Job) (j : eqtype.Equality.sort Job) (t : time), is_true (ssrbool.in_mem j (ssrbool.mem (actual_arrivals_before job_arrival job_jitter arr_seq t))) -> is_true (actual_arrival_before job_arrival job_jitter j t).
+     Parameter in_actual_arrivals_implies_arrived_between : forall (Job : eqtype.Equality.type) (job_arrival job_jitter : eqtype.Equality.sort Job -> time) (arr_seq : arrival_sequence Job) (j : eqtype.Equality.sort Job) (t1 t2 : time), is_true (ssrbool.in_mem j (ssrbool.mem (actual_arrivals_between job_arrival job_jitter arr_seq t1 t2))) -> is_true (actual_arrival_between job_arrival job_jitter j t1 t2).
+     Parameter arrived_between_implies_in_actual_arrivals : forall (Job : eqtype.Equality.type) (job_arrival job_jitter : eqtype.Equality.sort Job -> time) (arr_seq : arrival_sequence Job), arrival_times_are_consistent job_arrival arr_seq -> forall (j : eqtype.Equality.sort Job) (t1 t2 : time), arrives_in arr_seq j -> is_true (actual_arrival_between job_arrival job_jitter j t1 t2) -> is_true (ssrbool.in_mem j (ssrbool.mem (actual_arrivals_between job_arrival job_jitter arr_seq t1 t2))).
+     Parameter actual_arrivals_uniq : forall (Job : eqtype.Equality.type) (job_arrival job_jitter : eqtype.Equality.sort Job -> time) (arr_seq : arrival_sequence Job), arrival_times_are_consistent job_arrival arr_seq -> arrival_sequence_is_a_set arr_seq -> forall t1 t2 : time, is_true (seq.uniq (actual_arrivals_between job_arrival job_jitter arr_seq t1 t2)).
+   End
+
+## About
+
+ArrivalSequenceWithJitter.actual_arrival : forall {Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> eqtype.Equality.sort Job -> nat
+
+ArrivalSequenceWithJitter.actual_arrival is not universe polymorphic
+Arguments ArrivalSequenceWithJitter.actual_arrival {Job} (job_arrival job_jitter)%function_scope j
+ArrivalSequenceWithJitter.actual_arrival is transparent
+Expands to: Constant prosa.classic.model.arrival.jitter.arrival_sequence.ArrivalSequenceWithJitter.actual_arrival
+Declared in library prosa.classic.model.arrival.jitter.arrival_sequence, line 20, characters 15-29
+ArrivalSequenceWithJitter.jitter_has_passed : forall {Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> eqtype.Equality.sort Job -> time.Time.time -> bool
+
+ArrivalSequenceWithJitter.jitter_has_passed is not universe polymorphic
+Arguments ArrivalSequenceWithJitter.jitter_has_passed {Job} (job_arrival job_jitter)%function_scope j t
+ArrivalSequenceWithJitter.jitter_has_passed is transparent
+Expands to: Constant prosa.classic.model.arrival.jitter.arrival_sequence.ArrivalSequenceWithJitter.jitter_has_passed
+Declared in library prosa.classic.model.arrival.jitter.arrival_sequence, line 23, characters 15-32
+ArrivalSequenceWithJitter.actual_arrival_before : forall {Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> eqtype.Equality.sort Job -> time.Time.time -> bool
+
+ArrivalSequenceWithJitter.actual_arrival_before is not universe polymorphic
+Arguments ArrivalSequenceWithJitter.actual_arrival_before {Job} (job_arrival job_jitter)%function_scope j t
+ArrivalSequenceWithJitter.actual_arrival_before is transparent
+Expands to: Constant prosa.classic.model.arrival.jitter.arrival_sequence.ArrivalSequenceWithJitter.actual_arrival_before
+Declared in library prosa.classic.model.arrival.jitter.arrival_sequence, line 26, characters 15-36
+ArrivalSequenceWithJitter.actual_arrival_between : forall {Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> eqtype.Equality.sort Job -> time.Time.time -> time.Time.time -> bool
+
+ArrivalSequenceWithJitter.actual_arrival_between is not universe polymorphic
+Arguments ArrivalSequenceWithJitter.actual_arrival_between {Job} (job_arrival job_jitter)%function_scope j t1 t2
+ArrivalSequenceWithJitter.actual_arrival_between is transparent
+Expands to: Constant prosa.classic.model.arrival.jitter.arrival_sequence.ArrivalSequenceWithJitter.actual_arrival_between
+Declared in library prosa.classic.model.arrival.jitter.arrival_sequence, line 29, characters 15-37
+ArrivalSequenceWithJitter.actual_arrivals_between : forall {Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> time.Time.time -> time.Time.time -> list (eqtype.Equality.sort Job)
+
+ArrivalSequenceWithJitter.actual_arrivals_between is not universe polymorphic
+Arguments ArrivalSequenceWithJitter.actual_arrivals_between {Job} (job_arrival job_jitter)%function_scope arr_seq t1 t2
+ArrivalSequenceWithJitter.actual_arrivals_between is transparent
+Expands to: Constant prosa.classic.model.arrival.jitter.arrival_sequence.ArrivalSequenceWithJitter.actual_arrivals_between
+Declared in library prosa.classic.model.arrival.jitter.arrival_sequence, line 49, characters 15-38
+ArrivalSequenceWithJitter.actual_arrivals_up_to : forall {Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> time.Time.time -> list (eqtype.Equality.sort Job)
+
+ArrivalSequenceWithJitter.actual_arrivals_up_to is not universe polymorphic
+Arguments ArrivalSequenceWithJitter.actual_arrivals_up_to {Job} (job_arrival job_jitter)%function_scope arr_seq t
+ArrivalSequenceWithJitter.actual_arrivals_up_to is transparent
+Expands to: Constant prosa.classic.model.arrival.jitter.arrival_sequence.ArrivalSequenceWithJitter.actual_arrivals_up_to
+Declared in library prosa.classic.model.arrival.jitter.arrival_sequence, line 53, characters 15-36
+ArrivalSequenceWithJitter.actual_arrivals_before : forall {Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> time.Time.time -> list (eqtype.Equality.sort Job)
+
+ArrivalSequenceWithJitter.actual_arrivals_before is not universe polymorphic
+Arguments ArrivalSequenceWithJitter.actual_arrivals_before {Job} (job_arrival job_jitter)%function_scope arr_seq t
+ArrivalSequenceWithJitter.actual_arrivals_before is transparent
+Expands to: Constant prosa.classic.model.arrival.jitter.arrival_sequence.ArrivalSequenceWithJitter.actual_arrivals_before
+Declared in library prosa.classic.model.arrival.jitter.arrival_sequence, line 56, characters 15-37
+ArrivalSequenceWithJitter.actual_arrivals_between_mem_cat : forall {Job : eqtype.Equality.type} (job_arrival job_jitter : eqtype.Equality.sort Job -> time.Time.time) (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job), arrival_sequence.ArrivalSequence.arrival_times_are_consistent job_arrival arr_seq -> forall (j : eqtype.Equality.sort Job) (t1 t t2 : nat), is_true (ssrnat.leq t1 t) -> is_true (ssrnat.leq t t2) -> ssrbool.in_mem j (ssrbool.mem (ArrivalSequenceWithJitter.actual_arrivals_between job_arrival job_jitter arr_seq t1 t2)) = ssrbool.in_mem j (ssrbool.mem (seq.cat (ArrivalSequenceWithJitter.actual_arrivals_between job_arrival job_jitter arr_seq t1 t) (ArrivalSequenceWithJitter.actual_arrivals_between job_arrival job_jitter arr_seq t t2)))
+
+ArrivalSequenceWithJitter.actual_arrivals_between_mem_cat is not universe polymorphic
+Arguments ArrivalSequenceWithJitter.actual_arrivals_between_mem_cat {Job} (job_arrival job_jitter)%function_scope arr_seq H_arrival_times_are_consistent j (t1 t t2)%nat_scope _ _
+ArrivalSequenceWithJitter.actual_arrivals_between_mem_cat is opaque
+Expands to: Constant prosa.classic.model.arrival.jitter.arrival_sequence.ArrivalSequenceWithJitter.actual_arrivals_between_mem_cat
+Declared in library prosa.classic.model.arrival.jitter.arrival_sequence, line 70, characters 14-45
+ArrivalSequenceWithJitter.actual_arrivals_between_sub : forall {Job : eqtype.Equality.type} (job_arrival job_jitter : eqtype.Equality.sort Job -> time.Time.time) (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job), arrival_sequence.ArrivalSequence.arrival_times_are_consistent job_arrival arr_seq -> forall (j : eqtype.Equality.sort Job) (t1 t1' t2 t2' : nat), is_true (ssrnat.leq t1' t1) -> is_true (ssrnat.leq t2 t2') -> is_true (ssrbool.in_mem j (ssrbool.mem (ArrivalSequenceWithJitter.actual_arrivals_between job_arrival job_jitter arr_seq t1 t2))) -> is_true (ssrbool.in_mem j (ssrbool.mem (ArrivalSequenceWithJitter.actual_arrivals_between job_arrival job_jitter arr_seq t1' t2')))
+
+ArrivalSequenceWithJitter.actual_arrivals_between_sub is not universe polymorphic
+Arguments ArrivalSequenceWithJitter.actual_arrivals_between_sub {Job} (job_arrival job_jitter)%function_scope arr_seq H_arrival_times_are_consistent j (t1 t1' t2 t2')%nat_scope _ _ _
+ArrivalSequenceWithJitter.actual_arrivals_between_sub is opaque
+Expands to: Constant prosa.classic.model.arrival.jitter.arrival_sequence.ArrivalSequenceWithJitter.actual_arrivals_between_sub
+Declared in library prosa.classic.model.arrival.jitter.arrival_sequence, line 115, characters 14-41
+ArrivalSequenceWithJitter.in_actual_arrivals_between_implies_arrived : forall {Job : eqtype.Equality.type} (job_arrival job_jitter : eqtype.Equality.sort Job -> time.Time.time) (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job) (j : eqtype.Equality.sort Job) (t1 t2 : time.Time.time), is_true (ssrbool.in_mem j (ssrbool.mem (ArrivalSequenceWithJitter.actual_arrivals_between job_arrival job_jitter arr_seq t1 t2))) -> arrival_sequence.ArrivalSequence.arrives_in arr_seq j
+
+ArrivalSequenceWithJitter.in_actual_arrivals_between_implies_arrived is not universe polymorphic
+Arguments ArrivalSequenceWithJitter.in_actual_arrivals_between_implies_arrived {Job} (job_arrival job_jitter)%function_scope arr_seq j t1 t2 _
+ArrivalSequenceWithJitter.in_actual_arrivals_between_implies_arrived is opaque
+Expands to: Constant prosa.classic.model.arrival.jitter.arrival_sequence.ArrivalSequenceWithJitter.in_actual_arrivals_between_implies_arrived
+Declared in library prosa.classic.model.arrival.jitter.arrival_sequence, line 145, characters 14-56
+ArrivalSequenceWithJitter.in_actual_arrivals_before_implies_arrived : forall {Job : eqtype.Equality.type} (job_arrival job_jitter : eqtype.Equality.sort Job -> time.Time.time) (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job) (j : eqtype.Equality.sort Job) (t : time.Time.time), is_true (ssrbool.in_mem j (ssrbool.mem (ArrivalSequenceWithJitter.actual_arrivals_before job_arrival job_jitter arr_seq t))) -> arrival_sequence.ArrivalSequence.arrives_in arr_seq j
+
+ArrivalSequenceWithJitter.in_actual_arrivals_before_implies_arrived is not universe polymorphic
+Arguments ArrivalSequenceWithJitter.in_actual_arrivals_before_implies_arrived {Job} (job_arrival job_jitter)%function_scope arr_seq j t _
+ArrivalSequenceWithJitter.in_actual_arrivals_before_implies_arrived is opaque
+Expands to: Constant prosa.classic.model.arrival.jitter.arrival_sequence.ArrivalSequenceWithJitter.in_actual_arrivals_before_implies_arrived
+Declared in library prosa.classic.model.arrival.jitter.arrival_sequence, line 157, characters 14-55
+ArrivalSequenceWithJitter.in_actual_arrivals_implies_arrived_before : forall {Job : eqtype.Equality.type} (job_arrival job_jitter : eqtype.Equality.sort Job -> time.Time.time) (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job) (j : eqtype.Equality.sort Job) (t : time.Time.time), is_true (ssrbool.in_mem j (ssrbool.mem (ArrivalSequenceWithJitter.actual_arrivals_before job_arrival job_jitter arr_seq t))) -> is_true (ArrivalSequenceWithJitter.actual_arrival_before job_arrival job_jitter j t)
+
+ArrivalSequenceWithJitter.in_actual_arrivals_implies_arrived_before is not universe polymorphic
+Arguments ArrivalSequenceWithJitter.in_actual_arrivals_implies_arrived_before {Job} (job_arrival job_jitter)%function_scope arr_seq j t _
+ArrivalSequenceWithJitter.in_actual_arrivals_implies_arrived_before is opaque
+Expands to: Constant prosa.classic.model.arrival.jitter.arrival_sequence.ArrivalSequenceWithJitter.in_actual_arrivals_implies_arrived_before
+Declared in library prosa.classic.model.arrival.jitter.arrival_sequence, line 171, characters 14-55
+ArrivalSequenceWithJitter.in_actual_arrivals_implies_arrived_between : forall {Job : eqtype.Equality.type} (job_arrival job_jitter : eqtype.Equality.sort Job -> time.Time.time) (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job) (j : eqtype.Equality.sort Job) (t1 t2 : time.Time.time), is_true (ssrbool.in_mem j (ssrbool.mem (ArrivalSequenceWithJitter.actual_arrivals_between job_arrival job_jitter arr_seq t1 t2))) -> is_true (ArrivalSequenceWithJitter.actual_arrival_between job_arrival job_jitter j t1 t2)
+
+ArrivalSequenceWithJitter.in_actual_arrivals_implies_arrived_between is not universe polymorphic
+Arguments ArrivalSequenceWithJitter.in_actual_arrivals_implies_arrived_between {Job} (job_arrival job_jitter)%function_scope arr_seq j t1 t2 _
+ArrivalSequenceWithJitter.in_actual_arrivals_implies_arrived_between is opaque
+Expands to: Constant prosa.classic.model.arrival.jitter.arrival_sequence.ArrivalSequenceWithJitter.in_actual_arrivals_implies_arrived_between
+Declared in library prosa.classic.model.arrival.jitter.arrival_sequence, line 182, characters 14-56
+ArrivalSequenceWithJitter.arrived_between_implies_in_actual_arrivals : forall {Job : eqtype.Equality.type} (job_arrival job_jitter : eqtype.Equality.sort Job -> time.Time.time) (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job), arrival_sequence.ArrivalSequence.arrival_times_are_consistent job_arrival arr_seq -> forall (j : eqtype.Equality.sort Job) (t1 t2 : time.Time.time), arrival_sequence.ArrivalSequence.arrives_in arr_seq j -> is_true (ArrivalSequenceWithJitter.actual_arrival_between job_arrival job_jitter j t1 t2) -> is_true (ssrbool.in_mem j (ssrbool.mem (ArrivalSequenceWithJitter.actual_arrivals_between job_arrival job_jitter arr_seq t1 t2)))
+
+ArrivalSequenceWithJitter.arrived_between_implies_in_actual_arrivals is not universe polymorphic
+Arguments ArrivalSequenceWithJitter.arrived_between_implies_in_actual_arrivals {Job} (job_arrival job_jitter)%function_scope arr_seq H_arrival_times_are_consistent j t1 t2 _ _
+ArrivalSequenceWithJitter.arrived_between_implies_in_actual_arrivals is opaque
+Expands to: Constant prosa.classic.model.arrival.jitter.arrival_sequence.ArrivalSequenceWithJitter.arrived_between_implies_in_actual_arrivals
+Declared in library prosa.classic.model.arrival.jitter.arrival_sequence, line 193, characters 14-56
+ArrivalSequenceWithJitter.actual_arrivals_uniq : forall {Job : eqtype.Equality.type} (job_arrival job_jitter : eqtype.Equality.sort Job -> time.Time.time) (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job), arrival_sequence.ArrivalSequence.arrival_times_are_consistent job_arrival arr_seq -> arrival_sequence.ArrivalSequence.arrival_sequence_is_a_set arr_seq -> forall t1 t2 : time.Time.time, is_true (seq.uniq (ArrivalSequenceWithJitter.actual_arrivals_between job_arrival job_jitter arr_seq t1 t2))
+
+ArrivalSequenceWithJitter.actual_arrivals_uniq is not universe polymorphic
+Arguments ArrivalSequenceWithJitter.actual_arrivals_uniq {Job} (job_arrival job_jitter)%function_scope arr_seq H_arrival_times_are_consistent _ t1 t2
+ArrivalSequenceWithJitter.actual_arrivals_uniq is opaque
+Expands to: Constant prosa.classic.model.arrival.jitter.arrival_sequence.ArrivalSequenceWithJitter.actual_arrivals_uniq
+Declared in library prosa.classic.model.arrival.jitter.arrival_sequence, line 209, characters 14-34

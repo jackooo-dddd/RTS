@@ -1,0 +1,391 @@
+@SchedulabilityAnalysisEDF.cumulative_task_interference
+     : forall sporadic_task Job : eqType,
+       (Job -> time.Time.time) ->
+       (Job -> time.Time.time) ->
+       (Job -> sporadic_task) ->
+       SporadicTaskset.taskset_of sporadic_task ->
+       forall num_cpus : nat,
+       Schedule.schedule Job num_cpus ->
+       Job -> time.Time.time -> time.Time.time -> sporadic_task -> nat
+SchedulabilityAnalysisEDF.cumulative_task_interference =
+fun (sporadic_task Job : eqType)
+  (job_arrival job_cost : Job -> time.Time.time)
+  (job_task : Job -> sporadic_task)
+  (ts : SporadicTaskset.taskset_of sporadic_task) 
+  (num_cpus : nat) (sched : Schedule.schedule Job num_cpus) 
+  (j : Job) (a b : time.Time.time) (tsk : sporadic_task) =>
+\sum_(tsk_other <- ts | tsk_other != tsk)
+   Interference.task_interference job_arrival job_cost job_task sched j
+     tsk_other a b
+     : forall {sporadic_task Job : eqType},
+       (Job -> time.Time.time) ->
+       (Job -> time.Time.time) ->
+       (Job -> sporadic_task) ->
+       SporadicTaskset.taskset_of sporadic_task ->
+       forall num_cpus : nat,
+       Schedule.schedule Job num_cpus ->
+       Job -> time.Time.time -> time.Time.time -> sporadic_task -> nat
+
+Arguments SchedulabilityAnalysisEDF.cumulative_task_interference
+  {sporadic_task Job} (job_arrival job_cost job_task)%function_scope 
+  ts num_cpus%nat_scope sched j a b tsk
+@SchedulabilityAnalysisEDF.slack
+     : forall sporadic_task : eqType,
+       (sporadic_task -> time.Time.time) ->
+       (sporadic_task -> time.Time.time) -> sporadic_task -> nat
+SchedulabilityAnalysisEDF.slack =
+fun (sporadic_task : eqType)
+  (task_cost task_deadline : sporadic_task -> time.Time.time)
+  (tsk : sporadic_task) =>
+task_deadline tsk - task_cost tsk
+     : forall {sporadic_task : eqType},
+       (sporadic_task -> time.Time.time) ->
+       (sporadic_task -> time.Time.time) -> sporadic_task -> nat
+
+Arguments SchedulabilityAnalysisEDF.slack {sporadic_task}
+  (task_cost task_deadline)%function_scope tsk
+@SchedulabilityAnalysisEDF.task_interference_in_worst_case_window
+     : forall sporadic_task Job : eqType,
+       (Job -> time.Time.time) ->
+       (Job -> time.Time.time) ->
+       (Job -> time.Time.time) ->
+       (Job -> sporadic_task) ->
+       forall num_cpus : nat,
+       Schedule.schedule Job num_cpus ->
+       (sporadic_task -> Job) -> sporadic_task -> sporadic_task -> nat
+SchedulabilityAnalysisEDF.task_interference_in_worst_case_window =
+fun (sporadic_task Job : eqType)
+  (job_arrival job_cost job_deadline : Job -> time.Time.time)
+  (job_task : Job -> sporadic_task) (num_cpus : nat)
+  (sched : Schedule.schedule Job num_cpus)
+  (worst_case_job_of_task : sporadic_task -> Job)
+  (tsk_other tsk : sporadic_task) =>
+let j := worst_case_job_of_task tsk in
+Interference.task_interference job_arrival job_cost job_task sched j
+  tsk_other (job_arrival j) (job_arrival j + job_deadline j)
+     : forall {sporadic_task Job : eqType},
+       (Job -> time.Time.time) ->
+       (Job -> time.Time.time) ->
+       (Job -> time.Time.time) ->
+       (Job -> sporadic_task) ->
+       forall num_cpus : nat,
+       Schedule.schedule Job num_cpus ->
+       (sporadic_task -> Job) -> sporadic_task -> sporadic_task -> nat
+
+Arguments SchedulabilityAnalysisEDF.task_interference_in_worst_case_window
+  {sporadic_task Job}
+  (job_arrival job_cost job_deadline job_task)%function_scope
+  num_cpus%nat_scope sched worst_case_job_of_task%function_scope 
+  tsk_other tsk
+@SchedulabilityAnalysisEDF.truncated_task_interference_sum
+     : forall sporadic_task : eqType,
+       (sporadic_task -> time.Time.time) ->
+       (sporadic_task -> time.Time.time) ->
+       forall Job : eqType,
+       (Job -> time.Time.time) ->
+       (Job -> time.Time.time) ->
+       (Job -> time.Time.time) ->
+       (Job -> sporadic_task) ->
+       SporadicTaskset.taskset_of sporadic_task ->
+       forall num_cpus : nat,
+       Schedule.schedule Job num_cpus ->
+       (sporadic_task -> Job) -> sporadic_task -> nat
+SchedulabilityAnalysisEDF.truncated_task_interference_sum =
+fun (sporadic_task : eqType)
+  (task_cost task_deadline : sporadic_task -> time.Time.time) 
+  (Job : eqType) (job_arrival job_cost job_deadline : Job -> time.Time.time)
+  (job_task : Job -> sporadic_task)
+  (ts : SporadicTaskset.taskset_of sporadic_task) 
+  (num_cpus : nat) (sched : Schedule.schedule Job num_cpus)
+  (worst_case_job_of_task : sporadic_task -> Job) 
+  (tsk : sporadic_task) =>
+\sum_(tsk_other <- ts | tsk_other != tsk)
+   PeanoNat.Nat.min
+     (SchedulabilityAnalysisEDF.task_interference_in_worst_case_window
+        job_arrival job_cost job_deadline job_task num_cpus sched
+        worst_case_job_of_task tsk_other tsk)
+     (SchedulabilityAnalysisEDF.slack task_cost task_deadline tsk)
+     : forall {sporadic_task : eqType},
+       (sporadic_task -> time.Time.time) ->
+       (sporadic_task -> time.Time.time) ->
+       forall {Job : eqType},
+       (Job -> time.Time.time) ->
+       (Job -> time.Time.time) ->
+       (Job -> time.Time.time) ->
+       (Job -> sporadic_task) ->
+       SporadicTaskset.taskset_of sporadic_task ->
+       forall num_cpus : nat,
+       Schedule.schedule Job num_cpus ->
+       (sporadic_task -> Job) -> sporadic_task -> nat
+
+Arguments SchedulabilityAnalysisEDF.truncated_task_interference_sum
+  {sporadic_task} (task_cost task_deadline)%function_scope 
+  {Job} (job_arrival job_cost job_deadline job_task)%function_scope 
+  ts num_cpus%nat_scope sched worst_case_job_of_task%function_scope 
+  tsk
+@SchedulabilityAnalysisEDF.theorem6_first_condition
+     : forall sporadic_task : eqType,
+       (sporadic_task -> time.Time.time) ->
+       (sporadic_task -> time.Time.time) ->
+       forall Job : eqType,
+       (Job -> time.Time.time) ->
+       (Job -> time.Time.time) ->
+       (Job -> time.Time.time) ->
+       (Job -> sporadic_task) ->
+       SporadicTaskset.taskset_of sporadic_task ->
+       forall num_cpus : nat,
+       Schedule.schedule Job num_cpus ->
+       (sporadic_task -> Job) -> sporadic_task -> bool
+SchedulabilityAnalysisEDF.theorem6_first_condition =
+fun (sporadic_task : eqType)
+  (task_cost task_deadline : sporadic_task -> time.Time.time) 
+  (Job : eqType) (job_arrival job_cost job_deadline : Job -> time.Time.time)
+  (job_task : Job -> sporadic_task)
+  (ts : SporadicTaskset.taskset_of sporadic_task) 
+  (num_cpus : nat) (sched : Schedule.schedule Job num_cpus)
+  (worst_case_job_of_task : sporadic_task -> Job) 
+  (tsk : sporadic_task) =>
+SchedulabilityAnalysisEDF.truncated_task_interference_sum task_cost
+  task_deadline job_arrival job_cost job_deadline job_task ts num_cpus sched
+  worst_case_job_of_task tsk <
+num_cpus * SchedulabilityAnalysisEDF.slack task_cost task_deadline tsk
+     : forall {sporadic_task : eqType},
+       (sporadic_task -> time.Time.time) ->
+       (sporadic_task -> time.Time.time) ->
+       forall {Job : eqType},
+       (Job -> time.Time.time) ->
+       (Job -> time.Time.time) ->
+       (Job -> time.Time.time) ->
+       (Job -> sporadic_task) ->
+       SporadicTaskset.taskset_of sporadic_task ->
+       forall num_cpus : nat,
+       Schedule.schedule Job num_cpus ->
+       (sporadic_task -> Job) -> sporadic_task -> bool
+
+Arguments SchedulabilityAnalysisEDF.theorem6_first_condition 
+  {sporadic_task} (task_cost task_deadline)%function_scope 
+  {Job} (job_arrival job_cost job_deadline job_task)%function_scope 
+  ts num_cpus%nat_scope sched worst_case_job_of_task%function_scope 
+  tsk
+@SchedulabilityAnalysisEDF.theorem6_second_condition
+     : forall sporadic_task : eqType,
+       (sporadic_task -> time.Time.time) ->
+       (sporadic_task -> time.Time.time) ->
+       forall Job : eqType,
+       (Job -> time.Time.time) ->
+       (Job -> time.Time.time) ->
+       (Job -> time.Time.time) ->
+       (Job -> sporadic_task) ->
+       SporadicTaskset.taskset_of sporadic_task ->
+       forall num_cpus : nat,
+       Schedule.schedule Job num_cpus ->
+       (sporadic_task -> Job) -> sporadic_task -> Prop
+SchedulabilityAnalysisEDF.theorem6_second_condition =
+fun (sporadic_task : eqType)
+  (task_cost task_deadline : sporadic_task -> time.Time.time) 
+  (Job : eqType) (job_arrival job_cost job_deadline : Job -> time.Time.time)
+  (job_task : Job -> sporadic_task)
+  (ts : SporadicTaskset.taskset_of sporadic_task) 
+  (num_cpus : nat) (sched : Schedule.schedule Job num_cpus)
+  (worst_case_job_of_task : sporadic_task -> Job) 
+  (tsk : sporadic_task) =>
+SchedulabilityAnalysisEDF.truncated_task_interference_sum task_cost
+  task_deadline job_arrival job_cost job_deadline job_task ts num_cpus sched
+  worst_case_job_of_task tsk =
+num_cpus * SchedulabilityAnalysisEDF.slack task_cost task_deadline tsk /\
+(exists tsk_h : sporadic_task,
+   tsk_h \in ts /\
+   tsk_h != tsk /\
+   0 <
+   SchedulabilityAnalysisEDF.task_interference_in_worst_case_window
+     job_arrival job_cost job_deadline job_task num_cpus sched
+     worst_case_job_of_task tsk_h tsk /\
+   SchedulabilityAnalysisEDF.task_interference_in_worst_case_window
+     job_arrival job_cost job_deadline job_task num_cpus sched
+     worst_case_job_of_task tsk_h tsk <=
+   SchedulabilityAnalysisEDF.slack task_cost task_deadline tsk)
+     : forall {sporadic_task : eqType},
+       (sporadic_task -> time.Time.time) ->
+       (sporadic_task -> time.Time.time) ->
+       forall {Job : eqType},
+       (Job -> time.Time.time) ->
+       (Job -> time.Time.time) ->
+       (Job -> time.Time.time) ->
+       (Job -> sporadic_task) ->
+       SporadicTaskset.taskset_of sporadic_task ->
+       forall num_cpus : nat,
+       Schedule.schedule Job num_cpus ->
+       (sporadic_task -> Job) -> sporadic_task -> Prop
+
+Arguments SchedulabilityAnalysisEDF.theorem6_second_condition 
+  {sporadic_task} (task_cost task_deadline)%function_scope 
+  {Job} (job_arrival job_cost job_deadline job_task)%function_scope 
+  ts num_cpus%nat_scope sched worst_case_job_of_task%function_scope 
+  tsk
+@SchedulabilityAnalysisEDF.theorem6_task_condition
+     : forall sporadic_task : eqType,
+       (sporadic_task -> time.Time.time) ->
+       (sporadic_task -> time.Time.time) ->
+       forall Job : eqType,
+       (Job -> time.Time.time) ->
+       (Job -> time.Time.time) ->
+       (Job -> time.Time.time) ->
+       (Job -> sporadic_task) ->
+       SporadicTaskset.taskset_of sporadic_task ->
+       forall num_cpus : nat,
+       Schedule.schedule Job num_cpus ->
+       (sporadic_task -> Job) -> sporadic_task -> Prop
+SchedulabilityAnalysisEDF.theorem6_task_condition =
+fun (sporadic_task : eqType)
+  (task_cost task_deadline : sporadic_task -> time.Time.time) 
+  (Job : eqType) (job_arrival job_cost job_deadline : Job -> time.Time.time)
+  (job_task : Job -> sporadic_task)
+  (ts : SporadicTaskset.taskset_of sporadic_task) 
+  (num_cpus : nat) (sched : Schedule.schedule Job num_cpus)
+  (worst_case_job_of_task : sporadic_task -> Job) 
+  (tsk : sporadic_task) =>
+SchedulabilityAnalysisEDF.theorem6_first_condition task_cost task_deadline
+  job_arrival job_cost job_deadline job_task ts num_cpus sched
+  worst_case_job_of_task tsk \/
+SchedulabilityAnalysisEDF.theorem6_second_condition task_cost task_deadline
+  job_arrival job_cost job_deadline job_task ts num_cpus sched
+  worst_case_job_of_task tsk
+     : forall {sporadic_task : eqType},
+       (sporadic_task -> time.Time.time) ->
+       (sporadic_task -> time.Time.time) ->
+       forall {Job : eqType},
+       (Job -> time.Time.time) ->
+       (Job -> time.Time.time) ->
+       (Job -> time.Time.time) ->
+       (Job -> sporadic_task) ->
+       SporadicTaskset.taskset_of sporadic_task ->
+       forall num_cpus : nat,
+       Schedule.schedule Job num_cpus ->
+       (sporadic_task -> Job) -> sporadic_task -> Prop
+
+Arguments SchedulabilityAnalysisEDF.theorem6_task_condition 
+  {sporadic_task} (task_cost task_deadline)%function_scope 
+  {Job} (job_arrival job_cost job_deadline job_task)%function_scope 
+  ts num_cpus%nat_scope sched worst_case_job_of_task%function_scope 
+  tsk
+@SchedulabilityAnalysisEDF.taskset_schedulable
+     : forall sporadic_task Job : eqType,
+       (Job -> time.Time.time) ->
+       (Job -> time.Time.time) ->
+       (Job -> time.Time.time) ->
+       (Job -> sporadic_task) ->
+       arrival_sequence.ArrivalSequence.arrival_sequence Job ->
+       SporadicTaskset.taskset_of sporadic_task ->
+       forall num_cpus : nat, Schedule.schedule Job num_cpus -> Prop
+SchedulabilityAnalysisEDF.taskset_schedulable =
+fun (sporadic_task Job : eqType)
+  (job_arrival job_cost job_deadline : Job -> time.Time.time)
+  (job_task : Job -> sporadic_task)
+  (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job)
+  (ts : SporadicTaskset.taskset_of sporadic_task) 
+  (num_cpus : nat) (sched : Schedule.schedule Job num_cpus) =>
+forall tsk : sporadic_task,
+tsk \in ts ->
+Schedulability.task_misses_no_deadline job_arrival job_cost job_deadline
+  job_task arr_seq sched tsk
+     : forall {sporadic_task Job : eqType},
+       (Job -> time.Time.time) ->
+       (Job -> time.Time.time) ->
+       (Job -> time.Time.time) ->
+       (Job -> sporadic_task) ->
+       arrival_sequence.ArrivalSequence.arrival_sequence Job ->
+       SporadicTaskset.taskset_of sporadic_task ->
+       forall num_cpus : nat, Schedule.schedule Job num_cpus -> Prop
+
+Arguments SchedulabilityAnalysisEDF.taskset_schedulable 
+  {sporadic_task Job}
+  (job_arrival job_cost job_deadline job_task)%function_scope 
+  arr_seq ts num_cpus%nat_scope sched
+@SchedulabilityAnalysisEDF.Theorem6_05
+     : forall (sporadic_task : eqType)
+         (task_cost task_period
+          task_deadline : sporadic_task -> time.Time.time)
+         (Job : eqType)
+         (job_arrival job_cost job_deadline : Job -> time.Time.time)
+         (job_task : Job -> sporadic_task)
+         (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job),
+       (forall j : Job,
+        arrival_sequence.ArrivalSequence.arrives_in arr_seq j ->
+        0 < job_cost j /\
+        job_cost j < job_deadline j /\
+        0 < job_deadline j /\
+        job_deadline j = task_deadline (job_task j) /\
+        job_cost j = task_cost (job_task j)) ->
+       forall ts : SporadicTaskset.taskset_of sporadic_task,
+       SporadicTaskset.valid_sporadic_taskset task_cost task_period
+         task_deadline ts ->
+       TaskArrival.sporadic_task_model task_period job_arrival job_task
+         arr_seq ->
+       (forall j : Job,
+        arrival_sequence.ArrivalSequence.arrives_in arr_seq j ->
+        job_task j \in ts) ->
+       forall (num_cpus : nat) (sched : Schedule.schedule Job num_cpus),
+       Schedule.jobs_must_arrive_to_execute job_arrival sched ->
+       Schedule.jobs_come_from_arrival_sequence sched arr_seq ->
+       Schedule.sequential_jobs sched ->
+       0 < num_cpus ->
+       Schedule.completed_jobs_dont_execute job_cost sched ->
+       arrival_sequence.ArrivalSequence.arrival_times_are_consistent
+         job_arrival arr_seq ->
+       arrival_sequence.ArrivalSequence.arrival_sequence_is_a_set arr_seq ->
+       Platform.work_conserving job_arrival job_cost arr_seq sched ->
+       uniq ts ->
+       Platform.respects_JLFP_policy job_arrival job_cost arr_seq sched
+         (Priority.EDF job_arrival job_deadline) ->
+       (forall tsk : sporadic_task,
+        tsk \in ts -> task_deadline tsk <= task_period tsk) ->
+       (forall tsk : sporadic_task,
+        tsk \in ts -> task_cost tsk < task_deadline tsk) ->
+       (forall (j : Job) (a b : time.Time.time) (tsk : sporadic_task),
+        tsk \in ts ->
+        arrival_sequence.ArrivalSequence.arrives_in arr_seq j ->
+        job_task j = tsk ->
+        SchedulabilityAnalysisEDF.cumulative_task_interference job_arrival
+          job_cost job_task ts num_cpus sched j a b tsk =
+        num_cpus *
+        Interference.total_interference job_arrival job_cost sched j a b) ->
+       (forall (tsk_k : sporadic_task) (j : Job) (a b : time.Time.time)
+          (c : nat),
+        tsk_k \in ts ->
+        arrival_sequence.ArrivalSequence.arrives_in arr_seq j ->
+        job_task j = tsk_k ->
+        c <= Interference.total_interference job_arrival job_cost sched j a b <->
+        num_cpus * c <=
+        \sum_(tsk_other <- ts | tsk_other != tsk_k)
+           PeanoNat.Nat.min
+             (Interference.task_interference job_arrival job_cost job_task
+                sched j tsk_other a b)
+             c) ->
+       forall worst_case_job_of_task : sporadic_task -> Job,
+       (forall tsk : sporadic_task,
+        tsk \in ts ->
+        arrival_sequence.ArrivalSequence.arrives_in arr_seq
+          (worst_case_job_of_task tsk)) ->
+       (forall tsk : sporadic_task,
+        tsk \in ts -> job_task (worst_case_job_of_task tsk) = tsk) ->
+       (forall (tsk : sporadic_task) (j : Job),
+        tsk \in ts ->
+        arrival_sequence.ArrivalSequence.arrives_in arr_seq j ->
+        job_task j = tsk ->
+        Interference.total_interference job_arrival job_cost sched j
+          (job_arrival j) (job_arrival j + job_deadline j) <=
+        Interference.total_interference job_arrival job_cost sched
+          (worst_case_job_of_task tsk)
+          (job_arrival (worst_case_job_of_task tsk))
+          (job_arrival (worst_case_job_of_task tsk) +
+           job_deadline (worst_case_job_of_task tsk))) ->
+       SchedulabilityAnalysisEDF.taskset_schedulable job_arrival job_cost
+         job_deadline job_task arr_seq ts num_cpus sched <->
+       (forall tsk : sporadic_task,
+        tsk \in ts ->
+        SchedulabilityAnalysisEDF.theorem6_task_condition task_cost
+          task_deadline job_arrival job_cost job_deadline job_task ts
+          num_cpus sched worst_case_job_of_task tsk)
+with arguments constr at level 99, constr and "[ pairs ( _ , _ ) | _ <- _ ]"
+defined at level 0 with arguments constr at level 1, constr at level 1
+have incompatible prefixes. One of them will likely not work.

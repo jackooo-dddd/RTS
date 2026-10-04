@@ -1,0 +1,74 @@
+{
+  "rank": 53,
+  "layer": 10,
+  "classic_scope": "full",
+  "slug": "classic_model_schedule_uni_jitter_schedule",
+  "tag": "CUJSCHED",
+  "export_name": "ClassicUniJitterSchedule",
+  "source": "classic/model/schedule/uni/jitter/schedule.v",
+  "production": "Prosa/Classic/Model/Schedule/Uni/Jitter/Schedule.lean",
+  "fixtures": [
+    "ClassicUniJitterScheduleInterface"
+  ],
+  "export_module": "Validation.fixtures.translation_order.ClassicUniJitterScheduleInterface",
+  "interface_theorems": [],
+  "computational": [
+    "UniprocessorScheduleWithJitter.pending",
+    "UniprocessorScheduleWithJitter.backlogged",
+    "UniprocessorScheduleWithJitter.jobs_execute_after_jitter"
+  ],
+  "chain": [
+    "ClassicUniJitterScheduleBase",
+    "ClassicUniJitterScheduleList",
+    "ClassicUniJitterScheduleCorrespondence"
+  ],
+  "principal": {},
+  "helpers": [
+    "cuj_forall_sched",
+    "cuj_forall_par",
+    "cuj_ico"
+  ],
+  "base_run": null,
+  "base_checks": [],
+  "previous_status": "classic_model_schedule_uni_basic_platform_tdma_module_status.json",
+  "input_relations": [
+    "job type: eqType identified, Lean DecidableEq instance = the eqType's decision procedure",
+    "times by SubNatRel; job parameters pointwise through SubNatRel; schedules pointwise through the option map (two-way totals)"
+  ],
+  "lean_representation_note": "the Rocq module UniprocessorScheduleWithJitter is a namespace; `\\sum_(t1 <= t < t2) F t` is `\u2211 t \u2208 Finset.Ico t1 t2, F t` (normalization guards); Boolean predicates in Prop positions use `= true`",
+  "prop_sprop_foundation": [
+    "PropSPropFoundation.interpret_strict"
+  ],
+  "importer_foundation": [],
+  "rocq_sprop_uip": [
+    "ClassicUniJitterScheduleBase.I.HEq_inst1",
+    "ClassicUniJitterScheduleBase.I.True",
+    "I.HEq",
+    "I.HEq_inst1",
+    "I.True",
+    "Lean.eq",
+    "Lean.eq_inst1",
+    "SubadditivityNatCorrespondence.SubNatTrue"
+  ],
+  "normalization": {
+    "theorem_types": [
+      "Prosa.Classic.Model.Schedule.Uni.Jitter.Schedule.UniprocessorScheduleWithJitter.cumulative_service_before_jitter_is_zero",
+      "Prosa.Classic.Model.Schedule.Uni.Jitter.Schedule.UniprocessorScheduleWithJitter.ignore_service_before_jitter"
+    ],
+    "subexpression_heads": [
+      "Finset.sum"
+    ],
+    "definition_bodies": [],
+    "body_projections": [
+      "Prosa.Classic.Model.Schedule.Uni.Schedule.UniprocessorSchedule.service_during=Prosa.Validation.ClassicUniJitterScheduleInterface.service_during_proj=Prosa.Validation.ClassicUniJitterScheduleInterface.service_during_proj_guard",
+      "Prosa.Classic.Model.Schedule.Uni.Schedule.UniprocessorSchedule.total_service_during=Prosa.Validation.ClassicUniJitterScheduleInterface.total_service_during_proj=Prosa.Validation.ClassicUniJitterScheduleInterface.total_service_during_proj_guard"
+    ]
+  },
+  "export_env": {
+    "LEAN4EXPORT_PRESERVE_REDUCIBLE_THEOREM_TYPES": "1",
+    "LEAN4EXPORT_NAT_INDEX_ALIASES": "Prosa.Classic.Model.Time.Time.time"
+  },
+  "kernel_guard_artifacts": [
+    "Validation/fixtures/translation_order/ClassicUniJitterScheduleInterface.lean"
+  ]
+}

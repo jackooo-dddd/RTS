@@ -13,7 +13,7 @@ open Prosa.Behavior.Job
 open Prosa.Behavior.Schedule
 open Prosa.Behavior.Service
 
-universe u v w
+universe u v w -- universes for JobType, ProcessorState, and other dependent types
 
 section JobFinishTime
 

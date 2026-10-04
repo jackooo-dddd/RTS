@@ -1,0 +1,75 @@
+{
+  "rank": 84,
+  "layer": 12,
+  "classic_scope": "full",
+  "slug": "classic_model_schedule_uni_limited_schedule",
+  "tag": "CULSCHED",
+  "export_name": "ClassicUniLimitedSchedule",
+  "source": "classic/model/schedule/uni/limited/schedule.v",
+  "production": "Prosa/Classic/Model/Schedule/Uni/Limited/Schedule.lean",
+  "fixtures": [
+    "ClassicUniLimitedScheduleInterface"
+  ],
+  "export_module": "Validation.fixtures.translation_order.ClassicUniLimitedScheduleInterface",
+  "interface_theorems": [],
+  "computational": [
+    "job_lock_in_service_positive",
+    "job_lock_in_service_le_job_cost",
+    "job_nonpreemptive_after_lock_in_service",
+    "proper_job_lock_in_service",
+    "task_lock_in_service_le_task_cost",
+    "task_lock_in_service_bounds_job_lock_in_service",
+    "proper_task_lock_in_service"
+  ],
+  "chain": [
+    "ClassicUniLimitedScheduleBase",
+    "ClassicUniLimitedScheduleList",
+    "ClassicUniLimitedScheduleCorrespondence"
+  ],
+  "principal": {},
+  "helpers": [
+    "cls_forall_sched",
+    "cls_forall_par",
+    "cls_ico"
+  ],
+  "base_run": null,
+  "base_checks": [],
+  "previous_status": "classic_model_schedule_partitioned_schedulability_module_status.json",
+  "input_relations": [
+    "job and task types: eqTypes identified, Lean DecidableEq instances = the eqTypes' decision procedures; job_task identified",
+    "times by SubNatRel; job/task parameters pointwise through SubNatRel; schedules pointwise through the option map; arrival sequences pointwise on related times (two-way totals)"
+  ],
+  "lean_representation_note": "the source file has no Rocq module (the Lean namespace is the file path); the section-local lock-in services are the lambdas `fun j => job_cost j` and `fun _ => \u03b5`",
+  "prop_sprop_foundation": [
+    "PropSPropFoundation.interpret_strict"
+  ],
+  "importer_foundation": [],
+  "rocq_sprop_uip": [
+    "ClassicUniLimitedScheduleBase.I.HEq_inst1",
+    "ClassicUniLimitedScheduleBase.I.True",
+    "I.HEq",
+    "I.HEq_inst1",
+    "I.True",
+    "Lean.eq",
+    "Lean.eq_inst1",
+    "SubadditivityNatCorrespondence.SubNatTrue"
+  ],
+  "normalization": {
+    "theorem_types": [],
+    "subexpression_heads": [
+      "Finset.sum"
+    ],
+    "definition_bodies": [],
+    "body_projections": [
+      "Prosa.Classic.Model.Schedule.Uni.Schedule.UniprocessorSchedule.service_during=Prosa.Validation.ClassicUniLimitedScheduleInterface.service_during_proj=Prosa.Validation.ClassicUniLimitedScheduleInterface.service_during_proj_guard",
+      "Prosa.Classic.Model.Schedule.Uni.Schedule.UniprocessorSchedule.total_service_during=Prosa.Validation.ClassicUniLimitedScheduleInterface.total_service_during_proj=Prosa.Validation.ClassicUniLimitedScheduleInterface.total_service_during_proj_guard"
+    ]
+  },
+  "export_env": {
+    "LEAN4EXPORT_PRESERVE_REDUCIBLE_THEOREM_TYPES": "1",
+    "LEAN4EXPORT_NAT_INDEX_ALIASES": "Prosa.Classic.Model.Time.Time.time"
+  },
+  "kernel_guard_artifacts": [
+    "Validation/fixtures/translation_order/ClassicUniLimitedScheduleInterface.lean"
+  ]
+}

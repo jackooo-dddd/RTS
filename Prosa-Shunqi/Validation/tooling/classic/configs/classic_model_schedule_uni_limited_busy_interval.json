@@ -1,0 +1,96 @@
+{
+  "rank": 102,
+  "layer": 12,
+  "classic_scope": "full",
+  "slug": "classic_model_schedule_uni_limited_busy_interval",
+  "tag": "CULBI",
+  "export_name": "ClassicUniLimitedBusyInterval",
+  "source": "classic/model/schedule/uni/limited/busy_interval.v",
+  "production": "Prosa/Classic/Model/Schedule/Uni/Limited/BusyInterval.lean",
+  "fixtures": [
+    "ClassicUniLimitedBusyIntervalInterface"
+  ],
+  "export_module": "Validation.fixtures.translation_order.ClassicUniLimitedBusyIntervalInterface",
+  "interface_theorems": [
+    "Prosa.Validation.ClassicUniLimitedBusyIntervalInterface.bigCat_range'",
+    "Prosa.Validation.ClassicUniLimitedBusyIntervalInterface.production_sumSeq_nil",
+    "Prosa.Validation.ClassicUniLimitedBusyIntervalInterface.production_sumSeq_cons",
+    "Prosa.Validation.ClassicUniLimitedBusyIntervalInterface.production_sumFiltered_nil",
+    "Prosa.Validation.ClassicUniLimitedBusyIntervalInterface.production_sumFiltered_cons_true",
+    "Prosa.Validation.ClassicUniLimitedBusyIntervalInterface.production_sumFiltered_cons_false"
+  ],
+  "computational": [
+    "BusyIntervalJLFP.quiet_time",
+    "BusyIntervalJLFP.busy_interval_prefix",
+    "BusyIntervalJLFP.busy_interval",
+    "BusyIntervalJLFP.is_priority_inversion",
+    "BusyIntervalJLFP.cumulative_priority_inversion",
+    "BusyIntervalJLFP.priority_inversion_of_job_is_bounded_by",
+    "BusyIntervalJLFP.priority_inversion_is_bounded_by",
+    "BusyIntervalJLFP.quiet_time_dec",
+    "BusyIntervalJLFP.no_carry_in"
+  ],
+  "chain": [
+    "ClassicUniLimitedBusyIntervalBase",
+    "ClassicUniLimitedBusyIntervalList",
+    "ClassicUniLimitedBusyIntervalCorrespondence"
+  ],
+  "principal": {},
+  "helpers": [
+    "clb_forall_sched",
+    "clb_forall_arr",
+    "clb_forall_par",
+    "clb_forall_rel",
+    "clb_service_of_hep_jobs",
+    "clb_reflect_forward",
+    "clb_reflect_backward"
+  ],
+  "base_run": null,
+  "base_checks": [],
+  "previous_status": "classic_analysis_uni_jitter_fp_rta_comp_module_status.json",
+  "input_relations": [
+    "job and task types: eqTypes identified, Lean DecidableEq instances = the eqTypes' decision procedures; job_task identified",
+    "times by SubNatRel; job parameters pointwise through SubNatRel; schedules pointwise through the option map; arrival sequences pointwise on related times; job sequences elementwise; predicates / policies pointwise on Booleans (two-way totals)"
+  ],
+  "lean_representation_note": "the Rocq module BusyIntervalJLFP is a namespace; the section-local `Let`s are unfolded; `t1 <= t < t2` is `decide (t1 \u2264 t) && decide (t < t2)`; `a ==> b` is `!a || b`; `reflect` is the informative `BoolReflect`; the limited-preemption `work_conserving` is the uniprocessor one",
+  "prop_sprop_foundation": [
+    "PropSPropFoundation.interpret_strict"
+  ],
+  "importer_foundation": [
+    "ImportedClassicUniLimitedBusyInterval.propext",
+    "PrimInt63.eqb",
+    "PrimInt63.int",
+    "PrimInt63.land",
+    "PrimInt63.lsr"
+  ],
+  "rocq_sprop_uip": [
+    "ClassicUniLimitedBusyIntervalBase.I.HEq_inst1",
+    "ClassicUniLimitedBusyIntervalBase.I.True",
+    "I.HEq",
+    "I.HEq_inst1",
+    "I.True",
+    "Lean.eq",
+    "Lean.eq_inst1",
+    "SubadditivityNatCorrespondence.SubNatTrue"
+  ],
+  "normalization": {
+    "theorem_types": [],
+    "subexpression_heads": [
+      "Finset.sum"
+    ],
+    "definition_bodies": [],
+    "body_projections": [
+      "Prosa.Classic.Model.Schedule.Uni.Schedule.UniprocessorSchedule.service_during=Prosa.Validation.ClassicUniLimitedBusyIntervalInterface.service_during_proj=Prosa.Validation.ClassicUniLimitedBusyIntervalInterface.service_during_proj_guard",
+      "Prosa.Classic.Model.Schedule.Uni.Schedule.UniprocessorSchedule.total_service_during=Prosa.Validation.ClassicUniLimitedBusyIntervalInterface.total_service_during_proj=Prosa.Validation.ClassicUniLimitedBusyIntervalInterface.total_service_during_proj_guard",
+      "Prosa.Classic.Model.Schedule.Uni.Limited.BusyInterval.BusyIntervalJLFP.cumulative_priority_inversion=Prosa.Validation.ClassicUniLimitedBusyIntervalInterface.cumulative_priority_inversion_proj=Prosa.Validation.ClassicUniLimitedBusyIntervalInterface.cumulative_priority_inversion_proj_guard"
+    ]
+  },
+  "export_env": {
+    "LEAN4EXPORT_PRESERVE_REDUCIBLE_THEOREM_TYPES": "1",
+    "LEAN4EXPORT_NAT_INDEX_ALIASES": "Prosa.Classic.Model.Time.Time.time"
+  },
+  "kernel_guard_artifacts": [
+    "Validation/fixtures/translation_order/ClassicUniLimitedBusyIntervalInterface.lean"
+  ],
+  "export_diagnosis": "~101,000 lines: the BusyInterval module's statements mention the uniprocessor service/workload sums (v0.6 sumFiltered over List.filter, with the Lean core List/BEq closure), the classic Prosa.Classic.Util.List.BoolReflect informative reflection and the limited-preemption platform; the restated interface theorems (finRange/maxFiltered, sumSeq/sumFiltered constructor equations, bigCat_range') are exported with their proof bodies; the half-open Finset.Ico sums (service_during, total_service_during, cumulative_priority_inversion) are kept out of the export by kernel-guarded rfl body projections."
+}

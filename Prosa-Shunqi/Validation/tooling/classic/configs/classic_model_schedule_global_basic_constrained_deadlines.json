@@ -1,0 +1,86 @@
+{
+  "rank": 42,
+  "layer": 14,
+  "slug": "classic_model_schedule_global_basic_constrained_deadlines",
+  "tag": "CCDG",
+  "export_name": "ClassicConstrainedDeadlinesGlobal",
+  "source": "classic/model/schedule/global/basic/constrained_deadlines.v",
+  "production": "Prosa/Classic/Model/Schedule/Global/Basic/ConstrainedDeadlines.lean",
+  "fixtures": [
+    "ClassicConstrainedDeadlinesGlobalInterface"
+  ],
+  "export_module": "Validation.fixtures.translation_order.ClassicConstrainedDeadlinesGlobalInterface",
+  "interface_theorems": [
+    "Prosa.Validation.ClassicConstrainedDeadlinesGlobalInterface.finRange_any",
+    "Prosa.Validation.ClassicConstrainedDeadlinesGlobalInterface.bigCatFin_range'",
+    "Prosa.Validation.ClassicConstrainedDeadlinesGlobalInterface.fin_sum_range'",
+    "Prosa.Validation.ClassicConstrainedDeadlinesGlobalInterface.service_at_sum"
+  ],
+  "computational": [
+    "ConstrainedDeadlines.scheduled_task_with_higher_eq_priority"
+  ],
+  "chain": [
+    "ClassicConstrainedDeadlinesGlobalBase",
+    "ClassicConstrainedDeadlinesGlobalList",
+    "ClassicConstrainedDeadlinesGlobalOrd",
+    "ClassicConstrainedDeadlinesGlobalCorrespondence"
+  ],
+  "base_run": null,
+  "base_checks": [],
+  "previous_status": "classic_model_schedule_apa_constrained_deadlines_module_status.json",
+  "input_relations": [
+    "job and task types: eqTypes identified, Lean DecidableEq instances = the eqTypes' decision procedures; job_task identified",
+    "natural numbers (time, num_cpus) by SubNatRel; processors 'I_n and Fin n by their values; schedules pointwise on related processors and times with option values by the constructor map; job and task parameters pointwise through SubNatRel; arrival sequences pointwise on related times; FP policies pointwise (two-way totals)"
+  ],
+  "lean_representation_note": "as for the accepted classic schedule, task_arrival, priority validations; Boolean tests in propositions are `= true`; the section-local `hp_task_in` is unfolded",
+  "normalization": {
+    "theorem_types": [],
+    "subexpression_heads": [],
+    "definition_bodies": [],
+    "body_projections": [
+      "Prosa.Classic.Model.Schedule.Global.Basic.Schedule.Schedule.service=Prosa.Validation.ClassicConstrainedDeadlinesGlobalInterface.service_proj=Prosa.Validation.ClassicConstrainedDeadlinesGlobalInterface.service_proj_guard",
+      "Prosa.Classic.Model.Schedule.Global.Basic.Schedule.Schedule.service_during=Prosa.Validation.ClassicConstrainedDeadlinesGlobalInterface.service_during_proj=Prosa.Validation.ClassicConstrainedDeadlinesGlobalInterface.service_during_proj_guard"
+    ]
+  },
+  "kernel_guard_artifacts": [
+    "Validation/fixtures/translation_order/ClassicConstrainedDeadlinesGlobalInterface.lean"
+  ],
+  "own_qualified_in_type": [
+    "ConstrainedDeadlines.scheduled_task_with_higher_eq_priority"
+  ],
+  "helpers": [
+    "cs_forall_ncpus_sched",
+    "cs_forall_sched"
+  ],
+  "export_diagnosis": "as for the accepted classic schedule export (service_at is a filtered Finset sum over Fin num_cpus; validation-only interface theorems exported with their proof bodies); service/service_during through kernel-guarded rfl body projections.",
+  "probe_extra": [],
+  "prop_sprop_foundation": [
+    "PropSPropFoundation.interpret_strict"
+  ],
+  "importer_foundation": [
+    "ImportedClassicConstrainedDeadlinesGlobal.Classical_choice",
+    "ImportedClassicConstrainedDeadlinesGlobal.Quot_sound",
+    "ImportedClassicConstrainedDeadlinesGlobal.propext",
+    "PrimInt63.eqb",
+    "PrimInt63.int",
+    "PrimInt63.land",
+    "PrimInt63.lsr"
+  ],
+  "rocq_sprop_uip": [
+    "ClassicConstrainedDeadlinesGlobalBase.I.HEq_inst1",
+    "ClassicConstrainedDeadlinesGlobalBase.I.True",
+    "ClassicConstrainedDeadlinesGlobalOrd.I.HEq",
+    "ClassicConstrainedDeadlinesGlobalOrd.I.HEq_inst1",
+    "ClassicConstrainedDeadlinesGlobalOrd.I.True",
+    "I.HEq",
+    "I.HEq_inst1",
+    "I.True",
+    "Lean.eq",
+    "Lean.eq_inst1",
+    "SubadditivityNatCorrespondence.SubNatTrue"
+  ],
+  "dependency_qualified_in_type": [
+    "prosa.classic.model.schedule.global.basic.platform.Platform.work_conserving",
+    "prosa.classic.model.schedule.global.basic.platform.Platform.respects_FP_policy"
+  ]
+}

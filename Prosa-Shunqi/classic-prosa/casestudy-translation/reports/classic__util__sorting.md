@@ -6,8 +6,8 @@
 | sha256 | `707c3ef0d575628941cff76b26368383a0f21fd3f85082fbd1f4b42593a94d58` |
 | Lean module | `Prosa/Classic/Util/Sorting.lean` (namespace `Prosa.Classic.Util.Sorting`) |
 | Tier / layer | S / 3 |
-| Status | **TRANSLATED**: compiles (Lean 4.33.1, pinned Mathlib), no `sorry`; `#print axioms` ⊆ {`propext`, `Quot.sound`, `Classical.choice`} |
-| Validation | pending Stage 0 (classic pipeline extension) |
+| Status | **ACCEPTED** (classic validation family; see the manifest) |
+| Validation | accepted |
 
 ## Declarations (6 source → Lean, same names)
 
@@ -40,3 +40,5 @@ Representation notes:
 ## History
 
 - 2026-10-01: translated; build and axiom check passed.
+- 2026-10-02: translated; build and axiom check passed.
+- 2026-10-02: accepted.

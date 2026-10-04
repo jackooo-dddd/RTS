@@ -1,0 +1,12 @@
+import Validation.fixtures.translation_order.ClassicInterferenceEdfInterface
+set_option pp.fieldNotation false
+
+#check @Prosa.Classic.Model.Schedule.Global.Basic.InterferenceEdf.InterferenceEDF.interference_under_edf_implies_shorter_deadlines
+#check @Prosa.Validation.ClassicInterferenceEdfInterface.finRange_any
+#check @Prosa.Validation.ClassicInterferenceEdfInterface.fin_sum_range'
+#check @Prosa.Validation.ClassicInterferenceEdfInterface.service_at_sum
+
+#print axioms Prosa.Classic.Model.Schedule.Global.Basic.InterferenceEdf.InterferenceEDF.interference_under_edf_implies_shorter_deadlines
+#print axioms Prosa.Validation.ClassicInterferenceEdfInterface.finRange_any
+#print axioms Prosa.Validation.ClassicInterferenceEdfInterface.fin_sum_range'
+#print axioms Prosa.Validation.ClassicInterferenceEdfInterface.service_at_sum

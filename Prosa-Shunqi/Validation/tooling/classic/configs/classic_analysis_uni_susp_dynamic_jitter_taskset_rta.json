@@ -1,0 +1,102 @@
+{
+  "rank": 183,
+  "layer": 17,
+  "classic_scope": "full",
+  "slug": "classic_analysis_uni_susp_dynamic_jitter_taskset_rta",
+  "tag": "CTSRTA",
+  "export_name": "ClassicTasksetRta",
+  "source": "classic/analysis/uni/susp/dynamic/jitter/taskset_rta.v",
+  "production": "Prosa/Classic/Analysis/Uni/Susp/Dynamic/Jitter/TasksetRta.lean",
+  "fixtures": [
+    "ClassicTasksetRtaInterface"
+  ],
+  "export_module": "Validation.fixtures.translation_order.ClassicTasksetRtaInterface",
+  "interface_theorems": [
+    "Prosa.Validation.ClassicTasksetRtaInterface.finRange_map_shift",
+    "Prosa.Validation.ClassicTasksetRtaInterface.finRange_map_val",
+    "Prosa.Validation.ClassicTasksetRtaInterface.finRange_any",
+    "Prosa.Validation.ClassicTasksetRtaInterface.map_finRange_eq_map_range'",
+    "Prosa.Validation.ClassicTasksetRtaInterface.maxFiltered_eq_foldr_cond",
+    "Prosa.Validation.ClassicTasksetRtaInterface.maxFiltered_finRange",
+    "Prosa.Validation.ClassicTasksetRtaInterface.bigCat_range'",
+    "Prosa.Validation.ClassicTasksetRtaInterface.production_schedule_prefix_zero",
+    "Prosa.Validation.ClassicTasksetRtaInterface.production_schedule_prefix_succ",
+    "Prosa.Validation.ClassicTasksetRtaInterface.production_sumSeq_nil",
+    "Prosa.Validation.ClassicTasksetRtaInterface.production_sumSeq_cons",
+    "Prosa.Validation.ClassicTasksetRtaInterface.production_sumFiltered_nil",
+    "Prosa.Validation.ClassicTasksetRtaInterface.production_sumFiltered_cons_true",
+    "Prosa.Validation.ClassicTasksetRtaInterface.production_sumFiltered_cons_false",
+    "Prosa.Validation.ClassicTasksetRtaInterface.finRange_find?_map_val",
+    "Prosa.Validation.ClassicTasksetRtaInterface.finRange_all",
+    "Prosa.Validation.ClassicTasksetRtaInterface.default0_find?"
+  ],
+  "computational": [
+    "TaskSetRTA.valid_jobs_with_jitter"
+  ],
+  "chain": [
+    "ClassicTasksetRtaBase",
+    "ClassicTasksetRtaList",
+    "ClassicTasksetRtaOrd",
+    "ClassicTasksetRtaCorrespondence"
+  ],
+  "principal": {},
+  "helpers": [
+    "cjr_forall_sched",
+    "cjr_forall_par",
+    "cjr_forall_arr",
+    "cjr_forall_rel",
+    "cjr_forall_susp"
+  ],
+  "base_run": null,
+  "base_checks": [],
+  "previous_status": "classic_analysis_uni_susp_dynamic_jitter_rta_by_reduction_module_status.json",
+  "input_relations": [
+    "job and task types: eqTypes identified, Lean DecidableEq instances = the eqTypes' decision procedures; job_task identified",
+    "times by SubNatRel; job parameters pointwise through SubNatRel; suspension functions pointwise; FP policies pointwise; arrival sequences pointwise on related times; uniprocessor schedules pointwise through the option map (two-way totals)"
+  ],
+  "lean_representation_note": "the Rocq module JitterScheduleConstruction is a namespace; the section-local `Let`s are unfolded; `if any_j == j` is `if any_j = j` (decidable `ite`); `minn` is `min`; `lower_priority` is `!FP_to_JLFP`",
+  "prop_sprop_foundation": [
+    "PropSPropFoundation.interpret_strict"
+  ],
+  "importer_foundation": [
+    "ImportedClassicTasksetRta.Quot_sound",
+    "ImportedClassicTasksetRta.propext",
+    "PrimInt63.eqb",
+    "PrimInt63.int",
+    "PrimInt63.land",
+    "PrimInt63.lsr"
+  ],
+  "rocq_sprop_uip": [
+    "ClassicTasksetRtaBase.I.HEq_inst1",
+    "ClassicTasksetRtaBase.I.True",
+    "ClassicTasksetRtaOrd.I.HEq",
+    "ClassicTasksetRtaOrd.I.HEq_inst1",
+    "ClassicTasksetRtaOrd.I.True",
+    "I.HEq",
+    "I.HEq_inst1",
+    "I.True",
+    "Lean.eq",
+    "Lean.eq_inst1",
+    "SubadditivityNatCorrespondence.SubNatTrue"
+  ],
+  "normalization": {
+    "theorem_types": [],
+    "subexpression_heads": [
+      "Finset.sum"
+    ],
+    "definition_bodies": [],
+    "body_projections": [
+      "Prosa.Classic.Model.Schedule.Uni.Schedule.UniprocessorSchedule.service_during=Prosa.Validation.ClassicTasksetRtaInterface.service_during_proj=Prosa.Validation.ClassicTasksetRtaInterface.service_during_proj_guard",
+      "Prosa.Classic.Model.Schedule.Uni.Schedule.UniprocessorSchedule.total_service_during=Prosa.Validation.ClassicTasksetRtaInterface.total_service_during_proj=Prosa.Validation.ClassicTasksetRtaInterface.total_service_during_proj_guard",
+      "Prosa.Classic.Model.Suspension.Suspension.total_suspension=Prosa.Validation.ClassicTasksetRtaInterface.total_suspension_proj=Prosa.Validation.ClassicTasksetRtaInterface.total_suspension_proj_guard",
+      "Prosa.Classic.Model.Schedule.Uni.Susp.SuspensionIntervals.SuspensionIntervals.cumulative_suspension_during=Prosa.Validation.ClassicTasksetRtaInterface.cumulative_suspension_during_proj=Prosa.Validation.ClassicTasksetRtaInterface.cumulative_suspension_during_proj_guard"
+    ]
+  },
+  "export_env": {
+    "LEAN4EXPORT_PRESERVE_REDUCIBLE_THEOREM_TYPES": "1",
+    "LEAN4EXPORT_NAT_INDEX_ALIASES": "Prosa.Classic.Model.Time.Time.time"
+  },
+  "kernel_guard_artifacts": [
+    "Validation/fixtures/translation_order/ClassicTasksetRtaInterface.lean"
+  ]
+}

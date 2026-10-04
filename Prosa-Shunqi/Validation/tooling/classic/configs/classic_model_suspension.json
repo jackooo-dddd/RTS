@@ -1,0 +1,60 @@
+{
+  "rank": 31,
+  "layer": 7,
+  "classic_scope": "full",
+  "slug": "classic_model_suspension",
+  "tag": "CSUSP",
+  "export_name": "ClassicSuspension",
+  "source": "classic/model/suspension.v",
+  "production": "Prosa/Classic/Model/Suspension.lean",
+  "fixtures": [
+    "ClassicSuspensionInterface"
+  ],
+  "export_module": "Validation.fixtures.translation_order.ClassicSuspensionInterface",
+  "interface_theorems": [],
+  "computational": [
+    "Suspension.job_suspension",
+    "Suspension.total_suspension",
+    "Suspension.dynamic_suspension_model"
+  ],
+  "chain": [
+    "ClassicSuspensionBase",
+    "ClassicSuspensionList",
+    "ClassicSuspensionCorrespondence"
+  ],
+  "principal": {},
+  "helpers": [
+    "csu_ico",
+    "csu_forall_par"
+  ],
+  "base_run": null,
+  "base_checks": [],
+  "previous_status": "classic_model_arrival_jitter_arrival_sequence_module_status.json",
+  "input_relations": [
+    "job and task types: eqType identified, Lean DecidableEq instances = the eqTypes' decision procedures; job_task identified",
+    "natural numbers (time, duration) by SubNatRel; job_cost and suspension_bound pointwise through SubNatRel; suspension functions pointwise on related times (two-way totals)"
+  ],
+  "lean_representation_note": "`job_suspension Job` is the reducible `Job \u2192 time \u2192 duration`; `\\sum_(0 <= t < n) F t` is the Mathlib `\u2211 t \u2208 Finset.Ico 0 n, F t`, exported through a kernel-guarded rfl body projection to `List.foldr Nat.add 0 (List.map F (List.range' 0 (n - 0) 1))`",
+  "prop_sprop_foundation": [
+    "PropSPropFoundation.interpret_strict"
+  ],
+  "importer_foundation": [],
+  "rocq_sprop_uip": [
+    "Lean.eq",
+    "SubadditivityNatCorrespondence.SubNatTrue"
+  ],
+  "normalization": {
+    "theorem_types": [],
+    "subexpression_heads": [],
+    "definition_bodies": [],
+    "body_projections": [
+      "Prosa.Classic.Model.Suspension.Suspension.total_suspension=Prosa.Validation.ClassicSuspensionInterface.total_suspension_proj=Prosa.Validation.ClassicSuspensionInterface.total_suspension_proj_guard"
+    ]
+  },
+  "export_env": {
+    "LEAN4EXPORT_NAT_INDEX_ALIASES": "Prosa.Classic.Model.Time.Time.time"
+  },
+  "kernel_guard_artifacts": [
+    "Validation/fixtures/translation_order/ClassicSuspensionInterface.lean"
+  ]
+}

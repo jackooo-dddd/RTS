@@ -1,0 +1,78 @@
+{
+  "rank": 75,
+  "layer": 10,
+  "classic_scope": "full",
+  "slug": "classic_analysis_uni_susp_dynamic_jitter_jitter_schedule",
+  "tag": "CJSC",
+  "export_name": "ClassicJitterScheduleConstruction",
+  "source": "classic/analysis/uni/susp/dynamic/jitter/jitter_schedule.v",
+  "production": "Prosa/Classic/Analysis/Uni/Susp/Dynamic/Jitter/JitterSchedule.lean",
+  "fixtures": [
+    "ClassicJitterScheduleConstructionInterface"
+  ],
+  "export_module": "Validation.fixtures.translation_order.ClassicJitterScheduleConstructionInterface",
+  "interface_theorems": [
+    "Prosa.Validation.ClassicJitterScheduleConstructionInterface.bigCat_range'",
+    "Prosa.Validation.ClassicJitterScheduleConstructionInterface.production_schedule_prefix_zero",
+    "Prosa.Validation.ClassicJitterScheduleConstructionInterface.production_schedule_prefix_succ"
+  ],
+  "computational": [
+    "JitterScheduleConstruction.inflated_job_cost",
+    "JitterScheduleConstruction.job_jitter",
+    "JitterScheduleConstruction.pending_jobs_other_than_j",
+    "JitterScheduleConstruction.highest_priority_job_other_than_j",
+    "JitterScheduleConstruction.build_schedule",
+    "JitterScheduleConstruction.sched_jitter"
+  ],
+  "chain": [
+    "ClassicJitterScheduleConstructionBase",
+    "ClassicJitterScheduleConstructionList",
+    "ClassicJitterScheduleConstructionCorrespondence"
+  ],
+  "principal": {},
+  "helpers": [
+    "cjs_seq_min",
+    "cjs_UC_build_schedule_from_prefixes"
+  ],
+  "base_run": null,
+  "base_checks": [],
+  "previous_status": "classic_implementation_uni_susp_schedule_module_status.json",
+  "input_relations": [
+    "job and task types: eqTypes identified, Lean DecidableEq instances = the eqTypes' decision procedures; job_task identified",
+    "times by SubNatRel; job parameters pointwise through SubNatRel; suspension functions pointwise; FP policies pointwise; arrival sequences pointwise on related times; uniprocessor schedules pointwise through the option map (two-way totals)"
+  ],
+  "lean_representation_note": "the Rocq module JitterScheduleConstruction is a namespace; the section-local `Let`s are unfolded; `if any_j == j` is `if any_j = j` (decidable `ite`); `minn` is `min`; `lower_priority` is `!FP_to_JLFP`",
+  "prop_sprop_foundation": [
+    "PropSPropFoundation.interpret_strict"
+  ],
+  "importer_foundation": [],
+  "rocq_sprop_uip": [
+    "ClassicJitterScheduleConstructionBase.I.HEq_inst1",
+    "ClassicJitterScheduleConstructionBase.I.True",
+    "I.HEq",
+    "I.HEq_inst1",
+    "I.True",
+    "Lean.eq",
+    "Lean.eq_inst1",
+    "SubadditivityNatCorrespondence.SubNatTrue"
+  ],
+  "normalization": {
+    "theorem_types": [],
+    "subexpression_heads": [
+      "Finset.sum"
+    ],
+    "definition_bodies": [],
+    "body_projections": [
+      "Prosa.Classic.Model.Schedule.Uni.Schedule.UniprocessorSchedule.service_during=Prosa.Validation.ClassicJitterScheduleConstructionInterface.service_during_proj=Prosa.Validation.ClassicJitterScheduleConstructionInterface.service_during_proj_guard",
+      "Prosa.Classic.Model.Schedule.Uni.Schedule.UniprocessorSchedule.total_service_during=Prosa.Validation.ClassicJitterScheduleConstructionInterface.total_service_during_proj=Prosa.Validation.ClassicJitterScheduleConstructionInterface.total_service_during_proj_guard",
+      "Prosa.Classic.Model.Suspension.Suspension.total_suspension=Prosa.Validation.ClassicJitterScheduleConstructionInterface.total_suspension_proj=Prosa.Validation.ClassicJitterScheduleConstructionInterface.total_suspension_proj_guard"
+    ]
+  },
+  "export_env": {
+    "LEAN4EXPORT_PRESERVE_REDUCIBLE_THEOREM_TYPES": "1",
+    "LEAN4EXPORT_NAT_INDEX_ALIASES": "Prosa.Classic.Model.Time.Time.time"
+  },
+  "kernel_guard_artifacts": [
+    "Validation/fixtures/translation_order/ClassicJitterScheduleConstructionInterface.lean"
+  ]
+}

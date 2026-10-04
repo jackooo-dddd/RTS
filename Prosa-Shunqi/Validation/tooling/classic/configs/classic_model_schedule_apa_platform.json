@@ -1,0 +1,91 @@
+{
+  "rank": 37,
+  "layer": 13,
+  "slug": "classic_model_schedule_apa_platform",
+  "tag": "CPLATA",
+  "export_name": "ClassicPlatformApa",
+  "source": "classic/model/schedule/apa/platform.v",
+  "production": "Prosa/Classic/Model/Schedule/Apa/Platform.lean",
+  "fixtures": [
+    "ClassicPlatformApaInterface"
+  ],
+  "export_module": "Validation.fixtures.translation_order.ClassicPlatformApaInterface",
+  "interface_theorems": [
+    "Prosa.Validation.ClassicPlatformApaInterface.finRange_any",
+    "Prosa.Validation.ClassicPlatformApaInterface.bigCatFin_range'",
+    "Prosa.Validation.ClassicPlatformApaInterface.fin_sum_range'",
+    "Prosa.Validation.ClassicPlatformApaInterface.service_at_sum"
+  ],
+  "computational": [
+    "Platform.apa_work_conserving",
+    "Platform.respects_affinity",
+    "Platform.respects_FP_policy_under_weak_APA",
+    "Platform.respects_JLFP_policy_under_weak_APA",
+    "Platform.respects_JLDP_policy_under_weak_APA"
+  ],
+  "chain": [
+    "ClassicPlatformApaBase",
+    "ClassicPlatformApaList",
+    "ClassicPlatformApaList1",
+    "ClassicPlatformApaOrd",
+    "ClassicPlatformApaCorrespondence"
+  ],
+  "base_run": null,
+  "base_checks": [],
+  "previous_status": "classic_analysis_global_basic_workload_bound_module_status.json",
+  "input_relations": [
+    "job and task types: eqTypes identified, Lean DecidableEq instances = the eqTypes' decision procedures; job_task identified",
+    "natural numbers (time, num_cpus) by SubNatRel; processors 'I_n and Fin n by their values; schedules pointwise on related processors and times with option values by the constructor map; job parameters pointwise through SubNatRel; arrival sequences pointwise on related times; FP/JLFP policies pointwise, JLDP policies pointwise on related times; affinities by their underlying sequences through the ordinal conversion, task affinities pointwise (two-way totals)"
+  ],
+  "lean_representation_note": "as for the accepted classic schedule, priority and affinity validations; Boolean tests in propositions are `= true`",
+  "normalization": {
+    "theorem_types": [],
+    "subexpression_heads": [],
+    "definition_bodies": [],
+    "body_projections": [
+      "Prosa.Classic.Model.Schedule.Global.Basic.Schedule.Schedule.service=Prosa.Validation.ClassicPlatformApaInterface.service_proj=Prosa.Validation.ClassicPlatformApaInterface.service_proj_guard",
+      "Prosa.Classic.Model.Schedule.Global.Basic.Schedule.Schedule.service_during=Prosa.Validation.ClassicPlatformApaInterface.service_during_proj=Prosa.Validation.ClassicPlatformApaInterface.service_during_proj_guard"
+    ]
+  },
+  "kernel_guard_artifacts": [
+    "Validation/fixtures/translation_order/ClassicPlatformApaInterface.lean"
+  ],
+  "own_qualified_in_type": [
+    "Platform.apa_work_conserving",
+    "Platform.respects_affinity",
+    "Platform.respects_FP_policy_under_weak_APA",
+    "Platform.respects_JLFP_policy_under_weak_APA",
+    "Platform.respects_JLDP_policy_under_weak_APA"
+  ],
+  "helpers": [
+    "cs_forall_ncpus_sched",
+    "cs_forall_sched"
+  ],
+  "export_diagnosis": "as for the accepted classic schedule export (service_at is a filtered Finset sum over Fin num_cpus; validation-only interface theorems exported with their proof bodies); service/service_during through kernel-guarded rfl body projections.",
+  "probe_extra": [],
+  "prop_sprop_foundation": [
+    "PropSPropFoundation.interpret_strict"
+  ],
+  "importer_foundation": [
+    "ImportedClassicPlatformApa.Classical_choice",
+    "ImportedClassicPlatformApa.Quot_sound",
+    "ImportedClassicPlatformApa.propext",
+    "PrimInt63.eqb",
+    "PrimInt63.int",
+    "PrimInt63.land",
+    "PrimInt63.lsr"
+  ],
+  "rocq_sprop_uip": [
+    "ClassicPlatformApaBase.I.HEq_inst1",
+    "ClassicPlatformApaBase.I.True",
+    "ClassicPlatformApaOrd.I.HEq",
+    "ClassicPlatformApaOrd.I.HEq_inst1",
+    "ClassicPlatformApaOrd.I.True",
+    "I.HEq",
+    "I.HEq_inst1",
+    "I.True",
+    "Lean.eq",
+    "Lean.eq_inst1",
+    "SubadditivityNatCorrespondence.SubNatTrue"
+  ]
+}

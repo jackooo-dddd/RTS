@@ -1,0 +1,6 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedClassicImplUjJob.
+
+Check ImportedClassicImplUjJob.Prosa_Classic_Implementation_Uni_Jitter_Job_ConcreteJob_concrete_job.
+Check ImportedClassicImplUjJob.Prosa_Classic_Implementation_Uni_Jitter_Job_ConcreteJob_job_eqdef.
+Check ImportedClassicImplUjJob.Prosa_Classic_Implementation_Uni_Jitter_Job_ConcreteJob_eqn_job.

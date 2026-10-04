@@ -1,0 +1,174 @@
+From FoundationCertificates Require Import ClassicInterferenceBoundEdfCorrespondence.
+Set Printing Width 1000.
+
+Goal Logic.True. idtac "AUDIT_BEGIN InterferenceBoundEDF_edf_specific_interference_bound_correspondence". exact Logic.I. Qed.
+Print Assumptions InterferenceBoundEDF_edf_specific_interference_bound_correspondence.
+Goal Logic.True. idtac "AUDIT_END InterferenceBoundEDF_edf_specific_interference_bound_correspondence". exact Logic.I. Qed.
+
+Goal Logic.True. idtac "AUDIT_BEGIN InterferenceBoundEDF_interference_bound_edf_correspondence". exact Logic.I. Qed.
+Print Assumptions InterferenceBoundEDF_interference_bound_edf_correspondence.
+Goal Logic.True. idtac "AUDIT_END InterferenceBoundEDF_interference_bound_edf_correspondence". exact Logic.I. Qed.
+
+Goal Logic.True. idtac "AUDIT_BEGIN InterferenceBoundEDF_total_interference_bound_edf_correspondence". exact Logic.I. Qed.
+Print Assumptions InterferenceBoundEDF_total_interference_bound_edf_correspondence.
+Goal Logic.True. idtac "AUDIT_END InterferenceBoundEDF_total_interference_bound_edf_correspondence". exact Logic.I. Qed.
+
+Goal Logic.True. idtac "AUDIT_BEGIN InterferenceBoundEDF_interference_bound_edf_use_another_definition_correspondence". exact Logic.I. Qed.
+Print Assumptions InterferenceBoundEDF_interference_bound_edf_use_another_definition_correspondence.
+Goal Logic.True. idtac "AUDIT_END InterferenceBoundEDF_interference_bound_edf_use_another_definition_correspondence". exact Logic.I. Qed.
+
+Goal Logic.True. idtac "AUDIT_BEGIN InterferenceBoundEDF_interference_bound_edf_simpl_by_filtering_interfering_jobs_correspondence". exact Logic.I. Qed.
+Print Assumptions InterferenceBoundEDF_interference_bound_edf_simpl_by_filtering_interfering_jobs_correspondence.
+Goal Logic.True. idtac "AUDIT_END InterferenceBoundEDF_interference_bound_edf_simpl_by_filtering_interfering_jobs_correspondence". exact Logic.I. Qed.
+
+Goal Logic.True. idtac "AUDIT_BEGIN InterferenceBoundEDF_interference_bound_edf_simpl_by_sorting_interfering_jobs_correspondence". exact Logic.I. Qed.
+Print Assumptions InterferenceBoundEDF_interference_bound_edf_simpl_by_sorting_interfering_jobs_correspondence.
+Goal Logic.True. idtac "AUDIT_END InterferenceBoundEDF_interference_bound_edf_simpl_by_sorting_interfering_jobs_correspondence". exact Logic.I. Qed.
+
+Goal Logic.True. idtac "AUDIT_BEGIN InterferenceBoundEDF_interference_bound_edf_job_in_same_sequence_correspondence". exact Logic.I. Qed.
+Print Assumptions InterferenceBoundEDF_interference_bound_edf_job_in_same_sequence_correspondence.
+Goal Logic.True. idtac "AUDIT_END InterferenceBoundEDF_interference_bound_edf_job_in_same_sequence_correspondence". exact Logic.I. Qed.
+
+Goal Logic.True. idtac "AUDIT_BEGIN InterferenceBoundEDF_interference_bound_edf_all_jobs_from_tsk_k_correspondence". exact Logic.I. Qed.
+Print Assumptions InterferenceBoundEDF_interference_bound_edf_all_jobs_from_tsk_k_correspondence.
+Goal Logic.True. idtac "AUDIT_END InterferenceBoundEDF_interference_bound_edf_all_jobs_from_tsk_k_correspondence". exact Logic.I. Qed.
+
+Goal Logic.True. idtac "AUDIT_BEGIN InterferenceBoundEDF_interference_bound_edf_jobs_ordered_by_arrival_correspondence". exact Logic.I. Qed.
+Print Assumptions InterferenceBoundEDF_interference_bound_edf_jobs_ordered_by_arrival_correspondence.
+Goal Logic.True. idtac "AUDIT_END InterferenceBoundEDF_interference_bound_edf_jobs_ordered_by_arrival_correspondence". exact Logic.I. Qed.
+
+Goal Logic.True. idtac "AUDIT_BEGIN InterferenceBoundEDF_interference_bound_edf_interference_le_task_cost_correspondence". exact Logic.I. Qed.
+Print Assumptions InterferenceBoundEDF_interference_bound_edf_interference_le_task_cost_correspondence.
+Goal Logic.True. idtac "AUDIT_END InterferenceBoundEDF_interference_bound_edf_interference_le_task_cost_correspondence". exact Logic.I. Qed.
+
+Goal Logic.True. idtac "AUDIT_BEGIN InterferenceBoundEDF_interference_bound_edf_holds_for_at_most_n_k_jobs_correspondence". exact Logic.I. Qed.
+Print Assumptions InterferenceBoundEDF_interference_bound_edf_holds_for_at_most_n_k_jobs_correspondence.
+Goal Logic.True. idtac "AUDIT_END InterferenceBoundEDF_interference_bound_edf_holds_for_at_most_n_k_jobs_correspondence". exact Logic.I. Qed.
+
+Goal Logic.True. idtac "AUDIT_BEGIN InterferenceBoundEDF_interference_bound_edf_at_least_one_job_correspondence". exact Logic.I. Qed.
+Print Assumptions InterferenceBoundEDF_interference_bound_edf_at_least_one_job_correspondence.
+Goal Logic.True. idtac "AUDIT_END InterferenceBoundEDF_interference_bound_edf_at_least_one_job_correspondence". exact Logic.I. Qed.
+
+Goal Logic.True. idtac "AUDIT_BEGIN InterferenceBoundEDF_interference_bound_edf_j_fst_is_job_of_tsk_k_correspondence". exact Logic.I. Qed.
+Print Assumptions InterferenceBoundEDF_interference_bound_edf_j_fst_is_job_of_tsk_k_correspondence.
+Goal Logic.True. idtac "AUDIT_END InterferenceBoundEDF_interference_bound_edf_j_fst_is_job_of_tsk_k_correspondence". exact Logic.I. Qed.
+
+Goal Logic.True. idtac "AUDIT_BEGIN InterferenceBoundEDF_interference_bound_edf_j_fst_deadline_correspondence". exact Logic.I. Qed.
+Print Assumptions InterferenceBoundEDF_interference_bound_edf_j_fst_deadline_correspondence.
+Goal Logic.True. idtac "AUDIT_END InterferenceBoundEDF_interference_bound_edf_j_fst_deadline_correspondence". exact Logic.I. Qed.
+
+Goal Logic.True. idtac "AUDIT_BEGIN InterferenceBoundEDF_interference_bound_edf_j_i_deadline_correspondence". exact Logic.I. Qed.
+Print Assumptions InterferenceBoundEDF_interference_bound_edf_j_i_deadline_correspondence.
+Goal Logic.True. idtac "AUDIT_END InterferenceBoundEDF_interference_bound_edf_j_i_deadline_correspondence". exact Logic.I. Qed.
+
+Goal Logic.True. idtac "AUDIT_BEGIN InterferenceBoundEDF_interference_bound_edf_j_fst_completion_implies_rt_bound_inside_interval_correspondence". exact Logic.I. Qed.
+Print Assumptions InterferenceBoundEDF_interference_bound_edf_j_fst_completion_implies_rt_bound_inside_interval_correspondence.
+Goal Logic.True. idtac "AUDIT_END InterferenceBoundEDF_interference_bound_edf_j_fst_completion_implies_rt_bound_inside_interval_correspondence". exact Logic.I. Qed.
+
+Goal Logic.True. idtac "AUDIT_BEGIN InterferenceBoundEDF_interference_bound_edf_simpl_when_there's_one_job_correspondence". exact Logic.I. Qed.
+Print Assumptions InterferenceBoundEDF_interference_bound_edf_simpl_when_there's_one_job_correspondence.
+Goal Logic.True. idtac "AUDIT_END InterferenceBoundEDF_interference_bound_edf_simpl_when_there's_one_job_correspondence". exact Logic.I. Qed.
+
+Goal Logic.True. idtac "AUDIT_BEGIN InterferenceBoundEDF_interference_bound_edf_holds_for_single_job_that_completes_on_time_correspondence". exact Logic.I. Qed.
+Print Assumptions InterferenceBoundEDF_interference_bound_edf_holds_for_single_job_that_completes_on_time_correspondence.
+Goal Logic.True. idtac "AUDIT_END InterferenceBoundEDF_interference_bound_edf_holds_for_single_job_that_completes_on_time_correspondence". exact Logic.I. Qed.
+
+Goal Logic.True. idtac "AUDIT_BEGIN InterferenceBoundEDF_interference_bound_edf_response_time_bound_of_j_fst_after_interval_correspondence". exact Logic.I. Qed.
+Print Assumptions InterferenceBoundEDF_interference_bound_edf_response_time_bound_of_j_fst_after_interval_correspondence.
+Goal Logic.True. idtac "AUDIT_END InterferenceBoundEDF_interference_bound_edf_response_time_bound_of_j_fst_after_interval_correspondence". exact Logic.I. Qed.
+
+Goal Logic.True. idtac "AUDIT_BEGIN InterferenceBoundEDF_interference_bound_edf_holds_for_single_job_with_big_slack_correspondence". exact Logic.I. Qed.
+Print Assumptions InterferenceBoundEDF_interference_bound_edf_holds_for_single_job_with_big_slack_correspondence.
+Goal Logic.True. idtac "AUDIT_END InterferenceBoundEDF_interference_bound_edf_holds_for_single_job_with_big_slack_correspondence". exact Logic.I. Qed.
+
+Goal Logic.True. idtac "AUDIT_BEGIN InterferenceBoundEDF_interference_bound_edf_holds_for_single_job_with_small_slack_correspondence". exact Logic.I. Qed.
+Print Assumptions InterferenceBoundEDF_interference_bound_edf_holds_for_single_job_with_small_slack_correspondence.
+Goal Logic.True. idtac "AUDIT_END InterferenceBoundEDF_interference_bound_edf_holds_for_single_job_with_small_slack_correspondence". exact Logic.I. Qed.
+
+Goal Logic.True. idtac "AUDIT_BEGIN InterferenceBoundEDF_interference_bound_edf_interference_of_j_fst_limited_by_slack_correspondence". exact Logic.I. Qed.
+Print Assumptions InterferenceBoundEDF_interference_bound_edf_interference_of_j_fst_limited_by_slack_correspondence.
+Goal Logic.True. idtac "AUDIT_END InterferenceBoundEDF_interference_bound_edf_interference_of_j_fst_limited_by_slack_correspondence". exact Logic.I. Qed.
+
+Goal Logic.True. idtac "AUDIT_BEGIN InterferenceBoundEDF_interference_bound_edf_holds_for_a_single_job_correspondence". exact Logic.I. Qed.
+Print Assumptions InterferenceBoundEDF_interference_bound_edf_holds_for_a_single_job_correspondence.
+Goal Logic.True. idtac "AUDIT_END InterferenceBoundEDF_interference_bound_edf_holds_for_a_single_job_correspondence". exact Logic.I. Qed.
+
+Goal Logic.True. idtac "AUDIT_BEGIN InterferenceBoundEDF_interference_bound_edf_j_lst_is_job_of_tsk_k_correspondence". exact Logic.I. Qed.
+Print Assumptions InterferenceBoundEDF_interference_bound_edf_j_lst_is_job_of_tsk_k_correspondence.
+Goal Logic.True. idtac "AUDIT_END InterferenceBoundEDF_interference_bound_edf_j_lst_is_job_of_tsk_k_correspondence". exact Logic.I. Qed.
+
+Goal Logic.True. idtac "AUDIT_BEGIN InterferenceBoundEDF_interference_bound_edf_j_lst_deadline_correspondence". exact Logic.I. Qed.
+Print Assumptions InterferenceBoundEDF_interference_bound_edf_j_lst_deadline_correspondence.
+Goal Logic.True. idtac "AUDIT_END InterferenceBoundEDF_interference_bound_edf_j_lst_deadline_correspondence". exact Logic.I. Qed.
+
+Goal Logic.True. idtac "AUDIT_BEGIN InterferenceBoundEDF_interference_bound_edf_j_fst_before_j_lst_correspondence". exact Logic.I. Qed.
+Print Assumptions InterferenceBoundEDF_interference_bound_edf_j_fst_before_j_lst_correspondence.
+Goal Logic.True. idtac "AUDIT_END InterferenceBoundEDF_interference_bound_edf_j_fst_before_j_lst_correspondence". exact Logic.I. Qed.
+
+Goal Logic.True. idtac "AUDIT_BEGIN InterferenceBoundEDF_interference_bound_edf_last_job_arrives_before_end_of_interval_correspondence". exact Logic.I. Qed.
+Print Assumptions InterferenceBoundEDF_interference_bound_edf_last_job_arrives_before_end_of_interval_correspondence.
+Goal Logic.True. idtac "AUDIT_END InterferenceBoundEDF_interference_bound_edf_last_job_arrives_before_end_of_interval_correspondence". exact Logic.I. Qed.
+
+Goal Logic.True. idtac "AUDIT_BEGIN InterferenceBoundEDF_interference_bound_edf_j_fst_completed_on_time_correspondence". exact Logic.I. Qed.
+Print Assumptions InterferenceBoundEDF_interference_bound_edf_j_fst_completed_on_time_correspondence.
+Goal Logic.True. idtac "AUDIT_END InterferenceBoundEDF_interference_bound_edf_j_fst_completed_on_time_correspondence". exact Logic.I. Qed.
+
+Goal Logic.True. idtac "AUDIT_BEGIN InterferenceBoundEDF_interference_bound_edf_many_periods_in_between_correspondence". exact Logic.I. Qed.
+Print Assumptions InterferenceBoundEDF_interference_bound_edf_many_periods_in_between_correspondence.
+Goal Logic.True. idtac "AUDIT_END InterferenceBoundEDF_interference_bound_edf_many_periods_in_between_correspondence". exact Logic.I. Qed.
+
+Goal Logic.True. idtac "AUDIT_BEGIN InterferenceBoundEDF_interference_bound_edf_n_k_covers_middle_jobs_plus_one_correspondence". exact Logic.I. Qed.
+Print Assumptions InterferenceBoundEDF_interference_bound_edf_n_k_covers_middle_jobs_plus_one_correspondence.
+Goal Logic.True. idtac "AUDIT_END InterferenceBoundEDF_interference_bound_edf_n_k_covers_middle_jobs_plus_one_correspondence". exact Logic.I. Qed.
+
+Goal Logic.True. idtac "AUDIT_BEGIN InterferenceBoundEDF_interference_bound_edf_holds_for_middle_and_last_jobs_correspondence". exact Logic.I. Qed.
+Print Assumptions InterferenceBoundEDF_interference_bound_edf_holds_for_middle_and_last_jobs_correspondence.
+Goal Logic.True. idtac "AUDIT_END InterferenceBoundEDF_interference_bound_edf_holds_for_middle_and_last_jobs_correspondence". exact Logic.I. Qed.
+
+Goal Logic.True. idtac "AUDIT_BEGIN InterferenceBoundEDF_interference_bound_edf_n_k_equals_num_mid_jobs_plus_one_correspondence". exact Logic.I. Qed.
+Print Assumptions InterferenceBoundEDF_interference_bound_edf_n_k_equals_num_mid_jobs_plus_one_correspondence.
+Goal Logic.True. idtac "AUDIT_END InterferenceBoundEDF_interference_bound_edf_n_k_equals_num_mid_jobs_plus_one_correspondence". exact Logic.I. Qed.
+
+Goal Logic.True. idtac "AUDIT_BEGIN InterferenceBoundEDF_interference_bound_edf_remainder_ge_slack_correspondence". exact Logic.I. Qed.
+Print Assumptions InterferenceBoundEDF_interference_bound_edf_remainder_ge_slack_correspondence.
+Goal Logic.True. idtac "AUDIT_END InterferenceBoundEDF_interference_bound_edf_remainder_ge_slack_correspondence". exact Logic.I. Qed.
+
+Goal Logic.True. idtac "AUDIT_BEGIN InterferenceBoundEDF_interference_bound_edf_simpl_by_moving_to_left_side_correspondence". exact Logic.I. Qed.
+Print Assumptions InterferenceBoundEDF_interference_bound_edf_simpl_by_moving_to_left_side_correspondence.
+Goal Logic.True. idtac "AUDIT_END InterferenceBoundEDF_interference_bound_edf_simpl_by_moving_to_left_side_correspondence". exact Logic.I. Qed.
+
+Goal Logic.True. idtac "AUDIT_BEGIN InterferenceBoundEDF_interference_bound_edf_interference_of_j_fst_bounded_by_response_time_correspondence". exact Logic.I. Qed.
+Print Assumptions InterferenceBoundEDF_interference_bound_edf_interference_of_j_fst_bounded_by_response_time_correspondence.
+Goal Logic.True. idtac "AUDIT_END InterferenceBoundEDF_interference_bound_edf_interference_of_j_fst_bounded_by_response_time_correspondence". exact Logic.I. Qed.
+
+Goal Logic.True. idtac "AUDIT_BEGIN InterferenceBoundEDF_interference_bound_edf_bounding_interference_with_interval_lengths_correspondence". exact Logic.I. Qed.
+Print Assumptions InterferenceBoundEDF_interference_bound_edf_bounding_interference_with_interval_lengths_correspondence.
+Goal Logic.True. idtac "AUDIT_END InterferenceBoundEDF_interference_bound_edf_bounding_interference_with_interval_lengths_correspondence". exact Logic.I. Qed.
+
+Goal Logic.True. idtac "AUDIT_BEGIN InterferenceBoundEDF_interference_bound_edf_simpl_by_concatenation_of_intervals_correspondence". exact Logic.I. Qed.
+Print Assumptions InterferenceBoundEDF_interference_bound_edf_simpl_by_concatenation_of_intervals_correspondence.
+Goal Logic.True. idtac "AUDIT_END InterferenceBoundEDF_interference_bound_edf_simpl_by_concatenation_of_intervals_correspondence". exact Logic.I. Qed.
+
+Goal Logic.True. idtac "AUDIT_BEGIN InterferenceBoundEDF_interference_bound_edf_interference_of_j_fst_limited_by_remainder_and_slack_correspondence". exact Logic.I. Qed.
+Print Assumptions InterferenceBoundEDF_interference_bound_edf_interference_of_j_fst_limited_by_remainder_and_slack_correspondence.
+Goal Logic.True. idtac "AUDIT_END InterferenceBoundEDF_interference_bound_edf_interference_of_j_fst_limited_by_remainder_and_slack_correspondence". exact Logic.I. Qed.
+
+Goal Logic.True. idtac "AUDIT_BEGIN InterferenceBoundEDF_interference_bound_edf_holds_for_multiple_jobs_correspondence". exact Logic.I. Qed.
+Print Assumptions InterferenceBoundEDF_interference_bound_edf_holds_for_multiple_jobs_correspondence.
+Goal Logic.True. idtac "AUDIT_END InterferenceBoundEDF_interference_bound_edf_holds_for_multiple_jobs_correspondence". exact Logic.I. Qed.
+
+Goal Logic.True. idtac "AUDIT_BEGIN InterferenceBoundEDF_interference_bound_edf_bounds_interference_correspondence". exact Logic.I. Qed.
+Print Assumptions InterferenceBoundEDF_interference_bound_edf_bounds_interference_correspondence.
+Goal Logic.True. idtac "AUDIT_END InterferenceBoundEDF_interference_bound_edf_bounds_interference_correspondence". exact Logic.I. Qed.
+
+Goal Logic.True. idtac "AUDIT_BEGIN InterferenceBoundEDF_interference_bound_edf_monotonic_correspondence". exact Logic.I. Qed.
+Print Assumptions InterferenceBoundEDF_interference_bound_edf_monotonic_correspondence.
+Goal Logic.True. idtac "AUDIT_END InterferenceBoundEDF_interference_bound_edf_monotonic_correspondence". exact Logic.I. Qed.
+
+Goal Logic.True. idtac "AUDIT_BEGIN cs_forall_ncpus_sched". exact Logic.I. Qed.
+Print Assumptions cs_forall_ncpus_sched.
+Goal Logic.True. idtac "AUDIT_END cs_forall_ncpus_sched". exact Logic.I. Qed.
+
+Goal Logic.True. idtac "AUDIT_BEGIN cs_ico". exact Logic.I. Qed.
+Print Assumptions cs_ico.
+Goal Logic.True. idtac "AUDIT_END cs_ico". exact Logic.I. Qed.

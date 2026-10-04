@@ -1,0 +1,22 @@
+import Validation.fixtures.translation_order.ClassicUniConstructionInterface
+set_option pp.fieldNotation false
+
+#check @Prosa.Classic.Model.Schedule.Uni.Transformation.Construction.ScheduleConstruction.update_schedule
+#check @Prosa.Classic.Model.Schedule.Uni.Transformation.Construction.ScheduleConstruction.schedule_prefix
+#check @Prosa.Classic.Model.Schedule.Uni.Transformation.Construction.ScheduleConstruction.build_schedule_from_prefixes
+#check @Prosa.Classic.Model.Schedule.Uni.Transformation.Construction.ScheduleConstruction.prefix_construction_same_prefix
+#check @Prosa.Classic.Model.Schedule.Uni.Transformation.Construction.ScheduleConstruction.service_dependent_schedule_construction
+#check @Prosa.Classic.Model.Schedule.Uni.Transformation.Construction.ScheduleConstruction.prefix_dependent_schedule_construction
+#check @Prosa.Classic.Model.Schedule.Uni.Transformation.Construction.ScheduleConstruction.immediate_property_of_schedule_construction
+#check @Prosa.Validation.ClassicUniConstructionInterface.production_schedule_prefix_zero
+#check @Prosa.Validation.ClassicUniConstructionInterface.production_schedule_prefix_succ
+
+#print axioms Prosa.Classic.Model.Schedule.Uni.Transformation.Construction.ScheduleConstruction.update_schedule
+#print axioms Prosa.Classic.Model.Schedule.Uni.Transformation.Construction.ScheduleConstruction.schedule_prefix
+#print axioms Prosa.Classic.Model.Schedule.Uni.Transformation.Construction.ScheduleConstruction.build_schedule_from_prefixes
+#print axioms Prosa.Classic.Model.Schedule.Uni.Transformation.Construction.ScheduleConstruction.prefix_construction_same_prefix
+#print axioms Prosa.Classic.Model.Schedule.Uni.Transformation.Construction.ScheduleConstruction.service_dependent_schedule_construction
+#print axioms Prosa.Classic.Model.Schedule.Uni.Transformation.Construction.ScheduleConstruction.prefix_dependent_schedule_construction
+#print axioms Prosa.Classic.Model.Schedule.Uni.Transformation.Construction.ScheduleConstruction.immediate_property_of_schedule_construction
+#print axioms Prosa.Validation.ClassicUniConstructionInterface.production_schedule_prefix_zero
+#print axioms Prosa.Validation.ClassicUniConstructionInterface.production_schedule_prefix_succ

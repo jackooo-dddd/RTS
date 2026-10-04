@@ -1,0 +1,64 @@
+{
+  "rank": 23,
+  "layer": 7,
+  "slug": "classic_model_arrival_basic_arrival_sequence",
+  "tag": "CARRSEQ",
+  "export_name": "ClassicArrivalSequence",
+  "source": "classic/model/arrival/basic/arrival_sequence.v",
+  "production": "Prosa/Classic/Model/Arrival/Basic/ArrivalSequence.lean",
+  "fixtures": [
+    "ClassicArrivalSequenceInterface"
+  ],
+  "export_module": "Validation.fixtures.translation_order.ClassicArrivalSequenceInterface",
+  "interface_theorems": [
+    "Prosa.Validation.ClassicArrivalSequenceInterface.bigCat_range'"
+  ],
+  "computational": [
+    "ArrivalSequence.arrival_sequence",
+    "ArrivalSequence.jobs_arriving_at",
+    "ArrivalSequence.arrives_at",
+    "ArrivalSequence.arrives_in",
+    "ArrivalSequence.arrival_times_are_consistent",
+    "ArrivalSequence.arrival_sequence_is_a_set",
+    "ArrivalSequence.has_arrived",
+    "ArrivalSequence.arrived_before",
+    "ArrivalSequence.arrived_between",
+    "ArrivalSequence.jobs_arrived_between",
+    "ArrivalSequence.jobs_arrived_up_to",
+    "ArrivalSequence.jobs_arrived_before"
+  ],
+  "chain": [
+    "ClassicArrivalSequenceBase",
+    "ClassicArrivalSequenceList",
+    "ClassicArrivalSequenceCorrespondence"
+  ],
+  "base_run": null,
+  "base_checks": [],
+  "previous_status": "classic_model_arrival_basic_task_module_status.json",
+  "input_relations": [
+    "job types: eqType identified, Lean DecidableEq instance = the eqType's decision procedure",
+    "natural numbers (time) by SubNatRel; sequences elementwise; arrival sequences pointwise on related times; job_arrival pointwise through SubNatRel (two-way totals)"
+  ],
+  "lean_representation_note": "`arrival_sequence Job` is `time \u2192 List Job`; `\\cat_(t1 <= t < t2) F t` is the accepted v0.6 helper `Prosa.Util.Notation.bigCat t1 t2 F`; `j \\in s` returning bool is `decide (j \u2208 s)`; Boolean range tests are `decide` of the Nat orders",
+  "probe_extra": [],
+  "helpers": [
+    "ca_bigcat_rel",
+    "ca_forall_arr",
+    "ca_forall_par"
+  ],
+  "prop_sprop_foundation": [
+    "PropSPropFoundation.interpret_strict"
+  ],
+  "importer_foundation": [
+    "ImportedClassicArrivalSequence.propext"
+  ],
+  "rocq_sprop_uip": [
+    "ClassicArrivalSequenceBase.I.HEq_inst1",
+    "ClassicArrivalSequenceBase.I.True",
+    "I.HEq_inst1",
+    "I.True",
+    "Lean.eq",
+    "Lean.eq_inst1",
+    "SubadditivityNatCorrespondence.SubNatTrue"
+  ]
+}

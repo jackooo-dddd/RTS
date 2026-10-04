@@ -1,0 +1,90 @@
+{
+  "rank": 180,
+  "layer": 17,
+  "classic_scope": "full",
+  "slug": "classic_model_schedule_uni_limited_edf_nonpr_reg_response_time_bound",
+  "tag": "CNPEDF",
+  "export_name": "ClassicNonprEdfRta",
+  "source": "classic/model/schedule/uni/limited/edf/nonpr_reg/response_time_bound.v",
+  "production": "Prosa/Classic/Model/Schedule/Uni/Limited/Edf/NonprReg/ResponseTimeBound.lean",
+  "fixtures": [
+    "ClassicNonprEdfRtaInterface"
+  ],
+  "export_module": "Validation.fixtures.translation_order.ClassicNonprEdfRtaInterface",
+  "interface_theorems": [
+    "Prosa.Validation.ClassicNonprEdfRtaInterface.bigCat_range'",
+    "Prosa.Validation.ClassicNonprEdfRtaInterface.production_sumSeq_nil",
+    "Prosa.Validation.ClassicNonprEdfRtaInterface.production_sumSeq_cons",
+    "Prosa.Validation.ClassicNonprEdfRtaInterface.production_sumFiltered_nil",
+    "Prosa.Validation.ClassicNonprEdfRtaInterface.production_sumFiltered_cons_true",
+    "Prosa.Validation.ClassicNonprEdfRtaInterface.production_sumFiltered_cons_false",
+    "Prosa.Validation.ClassicNonprEdfRtaInterface.maxFiltered_eq_foldr_cond"
+  ],
+  "computational": [
+    "RTAforEDFwithBoundedNonpreemptiveSegmentsWithArrivalCurves.blocking_bound"
+  ],
+  "chain": [
+    "ClassicNonprEdfRtaBase",
+    "ClassicNonprEdfRtaList",
+    "ClassicNonprEdfRtaCorrespondence"
+  ],
+  "principal": {},
+  "helpers": [
+    "cne_forall_sched",
+    "cne_forall_par",
+    "cne_forall_arr",
+    "cne_forall_rel",
+    "cne_forall_curve"
+  ],
+  "base_run": null,
+  "base_checks": [],
+  "previous_status": "classic_analysis_global_jitter_interference_bound_edf_module_status.json",
+  "input_relations": [
+    "job and task types: eqTypes identified, Lean DecidableEq instances = the eqTypes' decision procedures; job_task identified",
+    "times by SubNatRel; job parameters pointwise through SubNatRel; schedules pointwise through the option map; arrival sequences pointwise on related times; interference predicates / workloads pointwise on related times (two-way totals)",
+    "arrival curves and interference bound functions pointwise on related arguments; task sequences elementwise (two-way totals)"
+  ],
+  "lean_representation_note": "the Rocq module JLFPInstantiation is a namespace; the section-local `Let`s are unfolded (see the Lean module header); a Boolean summed as a number is `Bool.toNat`; `\\sum_(t1 <= t < t2)` is `\u2211 t \u2208 Finset.Ico t1 t2`",
+  "prop_sprop_foundation": [
+    "PropSPropFoundation.interpret_strict"
+  ],
+  "importer_foundation": [
+    "ImportedClassicNonprEdfRta.propext",
+    "PrimInt63.eqb",
+    "PrimInt63.int",
+    "PrimInt63.land",
+    "PrimInt63.lsr"
+  ],
+  "rocq_sprop_uip": [
+    "ClassicNonprEdfRtaBase.I.HEq_inst1",
+    "ClassicNonprEdfRtaBase.I.True",
+    "I.HEq",
+    "I.HEq_inst1",
+    "I.True",
+    "Lean.eq",
+    "Lean.eq_inst1",
+    "SubadditivityNatCorrespondence.SubNatTrue"
+  ],
+  "normalization": {
+    "theorem_types": [],
+    "subexpression_heads": [
+      "Finset.sum"
+    ],
+    "definition_bodies": [],
+    "body_projections": [
+      "Prosa.Classic.Model.Schedule.Uni.Schedule.UniprocessorSchedule.service_during=Prosa.Validation.ClassicNonprEdfRtaInterface.service_during_proj=Prosa.Validation.ClassicNonprEdfRtaInterface.service_during_proj_guard",
+      "Prosa.Classic.Model.Schedule.Uni.Schedule.UniprocessorSchedule.total_service_during=Prosa.Validation.ClassicNonprEdfRtaInterface.total_service_during_proj=Prosa.Validation.ClassicNonprEdfRtaInterface.total_service_during_proj_guard",
+      "Prosa.Classic.Model.Schedule.Uni.Limited.AbstractRTA.Definitions.AbstractRTADefinitions.cumul_interference=Prosa.Validation.ClassicNonprEdfRtaInterface.cumul_interference_proj=Prosa.Validation.ClassicNonprEdfRtaInterface.cumul_interference_proj_guard",
+      "Prosa.Classic.Model.Schedule.Uni.Limited.AbstractRTA.Definitions.AbstractRTADefinitions.cumul_interfering_workload=Prosa.Validation.ClassicNonprEdfRtaInterface.cumul_interfering_workload_proj=Prosa.Validation.ClassicNonprEdfRtaInterface.cumul_interfering_workload_proj_guard",
+      "Prosa.Classic.Model.Schedule.Uni.Limited.AbstractRTA.AbstractSeqRta.AbstractSeqRTA.cumul_task_interference=Prosa.Validation.ClassicNonprEdfRtaInterface.cumul_task_interference_proj=Prosa.Validation.ClassicNonprEdfRtaInterface.cumul_task_interference_proj_guard",
+      "Prosa.Classic.Model.Schedule.Uni.Limited.BusyInterval.BusyIntervalJLFP.cumulative_priority_inversion=Prosa.Validation.ClassicNonprEdfRtaInterface.cumulative_priority_inversion_proj=Prosa.Validation.ClassicNonprEdfRtaInterface.cumulative_priority_inversion_proj_guard"
+    ]
+  },
+  "export_env": {
+    "LEAN4EXPORT_PRESERVE_REDUCIBLE_THEOREM_TYPES": "1",
+    "LEAN4EXPORT_NAT_INDEX_ALIASES": "Prosa.Classic.Model.Time.Time.time"
+  },
+  "kernel_guard_artifacts": [
+    "Validation/fixtures/translation_order/ClassicNonprEdfRtaInterface.lean"
+  ]
+}

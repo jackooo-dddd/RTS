@@ -1,0 +1,186 @@
+{
+  "rank": 27,
+  "layer": 9,
+  "tag": "CSCHED",
+  "slug": "classic_model_schedule_global_basic_schedule",
+  "family": "classic",
+  "source": "classic/model/schedule/global/basic/schedule.v",
+  "dependencies": [
+    "classic/model/arrival/basic/arrival_sequence.v",
+    "classic/model/arrival/basic/job.v",
+    "classic/model/arrival/basic/task.v",
+    "classic/util/all.v"
+  ],
+  "declaration_count": 39,
+  "base_run": null,
+  "base_checks": [],
+  "source_mode": "official_closure",
+  "official_closure": {
+    "files": "tooling/classic/closures/classic_model_schedule_global_basic_schedule.txt",
+    "patches": [
+      "patches/classic/rocq93-util-tactics.patch",
+      "patches/classic/rocq93-util-list.patch",
+      "patches/classic/rocq93-util-bigcat.patch",
+      "patches/classic/rocq93-util-div_mod.patch",
+      "patches/prosa-v06-rocq93-util-minmax.patch",
+      "patches/classic/rocq93-util-seqset.patch",
+      "patches/classic/rocq93-util-sum.patch"
+    ]
+  },
+  "fingerprint_probe": "Validation/fixtures/translation_order/ClassicScheduleTypeFingerprintProbe.v",
+  "production": "Prosa/Classic/Model/Schedule/Global/Basic/Schedule.lean",
+  "production_olean": "Prosa/Classic/Model/Schedule/Global/Basic/Schedule.olean",
+  "lean_namespace": "Prosa.Classic.Model.Schedule.Global.Basic.Schedule",
+  "fixtures": [
+    "ClassicScheduleInterface"
+  ],
+  "lean_type_audit": "Validation/fixtures/translation_order/ClassicScheduleLeanTypeAudit.lean",
+  "export_config": "Validation/tooling/classic/classic_model_schedule_global_basic_schedule_export_config.json",
+  "export_name": "ClassicSchedule",
+  "cert_dir": "certificates/classic_model_schedule_global_basic_schedule",
+  "chain": [
+    "ClassicScheduleBase",
+    "ClassicScheduleList",
+    "ClassicScheduleOrd",
+    "ClassicScheduleCorrespondence"
+  ],
+  "audit_module": "ClassicScheduleAssumptionAudit",
+  "imported_type_audit": "Validation/fixtures/translation_order/ClassicScheduleImportedTypeAudit.v",
+  "assumption_config": "certificates/classic_model_schedule_global_basic_schedule/classic_model_schedule_global_basic_schedule_assumption_config.json",
+  "lean_axiom_config": "certificates/classic_model_schedule_global_basic_schedule/classic_model_schedule_global_basic_schedule_lean_axiom_config.json",
+  "computational": [
+    "Schedule.processor",
+    "Schedule.schedule",
+    "Schedule.scheduled_on",
+    "Schedule.scheduled",
+    "Schedule.is_idle",
+    "Schedule.service_at",
+    "Schedule.service",
+    "Schedule.service_during",
+    "Schedule.completed",
+    "Schedule.pending",
+    "Schedule.backlogged",
+    "Schedule.carried_in",
+    "Schedule.carried_out",
+    "Schedule.jobs_scheduled_at",
+    "Schedule.jobs_scheduled_between",
+    "Schedule.sequential_jobs",
+    "Schedule.jobs_must_arrive_to_execute",
+    "Schedule.completed_jobs_dont_execute",
+    "Schedule.jobs_come_from_arrival_sequence",
+    "ScheduleOfSporadicTask.task_scheduled_on",
+    "ScheduleOfSporadicTask.task_is_scheduled",
+    "ScheduleOfSporadicTask.jobs_of_task_scheduled_between",
+    "ScheduleOfSporadicTask.jobs_of_same_task_dont_execute_in_parallel"
+  ],
+  "principal": {},
+  "helpers": [
+    "cs_forall_sched",
+    "cs_forall_ncpus_sched",
+    "cs_ico",
+    "cs_bigcat_nat_rel",
+    "cs_undup_rel",
+    "cs_forall_par"
+  ],
+  "previous_status": "classic_model_priority_module_status.json",
+  "previous_files": 26,
+  "previous_decls": 287,
+  "input_relations": [
+    "job and task types: eqTypes identified, Lean DecidableEq instances = the eqTypes' decision procedures; job_task identified",
+    "natural numbers (time, num_cpus) by SubNatRel; processors 'I_n and Fin n by their values; schedules pointwise on related processors and times with option values identified; job parameters pointwise through SubNatRel; sequences elementwise; arrival sequences pointwise on related times (two-way totals)"
+  ],
+  "coverage_for_inner_binders": [],
+  "lean_representation_note": "`processor n` is `Fin n`; `[exists cpu, P cpu]` is `(List.finRange n).any P`; `\\sum_(cpu < n | P cpu) 1` is `\u2211 cpu \u2208 Finset.univ.filter (P \u00b7 = true), 1`; `\\sum_(t1 <= t < t2) F t` is `\u2211 t \u2208 Finset.Ico t1 t2, F t`; `\\cat_(cpu < n) F cpu` is `bigCatFin F`; `undup` is `List.dedup`",
+  "extra_pinned_sources": [],
+  "extra_artifacts": [],
+  "extra_olean_artifacts": [
+    {
+      "from": "analysis_abstract_abstract_rta_final/olean/Prosa/Util/Notation.olean",
+      "to": "Prosa/Util/Notation.olean",
+      "v06_file": "util/notation.v"
+    },
+    {
+      "from": "classic_util_notation_final/olean/Prosa/Classic/Util/Notation.olean",
+      "to": "Prosa/Classic/Util/Notation.olean",
+      "manifest": "classic_util_notation",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_abstract_abstract_rta_final/olean/Prosa/Util/Supremum.olean",
+      "to": "Prosa/Util/Supremum.olean",
+      "v06_file": "util/supremum.v"
+    },
+    {
+      "from": "analysis_abstract_abstract_rta_final/olean/Prosa/Util/List.olean",
+      "to": "Prosa/Util/List.olean",
+      "v06_file": "util/list.v"
+    },
+    {
+      "from": "analysis_abstract_abstract_rta_final/olean/Prosa/Util/Tactics.olean",
+      "to": "Prosa/Util/Tactics.olean",
+      "v06_file": "util/tactics.v"
+    },
+    {
+      "from": "analysis_abstract_abstract_rta_final/olean/Prosa/Util/Bigcat.olean",
+      "to": "Prosa/Util/Bigcat.olean",
+      "v06_file": "util/bigcat.v"
+    },
+    {
+      "from": "analysis_abstract_abstract_rta_final/olean/Prosa/Util/Bigop.olean",
+      "to": "Prosa/Util/Bigop.olean",
+      "v06_file": "util/bigop.v"
+    },
+    {
+      "from": "classic_util_bigord_final/olean/Prosa/Classic/Util/Bigord.olean",
+      "to": "Prosa/Classic/Util/Bigord.olean",
+      "manifest": "classic_util_bigord",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "classic_util_bigcat_final/olean/Prosa/Classic/Util/Bigcat.olean",
+      "to": "Prosa/Classic/Util/Bigcat.olean",
+      "manifest": "classic_util_bigcat",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "classic_util_ord_quantifier_final/olean/Prosa/Classic/Util/OrdQuantifier.olean",
+      "to": "Prosa/Classic/Util/OrdQuantifier.olean",
+      "manifest": "classic_util_ord_quantifier",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "classic_model_time_final/olean/Prosa/Classic/Model/Time.olean",
+      "to": "Prosa/Classic/Model/Time.olean",
+      "manifest": "classic_model_time",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "analysis_abstract_abstract_rta_final/olean/Prosa/Util/Seqset.olean",
+      "to": "Prosa/Util/Seqset.olean",
+      "v06_file": "util/seqset.v"
+    },
+    {
+      "from": "classic_model_arrival_basic_task_final/olean/Prosa/Classic/Model/Arrival/Basic/Task.olean",
+      "to": "Prosa/Classic/Model/Arrival/Basic/Task.olean",
+      "manifest": "classic_model_arrival_basic_task",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "classic_model_arrival_basic_arrival_sequence_final/olean/Prosa/Classic/Model/Arrival/Basic/ArrivalSequence.olean",
+      "to": "Prosa/Classic/Model/Arrival/Basic/ArrivalSequence.olean",
+      "manifest": "classic_model_arrival_basic_arrival_sequence",
+      "key": "production_olean_sha256"
+    },
+    {
+      "from": "classic_model_arrival_basic_job_final/olean/Prosa/Classic/Model/Arrival/Basic/Job.olean",
+      "to": "Prosa/Classic/Model/Arrival/Basic/Job.olean",
+      "manifest": "classic_model_arrival_basic_job",
+      "key": "production_olean_sha256"
+    }
+  ],
+  "export_env": {
+    "LEAN4EXPORT_PRESERVE_REDUCIBLE_THEOREM_TYPES": "1",
+    "LEAN4EXPORT_NAT_INDEX_ALIASES": "Prosa.Classic.Model.Time.Time.time"
+  },
+  "export_diagnosis": "159,148 lines: service_at is a filtered Finset sum over Fin num_cpus (Finset.univ of Fin.fintype, Finset.filter, AddCommMonoid Nat: the Mathlib Finset/Multiset/Quot closure), jobs_scheduled_between uses Mathlib List.dedup (pwFilter), and the validation-only interface theorems are exported with their proof bodies (finRange/range' and dedup step lemmas, a structural count lemma). The half-open Finset.Ico sums are not in the export: service and service_during are exported through kernel-guarded rfl body projections and the two Ico statements through kernel-guarded type normalization (index type `time` accepted through the opt-in LEAN4EXPORT_NAT_INDEX_ALIASES), which keeps Nat.instLocallyFiniteOrder and its Nat.Internal.Linear proofs out of the export."
+}

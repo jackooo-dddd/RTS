@@ -1,0 +1,96 @@
+{
+  "rank": 146,
+  "layer": 14,
+  "classic_scope": "full",
+  "slug": "classic_analysis_global_parallel_bertogna_fp_theory",
+  "tag": "CGPBFP",
+  "export_name": "ClassicParallelBertognaFp",
+  "source": "classic/analysis/global/parallel/bertogna_fp_theory.v",
+  "production": "Prosa/Classic/Analysis/Global/Parallel/BertognaFpTheory.lean",
+  "fixtures": [
+    "ClassicParallelBertognaFpInterface"
+  ],
+  "export_module": "Validation.fixtures.translation_order.ClassicParallelBertognaFpInterface",
+  "interface_theorems": [
+    "Prosa.Validation.ClassicParallelBertognaFpInterface.finRange_any",
+    "Prosa.Validation.ClassicParallelBertognaFpInterface.bigCatFin_range'",
+    "Prosa.Validation.ClassicParallelBertognaFpInterface.fin_sum_range'",
+    "Prosa.Validation.ClassicParallelBertognaFpInterface.bigCat_range'",
+    "Prosa.Validation.ClassicParallelBertognaFpInterface.service_at_sum",
+    "Prosa.Validation.ClassicParallelBertognaFpInterface.dedup_nil",
+    "Prosa.Validation.ClassicParallelBertognaFpInterface.dedup_cons_mem",
+    "Prosa.Validation.ClassicParallelBertognaFpInterface.dedup_cons_not_mem",
+    "Prosa.Validation.DivModInterface.production_div_floor_eq",
+    "Prosa.Validation.DivModInterface.production_div_ceil_eq",
+    "Prosa.Validation.DivModInterface.production_div_add_mod",
+    "Prosa.Validation.DivModInterface.production_mod_lt",
+    "Prosa.Validation.DivModInterface.production_div_zero",
+    "Prosa.Validation.DivModInterface.production_mod_zero",
+    "Prosa.Validation.DivModInterface.production_dvd_iff_mod_eq_zero"
+  ],
+  "computational": [],
+  "chain": [
+    "ClassicParallelBertognaFpBase",
+    "ClassicParallelBertognaFpList",
+    "ClassicParallelBertognaFpOrd",
+    "ClassicParallelBertognaFpCorrespondence"
+  ],
+  "principal": {},
+  "helpers": [
+    "cs_forall_ncpus_sched",
+    "cs_ico"
+  ],
+  "base_run": null,
+  "base_checks": [],
+  "previous_status": "classic_model_schedule_uni_limited_jlfp_instantiation_module_status.json",
+  "input_relations": [
+    "job and task types: eqTypes identified, Lean DecidableEq instances = the eqTypes' decision procedures; job_task identified",
+    "natural numbers (time, num_cpus) by SubNatRel; processors 'I_n and Fin n by their values; schedules pointwise on related processors and times with option values by the constructor map; job and task parameters pointwise through SubNatRel; arrival sequences pointwise on related times; task sets by their underlying sequences; sequences of (task, time) pairs elementwise by the pair conversion; FP policies pointwise; affinities by their underlying sequences through the ordinal conversion, task affinities pointwise (two-way totals)"
+  ],
+  "lean_representation_note": "as for the accepted classic schedule, task, task_arrival, affinity, interference, platform, response_time, workload_bound and interference_bound_fp validations; Boolean tests in propositions are `= true`; the section-local `Let`s are unfolded",
+  "prop_sprop_foundation": [
+    "PropSPropFoundation.interpret_strict"
+  ],
+  "importer_foundation": [
+    "ImportedClassicParallelBertognaFp.Classical_choice",
+    "ImportedClassicParallelBertognaFp.Quot_sound",
+    "ImportedClassicParallelBertognaFp.propext",
+    "PrimInt63.eqb",
+    "PrimInt63.int",
+    "PrimInt63.land",
+    "PrimInt63.lsr"
+  ],
+  "rocq_sprop_uip": [
+    "ClassicParallelBertognaFpBase.I.HEq_inst1",
+    "ClassicParallelBertognaFpBase.I.True",
+    "ClassicParallelBertognaFpOrd.I.HEq",
+    "ClassicParallelBertognaFpOrd.I.HEq_inst1",
+    "ClassicParallelBertognaFpOrd.I.True",
+    "I.HEq",
+    "I.HEq_inst1",
+    "I.True",
+    "Lean.eq",
+    "Lean.eq_inst1",
+    "SubadditivityNatCorrespondence.SubNatTrue"
+  ],
+  "normalization": {
+    "theorem_types": [],
+    "subexpression_heads": [],
+    "definition_bodies": [],
+    "body_projections": [
+      "Prosa.Classic.Model.Schedule.Global.Basic.Schedule.Schedule.service=Prosa.Validation.ClassicParallelBertognaFpInterface.service_proj=Prosa.Validation.ClassicParallelBertognaFpInterface.service_proj_guard",
+      "Prosa.Classic.Model.Schedule.Global.Basic.Schedule.Schedule.service_during=Prosa.Validation.ClassicParallelBertognaFpInterface.service_during_proj=Prosa.Validation.ClassicParallelBertognaFpInterface.service_during_proj_guard",
+      "Prosa.Classic.Model.Schedule.Global.Basic.Interference.Interference.total_interference=Prosa.Validation.ClassicParallelBertognaFpInterface.total_interference_proj=Prosa.Validation.ClassicParallelBertognaFpInterface.total_interference_proj_guard",
+      "Prosa.Classic.Model.Schedule.Global.Basic.Interference.Interference.job_interference=Prosa.Validation.ClassicParallelBertognaFpInterface.job_interference_proj=Prosa.Validation.ClassicParallelBertognaFpInterface.job_interference_proj_guard",
+      "Prosa.Classic.Model.Schedule.Global.Basic.Interference.Interference.task_interference=Prosa.Validation.ClassicParallelBertognaFpInterface.task_interference_proj=Prosa.Validation.ClassicParallelBertognaFpInterface.task_interference_proj_guard"
+    ]
+  },
+  "export_env": {
+    "LEAN4EXPORT_PRESERVE_REDUCIBLE_THEOREM_TYPES": "1",
+    "LEAN4EXPORT_NAT_INDEX_ALIASES": "Prosa.Classic.Model.Time.Time.time"
+  },
+  "export_diagnosis": "as for the accepted classic schedule and APA interference exports (service_at is a filtered Finset sum over Fin num_cpus; validation-only interface theorems exported with their proof bodies); service/service_during and the interference definitions through kernel-guarded rfl body projections.",
+  "kernel_guard_artifacts": [
+    "Validation/fixtures/translation_order/ClassicParallelBertognaFpInterface.lean"
+  ]
+}

@@ -1,0 +1,4 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedClassicInterferenceBoundFpApa.
+
+Check ImportedClassicInterferenceBoundFpApa.Prosa_Classic_Analysis_Apa_InterferenceBoundFp_InterferenceBoundFP_total_interference_bound_fp.

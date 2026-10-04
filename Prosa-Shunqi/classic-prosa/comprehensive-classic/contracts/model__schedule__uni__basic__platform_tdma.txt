@@ -1,0 +1,31 @@
+# classic/model/schedule/uni/basic/platform_tdma.v: 3 declarations
+
+## Print Module
+
+Module platform_tdma := Struct Module Platform_TDMA End
+
+Module Platform_TDMA := Struct Definition sched_implies_in_slot : forall sporadic_task Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> eqtype.Equality.sort sporadic_task) -> schedule.UniprocessorSchedule.schedule Job -> seqset.set_of (ssreflect.Phant (eqtype.Equality.sort sporadic_task)) -> TDMA_slot sporadic_task -> TDMA_slot_order sporadic_task -> eqtype.Equality.sort Job -> time.Time.time -> Prop. Definition backlogged_implies_not_in_slot_or_other_job_sched : forall sporadic_task Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> eqtype.Equality.sort sporadic_task) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> schedule.UniprocessorSchedule.schedule Job -> seqset.set_of (ssreflect.Phant (eqtype.Equality.sort sporadic_task)) -> TDMA_slot sporadic_task -> TDMA_slot_order sporadic_task -> eqtype.Equality.sort Job -> time.Time.time -> Prop. Definition Respects_TDMA_policy : forall sporadic_task Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> eqtype.Equality.sort sporadic_task) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> schedule.UniprocessorSchedule.schedule Job -> seqset.set_of (ssreflect.Phant (eqtype.Equality.sort sporadic_task)) -> TDMA_slot sporadic_task -> TDMA_slot_order sporadic_task -> Prop. End
+
+## About
+
+Platform_TDMA.sched_implies_in_slot : forall {sporadic_task Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> eqtype.Equality.sort sporadic_task) -> schedule.UniprocessorSchedule.schedule Job -> seqset.set_of (ssreflect.Phant (eqtype.Equality.sort sporadic_task)) -> policy_tdma.PolicyTDMA.TDMA_slot sporadic_task -> policy_tdma.PolicyTDMA.TDMA_slot_order sporadic_task -> eqtype.Equality.sort Job -> time.Time.time -> Prop
+
+Platform_TDMA.sched_implies_in_slot is not universe polymorphic
+Arguments Platform_TDMA.sched_implies_in_slot {sporadic_task Job} job_task%function_scope sched ts time_slot slot_order j t
+Platform_TDMA.sched_implies_in_slot is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.basic.platform_tdma.Platform_TDMA.sched_implies_in_slot
+Declared in library prosa.classic.model.schedule.uni.basic.platform_tdma, line 46, characters 15-36
+Platform_TDMA.backlogged_implies_not_in_slot_or_other_job_sched : forall {sporadic_task Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> eqtype.Equality.sort sporadic_task) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> schedule.UniprocessorSchedule.schedule Job -> seqset.set_of (ssreflect.Phant (eqtype.Equality.sort sporadic_task)) -> policy_tdma.PolicyTDMA.TDMA_slot sporadic_task -> policy_tdma.PolicyTDMA.TDMA_slot_order sporadic_task -> eqtype.Equality.sort Job -> time.Time.time -> Prop
+
+Platform_TDMA.backlogged_implies_not_in_slot_or_other_job_sched is not universe polymorphic
+Arguments Platform_TDMA.backlogged_implies_not_in_slot_or_other_job_sched {sporadic_task Job} (job_arrival job_cost job_task)%function_scope arr_seq sched ts time_slot slot_order j t
+Platform_TDMA.backlogged_implies_not_in_slot_or_other_job_sched is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.basic.platform_tdma.Platform_TDMA.backlogged_implies_not_in_slot_or_other_job_sched
+Declared in library prosa.classic.model.schedule.uni.basic.platform_tdma, line 51, characters 15-64
+Platform_TDMA.Respects_TDMA_policy : forall {sporadic_task Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> eqtype.Equality.sort sporadic_task) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> schedule.UniprocessorSchedule.schedule Job -> seqset.set_of (ssreflect.Phant (eqtype.Equality.sort sporadic_task)) -> policy_tdma.PolicyTDMA.TDMA_slot sporadic_task -> policy_tdma.PolicyTDMA.TDMA_slot_order sporadic_task -> Prop
+
+Platform_TDMA.Respects_TDMA_policy is not universe polymorphic
+Arguments Platform_TDMA.Respects_TDMA_policy {sporadic_task Job} (job_arrival job_cost job_task)%function_scope arr_seq sched ts time_slot slot_order
+Platform_TDMA.Respects_TDMA_policy is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.basic.platform_tdma.Platform_TDMA.Respects_TDMA_policy
+Declared in library prosa.classic.model.schedule.uni.basic.platform_tdma, line 59, characters 15-35

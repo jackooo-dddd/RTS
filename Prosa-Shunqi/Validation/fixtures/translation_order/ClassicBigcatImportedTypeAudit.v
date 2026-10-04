@@ -1,0 +1,9 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedClassicBigcat.
+
+Check ImportedClassicBigcat.Prosa_Classic_Util_Bigcat_mem_bigcat_ord.
+Check ImportedClassicBigcat.Prosa_Classic_Util_Bigcat_mem_bigcat_ord_exists.
+Check ImportedClassicBigcat.Prosa_Classic_Util_Bigcat_bigcat_ord_uniq.
+Check ImportedClassicBigcat.Prosa_Classic_Util_Bigcat_map_bigcat_ord.
+Check ImportedClassicBigcat.Prosa_Classic_Util_Bigcat_size_bigcat_ord.
+Check ImportedClassicBigcat.Prosa_Classic_Util_Bigcat_size_bigcat_ord_max.

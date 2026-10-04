@@ -1,0 +1,6 @@
+From LeanImport Require Import Lean.
+From FoundationImported Require Import ImportedClassicSuspension.
+
+Check ImportedClassicSuspension.Prosa_Classic_Model_Suspension_Suspension_job_suspension.
+Check ImportedClassicSuspension.Prosa_Classic_Model_Suspension_Suspension_total_suspension.
+Check ImportedClassicSuspension.Prosa_Classic_Model_Suspension_Suspension_dynamic_suspension_model.

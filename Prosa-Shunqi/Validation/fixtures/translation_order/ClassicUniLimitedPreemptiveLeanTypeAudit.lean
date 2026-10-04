@@ -1,0 +1,10 @@
+import Validation.fixtures.translation_order.ClassicUniLimitedPreemptiveInterface
+set_option pp.fieldNotation false
+
+#check @Prosa.Classic.Model.Schedule.Uni.Limited.Platform.Preemptive.FullyPreemptivePlatform.can_be_preempted_for_fully_preemptive_model
+#check @Prosa.Classic.Model.Schedule.Uni.Limited.Platform.Preemptive.FullyPreemptivePlatform.fully_preemptive_model_is_correct
+#check @Prosa.Classic.Model.Schedule.Uni.Limited.Platform.Preemptive.FullyPreemptivePlatform.fully_preemptive_model_is_model_with_bounded_nonpreemptive_regions
+
+#print axioms Prosa.Classic.Model.Schedule.Uni.Limited.Platform.Preemptive.FullyPreemptivePlatform.can_be_preempted_for_fully_preemptive_model
+#print axioms Prosa.Classic.Model.Schedule.Uni.Limited.Platform.Preemptive.FullyPreemptivePlatform.fully_preemptive_model_is_correct
+#print axioms Prosa.Classic.Model.Schedule.Uni.Limited.Platform.Preemptive.FullyPreemptivePlatform.fully_preemptive_model_is_model_with_bounded_nonpreemptive_regions

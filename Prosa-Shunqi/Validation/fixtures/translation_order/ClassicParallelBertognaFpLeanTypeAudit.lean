@@ -1,0 +1,46 @@
+import Validation.fixtures.translation_order.ClassicParallelBertognaFpInterface
+set_option pp.fieldNotation false
+
+#check @Prosa.Classic.Analysis.Global.Parallel.BertognaFpTheory.ResponseTimeAnalysisFP.bertogna_fp_workload_bounds_interference
+#check @Prosa.Classic.Analysis.Global.Parallel.BertognaFpTheory.ResponseTimeAnalysisFP.bertogna_fp_too_much_interference
+#check @Prosa.Classic.Analysis.Global.Parallel.BertognaFpTheory.ResponseTimeAnalysisFP.bertogna_fp_all_cpus_are_busy
+#check @Prosa.Classic.Analysis.Global.Parallel.BertognaFpTheory.ResponseTimeAnalysisFP.bertogna_fp_sum_exceeds_total_interference
+#check @Prosa.Classic.Analysis.Global.Parallel.BertognaFpTheory.ResponseTimeAnalysisFP.bertogna_fp_exists_task_that_exceeds_bound
+#check @Prosa.Classic.Analysis.Global.Parallel.BertognaFpTheory.ResponseTimeAnalysisFP.bertogna_cirinei_response_time_bound_fp
+#check @Prosa.Validation.ClassicParallelBertognaFpInterface.finRange_any
+#check @Prosa.Validation.ClassicParallelBertognaFpInterface.bigCatFin_range'
+#check @Prosa.Validation.ClassicParallelBertognaFpInterface.fin_sum_range'
+#check @Prosa.Validation.ClassicParallelBertognaFpInterface.bigCat_range'
+#check @Prosa.Validation.ClassicParallelBertognaFpInterface.service_at_sum
+#check @Prosa.Validation.ClassicParallelBertognaFpInterface.dedup_nil
+#check @Prosa.Validation.ClassicParallelBertognaFpInterface.dedup_cons_mem
+#check @Prosa.Validation.ClassicParallelBertognaFpInterface.dedup_cons_not_mem
+#check @Prosa.Validation.DivModInterface.production_div_floor_eq
+#check @Prosa.Validation.DivModInterface.production_div_ceil_eq
+#check @Prosa.Validation.DivModInterface.production_div_add_mod
+#check @Prosa.Validation.DivModInterface.production_mod_lt
+#check @Prosa.Validation.DivModInterface.production_div_zero
+#check @Prosa.Validation.DivModInterface.production_mod_zero
+#check @Prosa.Validation.DivModInterface.production_dvd_iff_mod_eq_zero
+
+#print axioms Prosa.Classic.Analysis.Global.Parallel.BertognaFpTheory.ResponseTimeAnalysisFP.bertogna_fp_workload_bounds_interference
+#print axioms Prosa.Classic.Analysis.Global.Parallel.BertognaFpTheory.ResponseTimeAnalysisFP.bertogna_fp_too_much_interference
+#print axioms Prosa.Classic.Analysis.Global.Parallel.BertognaFpTheory.ResponseTimeAnalysisFP.bertogna_fp_all_cpus_are_busy
+#print axioms Prosa.Classic.Analysis.Global.Parallel.BertognaFpTheory.ResponseTimeAnalysisFP.bertogna_fp_sum_exceeds_total_interference
+#print axioms Prosa.Classic.Analysis.Global.Parallel.BertognaFpTheory.ResponseTimeAnalysisFP.bertogna_fp_exists_task_that_exceeds_bound
+#print axioms Prosa.Classic.Analysis.Global.Parallel.BertognaFpTheory.ResponseTimeAnalysisFP.bertogna_cirinei_response_time_bound_fp
+#print axioms Prosa.Validation.ClassicParallelBertognaFpInterface.finRange_any
+#print axioms Prosa.Validation.ClassicParallelBertognaFpInterface.bigCatFin_range'
+#print axioms Prosa.Validation.ClassicParallelBertognaFpInterface.fin_sum_range'
+#print axioms Prosa.Validation.ClassicParallelBertognaFpInterface.bigCat_range'
+#print axioms Prosa.Validation.ClassicParallelBertognaFpInterface.service_at_sum
+#print axioms Prosa.Validation.ClassicParallelBertognaFpInterface.dedup_nil
+#print axioms Prosa.Validation.ClassicParallelBertognaFpInterface.dedup_cons_mem
+#print axioms Prosa.Validation.ClassicParallelBertognaFpInterface.dedup_cons_not_mem
+#print axioms Prosa.Validation.DivModInterface.production_div_floor_eq
+#print axioms Prosa.Validation.DivModInterface.production_div_ceil_eq
+#print axioms Prosa.Validation.DivModInterface.production_div_add_mod
+#print axioms Prosa.Validation.DivModInterface.production_mod_lt
+#print axioms Prosa.Validation.DivModInterface.production_div_zero
+#print axioms Prosa.Validation.DivModInterface.production_mod_zero
+#print axioms Prosa.Validation.DivModInterface.production_dvd_iff_mod_eq_zero

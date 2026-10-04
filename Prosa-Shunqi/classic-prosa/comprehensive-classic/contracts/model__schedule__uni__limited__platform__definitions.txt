@@ -1,0 +1,125 @@
+# classic/model/schedule/uni/limited/platform/definitions.v: 14 declarations
+
+## Print Module
+
+Module definitions := Struct Module LimitedPreemptionPlatform End
+
+Module
+LimitedPreemptionPlatform
+:= Struct
+     Definition preemption_time : forall Job : eqtype.Equality.type, schedule.UniprocessorSchedule.schedule Job -> (eqtype.Equality.sort Job -> time.Time.time -> bool) -> time.Time.time -> bool.
+     Definition not_preemptive_implies_scheduled : forall Job : eqtype.Equality.type, schedule.UniprocessorSchedule.schedule Job -> (eqtype.Equality.sort Job -> time.Time.time -> bool) -> eqtype.Equality.sort Job -> Prop.
+     Definition execution_starts_with_preemption_point : forall Job : eqtype.Equality.type, schedule.UniprocessorSchedule.schedule Job -> (eqtype.Equality.sort Job -> time.Time.time -> bool) -> eqtype.Equality.sort Job -> Prop.
+     Definition correct_preemption_model : forall Job : eqtype.Equality.type, arrival_sequence.ArrivalSequence.arrival_sequence Job -> schedule.UniprocessorSchedule.schedule Job -> (eqtype.Equality.sort Job -> time.Time.time -> bool) -> Prop.
+     Definition job_cannot_become_nonpreemptive_before_execution : forall Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> time.Time.time -> bool) -> eqtype.Equality.sort Job -> bool.
+     Definition job_cannot_be_nonpreemptive_after_completion : forall Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time -> bool) -> eqtype.Equality.sort Job -> bool.
+     Definition job_max_nonpreemptive_segment_le_task_max_nonpreemptive_segment : forall Task Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> eqtype.Equality.sort Task) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Task -> time.Time.time) -> eqtype.Equality.sort Job -> Prop.
+     Definition nonpreemptive_regions_have_bounded_length : forall Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time -> bool) -> (eqtype.Equality.sort Job -> time.Time.time) -> eqtype.Equality.sort Job -> Prop.
+     Definition model_with_bounded_nonpreemptive_segments : forall Task Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> eqtype.Equality.sort Task) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> (eqtype.Equality.sort Job -> time.Time.time -> bool) -> (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Task -> time.Time.time) -> Prop.
+     Parameter zero_is_pt : forall (Task Job : eqtype.Equality.type) (job_cost : eqtype.Equality.sort Job -> time.Time.time) (job_task : eqtype.Equality.sort Job -> eqtype.Equality.sort Task) (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job) (sched : schedule.UniprocessorSchedule.schedule Job) (can_be_preempted : eqtype.Equality.sort Job -> time.Time.time -> bool) (job_max_nps : eqtype.Equality.sort Job -> time.Time.time) (task_max_nps : eqtype.Equality.sort Task -> time.Time.time), model_with_bounded_nonpreemptive_segments job_cost job_task arr_seq can_be_preempted job_max_nps task_max_nps -> schedule.UniprocessorSchedule.jobs_come_from_arrival_sequence sched arr_seq -> is_true (preemption_time sched can_be_preempted 0).
+     Parameter first_moment_is_pt : forall (Job : eqtype.Equality.type) (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job) (sched : schedule.UniprocessorSchedule.schedule Job) (can_be_preempted : eqtype.Equality.sort Job -> time.Time.time -> bool), correct_preemption_model arr_seq sched can_be_preempted -> forall (j : eqtype.Equality.sort Job) (prt : time.Time.time), arrival_sequence.ArrivalSequence.arrives_in arr_seq j -> is_true (negb (schedule.UniprocessorSchedule.scheduled_at sched j prt)) -> is_true (schedule.UniprocessorSchedule.scheduled_at sched j (S prt)) -> is_true (preemption_time sched can_be_preempted (S prt)).
+     Definition work_conserving : forall Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> schedule.UniprocessorSchedule.schedule Job -> Prop.
+     Definition respects_FP_policy_at_preemption_point : forall Task Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> eqtype.Equality.sort Task) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> schedule.UniprocessorSchedule.schedule Job -> (eqtype.Equality.sort Job -> time.Time.time -> bool) -> priority.Priority.FP_policy Task -> Prop.
+     Definition respects_JLFP_policy_at_preemption_point : forall Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> schedule.UniprocessorSchedule.schedule Job -> (eqtype.Equality.sort Job -> time.Time.time -> bool) -> priority.Priority.JLFP_policy Job -> Prop.
+   End
+
+## About
+
+LimitedPreemptionPlatform.preemption_time : forall {Job : eqtype.Equality.type}, schedule.UniprocessorSchedule.schedule Job -> (eqtype.Equality.sort Job -> time.Time.time -> bool) -> time.Time.time -> bool
+
+LimitedPreemptionPlatform.preemption_time is not universe polymorphic
+Arguments LimitedPreemptionPlatform.preemption_time {Job} sched can_be_preempted%function_scope t
+LimitedPreemptionPlatform.preemption_time is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.limited.platform.definitions.LimitedPreemptionPlatform.preemption_time
+Declared in library prosa.classic.model.schedule.uni.limited.platform.definitions, line 53, characters 17-32
+LimitedPreemptionPlatform.not_preemptive_implies_scheduled : forall {Job : eqtype.Equality.type}, schedule.UniprocessorSchedule.schedule Job -> (eqtype.Equality.sort Job -> time.Time.time -> bool) -> eqtype.Equality.sort Job -> Prop
+
+LimitedPreemptionPlatform.not_preemptive_implies_scheduled is not universe polymorphic
+Arguments LimitedPreemptionPlatform.not_preemptive_implies_scheduled {Job} sched can_be_preempted%function_scope j
+LimitedPreemptionPlatform.not_preemptive_implies_scheduled is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.limited.platform.definitions.LimitedPreemptionPlatform.not_preemptive_implies_scheduled
+Declared in library prosa.classic.model.schedule.uni.limited.platform.definitions, line 66, characters 19-51
+LimitedPreemptionPlatform.execution_starts_with_preemption_point : forall {Job : eqtype.Equality.type}, schedule.UniprocessorSchedule.schedule Job -> (eqtype.Equality.sort Job -> time.Time.time -> bool) -> eqtype.Equality.sort Job -> Prop
+
+LimitedPreemptionPlatform.execution_starts_with_preemption_point is not universe polymorphic
+Arguments LimitedPreemptionPlatform.execution_starts_with_preemption_point {Job} sched can_be_preempted%function_scope j
+LimitedPreemptionPlatform.execution_starts_with_preemption_point is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.limited.platform.definitions.LimitedPreemptionPlatform.execution_starts_with_preemption_point
+Declared in library prosa.classic.model.schedule.uni.limited.platform.definitions, line 72, characters 19-57
+LimitedPreemptionPlatform.correct_preemption_model : forall {Job : eqtype.Equality.type}, arrival_sequence.ArrivalSequence.arrival_sequence Job -> schedule.UniprocessorSchedule.schedule Job -> (eqtype.Equality.sort Job -> time.Time.time -> bool) -> Prop
+
+LimitedPreemptionPlatform.correct_preemption_model is not universe polymorphic
+Arguments LimitedPreemptionPlatform.correct_preemption_model {Job} arr_seq sched can_be_preempted%function_scope
+LimitedPreemptionPlatform.correct_preemption_model is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.limited.platform.definitions.LimitedPreemptionPlatform.correct_preemption_model
+Declared in library prosa.classic.model.schedule.uni.limited.platform.definitions, line 80, characters 19-43
+LimitedPreemptionPlatform.job_cannot_become_nonpreemptive_before_execution : forall {Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> time.Time.time -> bool) -> eqtype.Equality.sort Job -> bool
+
+LimitedPreemptionPlatform.job_cannot_become_nonpreemptive_before_execution is not universe polymorphic
+Arguments LimitedPreemptionPlatform.job_cannot_become_nonpreemptive_before_execution {Job} can_be_preempted%function_scope j
+LimitedPreemptionPlatform.job_cannot_become_nonpreemptive_before_execution is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.limited.platform.definitions.LimitedPreemptionPlatform.job_cannot_become_nonpreemptive_before_execution
+Declared in library prosa.classic.model.schedule.uni.limited.platform.definitions, line 95, characters 19-67
+LimitedPreemptionPlatform.job_cannot_be_nonpreemptive_after_completion : forall {Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time -> bool) -> eqtype.Equality.sort Job -> bool
+
+LimitedPreemptionPlatform.job_cannot_be_nonpreemptive_after_completion is not universe polymorphic
+Arguments LimitedPreemptionPlatform.job_cannot_be_nonpreemptive_after_completion {Job} (job_cost can_be_preempted)%function_scope j
+LimitedPreemptionPlatform.job_cannot_be_nonpreemptive_after_completion is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.limited.platform.definitions.LimitedPreemptionPlatform.job_cannot_be_nonpreemptive_after_completion
+Declared in library prosa.classic.model.schedule.uni.limited.platform.definitions, line 99, characters 19-63
+LimitedPreemptionPlatform.job_max_nonpreemptive_segment_le_task_max_nonpreemptive_segment : forall {Task Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> eqtype.Equality.sort Task) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Task -> time.Time.time) -> eqtype.Equality.sort Job -> Prop
+
+LimitedPreemptionPlatform.job_max_nonpreemptive_segment_le_task_max_nonpreemptive_segment is not universe polymorphic
+Arguments LimitedPreemptionPlatform.job_max_nonpreemptive_segment_le_task_max_nonpreemptive_segment {Task Job} job_task%function_scope arr_seq (job_max_nps task_max_nps)%function_scope j
+LimitedPreemptionPlatform.job_max_nonpreemptive_segment_le_task_max_nonpreemptive_segment is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.limited.platform.definitions.LimitedPreemptionPlatform.job_max_nonpreemptive_segment_le_task_max_nonpreemptive_segment
+Declared in library prosa.classic.model.schedule.uni.limited.platform.definitions, line 110, characters 19-82
+LimitedPreemptionPlatform.nonpreemptive_regions_have_bounded_length : forall {Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time -> bool) -> (eqtype.Equality.sort Job -> time.Time.time) -> eqtype.Equality.sort Job -> Prop
+
+LimitedPreemptionPlatform.nonpreemptive_regions_have_bounded_length is not universe polymorphic
+Arguments LimitedPreemptionPlatform.nonpreemptive_regions_have_bounded_length {Job} (job_cost can_be_preempted job_max_nps)%function_scope j
+LimitedPreemptionPlatform.nonpreemptive_regions_have_bounded_length is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.limited.platform.definitions.LimitedPreemptionPlatform.nonpreemptive_regions_have_bounded_length
+Declared in library prosa.classic.model.schedule.uni.limited.platform.definitions, line 119, characters 19-60
+LimitedPreemptionPlatform.model_with_bounded_nonpreemptive_segments : forall {Task Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> eqtype.Equality.sort Task) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> (eqtype.Equality.sort Job -> time.Time.time -> bool) -> (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Task -> time.Time.time) -> Prop
+
+LimitedPreemptionPlatform.model_with_bounded_nonpreemptive_segments is not universe polymorphic
+Arguments LimitedPreemptionPlatform.model_with_bounded_nonpreemptive_segments {Task Job} (job_cost job_task)%function_scope arr_seq (can_be_preempted job_max_nps task_max_nps)%function_scope
+LimitedPreemptionPlatform.model_with_bounded_nonpreemptive_segments is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.limited.platform.definitions.LimitedPreemptionPlatform.model_with_bounded_nonpreemptive_segments
+Declared in library prosa.classic.model.schedule.uni.limited.platform.definitions, line 128, characters 19-60
+LimitedPreemptionPlatform.zero_is_pt : forall {Task Job : eqtype.Equality.type} (job_cost : eqtype.Equality.sort Job -> time.Time.time) (job_task : eqtype.Equality.sort Job -> eqtype.Equality.sort Task) (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job) (sched : schedule.UniprocessorSchedule.schedule Job) (can_be_preempted : eqtype.Equality.sort Job -> time.Time.time -> bool) (job_max_nps : eqtype.Equality.sort Job -> time.Time.time) (task_max_nps : eqtype.Equality.sort Task -> time.Time.time), LimitedPreemptionPlatform.model_with_bounded_nonpreemptive_segments job_cost job_task arr_seq can_be_preempted job_max_nps task_max_nps -> schedule.UniprocessorSchedule.jobs_come_from_arrival_sequence sched arr_seq -> is_true (LimitedPreemptionPlatform.preemption_time sched can_be_preempted 0)
+
+LimitedPreemptionPlatform.zero_is_pt is not universe polymorphic
+Arguments LimitedPreemptionPlatform.zero_is_pt {Task Job} (job_cost job_task)%function_scope arr_seq sched (can_be_preempted job_max_nps task_max_nps)%function_scope H_model_with_bounded_np_segments H_jobs_come_from_arrival_sequence
+LimitedPreemptionPlatform.zero_is_pt is opaque
+Expands to: Constant prosa.classic.model.schedule.uni.limited.platform.definitions.LimitedPreemptionPlatform.zero_is_pt
+Declared in library prosa.classic.model.schedule.uni.limited.platform.definitions, line 154, characters 14-24
+LimitedPreemptionPlatform.first_moment_is_pt : forall {Job : eqtype.Equality.type} (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job) (sched : schedule.UniprocessorSchedule.schedule Job) (can_be_preempted : eqtype.Equality.sort Job -> time.Time.time -> bool), LimitedPreemptionPlatform.correct_preemption_model arr_seq sched can_be_preempted -> forall (j : eqtype.Equality.sort Job) (prt : time.Time.time), arrival_sequence.ArrivalSequence.arrives_in arr_seq j -> is_true (negb (schedule.UniprocessorSchedule.scheduled_at sched j prt)) -> is_true (schedule.UniprocessorSchedule.scheduled_at sched j (S prt)) -> is_true (LimitedPreemptionPlatform.preemption_time sched can_be_preempted (S prt))
+
+LimitedPreemptionPlatform.first_moment_is_pt is not universe polymorphic
+Arguments LimitedPreemptionPlatform.first_moment_is_pt {Job} arr_seq sched can_be_preempted%function_scope H_correct_preemption_model j prt _ _ _
+LimitedPreemptionPlatform.first_moment_is_pt is opaque
+Expands to: Constant prosa.classic.model.schedule.uni.limited.platform.definitions.LimitedPreemptionPlatform.first_moment_is_pt
+Declared in library prosa.classic.model.schedule.uni.limited.platform.definitions, line 165, characters 14-32
+LimitedPreemptionPlatform.work_conserving : forall {Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> schedule.UniprocessorSchedule.schedule Job -> Prop
+
+LimitedPreemptionPlatform.work_conserving is not universe polymorphic
+Arguments LimitedPreemptionPlatform.work_conserving {Job} (job_cost job_cost)%function_scope arr_seq sched
+LimitedPreemptionPlatform.work_conserving is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.limited.platform.definitions.LimitedPreemptionPlatform.work_conserving
+Declared in library prosa.classic.model.schedule.uni.limited.platform.definitions, line 189, characters 17-32
+LimitedPreemptionPlatform.respects_FP_policy_at_preemption_point : forall {Task Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> eqtype.Equality.sort Task) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> schedule.UniprocessorSchedule.schedule Job -> (eqtype.Equality.sort Job -> time.Time.time -> bool) -> priority.Priority.FP_policy Task -> Prop
+
+LimitedPreemptionPlatform.respects_FP_policy_at_preemption_point is not universe polymorphic
+Arguments LimitedPreemptionPlatform.respects_FP_policy_at_preemption_point {Task Job} (job_arrival job_cost job_task)%function_scope arr_seq sched preemption_model%function_scope higher_eq_priority
+LimitedPreemptionPlatform.respects_FP_policy_at_preemption_point is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.limited.platform.definitions.LimitedPreemptionPlatform.respects_FP_policy_at_preemption_point
+Declared in library prosa.classic.model.schedule.uni.limited.platform.definitions, line 205, characters 17-55
+LimitedPreemptionPlatform.respects_JLFP_policy_at_preemption_point : forall {Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> schedule.UniprocessorSchedule.schedule Job -> (eqtype.Equality.sort Job -> time.Time.time -> bool) -> priority.Priority.JLFP_policy Job -> Prop
+
+LimitedPreemptionPlatform.respects_JLFP_policy_at_preemption_point is not universe polymorphic
+Arguments LimitedPreemptionPlatform.respects_JLFP_policy_at_preemption_point {Job} (job_arrival job_cost)%function_scope arr_seq sched preemption_model%function_scope higher_eq_priority
+LimitedPreemptionPlatform.respects_JLFP_policy_at_preemption_point is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.limited.platform.definitions.LimitedPreemptionPlatform.respects_JLFP_policy_at_preemption_point
+Declared in library prosa.classic.model.schedule.uni.limited.platform.definitions, line 227, characters 17-57

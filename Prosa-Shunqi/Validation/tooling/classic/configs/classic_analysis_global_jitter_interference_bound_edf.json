@@ -1,0 +1,118 @@
+{
+  "rank": 161,
+  "layer": 15,
+  "classic_scope": "full",
+  "slug": "classic_analysis_global_jitter_interference_bound_edf",
+  "tag": "CGJIBE",
+  "export_name": "ClassicJitterIbEdf",
+  "source": "classic/analysis/global/jitter/interference_bound_edf.v",
+  "production": "Prosa/Classic/Analysis/Global/Jitter/InterferenceBoundEdf.lean",
+  "fixtures": [
+    "ClassicJitterIbEdfInterface"
+  ],
+  "export_module": "Validation.fixtures.translation_order.ClassicJitterIbEdfInterface",
+  "interface_theorems": [
+    "Prosa.Validation.ClassicJitterIbEdfInterface.finRange_any",
+    "Prosa.Validation.ClassicJitterIbEdfInterface.bigCatFin_range'",
+    "Prosa.Validation.ClassicJitterIbEdfInterface.fin_sum_range'",
+    "Prosa.Validation.ClassicJitterIbEdfInterface.bigCat_range'",
+    "Prosa.Validation.ClassicJitterIbEdfInterface.service_at_sum",
+    "Prosa.Validation.ClassicJitterIbEdfInterface.dedup_nil",
+    "Prosa.Validation.ClassicJitterIbEdfInterface.dedup_cons_mem",
+    "Prosa.Validation.ClassicJitterIbEdfInterface.dedup_cons_not_mem",
+    "Prosa.Validation.ClassicJitterIbEdfInterface.mergeSort_isChain",
+    "Prosa.Validation.ClassicJitterIbEdfInterface.mergeSort_filter_class",
+    "Prosa.Validation.ClassicJitterIbEdfInterface.production_sumSeq_nil",
+    "Prosa.Validation.ClassicJitterIbEdfInterface.production_sumSeq_cons",
+    "Prosa.Validation.ClassicJitterIbEdfInterface.production_sumFiltered_nil",
+    "Prosa.Validation.ClassicJitterIbEdfInterface.production_sumFiltered_cons_true",
+    "Prosa.Validation.ClassicJitterIbEdfInterface.production_sumFiltered_cons_false",
+    "Prosa.Validation.DivModInterface.production_div_floor_eq",
+    "Prosa.Validation.DivModInterface.production_div_ceil_eq",
+    "Prosa.Validation.DivModInterface.production_div_add_mod",
+    "Prosa.Validation.DivModInterface.production_mod_lt",
+    "Prosa.Validation.DivModInterface.production_div_zero",
+    "Prosa.Validation.DivModInterface.production_mod_zero",
+    "Prosa.Validation.DivModInterface.production_dvd_iff_mod_eq_zero"
+  ],
+  "computational": [
+    "InterferenceBoundEDFJitter.edf_specific_interference_bound",
+    "InterferenceBoundEDFJitter.interference_bound_edf",
+    "InterferenceBoundEDFJitter.total_interference_bound_edf"
+  ],
+  "chain": [
+    "ClassicJitterIbEdfBase",
+    "ClassicJitterIbEdfList",
+    "ClassicJitterIbEdfOrd",
+    "ClassicJitterIbEdfCorrespondence"
+  ],
+  "principal": {},
+  "helpers": [
+    "cbt_forall_par"
+  ],
+  "base_run": null,
+  "base_checks": [],
+  "previous_status": "classic_model_schedule_uni_limited_fixed_priority_response_time_bound_module_status.json",
+  "input_relations": [
+    "job and task types: eqTypes identified, Lean DecidableEq instances = the eqTypes' decision procedures; job_task identified",
+    "natural numbers (time, num_cpus) by SubNatRel; processors 'I_n and Fin n by their values; schedules pointwise on related processors and times with option values by the constructor map; job/task parameters pointwise through SubNatRel; sequences elementwise; arrival sequences pointwise on related times (two-way totals)"
+  ],
+  "lean_representation_note": "as for the accepted classic global workload_bound validation: `sort` is `List.mergeSort` with the `decide (\u2264)` key, `nth elem s i` is `s.getD i elem`, `n.-1` is `n - 1`, `n.+2` is `n + 2`; `\\sum_(i <- s) F i` is `sumSeq s F`; `\\sum_(0 <= i < n) F i` is `\u2211 i \u2208 Finset.Ico 0 n, F i`; `div_floor` is the classic `Prosa.Classic.Util.DivMod.div_floor`, `minn` is `min`; the jitter job/schedule notions as in the accepted classic global jitter certificates",
+  "prop_sprop_foundation": [
+    "PropSPropFoundation.interpret_strict"
+  ],
+  "importer_foundation": [
+    "ImportedClassicJitterIbEdf.Classical_choice",
+    "ImportedClassicJitterIbEdf.Quot_sound",
+    "ImportedClassicJitterIbEdf.propext",
+    "PrimInt63.eqb",
+    "PrimInt63.int",
+    "PrimInt63.land",
+    "PrimInt63.lsr"
+  ],
+  "rocq_sprop_uip": [
+    "ClassicJitterIbEdfBase.I.HEq_inst1",
+    "ClassicJitterIbEdfBase.I.True",
+    "ClassicJitterIbEdfList.I.HEq_inst1",
+    "ClassicJitterIbEdfList.I.True",
+    "ClassicJitterIbEdfOrd.I.HEq",
+    "ClassicJitterIbEdfOrd.I.HEq_inst1",
+    "ClassicJitterIbEdfOrd.I.True",
+    "CtaTrue",
+    "I.HEq",
+    "I.HEq_inst1",
+    "I.True",
+    "Lean.eq",
+    "Lean.eq_inst1",
+    "SubadditivityNatCorrespondence.SubNatTrue"
+  ],
+  "normalization": {
+    "theorem_types": [
+      "Prosa.Classic.Analysis.Global.Jitter.InterferenceBoundEdf.InterferenceBoundEDFJitter.interference_bound_edf_holds_for_middle_and_last_jobs",
+      "Prosa.Classic.Analysis.Global.Jitter.InterferenceBoundEdf.InterferenceBoundEDFJitter.interference_bound_edf_interference_of_j_fst_bounded_by_response_time",
+      "Prosa.Classic.Analysis.Global.Jitter.InterferenceBoundEdf.InterferenceBoundEDFJitter.interference_bound_edf_bounding_interference_with_interval_lengths",
+      "Prosa.Classic.Analysis.Global.Jitter.InterferenceBoundEdf.InterferenceBoundEDFJitter.interference_bound_edf_simpl_by_concatenation_of_intervals",
+      "Prosa.Classic.Analysis.Global.Jitter.InterferenceBoundEdf.InterferenceBoundEDFJitter.interference_bound_edf_holds_for_multiple_jobs"
+    ],
+    "subexpression_heads": [
+      "Finset.sum"
+    ],
+    "definition_bodies": [],
+    "body_projections": [
+      "Prosa.Classic.Model.Schedule.Global.Basic.Schedule.Schedule.service=Prosa.Validation.ClassicJitterIbEdfInterface.service_proj=Prosa.Validation.ClassicJitterIbEdfInterface.service_proj_guard",
+      "Prosa.Classic.Model.Schedule.Global.Basic.Schedule.Schedule.service_during=Prosa.Validation.ClassicJitterIbEdfInterface.service_during_proj=Prosa.Validation.ClassicJitterIbEdfInterface.service_during_proj_guard",
+      "Prosa.Classic.Model.Schedule.Global.Workload.Workload.workload=Prosa.Validation.ClassicJitterIbEdfInterface.workload_proj=Prosa.Validation.ClassicJitterIbEdfInterface.workload_proj_guard",
+      "Prosa.Classic.Model.Schedule.Global.Jitter.Interference.Interference.total_interference=Prosa.Validation.ClassicJitterIbEdfInterface.total_interference_proj=Prosa.Validation.ClassicJitterIbEdfInterface.total_interference_proj_guard",
+      "Prosa.Classic.Model.Schedule.Global.Jitter.Interference.Interference.job_interference=Prosa.Validation.ClassicJitterIbEdfInterface.job_interference_proj=Prosa.Validation.ClassicJitterIbEdfInterface.job_interference_proj_guard",
+      "Prosa.Classic.Model.Schedule.Global.Jitter.Interference.Interference.task_interference=Prosa.Validation.ClassicJitterIbEdfInterface.task_interference_proj=Prosa.Validation.ClassicJitterIbEdfInterface.task_interference_proj_guard"
+    ]
+  },
+  "export_env": {
+    "LEAN4EXPORT_PRESERVE_REDUCIBLE_THEOREM_TYPES": "1",
+    "LEAN4EXPORT_NAT_INDEX_ALIASES": "Prosa.Classic.Model.Time.Time.time"
+  },
+  "export_diagnosis": "as for the accepted classic workload and task_arrival exports: service_at is a filtered Finset sum over Fin num_cpus, jobs_scheduled_between uses Mathlib List.dedup, the statements mention the core List.mergeSort (its termination proofs are `omega` certificates), and the validation-only interface theorems are exported with their proof bodies (stability of mergeSort proved by its recursion, avoiding the Nat.Internal.Linear closure of sublist_mergeSort); workload/service/service_during through kernel-guarded rfl body projections and the four Finset.Ico statements through kernel-guarded type normalization. The jitter module also imports the accepted basic workload_bound module, so its statements and proofs are exported too.",
+  "kernel_guard_artifacts": [
+    "Validation/fixtures/translation_order/ClassicJitterIbEdfInterface.lean"
+  ]
+}

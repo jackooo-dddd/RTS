@@ -1,0 +1,31 @@
+# classic/model/schedule/uni/limited/platform/preemptive.v: 3 declarations
+
+## Print Module
+
+Module preemptive := Struct Module FullyPreemptivePlatform End
+
+Module FullyPreemptivePlatform := Struct Definition can_be_preempted_for_fully_preemptive_model : forall Job : eqtype.Equality.type, eqtype.Equality.sort Job -> time.Time.time -> bool. Parameter fully_preemptive_model_is_correct : forall (Job : eqtype.Equality.type) (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job) (sched : schedule.UniprocessorSchedule.schedule Job), LimitedPreemptionPlatform.correct_preemption_model arr_seq sched can_be_preempted_for_fully_preemptive_model. Parameter fully_preemptive_model_is_model_with_bounded_nonpreemptive_regions : forall (Task Job : eqtype.Equality.type) (job_cost : eqtype.Equality.sort Job -> time.Time.time) (job_task : eqtype.Equality.sort Job -> eqtype.Equality.sort Task) (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job), LimitedPreemptionPlatform.model_with_bounded_nonpreemptive_segments job_cost job_task arr_seq can_be_preempted_for_fully_preemptive_model (fun _ : eqtype.Equality.sort Job => 1) (fun _ : eqtype.Equality.sort Task => 1). End
+
+## About
+
+FullyPreemptivePlatform.can_be_preempted_for_fully_preemptive_model : forall {Job : eqtype.Equality.type}, eqtype.Equality.sort Job -> time.Time.time -> bool
+
+FullyPreemptivePlatform.can_be_preempted_for_fully_preemptive_model is not universe polymorphic
+Arguments FullyPreemptivePlatform.can_be_preempted_for_fully_preemptive_model {Job} j progr
+FullyPreemptivePlatform.can_be_preempted_for_fully_preemptive_model is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.limited.platform.preemptive.FullyPreemptivePlatform.can_be_preempted_for_fully_preemptive_model
+Declared in library prosa.classic.model.schedule.uni.limited.platform.preemptive, line 43, characters 15-58
+FullyPreemptivePlatform.fully_preemptive_model_is_correct : forall {Job : eqtype.Equality.type} (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job) (sched : schedule.UniprocessorSchedule.schedule Job), LimitedPreemptionPlatform.correct_preemption_model arr_seq sched FullyPreemptivePlatform.can_be_preempted_for_fully_preemptive_model
+
+FullyPreemptivePlatform.fully_preemptive_model_is_correct is not universe polymorphic
+Arguments FullyPreemptivePlatform.fully_preemptive_model_is_correct {Job} arr_seq sched j _
+FullyPreemptivePlatform.fully_preemptive_model_is_correct is opaque
+Expands to: Constant prosa.classic.model.schedule.uni.limited.platform.preemptive.FullyPreemptivePlatform.fully_preemptive_model_is_correct
+Declared in library prosa.classic.model.schedule.uni.limited.platform.preemptive, line 53, characters 10-43
+FullyPreemptivePlatform.fully_preemptive_model_is_model_with_bounded_nonpreemptive_regions : forall {Task Job : eqtype.Equality.type} (job_cost : eqtype.Equality.sort Job -> time.Time.time) (job_task : eqtype.Equality.sort Job -> eqtype.Equality.sort Task) (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job), LimitedPreemptionPlatform.model_with_bounded_nonpreemptive_segments job_cost job_task arr_seq FullyPreemptivePlatform.can_be_preempted_for_fully_preemptive_model (fun _ : eqtype.Equality.sort Job => 1) (fun _ : eqtype.Equality.sort Task => 1)
+
+FullyPreemptivePlatform.fully_preemptive_model_is_model_with_bounded_nonpreemptive_regions is not universe polymorphic
+Arguments FullyPreemptivePlatform.fully_preemptive_model_is_model_with_bounded_nonpreemptive_regions {Task Job} (job_cost job_task)%function_scope arr_seq j _
+FullyPreemptivePlatform.fully_preemptive_model_is_model_with_bounded_nonpreemptive_regions is opaque
+Expands to: Constant prosa.classic.model.schedule.uni.limited.platform.preemptive.FullyPreemptivePlatform.fully_preemptive_model_is_model_with_bounded_nonpreemptive_regions
+Declared in library prosa.classic.model.schedule.uni.limited.platform.preemptive, line 58, characters 10-76

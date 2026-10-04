@@ -1,0 +1,71 @@
+# classic/model/schedule/uni/limited/schedule.v: 9 declarations
+
+## Print Module
+
+Module schedule := Struct Definition job_lock_in_service_positive : forall Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> time.Time.time) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> (eqtype.Equality.sort Job -> time.Time.time) -> Prop. Definition job_lock_in_service_le_job_cost : forall Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> time.Time.time) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> (eqtype.Equality.sort Job -> time.Time.time) -> Prop. Definition job_nonpreemptive_after_lock_in_service : forall Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> time.Time.time) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> schedule.UniprocessorSchedule.schedule Job -> (eqtype.Equality.sort Job -> time.Time.time) -> Prop. Definition proper_job_lock_in_service : forall Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> time.Time.time) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> schedule.UniprocessorSchedule.schedule Job -> (eqtype.Equality.sort Job -> time.Time.time) -> Prop. Definition task_lock_in_service_le_task_cost : forall Task : eqtype.Equality.type, (eqtype.Equality.sort Task -> time.Time.time) -> (eqtype.Equality.sort Task -> time.Time.time) -> eqtype.Equality.sort Task -> bool. Definition task_lock_in_service_bounds_job_lock_in_service : forall Task Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> eqtype.Equality.sort Task) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Task -> time.Time.time) -> eqtype.Equality.sort Task -> Prop. Definition proper_task_lock_in_service : forall Task : eqtype.Equality.type, (eqtype.Equality.sort Task -> time.Time.time) -> forall Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> eqtype.Equality.sort Task) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Task -> time.Time.time) -> eqtype.Equality.sort Task -> Prop. Parameter job_nonpreemptive_after_lock_in_service_trivial : forall (Job : eqtype.Equality.type) (job_cost : eqtype.Equality.sort Job -> time.Time.time) (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job) (sched : schedule.UniprocessorSchedule.schedule Job), schedule.UniprocessorSchedule.completed_jobs_dont_execute job_cost sched -> job_nonpreemptive_after_lock_in_service job_cost arr_seq sched (fun j : eqtype.Equality.sort Job => job_cost j). Parameter property_last_segment_is_nonpreemptive_holds : forall (Job : eqtype.Equality.type) (job_cost : eqtype.Equality.sort Job -> time.Time.time) (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job) (sched : schedule.UniprocessorSchedule.schedule Job), schedule.UniprocessorSchedule.completed_jobs_dont_execute job_cost sched -> schedule.NonpreemptiveSchedule.is_nonpreemptive_schedule job_cost sched -> job_nonpreemptive_after_lock_in_service job_cost arr_seq sched (fun _ : eqtype.Equality.sort Job => 1). End
+
+## About
+
+job_lock_in_service_positive : forall {Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> time.Time.time) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> (eqtype.Equality.sort Job -> time.Time.time) -> Prop
+
+job_lock_in_service_positive is not universe polymorphic
+Arguments job_lock_in_service_positive {Job} job_cost%function_scope arr_seq job_lock_in_service%function_scope
+job_lock_in_service_positive is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.limited.schedule.job_lock_in_service_positive
+Declared in library prosa.classic.model.schedule.uni.limited.schedule, line 34, characters 15-43
+job_lock_in_service_le_job_cost : forall {Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> time.Time.time) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> (eqtype.Equality.sort Job -> time.Time.time) -> Prop
+
+job_lock_in_service_le_job_cost is not universe polymorphic
+Arguments job_lock_in_service_le_job_cost {Job} job_cost%function_scope arr_seq job_lock_in_service%function_scope
+job_lock_in_service_le_job_cost is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.limited.schedule.job_lock_in_service_le_job_cost
+Declared in library prosa.classic.model.schedule.uni.limited.schedule, line 41, characters 15-46
+job_nonpreemptive_after_lock_in_service : forall {Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> time.Time.time) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> schedule.UniprocessorSchedule.schedule Job -> (eqtype.Equality.sort Job -> time.Time.time) -> Prop
+
+job_nonpreemptive_after_lock_in_service is not universe polymorphic
+Arguments job_nonpreemptive_after_lock_in_service {Job} job_cost%function_scope arr_seq sched job_lock_in_service%function_scope
+job_nonpreemptive_after_lock_in_service is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.limited.schedule.job_nonpreemptive_after_lock_in_service
+Declared in library prosa.classic.model.schedule.uni.limited.schedule, line 50, characters 15-54
+proper_job_lock_in_service : forall {Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> time.Time.time) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> schedule.UniprocessorSchedule.schedule Job -> (eqtype.Equality.sort Job -> time.Time.time) -> Prop
+
+proper_job_lock_in_service is not universe polymorphic
+Arguments proper_job_lock_in_service {Job} job_cost%function_scope arr_seq sched job_lock_in_service%function_scope
+proper_job_lock_in_service is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.limited.schedule.proper_job_lock_in_service
+Declared in library prosa.classic.model.schedule.uni.limited.schedule, line 62, characters 15-41
+task_lock_in_service_le_task_cost : forall {Task : eqtype.Equality.type}, (eqtype.Equality.sort Task -> time.Time.time) -> (eqtype.Equality.sort Task -> time.Time.time) -> eqtype.Equality.sort Task -> bool
+
+task_lock_in_service_le_task_cost is not universe polymorphic
+Arguments task_lock_in_service_le_task_cost {Task} (task_cost task_lock_in_service)%function_scope tsk
+task_lock_in_service_le_task_cost is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.limited.schedule.task_lock_in_service_le_task_cost
+Declared in library prosa.classic.model.schedule.uni.limited.schedule, line 72, characters 15-48
+task_lock_in_service_bounds_job_lock_in_service : forall {Task Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> eqtype.Equality.sort Task) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Task -> time.Time.time) -> eqtype.Equality.sort Task -> Prop
+
+task_lock_in_service_bounds_job_lock_in_service is not universe polymorphic
+Arguments task_lock_in_service_bounds_job_lock_in_service {Task Job} job_task%function_scope arr_seq (job_lock_in_service task_lock_in_service)%function_scope tsk
+task_lock_in_service_bounds_job_lock_in_service is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.limited.schedule.task_lock_in_service_bounds_job_lock_in_service
+Declared in library prosa.classic.model.schedule.uni.limited.schedule, line 78, characters 15-62
+proper_task_lock_in_service : forall {Task : eqtype.Equality.type}, (eqtype.Equality.sort Task -> time.Time.time) -> forall {Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> eqtype.Equality.sort Task) -> arrival_sequence.ArrivalSequence.arrival_sequence Job -> (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Task -> time.Time.time) -> eqtype.Equality.sort Task -> Prop
+
+proper_task_lock_in_service is not universe polymorphic
+Arguments proper_task_lock_in_service {Task} task_cost%function_scope {Job} job_task%function_scope arr_seq (job_lock_in_service task_lock_in_service)%function_scope tsk
+proper_task_lock_in_service is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.limited.schedule.proper_task_lock_in_service
+Declared in library prosa.classic.model.schedule.uni.limited.schedule, line 87, characters 15-42
+job_nonpreemptive_after_lock_in_service_trivial : forall {Job : eqtype.Equality.type} (job_cost : eqtype.Equality.sort Job -> time.Time.time) (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job) (sched : schedule.UniprocessorSchedule.schedule Job), schedule.UniprocessorSchedule.completed_jobs_dont_execute job_cost sched -> job_nonpreemptive_after_lock_in_service job_cost arr_seq sched (fun j : eqtype.Equality.sort Job => job_cost j)
+
+job_nonpreemptive_after_lock_in_service_trivial is not universe polymorphic
+Arguments job_nonpreemptive_after_lock_in_service_trivial {Job} job_cost%function_scope arr_seq sched H_completed_jobs_dont_execute j t t' _ _ _ _
+job_nonpreemptive_after_lock_in_service_trivial is opaque
+Expands to: Constant prosa.classic.model.schedule.uni.limited.schedule.job_nonpreemptive_after_lock_in_service_trivial
+Declared in library prosa.classic.model.schedule.uni.limited.schedule, line 117, characters 12-59
+property_last_segment_is_nonpreemptive_holds : forall {Job : eqtype.Equality.type} (job_cost : eqtype.Equality.sort Job -> time.Time.time) (arr_seq : arrival_sequence.ArrivalSequence.arrival_sequence Job) (sched : schedule.UniprocessorSchedule.schedule Job), schedule.UniprocessorSchedule.completed_jobs_dont_execute job_cost sched -> schedule.NonpreemptiveSchedule.is_nonpreemptive_schedule job_cost sched -> job_nonpreemptive_after_lock_in_service job_cost arr_seq sched (fun _ : eqtype.Equality.sort Job => 1)
+
+property_last_segment_is_nonpreemptive_holds is not universe polymorphic
+Arguments property_last_segment_is_nonpreemptive_holds {Job} job_cost%function_scope arr_seq sched H_completed_jobs_dont_execute H_is_nonpreemptive_schedule j t t' _ _ _ _
+property_last_segment_is_nonpreemptive_holds is opaque
+Expands to: Constant prosa.classic.model.schedule.uni.limited.schedule.property_last_segment_is_nonpreemptive_holds
+Declared in library prosa.classic.model.schedule.uni.limited.schedule, line 143, characters 12-56

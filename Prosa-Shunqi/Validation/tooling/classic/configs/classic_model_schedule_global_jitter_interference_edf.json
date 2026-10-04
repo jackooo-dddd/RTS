@@ -1,0 +1,89 @@
+{
+  "rank": 139,
+  "layer": 15,
+  "classic_scope": "full",
+  "slug": "classic_model_schedule_global_jitter_interference_edf",
+  "tag": "CGJIEDF",
+  "export_name": "ClassicGlobalJitterInterferenceEdf",
+  "source": "classic/model/schedule/global/jitter/interference_edf.v",
+  "production": "Prosa/Classic/Model/Schedule/Global/Jitter/InterferenceEdf.lean",
+  "fixtures": [
+    "ClassicGlobalJitterInterferenceEdfInterface"
+  ],
+  "export_module": "Validation.fixtures.translation_order.ClassicGlobalJitterInterferenceEdfInterface",
+  "interface_theorems": [
+    "Prosa.Validation.ClassicGlobalJitterInterferenceEdfInterface.finRange_any",
+    "Prosa.Validation.ClassicGlobalJitterInterferenceEdfInterface.bigCatFin_range'",
+    "Prosa.Validation.ClassicGlobalJitterInterferenceEdfInterface.fin_sum_range'",
+    "Prosa.Validation.ClassicGlobalJitterInterferenceEdfInterface.bigCat_range'",
+    "Prosa.Validation.ClassicGlobalJitterInterferenceEdfInterface.count_filter_eq",
+    "Prosa.Validation.ClassicGlobalJitterInterferenceEdfInterface.service_at_sum",
+    "Prosa.Validation.ClassicGlobalJitterInterferenceEdfInterface.dedup_nil",
+    "Prosa.Validation.ClassicGlobalJitterInterferenceEdfInterface.dedup_cons_mem",
+    "Prosa.Validation.ClassicGlobalJitterInterferenceEdfInterface.dedup_cons_not_mem"
+  ],
+  "computational": [],
+  "chain": [
+    "ClassicGlobalJitterInterferenceEdfBase",
+    "ClassicGlobalJitterInterferenceEdfList",
+    "ClassicGlobalJitterInterferenceEdfOrd",
+    "ClassicGlobalJitterInterferenceEdfCorrespondence"
+  ],
+  "principal": {},
+  "helpers": [
+    "cgz_forall_ncpus_sched"
+  ],
+  "base_run": null,
+  "base_checks": [],
+  "previous_status": "classic_model_schedule_global_jitter_platform_module_status.json",
+  "input_relations": [
+    "job type: eqType identified, Lean DecidableEq instance = the eqType's decision procedure",
+    "times and processor counts by SubNatRel; processors by CoOrdRel; schedules pointwise through the option map; job parameters pointwise through SubNatRel; arrival sequences pointwise on related times (two-way totals)"
+  ],
+  "lean_representation_note": "the Rocq module InterferenceEDF (global jitter) is a namespace; `x != 0` is `!decide (x = 0)`",
+  "prop_sprop_foundation": [
+    "PropSPropFoundation.interpret_strict"
+  ],
+  "importer_foundation": [
+    "ImportedClassicGlobalJitterInterferenceEdf.Classical_choice",
+    "ImportedClassicGlobalJitterInterferenceEdf.Quot_sound",
+    "ImportedClassicGlobalJitterInterferenceEdf.propext",
+    "PrimInt63.eqb",
+    "PrimInt63.int",
+    "PrimInt63.land",
+    "PrimInt63.lsr"
+  ],
+  "rocq_sprop_uip": [
+    "ClassicGlobalJitterInterferenceEdfBase.I.HEq_inst1",
+    "ClassicGlobalJitterInterferenceEdfBase.I.True",
+    "ClassicGlobalJitterInterferenceEdfOrd.I.HEq",
+    "ClassicGlobalJitterInterferenceEdfOrd.I.HEq_inst1",
+    "ClassicGlobalJitterInterferenceEdfOrd.I.True",
+    "I.HEq",
+    "I.HEq_inst1",
+    "I.True",
+    "Lean.eq",
+    "Lean.eq_inst1",
+    "SubadditivityNatCorrespondence.SubNatTrue"
+  ],
+  "normalization": {
+    "theorem_types": [],
+    "subexpression_heads": [
+      "Finset.sum"
+    ],
+    "definition_bodies": [],
+    "body_projections": [
+      "Prosa.Classic.Model.Schedule.Global.Basic.Schedule.Schedule.service=Prosa.Validation.ClassicGlobalJitterInterferenceEdfInterface.service_proj=Prosa.Validation.ClassicGlobalJitterInterferenceEdfInterface.service_proj_guard",
+      "Prosa.Classic.Model.Schedule.Global.Basic.Schedule.Schedule.service_during=Prosa.Validation.ClassicGlobalJitterInterferenceEdfInterface.service_during_proj=Prosa.Validation.ClassicGlobalJitterInterferenceEdfInterface.service_during_proj_guard",
+      "Prosa.Classic.Model.Schedule.Global.Jitter.Interference.Interference.job_interference=Prosa.Validation.ClassicGlobalJitterInterferenceEdfInterface.job_interference_proj=Prosa.Validation.ClassicGlobalJitterInterferenceEdfInterface.job_interference_proj_guard"
+    ]
+  },
+  "export_env": {
+    "LEAN4EXPORT_PRESERVE_REDUCIBLE_THEOREM_TYPES": "1",
+    "LEAN4EXPORT_NAT_INDEX_ALIASES": "Prosa.Classic.Model.Time.Time.time"
+  },
+  "export_diagnosis": "~159,000 lines: as for the accepted classic global schedule / interference-EDF exports: the global service_at is a filtered Finset sum over Fin num_cpus (Mathlib Finset/Multiset/Quot closure), jobs_scheduled_between uses Mathlib List.dedup, the restated ClassicScheduleInterface theorems are exported with their proof bodies; the half-open Finset.Ico sums (service, service_during, the jitter job_interference) are kept out of the export by kernel-guarded body projections.",
+  "kernel_guard_artifacts": [
+    "Validation/fixtures/translation_order/ClassicGlobalJitterInterferenceEdfInterface.lean"
+  ]
+}

@@ -1,0 +1,45 @@
+# classic/model/schedule/uni/limited/abstract_RTA/reduction_of_search_space.v: 5 declarations
+
+## Print Module
+
+Module reduction_of_search_space := Struct Module AbstractRTAReduction End
+
+Module AbstractRTAReduction := Struct Definition are_equivalent_at_values_less_than : forall T : eqtype.Equality.type, (nat -> eqtype.Equality.sort T) -> (nat -> eqtype.Equality.sort T) -> nat -> Prop. Definition are_not_equivalent_at_values_less_than : forall T : eqtype.Equality.type, (nat -> eqtype.Equality.sort T) -> (nat -> eqtype.Equality.sort T) -> nat -> Prop. Definition is_in_search_space : forall Task : eqtype.Equality.type, eqtype.Equality.sort Task -> time.Time.time -> (eqtype.Equality.sort Task -> time.Time.time -> time.Time.time -> time.Time.time) -> nat -> Prop. Parameter representative_exists : forall (Task : eqtype.Equality.type) (tsk : eqtype.Equality.sort Task) (B : time.Time.time) (interference_bound_function : eqtype.Equality.sort Task -> time.Time.time -> time.Time.time -> time.Time.time) (A : time.Time.time), is_true (ssrnat.leq (S A) B) -> exists A_sp : nat, is_true (ssrnat.leq A_sp A) /\ are_equivalent_at_values_less_than (interference_bound_function tsk A) (interference_bound_function tsk A_sp) B /\ is_in_search_space tsk B interference_bound_function A_sp. Parameter solution_for_A_exists : forall (Task : eqtype.Equality.type) (tsk : eqtype.Equality.sort Task) (B : time.Time.time) (interference_bound_function : eqtype.Equality.sort Task -> time.Time.time -> time.Time.time -> time.Time.time) (A_sp F_sp : time.Time.time), is_true (ssrnat.leq (S (ssrnat.addn A_sp F_sp)) B) -> ssrnat.addn A_sp F_sp = interference_bound_function tsk A_sp (ssrnat.addn A_sp F_sp) -> forall A : time.Time.time, is_true (ssrnat.leq A_sp A && ssrnat.leq A (ssrnat.addn A_sp F_sp)) -> are_equivalent_at_values_less_than (interference_bound_function tsk A) (interference_bound_function tsk A_sp) B -> exists F : nat, ssrnat.addn A_sp F_sp = ssrnat.addn A F /\ is_true (ssrnat.leq F F_sp) /\ ssrnat.addn A F = interference_bound_function tsk A (ssrnat.addn A F). End
+
+## About
+
+AbstractRTAReduction.are_equivalent_at_values_less_than : forall {T : eqtype.Equality.type}, (nat -> eqtype.Equality.sort T) -> (nat -> eqtype.Equality.sort T) -> nat -> Prop
+
+AbstractRTAReduction.are_equivalent_at_values_less_than is not universe polymorphic
+Arguments AbstractRTAReduction.are_equivalent_at_values_less_than {T} (f1 f2)%function_scope B%nat_scope
+AbstractRTAReduction.are_equivalent_at_values_less_than is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.limited.abstract_RTA.reduction_of_search_space.AbstractRTAReduction.are_equivalent_at_values_less_than
+Declared in library prosa.classic.model.schedule.uni.limited.abstract_RTA.reduction_of_search_space, line 38, characters 17-51
+AbstractRTAReduction.are_not_equivalent_at_values_less_than : forall {T : eqtype.Equality.type}, (nat -> eqtype.Equality.sort T) -> (nat -> eqtype.Equality.sort T) -> nat -> Prop
+
+AbstractRTAReduction.are_not_equivalent_at_values_less_than is not universe polymorphic
+Arguments AbstractRTAReduction.are_not_equivalent_at_values_less_than {T} (f1 f2)%function_scope B%nat_scope
+AbstractRTAReduction.are_not_equivalent_at_values_less_than is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.limited.abstract_RTA.reduction_of_search_space.AbstractRTAReduction.are_not_equivalent_at_values_less_than
+Declared in library prosa.classic.model.schedule.uni.limited.abstract_RTA.reduction_of_search_space, line 44, characters 17-55
+AbstractRTAReduction.is_in_search_space : forall {Task : eqtype.Equality.type}, eqtype.Equality.sort Task -> time.Time.time -> (eqtype.Equality.sort Task -> time.Time.time -> time.Time.time -> time.Time.time) -> nat -> Prop
+
+AbstractRTAReduction.is_in_search_space is not universe polymorphic
+Arguments AbstractRTAReduction.is_in_search_space {Task} tsk B interference_bound_function%function_scope A%nat_scope
+AbstractRTAReduction.is_in_search_space is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.limited.abstract_RTA.reduction_of_search_space.AbstractRTAReduction.is_in_search_space
+Declared in library prosa.classic.model.schedule.uni.limited.abstract_RTA.reduction_of_search_space, line 67, characters 15-33
+AbstractRTAReduction.representative_exists : forall {Task : eqtype.Equality.type} (tsk : eqtype.Equality.sort Task) (B : time.Time.time) (interference_bound_function : eqtype.Equality.sort Task -> time.Time.time -> time.Time.time -> time.Time.time) (A : time.Time.time), is_true (ssrnat.leq (S A) B) -> exists A_sp : nat, is_true (ssrnat.leq A_sp A) /\ AbstractRTAReduction.are_equivalent_at_values_less_than (interference_bound_function tsk A) (interference_bound_function tsk A_sp) B /\ AbstractRTAReduction.is_in_search_space tsk B interference_bound_function A_sp
+
+AbstractRTAReduction.representative_exists is not universe polymorphic
+Arguments AbstractRTAReduction.representative_exists {Task} tsk B interference_bound_function%function_scope A H_A_less_than_B
+AbstractRTAReduction.representative_exists is opaque
+Expands to: Constant prosa.classic.model.schedule.uni.limited.abstract_RTA.reduction_of_search_space.AbstractRTAReduction.representative_exists
+Declared in library prosa.classic.model.schedule.uni.limited.abstract_RTA.reduction_of_search_space, line 86, characters 12-33
+AbstractRTAReduction.solution_for_A_exists : forall {Task : eqtype.Equality.type} (tsk : eqtype.Equality.sort Task) (B : time.Time.time) (interference_bound_function : eqtype.Equality.sort Task -> time.Time.time -> time.Time.time -> time.Time.time) (A_sp F_sp : time.Time.time), is_true (ssrnat.leq (S (ssrnat.addn A_sp F_sp)) B) -> ssrnat.addn A_sp F_sp = interference_bound_function tsk A_sp (ssrnat.addn A_sp F_sp) -> forall A : time.Time.time, is_true (ssrnat.leq A_sp A && ssrnat.leq A (ssrnat.addn A_sp F_sp)) -> AbstractRTAReduction.are_equivalent_at_values_less_than (interference_bound_function tsk A) (interference_bound_function tsk A_sp) B -> exists F : nat, ssrnat.addn A_sp F_sp = ssrnat.addn A F /\ is_true (ssrnat.leq F F_sp) /\ ssrnat.addn A F = interference_bound_function tsk A (ssrnat.addn A F)
+
+AbstractRTAReduction.solution_for_A_exists is not universe polymorphic
+Arguments AbstractRTAReduction.solution_for_A_exists {Task} tsk B interference_bound_function%function_scope A_sp F_sp H_less_than H_fixpoint A H_bounds_for_A H_equivalent
+AbstractRTAReduction.solution_for_A_exists is opaque
+Expands to: Constant prosa.classic.model.schedule.uni.limited.abstract_RTA.reduction_of_search_space.AbstractRTAReduction.solution_for_A_exists
+Declared in library prosa.classic.model.schedule.uni.limited.abstract_RTA.reduction_of_search_space, line 153, characters 12-33

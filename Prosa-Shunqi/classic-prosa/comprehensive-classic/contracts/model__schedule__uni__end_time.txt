@@ -1,0 +1,179 @@
+# classic/model/schedule/uni/end_time.v: 21 declarations
+
+## Print Module
+
+Module uni.end_time := Struct Module end_time End
+
+Module
+end_time
+:= Struct
+     Inductive diagnosis_option : Set :=  OK : time.Time.instant -> diagnosis_option | Failure : time.Time.instant -> diagnosis_option.
+     Definition diagnosis_option_rect : forall P : diagnosis_option -> Type, (forall i : time.Time.instant, P (OK i)) -> (forall i : time.Time.instant, P (Failure i)) -> forall d : diagnosis_option, P d.
+     Definition diagnosis_option_ind : forall P : diagnosis_option -> Prop, (forall i : time.Time.instant, P (OK i)) -> (forall i : time.Time.instant, P (Failure i)) -> forall d : diagnosis_option, P d.
+     Definition diagnosis_option_rec : forall P : diagnosis_option -> Set, (forall i : time.Time.instant, P (OK i)) -> (forall i : time.Time.instant, P (Failure i)) -> forall d : diagnosis_option, P d.
+     Definition diagnosis_option_sind : forall P : diagnosis_option -> SProp, (forall i : time.Time.instant, P (OK i)) -> (forall i : time.Time.instant, P (Failure i)) -> forall d : diagnosis_option, P d.
+     Definition end_time_option : forall Job : eqtype.Equality.type, schedule.UniprocessorSchedule.schedule Job -> eqtype.Equality.sort Job -> time.Time.instant -> time.Time.duration -> nat -> diagnosis_option.
+     Inductive end_time_predicate (Job : eqtype.Equality.type) (sched : schedule.UniprocessorSchedule.schedule Job) (job : eqtype.Equality.sort Job) : time.Time.instant -> time.Time.duration -> time.Time.instant -> Prop :=  C0_ : forall t : time.Time.instant, end_time_predicate sched job t 0 t | S_C_not_sched : forall (t : time.Time.time) (c : nat) (e : time.Time.instant), ~ (fun t0 : time.Time.time => schedule.UniprocessorSchedule.scheduled_at sched job t0 = true) t -> end_time_predicate sched job (S t) (S c) e -> end_time_predicate sched job t (S c) e | S_C_sched : forall (t : time.Time.time) (c : time.Time.duration) (e : time.Time.instant), (fun t0 : time.Time.time => schedule.UniprocessorSchedule.scheduled_at sched job t0 = true) t -> end_time_predicate sched job (S t) c e -> end_time_predicate sched job t (S c) e.
+     Definition end_time_predicate_ind : forall (Job : eqtype.Equality.type) (sched : schedule.UniprocessorSchedule.schedule Job) (job : eqtype.Equality.sort Job) (P : time.Time.instant -> time.Time.duration -> time.Time.instant -> Prop), (forall t : time.Time.instant, P t 0 t) -> (forall (t : time.Time.time) (c : nat) (e : time.Time.instant), ~ (fun t0 : time.Time.time => schedule.UniprocessorSchedule.scheduled_at sched job t0 = true) t -> end_time_predicate sched job (S t) (S c) e -> P (S t) (S c) e -> P t (S c) e) -> (forall (t : time.Time.time) (c : time.Time.duration) (e : time.Time.instant), (fun t0 : time.Time.time => schedule.UniprocessorSchedule.scheduled_at sched job t0 = true) t -> end_time_predicate sched job (S t) c e -> P (S t) c e -> P t (S c) e) -> forall (i : time.Time.instant) (d : time.Time.duration) (i0 : time.Time.instant), end_time_predicate sched job i d i0 -> P i d i0.
+     Definition end_time_predicate_sind : forall (Job : eqtype.Equality.type) (sched : schedule.UniprocessorSchedule.schedule Job) (job : eqtype.Equality.sort Job) (P : time.Time.instant -> time.Time.duration -> time.Time.instant -> SProp), (forall t : time.Time.instant, P t 0 t) -> (forall (t : time.Time.time) (c : nat) (e : time.Time.instant), ~ (fun t0 : time.Time.time => schedule.UniprocessorSchedule.scheduled_at sched job t0 = true) t -> end_time_predicate sched job (S t) (S c) e -> P (S t) (S c) e -> P t (S c) e) -> (forall (t : time.Time.time) (c : time.Time.duration) (e : time.Time.instant), (fun t0 : time.Time.time => schedule.UniprocessorSchedule.scheduled_at sched job t0 = true) t -> end_time_predicate sched job (S t) c e -> P (S t) c e -> P t (S c) e) -> forall (i : time.Time.instant) (d : time.Time.duration) (i0 : time.Time.instant), end_time_predicate sched job i d i0 -> P i d i0.
+     Definition completes_at : forall Job : eqtype.Equality.type, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> schedule.UniprocessorSchedule.schedule Job -> eqtype.Equality.sort Job -> time.Time.instant -> Prop.
+     Parameter end_time_function_predicat_equivalence : forall (Job : eqtype.Equality.type) (job : eqtype.Equality.sort Job) (sched : schedule.UniprocessorSchedule.schedule Job) (e : time.Time.instant) (wf : nat) (t : time.Time.instant) (c : time.Time.duration), end_time_option sched job t c wf = OK e -> end_time_predicate sched job t c e.
+     Parameter end_time_predicat_function_equivalence : forall (Job : eqtype.Equality.type) (job : eqtype.Equality.sort Job) (sched : schedule.UniprocessorSchedule.schedule Job) (t : time.Time.instant) (c : time.Time.duration) (e : time.Time.instant), end_time_predicate sched job t c e -> exists wf : nat, end_time_option sched job t c wf = OK e.
+     Parameter end_time_predicate_not_sched : forall (Job : eqtype.Equality.type) (job : eqtype.Equality.sort Job) (sched : schedule.UniprocessorSchedule.schedule Job) (t : time.Time.time) (c : nat) (e : time.Time.instant), ~ (fun t0 : time.Time.time => schedule.UniprocessorSchedule.scheduled_at sched job t0 = true) t -> end_time_predicate sched job t (S c) e -> end_time_predicate sched job (S t) (S c) e.
+     Parameter end_time_predicate_sched : forall (Job : eqtype.Equality.type) (job : eqtype.Equality.sort Job) (sched : schedule.UniprocessorSchedule.schedule Job) (t : time.Time.time) (c : nat) (e : time.Time.instant), (fun t0 : time.Time.time => schedule.UniprocessorSchedule.scheduled_at sched job t0 = true) t -> end_time_predicate sched job t (S c) e -> end_time_predicate sched job (S t) c e.
+     Parameter arrival_le_end : forall (Job : eqtype.Equality.type) (job : eqtype.Equality.sort Job) (sched : schedule.UniprocessorSchedule.schedule Job) (t : time.Time.instant) (c : time.Time.duration) (e : time.Time.instant), end_time_predicate sched job t c e -> is_true (ssrnat.leq t e).
+     Parameter arrival_add_cost_le_end : forall (Job : eqtype.Equality.type) (job : eqtype.Equality.sort Job) (sched : schedule.UniprocessorSchedule.schedule Job) (t : time.Time.instant) (c : time.Time.duration) (e : time.Time.instant), end_time_predicate sched job t c e -> is_true (ssrnat.leq (ssrnat.addn t c) e).
+     Parameter service_eq_cost_at_end_time : forall (Job : eqtype.Equality.type) (job_arrival job_cost : eqtype.Equality.sort Job -> time.Time.time) (job : eqtype.Equality.sort Job) (sched : schedule.UniprocessorSchedule.schedule Job) (job_end : time.Time.instant), completes_at job_arrival job_cost sched job job_end -> schedule.UniprocessorSchedule.service_during sched job (job_arrival job) job_end = job_cost job.
+     Parameter completed_by_end_time : forall (Job : eqtype.Equality.type) (job_arrival job_cost : eqtype.Equality.sort Job -> time.Time.time) (job : eqtype.Equality.sort Job) (sched : schedule.UniprocessorSchedule.schedule Job), schedule.UniprocessorSchedule.jobs_must_arrive_to_execute job_arrival sched -> forall job_end : time.Time.instant, completes_at job_arrival job_cost sched job job_end -> is_true (schedule.UniprocessorSchedule.completed_by job_cost sched job job_end).
+     Parameter end_time_positive : forall (Job : eqtype.Equality.type) (job_arrival job_cost job_deadline : eqtype.Equality.sort Job -> time.Time.time) (job : eqtype.Equality.sort Job) (sched : schedule.UniprocessorSchedule.schedule Job), schedule.UniprocessorSchedule.jobs_must_arrive_to_execute job_arrival sched -> job.Job.valid_realtime_job job_cost job_deadline job -> forall job_end : time.Time.instant, completes_at job_arrival job_cost sched job job_end -> is_true (ssrnat.leq 1 job_end).
+     Parameter job_uncompletes_at_end_time_sub_1 : forall (Job : eqtype.Equality.type) (job_arrival job_cost : eqtype.Equality.sort Job -> time.Time.time) (job : eqtype.Equality.sort Job) (sched : schedule.UniprocessorSchedule.schedule Job) (job_end : time.Time.instant), completes_at job_arrival job_cost sched job job_end -> schedule.UniprocessorSchedule.service_during sched job (job_arrival job) (Nat.pred job_end) = Nat.pred (job_cost job).
+     Parameter job_uncompleted_before_end_time : forall (Job : eqtype.Equality.type) (job_arrival job_cost job_deadline : eqtype.Equality.sort Job -> time.Time.time) (job : eqtype.Equality.sort Job) (sched : schedule.UniprocessorSchedule.schedule Job), job.Job.valid_realtime_job job_cost job_deadline job -> forall job_end : time.Time.instant, completes_at job_arrival job_cost sched job job_end -> forall t' : nat, is_true (ssrnat.leq (job_arrival job) t') /\ is_true (ssrnat.leq t' (Nat.pred job_end)) -> is_true (ssrnat.leq (S (schedule.UniprocessorSchedule.service_during sched job (job_arrival job) t')) (job_cost job)).
+   End
+
+## About
+
+end_time.diagnosis_option : Set
+
+end_time.diagnosis_option is not universe polymorphic
+Expands to: Inductive prosa.classic.model.schedule.uni.end_time.end_time.diagnosis_option
+Declared in library prosa.classic.model.schedule.uni.end_time, line 27, characters 14-30
+end_time.diagnosis_option_rect : forall P : end_time.diagnosis_option -> Type, (forall i : time.Time.instant, P (end_time.OK i)) -> (forall i : time.Time.instant, P (end_time.Failure i)) -> forall d : end_time.diagnosis_option, P d
+
+end_time.diagnosis_option_rect is not universe polymorphic
+Arguments end_time.diagnosis_option_rect (P f f0)%function_scope d
+end_time.diagnosis_option_rect is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.end_time.end_time.diagnosis_option_rect
+Declared in library prosa.classic.model.schedule.uni.end_time, line 27, characters 4-132
+end_time.diagnosis_option_ind : forall P : end_time.diagnosis_option -> Prop, (forall i : time.Time.instant, P (end_time.OK i)) -> (forall i : time.Time.instant, P (end_time.Failure i)) -> forall d : end_time.diagnosis_option, P d
+
+end_time.diagnosis_option_ind is not universe polymorphic
+Arguments end_time.diagnosis_option_ind (P f f0)%function_scope d
+end_time.diagnosis_option_ind is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.end_time.end_time.diagnosis_option_ind
+Declared in library prosa.classic.model.schedule.uni.end_time, line 27, characters 4-132
+end_time.diagnosis_option_rec : forall P : end_time.diagnosis_option -> Set, (forall i : time.Time.instant, P (end_time.OK i)) -> (forall i : time.Time.instant, P (end_time.Failure i)) -> forall d : end_time.diagnosis_option, P d
+
+end_time.diagnosis_option_rec is not universe polymorphic
+Arguments end_time.diagnosis_option_rec (P f f0)%function_scope d
+end_time.diagnosis_option_rec is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.end_time.end_time.diagnosis_option_rec
+Declared in library prosa.classic.model.schedule.uni.end_time, line 27, characters 4-132
+end_time.diagnosis_option_sind : forall P : end_time.diagnosis_option -> SProp, (forall i : time.Time.instant, P (end_time.OK i)) -> (forall i : time.Time.instant, P (end_time.Failure i)) -> forall d : end_time.diagnosis_option, P d
+
+end_time.diagnosis_option_sind is not universe polymorphic
+Arguments end_time.diagnosis_option_sind (P f f0)%function_scope d
+end_time.diagnosis_option_sind is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.end_time.end_time.diagnosis_option_sind
+Declared in library prosa.classic.model.schedule.uni.end_time, line 27, characters 4-132
+end_time.end_time_option : forall {Job : eqtype.Equality.type}, schedule.UniprocessorSchedule.schedule Job -> eqtype.Equality.sort Job -> time.Time.instant -> time.Time.duration -> nat -> end_time.diagnosis_option
+
+end_time.end_time_option is not universe polymorphic
+Arguments end_time.end_time_option {Job} sched job t c wf%nat_scope
+end_time.end_time_option is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.end_time.end_time.end_time_option
+Declared in library prosa.classic.model.schedule.uni.end_time, line 50, characters 6-355
+end_time.end_time_predicate : forall {Job : eqtype.Equality.type}, schedule.UniprocessorSchedule.schedule Job -> eqtype.Equality.sort Job -> time.Time.instant -> time.Time.duration -> time.Time.instant -> Prop
+
+end_time.end_time_predicate is not universe polymorphic
+end_time.end_time_predicate may only be eliminated to produce values whose type is SProp or Prop.
+Arguments end_time.end_time_predicate {Job} sched job _ _ _
+Expands to: Inductive prosa.classic.model.schedule.uni.end_time.end_time.end_time_predicate
+Declared in library prosa.classic.model.schedule.uni.end_time, line 68, characters 16-34
+end_time.end_time_predicate_ind : forall {Job : eqtype.Equality.type} (sched : schedule.UniprocessorSchedule.schedule Job) (job : eqtype.Equality.sort Job) (P : time.Time.instant -> time.Time.duration -> time.Time.instant -> Prop), (forall t : time.Time.instant, P t 0 t) -> (forall (t : time.Time.time) (c : nat) (e : time.Time.instant), ~ (fun t0 : time.Time.time => schedule.UniprocessorSchedule.scheduled_at sched job t0 = true) t -> end_time.end_time_predicate sched job (S t) (S c) e -> P (S t) (S c) e -> P t (S c) e) -> (forall (t : time.Time.time) (c : time.Time.duration) (e : time.Time.instant), (fun t0 : time.Time.time => schedule.UniprocessorSchedule.scheduled_at sched job t0 = true) t -> end_time.end_time_predicate sched job (S t) c e -> P (S t) c e -> P t (S c) e) -> forall (i : time.Time.instant) (d : time.Time.duration) (i0 : time.Time.instant), end_time.end_time_predicate sched job i d i0 -> P i d i0
+
+end_time.end_time_predicate_ind is not universe polymorphic
+Arguments end_time.end_time_predicate_ind {Job} sched job (P f f0 f1)%function_scope i d i0 e
+end_time.end_time_predicate_ind is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.end_time.end_time.end_time_predicate_ind
+Declared in library prosa.classic.model.schedule.uni.end_time, line 68, characters 6-431
+end_time.end_time_predicate_sind : forall {Job : eqtype.Equality.type} (sched : schedule.UniprocessorSchedule.schedule Job) (job : eqtype.Equality.sort Job) (P : time.Time.instant -> time.Time.duration -> time.Time.instant -> SProp), (forall t : time.Time.instant, P t 0 t) -> (forall (t : time.Time.time) (c : nat) (e : time.Time.instant), ~ (fun t0 : time.Time.time => schedule.UniprocessorSchedule.scheduled_at sched job t0 = true) t -> end_time.end_time_predicate sched job (S t) (S c) e -> P (S t) (S c) e -> P t (S c) e) -> (forall (t : time.Time.time) (c : time.Time.duration) (e : time.Time.instant), (fun t0 : time.Time.time => schedule.UniprocessorSchedule.scheduled_at sched job t0 = true) t -> end_time.end_time_predicate sched job (S t) c e -> P (S t) c e -> P t (S c) e) -> forall (i : time.Time.instant) (d : time.Time.duration) (i0 : time.Time.instant), end_time.end_time_predicate sched job i d i0 -> P i d i0
+
+end_time.end_time_predicate_sind is not universe polymorphic
+Arguments end_time.end_time_predicate_sind {Job} sched job (P f f0 f1)%function_scope i d i0 e
+end_time.end_time_predicate_sind is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.end_time.end_time.end_time_predicate_sind
+Declared in library prosa.classic.model.schedule.uni.end_time, line 68, characters 6-431
+end_time.completes_at : forall {Job : eqtype.Equality.type}, (eqtype.Equality.sort Job -> time.Time.time) -> (eqtype.Equality.sort Job -> time.Time.time) -> schedule.UniprocessorSchedule.schedule Job -> eqtype.Equality.sort Job -> time.Time.instant -> Prop
+
+end_time.completes_at is not universe polymorphic
+Arguments end_time.completes_at {Job} (job_arrival job_cost)%function_scope sched job t
+end_time.completes_at is transparent
+Expands to: Constant prosa.classic.model.schedule.uni.end_time.end_time.completes_at
+Declared in library prosa.classic.model.schedule.uni.end_time, line 83, characters 17-29
+end_time.end_time_function_predicat_equivalence : forall {Job : eqtype.Equality.type} (job : eqtype.Equality.sort Job) (sched : schedule.UniprocessorSchedule.schedule Job) (e : time.Time.instant) (wf : nat) (t : time.Time.instant) (c : time.Time.duration), end_time.end_time_option sched job t c wf = end_time.OK e -> end_time.end_time_predicate sched job t c e
+
+end_time.end_time_function_predicat_equivalence is not universe polymorphic
+Arguments end_time.end_time_function_predicat_equivalence {Job} job sched e wf%nat_scope t c _
+end_time.end_time_function_predicat_equivalence is opaque
+Expands to: Constant prosa.classic.model.schedule.uni.end_time.end_time.end_time_function_predicat_equivalence
+Declared in library prosa.classic.model.schedule.uni.end_time, line 121, characters 14-52
+end_time.end_time_predicat_function_equivalence : forall {Job : eqtype.Equality.type} (job : eqtype.Equality.sort Job) (sched : schedule.UniprocessorSchedule.schedule Job) (t : time.Time.instant) (c : time.Time.duration) (e : time.Time.instant), end_time.end_time_predicate sched job t c e -> exists wf : nat, end_time.end_time_option sched job t c wf = end_time.OK e
+
+end_time.end_time_predicat_function_equivalence is not universe polymorphic
+Arguments end_time.end_time_predicat_function_equivalence {Job} job sched t c e _
+end_time.end_time_predicat_function_equivalence is opaque
+Expands to: Constant prosa.classic.model.schedule.uni.end_time.end_time.end_time_predicat_function_equivalence
+Declared in library prosa.classic.model.schedule.uni.end_time, line 141, characters 14-52
+end_time.end_time_predicate_not_sched : forall {Job : eqtype.Equality.type} (job : eqtype.Equality.sort Job) (sched : schedule.UniprocessorSchedule.schedule Job) (t : time.Time.time) (c : nat) (e : time.Time.instant), ~ (fun t0 : time.Time.time => schedule.UniprocessorSchedule.scheduled_at sched job t0 = true) t -> end_time.end_time_predicate sched job t (S c) e -> end_time.end_time_predicate sched job (S t) (S c) e
+
+end_time.end_time_predicate_not_sched is not universe polymorphic
+Arguments end_time.end_time_predicate_not_sched {Job} job sched t c%nat_scope e _ _
+end_time.end_time_predicate_not_sched is opaque
+Expands to: Constant prosa.classic.model.schedule.uni.end_time.end_time.end_time_predicate_not_sched
+Declared in library prosa.classic.model.schedule.uni.end_time, line 159, characters 12-40
+end_time.end_time_predicate_sched : forall {Job : eqtype.Equality.type} (job : eqtype.Equality.sort Job) (sched : schedule.UniprocessorSchedule.schedule Job) (t : time.Time.time) (c : nat) (e : time.Time.instant), (fun t0 : time.Time.time => schedule.UniprocessorSchedule.scheduled_at sched job t0 = true) t -> end_time.end_time_predicate sched job t (S c) e -> end_time.end_time_predicate sched job (S t) c e
+
+end_time.end_time_predicate_sched is not universe polymorphic
+Arguments end_time.end_time_predicate_sched {Job} job sched t c%nat_scope e _ _
+end_time.end_time_predicate_sched is opaque
+Expands to: Constant prosa.classic.model.schedule.uni.end_time.end_time.end_time_predicate_sched
+Declared in library prosa.classic.model.schedule.uni.end_time, line 172, characters 12-36
+end_time.arrival_le_end : forall {Job : eqtype.Equality.type} (job : eqtype.Equality.sort Job) (sched : schedule.UniprocessorSchedule.schedule Job) (t : time.Time.instant) (c : time.Time.duration) (e : time.Time.instant), end_time.end_time_predicate sched job t c e -> is_true (ssrnat.leq t e)
+
+end_time.arrival_le_end is not universe polymorphic
+Arguments end_time.arrival_le_end {Job} job sched t c e _
+end_time.arrival_le_end is opaque
+Expands to: Constant prosa.classic.model.schedule.uni.end_time.end_time.arrival_le_end
+Declared in library prosa.classic.model.schedule.uni.end_time, line 197, characters 12-26
+end_time.arrival_add_cost_le_end : forall {Job : eqtype.Equality.type} (job : eqtype.Equality.sort Job) (sched : schedule.UniprocessorSchedule.schedule Job) (t : time.Time.instant) (c : time.Time.duration) (e : time.Time.instant), end_time.end_time_predicate sched job t c e -> is_true (ssrnat.leq (ssrnat.addn t c) e)
+
+end_time.arrival_add_cost_le_end is not universe polymorphic
+Arguments end_time.arrival_add_cost_le_end {Job} job sched t c e _
+end_time.arrival_add_cost_le_end is opaque
+Expands to: Constant prosa.classic.model.schedule.uni.end_time.end_time.arrival_add_cost_le_end
+Declared in library prosa.classic.model.schedule.uni.end_time, line 206, characters 12-35
+end_time.service_eq_cost_at_end_time : forall {Job : eqtype.Equality.type} (job_arrival job_cost : eqtype.Equality.sort Job -> time.Time.time) (job : eqtype.Equality.sort Job) (sched : schedule.UniprocessorSchedule.schedule Job) (job_end : time.Time.instant), end_time.completes_at job_arrival job_cost sched job job_end -> schedule.UniprocessorSchedule.service_during sched job (job_arrival job) job_end = job_cost job
+
+end_time.service_eq_cost_at_end_time is not universe polymorphic
+Arguments end_time.service_eq_cost_at_end_time {Job} (job_arrival job_cost)%function_scope job sched job_end _
+end_time.service_eq_cost_at_end_time is opaque
+Expands to: Constant prosa.classic.model.schedule.uni.end_time.end_time.service_eq_cost_at_end_time
+Declared in library prosa.classic.model.schedule.uni.end_time, line 217, characters 12-39
+end_time.completed_by_end_time : forall {Job : eqtype.Equality.type} (job_arrival job_cost : eqtype.Equality.sort Job -> time.Time.time) (job : eqtype.Equality.sort Job) (sched : schedule.UniprocessorSchedule.schedule Job), schedule.UniprocessorSchedule.jobs_must_arrive_to_execute job_arrival sched -> forall job_end : time.Time.instant, end_time.completes_at job_arrival job_cost sched job job_end -> is_true (schedule.UniprocessorSchedule.completed_by job_cost sched job job_end)
+
+end_time.completed_by_end_time is not universe polymorphic
+Arguments end_time.completed_by_end_time {Job} (job_arrival job_cost)%function_scope job sched H_jobs_must_arrive_to_execute job_end _
+end_time.completed_by_end_time is opaque
+Expands to: Constant prosa.classic.model.schedule.uni.end_time.end_time.completed_by_end_time
+Declared in library prosa.classic.model.schedule.uni.end_time, line 234, characters 12-33
+end_time.end_time_positive : forall {Job : eqtype.Equality.type} (job_arrival job_cost job_deadline : eqtype.Equality.sort Job -> time.Time.time) (job : eqtype.Equality.sort Job) (sched : schedule.UniprocessorSchedule.schedule Job), schedule.UniprocessorSchedule.jobs_must_arrive_to_execute job_arrival sched -> job.Job.valid_realtime_job job_cost job_deadline job -> forall job_end : time.Time.instant, end_time.completes_at job_arrival job_cost sched job job_end -> is_true (ssrnat.leq 1 job_end)
+
+end_time.end_time_positive is not universe polymorphic
+Arguments end_time.end_time_positive {Job} (job_arrival job_cost job_deadline)%function_scope job sched H_jobs_must_arrive_to_execute H_valid_job job_end _
+end_time.end_time_positive is opaque
+Expands to: Constant prosa.classic.model.schedule.uni.end_time.end_time.end_time_positive
+Declared in library prosa.classic.model.schedule.uni.end_time, line 247, characters 16-33
+end_time.job_uncompletes_at_end_time_sub_1 : forall {Job : eqtype.Equality.type} (job_arrival job_cost : eqtype.Equality.sort Job -> time.Time.time) (job : eqtype.Equality.sort Job) (sched : schedule.UniprocessorSchedule.schedule Job) (job_end : time.Time.instant), end_time.completes_at job_arrival job_cost sched job job_end -> schedule.UniprocessorSchedule.service_during sched job (job_arrival job) (Nat.pred job_end) = Nat.pred (job_cost job)
+
+end_time.job_uncompletes_at_end_time_sub_1 is not universe polymorphic
+Arguments end_time.job_uncompletes_at_end_time_sub_1 {Job} (job_arrival job_cost)%function_scope job sched job_end _
+end_time.job_uncompletes_at_end_time_sub_1 is opaque
+Expands to: Constant prosa.classic.model.schedule.uni.end_time.end_time.job_uncompletes_at_end_time_sub_1
+Declared in library prosa.classic.model.schedule.uni.end_time, line 261, characters 12-45
+end_time.job_uncompleted_before_end_time : forall {Job : eqtype.Equality.type} (job_arrival job_cost job_deadline : eqtype.Equality.sort Job -> time.Time.time) (job : eqtype.Equality.sort Job) (sched : schedule.UniprocessorSchedule.schedule Job), job.Job.valid_realtime_job job_cost job_deadline job -> forall job_end : time.Time.instant, end_time.completes_at job_arrival job_cost sched job job_end -> forall t' : nat, is_true (ssrnat.leq (job_arrival job) t') /\ is_true (ssrnat.leq t' (Nat.pred job_end)) -> is_true (ssrnat.leq (S (schedule.UniprocessorSchedule.service_during sched job (job_arrival job) t')) (job_cost job))
+
+end_time.job_uncompleted_before_end_time is not universe polymorphic
+Arguments end_time.job_uncompleted_before_end_time {Job} (job_arrival job_cost job_deadline)%function_scope job sched H_valid_job job_end _ t'%nat_scope _
+end_time.job_uncompleted_before_end_time is opaque
+Expands to: Constant prosa.classic.model.schedule.uni.end_time.end_time.job_uncompleted_before_end_time
+Declared in library prosa.classic.model.schedule.uni.end_time, line 284, characters 12-43

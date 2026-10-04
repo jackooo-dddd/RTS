@@ -1,0 +1,97 @@
+# classic/implementation/uni/basic/extraction_tdma.v: 13 declarations
+
+## Print Module
+
+Module extraction_tdma := Struct CoInductive Task_T : Set :=  build_task : nat -> nat -> nat -> nat -> Task_T. Definition get_slot : Task_T -> nat. Definition get_cost : Task_T -> nat. Definition get_D : Task_T -> nat. Definition get_P : Task_T -> nat. Definition task_eq : Task_T -> Task_T -> bool. Definition In : Task_T -> list Task_T -> Prop. Definition schedulable_tsk : nat -> Task_T -> bool. Definition schedulability_test : nat -> list Task_T -> bool. Parameter schedulability_test_valid : forall (T : nat) (TL : list Task_T), is_true (schedulability_test T TL) <-> (forall tsk : Task_T, In tsk TL -> is_true (schedulable_tsk T tsk)). Definition cycle : list Task_T -> nat. Definition schedulability_tdma : list Task_T -> bool. Parameter schedulability_tdma_valid : forall task_list : list Task_T, is_true (schedulability_tdma task_list) <-> (forall tsk : Task_T, In tsk task_list -> is_true (schedulable_tsk (cycle task_list) tsk)). End
+
+## About
+
+Task_T : Set
+
+Task_T is not universe polymorphic
+Expands to: Inductive prosa.classic.implementation.uni.basic.extraction_tdma.Task_T
+Declared in library prosa.classic.implementation.uni.basic.extraction_tdma, line 7, characters 12-18
+get_slot : Task_T -> nat
+
+get_slot is not universe polymorphic
+Arguments get_slot tsk
+get_slot is transparent
+Expands to: Constant prosa.classic.implementation.uni.basic.extraction_tdma.get_slot
+Declared in library prosa.classic.implementation.uni.basic.extraction_tdma, line 11, characters 11-19
+get_cost : Task_T -> nat
+
+get_cost is not universe polymorphic
+Arguments get_cost tsk
+get_cost is transparent
+Expands to: Constant prosa.classic.implementation.uni.basic.extraction_tdma.get_cost
+Declared in library prosa.classic.implementation.uni.basic.extraction_tdma, line 15, characters 11-19
+get_D : Task_T -> nat
+
+get_D is not universe polymorphic
+Arguments get_D tsk
+get_D is transparent
+Expands to: Constant prosa.classic.implementation.uni.basic.extraction_tdma.get_D
+Declared in library prosa.classic.implementation.uni.basic.extraction_tdma, line 19, characters 11-16
+get_P : Task_T -> nat
+
+get_P is not universe polymorphic
+Arguments get_P tsk
+get_P is transparent
+Expands to: Constant prosa.classic.implementation.uni.basic.extraction_tdma.get_P
+Declared in library prosa.classic.implementation.uni.basic.extraction_tdma, line 23, characters 11-16
+task_eq : Task_T -> Task_T -> bool
+
+task_eq is not universe polymorphic
+Arguments task_eq t1 t2
+task_eq is transparent
+Expands to: Constant prosa.classic.implementation.uni.basic.extraction_tdma.task_eq
+Declared in library prosa.classic.implementation.uni.basic.extraction_tdma, line 27, characters 11-18
+In : Task_T -> list Task_T -> Prop
+
+In is not universe polymorphic
+Arguments In a l%list_scope%seq_scope
+In is transparent
+Expands to: Constant prosa.classic.implementation.uni.basic.extraction_tdma.In
+Declared in library prosa.classic.implementation.uni.basic.extraction_tdma, line 33, characters 0-128
+schedulable_tsk : nat -> Task_T -> bool
+
+schedulable_tsk is not universe polymorphic
+Arguments schedulable_tsk T%nat_scope tsk
+schedulable_tsk is transparent
+Expands to: Constant prosa.classic.implementation.uni.basic.extraction_tdma.schedulable_tsk
+Declared in library prosa.classic.implementation.uni.basic.extraction_tdma, line 39, characters 11-26
+schedulability_test : nat -> list Task_T -> bool
+
+schedulability_test is not universe polymorphic
+Arguments schedulability_test T%nat_scope l%list_scope%seq_scope
+schedulability_test is transparent
+Expands to: Constant prosa.classic.implementation.uni.basic.extraction_tdma.schedulability_test
+Declared in library prosa.classic.implementation.uni.basic.extraction_tdma, line 43, characters 0-139
+schedulability_test_valid : forall (T : nat) (TL : list Task_T), is_true (schedulability_test T TL) <-> (forall tsk : Task_T, In tsk TL -> is_true (schedulable_tsk T tsk))
+
+schedulability_test_valid is not universe polymorphic
+Arguments schedulability_test_valid T%nat_scope TL%list_scope%seq_scope
+schedulability_test_valid is opaque
+Expands to: Constant prosa.classic.implementation.uni.basic.extraction_tdma.schedulability_test_valid
+Declared in library prosa.classic.implementation.uni.basic.extraction_tdma, line 49, characters 8-33
+cycle : list Task_T -> nat
+
+cycle is not universe polymorphic
+Arguments cycle l%list_scope%seq_scope
+cycle is transparent
+Expands to: Constant prosa.classic.implementation.uni.basic.extraction_tdma.cycle
+Declared in library prosa.classic.implementation.uni.basic.extraction_tdma, line 63, characters 11-16
+schedulability_tdma : list Task_T -> bool
+
+schedulability_tdma is not universe polymorphic
+Arguments schedulability_tdma l%list_scope%seq_scope
+schedulability_tdma is transparent
+Expands to: Constant prosa.classic.implementation.uni.basic.extraction_tdma.schedulability_tdma
+Declared in library prosa.classic.implementation.uni.basic.extraction_tdma, line 66, characters 11-30
+schedulability_tdma_valid : forall task_list : list Task_T, is_true (schedulability_tdma task_list) <-> (forall tsk : Task_T, In tsk task_list -> is_true (schedulable_tsk (cycle task_list) tsk))
+
+schedulability_tdma_valid is not universe polymorphic
+Arguments schedulability_tdma_valid task_list%list_scope%seq_scope
+schedulability_tdma_valid is opaque
+Expands to: Constant prosa.classic.implementation.uni.basic.extraction_tdma.schedulability_tdma_valid
+Declared in library prosa.classic.implementation.uni.basic.extraction_tdma, line 69, characters 8-33

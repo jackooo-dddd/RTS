@@ -1,0 +1,60 @@
+{
+  "rank": 13,
+  "layer": 3,
+  "slug": "classic_util_bigcat",
+  "tag": "CBIGCAT",
+  "export_name": "ClassicBigcat",
+  "source": "classic/util/bigcat.v",
+  "production": "Prosa/Classic/Util/Bigcat.lean",
+  "fixtures": [
+    "ClassicBigcatInterface"
+  ],
+  "export_module": "Validation.fixtures.translation_order.ClassicBigcatInterface",
+  "interface_theorems": [
+    "Prosa.Validation.ClassicBigcatInterface.map_finRange_eq_map_range'",
+    "Prosa.Validation.ClassicBigcatInterface.bigCatFin_range'",
+    "Prosa.Validation.ClassicBigcatInterface.fin_sum_range'"
+  ],
+  "computational": [],
+  "chain": [
+    "ClassicBigcatBase",
+    "ClassicBigcatList",
+    "ClassicBigcatCorrespondence"
+  ],
+  "base_run": null,
+  "base_checks": [],
+  "previous_status": "classic_util_powerset_module_status.json",
+  "previous_files": 12,
+  "previous_decls": 105,
+  "input_relations": [
+    "type parameters and elements identified; eqType T: Lean DecidableEq instance = the eqType's decision procedure",
+    "natural numbers by SubNatRel; ordinals 'I_n and Fin n by their values; sequences elementwise",
+    "ordinal-indexed families of sequences pointwise on related ordinals (two-way totals)"
+  ],
+  "lean_representation_note": "`\\cat_(i<n) f i` is the accepted v0.6 helper `Prosa.Util.Bigcat.bigCatFin f`; `\\sum_(i < n) F i` is `\u2211 i : Fin n, F i`",
+  "helpers": [
+    "co_bigcat_rel",
+    "co_sum_rel"
+  ],
+  "export_diagnosis": "148,186 lines: the size statement mentions the Finset sum over `Fin n` (Finset.univ of Fin.fintype, AddCommMonoid Nat), whose Mathlib Finset/Multiset closure is exported; the validation-only interface theorems (bigCatFin and the Fin sum as folds over List.range') are exported with their proof bodies (List.ext_getElem, getElem/finRange simp lemmas), as for the accepted v0.6 MultiprocessorComputationInterface.",
+  "prop_sprop_foundation": [
+    "PropSPropFoundation.interpret_strict"
+  ],
+  "importer_foundation": [
+    "ImportedClassicBigcat.Classical_choice",
+    "ImportedClassicBigcat.Quot_sound",
+    "ImportedClassicBigcat.propext",
+    "PrimInt63.eqb",
+    "PrimInt63.int",
+    "PrimInt63.land",
+    "PrimInt63.lsr"
+  ],
+  "rocq_sprop_uip": [
+    "I.HEq",
+    "I.HEq_inst1",
+    "I.True",
+    "Lean.eq",
+    "Lean.eq_inst1",
+    "SubadditivityNatCorrespondence.SubNatTrue"
+  ]
+}

@@ -1,0 +1,217 @@
+{
+  "slice": "CLASSIC_TRANSLATION_ORDER_CLASSIC_ANALYSIS_GLOBAL_BASIC_INTERFERENCE_BOUND_FP",
+  "generated_at": "2026-10-02T16:15:40.022324+08:00",
+  "published_at": "2026-10-02T16:15:40.022324+08:00",
+  "rank": 44,
+  "layer": 14,
+  "source_file": "classic/analysis/global/basic/interference_bound_fp.v",
+  "source_commit": "f692cb7479780cf6009493f373a309e13165201c",
+  "source_tree": "24727b135eda27b7234119bf8d931d962d7c3593",
+  "source_file_sha256": "5c4c6e505fd479f105a5332ea95140cd819e23e64293afcc6b86d3808b5239f0",
+  "pipeline": "Validation/scripts/translation_file_pipeline.py",
+  "spec": "Validation/tooling/classic/file_specs/classic_analysis_global_basic_interference_bound_fp.json",
+  "spec_sha256": "cbd12717db0d00bc1def03f48538c82df2efbfbc6dc4f3bc4e6800d8e050c42d",
+  "source_compatibility": {
+    "mode": "official_closure",
+    "classic_prelude": {
+      "file": "classic-prosa/rocq93-port/Rocq90Compat.v",
+      "sha256": "73e13a9d7a7ced129501db8e511329194ea084c7d362c97f94c4ad32b3ab6ad2",
+      "vo_sha256": "b66daba70ed953c00d3bb5f1179e1e8ec9aeba4f552e4845b6454c167afbf31e",
+      "flags": "-Q compat Compat -ri Compat.Rocq90Compat (classic/ source files only)"
+    },
+    "note": "official proof closure (pinned files + recorded compatibility patches); module compiled byte-identically",
+    "closure_files": [
+      "classic/model/time.v",
+      "util/tactics.v",
+      "classic/util/tactics.v",
+      "classic/util/bigord.v",
+      "util/notation.v",
+      "classic/util/notation.v",
+      "util/supremum.v",
+      "util/list.v",
+      "util/bigcat.v",
+      "classic/util/bigcat.v",
+      "classic/util/ord_quantifier.v",
+      "classic/util/counting.v",
+      "classic/util/ssromega.v",
+      "util/nat.v",
+      "classic/util/nat.v",
+      "util/subadditivity.v",
+      "util/div_mod.v",
+      "classic/util/div_mod.v",
+      "classic/util/induction.v",
+      "classic/util/fixedpoint.v",
+      "classic/util/list.v",
+      "classic/util/sorting.v",
+      "util/setoid.v",
+      "util/minmax.v",
+      "classic/util/minmax.v",
+      "classic/util/pick.v",
+      "classic/util/powerset.v",
+      "util/seqset.v",
+      "classic/util/seqset.v",
+      "classic/util/step_function.v",
+      "util/rel.v",
+      "util/sum.v",
+      "classic/util/sum.v",
+      "util/epsilon.v",
+      "classic/util/all.v",
+      "classic/model/arrival/basic/task.v",
+      "classic/model/arrival/basic/arrival_sequence.v",
+      "classic/model/arrival/basic/job.v",
+      "classic/model/arrival/basic/task_arrival.v",
+      "classic/model/schedule/global/basic/schedule.v",
+      "classic/model/schedule/global/response_time.v",
+      "classic/model/schedule/global/schedulability.v",
+      "classic/model/schedule/global/workload.v",
+      "classic/analysis/global/basic/workload_bound.v",
+      "classic/analysis/global/basic/interference_bound.v",
+      "classic/model/priority.v",
+      "classic/model/schedule/global/basic/interference.v",
+      "classic/analysis/global/basic/interference_bound_fp.v"
+    ],
+    "closure_list_sha256": "86e7262ddef6119eaeabfd9779e2583352575d62614b83ff3d2de83a05e173da",
+    "patches": {
+      "patches/classic/rocq93-util-tactics.patch": "574611a76b538efb14b0da097fbf6fbc4ab3fca842edf68dc0e88410286945da",
+      "patches/classic/rocq93-util-list.patch": "8f3ccb8f540b4512caf764735b921243e9d4cacbefef0a5419d1cbe1ecce7fcc",
+      "patches/classic/rocq93-util-bigcat.patch": "8b9ca83244f78b1ad3323f08097fdc46ad89600fd44c66e573ff1e7305a77917",
+      "patches/classic/rocq93-util-div_mod.patch": "62db091448ca8277fedff8d4f656d94f2256c688887512d0923bce613a51ae9e",
+      "patches/prosa-v06-rocq93-util-minmax.patch": "83aa841f898cbf369601a468246005cf874a9ea237deac3dde60cab20077e2ed",
+      "patches/classic/rocq93-util-seqset.patch": "1915dbdd58805b2c1a3ca6c73e3a9a37bde08ee2fb9c3114e1011dde0ae9611f",
+      "patches/classic/rocq93-util-sum.patch": "bc4e0370fbbeb0f738da2c79e56ade5f1433565f8b02d5e9dcbc67f68161027a"
+    },
+    "patched_files": [
+      "util/bigcat.v",
+      "util/div_mod.v",
+      "util/list.v",
+      "util/minmax.v",
+      "util/seqset.v",
+      "util/sum.v",
+      "util/tactics.v"
+    ]
+  },
+  "source_type_evidence": {
+    "prosa.classic.analysis.global.basic.interference_bound_fp.InterferenceBoundFP.total_interference_bound_fp": "EXACT_MODULO_OWN_MODULE_QUALIFIER"
+  },
+  "statement_only_export_boundary": [],
+  "input_relations": [
+    "task types: eqTypes identified, Lean DecidableEq instances = the eqTypes' decision procedures",
+    "natural numbers (time) by SubNatRel; task parameters pointwise through SubNatRel; (task, response time) pairs by their components, sequences of them elementwise (two-way totals)"
+  ],
+  "coverage_for_inner_binders": [],
+  "lean_representation_note": "`\\sum_((tsk_other, R_other) <- R_prev) F` is the accepted v0.6 helper `sumSeq` with pattern-matching functions on the pairs",
+  "export_size": {
+    "lines": 19791,
+    "soft_budget_flag": "WITHIN_50K"
+  },
+  "file_dependencies": {
+    "classic/analysis/global/basic/interference_bound.v": "classic_pipeline/classic_analysis_global_basic_interference_bound_module_status.json",
+    "classic/analysis/global/basic/workload_bound.v": "classic_pipeline/classic_analysis_global_basic_workload_bound_module_status.json",
+    "classic/model/priority.v": "classic_pipeline/classic_model_priority_module_status.json",
+    "classic/model/schedule/global/basic/interference.v": "classic_pipeline/classic_model_schedule_global_basic_interference_module_status.json",
+    "classic/model/schedule/global/basic/schedule.v": "classic_pipeline/classic_model_schedule_global_basic_schedule_module_status.json",
+    "classic/model/schedule/global/workload.v": "classic_pipeline/classic_model_schedule_global_workload_module_status.json",
+    "classic/util/all.v": "classic_pipeline/classic_util_all_module_status.json"
+  },
+  "production_file": "Prosa/Classic/Analysis/Global/Basic/InterferenceBoundFp.lean",
+  "production_source_sha256": "229321e205333a281d812466835a6fe1e6cf495ebd7a27848350ed3f86db48fd",
+  "production_olean_sha256": "ad9875c4bf8fd5ab46ca0830697e88dbc9409b466fc2b844b773f8a75315d36a",
+  "export_config_sha256": "ede4338f6246fe73dec3df3a72d931f485c6094d9befb6bc301d8df96c9bcadb",
+  "export_sha256": "7befd22a0d523f17f62957726951c1f96a0853602d4d55f4f24838c8a2a7b0ef",
+  "export_lines": 19791,
+  "export_bytes": 408236,
+  "import_sha256": "e72fab05db259d9b70fe377fb47ce5e99415bd62bdadd416b7daaceea746adb3",
+  "source_vo_sha256": "75405bf73c13c46d9fa2499d49e61bbc5497511cb926d94c865a9694f7f6bec0",
+  "lean_axiom_summary_sha256": "8e458fabff899196ad22625631a043c6c188310040ab71cd7205a2cfbec93c78",
+  "rocq_assumption_summary_sha256": "3730fcc14d64ebdff81945859e9d1bd4daae24261ddfd063720fa59fa4bef944",
+  "assumption_config_sha256": "b34a0226e26a5e216271946956f346ba599bf01e3f76a0aa9a18cee47413bac7",
+  "stage_timing_seconds": {
+    "source_acquisition": {
+      "mode": "FRESH",
+      "seconds": 61
+    },
+    "lean_production": {
+      "mode": "FRESH",
+      "seconds": 18
+    },
+    "fixture:ClassicInterferenceBoundFpGlobalInterface": {
+      "mode": "FRESH",
+      "seconds": 4
+    },
+    "lean_type_audit": {
+      "mode": "FRESH",
+      "seconds": 2
+    },
+    "lean_build": {
+      "mode": "FRESH",
+      "seconds": 30
+    },
+    "export": {
+      "mode": "FRESH",
+      "seconds": 6
+    },
+    "rocq_import": {
+      "mode": "FRESH",
+      "seconds": 4
+    },
+    "certificate_compile": {
+      "mode": "COMPILED=0;REUSED=9",
+      "seconds": 0
+    },
+    "imported_type_audit": {
+      "mode": "FRESH",
+      "seconds": 0
+    },
+    "lean_axiom_audit": {
+      "mode": "FRESH",
+      "seconds": 0
+    },
+    "assumption_audit": {
+      "mode": "FRESH",
+      "seconds": 0
+    }
+  },
+  "certificates": {
+    "ClassicInterferenceBoundFpGlobalNatSub": {
+      "source_sha256": "690950529646e5accac80044cd9ecd26a105b12f32cf16e97415dca4a62a11a9",
+      "vo_sha256": "9f1f3c3a49a78d75682133873704415ed8f5017a3b2d00752fde7f8ae320fa24"
+    },
+    "ClassicInterferenceBoundFpGlobalOps": {
+      "source_sha256": "a36f28c0c73108e052e698bad66ff83f6d371643c59d0617c98f0d3d4ff3396f",
+      "vo_sha256": "06d5c3f51b43a5a9cc817b9812e1d1c15cc541397902eaf7ba3538b7ba6d080f"
+    },
+    "ClassicInterferenceBoundFpGlobalBase": {
+      "source_sha256": "6e5f826fefd5d68386e5679cbf342e3e6fbadad1664ef3a44021435c5ae7ffc3",
+      "vo_sha256": "caa2a13eaa5a649c6f29628871ce602e4503114bc3f5171a970c5ed4221b29ed"
+    },
+    "ClassicInterferenceBoundFpGlobalList": {
+      "source_sha256": "53c56226dd97130c1fa5985e32b0f06bb08fb3397dbbc8d5a258a7ff0747562e",
+      "vo_sha256": "14ccc1b68d208af36a2781db32b137dd92f84d248e6b04341b3e11a4f2b638ee"
+    },
+    "ClassicInterferenceBoundFpGlobalCorrespondence": {
+      "source_sha256": "0f0f605d6081c2b2c01720b562f7faaaa5b435070e09e1eeb909434ec788b846",
+      "vo_sha256": "faf67b861dcc070210a1cb84b3932993f9240641534ea1c2b9996d4ac2f9940d"
+    },
+    "ClassicInterferenceBoundFpGlobalAssumptionAudit": {
+      "source_sha256": "1b3881fc8448b5e077031840b0577b0721977bb6b1e490c1f1d5e9b0882a90e6",
+      "vo_sha256": "f26ceebe53c4637cbfcd28b750bfbcb73a3473b77ec53e46ab326091263023a6"
+    }
+  },
+  "certificate_checkpoints_sha256": "ec28a055fab7ecb8d35eeb118b6e5a8040967b34a5b2e2ef4309b504fa846514",
+  "lean_fixture_provenance_sha256": "5309cae6f172ce1302beaae4f85286506f5af34cd324db1801ba1bc6ab104948",
+  "declarations": [
+    {
+      "source_declaration": "prosa.classic.analysis.global.basic.interference_bound_fp.InterferenceBoundFP.total_interference_bound_fp",
+      "lean_declaration": "Prosa.Classic.Analysis.Global.Basic.InterferenceBoundFp.InterferenceBoundFP.total_interference_bound_fp",
+      "semantic_status": "CERTIFIED_WITH_PROP_SPROP_FOUNDATION",
+      "certificates": [
+        "InterferenceBoundFP_total_interference_bound_fp_correspondence"
+      ],
+      "semantic_premises": [],
+      "source_theorem_dependency": false,
+      "target_theorem_dependency": false,
+      "acceptance": "ACCEPTED_CLASSIC_TRANSLATION"
+    }
+  ],
+  "acceptance": "ACCEPTED_CLASSIC_FILE"
+}

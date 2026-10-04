@@ -1,0 +1,89 @@
+{
+  "rank": 130,
+  "layer": 13,
+  "classic_scope": "full",
+  "slug": "classic_analysis_uni_jitter_fp_rta_comp",
+  "tag": "CUJFPRC",
+  "export_name": "ClassicUniJitterFpRtaComp",
+  "source": "classic/analysis/uni/jitter/fp_rta_comp.v",
+  "production": "Prosa/Classic/Analysis/Uni/Jitter/FpRtaComp.lean",
+  "fixtures": [
+    "ClassicUniJitterFpRtaCompInterface"
+  ],
+  "export_module": "Validation.fixtures.translation_order.ClassicUniJitterFpRtaCompInterface",
+  "interface_theorems": [
+    "Prosa.Validation.ClassicUniJitterFpRtaCompInterface.bigCat_range'",
+    "Prosa.Validation.ClassicUniJitterFpRtaCompInterface.production_sumSeq_nil",
+    "Prosa.Validation.ClassicUniJitterFpRtaCompInterface.production_sumSeq_cons",
+    "Prosa.Validation.ClassicUniJitterFpRtaCompInterface.production_sumFiltered_nil",
+    "Prosa.Validation.ClassicUniJitterFpRtaCompInterface.production_sumFiltered_cons_true",
+    "Prosa.Validation.ClassicUniJitterFpRtaCompInterface.production_sumFiltered_cons_false",
+    "Prosa.Validation.DivModInterface.production_div_floor_eq",
+    "Prosa.Validation.DivModInterface.production_div_ceil_eq",
+    "Prosa.Validation.DivModInterface.production_div_add_mod",
+    "Prosa.Validation.DivModInterface.production_mod_lt",
+    "Prosa.Validation.DivModInterface.production_div_zero",
+    "Prosa.Validation.DivModInterface.production_mod_zero",
+    "Prosa.Validation.DivModInterface.production_dvd_iff_mod_eq_zero"
+  ],
+  "computational": [
+    "ResponseTimeIterationFP.max_steps",
+    "ResponseTimeIterationFP.per_task_rta",
+    "ResponseTimeIterationFP.fp_claimed_bounds",
+    "ResponseTimeIterationFP.fp_schedulable"
+  ],
+  "chain": [
+    "ClassicUniJitterFpRtaCompBase",
+    "ClassicUniJitterFpRtaCompList",
+    "ClassicUniJitterFpRtaCompCorrespondence"
+  ],
+  "principal": {},
+  "helpers": [],
+  "base_run": null,
+  "base_checks": [],
+  "previous_status": "classic_analysis_uni_jitter_fp_rta_theory_module_status.json",
+  "input_relations": [
+    "job and task types: eqTypes identified, Lean DecidableEq instances = the eqTypes' decision procedures; job_task identified",
+    "times by SubNatRel; job/task parameters pointwise through SubNatRel; task sequences elementwise; FP policies pointwise on Booleans; arrival sequences pointwise on related times (two-way totals)",
+    "uniprocessor schedules pointwise on related times through the option map (two-way totals)"
+  ],
+  "lean_representation_note": "the Rocq module ResponseTimeIterationFP is a namespace; `seq` is `List`; the section-local `Let is_valid_bound` is the LEAN_HELPER `is_valid_bound`; `pmap` is `List.filterMap`; `all` with the option-to-bool coercion is `List.all` with `Option.isSome`; `x \\In o` is `optIn x o`; `fp_schedulable` is `!decide (_ = none)`",
+  "prop_sprop_foundation": [
+    "PropSPropFoundation.interpret_strict"
+  ],
+  "importer_foundation": [
+    "ImportedClassicUniJitterFpRtaComp.propext",
+    "PrimInt63.eqb",
+    "PrimInt63.int",
+    "PrimInt63.land",
+    "PrimInt63.lsr"
+  ],
+  "rocq_sprop_uip": [
+    "ClassicUniJitterFpRtaCompBase.I.HEq_inst1",
+    "ClassicUniJitterFpRtaCompBase.I.True",
+    "I.HEq",
+    "I.HEq_inst1",
+    "I.True",
+    "Lean.eq",
+    "Lean.eq_inst1",
+    "SubadditivityNatCorrespondence.SubNatTrue"
+  ],
+  "normalization": {
+    "theorem_types": [],
+    "subexpression_heads": [
+      "Finset.sum"
+    ],
+    "definition_bodies": [],
+    "body_projections": [
+      "Prosa.Classic.Model.Schedule.Uni.Schedule.UniprocessorSchedule.service_during=Prosa.Validation.ClassicUniJitterFpRtaCompInterface.service_during_proj=Prosa.Validation.ClassicUniJitterFpRtaCompInterface.service_during_proj_guard",
+      "Prosa.Classic.Model.Schedule.Uni.Schedule.UniprocessorSchedule.total_service_during=Prosa.Validation.ClassicUniJitterFpRtaCompInterface.total_service_during_proj=Prosa.Validation.ClassicUniJitterFpRtaCompInterface.total_service_during_proj_guard"
+    ]
+  },
+  "export_env": {
+    "LEAN4EXPORT_PRESERVE_REDUCIBLE_THEOREM_TYPES": "1",
+    "LEAN4EXPORT_NAT_INDEX_ALIASES": "Prosa.Classic.Model.Time.Time.time"
+  },
+  "kernel_guard_artifacts": [
+    "Validation/fixtures/translation_order/ClassicUniJitterFpRtaCompInterface.lean"
+  ]
+}
