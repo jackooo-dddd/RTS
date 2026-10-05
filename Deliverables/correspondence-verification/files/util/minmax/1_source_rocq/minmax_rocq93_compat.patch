@@ -1,0 +1,11 @@
+--- a/util/minmax.v
++++ b/util/minmax.v
+@@ -1,6 +1,8 @@
+ From mathcomp Require Import ssreflect ssrbool eqtype ssrnat seq fintype bigop.
+ Require Export prosa.util.notation prosa.util.nat prosa.util.list prosa.util.setoid.
+ 
++Local Ltac done := solve [ Corelib.ssr.ssreflect_rw.done | eauto 4 with basic_rt_facts ].
++
+ (** * Additional Lemmas about [\max]. *)
+ 
+ (** Given a function [F], a predicate [P], and a sequence [xs], we

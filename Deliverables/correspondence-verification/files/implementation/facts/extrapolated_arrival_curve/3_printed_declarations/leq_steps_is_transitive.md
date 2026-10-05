@@ -1,0 +1,39 @@
+# `leq_steps_is_transitive`
+
+- Kind (Rocq): Lemma
+- Rocq: `prosa.implementation.facts.extrapolated_arrival_curve.leq_steps_is_transitive`
+- Lean: `Prosa.Implementation.Facts.ExtrapolatedArrivalCurve.leq_steps_is_transitive`
+- Certificate: `facts_leq_steps_is_transitive_certificate`
+
+## Official Rocq
+
+```coq
+leq_steps_is_transitive : @transitive (nat * nat) leq_steps
+
+leq_steps_is_transitive is not universe polymorphic
+Arguments leq_steps_is_transitive y x z _ _
+leq_steps_is_transitive is opaque
+Expands to: Constant prosa.implementation.facts.extrapolated_arrival_curve.leq_steps_is_transitive
+Declared in library prosa.implementation.facts.extrapolated_arrival_curve, line 28, characters 6-29
+leq_steps_is_transitive
+     : @transitive (nat * nat) leq_steps
+```
+
+## Lean
+
+```lean
+Prosa.Implementation.Facts.ExtrapolatedArrivalCurve.leq_steps_is_transitive : ∀ (a b c : ℕ × ℕ),
+  Prosa.Implementation.Definitions.ExtrapolatedArrivalCurve.leq_steps a b = true →
+    Prosa.Implementation.Definitions.ExtrapolatedArrivalCurve.leq_steps b c = true →
+      Prosa.Implementation.Definitions.ExtrapolatedArrivalCurve.leq_steps a c = true
+```
+
+## Lean, imported into Rocq
+
+```coq
+Prosa_Implementation_Facts_ExtrapolatedArrivalCurve_leq_steps_is_transitive
+     : forall a b c : Prod_inst3 Nat Nat,
+       @eq Bool (Prosa_Implementation_Definitions_ExtrapolatedArrivalCurve_leq_steps a b) Bool_true ->
+       @eq Bool (Prosa_Implementation_Definitions_ExtrapolatedArrivalCurve_leq_steps b c) Bool_true ->
+       @eq Bool (Prosa_Implementation_Definitions_ExtrapolatedArrivalCurve_leq_steps a c) Bool_true
+```

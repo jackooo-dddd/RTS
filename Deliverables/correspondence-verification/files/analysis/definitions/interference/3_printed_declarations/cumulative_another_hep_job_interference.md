@@ -1,0 +1,130 @@
+# `cumulative_another_hep_job_interference`
+
+- Kind (Rocq): Definition
+- Rocq: `prosa.analysis.definitions.interference.cumulative_another_hep_job_interference`
+- Lean: `Prosa.Analysis.Definitions.Interference.cumulative_another_hep_job_interference`
+- Certificate: `cumulative_another_hep_job_interference_correspondence`
+
+## Official Rocq
+
+```coq
+cumulative_another_hep_job_interference :
+forall {Job : JobType} {PState : ProcessorState Job},
+arrival_sequence Job ->
+@schedule Job PState -> JLFP_policy Job -> Equality.sort Job -> instant -> instant -> nat
+
+cumulative_another_hep_job_interference is not universe polymorphic
+Arguments cumulative_another_hep_job_interference {Job PState} arr_seq sched {JLFP} j t1 t2
+cumulative_another_hep_job_interference is transparent
+Expands to: Constant prosa.analysis.definitions.interference.cumulative_another_hep_job_interference
+Declared in library prosa.analysis.definitions.interference, line 115, characters 15-54
+@cumulative_another_hep_job_interference
+     : forall (Job : JobType) (PState : ProcessorState Job),
+       arrival_sequence Job ->
+       @schedule Job PState -> JLFP_policy Job -> Equality.sort Job -> instant -> instant -> nat
+```
+
+Body:
+
+```coq
+cumulative_another_hep_job_interference =
+fun (Job : JobType) (PState : ProcessorState Job) (arr_seq : arrival_sequence Job)
+  (sched : @schedule Job PState) (JLFP : JLFP_policy Job) (j : Equality.sort Job) 
+  (t1 t2 : instant) =>
+\sum_(t1 <= t < t2) nat_of_bool (@another_hep_job_interference Job PState arr_seq sched JLFP j t)
+     : forall {Job : JobType} {PState : ProcessorState Job},
+       arrival_sequence Job ->
+       @schedule Job PState -> JLFP_policy Job -> Equality.sort Job -> instant -> instant -> nat
+
+Arguments cumulative_another_hep_job_interference {Job PState} arr_seq sched {JLFP} j t1 t2
+```
+
+## Lean
+
+```lean
+@Prosa.Analysis.Definitions.Interference.cumulative_another_hep_job_interference : {Job : Prosa.Behavior.Job.JobType} →
+  [inst : DecidableEq Job] →
+    {PState : Prosa.Behavior.Schedule.ProcessorState Job} →
+      Prosa.Behavior.Arrival_sequence.arrival_sequence Job →
+        Prosa.Behavior.Schedule.schedule PState →
+          [Prosa.Model.Priority.Definitions.JLFP_policy Job] →
+            Job → Prosa.Behavior.Time.instant → Prosa.Behavior.Time.instant → ℕ
+```
+
+Body:
+
+```lean
+def Prosa.Analysis.Definitions.Interference.cumulative_another_hep_job_interference.{u_1, u_2, u_3} : {Job :
+    Prosa.Behavior.Job.JobType} →
+  [inst : DecidableEq Job] →
+    {PState : Prosa.Behavior.Schedule.ProcessorState Job} →
+      Prosa.Behavior.Arrival_sequence.arrival_sequence Job →
+        Prosa.Behavior.Schedule.schedule PState →
+          [Prosa.Model.Priority.Definitions.JLFP_policy Job] →
+            Job → Prosa.Behavior.Time.instant → Prosa.Behavior.Time.instant → ℕ :=
+fun {Job} [DecidableEq Job] {PState} arr_seq sched [Prosa.Model.Priority.Definitions.JLFP_policy Job] j t1 t2 =>
+  Prosa.Util.Sum.sumSeq (List.range' t1 (t2 - t1)) fun t =>
+    (Prosa.Analysis.Definitions.Interference.another_hep_job_interference arr_seq sched j t).toNat
+```
+
+## Lean, imported into Rocq
+
+```coq
+Prosa_Analysis_Definitions_Interference_cumulative_another_hep_job_interference
+     : forall (Job : Prosa_Behavior_Job_JobType)
+         (inst_3 : DecidableEq Job)
+         (PState : Prosa_Behavior_Schedule_ProcessorState Job
+                     inst_3),
+       Prosa_Behavior_Arrival_sequence_arrival_sequence Job
+         inst_3 ->
+       Prosa_Behavior_Schedule_schedule Job
+         inst_3 PState ->
+       Prosa_Model_Priority_Definitions_JLFP_policy Job
+         inst_3 ->
+       Job -> Prosa_Behavior_Time_instant -> Prosa_Behavior_Time_instant -> Nat
+```
+
+Body:
+
+```coq
+Prosa_Analysis_Definitions_Interference_cumulative_another_hep_job_interference@{u_1 u_2 u_3 Lean.u_1+1.0
+Lean.max__u_1+1_u_2+2_u_3+2.0 Lean.u_2+1.0 Lean.u_3+1.0 Lean.u_1+2.0 Lean.u_3+2.0} =
+fun (Job : Prosa_Behavior_Job_JobType)
+  (inst_3 : DecidableEq Job)
+  (PState : Prosa_Behavior_Schedule_ProcessorState Job
+              inst_3)
+  (arr_seq : Prosa_Behavior_Arrival_sequence_arrival_sequence Job
+               inst_3)
+  (sched : Prosa_Behavior_Schedule_schedule Job
+             inst_3 PState)
+  (inst_12 : 
+   Prosa_Model_Priority_Definitions_JLFP_policy Job
+     inst_3)
+  (j : Job) (t1 t2 : Prosa_Behavior_Time_instant) =>
+Prosa_Util_Sum_sumSeq_inst1 Nat
+  (List_range' t1
+     (HSub_hSub_inst7 Prosa_Behavior_Time_instant Prosa_Behavior_Time_instant Prosa_Behavior_Time_instant
+        (instHSub_inst1 Prosa_Behavior_Time_instant instSubNat) t2 t1)
+     (OfNat_ofNat_inst1 Nat 1 (instOfNatNat 1)))
+  (fun t : Nat =>
+   Bool_toNat
+     (Prosa_Analysis_Definitions_Interference_another_hep_job_interference Job
+        inst_3 PState arr_seq sched
+        inst_12 j t))
+     : forall (Job : Prosa_Behavior_Job_JobType)
+         (inst_3 : DecidableEq Job)
+         (PState : Prosa_Behavior_Schedule_ProcessorState Job
+                     inst_3),
+       Prosa_Behavior_Arrival_sequence_arrival_sequence Job
+         inst_3 ->
+       Prosa_Behavior_Schedule_schedule Job
+         inst_3 PState ->
+       Prosa_Model_Priority_Definitions_JLFP_policy Job
+         inst_3 ->
+       Job -> Prosa_Behavior_Time_instant -> Prosa_Behavior_Time_instant -> Nat
+
+Arguments Prosa_Analysis_Definitions_Interference_cumulative_another_hep_job_interference 
+  Job inst_3 
+  PState arr_seq sched inst_12 
+  j t1 t2
+```

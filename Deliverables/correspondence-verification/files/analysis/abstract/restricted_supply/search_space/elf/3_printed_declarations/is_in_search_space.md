@@ -1,0 +1,343 @@
+# `is_in_search_space`
+
+- Kind (Rocq): Definition
+- Rocq: `prosa.analysis.abstract.restricted_supply.search_space.elf.is_in_search_space`
+- Lean: `Prosa.Analysis.Abstract.RestrictedSupply.SearchSpace.Elf.is_in_search_space`
+- Certificate: `is_in_search_space_correspondence`
+
+## Official Rocq
+
+```coq
+is_in_search_space :
+forall {Task : TaskType},
+TaskCost Task ->
+TaskMaxNonpreemptiveSegment Task ->
+PriorityPoint Task ->
+seq (Equality.sort Task) ->
+MaxArrivals Task -> FP_policy Task -> Equality.sort Task -> duration -> duration -> bool
+
+is_in_search_space is not universe polymorphic
+Arguments is_in_search_space {Task H H1 H2} ts%seq_scope {H3 FP} tsk L A
+is_in_search_space is transparent
+Expands to: Constant prosa.analysis.abstract.restricted_supply.search_space.elf.is_in_search_space
+Declared in library prosa.analysis.abstract.restricted_supply.search_space.elf, line 75, characters 13-31
+@is_in_search_space
+     : forall Task : TaskType,
+       TaskCost Task ->
+       TaskMaxNonpreemptiveSegment Task ->
+       PriorityPoint Task ->
+       seq (Equality.sort Task) ->
+       MaxArrivals Task -> FP_policy Task -> Equality.sort Task -> duration -> duration -> bool
+```
+
+Body:
+
+```coq
+is_in_search_space =
+fun (Task : TaskType) (H : TaskCost Task) (H1 : TaskMaxNonpreemptiveSegment Task) 
+  (H2 : PriorityPoint Task) (ts : seq (Equality.sort Task)) (H3 : MaxArrivals Task) 
+  (FP : FP_policy Task) (tsk : Equality.sort Task) (L : duration) =>
+let task_rbf := @task_request_bound_function Task H H3 tsk in
+let task_rbf_changes_at := fun A : duration => task_rbf A != task_rbf (A + 1) in
+let bound_on_ep_task_workload_changes_at :=
+  fun A : duration =>
+  let new_hep_job_released_by :=
+    fun tsko : Equality.sort Task =>
+    @ep_task Task FP tsk tsko && (tsko != tsk) &&
+    (@ep_task_interfering_interval_length Task H2 tsk tsko (A - 1)
+     != @ep_task_interfering_interval_length Task H2 tsk tsko A)
+    in
+  @has (Equality.sort Task) new_hep_job_released_by ts in
+let blocking_bound_changes_at :=
+  fun A : duration =>
+  @blocking_bound Task H H1 H2 ts H3 FP tsk (A - 1) != @blocking_bound Task H H1 H2 ts H3 FP tsk A in
+fun A : duration =>
+(A < L) && (blocking_bound_changes_at A || task_rbf_changes_at A || bound_on_ep_task_workload_changes_at A)
+     : forall {Task : TaskType},
+       TaskCost Task ->
+       TaskMaxNonpreemptiveSegment Task ->
+       PriorityPoint Task ->
+       seq (Equality.sort Task) ->
+       MaxArrivals Task -> FP_policy Task -> Equality.sort Task -> duration -> duration -> bool
+
+Arguments is_in_search_space {Task H H1 H2} ts%seq_scope {H3 FP} tsk L A
+```
+
+## Lean
+
+```lean
+@Prosa.Analysis.Abstract.RestrictedSupply.SearchSpace.Elf.is_in_search_space : {Task :
+    Prosa.Model.Task.Concept.TaskType} →
+  [inst : DecidableEq Task] →
+    [Prosa.Model.Task.Concept.TaskCost Task] →
+      [Prosa.Model.Task.Preemption.Parameters.TaskMaxNonpreemptiveSegment Task] →
+        [Prosa.Model.Priority.Gel.PriorityPoint Task] →
+          List Task →
+            [Prosa.Model.Task.Arrival.Curves.MaxArrivals Task] →
+              [FP : Prosa.Model.Priority.Definitions.FP_policy Task] →
+                Task → Prosa.Behavior.Time.duration → Prosa.Behavior.Time.duration → Bool
+```
+
+Body:
+
+```lean
+def Prosa.Analysis.Abstract.RestrictedSupply.SearchSpace.Elf.is_in_search_space.{u_1} : {Task :
+    Prosa.Model.Task.Concept.TaskType} →
+  [inst : DecidableEq Task] →
+    [Prosa.Model.Task.Concept.TaskCost Task] →
+      [Prosa.Model.Task.Preemption.Parameters.TaskMaxNonpreemptiveSegment Task] →
+        [Prosa.Model.Priority.Gel.PriorityPoint Task] →
+          List Task →
+            [Prosa.Model.Task.Arrival.Curves.MaxArrivals Task] →
+              [FP : Prosa.Model.Priority.Definitions.FP_policy Task] →
+                Task → Prosa.Behavior.Time.duration → Prosa.Behavior.Time.duration → Bool :=
+fun {Task} [DecidableEq Task] [Prosa.Model.Task.Concept.TaskCost Task]
+    [Prosa.Model.Task.Preemption.Parameters.TaskMaxNonpreemptiveSegment Task]
+    [Prosa.Model.Priority.Gel.PriorityPoint Task] ts [Prosa.Model.Task.Arrival.Curves.MaxArrivals Task]
+    [Prosa.Model.Priority.Definitions.FP_policy Task] tsk L A =>
+  decide (A < L) &&
+    (decide
+          (Prosa.Analysis.Definitions.BlockingBound.Elf.blocking_bound ts tsk (A - 1) ≠
+            Prosa.Analysis.Definitions.BlockingBound.Elf.blocking_bound ts tsk A) ||
+        decide
+          (Prosa.Analysis.Definitions.RequestBoundFunction.task_request_bound_function tsk A ≠
+            Prosa.Analysis.Definitions.RequestBoundFunction.task_request_bound_function tsk (A + 1)) ||
+      ts.any fun tsko =>
+        Prosa.Model.Priority.Definitions.ep_task tsk tsko && decide (tsko ≠ tsk) &&
+          decide
+            (Prosa.Analysis.Definitions.Workload.ElfAthepBound.ep_task_interfering_interval_length tsk tsko (A - 1) ≠
+              Prosa.Analysis.Definitions.Workload.ElfAthepBound.ep_task_interfering_interval_length tsk tsko A))
+```
+
+## Lean, imported into Rocq
+
+```coq
+Prosa_Analysis_Abstract_RestrictedSupply_SearchSpace_Elf_is_in_search_space
+     : forall (Task : Prosa_Model_Task_Concept_TaskType)
+         (inst_3 : 
+          DecidableEq Task),
+       Prosa_Model_Task_Concept_TaskCost Task
+         inst_3 ->
+       Prosa_Model_Task_Preemption_Parameters_TaskMaxNonpreemptiveSegment Task
+         inst_3 ->
+       Prosa_Model_Priority_Gel_PriorityPoint Task
+         inst_3 ->
+       List Task ->
+       Prosa_Model_Task_Arrival_Curves_MaxArrivals Task
+         inst_3 ->
+       Prosa_Model_Priority_Definitions_FP_policy Task
+         inst_3 ->
+       Task -> Prosa_Behavior_Time_duration -> Prosa_Behavior_Time_duration -> Bool
+```
+
+Body:
+
+```coq
+Prosa_Analysis_Abstract_RestrictedSupply_SearchSpace_Elf_is_in_search_space@{u_1 Lean.u_1+1.0 Lean.u_1+2.0} =
+fun (Task : Prosa_Model_Task_Concept_TaskType)
+  (inst_3 : 
+   DecidableEq Task)
+  (inst_6 : 
+   Prosa_Model_Task_Concept_TaskCost Task
+     inst_3)
+  (inst_9 : 
+   Prosa_Model_Task_Preemption_Parameters_TaskMaxNonpreemptiveSegment Task
+     inst_3)
+  (inst_12 : 
+   Prosa_Model_Priority_Gel_PriorityPoint Task
+     inst_3)
+  (ts : List Task)
+  (inst_17 : 
+   Prosa_Model_Task_Arrival_Curves_MaxArrivals Task
+     inst_3)
+  (FP : Prosa_Model_Priority_Definitions_FP_policy Task
+          inst_3)
+  (tsk : Task) (L A : Prosa_Behavior_Time_duration) =>
+Bool_and (Decidable_decide (LT_lt_inst1 Prosa_Behavior_Time_duration instLTNat A L) (Nat_decLt A L))
+  (Bool_or
+     (Bool_or
+        (Decidable_decide
+           (Ne Nat
+              (Prosa_Analysis_Definitions_BlockingBound_Elf_blocking_bound Task
+                 inst_3
+                 inst_6
+                 inst_9
+                 inst_12
+                 ts
+                 inst_17
+                 FP tsk
+                 (HSub_hSub_inst7 Prosa_Behavior_Time_duration Prosa_Behavior_Time_duration
+                    Prosa_Behavior_Time_duration (instHSub_inst1 Prosa_Behavior_Time_duration instSubNat) A
+                    (OfNat_ofNat_inst1 Prosa_Behavior_Time_duration 1 (instOfNatNat 1))))
+              (Prosa_Analysis_Definitions_BlockingBound_Elf_blocking_bound Task
+                 inst_3
+                 inst_6
+                 inst_9
+                 inst_12
+                 ts
+                 inst_17
+                 FP tsk A))
+           (instDecidableNot
+              (@eq Nat
+                 (Prosa_Analysis_Definitions_BlockingBound_Elf_blocking_bound Task
+                    inst_3
+                    inst_6
+                    inst_9
+                    inst_12
+                    ts
+                    inst_17
+                    FP tsk
+                    (HSub_hSub_inst7 Prosa_Behavior_Time_duration Prosa_Behavior_Time_duration
+                       Prosa_Behavior_Time_duration (instHSub_inst1 Prosa_Behavior_Time_duration instSubNat)
+                       A (OfNat_ofNat_inst1 Prosa_Behavior_Time_duration 1 (instOfNatNat 1))))
+                 (Prosa_Analysis_Definitions_BlockingBound_Elf_blocking_bound Task
+                    inst_3
+                    inst_6
+                    inst_9
+                    inst_12
+                    ts
+                    inst_17
+                    FP tsk A))
+              (instDecidableEqNat
+                 (Prosa_Analysis_Definitions_BlockingBound_Elf_blocking_bound Task
+                    inst_3
+                    inst_6
+                    inst_9
+                    inst_12
+                    ts
+                    inst_17
+                    FP tsk
+                    (HSub_hSub_inst7 Prosa_Behavior_Time_duration Prosa_Behavior_Time_duration
+                       Prosa_Behavior_Time_duration (instHSub_inst1 Prosa_Behavior_Time_duration instSubNat)
+                       A (OfNat_ofNat_inst1 Prosa_Behavior_Time_duration 1 (instOfNatNat 1))))
+                 (Prosa_Analysis_Definitions_BlockingBound_Elf_blocking_bound Task
+                    inst_3
+                    inst_6
+                    inst_9
+                    inst_12
+                    ts
+                    inst_17
+                    FP tsk A))))
+        (Decidable_decide
+           (Ne Nat
+              (Prosa_Analysis_Definitions_RequestBoundFunction_task_request_bound_function Task
+                 inst_3
+                 inst_6
+                 inst_17
+                 tsk A)
+              (Prosa_Analysis_Definitions_RequestBoundFunction_task_request_bound_function Task
+                 inst_3
+                 inst_6
+                 inst_17
+                 tsk
+                 (HAdd_hAdd_inst7 Prosa_Behavior_Time_duration Prosa_Behavior_Time_duration
+                    Prosa_Behavior_Time_duration (instHAdd_inst1 Prosa_Behavior_Time_duration instAddNat) A
+                    (OfNat_ofNat_inst1 Prosa_Behavior_Time_duration 1 (instOfNatNat 1)))))
+           (instDecidableNot
+              (@eq Nat
+                 (Prosa_Analysis_Definitions_RequestBoundFunction_task_request_bound_function Task
+                    inst_3
+                    inst_6
+                    inst_17
+                    tsk A)
+                 (Prosa_Analysis_Definitions_RequestBoundFunction_task_request_bound_function Task
+                    inst_3
+                    inst_6
+                    inst_17
+                    tsk
+                    (HAdd_hAdd_inst7 Prosa_Behavior_Time_duration Prosa_Behavior_Time_duration
+                       Prosa_Behavior_Time_duration (instHAdd_inst1 Prosa_Behavior_Time_duration instAddNat)
+                       A (OfNat_ofNat_inst1 Prosa_Behavior_Time_duration 1 (instOfNatNat 1)))))
+              (instDecidableEqNat
+                 (Prosa_Analysis_Definitions_RequestBoundFunction_task_request_bound_function Task
+                    inst_3
+                    inst_6
+                    inst_17
+                    tsk A)
+                 (Prosa_Analysis_Definitions_RequestBoundFunction_task_request_bound_function Task
+                    inst_3
+                    inst_6
+                    inst_17
+                    tsk
+                    (HAdd_hAdd_inst7 Prosa_Behavior_Time_duration Prosa_Behavior_Time_duration
+                       Prosa_Behavior_Time_duration (instHAdd_inst1 Prosa_Behavior_Time_duration instAddNat)
+                       A (OfNat_ofNat_inst1 Prosa_Behavior_Time_duration 1 (instOfNatNat 1))))))))
+     (List_any Task ts
+        (fun tsko : Task =>
+         Bool_and
+           (Bool_and
+              (Prosa_Model_Priority_Definitions_ep_task Task
+                 inst_3
+                 FP tsk tsko)
+              (Decidable_decide (Ne Task tsko tsk)
+                 (instDecidableNot (@eq Task tsko tsk)
+                    (inst_3
+                       tsko tsk))))
+           (Decidable_decide
+              (Ne Int
+                 (Prosa_Analysis_Definitions_Workload_ElfAthepBound_ep_task_interfering_interval_length Task
+                    inst_3
+                    inst_12
+                    tsk tsko
+                    (HSub_hSub_inst7 Prosa_Behavior_Time_duration Prosa_Behavior_Time_duration
+                       Prosa_Behavior_Time_duration (instHSub_inst1 Prosa_Behavior_Time_duration instSubNat)
+                       A (OfNat_ofNat_inst1 Prosa_Behavior_Time_duration 1 (instOfNatNat 1))))
+                 (Prosa_Analysis_Definitions_Workload_ElfAthepBound_ep_task_interfering_interval_length Task
+                    inst_3
+                    inst_12
+                    tsk tsko A))
+              (instDecidableNot
+                 (@eq Int
+                    (Prosa_Analysis_Definitions_Workload_ElfAthepBound_ep_task_interfering_interval_length
+                       Task
+                       inst_3
+                       inst_12
+                       tsk tsko
+                       (HSub_hSub_inst7 Prosa_Behavior_Time_duration Prosa_Behavior_Time_duration
+                          Prosa_Behavior_Time_duration
+                          (instHSub_inst1 Prosa_Behavior_Time_duration instSubNat) A
+                          (OfNat_ofNat_inst1 Prosa_Behavior_Time_duration 1 (instOfNatNat 1))))
+                    (Prosa_Analysis_Definitions_Workload_ElfAthepBound_ep_task_interfering_interval_length
+                       Task
+                       inst_3
+                       inst_12
+                       tsk tsko A))
+                 (Int_instDecidableEq
+                    (Prosa_Analysis_Definitions_Workload_ElfAthepBound_ep_task_interfering_interval_length
+                       Task
+                       inst_3
+                       inst_12
+                       tsk tsko
+                       (HSub_hSub_inst7 Prosa_Behavior_Time_duration Prosa_Behavior_Time_duration
+                          Prosa_Behavior_Time_duration
+                          (instHSub_inst1 Prosa_Behavior_Time_duration instSubNat) A
+                          (OfNat_ofNat_inst1 Prosa_Behavior_Time_duration 1 (instOfNatNat 1))))
+                    (Prosa_Analysis_Definitions_Workload_ElfAthepBound_ep_task_interfering_interval_length
+                       Task
+                       inst_3
+                       inst_12
+                       tsk tsko A)))))))
+     : forall (Task : Prosa_Model_Task_Concept_TaskType)
+         (inst_3 : 
+          DecidableEq Task),
+       Prosa_Model_Task_Concept_TaskCost Task
+         inst_3 ->
+       Prosa_Model_Task_Preemption_Parameters_TaskMaxNonpreemptiveSegment Task
+         inst_3 ->
+       Prosa_Model_Priority_Gel_PriorityPoint Task
+         inst_3 ->
+       List Task ->
+       Prosa_Model_Task_Arrival_Curves_MaxArrivals Task
+         inst_3 ->
+       Prosa_Model_Priority_Definitions_FP_policy Task
+         inst_3 ->
+       Task -> Prosa_Behavior_Time_duration -> Prosa_Behavior_Time_duration -> Bool
+
+Arguments Prosa_Analysis_Abstract_RestrictedSupply_SearchSpace_Elf_is_in_search_space 
+  Task inst_3
+  inst_6
+  inst_9
+  inst_12 
+  ts inst_17 
+  FP tsk L R
+```

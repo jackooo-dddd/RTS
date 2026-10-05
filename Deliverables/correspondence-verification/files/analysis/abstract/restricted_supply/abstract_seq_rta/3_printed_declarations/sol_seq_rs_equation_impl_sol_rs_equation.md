@@ -1,0 +1,359 @@
+# `sol_seq_rs_equation_impl_sol_rs_equation`
+
+- Kind (Rocq): Lemma
+- Rocq: `prosa.analysis.abstract.restricted_supply.abstract_seq_rta.sol_seq_rs_equation_impl_sol_rs_equation`
+- Lean: `Prosa.Analysis.Abstract.RestrictedSupply.AbstractSeqRta.sol_seq_rs_equation_impl_sol_rs_equation`
+- Certificate: `sol_seq_rs_equation_impl_sol_rs_equation_correspondence`
+
+## Official Rocq
+
+```coq
+sol_seq_rs_equation_impl_sol_rs_equation :
+forall {Task : TaskType} {H : TaskCost Task} {H0 : TaskRunToCompletionThreshold Task} 
+  {Job : JobType} {H1 : JobTask Job Task} {jc : JobCost Job} {H3 : JobPreemptable Job}
+  (arr_seq : arrival_sequence Job) (ts : seq (Equality.sort Task)) (tsk : Equality.sort Task),
+is_true (tsk \in ts) ->
+@valid_task_run_to_completion_threshold Task H Job H1 jc H3 H0 arr_seq tsk ->
+forall {H4 : MaxArrivals Task},
+@valid_taskset_arrival_curve Task ts (@max_arrivals Task H4) ->
+forall (L : duration) {SBF : SupplyBoundFunction} (task_intra_IBF : duration -> duration -> duration)
+  (R : duration),
+(forall A : duration,
+ is_in_search_space L
+   (fun A0 Δ : duration =>
+    @task_request_bound_function Task H H4 tsk (A0 + 1) - @task_cost Task H tsk + task_intra_IBF A0 Δ)
+   A ->
+ exists F : duration,
+   is_true (F <= A + R) /\
+   is_true
+     (@task_request_bound_function Task H H4 tsk (A + 1) - (@task_cost Task H tsk - @task_rtct Task H0 tsk) +
+      task_intra_IBF A F <= SBF F) /\
+   is_true (SBF F + (@task_cost Task H tsk - @task_rtct Task H0 tsk) <= SBF (A + R))) ->
+is_true (0 < @max_arrivals Task H4 tsk 1) ->
+forall A : duration,
+is_in_search_space L
+  (fun (A0 : duration) (Δ : nat) =>
+   Δ - SBF Δ +
+   (fun A1 Δ0 : duration =>
+    @task_request_bound_function Task H H4 tsk (A1 + 1) - @task_cost Task H tsk + task_intra_IBF A1 Δ0) A0 Δ)
+  A ->
+exists F : duration,
+  is_true (F <= A + R) /\
+  is_true
+    (@task_rtct Task H0 tsk +
+     (fun A0 Δ : duration =>
+      @task_request_bound_function Task H H4 tsk (A0 + 1) - @task_cost Task H tsk + task_intra_IBF A0 Δ) A F <=
+     SBF F) /\
+  is_true (SBF F + (@task_cost Task H tsk - @task_rtct Task H0 tsk) <= SBF (A + R))
+
+sol_seq_rs_equation_impl_sol_rs_equation is not universe polymorphic
+Arguments sol_seq_rs_equation_impl_sol_rs_equation {Task H H0 Job H1 jc H3} arr_seq 
+  ts%seq_scope tsk H_tsk_in_ts H_valid_run_to_completion_threshold {H4} H_valid_arrival_curve 
+  L {SBF} task_intra_IBF%function_scope R H_R_is_maximum_seq_rs%function_scope H_arrival_curve_pos 
+  A _
+sol_seq_rs_equation_impl_sol_rs_equation is opaque
+Expands to: Constant
+            prosa.analysis.abstract.restricted_supply.abstract_seq_rta.sol_seq_rs_equation_impl_sol_rs_equation
+Declared in library prosa.analysis.abstract.restricted_supply.abstract_seq_rta, line 200, characters 10-50
+@sol_seq_rs_equation_impl_sol_rs_equation
+     : forall (Task : TaskType) (H : TaskCost Task) (H0 : TaskRunToCompletionThreshold Task) 
+         (Job : JobType) (H1 : JobTask Job Task) (jc : JobCost Job) (H3 : JobPreemptable Job)
+         (arr_seq : arrival_sequence Job) (ts : seq (Equality.sort Task)) (tsk : Equality.sort Task),
+       is_true (tsk \in ts) ->
+       @valid_task_run_to_completion_threshold Task H Job H1 jc H3 H0 arr_seq tsk ->
+       forall H4 : MaxArrivals Task,
+       @valid_taskset_arrival_curve Task ts (@max_arrivals Task H4) ->
+       forall (L : duration) (SBF : SupplyBoundFunction) (task_intra_IBF : duration -> duration -> duration)
+         (R : duration),
+       (forall A : duration,
+        is_in_search_space L
+          (fun A0 Δ : duration =>
+           @task_request_bound_function Task H H4 tsk (A0 + 1) - @task_cost Task H tsk + task_intra_IBF A0 Δ)
+          A ->
+        exists F : duration,
+          is_true (F <= A + R) /\
+          is_true
+            (@task_request_bound_function Task H H4 tsk (A + 1) -
+             (@task_cost Task H tsk - @task_rtct Task H0 tsk) + task_intra_IBF A F <= 
+             SBF F) /\
+          is_true (SBF F + (@task_cost Task H tsk - @task_rtct Task H0 tsk) <= SBF (A + R))) ->
+       is_true (0 < @max_arrivals Task H4 tsk 1) ->
+       forall A : duration,
+       is_in_search_space L
+         (fun (A0 : duration) (Δ : nat) =>
+          Δ - SBF Δ +
+          (@task_request_bound_function Task H H4 tsk (A0 + 1) - @task_cost Task H tsk + task_intra_IBF A0 Δ))
+         A ->
+       exists F : duration,
+         is_true (F <= A + R) /\
+         is_true
+           (@task_rtct Task H0 tsk +
+            (@task_request_bound_function Task H H4 tsk (A + 1) - @task_cost Task H tsk + task_intra_IBF A F) <=
+            SBF F) /\
+         is_true (SBF F + (@task_cost Task H tsk - @task_rtct Task H0 tsk) <= SBF (A + R))
+```
+
+## Lean
+
+```lean
+@Prosa.Analysis.Abstract.RestrictedSupply.AbstractSeqRta.sol_seq_rs_equation_impl_sol_rs_equation : ∀
+  {Task : Prosa.Model.Task.Concept.TaskType} [inst : DecidableEq Task] {Job : Prosa.Behavior.Job.JobType}
+  [inst_1 : DecidableEq Job] [inst_2 : Prosa.Model.Task.Concept.TaskCost Task]
+  [inst_3 : Prosa.Model.Task.Preemption.Parameters.TaskRunToCompletionThreshold Task]
+  [inst_4 : Prosa.Model.Task.Concept.JobTask Job Task] [jc : Prosa.Behavior.Job.JobCost Job]
+  [inst_5 : Prosa.Model.Preemption.Parameter.JobPreemptable Job]
+  (arr_seq : Prosa.Behavior.Arrival_sequence.arrival_sequence Job) (ts : List Task) (tsk : Task),
+  decide (tsk ∈ ts) = true →
+    Prosa.Model.Task.Preemption.Parameters.valid_task_run_to_completion_threshold arr_seq tsk →
+      ∀ [inst_6 : Prosa.Model.Task.Arrival.Curves.MaxArrivals Task],
+        Prosa.Model.Task.Arrival.Curves.valid_taskset_arrival_curve ts Prosa.Model.Task.Arrival.Curves.max_arrivals →
+          ∀ (L : Prosa.Behavior.Time.duration) (SBF : Prosa.Analysis.Definitions.Sbf.SupplyBoundFunction)
+            (task_intra_IBF :
+              Prosa.Behavior.Time.duration → Prosa.Behavior.Time.duration → Prosa.Behavior.Time.duration)
+            (R : Prosa.Behavior.Time.duration),
+            (∀ (A : Prosa.Behavior.Time.duration),
+                Prosa.Analysis.Abstract.SearchSpace.is_in_search_space L
+                    (fun A0 Δ =>
+                      Prosa.Analysis.Definitions.RequestBoundFunction.task_request_bound_function tsk (A0 + 1) -
+                          Prosa.Model.Task.Concept.task_cost tsk +
+                        task_intra_IBF A0 Δ)
+                    A →
+                  ∃ F ≤ A + R,
+                    Prosa.Analysis.Definitions.RequestBoundFunction.task_request_bound_function tsk (A + 1) -
+                            (Prosa.Model.Task.Concept.task_cost tsk -
+                              Prosa.Model.Task.Preemption.Parameters.task_rtct tsk) +
+                          task_intra_IBF A F ≤
+                        Prosa.Analysis.Definitions.Sbf.SupplyBoundFunction.supply_bound_function F ∧
+                      Prosa.Analysis.Definitions.Sbf.SupplyBoundFunction.supply_bound_function F +
+                          (Prosa.Model.Task.Concept.task_cost tsk -
+                            Prosa.Model.Task.Preemption.Parameters.task_rtct tsk) ≤
+                        Prosa.Analysis.Definitions.Sbf.SupplyBoundFunction.supply_bound_function (A + R)) →
+              0 < Prosa.Model.Task.Arrival.Curves.max_arrivals tsk 1 →
+                ∀ (A : Prosa.Behavior.Time.duration),
+                  Prosa.Analysis.Abstract.SearchSpace.is_in_search_space L
+                      (fun A0 Δ =>
+                        Δ - Prosa.Analysis.Definitions.Sbf.SupplyBoundFunction.supply_bound_function Δ +
+                          (Prosa.Analysis.Definitions.RequestBoundFunction.task_request_bound_function tsk (A0 + 1) -
+                              Prosa.Model.Task.Concept.task_cost tsk +
+                            task_intra_IBF A0 Δ))
+                      A →
+                    ∃ F ≤ A + R,
+                      Prosa.Model.Task.Preemption.Parameters.task_rtct tsk +
+                            (Prosa.Analysis.Definitions.RequestBoundFunction.task_request_bound_function tsk (A + 1) -
+                                Prosa.Model.Task.Concept.task_cost tsk +
+                              task_intra_IBF A F) ≤
+                          Prosa.Analysis.Definitions.Sbf.SupplyBoundFunction.supply_bound_function F ∧
+                        Prosa.Analysis.Definitions.Sbf.SupplyBoundFunction.supply_bound_function F +
+                            (Prosa.Model.Task.Concept.task_cost tsk -
+                              Prosa.Model.Task.Preemption.Parameters.task_rtct tsk) ≤
+                          Prosa.Analysis.Definitions.Sbf.SupplyBoundFunction.supply_bound_function (A + R)
+```
+
+## Lean, imported into Rocq
+
+```coq
+Prosa_Analysis_Abstract_RestrictedSupply_AbstractSeqRta_sol_seq_rs_equation_impl_sol_rs_equation
+     : forall (Task : Prosa_Model_Task_Concept_TaskType)
+         (inst_3 : 
+          DecidableEq Task)
+         (Job : Prosa_Behavior_Job_JobType)
+         (inst_7 : 
+          DecidableEq Job)
+         (inst_10 : 
+          Prosa_Model_Task_Concept_TaskCost Task
+            inst_3)
+         (inst_13 : 
+          Prosa_Model_Task_Preemption_Parameters_TaskRunToCompletionThreshold Task
+            inst_3)
+         (inst_16 : 
+          Prosa_Model_Task_Concept_JobTask Job
+            inst_7 Task
+            inst_3)
+         (jc : Prosa_Behavior_Job_JobCost Job
+                 inst_7)
+         (inst_22 : 
+          Prosa_Model_Preemption_Parameter_JobPreemptable Job
+            inst_7)
+         (arr_seq : Prosa_Behavior_Arrival_sequence_arrival_sequence Job
+                      inst_7)
+         (ts : List Task) (tsk : Task),
+       @eq Bool
+         (Decidable_decide (Membership_mem Task (List Task) (List_instMembership Task) ts tsk)
+            (List_instDecidableMemOfLawfulBEq Task
+               (instBEqOfDecidableEq Task
+                  inst_3)
+               (instLawfulBEq Task
+                  inst_3)
+               tsk ts))
+         Bool_true ->
+       Prosa_Model_Task_Preemption_Parameters_valid_task_run_to_completion_threshold Task
+         inst_3
+         inst_10 Job
+         inst_7
+         inst_16 jc
+         inst_22
+         inst_13 arr_seq
+         tsk ->
+       forall
+         inst_49 : 
+          Prosa_Model_Task_Arrival_Curves_MaxArrivals Task
+            inst_3,
+       Prosa_Model_Task_Arrival_Curves_valid_taskset_arrival_curve Task
+         inst_3 ts
+         (Prosa_Model_Task_Arrival_Curves_MaxArrivals_max_arrivals Task
+            inst_3
+            inst_49) ->
+       forall (L : Prosa_Behavior_Time_duration) (SBF : Prosa_Analysis_Definitions_Sbf_SupplyBoundFunction)
+         (task_intra_IBF : Prosa_Behavior_Time_duration ->
+                           Prosa_Behavior_Time_duration -> Prosa_Behavior_Time_duration)
+         (R : Prosa_Behavior_Time_duration),
+       (forall A : Prosa_Behavior_Time_duration,
+        Prosa_Analysis_Abstract_SearchSpace_is_in_search_space L
+          (fun A0 _UU0394_ : Prosa_Behavior_Time_duration =>
+           HAdd_hAdd_inst7 Nat Prosa_Behavior_Time_duration Nat (instHAdd_inst1 Nat instAddNat)
+             (HSub_hSub_inst7 Nat Prosa_Behavior_Time_duration Nat (instHSub_inst1 Nat instSubNat)
+                (Prosa_Analysis_Definitions_RequestBoundFunction_task_request_bound_function Task
+                   inst_3
+                   inst_10
+                   inst_49
+                   tsk
+                   (HAdd_hAdd_inst7 Prosa_Behavior_Time_duration Prosa_Behavior_Time_duration
+                      Prosa_Behavior_Time_duration (instHAdd_inst1 Prosa_Behavior_Time_duration instAddNat)
+                      A0 (OfNat_ofNat_inst1 Prosa_Behavior_Time_duration 1 (instOfNatNat 1))))
+                (Prosa_Model_Task_Concept_TaskCost_task_cost Task
+                   inst_3
+                   inst_10
+                   tsk))
+             (task_intra_IBF A0 _UU0394_))
+          A ->
+        Exists Prosa_Behavior_Time_duration
+          (fun F : Prosa_Behavior_Time_duration =>
+           And
+             (LE_le_inst1 Prosa_Behavior_Time_duration instLENat F
+                (HAdd_hAdd_inst7 Prosa_Behavior_Time_duration Prosa_Behavior_Time_duration
+                   Prosa_Behavior_Time_duration (instHAdd_inst1 Prosa_Behavior_Time_duration instAddNat) A R))
+             (And
+                (LE_le_inst1 Nat instLENat
+                   (HAdd_hAdd_inst7 Nat Prosa_Behavior_Time_duration Nat (instHAdd_inst1 Nat instAddNat)
+                      (HSub_hSub_inst7 Nat Prosa_Behavior_Time_duration Nat (instHSub_inst1 Nat instSubNat)
+                         (Prosa_Analysis_Definitions_RequestBoundFunction_task_request_bound_function Task
+                            inst_3
+                            inst_10
+                            inst_49
+                            tsk
+                            (HAdd_hAdd_inst7 Prosa_Behavior_Time_duration Prosa_Behavior_Time_duration
+                               Prosa_Behavior_Time_duration
+                               (instHAdd_inst1 Prosa_Behavior_Time_duration instAddNat) A
+                               (OfNat_ofNat_inst1 Prosa_Behavior_Time_duration 1 (instOfNatNat 1))))
+                         (HSub_hSub_inst7 Prosa_Behavior_Time_duration Prosa_Behavior_Job_work
+                            Prosa_Behavior_Time_duration
+                            (instHSub_inst1 Prosa_Behavior_Time_duration instSubNat)
+                            (Prosa_Model_Task_Concept_TaskCost_task_cost Task
+                               inst_3
+                               inst_10
+                               tsk)
+                            (Prosa_Model_Task_Preemption_Parameters_TaskRunToCompletionThreshold_task_rtct
+                               Task
+                               inst_3
+                               inst_13
+                               tsk)))
+                      (task_intra_IBF A F))
+                   (Prosa_Analysis_Definitions_Sbf_SupplyBoundFunction_supply_bound_function SBF F))
+                (LE_le_inst1 Prosa_Behavior_Job_work instLENat
+                   (HAdd_hAdd_inst7 Prosa_Behavior_Job_work Prosa_Behavior_Time_duration
+                      Prosa_Behavior_Job_work (instHAdd_inst1 Prosa_Behavior_Job_work instAddNat)
+                      (Prosa_Analysis_Definitions_Sbf_SupplyBoundFunction_supply_bound_function SBF F)
+                      (HSub_hSub_inst7 Prosa_Behavior_Time_duration Prosa_Behavior_Job_work
+                         Prosa_Behavior_Time_duration
+                         (instHSub_inst1 Prosa_Behavior_Time_duration instSubNat)
+                         (Prosa_Model_Task_Concept_TaskCost_task_cost Task
+                            inst_3
+                            inst_10
+                            tsk)
+                         (Prosa_Model_Task_Preemption_Parameters_TaskRunToCompletionThreshold_task_rtct Task
+                            inst_3
+                            inst_13
+                            tsk)))
+                   (Prosa_Analysis_Definitions_Sbf_SupplyBoundFunction_supply_bound_function SBF
+                      (HAdd_hAdd_inst7 Prosa_Behavior_Time_duration Prosa_Behavior_Time_duration
+                         Prosa_Behavior_Time_duration
+                         (instHAdd_inst1 Prosa_Behavior_Time_duration instAddNat) A R)))))) ->
+       LT_lt_inst1 Nat instLTNat (OfNat_ofNat_inst1 Nat 0 (instOfNatNat 0))
+         (Prosa_Model_Task_Arrival_Curves_MaxArrivals_max_arrivals Task
+            inst_3
+            inst_49 tsk
+            (OfNat_ofNat_inst1 Prosa_Behavior_Time_duration 1 (instOfNatNat 1))) ->
+       forall A : Prosa_Behavior_Time_duration,
+       Prosa_Analysis_Abstract_SearchSpace_is_in_search_space L
+         (fun A0 _UU0394_ : Prosa_Behavior_Time_duration =>
+          HAdd_hAdd_inst7 Prosa_Behavior_Time_duration Nat Prosa_Behavior_Time_duration
+            (instHAdd_inst1 Prosa_Behavior_Time_duration instAddNat)
+            (HSub_hSub_inst7 Prosa_Behavior_Time_duration Prosa_Behavior_Job_work
+               Prosa_Behavior_Time_duration (instHSub_inst1 Prosa_Behavior_Time_duration instSubNat) _UU0394_
+               (Prosa_Analysis_Definitions_Sbf_SupplyBoundFunction_supply_bound_function SBF _UU0394_))
+            (HAdd_hAdd_inst7 Nat Prosa_Behavior_Time_duration Nat (instHAdd_inst1 Nat instAddNat)
+               (HSub_hSub_inst7 Nat Prosa_Behavior_Time_duration Nat (instHSub_inst1 Nat instSubNat)
+                  (Prosa_Analysis_Definitions_RequestBoundFunction_task_request_bound_function Task
+                     inst_3
+                     inst_10
+                     inst_49
+                     tsk
+                     (HAdd_hAdd_inst7 Prosa_Behavior_Time_duration Prosa_Behavior_Time_duration
+                        Prosa_Behavior_Time_duration (instHAdd_inst1 Prosa_Behavior_Time_duration instAddNat)
+                        A0 (OfNat_ofNat_inst1 Prosa_Behavior_Time_duration 1 (instOfNatNat 1))))
+                  (Prosa_Model_Task_Concept_TaskCost_task_cost Task
+                     inst_3
+                     inst_10
+                     tsk))
+               (task_intra_IBF A0 _UU0394_)))
+         A ->
+       Exists Prosa_Behavior_Time_duration
+         (fun F : Prosa_Behavior_Time_duration =>
+          And
+            (LE_le_inst1 Prosa_Behavior_Time_duration instLENat F
+               (HAdd_hAdd_inst7 Prosa_Behavior_Time_duration Prosa_Behavior_Time_duration
+                  Prosa_Behavior_Time_duration (instHAdd_inst1 Prosa_Behavior_Time_duration instAddNat) A R))
+            (And
+               (LE_le_inst1 Prosa_Behavior_Job_work instLENat
+                  (HAdd_hAdd_inst7 Prosa_Behavior_Job_work Nat Prosa_Behavior_Job_work
+                     (instHAdd_inst1 Prosa_Behavior_Job_work instAddNat)
+                     (Prosa_Model_Task_Preemption_Parameters_TaskRunToCompletionThreshold_task_rtct Task
+                        inst_3
+                        inst_13
+                        tsk)
+                     (HAdd_hAdd_inst7 Nat Prosa_Behavior_Time_duration Nat (instHAdd_inst1 Nat instAddNat)
+                        (HSub_hSub_inst7 Nat Prosa_Behavior_Time_duration Nat (instHSub_inst1 Nat instSubNat)
+                           (Prosa_Analysis_Definitions_RequestBoundFunction_task_request_bound_function Task
+                              inst_3
+                              inst_10
+                              inst_49
+                              tsk
+                              (HAdd_hAdd_inst7 Prosa_Behavior_Time_duration Prosa_Behavior_Time_duration
+                                 Prosa_Behavior_Time_duration
+                                 (instHAdd_inst1 Prosa_Behavior_Time_duration instAddNat) A
+                                 (OfNat_ofNat_inst1 Prosa_Behavior_Time_duration 1 (instOfNatNat 1))))
+                           (Prosa_Model_Task_Concept_TaskCost_task_cost Task
+                              inst_3
+                              inst_10
+                              tsk))
+                        (task_intra_IBF A F)))
+                  (Prosa_Analysis_Definitions_Sbf_SupplyBoundFunction_supply_bound_function SBF F))
+               (LE_le_inst1 Prosa_Behavior_Job_work instLENat
+                  (HAdd_hAdd_inst7 Prosa_Behavior_Job_work Prosa_Behavior_Time_duration
+                     Prosa_Behavior_Job_work (instHAdd_inst1 Prosa_Behavior_Job_work instAddNat)
+                     (Prosa_Analysis_Definitions_Sbf_SupplyBoundFunction_supply_bound_function SBF F)
+                     (HSub_hSub_inst7 Prosa_Behavior_Time_duration Prosa_Behavior_Job_work
+                        Prosa_Behavior_Time_duration (instHSub_inst1 Prosa_Behavior_Time_duration instSubNat)
+                        (Prosa_Model_Task_Concept_TaskCost_task_cost Task
+                           inst_3
+                           inst_10
+                           tsk)
+                        (Prosa_Model_Task_Preemption_Parameters_TaskRunToCompletionThreshold_task_rtct Task
+                           inst_3
+                           inst_13
+                           tsk)))
+                  (Prosa_Analysis_Definitions_Sbf_SupplyBoundFunction_supply_bound_function SBF
+                     (HAdd_hAdd_inst7 Prosa_Behavior_Time_duration Prosa_Behavior_Time_duration
+                        Prosa_Behavior_Time_duration (instHAdd_inst1 Prosa_Behavior_Time_duration instAddNat)
+                        A R)))))
+```

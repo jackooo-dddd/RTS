@@ -1,0 +1,29 @@
+--- a/analysis/definitions/finish_time.v
++++ b/analysis/definitions/finish_time.v
+@@ -62,7 +62,8 @@
+   Proof.
+     move=> t COMP.
+     rewrite /finish_time/ex_minn.
+-    by case: find_ex_minn.
++    case: find_ex_minn => m Hcomp Hleast /=.
++    exact: Hleast.
+   Qed.
+ 
+   (** Third, Prosa's notion of [completes_at] is satisfied at the finish time. *)
+@@ -70,10 +71,12 @@
+     completes_at sched j finish_time.
+   Proof.
+     apply/andP; split; last exact: finished_at_finish_time.
+-    apply/orP; case FIN: finish_time; [by right|left].
+-    apply: contra_ltnN => [?|];
+-      first by apply: earliest_finish_time.
+-    by lia.
++    apply/orP; case FIN: finish_time => [|n].
++    - by right.
++    - left; apply/negP => Hprev.
++      have Hmin := earliest_finish_time n Hprev.
++      rewrite FIN in Hmin.
++      by lia.
+   Qed.
+ 
+   (** Finally, we can define a job's precise response time as usual as the time

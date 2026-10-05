@@ -6,7 +6,7 @@ From LeanImport Require Import Lean.
 For this finish-time case, the original build uses paths relative to Prosa-Shunqi/ 
 FoundationCertificates → Validation/.work/experiments/analysis_finish_time/certificates/
 FoundationImported     → Validation/.work/experiments/analysis_finish_time/*)
-(** What is ImportedFinishTime? It supplies the Lean-side finish_time, response_time, service definitions, and minimum lemmas.
+(** ImportedFinishTime supplies the Lean-side finish_time, response_time, service definitions, and minimum lemmas.
 in the correspondence theorem, we compares the imported Lean-side definitions with the original Prosa definitions.
 the meaningful declarations in readable Rocq syntax, open (/Users/shunqiwang/CityuHK/Research/Lean/TranslationProof/Prosa-Shunqi/Reports/casestudy/finish_time_import_print.txt),*)
 From FoundationImported Require Import ImportedFinishTime.
@@ -103,7 +103,10 @@ Section FinishTime.
     (svc_decidable_eq Job).
   Hypothesis Harrival : SvcJobArrivalRel Job arrivalR arrivalL.
 
+  (**RR: the Rocq-side response time bound for job j*)
+  (**RL: the Lean-side response time bound for job j*)
   Lemma finish_time_correspondence (j : Job) (RR : nat) (RL : Lean.Nat)
+    (** 进入 Proof 后，HR、HL 都已经在上下文中，可以直接用于两侧 finish_time *)
       (HR : @prosa.behavior.service.job_response_time_bound Job PStateR
         schedR costR arrivalR j RR)
       (HL : Lean.eq

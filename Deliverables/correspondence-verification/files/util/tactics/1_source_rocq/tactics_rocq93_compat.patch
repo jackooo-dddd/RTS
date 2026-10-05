@@ -1,0 +1,16 @@
+--- a/util/tactics.v
++++ b/util/tactics.v
+@@ -122,7 +122,7 @@
+ #[deprecated(since="prosa-0.6", note="use by or // instead")]
+ Ltac rt_eauto := eauto 4 with basic_rt_facts.
+ 
+-Ltac done := solve [ ssreflect.done | eauto 4 with basic_rt_facts ].
++Ltac done := solve [ Corelib.ssr.ssreflect_rw.done | eauto 4 with basic_rt_facts ].
+ #[export] Hint Resolve I : basic_rt_facts.
+ 
+ (** Note: [idtac] is a no-op. However, it suppresses the default obligation tactic,
+--- a/util/tactics.v
++++ b/util/tactics.v
+@@ -125 +125 @@
+-Ltac done := solve [ ssreflect.done | eauto 4 with basic_rt_facts ].
++Ltac done := solve [ done | eauto 4 with basic_rt_facts ].
