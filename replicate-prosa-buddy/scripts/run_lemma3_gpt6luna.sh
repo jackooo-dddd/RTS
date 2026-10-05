@@ -40,7 +40,16 @@ code="$(curl -s -o /dev/null -w '%{http_code}' -H "Authorization: Bearer $CLIPRO
 
 RESULTS_ROOT="$R/results"
 STAMP="$(date +%Y%m%d_%H%M%S)"
-SUPERVISOR_DIR="$RESULTS_ROOT/supervisor/${CASE_NAME}_${STAMP}"
+# Resume mode (as in the original run_ecrts_gpt2_deepseek_t6_resume_plus2.sh):
+#   RESUME_RUN_DIR=<results/our_casestudy_...> RESUME_SUPERVISOR_DIR=<results/supervisor/...> scripts/run_lemma3_gpt6luna.sh
+# reuses that run's worker XDG dirs and continues it in a fresh OpenCode session.
+declare -a RESUME_ARGS=()
+if [[ -n "${RESUME_RUN_DIR:-}" ]]; then
+  SUPERVISOR_DIR="${RESUME_SUPERVISOR_DIR:?set RESUME_SUPERVISOR_DIR with RESUME_RUN_DIR}"
+  RESUME_ARGS=(--resume-run-dir "$RESUME_RUN_DIR" --fresh-session-on-resume)
+else
+  SUPERVISOR_DIR="$RESULTS_ROOT/supervisor/${CASE_NAME}_${STAMP}"
+fi
 WORKER_ROOT="$SUPERVISOR_DIR/worker_1"
 mkdir -p "$WORKER_ROOT/data/opencode" "$WORKER_ROOT/state/opencode" "$WORKER_ROOT/cache"
 
@@ -60,7 +69,8 @@ provider_config="$(printf '{"provider":{"codexproxy":{"npm":"@ai-sdk/openai","na
   echo "coqc=$ROCQ_BIN_DIR/coqc ($("$ROCQ_BIN_DIR/coqc" --version | head -1))"
   echo "bun=$("$BUN_BIN" --version)"
   echo "started_at=$(date -Iseconds)"
-} >"$SUPERVISOR_DIR/config.txt"
+  [[ -n "${RESUME_RUN_DIR:-}" ]] && echo "resume_run_dir=$RESUME_RUN_DIR (fresh session)"
+} >>"$SUPERVISOR_DIR/config.txt"
 echo "supervisor_dir=$SUPERVISOR_DIR"
 
 exec env -u OPENCODE_MODEL -u OPENCODE_VARIANT -u COQPATH -u ROCQPATH \
@@ -93,4 +103,5 @@ exec env -u OPENCODE_MODEL -u OPENCODE_VARIANT -u COQPATH -u ROCQPATH \
     --segmented-proof-workflow \
     --skill \
     --trace-requests \
+    ${RESUME_ARGS[@]+"${RESUME_ARGS[@]}"} \
     "$CASE_NAME"
