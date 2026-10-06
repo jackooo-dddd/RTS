@@ -11,6 +11,7 @@ import { SessionProofWorkflow } from "@/session/proof-workflow"
 import { parseCoqCompilerOutput } from "./coq-diagnostics"
 import { ProofEditTransaction } from "@/session/proof-edit-transaction"
 import { CoqAstAudit } from "./coq-ast-audit"
+import { recordCompileVerdict } from "./compile-verdict"
 
 const DEFAULT_TIMEOUT_MS = 120_000
 
@@ -209,6 +210,30 @@ export const CoqcTool = Tool.define("coqc", {
               receipt: proofStatus.proof_progress.receipt,
             })
           : ProofEditTransaction.active(ctx.sessionID)
+      // [replicate-prosa-buddy patch 7] A compiling, plan-matched skeleton (decomposition terminal_ready)
+      // is a compiler-backed receipt for this exact staged revision even when it is not new progress
+      // (e.g. the first compile in a fresh recovery session is recorded as the baseline). Without a
+      // certificate, validation_pending never clears and planNextSubtask never dispatches the pending
+      // lemma regions (run 07). Record it as a structural certificate for this revision only.
+      if (
+        stagedTransaction &&
+        decompositionCheckpoint?.terminal_ready &&
+        !proofStatus.proof_progress.accepted &&
+        ProofEditTransaction.requiresValidation(ctx.sessionID, filepath)
+      ) {
+        try {
+          proofTransaction =
+            ProofEditTransaction.markCertifiedRecovery({
+              sessionID: ctx.sessionID,
+              file: filepath,
+              source: coqcSource,
+              level: "structural",
+              receipt: { kind: "decomposition_ready_skeleton", decomposition_checkpoint: decompositionCheckpoint },
+            }) ?? proofTransaction
+        } catch {
+          // stale view: leave the transaction state unchanged
+        }
+      }
       if (proofStatus.final_theorem_gate.ok && proofStatus.proof_progress.workspace_committable) {
         proofTransaction =
           (await ProofEditTransaction.finalizeHandedOffAccepted(ctx.sessionID, { requireAstAudit: true })) ?? proofTransaction
@@ -218,6 +243,15 @@ export const CoqcTool = Tool.define("coqc", {
           ? "decomposition_ready"
           : "decomposition_incomplete"
         : "success"
+      recordCompileVerdict(ctx.sessionID, {
+        tool: "coqc",
+        source: coqcSource,
+        status: `${toolStatus}, accepted_progress=${proofStatus.proof_progress.accepted}`,
+        detail: [
+          decompositionCheckpoint?.blockers?.length ? `blockers: ${decompositionCheckpoint.blockers.join("; ")}` : undefined,
+          `proof_progress_reason: ${proofStatus.proof_progress.reason}`,
+        ].filter(Boolean).join(" | "),
+      })
       return {
         title: `coqc ${rel}: ${decompositionCheckpoint ? toolStatus : statusDetail}`,
         output: [
@@ -334,6 +368,12 @@ export const CoqcTool = Tool.define("coqc", {
       ? errors.map((e) => `line ${e.line}: ${e.message}`).join("\n---\n")
       : diagnostics.output
 
+    recordCompileVerdict(ctx.sessionID, {
+      tool: "coqc",
+      source: coqcSource,
+      status: "error",
+      detail: summary.slice(0, 300),
+    })
     return {
       title: `coqc ${rel}: ${lemmaPrefixValidation?.ok ? "lemma-prefix-ok" : "fail"}`,
       output: [

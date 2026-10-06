@@ -1,0 +1,569 @@
+diff -ruN prosabuddy/packages/opencode/src/session/prompt.ts replicate-prosa-buddy/opencode/packages/opencode/src/session/prompt.ts
+--- a/packages/opencode/src/session/prompt.ts	2026-10-01 18:07:04
++++ b/packages/opencode/src/session/prompt.ts	2026-10-06 12:31:57
+@@ -45,6 +45,7 @@
+ import { iife } from "@/util/iife"
+ import { Shell } from "@/shell/shell"
+ import { Truncate } from "@/tool/truncation"
++import { lastCompileVerdict } from "@/tool/compile-verdict"
+ import { Trace } from "./trace"
+ import { ProofContext } from "./proof-context"
+ import { ProofProjection } from "./proof-projection"
+@@ -564,6 +565,36 @@
+     return streak
+   }
+ 
++  // [replicate-prosa-buddy patch 2] OpenCode's doom-loop guard only compares tool calls inside one
++  // assistant message, so a model that issues one identical call per step (observed: >100 reads of the
++  // same lines, then >80 checkpoints of the same unchanged revision) is never stopped. Count the trailing
++  // streak of completed calls to the same tool on the same target, reset by any edit or delegation.
++  const REPEAT_GUARD_THRESHOLD = 8
++  const REPEAT_GUARD_RESET_TOOLS = new Set(["edit", "multiedit", "write", "apply_patch", "task", "proof_plan"])
++
++  function sameToolRepeatStreak(msgs: MessageV2.WithParts[]) {
++    let streak = 0
++    let tool: string | undefined
++    let target: string | undefined
++    for (let msgIndex = msgs.length - 1; msgIndex >= 0; msgIndex--) {
++      const parts = msgs[msgIndex].parts
++      for (let partIndex = parts.length - 1; partIndex >= 0; partIndex--) {
++        const part = parts[partIndex]
++        if (part.type !== "tool" || part.state.status !== "completed") continue
++        if (REPEAT_GUARD_RESET_TOOLS.has(part.tool)) return { streak, tool, target }
++        const input = part.state.input as Record<string, unknown>
++        const partTarget = String(input.filePath ?? input.file ?? input.path ?? "")
++        if (tool === undefined) {
++          tool = part.tool
++          target = partTarget
++        }
++        if (part.tool !== tool || partTarget !== target) return { streak, tool, target }
++        streak += 1
++      }
++    }
++    return { streak, tool, target }
++  }
++
+   /** @internal Exported for regression tests of materialization liveness. */
+   export function acceptedPlanMaterializationLookupStreakForTest(
+     msgs: MessageV2.WithParts[],
+@@ -1232,6 +1263,36 @@
+         (recoveredProofEditTransaction?.recovered || recoveredProofEditTransaction?.handed_off) &&
+         recoveredProofEditTransaction.staged
+       ) {
++        // [replicate-prosa-buddy patch 1] The recovery reminder used to repeat "read the target .v
++        // file" on every turn, even after read.ts had acknowledged the staged revision
++        // (acknowledgeStagedRead), so models re-read the file indefinitely. Ask for the read only
++        // while it is still required; afterwards point at the action that clears validation_pending.
++        const stagedReadRequired = ProofEditTransaction.requiresStagedRead(
++          sessionID,
++          recoveredProofEditTransaction.file,
++        )
++        const verdict = lastCompileVerdict(sessionID)
++        const revisionAlreadyCompiled = verdict?.sourceHash === recoveredProofEditTransaction.source_hash
++        // [replicate-prosa-buddy patch 6] If the theorem terminator was switched to `Qed.` while a
++        // lemma-owned region still contains `admit`, every compile fails at the terminator, so the draft
++        // never gets the compiler receipt the scheduler needs before it dispatches that region (run 07).
++        const stagedSource = ProofEditTransaction.source(sessionID, recoveredProofEditTransaction.file)
++        const prematureQed =
++          revisionAlreadyCompiled &&
++          verdict!.status === "error" &&
++          /Attempt to|given up goals|incomplete proof/i.test(verdict!.detail ?? "") &&
++          stagedSource !== undefined &&
++          /\badmit\./.test(stagedSource)
++        const validationNextAction = !revisionAlreadyCompiled
++          ? "Next action: run `checkpoint` (or `coqc`) on the target file to certify this exact staged revision, then continue with the smallest edit, lemma dispatch, or final terminator edit indicated by the result."
++          : [
++              `\`${verdict!.tool}\` has already compiled this exact staged revision (${verdict!.repeats} time(s); source_hash unchanged) with result: ${verdict!.status}${verdict!.detail ? ` | ${verdict!.detail}` : ""}.`,
++              "Re-running checkpoint/coqc on unchanged source returns the same result and cannot clear validation_pending. Do not recompile until the source changes.",
++              "Act on that result instead: make the smallest proof edit that addresses it (for a normal-form or plan-drift blocker, make the region target match its contract or submit the single allowed `proof_plan` repair), then run checkpoint once on the new revision.",
++              prematureQed
++                ? "This error is at the theorem terminator: the theorem ends with `Qed.` while a lemma-owned proof_region still contains `admit.`. Restore the terminator to `Admitted.` (edit only that line) so the draft compiles, then run checkpoint once. A compiler-backed receipt for that revision lets the scheduler dispatch the pending region to its lemma worker. Switch back to `Qed.` only after every region is solved."
++                : undefined,
++            ].filter((line): line is string => Boolean(line)).join("\n")
+         runtimeContext.push(
+           runtimeContextMessage(
+             [
+@@ -1241,11 +1302,22 @@
+               `revision: ${recoveredProofEditTransaction.revision}`,
+               `source_hash: ${recoveredProofEditTransaction.source_hash}`,
+               `validation_pending: ${recoveredProofEditTransaction.validation_pending}`,
++              `staged_read_synchronized: ${!stagedReadRequired}`,
+               "The recovered staged source exposed by read/edit/multiedit/write/apply_patch/checkpoint/coqc is the authoritative proof state for this turn.",
+               "The ordinary workspace file on disk may intentionally be older until a compiler-accepted transaction snapshot is committed.",
+-              "Before lemma dispatch, proof planning, Coq-session use, or proof edits, read the target .v file through the read tool. The controller will reject those state-dependent actions until this staged-revision resynchronization read occurs. checkpoint/coqc are safe before that read because they compile the authoritative staged source directly.",
+-              "Do not use bash, cat, or a direct disk read to reconstruct proof state, and do not rewrite compiler-certified regions merely because the disk file is stale.",
+-              "Read the target through the read tool and continue with the smallest edit against that staged revision. If finalization reports only the theorem terminator remains, edit only that terminator and run the final checkpoint/coqc.",
++              ...(stagedReadRequired
++                ? [
++                    "Before lemma dispatch, proof planning, Coq-session use, or proof edits, read the target .v file through the read tool. The controller will reject those state-dependent actions until this staged-revision resynchronization read occurs. checkpoint/coqc are safe before that read because they compile the authoritative staged source directly.",
++                    "Do not use bash, cat, or a direct disk read to reconstruct proof state, and do not rewrite compiler-certified regions merely because the disk file is stale.",
++                    "Read the target through the read tool and continue with the smallest edit against that staged revision. If finalization reports only the theorem terminator remains, edit only that terminator and run the final checkpoint/coqc.",
++                  ]
++                : [
++                    "The staged revision has already been read through the read tool in this session; the resynchronization requirement is satisfied. Do not re-read the file to satisfy this notice: further reads do not change the transaction state.",
++                    "Do not use bash, cat, or a direct disk read to reconstruct proof state, and do not rewrite compiler-certified regions merely because the disk file is stale.",
++                    recoveredProofEditTransaction.validation_pending
++                      ? validationNextAction
++                      : "Continue with the smallest edit against this staged revision. If finalization reports only the theorem terminator remains, edit only that terminator and run the final checkpoint/coqc.",
++                  ]),
+               recoveredProofEditTransaction.validation_pending
+                 ? "The controller will not dispatch an ordinary lemma task from this draft until the exact staged revision receives a compiler-backed checkpoint/coqc receipt."
+                 : undefined,
+@@ -1253,6 +1325,21 @@
+             ].filter((line): line is string => Boolean(line)).join("\n"),
+           ),
+         )
++      }
++      {
++        const repeat = sameToolRepeatStreak(msgs)
++        if (repeat.tool && repeat.streak >= REPEAT_GUARD_THRESHOLD) {
++          runtimeContext.push(
++            runtimeContextMessage(
++              [
++                "<repetition-guard>",
++                `The last ${repeat.streak} tool calls were all \`${repeat.tool}\`${repeat.target ? ` on ${path.basename(repeat.target)}` : ""}, with no edit, plan revision, or delegation in between. Repeating it does not change the proof state and returns the same information.`,
++                `Do not call \`${repeat.tool}\` on the same target again now. Take a different action that changes state: edit the proof or the region target to address the latest compiler/checkpoint result, submit an available \`proof_plan\` repair, or delegate through the workflow. If you are genuinely blocked, state the exact blocker and end your turn.`,
++                "</repetition-guard>",
++              ].join("\n"),
++            ),
++          )
++        }
+       }
+       if (
+         fallbackGuard &&
+diff -ruN prosabuddy/packages/opencode/src/session/proof-context.ts replicate-prosa-buddy/opencode/packages/opencode/src/session/proof-context.ts
+--- a/packages/opencode/src/session/proof-context.ts	2026-10-01 18:07:04
++++ b/packages/opencode/src/session/proof-context.ts	2026-10-06 12:43:40
+@@ -174,7 +174,7 @@
+    * Render a snapshot as text for prompt injection.
+    */
+   export function render(snap: ProofSnapshot): string {
+-    const rel = path.relative(Instance.worktree, snap.file)
++    const rel = path.relative(Instance.directory, snap.file) // [replicate-prosa-buddy patch 9] workspace-relative (was worktree-relative)
+     const lines: string[] = [
+       `File: ${rel}  Position: ${snap.position.line + 1}:${snap.position.character + 1}`,
+     ]
+diff -ruN prosabuddy/packages/opencode/src/session/proof-projection.ts replicate-prosa-buddy/opencode/packages/opencode/src/session/proof-projection.ts
+--- a/packages/opencode/src/session/proof-projection.ts	2026-10-01 18:07:04
++++ b/packages/opencode/src/session/proof-projection.ts	2026-10-06 12:43:40
+@@ -78,7 +78,7 @@
+   }
+ 
+   function stagedLemmaReminder(context: StagedLemmaContext) {
+-    const rel = path.relative(Instance.worktree, context.file)
++    const rel = path.relative(Instance.directory, context.file) // [replicate-prosa-buddy patch 9] workspace-relative (was worktree-relative)
+     const inputs = context.assignment.obligation?.input ?? []
+     return [
+       "<proof-context-lemma-assignment>",
+@@ -165,7 +165,7 @@
+     const lines: string[] = []
+     if (!snap) return lines
+ 
+-    const rel = path.relative(Instance.worktree, snap.file)
++    const rel = path.relative(Instance.directory, snap.file) // [replicate-prosa-buddy patch 9] workspace-relative (was worktree-relative)
+     lines.push("<proof-context-fixer>")
+     lines.push(`File: ${rel}  Position: ${snap.position.line + 1}:${snap.position.character + 1}`)
+ 
+@@ -203,7 +203,7 @@
+     if (stagedLemma) {
+       lines.push(...stagedLemmaReminder(stagedLemma))
+     } else if (snap) {
+-      const rel = path.relative(Instance.worktree, snap.file)
++      const rel = path.relative(Instance.directory, snap.file) // [replicate-prosa-buddy patch 9] workspace-relative (was worktree-relative)
+       lines.push("<proof-context-lemma>")
+       lines.push(`File: ${rel}  Position: ${snap.position.line + 1}:${snap.position.character + 1}`)
+ 
+@@ -271,7 +271,7 @@
+     const lines: string[] = []
+     if (!snap) return lines
+ 
+-    const rel = path.relative(Instance.worktree, snap.file)
++    const rel = path.relative(Instance.directory, snap.file) // [replicate-prosa-buddy patch 9] workspace-relative (was worktree-relative)
+     lines.push("<proof-context-whole-lemma>")
+     lines.push(`File: ${rel}  Position: ${snap.position.line + 1}:${snap.position.character + 1}`)
+ 
+@@ -316,7 +316,7 @@
+     const lines: string[] = []
+     if (!snap) return lines
+ 
+-    const rel = path.relative(Instance.worktree, snap.file)
++    const rel = path.relative(Instance.directory, snap.file) // [replicate-prosa-buddy patch 9] workspace-relative (was worktree-relative)
+     lines.push("<proof-context-explorer>")
+     lines.push(`File: ${rel}  Position: ${snap.position.line + 1}:${snap.position.character + 1}`)
+ 
+@@ -354,7 +354,7 @@
+     const lines: string[] = []
+     if (!snap) return lines
+ 
+-    const rel = path.relative(Instance.worktree, snap.file)
++    const rel = path.relative(Instance.directory, snap.file) // [replicate-prosa-buddy patch 9] workspace-relative (was worktree-relative)
+     lines.push("<proof-context-diagnoser>")
+     lines.push(`File: ${rel}  Position: ${snap.position.line + 1}:${snap.position.character + 1}`)
+ 
+diff -ruN prosabuddy/packages/opencode/src/session/proof-workflow.ts replicate-prosa-buddy/opencode/packages/opencode/src/session/proof-workflow.ts
+--- a/packages/opencode/src/session/proof-workflow.ts	2026-10-01 18:07:04
++++ b/packages/opencode/src/session/proof-workflow.ts	2026-10-06 12:40:41
+@@ -1381,6 +1381,29 @@
+     "mathcomp_candidate_lemmas",
+   ]
+ 
++  // [replicate-prosa-buddy patch 4] parseAttributes() reads every `key: value` as one token, so a
++  // contract written inside the begin marker (allowed by the prover prompt), e.g.
++  // `normal_form: forall j0, arrives_in arr_seq j0 -> ...`, parsed as normal_form = "forall". Marker
++  // attributes take precedence over the contract comment, so materialization review always reported
++  // "target normal form differs from the accepted plan" and lemma dispatch never happened. For
++  // contract fields, take the text up to the next known key instead.
++  const MARKER_KEYS = ["owner", "admit_id", "theorem", "kind", "target", ...CONTRACT_FIELDS]
++  const MARKER_KEY_PATTERN = new RegExp(`(?:^|\\s)(${MARKER_KEYS.map(escapeRegExp).join("|")})\\s*:`, "g")
++
++  function parseMarkerAttributes(text: string) {
++    const attrs = parseAttributes(text)
++    const keys = [...text.matchAll(MARKER_KEY_PATTERN)]
++    keys.forEach((match, index) => {
++      const field = match[1]
++      if (!CONTRACT_FIELDS.includes(field)) return
++      const start = match.index! + match[0].length
++      const end = index + 1 < keys.length ? keys[index + 1].index! : text.length
++      const value = text.slice(start, end).replace(/\s+/g, " ").trim().replace(/[;,]$/, "").trim()
++      if (value) attrs.set(field, value.replace(/^"([^"]*)"$|^'([^']*)'$/, "$1$2"))
++    })
++    return attrs
++  }
++
+   function parseContractAttributes(text: string) {
+     const attrs = parseAttributes(text)
+     for (const field of CONTRACT_FIELDS) {
+@@ -1448,13 +1471,20 @@
+     return undefined
+   }
+ 
++  // [replicate-prosa-buddy patch 3] Marker lists are often written in JSON style (`depends_on: []`,
++  // `depends_on: [a, b]`), mirroring the arrays returned by proof_plan. The original split kept "[]"
++  // as a dependency named "[]" (and "[a" / "b]" for lists), so materialization review reported a
++  // dependency mismatch the model could not fix, and the single allowed plan repair was spent on it.
++  const EMPTY_LIST_ENTRIES = new Set(["none", "[]", "-", "n/a", "empty"])
++
+   function attrList(value: string | undefined) {
+     if (!value) return []
+-    return value
++    const unwrapped = value.trim().replace(/^\[([\s\S]*)\]$/, "$1")
++    return unwrapped
+       .split(/[|,]/)
+-      .map((entry) => entry.trim())
++      .map((entry) => entry.trim().replace(/^["'`]+|["'`]+$/g, "").trim())
+       .filter(Boolean)
+-      .filter((entry) => entry.toLowerCase() !== "none")
++      .filter((entry) => !EMPTY_LIST_ENTRIES.has(entry.toLowerCase()))
+   }
+ 
+   function escapeRegExp(text: string) {
+@@ -1561,15 +1591,25 @@
+   function resolveTargetName(markerText: string, blockText: string, parsedTarget?: string) {
+     const fieldText = targetFieldText(markerText)
+     const scalarTarget = fieldText ?? parsedTarget
++    const declarations = targetDeclarations(blockText)
+     if (
+       scalarTarget &&
+       /^[A-Za-z_][A-Za-z0-9_']*$/.test(scalarTarget) &&
+       !COQ_TARGET_KEYWORDS.has(scalarTarget.toLowerCase())
+     ) {
++      // [replicate-prosa-buddy patch 8] Models often name the marker target `x` while the exported
++      // statement is `have H_x : ...` (or the reverse). The exact lookup then failed and lemma dispatch was
++      // rejected with "must wrap exported target statement x" on every try (run 07). If the exact name is
++      // not declared in the region, accept the unique `H_`-prefix variant that is.
++      if (!declarations.some((entry) => entry.name === scalarTarget)) {
++        const variants = new Set([`H_${scalarTarget}`, scalarTarget.replace(/^H_/, "")])
++        variants.delete(scalarTarget)
++        const matching = declarations.filter((entry) => variants.has(entry.name))
++        if (matching.length === 1) return matching[0].name
++      }
+       return scalarTarget
+     }
+ 
+-    const declarations = targetDeclarations(blockText)
+     const normalizedTarget = fieldText?.replace(/\s+/g, " ").replace(/\.\s*$/, "").trim()
+     if (normalizedTarget) {
+       const matching = declarations.filter((entry) => entry.proposition === normalizedTarget)
+@@ -1627,7 +1667,7 @@
+     let match: RegExpExecArray | null
+ 
+     while ((match = REGION_BEGIN.exec(source))) {
+-      const attrs = parseAttributes(match[1])
++      const attrs = parseMarkerAttributes(match[1])
+       const ownerRaw = attrs.get("owner")
+       if (ownerRaw !== "lemma") continue
+ 
+diff -ruN prosabuddy/packages/opencode/src/tool/checkpoint.ts replicate-prosa-buddy/opencode/packages/opencode/src/tool/checkpoint.ts
+--- a/packages/opencode/src/tool/checkpoint.ts	2026-10-01 18:07:04
++++ b/packages/opencode/src/tool/checkpoint.ts	2026-10-06 12:37:22
+@@ -12,6 +12,7 @@
+ import { assertNoRewriteBangInCoqFile, assertNoIntuitionInCoqFile } from "./coq-style-guard"
+ import { ProofEditTransaction } from "@/session/proof-edit-transaction"
+ import { CoqAstAudit } from "./coq-ast-audit"
++import { recordCompileVerdict } from "./compile-verdict"
+ 
+ const DEFAULT_TIMEOUT_MS = 120_000
+ 
+@@ -218,6 +219,30 @@
+               receipt: proofStatus.proof_progress.receipt,
+             })
+           : ProofEditTransaction.active(ctx.sessionID)
++      // [replicate-prosa-buddy patch 7] A compiling, plan-matched skeleton (decomposition terminal_ready)
++      // is a compiler-backed receipt for this exact staged revision even when it is not new progress
++      // (e.g. the first compile in a fresh recovery session is recorded as the baseline). Without a
++      // certificate, validation_pending never clears and planNextSubtask never dispatches the pending
++      // lemma regions (run 07). Record it as a structural certificate for this revision only.
++      if (
++        stagedTransaction &&
++        decompositionCheckpoint?.terminal_ready &&
++        !proofStatus.proof_progress.accepted &&
++        ProofEditTransaction.requiresValidation(ctx.sessionID, filepath)
++      ) {
++        try {
++          proofTransaction =
++            ProofEditTransaction.markCertifiedRecovery({
++              sessionID: ctx.sessionID,
++              file: filepath,
++              source: compiledSource,
++              level: "structural",
++              receipt: { kind: "decomposition_ready_skeleton", decomposition_checkpoint: decompositionCheckpoint },
++            }) ?? proofTransaction
++        } catch {
++          // stale view: leave the transaction state unchanged
++        }
++      }
+       if (proofStatus.final_theorem_gate.ok && proofStatus.proof_progress.workspace_committable) {
+         proofTransaction =
+           (await ProofEditTransaction.finalizeHandedOffAccepted(ctx.sessionID, { requireAstAudit: true })) ?? proofTransaction
+@@ -251,6 +276,15 @@
+           : "decomposition_incomplete"
+         : "ok"
+ 
++      recordCompileVerdict(ctx.sessionID, {
++        tool: "checkpoint",
++        source: compiledSource,
++        status: `${toolStatus}, accepted_progress=${proofStatus.proof_progress.accepted}`,
++        detail: [
++          decompositionCheckpoint?.blockers?.length ? `blockers: ${decompositionCheckpoint.blockers.join("; ")}` : undefined,
++          `proof_progress_reason: ${proofStatus.proof_progress.reason}`,
++        ].filter(Boolean).join(" | "),
++      })
+       return {
+         title: `checkpoint ${rel}: ${toolStatus}`,
+         output: [
+@@ -410,6 +444,12 @@
+       warnSummary.length > 0 ? `warnings: ${warnSummary.join(", ")}` : "",
+     ].filter(Boolean).join("\n")
+ 
++    recordCompileVerdict(ctx.sessionID, {
++      tool: "checkpoint",
++      source: compiledSource,
++      status: "error",
++      detail: firstMsg ? `line ${firstLine ?? "?"}: ${firstMsg.slice(0, 300)}` : diagnostics.output.slice(0, 300),
++    })
+     return {
+       title: `checkpoint ${rel}: ${lemmaPrefixValidation?.ok && lemmaPrefixValidation.prefix_complete ? "lemma-prefix-ok" : "error"}${same ? " (same)" : ""}`,
+       output,
+diff -ruN prosabuddy/packages/opencode/src/tool/compile-verdict.ts replicate-prosa-buddy/opencode/packages/opencode/src/tool/compile-verdict.ts
+--- a/packages/opencode/src/tool/compile-verdict.ts	1970-01-01 08:00:00
++++ b/packages/opencode/src/tool/compile-verdict.ts	2026-10-05 23:27:59
+@@ -0,0 +1,38 @@
++// [replicate-prosa-buddy patch 1] Last compiler verdict per session, so the prover's
++// transaction-recovery reminder can tell whether the current staged revision was already
++// compiled. Without this, the reminder kept asking for a checkpoint that could not change
++// anything (e.g. a decomposition-drift blocker), and the model re-ran it indefinitely.
++import { createHash } from "crypto"
++
++export type CompileVerdict = {
++  tool: "checkpoint" | "coqc"
++  sourceHash: string
++  status: string
++  detail?: string
++  repeats: number
++}
++
++const verdicts = new Map<string, CompileVerdict>()
++
++export function hashSource(source: string) {
++  return createHash("sha256").update(source).digest("hex")
++}
++
++export function recordCompileVerdict(
++  sessionID: string,
++  input: { tool: CompileVerdict["tool"]; source: string; status: string; detail?: string },
++) {
++  const sourceHash = hashSource(input.source)
++  const previous = verdicts.get(sessionID)
++  verdicts.set(sessionID, {
++    tool: input.tool,
++    sourceHash,
++    status: input.status,
++    detail: input.detail,
++    repeats: previous?.sourceHash === sourceHash ? previous.repeats + 1 : 1,
++  })
++}
++
++export function lastCompileVerdict(sessionID: string) {
++  return verdicts.get(sessionID)
++}
+diff -ruN prosabuddy/packages/opencode/src/tool/coq-session.ts replicate-prosa-buddy/opencode/packages/opencode/src/tool/coq-session.ts
+--- a/packages/opencode/src/tool/coq-session.ts	2026-10-01 18:07:04
++++ b/packages/opencode/src/tool/coq-session.ts	2026-10-06 11:17:10
+@@ -98,7 +98,58 @@
+   return variants
+ }
+ 
++// [replicate-prosa-buddy patch 5] Coq prints binders with their types (`forall j0 : Job, ...`), while
++// lemma assignments are written from source text (`forall j0, ...`). The exact comparison below then
++// reported session_state_desync and blocked every tactic of the lemma worker (run 06). Compare an
++// additional form with binder type annotations erased: `forall x : T,` / `forall (x y : T) (z : U),`
++// become `forall x y z,` (same for exists/fun).
++function eraseBinderTypes(text: string): string {
++  let out = ""
++  let index = 0
++  const keyword = /\b(forall|exists|fun)\s+/g
++  while (true) {
++    keyword.lastIndex = index
++    const match = keyword.exec(text)
++    if (!match) return out + text.slice(index)
++    out += text.slice(index, match.index) + match[1] + " "
++    let cursor = match.index + match[0].length
++    const terminator = match[1] === "fun" ? "=>" : ","
++    let depth = 0
++    let end = -1
++    for (let i = cursor; i < text.length; i++) {
++      const char = text[i]
++      if (char === "(" || char === "[" || char === "{") depth += 1
++      else if (char === ")" || char === "]" || char === "}") depth -= 1
++      else if (depth === 0 && text.startsWith(terminator, i)) {
++        end = i
++        break
++      }
++    }
++    if (end < 0) {
++      out += text.slice(cursor)
++      return out
++    }
++    const binders = text.slice(cursor, end).trim()
++    const groups = binders.startsWith("(") ? [...binders.matchAll(/\(([^()]*)\)/g)].map((group) => group[1]) : [binders]
++    const names = groups.map((group) => {
++      const colon = group.indexOf(":")
++      return (colon >= 0 ? group.slice(0, colon) : group).trim()
++    })
++    out += names.filter(Boolean).join(" ") + (terminator === "," ? "," : " =>")
++    index = end + terminator.length
++  }
++}
++
+ function expectedGoalMatches(actual: ReturnType<typeof goalIdentity>, expectedGoal: string, expectedFingerprint?: string) {
++  if (actual.remaining_goals !== undefined && actual.remaining_goals !== 1) return false
++  if (expectedGoalMatchesStrict(actual, expectedGoal, expectedFingerprint)) return true
++  const actualErased = normalizedGoalText(eraseBinderTypes(actual.conclusion))
++  return [...normalizedComparisonVariants(expectedGoal)].some(
++    (variant) => normalizedGoalText(eraseBinderTypes(variant)) === actualErased,
++  )
++}
++
++function expectedGoalMatchesStrict(actual: ReturnType<typeof goalIdentity>, expectedGoal: string, expectedFingerprint?: string) {
+   if (actual.remaining_goals !== undefined && actual.remaining_goals !== 1) return false
+   const expectedVariants = normalizedComparisonVariants(expectedGoal)
+   // Assignment fingerprints have historically been produced from either the
+diff -ruN prosabuddy/packages/opencode/src/tool/coqc.ts replicate-prosa-buddy/opencode/packages/opencode/src/tool/coqc.ts
+--- a/packages/opencode/src/tool/coqc.ts	2026-10-01 18:07:04
++++ b/packages/opencode/src/tool/coqc.ts	2026-10-06 12:37:22
+@@ -11,6 +11,7 @@
+ import { parseCoqCompilerOutput } from "./coq-diagnostics"
+ import { ProofEditTransaction } from "@/session/proof-edit-transaction"
+ import { CoqAstAudit } from "./coq-ast-audit"
++import { recordCompileVerdict } from "./compile-verdict"
+ 
+ const DEFAULT_TIMEOUT_MS = 120_000
+ 
+@@ -209,6 +210,30 @@
+               receipt: proofStatus.proof_progress.receipt,
+             })
+           : ProofEditTransaction.active(ctx.sessionID)
++      // [replicate-prosa-buddy patch 7] A compiling, plan-matched skeleton (decomposition terminal_ready)
++      // is a compiler-backed receipt for this exact staged revision even when it is not new progress
++      // (e.g. the first compile in a fresh recovery session is recorded as the baseline). Without a
++      // certificate, validation_pending never clears and planNextSubtask never dispatches the pending
++      // lemma regions (run 07). Record it as a structural certificate for this revision only.
++      if (
++        stagedTransaction &&
++        decompositionCheckpoint?.terminal_ready &&
++        !proofStatus.proof_progress.accepted &&
++        ProofEditTransaction.requiresValidation(ctx.sessionID, filepath)
++      ) {
++        try {
++          proofTransaction =
++            ProofEditTransaction.markCertifiedRecovery({
++              sessionID: ctx.sessionID,
++              file: filepath,
++              source: coqcSource,
++              level: "structural",
++              receipt: { kind: "decomposition_ready_skeleton", decomposition_checkpoint: decompositionCheckpoint },
++            }) ?? proofTransaction
++        } catch {
++          // stale view: leave the transaction state unchanged
++        }
++      }
+       if (proofStatus.final_theorem_gate.ok && proofStatus.proof_progress.workspace_committable) {
+         proofTransaction =
+           (await ProofEditTransaction.finalizeHandedOffAccepted(ctx.sessionID, { requireAstAudit: true })) ?? proofTransaction
+@@ -218,6 +243,15 @@
+           ? "decomposition_ready"
+           : "decomposition_incomplete"
+         : "success"
++      recordCompileVerdict(ctx.sessionID, {
++        tool: "coqc",
++        source: coqcSource,
++        status: `${toolStatus}, accepted_progress=${proofStatus.proof_progress.accepted}`,
++        detail: [
++          decompositionCheckpoint?.blockers?.length ? `blockers: ${decompositionCheckpoint.blockers.join("; ")}` : undefined,
++          `proof_progress_reason: ${proofStatus.proof_progress.reason}`,
++        ].filter(Boolean).join(" | "),
++      })
+       return {
+         title: `coqc ${rel}: ${decompositionCheckpoint ? toolStatus : statusDetail}`,
+         output: [
+@@ -334,6 +368,12 @@
+       ? errors.map((e) => `line ${e.line}: ${e.message}`).join("\n---\n")
+       : diagnostics.output
+ 
++    recordCompileVerdict(ctx.sessionID, {
++      tool: "coqc",
++      source: coqcSource,
++      status: "error",
++      detail: summary.slice(0, 300),
++    })
+     return {
+       title: `coqc ${rel}: ${lemmaPrefixValidation?.ok ? "lemma-prefix-ok" : "fail"}`,
+       output: [
+diff -ruN prosabuddy/packages/opencode/src/tool/task.ts replicate-prosa-buddy/opencode/packages/opencode/src/tool/task.ts
+--- a/packages/opencode/src/tool/task.ts	2026-10-01 18:07:04
++++ b/packages/opencode/src/tool/task.ts	2026-10-06 12:49:48
+@@ -714,7 +714,23 @@
+   }
+ }
+ 
+-function inspectProofResult(raw: Record<string, unknown>, runtime?: LemmaTaskRuntime, currentStep?: number) {
++// [replicate-prosa-buddy patch 10] Models fill unused optional fields with "" or null (e.g. a solved result
++// with `"escalation_type": ""`). The enum check then failed and the whole proof_result was rejected, so a
++// correct `solved` region was not accepted (run 07). Treat empty optional fields as absent; an `escalate`
++// result still requires a valid escalation_type (checked by the schema refinement).
++const EMPTY_TOLERANT_PROOF_RESULT_FIELDS = ["escalation_type", "remodel_request", "attempt_report"]
++
++function withoutEmptyOptionalFields(raw: Record<string, unknown>) {
++  const cleaned = { ...raw }
++  for (const field of EMPTY_TOLERANT_PROOF_RESULT_FIELDS) {
++    const value = cleaned[field]
++    if (value === null || (typeof value === "string" && value.trim() === "")) delete cleaned[field]
++  }
++  return cleaned
++}
++
++function inspectProofResult(rawInput: Record<string, unknown>, runtime?: LemmaTaskRuntime, currentStep?: number) {
++  const raw = withoutEmptyOptionalFields(rawInput)
+   const parsed = proofResultSchema.safeParse(raw)
+   const errors = parsed.success
+     ? []

@@ -98,7 +98,58 @@ function normalizedComparisonVariants(text: string) {
   return variants
 }
 
+// [replicate-prosa-buddy patch 5] Coq prints binders with their types (`forall j0 : Job, ...`), while
+// lemma assignments are written from source text (`forall j0, ...`). The exact comparison below then
+// reported session_state_desync and blocked every tactic of the lemma worker (run 06). Compare an
+// additional form with binder type annotations erased: `forall x : T,` / `forall (x y : T) (z : U),`
+// become `forall x y z,` (same for exists/fun).
+function eraseBinderTypes(text: string): string {
+  let out = ""
+  let index = 0
+  const keyword = /\b(forall|exists|fun)\s+/g
+  while (true) {
+    keyword.lastIndex = index
+    const match = keyword.exec(text)
+    if (!match) return out + text.slice(index)
+    out += text.slice(index, match.index) + match[1] + " "
+    let cursor = match.index + match[0].length
+    const terminator = match[1] === "fun" ? "=>" : ","
+    let depth = 0
+    let end = -1
+    for (let i = cursor; i < text.length; i++) {
+      const char = text[i]
+      if (char === "(" || char === "[" || char === "{") depth += 1
+      else if (char === ")" || char === "]" || char === "}") depth -= 1
+      else if (depth === 0 && text.startsWith(terminator, i)) {
+        end = i
+        break
+      }
+    }
+    if (end < 0) {
+      out += text.slice(cursor)
+      return out
+    }
+    const binders = text.slice(cursor, end).trim()
+    const groups = binders.startsWith("(") ? [...binders.matchAll(/\(([^()]*)\)/g)].map((group) => group[1]) : [binders]
+    const names = groups.map((group) => {
+      const colon = group.indexOf(":")
+      return (colon >= 0 ? group.slice(0, colon) : group).trim()
+    })
+    out += names.filter(Boolean).join(" ") + (terminator === "," ? "," : " =>")
+    index = end + terminator.length
+  }
+}
+
 function expectedGoalMatches(actual: ReturnType<typeof goalIdentity>, expectedGoal: string, expectedFingerprint?: string) {
+  if (actual.remaining_goals !== undefined && actual.remaining_goals !== 1) return false
+  if (expectedGoalMatchesStrict(actual, expectedGoal, expectedFingerprint)) return true
+  const actualErased = normalizedGoalText(eraseBinderTypes(actual.conclusion))
+  return [...normalizedComparisonVariants(expectedGoal)].some(
+    (variant) => normalizedGoalText(eraseBinderTypes(variant)) === actualErased,
+  )
+}
+
+function expectedGoalMatchesStrict(actual: ReturnType<typeof goalIdentity>, expectedGoal: string, expectedFingerprint?: string) {
   if (actual.remaining_goals !== undefined && actual.remaining_goals !== 1) return false
   const expectedVariants = normalizedComparisonVariants(expectedGoal)
   // Assignment fingerprints have historically been produced from either the

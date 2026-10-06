@@ -714,7 +714,23 @@ function contextAuditReview(proofResult: ReturnType<typeof inspectProofResult> |
   }
 }
 
-function inspectProofResult(raw: Record<string, unknown>, runtime?: LemmaTaskRuntime, currentStep?: number) {
+// [replicate-prosa-buddy patch 10] Models fill unused optional fields with "" or null (e.g. a solved result
+// with `"escalation_type": ""`). The enum check then failed and the whole proof_result was rejected, so a
+// correct `solved` region was not accepted (run 07). Treat empty optional fields as absent; an `escalate`
+// result still requires a valid escalation_type (checked by the schema refinement).
+const EMPTY_TOLERANT_PROOF_RESULT_FIELDS = ["escalation_type", "remodel_request", "attempt_report"]
+
+function withoutEmptyOptionalFields(raw: Record<string, unknown>) {
+  const cleaned = { ...raw }
+  for (const field of EMPTY_TOLERANT_PROOF_RESULT_FIELDS) {
+    const value = cleaned[field]
+    if (value === null || (typeof value === "string" && value.trim() === "")) delete cleaned[field]
+  }
+  return cleaned
+}
+
+function inspectProofResult(rawInput: Record<string, unknown>, runtime?: LemmaTaskRuntime, currentStep?: number) {
+  const raw = withoutEmptyOptionalFields(rawInput)
   const parsed = proofResultSchema.safeParse(raw)
   const errors = parsed.success
     ? []

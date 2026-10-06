@@ -1381,6 +1381,29 @@ export namespace SessionProofWorkflow {
     "mathcomp_candidate_lemmas",
   ]
 
+  // [replicate-prosa-buddy patch 4] parseAttributes() reads every `key: value` as one token, so a
+  // contract written inside the begin marker (allowed by the prover prompt), e.g.
+  // `normal_form: forall j0, arrives_in arr_seq j0 -> ...`, parsed as normal_form = "forall". Marker
+  // attributes take precedence over the contract comment, so materialization review always reported
+  // "target normal form differs from the accepted plan" and lemma dispatch never happened. For
+  // contract fields, take the text up to the next known key instead.
+  const MARKER_KEYS = ["owner", "admit_id", "theorem", "kind", "target", ...CONTRACT_FIELDS]
+  const MARKER_KEY_PATTERN = new RegExp(`(?:^|\\s)(${MARKER_KEYS.map(escapeRegExp).join("|")})\\s*:`, "g")
+
+  function parseMarkerAttributes(text: string) {
+    const attrs = parseAttributes(text)
+    const keys = [...text.matchAll(MARKER_KEY_PATTERN)]
+    keys.forEach((match, index) => {
+      const field = match[1]
+      if (!CONTRACT_FIELDS.includes(field)) return
+      const start = match.index! + match[0].length
+      const end = index + 1 < keys.length ? keys[index + 1].index! : text.length
+      const value = text.slice(start, end).replace(/\s+/g, " ").trim().replace(/[;,]$/, "").trim()
+      if (value) attrs.set(field, value.replace(/^"([^"]*)"$|^'([^']*)'$/, "$1$2"))
+    })
+    return attrs
+  }
+
   function parseContractAttributes(text: string) {
     const attrs = parseAttributes(text)
     for (const field of CONTRACT_FIELDS) {
@@ -1448,13 +1471,20 @@ export namespace SessionProofWorkflow {
     return undefined
   }
 
+  // [replicate-prosa-buddy patch 3] Marker lists are often written in JSON style (`depends_on: []`,
+  // `depends_on: [a, b]`), mirroring the arrays returned by proof_plan. The original split kept "[]"
+  // as a dependency named "[]" (and "[a" / "b]" for lists), so materialization review reported a
+  // dependency mismatch the model could not fix, and the single allowed plan repair was spent on it.
+  const EMPTY_LIST_ENTRIES = new Set(["none", "[]", "-", "n/a", "empty"])
+
   function attrList(value: string | undefined) {
     if (!value) return []
-    return value
+    const unwrapped = value.trim().replace(/^\[([\s\S]*)\]$/, "$1")
+    return unwrapped
       .split(/[|,]/)
-      .map((entry) => entry.trim())
+      .map((entry) => entry.trim().replace(/^["'`]+|["'`]+$/g, "").trim())
       .filter(Boolean)
-      .filter((entry) => entry.toLowerCase() !== "none")
+      .filter((entry) => !EMPTY_LIST_ENTRIES.has(entry.toLowerCase()))
   }
 
   function escapeRegExp(text: string) {
@@ -1561,15 +1591,25 @@ export namespace SessionProofWorkflow {
   function resolveTargetName(markerText: string, blockText: string, parsedTarget?: string) {
     const fieldText = targetFieldText(markerText)
     const scalarTarget = fieldText ?? parsedTarget
+    const declarations = targetDeclarations(blockText)
     if (
       scalarTarget &&
       /^[A-Za-z_][A-Za-z0-9_']*$/.test(scalarTarget) &&
       !COQ_TARGET_KEYWORDS.has(scalarTarget.toLowerCase())
     ) {
+      // [replicate-prosa-buddy patch 8] Models often name the marker target `x` while the exported
+      // statement is `have H_x : ...` (or the reverse). The exact lookup then failed and lemma dispatch was
+      // rejected with "must wrap exported target statement x" on every try (run 07). If the exact name is
+      // not declared in the region, accept the unique `H_`-prefix variant that is.
+      if (!declarations.some((entry) => entry.name === scalarTarget)) {
+        const variants = new Set([`H_${scalarTarget}`, scalarTarget.replace(/^H_/, "")])
+        variants.delete(scalarTarget)
+        const matching = declarations.filter((entry) => variants.has(entry.name))
+        if (matching.length === 1) return matching[0].name
+      }
       return scalarTarget
     }
 
-    const declarations = targetDeclarations(blockText)
     const normalizedTarget = fieldText?.replace(/\s+/g, " ").replace(/\.\s*$/, "").trim()
     if (normalizedTarget) {
       const matching = declarations.filter((entry) => entry.proposition === normalizedTarget)
@@ -1627,7 +1667,7 @@ export namespace SessionProofWorkflow {
     let match: RegExpExecArray | null
 
     while ((match = REGION_BEGIN.exec(source))) {
-      const attrs = parseAttributes(match[1])
+      const attrs = parseMarkerAttributes(match[1])
       const ownerRaw = attrs.get("owner")
       if (ownerRaw !== "lemma") continue
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Single-theorem ProsaBuddy replication: 2005-ECRTS-Lemma3 with gpt-6-luna via CLIProxyAPI.
+# Single-theorem ProsaBuddy replication with gpt-6-luna via CLIProxyAPI (one case study per run).
 #
 # Mirrors scripts/run_ecrts_lemma3_rebuttal.sh (the original experiment) with:
 #   - one worker instead of two (single theorem run),
@@ -7,7 +7,7 @@
 #   - local paths, Rocq 9.0.1 from the opam switch prosa-0.6.
 # Runner flags, token budget (80M), retries (8) and timeout (12h) are unchanged.
 #
-# Usage: scripts/run_lemma3_gpt6luna.sh [CASE_NAME]
+# Usage: scripts/run_case_gpt6luna.sh [CASE_NAME]   (default 2005-ECRTS-Lemma3)
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
@@ -41,7 +41,7 @@ code="$(curl -s -o /dev/null -w '%{http_code}' -H "Authorization: Bearer $CLIPRO
 RESULTS_ROOT="$R/results"
 STAMP="$(date +%Y%m%d_%H%M%S)"
 # Resume mode (as in the original run_ecrts_gpt2_deepseek_t6_resume_plus2.sh):
-#   RESUME_RUN_DIR=<results/our_casestudy_...> RESUME_SUPERVISOR_DIR=<results/supervisor/...> scripts/run_lemma3_gpt6luna.sh
+#   RESUME_RUN_DIR=<results/our_casestudy_...> RESUME_SUPERVISOR_DIR=<results/supervisor/...> scripts/run_case_gpt6luna.sh
 # reuses that run's worker XDG dirs and continues it in a fresh OpenCode session.
 declare -a RESUME_ARGS=()
 if [[ -n "${RESUME_RUN_DIR:-}" ]]; then
@@ -87,7 +87,7 @@ exec env -u OPENCODE_MODEL -u OPENCODE_VARIANT -u COQPATH -u ROCQPATH \
   OPENCODE_RUN_NOHUP=0 \
   PYTHONUNBUFFERED=1 \
   "OPENCODE_RESULTS_ROOT=$RESULTS_ROOT" \
-  "OPENCODE_RESULT_PREFIX=our_casestudy_fullprosa_gpt6luna_run1" \
+  "OPENCODE_RESULT_PREFIX=our_casestudy_fullprosa_gpt6luna_${CASE_NAME}" \
   "OPENCODE_CONFIG_CONTENT=$provider_config" \
   "$PYTHON_BIN" "$SCRIPT_DIR/run_casestudy_our_minprosa.py" \
     --model "$MODEL" \

@@ -45,6 +45,7 @@ import { LLM } from "./llm"
 import { iife } from "@/util/iife"
 import { Shell } from "@/shell/shell"
 import { Truncate } from "@/tool/truncation"
+import { lastCompileVerdict } from "@/tool/compile-verdict"
 import { Trace } from "./trace"
 import { ProofContext } from "./proof-context"
 import { ProofProjection } from "./proof-projection"
@@ -562,6 +563,36 @@ export namespace SessionPrompt {
       }
     }
     return streak
+  }
+
+  // [replicate-prosa-buddy patch 2] OpenCode's doom-loop guard only compares tool calls inside one
+  // assistant message, so a model that issues one identical call per step (observed: >100 reads of the
+  // same lines, then >80 checkpoints of the same unchanged revision) is never stopped. Count the trailing
+  // streak of completed calls to the same tool on the same target, reset by any edit or delegation.
+  const REPEAT_GUARD_THRESHOLD = 8
+  const REPEAT_GUARD_RESET_TOOLS = new Set(["edit", "multiedit", "write", "apply_patch", "task", "proof_plan"])
+
+  function sameToolRepeatStreak(msgs: MessageV2.WithParts[]) {
+    let streak = 0
+    let tool: string | undefined
+    let target: string | undefined
+    for (let msgIndex = msgs.length - 1; msgIndex >= 0; msgIndex--) {
+      const parts = msgs[msgIndex].parts
+      for (let partIndex = parts.length - 1; partIndex >= 0; partIndex--) {
+        const part = parts[partIndex]
+        if (part.type !== "tool" || part.state.status !== "completed") continue
+        if (REPEAT_GUARD_RESET_TOOLS.has(part.tool)) return { streak, tool, target }
+        const input = part.state.input as Record<string, unknown>
+        const partTarget = String(input.filePath ?? input.file ?? input.path ?? "")
+        if (tool === undefined) {
+          tool = part.tool
+          target = partTarget
+        }
+        if (part.tool !== tool || partTarget !== target) return { streak, tool, target }
+        streak += 1
+      }
+    }
+    return { streak, tool, target }
   }
 
   /** @internal Exported for regression tests of materialization liveness. */
@@ -1232,6 +1263,36 @@ export namespace SessionPrompt {
         (recoveredProofEditTransaction?.recovered || recoveredProofEditTransaction?.handed_off) &&
         recoveredProofEditTransaction.staged
       ) {
+        // [replicate-prosa-buddy patch 1] The recovery reminder used to repeat "read the target .v
+        // file" on every turn, even after read.ts had acknowledged the staged revision
+        // (acknowledgeStagedRead), so models re-read the file indefinitely. Ask for the read only
+        // while it is still required; afterwards point at the action that clears validation_pending.
+        const stagedReadRequired = ProofEditTransaction.requiresStagedRead(
+          sessionID,
+          recoveredProofEditTransaction.file,
+        )
+        const verdict = lastCompileVerdict(sessionID)
+        const revisionAlreadyCompiled = verdict?.sourceHash === recoveredProofEditTransaction.source_hash
+        // [replicate-prosa-buddy patch 6] If the theorem terminator was switched to `Qed.` while a
+        // lemma-owned region still contains `admit`, every compile fails at the terminator, so the draft
+        // never gets the compiler receipt the scheduler needs before it dispatches that region (run 07).
+        const stagedSource = ProofEditTransaction.source(sessionID, recoveredProofEditTransaction.file)
+        const prematureQed =
+          revisionAlreadyCompiled &&
+          verdict!.status === "error" &&
+          /Attempt to|given up goals|incomplete proof/i.test(verdict!.detail ?? "") &&
+          stagedSource !== undefined &&
+          /\badmit\./.test(stagedSource)
+        const validationNextAction = !revisionAlreadyCompiled
+          ? "Next action: run `checkpoint` (or `coqc`) on the target file to certify this exact staged revision, then continue with the smallest edit, lemma dispatch, or final terminator edit indicated by the result."
+          : [
+              `\`${verdict!.tool}\` has already compiled this exact staged revision (${verdict!.repeats} time(s); source_hash unchanged) with result: ${verdict!.status}${verdict!.detail ? ` | ${verdict!.detail}` : ""}.`,
+              "Re-running checkpoint/coqc on unchanged source returns the same result and cannot clear validation_pending. Do not recompile until the source changes.",
+              "Act on that result instead: make the smallest proof edit that addresses it (for a normal-form or plan-drift blocker, make the region target match its contract or submit the single allowed `proof_plan` repair), then run checkpoint once on the new revision.",
+              prematureQed
+                ? "This error is at the theorem terminator: the theorem ends with `Qed.` while a lemma-owned proof_region still contains `admit.`. Restore the terminator to `Admitted.` (edit only that line) so the draft compiles, then run checkpoint once. A compiler-backed receipt for that revision lets the scheduler dispatch the pending region to its lemma worker. Switch back to `Qed.` only after every region is solved."
+                : undefined,
+            ].filter((line): line is string => Boolean(line)).join("\n")
         runtimeContext.push(
           runtimeContextMessage(
             [
@@ -1241,11 +1302,22 @@ export namespace SessionPrompt {
               `revision: ${recoveredProofEditTransaction.revision}`,
               `source_hash: ${recoveredProofEditTransaction.source_hash}`,
               `validation_pending: ${recoveredProofEditTransaction.validation_pending}`,
+              `staged_read_synchronized: ${!stagedReadRequired}`,
               "The recovered staged source exposed by read/edit/multiedit/write/apply_patch/checkpoint/coqc is the authoritative proof state for this turn.",
               "The ordinary workspace file on disk may intentionally be older until a compiler-accepted transaction snapshot is committed.",
-              "Before lemma dispatch, proof planning, Coq-session use, or proof edits, read the target .v file through the read tool. The controller will reject those state-dependent actions until this staged-revision resynchronization read occurs. checkpoint/coqc are safe before that read because they compile the authoritative staged source directly.",
-              "Do not use bash, cat, or a direct disk read to reconstruct proof state, and do not rewrite compiler-certified regions merely because the disk file is stale.",
-              "Read the target through the read tool and continue with the smallest edit against that staged revision. If finalization reports only the theorem terminator remains, edit only that terminator and run the final checkpoint/coqc.",
+              ...(stagedReadRequired
+                ? [
+                    "Before lemma dispatch, proof planning, Coq-session use, or proof edits, read the target .v file through the read tool. The controller will reject those state-dependent actions until this staged-revision resynchronization read occurs. checkpoint/coqc are safe before that read because they compile the authoritative staged source directly.",
+                    "Do not use bash, cat, or a direct disk read to reconstruct proof state, and do not rewrite compiler-certified regions merely because the disk file is stale.",
+                    "Read the target through the read tool and continue with the smallest edit against that staged revision. If finalization reports only the theorem terminator remains, edit only that terminator and run the final checkpoint/coqc.",
+                  ]
+                : [
+                    "The staged revision has already been read through the read tool in this session; the resynchronization requirement is satisfied. Do not re-read the file to satisfy this notice: further reads do not change the transaction state.",
+                    "Do not use bash, cat, or a direct disk read to reconstruct proof state, and do not rewrite compiler-certified regions merely because the disk file is stale.",
+                    recoveredProofEditTransaction.validation_pending
+                      ? validationNextAction
+                      : "Continue with the smallest edit against this staged revision. If finalization reports only the theorem terminator remains, edit only that terminator and run the final checkpoint/coqc.",
+                  ]),
               recoveredProofEditTransaction.validation_pending
                 ? "The controller will not dispatch an ordinary lemma task from this draft until the exact staged revision receives a compiler-backed checkpoint/coqc receipt."
                 : undefined,
@@ -1253,6 +1325,21 @@ export namespace SessionPrompt {
             ].filter((line): line is string => Boolean(line)).join("\n"),
           ),
         )
+      }
+      {
+        const repeat = sameToolRepeatStreak(msgs)
+        if (repeat.tool && repeat.streak >= REPEAT_GUARD_THRESHOLD) {
+          runtimeContext.push(
+            runtimeContextMessage(
+              [
+                "<repetition-guard>",
+                `The last ${repeat.streak} tool calls were all \`${repeat.tool}\`${repeat.target ? ` on ${path.basename(repeat.target)}` : ""}, with no edit, plan revision, or delegation in between. Repeating it does not change the proof state and returns the same information.`,
+                `Do not call \`${repeat.tool}\` on the same target again now. Take a different action that changes state: edit the proof or the region target to address the latest compiler/checkpoint result, submit an available \`proof_plan\` repair, or delegate through the workflow. If you are genuinely blocked, state the exact blocker and end your turn.`,
+                "</repetition-guard>",
+              ].join("\n"),
+            ),
+          )
+        }
       }
       if (
         fallbackGuard &&

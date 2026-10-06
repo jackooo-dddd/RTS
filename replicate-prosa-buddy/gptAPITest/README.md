@@ -1,4 +1,4 @@
-# gptAPI test
+# gptAPITest
 
 A minimal OpenAI Python SDK (Responses API) experiment against a local
 [CLIProxyAPI](https://github.com/router-for-me/CLIProxyAPI) proxy, which forwards
@@ -19,7 +19,7 @@ model `gpt-6-luna`.
 ## Run
 
 ```bash
-cd "/Users/shunqiwang/CityuHK/Research/Lean/TranslationProof/replicate-prosa-buddy/gptAPI test"
+cd "/Users/shunqiwang/CityuHK/Research/Lean/TranslationProof/replicate-prosa-buddy/gptAPITest"
 .venv/bin/python test_api.py                                                    # "Reply with exactly: CLIProxyAPI works"
 .venv/bin/python test_api.py "Explain in two sentences what a theorem prover is."
 MODEL=gpt-6-sol .venv/bin/python test_api.py                                    # another model

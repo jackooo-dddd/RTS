@@ -78,7 +78,7 @@ export namespace ProofProjection {
   }
 
   function stagedLemmaReminder(context: StagedLemmaContext) {
-    const rel = path.relative(Instance.worktree, context.file)
+    const rel = path.relative(Instance.directory, context.file) // [replicate-prosa-buddy patch 9] workspace-relative (was worktree-relative)
     const inputs = context.assignment.obligation?.input ?? []
     return [
       "<proof-context-lemma-assignment>",
@@ -165,7 +165,7 @@ export namespace ProofProjection {
     const lines: string[] = []
     if (!snap) return lines
 
-    const rel = path.relative(Instance.worktree, snap.file)
+    const rel = path.relative(Instance.directory, snap.file) // [replicate-prosa-buddy patch 9] workspace-relative (was worktree-relative)
     lines.push("<proof-context-fixer>")
     lines.push(`File: ${rel}  Position: ${snap.position.line + 1}:${snap.position.character + 1}`)
 
@@ -203,7 +203,7 @@ export namespace ProofProjection {
     if (stagedLemma) {
       lines.push(...stagedLemmaReminder(stagedLemma))
     } else if (snap) {
-      const rel = path.relative(Instance.worktree, snap.file)
+      const rel = path.relative(Instance.directory, snap.file) // [replicate-prosa-buddy patch 9] workspace-relative (was worktree-relative)
       lines.push("<proof-context-lemma>")
       lines.push(`File: ${rel}  Position: ${snap.position.line + 1}:${snap.position.character + 1}`)
 
@@ -271,7 +271,7 @@ export namespace ProofProjection {
     const lines: string[] = []
     if (!snap) return lines
 
-    const rel = path.relative(Instance.worktree, snap.file)
+    const rel = path.relative(Instance.directory, snap.file) // [replicate-prosa-buddy patch 9] workspace-relative (was worktree-relative)
     lines.push("<proof-context-whole-lemma>")
     lines.push(`File: ${rel}  Position: ${snap.position.line + 1}:${snap.position.character + 1}`)
 
@@ -316,7 +316,7 @@ export namespace ProofProjection {
     const lines: string[] = []
     if (!snap) return lines
 
-    const rel = path.relative(Instance.worktree, snap.file)
+    const rel = path.relative(Instance.directory, snap.file) // [replicate-prosa-buddy patch 9] workspace-relative (was worktree-relative)
     lines.push("<proof-context-explorer>")
     lines.push(`File: ${rel}  Position: ${snap.position.line + 1}:${snap.position.character + 1}`)
 
@@ -354,7 +354,7 @@ export namespace ProofProjection {
     const lines: string[] = []
     if (!snap) return lines
 
-    const rel = path.relative(Instance.worktree, snap.file)
+    const rel = path.relative(Instance.directory, snap.file) // [replicate-prosa-buddy patch 9] workspace-relative (was worktree-relative)
     lines.push("<proof-context-diagnoser>")
     lines.push(`File: ${rel}  Position: ${snap.position.line + 1}:${snap.position.character + 1}`)
 

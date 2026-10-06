@@ -174,7 +174,7 @@ export namespace ProofContext {
    * Render a snapshot as text for prompt injection.
    */
   export function render(snap: ProofSnapshot): string {
-    const rel = path.relative(Instance.worktree, snap.file)
+    const rel = path.relative(Instance.directory, snap.file) // [replicate-prosa-buddy patch 9] workspace-relative (was worktree-relative)
     const lines: string[] = [
       `File: ${rel}  Position: ${snap.position.line + 1}:${snap.position.character + 1}`,
     ]
