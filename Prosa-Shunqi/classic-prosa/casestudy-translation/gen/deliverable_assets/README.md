@@ -7,7 +7,7 @@ schedules, service, busy intervals, and response-time analyses. The package cont
   `Prosa/Classic`).
 - **Classic Prosa**: all 190 source files of classic Prosa (models, utilities, implementations, and the
   uniprocessor, global, APA, jitter, self-suspension and sustainability analyses), under `Prosa/Classic/`.
-- **A proof benchmark**: 23 case studies from real-time systems papers, stated in Lean over classic Prosa,
+- **A proof benchmark**: 24 case studies from real-time systems papers, stated in Lean over classic Prosa,
   with a checker for testing whether a model (or a person) can prove them. See
   [`benchmark/README.md`](benchmark/README.md).
 - **A second benchmark, of Prosa's own theorems**: the 130 theorems (65 training, 65 test, levels 1–7) of
@@ -88,7 +88,7 @@ once a job has completed, it stays completed. The proof builds on the library's 
   in Lean with a complete proof, but their statements were not compared one by one with the Rocq ones.
 - `CaseStudies/`: the case-study benchmark, one folder per task, `CaseStudies/<G>/<F>/`, containing the
   read-only statement `Statement.lean` (`<theorem>_statement : Prop` and the definitions it uses), the hint
-  `proof.tex` (the paper's statement and proof sketch in LaTeX; 21 of the 23 tasks have one), and the
+  `proof.tex` (the paper's statement and proof sketch in LaTeX; 22 of the 24 tasks have one), and the
   workspace `Solution.lean`, which ends in `sorry`.
 - `benchmark/`: the task list, the checker, and the instructions for running the case-study benchmark.
 - `benchmark/prosa-theorems/`: ProsaBuddy's 130 Prosa theorems (task list, `prepare.py`, `check.py`,
@@ -118,6 +118,7 @@ once a job has completed, it stays completed. The proof builds on the library's 
 | `2014-RTCSA-Lemma5` | `CaseStudies/RTCSA2014/Lemma5/` | `CaseStudies.RTCSA2014.Lemma5.ResponseTimeAnalysisFP.Lemma5_14_statement` | `proof.tex` |
 | `2014-RTCSA-Theorem3` | `CaseStudies/RTCSA2014/Theorem3/` | `CaseStudies.RTCSA2014.Theorem3.ResponseTimeAnalysisFP.Theorem3_14_statement` | `proof.tex` |
 | `2015-BOOK-Lemma18.1` | `CaseStudies/BOOK2015/Lemma18_1/` | `CaseStudies.BOOK2015.Lemma18_1.ResponseTimeAnalysisFP.Lemma18_1_15_statement` | `proof.tex` |
+| `2015-book-Theorem18_6` | `CaseStudies/BOOK2015/Theorem18_6/` | `CaseStudies.BOOK2015.Theorem18_6.Theorem18_6_statement` | `proof.tex` |
 | `2015-RTAS-Lemma8` | `CaseStudies/RTAS2015/Lemma8/` | `CaseStudies.RTAS2015.Lemma8.ResponseTimeAnalysisFP.bertogna_cirinei_response_time_bound_fp_statement` | `proof.tex` |
 
 ## License

@@ -182,6 +182,13 @@ failed tactic was reported as the first notation warning (kind `environment_prob
 the lemma only saw the warning). Warning blocks are now dropped and the summary starts at the first `Error` (with its
 `File ... line ...` location, up to 8 lines). The feedback kinds are unchanged.
 
+**Patch 14: ignore stale region dependencies** (`session/proof-workflow.ts`, materialization review; diff
+`patches/06-stale-dependency-tolerance.patch`, 2026-10-08). In 2015-BOOK-Lemma18.1 run `20261008_131220` an accepted
+plan repair removed node `pointwise_cap`, but the `fp_aggregate`/`gn_aggregate` region markers kept
+`depends_on: pointwise_cap`. Every checkpoint reported a dependency mismatch, no lemma was dispatched, and five
+attempts used five retries in ~30 minutes. Dependencies naming a step that is not in the current plan are now
+ignored (logged as `patch 14: ...`); mismatches between existing plan steps are still reported.
+
 Patches 1-6 were active in the successful Theorem3 attempt; patches 7-10 fix failures observed in run 07 and were
 written while its final attempt was already running, so they have not yet been exercised in a successful run.
 

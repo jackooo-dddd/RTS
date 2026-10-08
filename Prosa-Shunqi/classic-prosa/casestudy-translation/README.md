@@ -6,7 +6,7 @@ tier S 38 files · tier P 11 files · v0.6 `util` dependencies: 14 / 14 already 
 all files processed · last update: 2026-10-02
 <!-- STATUS_END -->
 
-Goal: translate exactly the Classic Prosa files needed for the 23 `RTS_Papers` case studies, so
+Goal: translate exactly the Classic Prosa files needed for the 24 `RTS_Papers` case studies, so
 that their statements can be written in Lean and later proved there.
 
 ## Source authority
@@ -127,7 +127,7 @@ note. Keep the table below and `file_order.csv` in sync.
 
 ## Case studies
 
-All 23 case-study statements become writable once ranks 1–42 are accepted: after rank 38 for
+All 24 case-study statements become writable once ranks 1–42 are accepted: after rank 38 for
 2009-RTSS-Lemma5, 2009-RTSS-Theorem2 and 2014-RTCSA-Lemma4, and after rank 41 for
 2015-RTAS-Lemma8. See [`case_studies.csv`](case_studies.csv).
 
@@ -140,6 +140,7 @@ All 23 case-study statements become writable once ranks 1–42 are accepted: aft
 | 2005-ECRTS Lemma3/Lemma4/Theorem6 | global EDF Bertogna–Cirinei proof steps | 36, 40, 45, 48, 49 |
 | 2007-RTSS-Theorem3 | global FP Bertogna–Cirinei proof steps | 36, 40, 44, 47 |
 | 2009-RTSS (11), 2014-RTCSA (3), 2015-BOOK-Lemma18.1 | none in classic: new proofs on the FP infrastructure | 36, 47 |
+| 2015-book-Theorem18_6 | none in classic: a self-contained model of the book's two analyses (only the classic task model) | — |
 
 The case-study files also contain their own local definitions (105 names, 133 distinct
 variants across files). Translate those together with each case study, after rank 42.

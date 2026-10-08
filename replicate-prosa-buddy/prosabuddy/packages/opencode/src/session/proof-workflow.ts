@@ -1926,7 +1926,22 @@ export namespace SessionProofWorkflow {
     for (const [id, node] of delegated) {
       const block = observedByNode.get(id)?.[0]
       if (!block) continue
-      if (!sameMetadataList(node.depends_on, block.dependsOn)) {
+      // [replicate-prosa-buddy patch 14] A region marker may still list a dependency on a plan node that an
+      // accepted repair revision removed (2015-BOOK-Lemma18.1 run 20261008_131220: `pointwise_cap` was dropped
+      // from the plan, markers kept `depends_on: pointwise_cap`; every checkpoint reported a dependency
+      // mismatch, no lemma was dispatched and attempts burned retries). Such a dependency names no current
+      // plan step, so it is stale metadata, not an ordering constraint: ignore it. Mismatches between
+      // existing plan steps are still reported.
+      const observedDependsOn = block.dependsOn.filter((dep) => {
+        const known = planNodes.has(dep.trim())
+        if (!known && dep.trim())
+          log.info("patch 14: ignoring region dependency on a step absent from the current plan", {
+            plan_node: id,
+            stale_dependency: dep,
+          })
+        return known
+      })
+      if (!sameMetadataList(node.depends_on, observedDependsOn)) {
         dependencyMismatches.push({
           plan_node: id,
           expected: normalizedMetadataList(node.depends_on),

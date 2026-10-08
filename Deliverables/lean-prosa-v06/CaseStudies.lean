@@ -20,6 +20,7 @@ import CaseStudies.RTCSA2014.Lemma4.Statement
 import CaseStudies.RTCSA2014.Lemma5.Statement
 import CaseStudies.RTCSA2014.Theorem3.Statement
 import CaseStudies.BOOK2015.Lemma18_1.Statement
+import CaseStudies.BOOK2015.Theorem18_6.Statement
 import CaseStudies.RTAS2015.Lemma8.Statement
 
-/-! The 23 case-study statements (benchmark tasks); see `benchmark/README.md`. -/
+/-! The 24 case-study statements (benchmark tasks); see `benchmark/README.md`. -/

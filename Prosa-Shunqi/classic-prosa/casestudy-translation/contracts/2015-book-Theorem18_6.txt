@@ -1,0 +1,425 @@
+@task_at
+     : forall sporadic_task : eqType,
+       taskset_of sporadic_task -> sporadic_task -> nat -> sporadic_task
+task_at =
+fun (sporadic_task : eqType) (ts : taskset_of sporadic_task)
+  (default_task : sporadic_task) =>
+[eta nth default_task ts]
+     : forall {sporadic_task : eqType},
+       taskset_of sporadic_task -> sporadic_task -> nat -> sporadic_task
+
+Arguments task_at {sporadic_task} ts default_task k%nat_scope
+@higher_priority_tasks_of
+     : forall sporadic_task : eqType,
+       taskset_of sporadic_task -> nat -> seq sporadic_task
+higher_priority_tasks_of =
+fun (sporadic_task : eqType) (ts : taskset_of sporadic_task) => take^~ ts
+     : forall {sporadic_task : eqType},
+       taskset_of sporadic_task -> nat -> seq sporadic_task
+
+Arguments higher_priority_tasks_of {sporadic_task} ts k%nat_scope
+@lower_priority_tasks_do_not_interfere
+     : forall sporadic_task : eqType,
+       taskset_of sporadic_task ->
+       sporadic_task ->
+       (sporadic_task -> sporadic_task -> time -> time) -> Prop
+lower_priority_tasks_do_not_interfere =
+fun (sporadic_task : eqType) (ts : taskset_of sporadic_task)
+  (default_task : sporadic_task)
+  (ftp_interference : sporadic_task -> sporadic_task -> time -> time) =>
+forall (i k : nat) (R : time),
+k < size ts ->
+i < size ts ->
+k < i ->
+ftp_interference (task_at ts default_task i) (task_at ts default_task k) R =
+0
+     : forall {sporadic_task : eqType},
+       taskset_of sporadic_task ->
+       sporadic_task ->
+       (sporadic_task -> sporadic_task -> time -> time) -> Prop
+
+Arguments lower_priority_tasks_do_not_interfere {sporadic_task} 
+  ts default_task ftp_interference%function_scope
+@ftp_total_interference_18_1
+     : forall sporadic_task : eqType,
+       taskset_of sporadic_task ->
+       sporadic_task ->
+       nat ->
+       (sporadic_task -> sporadic_task -> time -> time) ->
+       time -> time -> nat
+ftp_total_interference_18_1 =
+fun (sporadic_task : eqType) (ts : taskset_of sporadic_task)
+  (default_task : sporadic_task) (num_cpus : nat)
+  (ftp_interference : sporadic_task -> sporadic_task -> time -> time)
+  (k R : time) =>
+(\sum_(hp_tsk <- higher_priority_tasks_of ts k)
+    ftp_interference hp_tsk (task_at ts default_task k) R)
+%/ num_cpus
+     : forall {sporadic_task : eqType},
+       taskset_of sporadic_task ->
+       sporadic_task ->
+       nat ->
+       (sporadic_task -> sporadic_task -> time -> time) ->
+       time -> time -> nat
+
+Arguments ftp_total_interference_18_1 {sporadic_task} 
+  ts default_task num_cpus%nat_scope ftp_interference%function_scope 
+  k R
+@generic_workload_bound_17_3
+     : forall sporadic_task : eqType,
+       (sporadic_task -> time) ->
+       (sporadic_task -> time) -> sporadic_task -> time -> time -> nat
+generic_workload_bound_17_3 =
+fun (sporadic_task : eqType) (task_cost task_period : sporadic_task -> time)
+  (tsk : sporadic_task) (Rub_i L : time) =>
+let C := task_cost tsk in
+let T := task_period tsk in
+(L + Rub_i - C) %/ T * C + minn C ((L + Rub_i - C) %% T)
+     : forall {sporadic_task : eqType},
+       (sporadic_task -> time) ->
+       (sporadic_task -> time) -> sporadic_task -> time -> time -> nat
+
+Arguments generic_workload_bound_17_3 {sporadic_task}
+  (task_cost task_period)%function_scope tsk Rub_i 
+  L
+@ftp_bcl_workload_bound_18_2
+     : forall sporadic_task : eqType,
+       (sporadic_task -> time) ->
+       (sporadic_task -> time) ->
+       (sporadic_task -> time) -> sporadic_task -> sporadic_task -> nat
+ftp_bcl_workload_bound_18_2 =
+fun (sporadic_task : eqType)
+  (task_cost task_period task_deadline : sporadic_task -> time)
+  (hp_tsk tsk : sporadic_task) =>
+let C := task_cost hp_tsk in
+let T := task_period hp_tsk in
+let D := task_deadline hp_tsk in
+let Dk := task_deadline tsk in
+(Dk + D - C) %/ T * C + minn C ((Dk + D - C) %% T)
+     : forall {sporadic_task : eqType},
+       (sporadic_task -> time) ->
+       (sporadic_task -> time) ->
+       (sporadic_task -> time) -> sporadic_task -> sporadic_task -> nat
+
+Arguments ftp_bcl_workload_bound_18_2 {sporadic_task}
+  (task_cost task_period task_deadline)%function_scope 
+  hp_tsk tsk
+@ftp_bcl_test_18_2
+     : forall sporadic_task : eqType,
+       (sporadic_task -> time) ->
+       (sporadic_task -> time) ->
+       (sporadic_task -> time) ->
+       taskset_of sporadic_task -> sporadic_task -> nat -> nat -> bool
+ftp_bcl_test_18_2 =
+fun (sporadic_task : eqType)
+  (task_cost task_period task_deadline : sporadic_task -> time)
+  (ts : taskset_of sporadic_task) (default_task : sporadic_task)
+  (num_cpus k : nat) =>
+let tsk := task_at ts default_task k in
+\sum_(hp_tsk <- higher_priority_tasks_of ts k)
+   minn (task_deadline tsk - task_cost tsk)
+     (ftp_bcl_workload_bound_18_2 task_cost task_period task_deadline hp_tsk
+        tsk) <
+num_cpus * (task_deadline tsk - task_cost tsk)
+     : forall {sporadic_task : eqType},
+       (sporadic_task -> time) ->
+       (sporadic_task -> time) ->
+       (sporadic_task -> time) ->
+       taskset_of sporadic_task -> sporadic_task -> nat -> nat -> bool
+
+Arguments ftp_bcl_test_18_2 {sporadic_task}
+  (task_cost task_period task_deadline)%function_scope 
+  ts default_task (num_cpus k)%nat_scope
+@ftp_rta_interference_test_18_3
+     : forall sporadic_task : eqType,
+       (sporadic_task -> time) ->
+       taskset_of sporadic_task ->
+       sporadic_task ->
+       nat ->
+       (sporadic_task -> sporadic_task -> time -> time) ->
+       nat -> time -> bool
+ftp_rta_interference_test_18_3 =
+fun (sporadic_task : eqType) (task_cost : sporadic_task -> time)
+  (ts : taskset_of sporadic_task) (default_task : sporadic_task)
+  (num_cpus : nat)
+  (ftp_interference : sporadic_task -> sporadic_task -> time -> time)
+  (k : nat) (Rub_k : time) =>
+let tsk := task_at ts default_task k in
+\sum_(hp_tsk <- higher_priority_tasks_of ts k)
+   minn (ftp_interference hp_tsk tsk Rub_k) (Rub_k - task_cost tsk + 1) <
+num_cpus * (Rub_k - task_cost tsk + 1)
+     : forall {sporadic_task : eqType},
+       (sporadic_task -> time) ->
+       taskset_of sporadic_task ->
+       sporadic_task ->
+       nat ->
+       (sporadic_task -> sporadic_task -> time -> time) ->
+       nat -> time -> bool
+
+Arguments ftp_rta_interference_test_18_3 {sporadic_task}
+  task_cost%function_scope ts default_task num_cpus%nat_scope
+  ftp_interference%function_scope k%nat_scope Rub_k
+@hp_response_bounds
+     : eqType -> Type
+hp_response_bounds =
+fun sporadic_task : eqType => seq (sporadic_task * time)
+     : eqType -> Type
+
+Arguments hp_response_bounds {sporadic_task}
+@response_bound_of
+     : forall sporadic_task : eqType,
+       (sporadic_task -> time) -> hp_response_bounds -> sporadic_task -> time
+response_bound_of =
+fun (sporadic_task : eqType) (task_cost : sporadic_task -> time) =>
+fix response_bound_of
+  (hp_bounds : hp_response_bounds) (tsk : sporadic_task) {struct hp_bounds} :
+    time :=
+  match hp_bounds with
+  | [::] => task_cost tsk
+  | (tsk', R) :: hp_bounds' =>
+      if tsk == tsk' then R else response_bound_of hp_bounds' tsk
+  end
+     : forall {sporadic_task : eqType},
+       (sporadic_task -> time) -> hp_response_bounds -> sporadic_task -> time
+
+Arguments response_bound_of {sporadic_task} task_cost%function_scope
+  hp_bounds tsk
+@ftp_rta_recurrence_18_4
+     : forall sporadic_task : eqType,
+       (sporadic_task -> time) ->
+       (sporadic_task -> time) ->
+       taskset_of sporadic_task ->
+       sporadic_task -> nat -> hp_response_bounds -> nat -> time -> nat
+ftp_rta_recurrence_18_4 =
+fun (sporadic_task : eqType) (task_cost task_period : sporadic_task -> time)
+  (ts : taskset_of sporadic_task) (default_task : sporadic_task)
+  (num_cpus : nat) (hp_bounds : hp_response_bounds) 
+  (k : nat) (Rub_k : time) =>
+let tsk := task_at ts default_task k in
+task_cost tsk +
+(\sum_(hp_tsk <- higher_priority_tasks_of ts k)
+    minn
+      (generic_workload_bound_17_3 task_cost task_period hp_tsk
+         (response_bound_of task_cost hp_bounds hp_tsk) Rub_k)
+      (Rub_k - task_cost tsk + 1))
+%/ num_cpus
+     : forall {sporadic_task : eqType},
+       (sporadic_task -> time) ->
+       (sporadic_task -> time) ->
+       taskset_of sporadic_task ->
+       sporadic_task -> nat -> hp_response_bounds -> nat -> time -> nat
+
+Arguments ftp_rta_recurrence_18_4 {sporadic_task}
+  (task_cost task_period)%function_scope ts default_task 
+  num_cpus%nat_scope hp_bounds k%nat_scope Rub_k
+@iterate_18_4
+     : forall sporadic_task : eqType,
+       (sporadic_task -> time) ->
+       (sporadic_task -> time) ->
+       taskset_of sporadic_task ->
+       sporadic_task -> nat -> hp_response_bounds -> nat -> nat -> time
+iterate_18_4 =
+fun (sporadic_task : eqType) (task_cost task_period : sporadic_task -> time)
+  (ts : taskset_of sporadic_task) (default_task : sporadic_task)
+  (num_cpus : nat) (hp_bounds : hp_response_bounds) 
+  (k steps : nat) =>
+iter steps
+  (ftp_rta_recurrence_18_4 task_cost task_period ts default_task num_cpus
+     hp_bounds k)
+  (task_cost (task_at ts default_task k))
+     : forall {sporadic_task : eqType},
+       (sporadic_task -> time) ->
+       (sporadic_task -> time) ->
+       taskset_of sporadic_task ->
+       sporadic_task -> nat -> hp_response_bounds -> nat -> nat -> time
+
+Arguments iterate_18_4 {sporadic_task} (task_cost task_period)%function_scope
+  ts default_task num_cpus%nat_scope hp_bounds (k steps)%nat_scope
+@carry_in_workload_17_7
+     : forall sporadic_task : eqType,
+       (sporadic_task -> time) ->
+       (sporadic_task -> time) ->
+       hp_response_bounds -> sporadic_task -> sporadic_task -> time -> nat
+carry_in_workload_17_7 =
+fun (sporadic_task : eqType) (task_cost task_period : sporadic_task -> time)
+  (hp_bounds : hp_response_bounds) (hp_tsk tsk : sporadic_task) 
+  (L : time) =>
+minn
+  (generic_workload_bound_17_3 task_cost task_period hp_tsk
+     (response_bound_of task_cost hp_bounds hp_tsk) L)
+  (L - task_cost tsk + 1)
+     : forall {sporadic_task : eqType},
+       (sporadic_task -> time) ->
+       (sporadic_task -> time) ->
+       hp_response_bounds -> sporadic_task -> sporadic_task -> time -> nat
+
+Arguments carry_in_workload_17_7 {sporadic_task}
+  (task_cost task_period)%function_scope hp_bounds 
+  hp_tsk tsk L
+@non_carry_in_workload_17_8
+     : forall sporadic_task : eqType,
+       (sporadic_task -> time) ->
+       (sporadic_task -> time) ->
+       sporadic_task -> sporadic_task -> time -> nat
+non_carry_in_workload_17_8 =
+fun (sporadic_task : eqType) (task_cost task_period : sporadic_task -> time)
+  (hp_tsk tsk : sporadic_task) (L : time) =>
+let C := task_cost hp_tsk in
+let T := task_period hp_tsk in
+minn (L %/ T * C + minn C (L %% T)) (L - task_cost tsk + 1)
+     : forall {sporadic_task : eqType},
+       (sporadic_task -> time) ->
+       (sporadic_task -> time) ->
+       sporadic_task -> sporadic_task -> time -> nat
+
+Arguments non_carry_in_workload_17_8 {sporadic_task}
+  (task_cost task_period)%function_scope hp_tsk tsk 
+  L
+@carry_in_difference_17_9
+     : forall sporadic_task : eqType,
+       (sporadic_task -> time) ->
+       (sporadic_task -> time) ->
+       hp_response_bounds -> sporadic_task -> sporadic_task -> time -> nat
+carry_in_difference_17_9 =
+fun (sporadic_task : eqType) (task_cost task_period : sporadic_task -> time)
+  (hp_bounds : hp_response_bounds) (hp_tsk tsk : sporadic_task) 
+  (L : time) =>
+carry_in_workload_17_7 task_cost task_period hp_bounds hp_tsk tsk L -
+non_carry_in_workload_17_8 task_cost task_period hp_tsk tsk L
+     : forall {sporadic_task : eqType},
+       (sporadic_task -> time) ->
+       (sporadic_task -> time) ->
+       hp_response_bounds -> sporadic_task -> sporadic_task -> time -> nat
+
+Arguments carry_in_difference_17_9 {sporadic_task}
+  (task_cost task_period)%function_scope hp_bounds 
+  hp_tsk tsk L
+@largest_carry_in_differences
+     : forall sporadic_task : eqType,
+       (sporadic_task -> time) ->
+       (sporadic_task -> time) ->
+       taskset_of sporadic_task ->
+       sporadic_task -> nat -> hp_response_bounds -> nat -> time -> seq nat
+largest_carry_in_differences =
+fun (sporadic_task : eqType) (task_cost task_period : sporadic_task -> time)
+  (ts : taskset_of sporadic_task) (default_task : sporadic_task)
+  (num_cpus : nat) (hp_bounds : hp_response_bounds) 
+  (k : nat) (L : time) =>
+let tsk := task_at ts default_task k in
+let deltas :=
+  [seq carry_in_difference_17_9 task_cost task_period hp_bounds hp_tsk tsk L
+     | hp_tsk <- higher_priority_tasks_of ts k]
+  in
+take num_cpus.-1 (sort geq deltas)
+     : forall {sporadic_task : eqType},
+       (sporadic_task -> time) ->
+       (sporadic_task -> time) ->
+       taskset_of sporadic_task ->
+       sporadic_task -> nat -> hp_response_bounds -> nat -> time -> seq nat
+
+Arguments largest_carry_in_differences {sporadic_task}
+  (task_cost task_period)%function_scope ts default_task 
+  num_cpus%nat_scope hp_bounds k%nat_scope L
+@ftp_rta_recurrence_18_5
+     : forall sporadic_task : eqType,
+       (sporadic_task -> time) ->
+       (sporadic_task -> time) ->
+       taskset_of sporadic_task ->
+       sporadic_task -> nat -> hp_response_bounds -> nat -> time -> nat
+ftp_rta_recurrence_18_5 =
+fun (sporadic_task : eqType) (task_cost task_period : sporadic_task -> time)
+  (ts : taskset_of sporadic_task) (default_task : sporadic_task)
+  (num_cpus : nat) (hp_bounds : hp_response_bounds) 
+  (k : nat) (Rub_k : time) =>
+let tsk := task_at ts default_task k in
+task_cost tsk +
+(\sum_(hp_tsk <- higher_priority_tasks_of ts k)
+    non_carry_in_workload_17_8 task_cost task_period hp_tsk tsk Rub_k +
+ \sum_(delta <- largest_carry_in_differences task_cost task_period ts
+                  default_task num_cpus hp_bounds k Rub_k)
+    delta)
+%/ num_cpus
+     : forall {sporadic_task : eqType},
+       (sporadic_task -> time) ->
+       (sporadic_task -> time) ->
+       taskset_of sporadic_task ->
+       sporadic_task -> nat -> hp_response_bounds -> nat -> time -> nat
+
+Arguments ftp_rta_recurrence_18_5 {sporadic_task}
+  (task_cost task_period)%function_scope ts default_task 
+  num_cpus%nat_scope hp_bounds k%nat_scope Rub_k
+@iterate_18_5
+     : forall sporadic_task : eqType,
+       (sporadic_task -> time) ->
+       (sporadic_task -> time) ->
+       taskset_of sporadic_task ->
+       sporadic_task -> nat -> hp_response_bounds -> nat -> nat -> time
+iterate_18_5 =
+fun (sporadic_task : eqType) (task_cost task_period : sporadic_task -> time)
+  (ts : taskset_of sporadic_task) (default_task : sporadic_task)
+  (num_cpus : nat) (hp_bounds : hp_response_bounds) 
+  (k steps : nat) =>
+iter steps
+  (ftp_rta_recurrence_18_5 task_cost task_period ts default_task num_cpus
+     hp_bounds k)
+  (task_cost (task_at ts default_task k))
+     : forall {sporadic_task : eqType},
+       (sporadic_task -> time) ->
+       (sporadic_task -> time) ->
+       taskset_of sporadic_task ->
+       sporadic_task -> nat -> hp_response_bounds -> nat -> nat -> time
+
+Arguments iterate_18_5 {sporadic_task} (task_cost task_period)%function_scope
+  ts default_task num_cpus%nat_scope hp_bounds (k steps)%nat_scope
+@at_most_two_m_tasks
+     : forall sporadic_task : eqType, taskset_of sporadic_task -> nat -> bool
+at_most_two_m_tasks =
+fun (sporadic_task : eqType) (ts : taskset_of sporadic_task) (num_cpus : nat) =>
+size ts <= num_cpus.*2
+     : forall {sporadic_task : eqType},
+       taskset_of sporadic_task -> nat -> bool
+
+Arguments at_most_two_m_tasks {sporadic_task} ts num_cpus%nat_scope
+@theorems_18_4_and_18_5_are_equivalent
+     : forall sporadic_task : eqType,
+       (sporadic_task -> time) ->
+       (sporadic_task -> time) ->
+       taskset_of sporadic_task -> sporadic_task -> nat -> Prop
+theorems_18_4_and_18_5_are_equivalent =
+fun (sporadic_task : eqType) (task_cost task_period : sporadic_task -> time)
+  (ts : taskset_of sporadic_task) (default_task : sporadic_task)
+  (num_cpus : nat) =>
+forall (k : nat) (Rub_k : time),
+k < size ts ->
+returned_bound_by_18_4 task_cost task_period ts default_task num_cpus k Rub_k <->
+returned_bound_by_18_5 task_cost task_period ts default_task num_cpus k Rub_k
+     : forall {sporadic_task : eqType},
+       (sporadic_task -> time) ->
+       (sporadic_task -> time) ->
+       taskset_of sporadic_task -> sporadic_task -> nat -> Prop
+
+Arguments theorems_18_4_and_18_5_are_equivalent {sporadic_task}
+  (task_cost task_period)%function_scope ts default_task 
+  num_cpus%nat_scope
+@Theorem18_6
+     : forall (sporadic_task : eqType)
+         (task_cost task_period task_deadline : sporadic_task -> time)
+         (ts : taskset_of sporadic_task) (default_task : sporadic_task)
+         (num_cpus : nat),
+       0 < num_cpus ->
+       valid_sporadic_taskset task_cost task_period task_deadline ts ->
+       (forall tsk : sporadic_task,
+        tsk \in ts -> task_deadline tsk <= task_period tsk) ->
+       (sporadic_task -> sporadic_task -> time -> time) ->
+       (forall k : nat,
+        k < minn num_cpus (size ts) ->
+        returned_bound_by_18_4 task_cost task_period ts default_task num_cpus
+          k (task_cost (task_at ts default_task k)) /\
+        returned_bound_by_18_5 task_cost task_period ts default_task num_cpus
+          k (task_cost (task_at ts default_task k))) ->
+       at_most_two_m_tasks ts num_cpus ->
+       theorems_18_4_and_18_5_are_equivalent task_cost task_period ts
+         default_task num_cpus
+with arguments constr at level 99, constr and "[ pairs ( _ , _ ) | _ <- _ ]"
+defined at level 0 with arguments constr at level 1, constr at level 1
+have incompatible prefixes. One of them will likely not work.

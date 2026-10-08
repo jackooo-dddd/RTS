@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Export the standalone Lean package `lean-prosa-v06` (Prosa v0.6 + classic Prosa + the 23 case studies as a
+"""Export the standalone Lean package `lean-prosa-v06` (Prosa v0.6 + classic Prosa + the 24 case studies as a
 proof benchmark + ProsaBuddy's Prosa-theorem benchmark, see theorem_benchmark.py) and, separately, the reference
 solutions.
 
@@ -352,7 +352,15 @@ def main():
     write_frozen(out)
     print(f"library files {len(lib)}; tasks {len(tasks)}")
     # ProsaBuddy's Prosa-theorem benchmark (benchmark/prosa-theorems/), built from the exported library files
-    subprocess.run([sys.executable, str(HERE / "theorem_benchmark.py"), str(out)], check=True)
+    # It reads the pinned ProsaBuddy checkout (Validation/.work/prosabuddy-f692cb7); when that checkout is not on
+    # this machine, the previous package's folder is carried over unchanged (its inputs, the library files and
+    # ProsaBuddy's dataset, do not change between exports).
+    if (WS / "Validation/.work/prosabuddy-f692cb7").exists():
+        subprocess.run([sys.executable, str(HERE / "theorem_benchmark.py"), str(out)], check=True)
+    else:
+        shutil.copytree(old / "benchmark" / "prosa-theorems", out / "benchmark" / "prosa-theorems",
+                        ignore=shutil.ignore_patterns(".DS_Store"))
+        print("prosa-theorems: pinned ProsaBuddy checkout not present; carried over from", old)
 
 def write_frozen(out):
     """sha256 of every file a benchmark solution must not change: the library, the examples, each task's

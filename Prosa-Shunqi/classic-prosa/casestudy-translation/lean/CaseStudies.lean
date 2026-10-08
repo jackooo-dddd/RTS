@@ -25,9 +25,10 @@ import CaseStudies.RTCSA2014.Lemma4
 import CaseStudies.RTCSA2014.Lemma5
 import CaseStudies.RTCSA2014.Theorem3
 import CaseStudies.BOOK2015.Lemma18_1
+import CaseStudies.BOOK2015.Theorem18_6
 import CaseStudies.RTAS2015.Lemma8
 
 /-!
-Lean translations of the 23 RTS_Papers case studies over the classic Lean Prosa (see `README.md` in this folder
+Lean translations of the 24 RTS_Papers case studies over the classic Lean Prosa (see `README.md` in this folder
 for the status of each).
 -/

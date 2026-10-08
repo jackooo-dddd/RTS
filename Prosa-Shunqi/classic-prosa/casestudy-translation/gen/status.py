@@ -25,7 +25,8 @@ PATHS = {
     "2009-RTSS-Method1": "RTSS2009/Method1.lean", "2009-RTSS-Theorem1": "RTSS2009/Theorem1.lean",
     "2009-RTSS-Theorem2": "RTSS2009/Theorem2.lean", "2014-RTCSA-Lemma4": "RTCSA2014/Lemma4.lean",
     "2014-RTCSA-Lemma5": "RTCSA2014/Lemma5.lean", "2014-RTCSA-Theorem3": "RTCSA2014/Theorem3.lean",
-    "2015-BOOK-Lemma18.1": "BOOK2015/Lemma18_1.lean", "2015-RTAS-Lemma8": "RTAS2015/Lemma8.lean",
+    "2015-BOOK-Lemma18.1": "BOOK2015/Lemma18_1.lean", "2015-book-Theorem18_6": "BOOK2015/Theorem18_6.lean",
+    "2015-RTAS-Lemma8": "RTAS2015/Lemma8.lean",
 }
 PAPERS = {
     "2005-ECRTS": "Bertogna, Cirinei, Lipari — Improved Schedulability Analysis of EDF on Multiprocessor Platforms (ECRTS 2005)",
@@ -33,6 +34,7 @@ PAPERS = {
     "2009-RTSS": "Guan, Stigge, Yi, Yu — New Response Time Bounds for Fixed Priority Multiprocessor Scheduling (RTSS 2009)",
     "2014-RTCSA": "Improving the Response Time Analysis of Global Fixed-Priority Multiprocessor Scheduling (RTCSA 2014)",
     "2015-BOOK": "Baruah, Bertogna, Buttazzo — Multiprocessor Scheduling for Real-Time Systems (book, 2015), Lemma 18.1",
+    "2015-book": "Baruah, Bertogna, Buttazzo — Multiprocessor Scheduling for Real-Time Systems (book, 2015), Theorem 18.6",
     "2015-RTAS": "Linux push/pull scheduler with arbitrary processor affinities (2015), Lemma 8 (APA)",
 }
 NOTES = json.load(open(HERE / "status_notes.json")) if (HERE / "status_notes.json").exists() else {}

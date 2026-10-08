@@ -1,12 +1,12 @@
 # Case-study proof benchmark
 
-23 theorems from real-time scheduling papers, stated in Lean 4 over classic Prosa (`Prosa.Classic.*`). Each
+24 theorems from real-time scheduling papers, stated in Lean 4 over classic Prosa (`Prosa.Classic.*`). Each
 task asks for a complete, axiom-free Lean proof of one statement. The checker accepts a proof only if it
 proves exactly the frozen statement.
 
 The statements come from the Rocq case studies `RTS_Papers/<task>/…` written against classic Prosa. Each was
 translated to Lean with the same definitions, binders and hypotheses (see the docstring of each task's
-`Statement.lean`). All 23 are provable: reference proofs exist and are distributed separately (see
+`Statement.lean`). All 24 are provable: reference proofs exist and are distributed separately (see
 "Reference solutions" below).
 
 ## Papers and tasks
@@ -15,7 +15,7 @@ translated to Lean with the same definitions, binders and hypotheses (see the do
 - Bertogna, Cirinei — Response-Time Analysis for Globally Scheduled Symmetric Multiprocessor Platforms (RTSS 2007): `2007-RTSS-Theorem1`, `2007-RTSS-Theorem2`, `2007-RTSS-Theorem3`, `2007-RTSS-Theorem4`
 - Guan, Stigge, Yi, Yu — New Response Time Bounds for Fixed Priority Multiprocessor Scheduling (RTSS 2009): `2009-RTSS-Extend1_10`, `2009-RTSS-Lemma1`, `2009-RTSS-Lemma1_2`, `2009-RTSS-Lemma2-1`, `2009-RTSS-Lemma2-2`, `2009-RTSS-Lemma3`, `2009-RTSS-Lemma4`, `2009-RTSS-Lemma5`, `2009-RTSS-Method1`, `2009-RTSS-Theorem1`, `2009-RTSS-Theorem2`
 - Improving the Response Time Analysis of Global Fixed-Priority Multiprocessor Scheduling (RTCSA 2014): `2014-RTCSA-Lemma4`, `2014-RTCSA-Lemma5`, `2014-RTCSA-Theorem3`
-- Baruah, Bertogna, Buttazzo — Multiprocessor Scheduling for Real-Time Systems (book, 2015), Lemma 18.1: `2015-BOOK-Lemma18.1`
+- Baruah, Bertogna, Buttazzo — Multiprocessor Scheduling for Real-Time Systems (book, 2015): `2015-BOOK-Lemma18.1` (Lemma 18.1), `2015-book-Theorem18_6` (Theorem 18.6)
 - Linux push/pull scheduler with arbitrary processor affinities (2015), Lemma 8 (APA): `2015-RTAS-Lemma8`
 
 ## Layout
@@ -33,7 +33,7 @@ Each task has its own folder, `CaseStudies/<G>/<F>/` (for example `CaseStudies/R
 | `benchmark/tasks.json` | Task list (ids, folders, modules, statement and solution names, hint file) | no |
 | `benchmark/check.py` | The checker | no |
 
-21 of the 23 tasks have a hint; `2009-RTSS-Extend1_10` and `2009-RTSS-Method1` have none (their `hint_file` in
+22 of the 24 tasks have a hint; `2009-RTSS-Extend1_10` and `2009-RTSS-Method1` have none (their `hint_file` in
 `tasks.json` is `null`).
 
 ## Rules for a solution
@@ -103,11 +103,11 @@ Several case studies take earlier lemmas of their paper as hypotheses (for examp
 
 ## Reference solutions
 
-Reference proofs of all 23 tasks are in the separate folder `lean-prosa-v06-reference-solutions/`. Do not give
+Reference proofs of all 24 tasks are in the separate folder `lean-prosa-v06-reference-solutions/`. Do not give
 it to a model under evaluation. To verify them, copy its `CaseStudies/` folder over this one (it replaces each
 `Solution.lean` and adds the shared helper modules `CaseStudies/Support/*`) and run the checker:
 
 ```sh
 cp -R ../lean-prosa-v06-reference-solutions/CaseStudies .
-python3 benchmark/check.py          # 23/23 passed
+python3 benchmark/check.py          # 24/24 passed
 ```

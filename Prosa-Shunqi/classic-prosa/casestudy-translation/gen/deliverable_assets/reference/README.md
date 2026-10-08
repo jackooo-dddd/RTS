@@ -1,6 +1,6 @@
 # Reference solutions for the lean-prosa-v06 case-study benchmark
 
-Complete Lean proofs of all 23 benchmark tasks of `lean-prosa-v06` (see its `benchmark/README.md`).
+Complete Lean proofs of all 24 benchmark tasks of `lean-prosa-v06` (see its `benchmark/README.md`).
 **Keep this folder away from any model under evaluation.**
 
 - `CaseStudies/<G>/<F>/Solution.lean`: one proof per task, in the same task folder as in `lean-prosa-v06`.
@@ -16,7 +16,7 @@ To verify, from inside `lean-prosa-v06/`:
 
 ```sh
 cp -R ../lean-prosa-v06-reference-solutions/CaseStudies .
-python3 benchmark/check.py          # 23/23 passed
+python3 benchmark/check.py          # 24/24 passed
 ```
 
 Several case studies take earlier lemmas of their paper as hypotheses (for example `H_Lemma2_1` or
