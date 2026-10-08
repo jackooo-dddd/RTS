@@ -1,0 +1,22 @@
+Note that for all $k \leq M$, the minimal solution of (11) is trivially $C_k$, since in that case, $\Omega_k(x) < M$ for $x \leq C_k$ by definition. This matches the intuition that the $M$ highest priority tasks don't suffer any interference, since $M$ processors are available to accommodate them independently.
+
+We have now seen how an upper bound of the response time of $\tau_k$ can be derived, if a particular $\varphi$ is given. Since $\varphi$ is an open variable, we need to find an upper bound of all response times for all $\varphi$ to get a safe bound for the response time in general. Naively, it would seem that we have to enumerate all possible values of $\varphi$ and solve (11), to obtain a safe upper bound of $\tau_k$'s WCRT.
+
+However, as mentioned in Section IV-B, the computation of $W_k^{\mathrm{NC}}(\tau_i,x)$ and $W_k^{\mathrm{CI}}(\tau_i,x)$ is independent of $\varphi$. Thus, it turns out that $\Omega_k(x)$ is also independent of $\varphi$. Therefore, no matter what value of $\varphi$ we are dealing with, the solution of Equation (11) is always the same. And since $\chi-\varphi$ is an upper bound of $\tau_k$'s response time (with that particular $\varphi$), the maximal value and therefore general response time bound is $\chi$. Thus, we only need to do the RTA according to Lemma 4 with $t_0=r_k$ (i.e., $\varphi=0$). The derived solution is guaranteed to be an upper bound of $\tau_k$'s WCRT.
+
+Note that this observation can be regarded as a kind of \textit{critical instant} for multiprocessor fixed-priority scheduling. In the context of our analysis, $\varphi=0$ is guaranteed to be worst among all cases. Namely, we get the worst case when the earliest time instant after which all processors are occupied by higher-priority tasks occurs just before the release of $\tau_k$. Still, since this does not provide precise information about the worst-case release times of the higher priority tasks, we are left with a \textit{set} among which the real critical instant is found -- but this set is significantly smaller than the whole space of possible job sequences.
+
+We summarize the conclusion as the following theorem.
+
+\textbf{Theorem 1 ([OUR-RTA]).} \ \textit{Let $\chi$ be the minimal solution of the following Equation (12) by doing an iterative fixed point search of the right hand side starting with $x=C_k$.}
+\[
+x=\left\lceil \frac{\Omega_k(x)}{M} \right\rceil + C_k
+\tag{12}
+\]
+
+\textit{Then $\chi$ is an upper bound of $\tau_k$'s WCRT.}
+
+\bigskip
+
+\noindent
+\textit{Proof:} By Lemma 4 and the above discussion. \hfill $\blacksquare$

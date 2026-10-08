@@ -1,0 +1,138 @@
+diff -ruN a/packages/opencode/src/session/normal-form.ts b/packages/opencode/src/session/normal-form.ts
+--- a/packages/opencode/src/session/normal-form.ts	1970-01-01 08:00:00
++++ b/packages/opencode/src/session/normal-form.ts	2026-10-07 17:25:59
+@@ -0,0 +1,87 @@
++// [replicate-prosa-buddy patch 11b] Formatting-insensitive comparison of proof-plan normal forms.
++//
++// The materialization review compared a delegated region's `normal_form` contract with the accepted
++// plan's text after only whitespace/case normalization. In 2005-ECRTS-Lemma3 run 20261007_143032 the
++// two texts were the same statement but differed in (a) doubled backslashes (`\\sum` instead of
++// `\sum`, a JSON double-escaping slip in the model's edit that survived only inside the contract
++// comment, where the compiler never sees it) and (b) redundant outer parentheses. The review stayed
++// "drifted" for 39 checkpoints, its message did not say what differed, and no lemma was dispatched.
++//
++// `cosmetic` removes only such presentation differences; `describeDifference` reports the first
++// remaining difference so the prover can repair the right text.
++
++export namespace NormalFormText {
++  // Same algorithm as eraseBinderTypes in tool/coq-session.ts (patch 5); copied because coq-session
++  // imports proof-workflow, so importing it here would create a cycle.
++  // `forall x : T,` / `forall (x y : T) (z : U),` become `forall x y z,` (same for exists/fun).
++  export function eraseBinderTypes(text: string): string {
++    let out = ""
++    let index = 0
++    const keyword = /\b(forall|exists|fun)\s+/g
++    while (true) {
++      keyword.lastIndex = index
++      const match = keyword.exec(text)
++      if (!match) return out + text.slice(index)
++      out += text.slice(index, match.index) + match[1] + " "
++      const cursor = match.index + match[0].length
++      const terminator = match[1] === "fun" ? "=>" : ","
++      let depth = 0
++      let end = -1
++      for (let i = cursor; i < text.length; i++) {
++        const char = text[i]
++        if (char === "(" || char === "[" || char === "{") depth += 1
++        else if (char === ")" || char === "]" || char === "}") depth -= 1
++        else if (depth === 0 && text.startsWith(terminator, i)) {
++          end = i
++          break
++        }
++      }
++      if (end < 0) return out + text.slice(cursor)
++      const binders = text.slice(cursor, end).trim()
++      const groups = binders.startsWith("(")
++        ? [...binders.matchAll(/\(([^()]*)\)/g)].map((group) => group[1])
++        : [binders]
++      const names = groups.map((group) => {
++        const colon = group.indexOf(":")
++        return (colon >= 0 ? group.slice(0, colon) : group).trim()
++      })
++      out += names.filter(Boolean).join(" ") + (terminator === "," ? "," : " =>")
++      index = end + terminator.length
++    }
++  }
++
++  // Collapse doubled backslashes, erase binder types, then ignore parentheses, spacing, case and a
++  // final period.
++  export function cosmetic(text: string | undefined): string {
++    return eraseBinderTypes((text ?? "").replace(/\\{2,}/g, "\\"))
++      .replace(/[()]/g, " ")
++      .replace(/\s+/g, " ")
++      .replace(/\s+([,.])/g, "$1")
++      .trim()
++      .replace(/\.$/, "")
++      .toLowerCase()
++  }
++
++  export function sameModuloFormatting(a: string | undefined, b: string | undefined): boolean {
++    const left = cosmetic(a)
++    return left.length > 0 && left === cosmetic(b)
++  }
++
++  // Human-readable first difference after `cosmetic` normalization, for checkpoint blockers.
++  export function describeDifference(plan: string | undefined, region: string | undefined, context = 45): string {
++    const a = cosmetic(plan)
++    const b = cosmetic(region)
++    if (!b) return "the region has no normal_form contract; copy the accepted plan normal_form into it"
++    let i = 0
++    while (i < a.length && i < b.length && a[i] === b[i]) i++
++    const from = Math.max(0, i - 15)
++    const snippet = (text: string) =>
++      (from > 0 ? "…" : "") + text.slice(from, i + context) + (i + context < text.length ? "…" : "")
++    return (
++      `first difference (ignoring spacing, parentheses, doubled backslashes and binder types): ` +
++      `plan "${snippet(a)}" vs region "${snippet(b)}". ` +
++      "Copy the accepted plan normal_form verbatim into the region's normal_form contract and have statement, " +
++      "or submit an authorized plan repair if the target must change."
++    )
++  }
++}
+diff -ruN a/packages/opencode/src/session/proof-workflow.ts b/packages/opencode/src/session/proof-workflow.ts
+--- a/packages/opencode/src/session/proof-workflow.ts	2026-10-07 17:25:59
++++ b/packages/opencode/src/session/proof-workflow.ts	2026-10-07 17:25:59
+@@ -25,6 +25,7 @@
+ import { Instance } from "@/project/instance"
+ import { parseCoqCompilerOutput } from "@/tool/coq-diagnostics"
+ import { Log } from "@/util/log"
++import { NormalFormText } from "./normal-form" // [replicate-prosa-buddy patch 11b]
+ import {
+   MAX_IDENTICAL_PLAN_METADATA_REPAIRS,
+   MAX_SEMANTIC_PLAN_REVISIONS,
+@@ -1949,14 +1950,25 @@
+         // target after planning (Lemma3 run 20261007_143032: `num_cpus * backlogged ...` became
+         // `num_cpus * (if backlogged ... then 1 else 0)`) stays "drifted" forever and no lemma is ever
+         // dispatched. Soundness is unchanged: regions must still compile and the theorem must end in Qed.
+-        if (targetShapeMatches(block)) {
++        // [replicate-prosa-buddy patch 11b] First ignore pure formatting (doubled backslashes,
++        // parentheses, spacing, binder types, final period), and report the first real difference.
++        if (NormalFormText.sameModuloFormatting(expectedNormalForm, block.targetNormalForm)) {
++          log.info("patch 11b: region normal_form differs from the locked plan only in formatting", {
++            plan_node: id,
++            plan_normal_form: expectedNormalForm,
++            region_normal_form: block.targetNormalForm,
++          })
++        } else if (targetShapeMatches(block)) {
+           log.info("patch 11: accepted region normal_form that differs from the locked plan", {
+             plan_node: id,
+             plan_normal_form: expectedNormalForm,
+             region_normal_form: block.targetNormalForm,
+           })
+         } else {
+-          metadataMismatches.push(`${id}: target normal form differs from the accepted plan`)
++          metadataMismatches.push(
++            `${id}: target normal form differs from the accepted plan; ` +
++              NormalFormText.describeDifference(expectedNormalForm, block.targetNormalForm),
++          )
+         }
+       }
+     }
+@@ -3683,6 +3695,7 @@
+ 
+   function normalizeTargetShape(text: string | undefined) {
+     return (text ?? "")
++      .replace(/\\{2,}/g, "\\") // [replicate-prosa-buddy patch 11b] `\\sum` in a contract comment == `\sum`
+       .replace(/\$+/g, " ")
+       .replace(/\\leq?|\\le/g, " <= ")
+       .replace(/\\geq?|\\ge/g, " >= ")

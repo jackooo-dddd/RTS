@@ -1,0 +1,47 @@
+As in the constrained-deadlines case of Section IV-C, the above was first dealing with the case of a given $\varphi$. Again, this is an open variable in general, so naively, the maximal $R_k^\varphi$ over all $\varphi$ needs to be found to derive a safe upper bound for the response time in general. It turns out that, as before, it will be only necessary to consider the case $\varphi=0$ to get a safe bound, without checking other values for the open variable $\varphi$.
+
+For the arbitrary-deadlines case in this section, this conclusion is a little bit more involved than the constrained-deadlines case in Section IV-C. The reason is that the concerned $R_k^\varphi$ is the maximum of a set of solutions for the recursive equation (16). Thus, for $\varphi_1>\varphi_2$, we don't have a straightforward derivation for a relation between $R_k^{\varphi_1}$ and $R_k^{\varphi_2}$ as in the constrained-deadlines case (Section IV-C).
+
+However, we still have the property that $\Omega_k(x,h)$ is independent of $\varphi$. Thus, for each $h$, the minimal solution found for Equation (16) will be independent of $\varphi$. We let
+\[
+\Psi^\varphi=\{\chi^h-(h-1)\cdot T_k-\varphi \mid h\in[1,H(\varphi)]\},
+\]
+and we know with $\varphi_1>\varphi_2$, for each $h\in[1,H(\varphi_1)]\cap[1,H(\varphi_2)]$, each element in $\Psi^{\varphi_2}$ is smaller than the corresponding one in $\Psi^{\varphi_1}$. At the same time, the right-hand side of condition (17) with $\varphi_1$ is larger than the right-hand side of (17) with $\varphi_2$, by which we know $\varphi_1>\varphi_2$ implies $H(\varphi_1)\leq H(\varphi_2)$. So we know that for $\varphi_1>\varphi_2$, the maximum in (18) for calculating $R_k^{\varphi_1}$ is taken over a set whose elements all have a larger counterpart in the set for calculating $R_k^{\varphi_2}$. Thus, we have the following implication:
+\[
+\varphi_1>\varphi_2
+\quad \Rightarrow \quad
+R_k^{\varphi_1}\leq R_k^{\varphi_2}
+\]
+
+It follows directly that, in order to maximize $R_k^\varphi$, only $\varphi=0$ needs to be considered, since $0$ is the minimal possible value of $\varphi$.
+
+We conclude with a formulation of our response time analysis procedure for arbitrary-deadline task sets in the following theorem, that directly follows from the above discussion. We will use the following two predicates as termination conditions:
+\begin{itemize}
+    \item Termination because of job finishing before next period:
+    \[
+    \mathrm{Term}(h,k)\equiv[\chi^h\leq h\cdot T_k]
+    \]
+
+    \item Termination because of detected possible deadline miss:
+    \[
+    \mathrm{Miss}(h,k)\equiv[\chi^h>(h-1)\cdot T_k+D_k]
+    \]
+\end{itemize}
+
+\textbf{Theorem 2 ([OUR-RTA-arb]).} \ \textit{For each $h\geq 1$, let $\chi^h$ be the minimal solution of the following Equation (19) by doing an iterative fixed point search of the right hand side starting with $x=h\cdot C_k$.}
+\[
+x=\left\lceil \frac{\Omega_k(x,h)}{M} \right\rceil + h\cdot C_k
+\tag{19}
+\]
+
+\textit{Let $H$ be the minimal index satisfying $\mathrm{Term}(H,k)$, then}
+\[
+R_k=\max_{h\in[1,H]}\{\chi^h-(h-1)\cdot T_k\}
+\]
+
+\textit{is an upper bound of $\tau_k$'s WCRT.}
+
+\bigskip
+
+\noindent
+\textit{Proof:} By Lemma 5 and the above discussion. \hfill $\blacksquare$

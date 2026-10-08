@@ -15,18 +15,13 @@ lean_lib Prosa where
   roots := #[`Prosa]
   globs := #[.submodules `Prosa]
 
-/-- The 22 case-study statements of the benchmark (read-only). -/
+/-- The case-study benchmark: one folder per task, `CaseStudies/<G>/<F>/` with the read-only `Statement.lean`,
+the hint `proof.tex` and the workspace `Solution.lean`.  `lake build` compiles the statements (the root
+module `CaseStudies` imports them); a solution is built on request: `lake build CaseStudies.<G>.<F>.Solution`. -/
 @[default_target]
 lean_lib CaseStudies where
   srcDir := "."
   roots := #[`CaseStudies]
-  globs := #[.andSubmodules `CaseStudies]
-
-/-- Benchmark workspace: one `solution` per case study (templates end in `sorry`). -/
-lean_lib Solutions where
-  srcDir := "."
-  roots := #[`Solutions]
-  globs := #[.submodules `Solutions]
 
 /-- Usage example; built only on request (`lake build Examples`). -/
 lean_lib Examples where

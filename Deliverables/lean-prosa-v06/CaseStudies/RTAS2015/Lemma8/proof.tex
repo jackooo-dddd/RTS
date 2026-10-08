@@ -1,0 +1,66 @@
+\textit{Lemma 8:} \ \textit{Let $\tau$ denote a task set to be scheduled under FP APA scheduling on a processor platform $\pi$. For any $T_i \in \tau$, if no deadline is missed by any higher-priority task in $\tau$ (under FP APA scheduling on platform $\pi$), and if there exists a non-empty set of processors $\alpha_i' \subseteq \alpha_i$ such that Equation 14}
+\[
+R_i^{apa} = e_i + \frac{1}{|\alpha_i'|}\cdot \sum_{T_k \in tasks(\alpha_i')} I_i^k(R_i^{apa})
+\tag{14}
+\]
+\textit{has a least positive solution $R_i^{apa} \leq d_i$, then $R_i^{apa}$ upper-bounds task $T_i$'s response time in any schedule of $\tau$ under FP APA scheduling.}
+
+\bigskip
+
+\noindent
+\textit{Proof:} By contradiction. Suppose that Equation 14 has a solution $R_i^{apa} \leq d_i$ and no deadline is missed by any higher-priority task in $tasks(\alpha_i')$, but there exists a schedule $S$ of $\tau$ under APA scheduling in which a job of $T_i$ has a response time greater than $R_i^{apa}$, i.e., in which a job of $T_i$ remains pending for more than $R_i^{apa}$ time units.
+
+Let $J$ denote the first job of $T_i$ to remain pending for more than $R_i^{apa}$ time units in $S$ and let $t_r$ denote $J$'s release time. Let $X \subseteq [t_r,\, t_r + R_i^{apa})$ denote all times at which $J$ is interfered with before time $t_r + R_i^{apa}$, i.e., all times at which $J_i$ is not scheduled during $[t_r,\, t_r + R_i^{apa})$. Since $J$ does not complete by time $t_r + R_i^{apa}$, it is scheduled for strictly less than $e_i$ time units during $[t_r,\, t_r + R_i^{apa})$, and therefore
+\[
+|X| \geq t_r + R_i^{apa} - t_r - (e_i - 1) = R_i^{apa} - e_i + 1.
+\]
+
+Let $x_k$ denote the interference incurred by $J$ due to task $T_k$ before time $t_r + R_i^{apa}$, i.e., the total time that jobs of $T_k$ execute on processors in $\alpha_i$ during $[t_r,\, t_r + R_i^{apa})$ while $J$ is not scheduled.
+
+Since under FP scheduling only higher-priority tasks cause interference, and because no deadline is missed by any higher-priority task, we observe that, according to Definition 1,
+\[
+x_k \leq W_k(R_i^{apa})
+\tag{15}
+\]
+since a task must be scheduled to interfere.
+
+Since all processors in $\alpha_i$ are busy executing jobs of higher-priority tasks when $J$ is not scheduled, we have
+\[
+\sum_{T_k \in \tau} x_k = |X| \cdot |\alpha_i| \geq |\alpha_i| \cdot (R_i^{apa} - e_i + 1),
+\]
+and therefore, by Lemmas 6 and 7, also
+\[
+\sum_{T_k \in tasks(\alpha_i')} \min(x_k,\, R_i^{apa} - e_i + 1) \geq |\alpha_i'| \cdot (R_i^{apa} - e_i + 1),
+\]
+or, rearranged and strengthened to a strict inequality,
+\[
+e_i + \frac{1}{|\alpha_i'|} \cdot \sum_{T_k \in tasks(\alpha_i')} \min(x_k,\, R_i^{apa} - e_i + 1) > R_i^{apa}.
+\]
+
+It follows, by the definition of $R_i^{apa}$ (Equation 14), that
+\[
+e_i + \frac{1}{|\alpha_i'|} \cdot \sum_{T_k \in tasks(\alpha_i')} \min(x_k,\, R_i^{apa} - e_i + 1)
+\]
+\[
+> e_i + \frac{1}{|\alpha_i'|} \cdot \sum_{T_k \in tasks(\alpha_i')} I_i^k(R_i^{apa}),
+\]
+or, simplified,
+\[
+\sum_{T_k \in tasks(\alpha_i')} \min(x_k,\, R_i^{apa} - e_i + 1) > \sum_{T_k \in tasks(\alpha_i')} I_i^k(R_i^{apa}).
+\]
+
+This implies that there exists a task $T_k \in tasks(\alpha_i')$ such that
+\[
+\min(x_k,\, R_i^{apa} - e_i + 1) > I_i^k(R_i^{apa}).
+\]
+
+Since lower-priority tasks cannot cause interference under FP scheduling, and since $T_i$ does not interfere with itself (recall that $J$ is the first job with a response time greater than $R_i^{apa} \leq d_i$ and the restriction to constrained deadlines), it follows that $x_k > 0$ is possible only if $T_k$ is a higher-priority task. Therefore, we have
+\[
+I_i^k(t) = \min(W_k(t),\, t - e_i + 1),
+\]
+and thus
+\[
+\min(x_k,\, R_i^{apa} - e_i + 1) > \min(W_k(R_i^{apa}),\, R_i^{apa} - e_i + 1).
+\]
+
+However, this implies $x_k > W_k(R_i^{apa})$, which by Inequality 15 is impossible. Contradiction. \hfill $\blacksquare$

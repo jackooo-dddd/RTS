@@ -1,0 +1,25 @@
+--- a/packages/opencode/src/session/proof-workflow.ts	2026-10-07 16:58:40
++++ b/packages/opencode/src/session/proof-workflow.ts	2026-10-07 16:58:40
+@@ -1943,7 +1943,21 @@
+         expectedNormalForm &&
+         normalizedMetadataText(expectedNormalForm) !== normalizedMetadataText(block.targetNormalForm)
+       ) {
+-        metadataMismatches.push(`${id}: target normal form differs from the accepted plan`)
++        // [replicate-prosa-buddy patch 11] A locked plan's normal_form text is not authoritative once the
++        // region exports a different but self-consistent Coq target: its `have` statement matches the
++        // region's own normal_form contract (targetShapeMatches). Without this, a prover that restates a
++        // target after planning (Lemma3 run 20261007_143032: `num_cpus * backlogged ...` became
++        // `num_cpus * (if backlogged ... then 1 else 0)`) stays "drifted" forever and no lemma is ever
++        // dispatched. Soundness is unchanged: regions must still compile and the theorem must end in Qed.
++        if (targetShapeMatches(block)) {
++          log.info("patch 11: accepted region normal_form that differs from the locked plan", {
++            plan_node: id,
++            plan_normal_form: expectedNormalForm,
++            region_normal_form: block.targetNormalForm,
++          })
++        } else {
++          metadataMismatches.push(`${id}: target normal form differs from the accepted plan`)
++        }
+       }
+     }
+     const status =

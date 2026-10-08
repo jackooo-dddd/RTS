@@ -1,4 +1,4 @@
-diff -ruN prosabuddy/packages/opencode/src/session/prompt.ts replicate-prosa-buddy/opencode/packages/opencode/src/session/prompt.ts
+diff -ruN prosabuddy/packages/opencode/src/session/prompt.ts replicate-prosa-buddy/prosabuddy/packages/opencode/src/session/prompt.ts
 --- a/packages/opencode/src/session/prompt.ts	2026-10-01 18:07:04
 +++ b/packages/opencode/src/session/prompt.ts	2026-10-06 12:31:57
 @@ -45,6 +45,7 @@
@@ -131,7 +131,7 @@ diff -ruN prosabuddy/packages/opencode/src/session/prompt.ts replicate-prosa-bud
        }
        if (
          fallbackGuard &&
-diff -ruN prosabuddy/packages/opencode/src/session/proof-context.ts replicate-prosa-buddy/opencode/packages/opencode/src/session/proof-context.ts
+diff -ruN prosabuddy/packages/opencode/src/session/proof-context.ts replicate-prosa-buddy/prosabuddy/packages/opencode/src/session/proof-context.ts
 --- a/packages/opencode/src/session/proof-context.ts	2026-10-01 18:07:04
 +++ b/packages/opencode/src/session/proof-context.ts	2026-10-06 12:43:40
 @@ -174,7 +174,7 @@
@@ -143,7 +143,7 @@ diff -ruN prosabuddy/packages/opencode/src/session/proof-context.ts replicate-pr
      const lines: string[] = [
        `File: ${rel}  Position: ${snap.position.line + 1}:${snap.position.character + 1}`,
      ]
-diff -ruN prosabuddy/packages/opencode/src/session/proof-projection.ts replicate-prosa-buddy/opencode/packages/opencode/src/session/proof-projection.ts
+diff -ruN prosabuddy/packages/opencode/src/session/proof-projection.ts replicate-prosa-buddy/prosabuddy/packages/opencode/src/session/proof-projection.ts
 --- a/packages/opencode/src/session/proof-projection.ts	2026-10-01 18:07:04
 +++ b/packages/opencode/src/session/proof-projection.ts	2026-10-06 12:43:40
 @@ -78,7 +78,7 @@
@@ -200,7 +200,7 @@ diff -ruN prosabuddy/packages/opencode/src/session/proof-projection.ts replicate
      lines.push("<proof-context-diagnoser>")
      lines.push(`File: ${rel}  Position: ${snap.position.line + 1}:${snap.position.character + 1}`)
  
-diff -ruN prosabuddy/packages/opencode/src/session/proof-workflow.ts replicate-prosa-buddy/opencode/packages/opencode/src/session/proof-workflow.ts
+diff -ruN prosabuddy/packages/opencode/src/session/proof-workflow.ts replicate-prosa-buddy/prosabuddy/packages/opencode/src/session/proof-workflow.ts
 --- a/packages/opencode/src/session/proof-workflow.ts	2026-10-01 18:07:04
 +++ b/packages/opencode/src/session/proof-workflow.ts	2026-10-06 12:40:41
 @@ -1381,6 +1381,29 @@
@@ -293,7 +293,7 @@ diff -ruN prosabuddy/packages/opencode/src/session/proof-workflow.ts replicate-p
        const ownerRaw = attrs.get("owner")
        if (ownerRaw !== "lemma") continue
  
-diff -ruN prosabuddy/packages/opencode/src/tool/checkpoint.ts replicate-prosa-buddy/opencode/packages/opencode/src/tool/checkpoint.ts
+diff -ruN prosabuddy/packages/opencode/src/tool/checkpoint.ts replicate-prosa-buddy/prosabuddy/packages/opencode/src/tool/checkpoint.ts
 --- a/packages/opencode/src/tool/checkpoint.ts	2026-10-01 18:07:04
 +++ b/packages/opencode/src/tool/checkpoint.ts	2026-10-06 12:37:22
 @@ -12,6 +12,7 @@
@@ -364,7 +364,7 @@ diff -ruN prosabuddy/packages/opencode/src/tool/checkpoint.ts replicate-prosa-bu
      return {
        title: `checkpoint ${rel}: ${lemmaPrefixValidation?.ok && lemmaPrefixValidation.prefix_complete ? "lemma-prefix-ok" : "error"}${same ? " (same)" : ""}`,
        output,
-diff -ruN prosabuddy/packages/opencode/src/tool/compile-verdict.ts replicate-prosa-buddy/opencode/packages/opencode/src/tool/compile-verdict.ts
+diff -ruN prosabuddy/packages/opencode/src/tool/compile-verdict.ts replicate-prosa-buddy/prosabuddy/packages/opencode/src/tool/compile-verdict.ts
 --- a/packages/opencode/src/tool/compile-verdict.ts	1970-01-01 08:00:00
 +++ b/packages/opencode/src/tool/compile-verdict.ts	2026-10-05 23:27:59
 @@ -0,0 +1,38 @@
@@ -406,7 +406,7 @@ diff -ruN prosabuddy/packages/opencode/src/tool/compile-verdict.ts replicate-pro
 +export function lastCompileVerdict(sessionID: string) {
 +  return verdicts.get(sessionID)
 +}
-diff -ruN prosabuddy/packages/opencode/src/tool/coq-session.ts replicate-prosa-buddy/opencode/packages/opencode/src/tool/coq-session.ts
+diff -ruN prosabuddy/packages/opencode/src/tool/coq-session.ts replicate-prosa-buddy/prosabuddy/packages/opencode/src/tool/coq-session.ts
 --- a/packages/opencode/src/tool/coq-session.ts	2026-10-01 18:07:04
 +++ b/packages/opencode/src/tool/coq-session.ts	2026-10-06 11:17:10
 @@ -98,7 +98,58 @@
@@ -468,7 +468,7 @@ diff -ruN prosabuddy/packages/opencode/src/tool/coq-session.ts replicate-prosa-b
    if (actual.remaining_goals !== undefined && actual.remaining_goals !== 1) return false
    const expectedVariants = normalizedComparisonVariants(expectedGoal)
    // Assignment fingerprints have historically been produced from either the
-diff -ruN prosabuddy/packages/opencode/src/tool/coqc.ts replicate-prosa-buddy/opencode/packages/opencode/src/tool/coqc.ts
+diff -ruN prosabuddy/packages/opencode/src/tool/coqc.ts replicate-prosa-buddy/prosabuddy/packages/opencode/src/tool/coqc.ts
 --- a/packages/opencode/src/tool/coqc.ts	2026-10-01 18:07:04
 +++ b/packages/opencode/src/tool/coqc.ts	2026-10-06 12:37:22
 @@ -11,6 +11,7 @@
@@ -539,7 +539,7 @@ diff -ruN prosabuddy/packages/opencode/src/tool/coqc.ts replicate-prosa-buddy/op
      return {
        title: `coqc ${rel}: ${lemmaPrefixValidation?.ok ? "lemma-prefix-ok" : "fail"}`,
        output: [
-diff -ruN prosabuddy/packages/opencode/src/tool/task.ts replicate-prosa-buddy/opencode/packages/opencode/src/tool/task.ts
+diff -ruN prosabuddy/packages/opencode/src/tool/task.ts replicate-prosa-buddy/prosabuddy/packages/opencode/src/tool/task.ts
 --- a/packages/opencode/src/tool/task.ts	2026-10-01 18:07:04
 +++ b/packages/opencode/src/tool/task.ts	2026-10-06 12:49:48
 @@ -714,7 +714,23 @@

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Export the standalone Lean package `lean-prosa-v06` (Prosa v0.6 + classic Prosa + the 22 case studies as a
+"""Export the standalone Lean package `lean-prosa-v06` (Prosa v0.6 + classic Prosa + the 23 case studies as a
 proof benchmark + ProsaBuddy's Prosa-theorem benchmark, see theorem_benchmark.py) and, separately, the reference
 solutions.
 
@@ -7,11 +7,14 @@ usage: export_deliverable.py OUT_PACKAGE_DIR OUT_REFERENCE_DIR OLD_PACKAGE_DIR
 
 * Library: every `Prosa/**/*.lean` of the workspace whose current sha256 is recorded in its own accepted
   validation record (Validation/planning/{v06,classic}_pipeline); files are copied byte-identically.
-* `CaseStudies/<G>/<F>.lean`: the case study's definitions and, instead of the theorem, the closed proposition
-  `<thm>_statement : Prop` (read-only for the benchmark).
-* `Solutions/<G>/<F>.lean`: a template `theorem solution : <thm>_statement := by sorry`.
-* Reference solutions (OUT_REFERENCE_DIR/Solutions/...): the proofs of this workspace, restated against the
-  frozen statement modules, plus the shared support modules (`Solutions/Support/*`).
+* One folder per task, `CaseStudies/<G>/<F>/`:
+  - `Statement.lean`: the case study's definitions and, instead of the theorem, the closed proposition
+    `<thm>_statement : Prop` (read-only for the benchmark);
+  - `proof.tex`: the paper's statement and proof sketch, copied from `RTS_Papers/<case>/proof.tex` when it
+    exists (read-only hint);
+  - `Solution.lean`: a template `theorem solution : <thm>_statement := by sorry`.
+* Reference solutions (OUT_REFERENCE_DIR/CaseStudies/<G>/<F>/Solution.lean): the proofs of this workspace,
+  restated against the frozen statement modules, plus the shared support modules (`CaseStudies/Support/*`).
 """
 import hashlib, json, re, shutil, subprocess, sys, glob, os
 from pathlib import Path
@@ -20,6 +23,8 @@ HERE = Path(__file__).resolve().parent
 CST = HERE.parent                         # classic-prosa/casestudy-translation
 WS = CST.parents[1]                       # Prosa-Shunqi
 LEAN = CST / "lean"
+PAPERS_DIR = WS.parent / "RTS_Papers"
+HINT = "proof.tex"
 sys.path.insert(0, str(HERE))
 import status                              # PATHS, PAPERS, NOTES
 import cases as CASEMOD
@@ -202,7 +207,8 @@ def frozen_module(case, path, info):
     paper = status.PAPERS["-".join(case.split("-")[:2])]
     header = (f"-- Case study {case}: {paper}.\n"
               f"-- Original Rocq statement: RTS_Papers/{rocq}.\n"
-              f"-- Benchmark file: read-only.  Prove `{info['ns']}.{info['name']}_statement` in `Solutions/{path}`.\n")
+              f"-- Benchmark file: read-only.  Prove `{info['ns']}.{info['name']}_statement` in `Solution.lean` "
+              f"(this folder).\n")
     name = info["name"]
     stmt = (f"/-- The statement of the case study's theorem `{name}`. -/\n"
             f"def {name}_statement : Prop :=\n"
@@ -213,23 +219,27 @@ def frozen_module(case, path, info):
 def opens_of(text):
     return [l for l in text.splitlines() if l.startswith("open ") and not l.startswith("open CaseStudies.")]
 
-def sol_ns(path): return "Solutions." + path[:-5].replace("/", ".")
-def stmt_mod(path): return "CaseStudies." + path[:-5].replace("/", ".")
+def task_dir(path): return path[:-5]                                  # RTSS2007/Theorem1
+def sol_ns(path): return "CaseStudies." + task_dir(path).replace("/", ".")
+def stmt_mod(path): return sol_ns(path) + ".Statement"
+def sol_mod(path): return sol_ns(path) + ".Solution"
 
 def template(case, path, info, frozen_text):
     us = universes_of(frozen_text)
     uni = ".{" + ", ".join(us) + "}" if us else ""
     opens = "\n".join(opens_of(frozen_text))
+    hint = (f"\nThe paper's statement and proof sketch (LaTeX) are in `proof.tex` in this folder.\n"
+            if (PAPERS_DIR / case / HINT).exists() else "")
     return f"""import {stmt_mod(path)}
 
 /-!
 Benchmark task `{case}`: prove `{info['ns']}.{info['name']}_statement`
-(defined in `CaseStudies/{path}`, which also contains the case study's definitions).
-
-Replace `sorry` with a proof.  You may add `import`s of modules of this package (`Prosa.*`, `Mathlib.*`,
-your own `Solutions.*` modules), helper definitions and lemmas, and new files under `Solutions/`.  Do not edit
-anything outside `Solutions/`, and keep the name and type of `solution`.  Check with
-`python3 benchmark/check.py {case}`.
+(defined in `Statement.lean` in this folder, which also contains the case study's definitions).
+{hint}
+Replace `sorry` with a proof.  You may add `import`s of modules of this package (`Prosa.*`, `Mathlib.*`),
+helper definitions and lemmas, and new `.lean` files under `CaseStudies/` (for example next to this file).
+Do not edit `Statement.lean`, `proof.tex` or anything outside `CaseStudies/`, and keep the name and type of
+`solution`.  Check with `python3 benchmark/check.py {case}`.
 -/
 
 set_option linter.unusedVariables false
@@ -248,7 +258,7 @@ end {sol_ns(path)}
 """
 
 def rewrite_support(text):
-    text = SUPPORT_RE.sub(lambda m: "Solutions.Support." + m.group(1), text)
+    text = SUPPORT_RE.sub(lambda m: "CaseStudies.Support." + m.group(1), text)
     return text
 
 def reference_solution(case, path, info, frozen_text):
@@ -259,7 +269,7 @@ def reference_solution(case, path, info, frozen_text):
     extra = [l for l in imports if l.startswith("import CaseStudies.") or l in PROOF_ONLY_IMPORTS]
     extra += info["proof_imports"]
     extra = [rewrite_support(l) for l in extra]
-    extra = list(dict.fromkeys(["import Solutions.Support.Common"] + extra))
+    extra = list(dict.fromkeys(["import CaseStudies.Support.Common"] + extra))
     opens = "\n".join(rewrite_support(l) for l in s.splitlines() if l.startswith("open "))
     # keep continuation lines of multi-line opens (2005-ECRTS-Theorem6)
     opens = "\n".join(rewrite_support(m.group(0)) for m in re.finditer(r"^open .*(?:\n  .*)*", s, re.M))
@@ -288,7 +298,7 @@ theorem {sol_ns(path)}.solution : {info['ns']}.{info['name']}_statement{uni} :=
 
 def support_module(name):
     text = (LEAN / "CaseStudies" / f"{name}.lean").read_text()
-    text = re.sub(r"^import CaseStudies\.(\w+)", lambda m: f"import Solutions.Support.{m.group(1)}", text, flags=re.M)
+    text = re.sub(r"^import CaseStudies\.(\w+)", lambda m: f"import CaseStudies.Support.{m.group(1)}", text, flags=re.M)
     return rewrite_support(text)
 
 # ---------------------------------------------------------------- main
@@ -304,26 +314,33 @@ def main():
         shutil.copy2(old / f, out / f)
     shutil.copytree(old / "Examples", out / "Examples", ignore=shutil.ignore_patterns(".DS_Store"))
     tasks = []
-    (ref / "Solutions" / "Support").mkdir(parents=True, exist_ok=True)
+    (ref / "CaseStudies" / "Support").mkdir(parents=True, exist_ok=True)
     for n in SUPPORT:
-        (ref / "Solutions" / "Support" / f"{n}.lean").write_text(support_module(n))
+        (ref / "CaseStudies" / "Support" / f"{n}.lean").write_text(support_module(n))
     for case, path in status.PATHS.items():
         info = case_info(case, path)
         fz = frozen_module(case, path, info)
-        for base, text in [(out / "CaseStudies", fz), (out / "Solutions", template(case, path, info, fz)),
-                           (ref / "Solutions", reference_solution(case, path, info, fz))]:
-            p = base / path; p.parent.mkdir(parents=True, exist_ok=True); p.write_text(text)
+        d = task_dir(path)
+        for p, text in [(out / "CaseStudies" / d / "Statement.lean", fz),
+                        (out / "CaseStudies" / d / "Solution.lean", template(case, path, info, fz)),
+                        (ref / "CaseStudies" / d / "Solution.lean", reference_solution(case, path, info, fz))]:
+            p.parent.mkdir(parents=True, exist_ok=True); p.write_text(text)
+        hint = PAPERS_DIR / case / HINT
+        if hint.exists():
+            shutil.copy2(hint, out / "CaseStudies" / d / HINT)
         group = "-".join(case.split("-")[:2])
         tasks.append(dict(
             id=case, paper=status.PAPERS[group], rocq_original=f"RTS_Papers/{status.MAN[case]['file']}",
-            statement_module=stmt_mod(path), statement_file=f"CaseStudies/{path}",
+            folder=f"CaseStudies/{d}/",
+            statement_module=stmt_mod(path), statement_file=f"CaseStudies/{d}/Statement.lean",
             statement=f"{info['ns']}.{info['name']}_statement", universes=universes_of(fz),
-            solution_module=sol_ns(path), solution_file=f"Solutions/{path}",
+            solution_module=sol_mod(path), solution_file=f"CaseStudies/{d}/Solution.lean",
             solution=f"{sol_ns(path)}.solution",
+            hint_file=f"CaseStudies/{d}/{HINT}" if hint.exists() else None,
             note=NOTE_OVERRIDES.get(case, status.NOTES.get(case, {}).get("note", ""))))
     (out / "CaseStudies.lean").write_text(
         "\n".join(f"import {t['statement_module']}" for t in tasks) +
-        "\n\n/-! The 22 case-study statements (benchmark tasks); see `benchmark/README.md`. -/\n")
+        f"\n\n/-! The {len(tasks)} case-study statements (benchmark tasks); see `benchmark/README.md`. -/\n")
     (out / "benchmark").mkdir()
     (out / "benchmark" / "tasks.json").write_text(json.dumps(tasks, indent=2, ensure_ascii=False) + "\n")
     assets = HERE / "deliverable_assets"
@@ -338,17 +355,21 @@ def main():
     subprocess.run([sys.executable, str(HERE / "theorem_benchmark.py"), str(out)], check=True)
 
 def write_frozen(out):
-    """sha256 of every file a benchmark solution must not change."""
+    """sha256 of every file a benchmark solution must not change: the library, the examples, each task's
+    `Statement.lean` and `proof.tex`, and the package configuration.  No file may be added under `Prosa/`."""
     files = {}
-    for tree in ["Prosa", "CaseStudies", "Examples"]:
+    for tree in ["Prosa", "Examples"]:
         for p in sorted((out / tree).rglob("*")):
             if p.is_file() and p.name != ".DS_Store":
                 files[p.relative_to(out).as_posix()] = sha(p)
+    for p in sorted((out / "CaseStudies").rglob("*")):
+        if p.is_file() and p.name in ("Statement.lean", HINT):
+            files[p.relative_to(out).as_posix()] = sha(p)
     for f in ["CaseStudies.lean", "lakefile.lean", "lean-toolchain", "lake-manifest.json",
               "benchmark/check.py", "benchmark/tasks.json"]:
         files[f] = sha(out / f)
     (out / "benchmark" / "frozen_sha256.json").write_text(json.dumps(
-        {"closed_trees": ["Prosa", "CaseStudies"], "files": dict(sorted(files.items()))}, indent=1) + "\n")
+        {"closed_trees": ["Prosa"], "files": dict(sorted(files.items()))}, indent=1) + "\n")
 
 if __name__ == "__main__":
     if sys.argv[1] == "--frozen-only":

@@ -1,0 +1,58 @@
+\textbf{Lemma 4.} \ \textit{The workload bound of a carry-in task $\tau_i$ in the problem window of length $x$ can be computed as:}
+\[
+W_i^{CI}(x)=W_i^{NC}([x-x_p]_0)+[x]^\delta
+\tag{9}
+\]
+
+\textit{where $x_p$ and $\delta$ are defined as:}
+\[
+x_p=C_i-1+\left\lceil \frac{R_i-C_i}{T_i-C_i} \right\rceil T_i-R_i
+\tag{10}
+\]
+\[
+\delta=\left\lceil \frac{R_i-C_i}{T_i-C_i} \right\rceil C_i-1
+\tag{11}
+\]
+
+\textit{and $W^{NC}$ is calculated as in (1).}
+
+\bigskip
+
+\noindent
+\textit{Proof:}
+
+We use $w$ to denote the number of carry-in jobs of $\tau_i$. Suppose $t$ is the starting time of the problem window, then by the definition of critical instant, there are at most $m-1$ tasks having active jobs at time $t-1$, so the carry-in jobs are already executing at $t-1$, and the total unfinished execution demand of the carry-in jobs by the start of the problem window is bounded by $w\cdot C_i-1$.
+
+We argue that the worst-case release pattern leading to the maximal workload of $\tau_i$ is as follows: (1) the earliest carry-in job executes as late as possible and finishes at exactly its worst-case response time, (2) the earliest carry-in job starts execution one time unit before the starting point of the problem window, (3) inside the problem window all jobs are released as fast as possible. The argument follows the same strategy as in [6], [3], showing that if we shift the release times in any way, this will not increase the total workload of the job inside the problem window. We omit the detailed reasoning procedure, but we use Figure 1 to depict this worst-case scenario. In the following, we show that with this particular release pattern, the workload of $\tau_i$ in the problem window is bounded by Equation (9).
+
+We index the job released inside problem window as $J_{i,1}, J_{i,2}, \ldots$, and we assume $\xi$ be the smallest index (if there exists) such that, when $J_{i,\xi}$ is released, all the preceding jobs have been finished. Therefore, the time interval between the starting time of the problem window and the release time of $J_{i,\xi}$ must be at least enough to execute all its preceding jobs. On the other hand, the release time of the $\xi^{th}$ job in the problem window is
+\[
+x_p=(C_i-1)+(w+\xi-1)\cdot T_i-R_i.
+\]
+So we have
+\[
+w\cdot C_i-1+(\xi-1)C_i \leq (C_i-1)+(w+\xi-1)\cdot T_i-R_i
+\]
+
+Since $\xi$ is an integer, the minimum value for it is:
+\[
+\xi=\left\lceil \frac{R_i-C_i}{T_i-C_i} \right\rceil-(w-1)
+\]
+
+Then we can obtain the expression of $x_p$ as in Equation (10).
+
+The total workload of $\tau_i$ in the problem window is contributed by two parts: (i) the jobs executing before the release of the $\xi^{th}$ job; (i) the jobs executing after the release of the $\xi^{th}$ job.
+
+The jobs executing before the $\xi^{th}$ job include the carry-in jobs (the workload of which in the problem window is bounded by $w\cdot C_i-1$ as we discussed above), and the $\xi-1$ jobs that are released in the problem window. So their total workload is bounded by
+\[
+\delta=w\cdot C_i-1+(\xi-1)C_i=\left\lceil \frac{R_i-C_i}{T_i-C_i} \right\rceil C_i-1
+\]
+
+On the other hand, the maximal workload actually executed in the problem window is bounded by the length of the problem window $x$.
+
+When $\tau_i$ releases a job at $x_p$, all its preceding jobs have been finished, so the total workload of jobs released in $[x_p,x]$ is bounded by
+\[
+W_i^{NC}([x-x_p]_0)
+\]
+
+Putting the workload upper bound of the two parts together establishes the lemma. \hfill $\blacksquare$

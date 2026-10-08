@@ -5,10 +5,12 @@ usage: python3 benchmark/check.py [TASK_ID ...] [--json FILE] [--timeout SECONDS
 
 With no TASK_ID, every task in benchmark/tasks.json is checked.  A task PASSES when all of these hold:
 
-1. No file outside `Solutions/` was changed: every file listed in benchmark/frozen_sha256.json still has its
-   recorded sha256, and no file was added under `Prosa/` or `CaseStudies/`.
-2. The solution file exists, and neither it nor any `Solutions.*` module it imports contains one of the
-   forbidden tokens below (comments are ignored).
+1. No read-only file was changed: every file listed in benchmark/frozen_sha256.json (the library, each task's
+   `Statement.lean` and `proof.tex`, the package configuration) still has its recorded sha256, and no file was
+   added under `Prosa/`.
+2. The solution file `CaseStudies/<G>/<F>/Solution.lean` exists, and neither it nor any other non-frozen
+   `CaseStudies.*` module it imports (helper modules) contains one of the forbidden tokens below (comments are
+   ignored).
 3. `lake build <solution module>` succeeds.
 4. A fresh Lean file that imports the statement module and the solution module elaborates
        theorem check : <statement> := <solution>
@@ -74,16 +76,21 @@ def run(cmd, timeout):
 
 
 def solutions_closure(module):
-    """The `Solutions.*` modules imported (transitively) by `module`, including itself."""
+    """The solution module and every non-frozen `CaseStudies.*` module it imports (transitively): the files a
+    solver wrote.  Frozen statement modules are excluded."""
+    frozen = json.loads((BENCH / "frozen_sha256.json").read_text())["files"]
     seen, todo = [], [module]
     while todo:
         m = todo.pop()
         if m in seen:
             continue
+        rel = m.replace(".", "/") + ".lean"
+        if rel in frozen:
+            continue
         seen.append(m)
-        p = ROOT / (m.replace(".", "/") + ".lean")
+        p = ROOT / rel
         if p.exists():
-            todo += re.findall(r"^import\s+(Solutions\.\S+)", strip_comments(p.read_text()), re.M)
+            todo += re.findall(r"^import\s+(CaseStudies\.\S+)", strip_comments(p.read_text()), re.M)
     return seen
 
 
@@ -143,7 +150,7 @@ def main():
     for task in selected:
         t0 = time.time()
         if violations:
-            verdict, detail = "FAIL", "files outside Solutions/ were changed: " + "; ".join(violations[:10])
+            verdict, detail = "FAIL", "read-only files were changed or added: " + "; ".join(violations[:10])
         else:
             verdict, detail = check_task(task, args.timeout)
         results.append({"id": task["id"], "result": verdict, "detail": detail,

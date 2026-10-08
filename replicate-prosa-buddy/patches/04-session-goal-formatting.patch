@@ -1,0 +1,33 @@
+diff -ruN a/packages/opencode/src/tool/coq-session.ts b/packages/opencode/src/tool/coq-session.ts
+--- a/packages/opencode/src/tool/coq-session.ts	2026-10-07 17:57:33
++++ b/packages/opencode/src/tool/coq-session.ts	2026-10-07 17:57:33
+@@ -14,6 +14,7 @@
+ } from "@/session/lemma-assignment"
+ import { SessionProofWorkflow } from "@/session/proof-workflow"
+ import { ProofEditTransaction } from "@/session/proof-edit-transaction"
++import { NormalFormText } from "@/session/normal-form" // [replicate-prosa-buddy patch 12]
+ 
+ function rid() {
+   return "snap_" + randomBytes(4).toString("hex")
+@@ -144,8 +145,19 @@
+   if (actual.remaining_goals !== undefined && actual.remaining_goals !== 1) return false
+   if (expectedGoalMatchesStrict(actual, expectedGoal, expectedFingerprint)) return true
+   const actualErased = normalizedGoalText(eraseBinderTypes(actual.conclusion))
+-  return [...normalizedComparisonVariants(expectedGoal)].some(
+-    (variant) => normalizedGoalText(eraseBinderTypes(variant)) === actualErased,
++  if (
++    [...normalizedComparisonVariants(expectedGoal)].some(
++      (variant) => normalizedGoalText(eraseBinderTypes(variant)) === actualErased,
++    )
++  )
++    return true
++  // [replicate-prosa-buddy patch 12] Rocq prints goals without redundant parentheses (e.g. the body of
++  // `\sum_(cpu < num_cpus) (a && b)` is printed as `a && b`), while assignments come from source text.
++  // In Lemma3 run 20261007_165915 every lemma session was blocked by session_state_desync for that
++  // reason. Fall back to the formatting-insensitive comparison of patch 11b (parentheses, doubled
++  // backslashes, binder types, spacing). Tactics are still checked by Rocq.
++  return [...normalizedComparisonVariants(expectedGoal)].some((variant) =>
++    NormalFormText.sameModuloFormatting(variant, actual.conclusion),
+   )
+ }
+ 

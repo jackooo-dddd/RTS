@@ -1,0 +1,126 @@
+\textbf{Theorem 6.}
+\textit{The task set is schedulable iff, for each task $\tau_k$, one of the following is true:}
+
+\begin{enumerate}
+  \item
+  \[
+    \sum_{i \ne k} \min\bigl(I_{i,k}, D_k - C_k\bigr)
+    <
+    m(D_k - C_k).
+  \]
+
+  \item
+  \[
+    \sum_{i \ne k} \min\bigl(I_{i,k}, D_k - C_k\bigr)
+    =
+    m(D_k - C_k)
+  \]
+  and
+  \[
+    \exists h \ne k : 0 < I_{h,k} \leq D_k - C_k.
+  \]
+\end{enumerate}
+
+\bigskip
+
+\noindent
+\textbf{Proof.}
+
+\bigskip
+
+\noindent
+\textit{If.}
+If condition 1 holds, then by Lemma 4 we have
+\[
+  I_k < D_k - C_k,
+\]
+and therefore task $\tau_k$ is feasible.
+
+Now suppose that condition 2 holds for task $\tau_k$. Then there exists a task
+$\tau_h$ such that
+\[
+  0 < I_{h,k} \leq D_k - C_k.
+\]
+There are fewer than $m$ tasks such that
+\[
+  I_{i,k} > D_k - C_k,
+\]
+otherwise we would have
+\[
+  \sum_i \min\bigl(I_{i,k}, D_k - C_k\bigr)
+  >
+  m(D_k - C_k),
+\]
+which contradicts the assumption.
+
+In this situation, substitute $D_k - C_k$ with $D_k - C_k + \epsilon$.
+The right-hand side increases by $m\epsilon$, while the left-hand side increases
+by less than $m\epsilon$, because fewer than $m$ tasks select the second term of
+the minimum. Hence, for every arbitrarily small positive $\epsilon$,
+\[
+  \sum_i \min\bigl(I_{i,k}, D_k - C_k + \epsilon\bigr)
+  <
+  m(D_k - C_k + \epsilon).
+\]
+By Lemma 4, for every $\epsilon > 0$,
+\[
+  I_k < D_k - C_k + \epsilon.
+\]
+Thus the interference suffered by $\tau_k$ is never greater than its slack time,
+so the task cannot miss its deadline.
+
+\bigskip
+
+\noindent
+\textit{Only If.}
+If
+\[
+  \sum_i \min\bigl(I_{i,k}, D_k - C_k\bigr)
+  >
+  m(D_k - C_k),
+\]
+then
+\[
+  I_k
+  =
+  \frac{\sum_i I_{i,k}}{m}
+  \geq
+  \frac{\sum_i \min\bigl(I_{i,k}, D_k - C_k\bigr)}{m}
+  >
+  \frac{m(D_k - C_k)}{m}
+  =
+  D_k - C_k,
+\]
+and hence task $\tau_k$ is not schedulable.
+
+Now suppose that
+\[
+  \sum_i \min\bigl(I_{i,k}, D_k - C_k\bigr)
+  =
+  m(D_k - C_k),
+\]
+but for every task $\tau_i$,
+\[
+  I_{i,k} = 0
+  \quad\text{or}\quad
+  I_{i,k} > D_k - C_k.
+\]
+Then there are exactly $m$ tasks such that
+\[
+  I_{i,k} > D_k - C_k.
+\]
+Therefore,
+\[
+  I_k
+  =
+  \frac{\sum_i I_{i,k}}{m}
+  >
+  \frac{\sum_i \min\bigl(I_{i,k}, D_k - C_k\bigr)}{m}
+  =
+  \frac{m(D_k - C_k)}{m}
+  =
+  D_k - C_k,
+\]
+and hence task $\tau_k$ is not schedulable.
+
+\hfill $\square$

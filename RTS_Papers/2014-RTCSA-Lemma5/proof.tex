@@ -1,0 +1,58 @@
+\textbf{Lemma 5.} \ \textit{Given a task $\tau_k$ and a carry-in task set $T^{CI}$, the WCRT of $\tau_k$ with respect to $T^{CI}$ is upper bounded by:}
+\[
+R_k^{T^{CI}}=\max_{h\in[1,H]}\{\chi^{h,T^{CI}}-(h-1)\cdot T_k\}
+\tag{14}
+\]
+
+\textit{Proof:} We show here the case when deadlines are less than or equal to periods and the arbitrary deadline case can be derived similarly. For simplicity, we use $I_k(\tau_i,x)$, $\Omega_k(T^{CI},x)$ and $\chi^{T^{CI}}$ by ignoring $h=1$.
+
+Suppose $\chi^{T^{CI}}$ is the minimal solution of the iteration
+\[
+x=\left\lceil \frac{\Omega_k(T^{CI},x)}{m} \right\rceil + C_k
+\tag{15}
+\]
+
+We are going to prove $\chi^{T^{CI}}$ is an upper bound of $\tau_k$'s response time with respect to $T^{CI}$.
+
+The proof is similar as in [8]. By contradiction. Suppose, for some carry-in task set $T^{CI}$, the iteration in Equation (15) ends with a value $\chi^{T^{CI}} \leq D_k$, but the response time of $\tau_k$, released with the same $T^{CI}$, is higher than $\chi^{T^{CI}}$. Since the iteration ends, there is
+\[
+\chi^{T^{CI}}=\left\lceil \frac{\Omega_k(T^{CI},\chi^{T^{CI}})}{m} \right\rceil + C_k
+\]
+
+That is,
+\[
+\chi^{T^{CI}}=
+\left\lceil
+\frac{\sum_{\tau_i\in T} I_k(\tau_i,\chi^{T^{CI}})}{m}
+\right\rceil
++ C_k
+\tag{16}
+\]
+
+Remind that $\sum_{\tau_i\in T} I_k(\tau_i,\chi^{T^{CI}})$ is a short form for
+\[
+\sum_{\tau_i\notin T^{CI}} I_k^{NC}(\tau_i,\chi^{T^{CI}})
++
+\sum_{\tau_i\in T^{CI}} I_k^{CI}(\tau_i,\chi^{T^{CI}})
+\]
+
+According to Theorem 3 in [8], if $R_k^{ub}$ is a response time upper bound of $\tau_k$, we have
+\[
+\sum_{\tau_i\in T} I_k(\tau_i,R_k^{ub}) < m(R_k^{ub}-C_k+1)
+\]
+
+We assumed that $\chi^{T^{CI}}$ is not an upper bound, hence we reverse the above formula:
+\[
+\sum_{\tau_i\in T} I_k(\tau_i,\chi^{T^{CI}}) \geq m(\chi^{T^{CI}}-C_k+1)
+\tag{17}
+\]
+
+Then, by replacing $\sum_{\tau_i\in T} I_k(\tau_i,\chi^{T^{CI}})$ in (16) with the right hand side of (17), we have
+\[
+\chi^{T^{CI}} \geq (\chi^{T^{CI}}-C_k+1)+C_k
+\]
+\[
+= \chi^{T^{CI}}+1
+\]
+
+By contradiction, we know that $\chi^{T^{CI}}$ is the upper bound of response time of $\tau_k$ with carry-in task set $T^{CI}$. \hfill $\blacksquare$

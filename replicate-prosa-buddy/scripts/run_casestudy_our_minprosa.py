@@ -96,6 +96,7 @@ _ensure_env_path(
     "OPENCODE_SKILL_SOURCE_DIR",
     _first_existing_dir(
         Path("/home/junyi/prosabuddy/.opencode/skill"),
+        ROOT / "prosabuddy" / ".opencode" / "skill",  # replicate-prosa-buddy: app folder renamed opencode/ -> prosabuddy/
         ROOT / "opencode" / ".opencode" / "skill",
         SUPPORT_ROOT / "opencode" / ".opencode" / "skill",
     ),

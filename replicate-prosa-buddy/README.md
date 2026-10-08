@@ -12,11 +12,10 @@ Source of everything copied: `../prosabuddy` (ProsaBuddy commit `af8f06d`, which
 
 | Path | Contents | Copied from |
 |---|---|---|
-| `opencode/` | The ProsaBuddy app (OpenCode fork): root manifests + `bun.lock`, `packages/{opencode,plugin,sdk,util,script}` (no `test/`, Dockerfile, dev docs) | `prosabuddy/` |
-| `opencode/.opencode/` | Project agents, the 8 proof skills, commands, custom Coq tools, `opencode.jsonc` (no translation glossary/themes) | `prosabuddy/.opencode/` |
-| `opencode/scripts/` | AST validator used by the runtime AST audit (`coq-ast-audit.ts` resolves `<app>/scripts`) | `prosabuddy/scripts/` |
+| `prosabuddy/` | The ProsaBuddy app (OpenCode fork; same layout as the original `prosabuddy/`): root manifests + `bun.lock`, `packages/{opencode,plugin,sdk,util,script}` (no `test/`, Dockerfile, dev docs) | `prosabuddy/` |
+| `prosabuddy/.opencode/` | The 8 proof skills, custom Coq/PDF tools (`coq-check`, `coq-proof-dag`, `coq-serapi`, `pdf-read`), `opencode.jsonc` (no translation glossary/themes; the `.md` project agents, slash commands and GitHub tools were removed) | `prosabuddy/.opencode/` |
+| `prosabuddy/scripts/` | AST validator used by the runtime AST audit (`coq-ast-audit.ts` resolves `<app>/scripts`) | `prosabuddy/scripts/` |
 | `scripts/` | Experiment runner and its support files, in the layout the runner expects (`ROOT/scripts`) | `prosabuddy/scripts/scripts_junyi/` |
-| `scripts/run_ecrts_lemma3_rebuttal.sh` | The original launcher for this theorem, unchanged, for reference | same |
 | `scripts/opencode_runner_config.env` | Original runner settings; only `/home/junyi` paths replaced, `PARALLEL=1` | rewritten |
 | `scripts/run_case_gpt6luna.sh` | Launcher for this replication (mirrors the original launcher) | new |
 | `prosa_v06/` | Prosa v0.6 (`analysis behavior implementation model results util`) + ProsaBuddy's `classic`, `.v` sources compiled here with Rocq 9.0.1 | `prosabuddy/prosaworkspace/` (symlinks resolved) |
@@ -24,12 +23,13 @@ Source of everything copied: `../prosabuddy` (ProsaBuddy commit `af8f06d`, which
 | `patches/` | Every change made to ProsaBuddy source, as unified diffs against `../prosabuddy` | new |
 | `results/` | Run outputs: staged workspace, logs, request traces, per-attempt records (git-ignored) | generated |
 | `.tools/bin/bun` | Bun 1.3.10, the version ProsaBuddy pins (`packageManager`) | GitHub release |
-| `gptAPITest/` | CLIProxyAPI smoke test; its `.env` holds the local proxy URL + key used by the launcher | earlier setup |
+| `gptAPITest/.env` | Local CLIProxyAPI URL + key read by the launcher (git-ignored; the smoke test that used to live here was removed) | earlier setup |
 
 ## Same as the original experiment
 
 - Agents: the built-in ProsaBuddy agents `prover` (entry agent) → `lemma`, `fixer`, `diagnoser`, `explorer`,
-  `whole-lemma`, plus the project agents in `.opencode/agent/`. Prompts are the unmodified source files.
+  `whole-lemma`, with the unmodified `.txt` prompts in `prosabuddy/packages/opencode/src/agent/prompt/`. No `.md`
+  agents: the project agents of `prosabuddy/.opencode/agent/` are not copied, and `opencode.jsonc` disables them by name.
 - Skills: all 8 skills in `.opencode/skill/`, enabled with `--skill`.
 - Runner: `run_casestudy_our_minprosa.py` with the original flags `--stage-full-casestudy-workspace --full-prosa
   --segmented-proof-workflow --skill --trace-requests`, 80M token budget, 8 retries, 12 h timeout,
@@ -49,6 +49,7 @@ Source of everything copied: `../prosabuddy` (ProsaBuddy commit `af8f06d`, which
 | ProsaBuddy source | unmodified | `prompt.ts`, `proof-workflow.ts`, `proof-context.ts`, `proof-projection.ts`, `checkpoint.ts`, `coqc.ts`, `coq-session.ts`, `task.ts` patched + `compile-verdict.ts` added (`patches/01-proof-loop-fixes.patch`) | agents looped on read/checkpoint; marker parser blocked lemma dispatch; see "Patches" |
 | `setsid` | util-linux `setsid` (Linux) | `.tools/bin/setsid`, a 20-line C shim (`.tools/src/setsid.c`): `setsid()` then `exec`, same pid/process-group semantics | `tool/coq-project.ts` runs every `coqc`/`coqtop`/`coq_session` call as `setsid <cmd>`; macOS has no `setsid`. The first launch failed every Coq call for this reason and was stopped (run 01 in `results/RUNS.md`) |
 | Claude Code integration | n/a | `OPENCODE_DISABLE_CLAUDE_CODE=1` | keeps `~/.claude/skills` on this Mac out of the agent's skill list |
+| App folder name | `prosabuddy/` (repo root) | `prosabuddy/` (renamed from `opencode/` on 2026-10-07) | clearer name; `run_casestudy_our_minprosa.py` gets one extra skill-dir fallback `ROOT/prosabuddy/.opencode/skill`, because it resolves its fallback directories before reading `OPENCODE_SKILL_SOURCE_DIR` and would otherwise stop at startup |
 | `proof.tex` | used when the case directory has one | none for this case in `RTS_Papers` | not available |
 
 ## Run
@@ -141,6 +142,45 @@ with `"escalation_type": ""`; the enum check failed and the whole `proof_result`
 accepted through its compiler certificate in that run, but the structured result was discarded). Empty-string or
 `null` values of the optional fields `escalation_type`, `remodel_request`, `attempt_report` are now treated as absent;
 an `escalate` result still needs a valid `escalation_type`.
+
+**Patch 11: tolerate a restated region target after the plan is locked** (`session/proof-workflow.ts`, materialization
+review; separate diff `patches/02-plan-normal-form-tolerance.patch`, 2026-10-07). The review compared each delegated
+region's `normal_form` contract with the accepted plan's text (whitespace/case-insensitive). After the plan is locked,
+a prover that restates a target (2005-ECRTS-Lemma3 run `20261007_143032`: `num_cpus * backlogged ...` became
+`num_cpus * (if backlogged ... then 1 else 0)`) kept the review `drifted` for 33 checkpoints; no `lemma` was ever
+dispatched and the run ended at the retry limit (8 attempts, 50.6M tokens). Now a differing `normal_form` is accepted
+when the region's exported `have` statement matches its own `normal_form` (the existing `targetShapeMatches` check);
+otherwise the mismatch is reported as before. Each acceptance is logged (`patch 11: accepted region normal_form ...`).
+Soundness is unchanged: regions must compile, and success still requires `Qed.`, no admits/axioms and a clean `coqc`.
+
+**Patch 11b: formatting-insensitive normal-form comparison + informative blocker** (new `session/normal-form.ts`,
+`session/proof-workflow.ts`; diff `patches/03-normal-form-formatting.patch`, 2026-10-07). A closer look at run
+`20261007_143032` showed that the plan and the region used the same statement; the texts differed only in doubled
+backslashes (`\\sum`, a JSON double-escaping slip in the model's edit that the compiler never sees inside the contract
+comment) and redundant outer parentheses, and the blocker message did not say what differed (the prover then changed
+the right-hand side, which was not the problem). Now: (1) the review treats plan and region normal forms as equal when
+they differ only in doubled backslashes, parentheses, spacing, case, binder type annotations (`forall t : time,` vs
+`forall t,`) or a final period; (2) `normalizeTargetShape` (have-statement vs contract, used by the lemma locality gate)
+also collapses doubled backslashes; (3) a remaining mismatch reports the first differing fragment of plan vs region.
+Patch 11's acceptance of a self-consistent restated target is kept as the next fallback. Known limit: ignoring
+parentheses could equate `a * (b + c)` with `a * b + c`; this only affects lemma dispatch, never proof checking.
+
+**Patch 12: formatting-insensitive lemma session entry check** (`tool/coq-session.ts`, `expectedGoalMatches`; diff
+`patches/04-session-goal-formatting.patch`, 2026-10-07). Rocq prints goals without redundant parentheses (the body of
+`\\sum_(cpu < num_cpus) (a && b)` is printed as `a && b`), while lemma assignments carry the source text. The session's
+entry check compared them modulo whitespace and binder types only (patch 5), so in Lemma3 run `20261007_165915` every
+lemma session reported `session_state_desync`, all tactics were blocked and all three lemmas escalated. The check now
+falls back to patch 11b's `NormalFormText.sameModuloFormatting` (parentheses, doubled backslashes, binder types,
+spacing). Verified on the real assignment text vs the goal Rocq prints at that region; a goal with `*` changed to `+`
+still mismatches.
+
+**Patch 13: show the real Rocq error in `coq_session` feedback** (`tool/coq-session.ts`, `classify`; diff
+`patches/05-session-error-summary.patch`, 2026-10-07). The step feedback summary was the first 3 non-empty stderr lines.
+With Prosa's imports, Rocq 9.0.1 + MathComp 2.4 print 16 notation warnings (~50 lines) before any error, so every
+failed tactic was reported as the first notation warning (kind `environment_problem`) and the actual error was hidden
+(Lemma3 run `20261007_165915`: `move=> t cpu BACK.` failed with `Error: No assumption in (...)` on stderr line 53 of 58;
+the lemma only saw the warning). Warning blocks are now dropped and the summary starts at the first `Error` (with its
+`File ... line ...` location, up to 8 lines). The feedback kinds are unchanged.
 
 Patches 1-6 were active in the successful Theorem3 attempt; patches 7-10 fix failures observed in run 07 and were
 written while its final attempt was already running, so they have not yet been exercised in a successful run.

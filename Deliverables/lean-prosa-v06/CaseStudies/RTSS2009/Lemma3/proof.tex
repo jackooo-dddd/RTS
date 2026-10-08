@@ -1,0 +1,36 @@
+\textit{Proof:} We recall that by definition, $\Omega_k(x)$ consists of two sums over the sets $\tau^{\mathrm{NC}}$ and $\tau^{\mathrm{CI}}$ which are a partitioning of $\tau$ such that $\Omega_k(x)$ is maximal:
+\[
+\Omega_k(x)=\sum_{\tau_i\in\tau^{\mathrm{CI}}} I_k^{\mathrm{CI}}(\tau_i,x)+\sum_{\tau_i\in\tau^{\mathrm{NC}}} I_k^{\mathrm{NC}}(\tau_i,x)
+\]
+
+Let $\vartheta^{\mathrm{CI}} \subseteq \tau^{\mathrm{CI}}$ and $\vartheta^{\mathrm{NC}} \subseteq \tau^{\mathrm{NC}}$ be subsets of both partitions, such that:
+\[
+\forall \tau_i \in \vartheta^{\mathrm{CI}}:\; W_k^{\mathrm{CI}}(\tau_i,x) > x-C_k+1
+\]
+\[
+\forall \tau_i \in \vartheta^{\mathrm{NC}}:\; W_k^{\mathrm{NC}}(\tau_i,x) > x-C_k+1
+\]
+
+Thus, $\vartheta := \vartheta^{\mathrm{CI}} \cup \vartheta^{\mathrm{NC}}$ captures the relatively ``dense'' tasks of $\tau$. Using this, $I_k^{\mathrm{CI}}(\tau_i,x,h)$ and $I_k^{\mathrm{NC}}(\tau_i,x,h)$ can be rewritten using $W_k^{\mathrm{CI}}(\tau_i,x)$ and $W_k^{\mathrm{NC}}(\tau_i,x)$ in the definition of $\Omega_k(x)$:
+\[
+\Omega_k(x)=|\vartheta|\cdot(x-C_k+1)
++\sum_{\tau_i\in\tau^{\mathrm{CI}}\setminus\vartheta^{\mathrm{CI}}} W_k^{\mathrm{CI}}(\tau_i,x)
++\sum_{\tau_i\in\tau^{\mathrm{NC}}\setminus\vartheta^{\mathrm{NC}}} W_k^{\mathrm{NC}}(\tau_i,x)
+\tag{22}
+\]
+
+We consider the case of $|\vartheta|<M$. (Otherwise, the lemma obviously holds.)
+
+Now let $x<f_k-t_0$, as in the assumption of the lemma, so the Job $J_k$ is still active at time point $x$. Thus, only at strictly less than $C_k$ time points of the interval $[t_0,t_0+x)$, $J_k$ was able to run. Now we know, that all tasks from $\vartheta$ could keep at most $|\vartheta|$ processors busy at each time unit during the interval. It follows, that the remaining tasks (those from $\tau\setminus\vartheta$) kept the remaining $M-|\vartheta|$ processors busy for at least $x-C_k+1$ time units during the interval (otherwise, $J_k$ would have been able to execute for $C_k$ time units and thus finish until $t_0+x$). Consequently, the tasks from $\tau\setminus\vartheta$ must have generated a workload of at least $(M-|\vartheta|)\cdot(x-C_k+1)$ over the considered $x$ time units. Since $W_k^{\mathrm{CI}}(\tau_i,x)$ and $W_k^{\mathrm{NC}}(\tau_i,x)$ are upper bounds of their workloads, we have:
+\[
+\sum_{\tau_i\in\tau^{\mathrm{CI}}\setminus\vartheta^{\mathrm{CI}}} W_k^{\mathrm{CI}}(\tau_i,x)
++\sum_{\tau_i\in\tau^{\mathrm{NC}}\setminus\vartheta^{\mathrm{NC}}} W_k^{\mathrm{NC}}(\tau_i,x)
+\geq (M-|\vartheta|)\cdot(x-C_k+1)
+\tag{23}
+\]
+
+From (22) and (23) it follows
+\[
+\Omega_k(x)\geq M\cdot(x-C_k+1),
+\]
+which is equivalent to the lemma. \hfill $\blacksquare$

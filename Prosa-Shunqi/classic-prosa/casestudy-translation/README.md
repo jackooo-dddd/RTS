@@ -6,7 +6,7 @@ tier S 38 files · tier P 11 files · v0.6 `util` dependencies: 14 / 14 already 
 all files processed · last update: 2026-10-02
 <!-- STATUS_END -->
 
-Goal: translate exactly the Classic Prosa files needed for the 22 `RTS_Papers` case studies, so
+Goal: translate exactly the Classic Prosa files needed for the 23 `RTS_Papers` case studies, so
 that their statements can be written in Lean and later proved there.
 
 ## Source authority
@@ -127,12 +127,13 @@ note. Keep the table below and `file_order.csv` in sync.
 
 ## Case studies
 
-All 22 case-study statements become writable once ranks 1–42 are accepted: after rank 38 for
+All 23 case-study statements become writable once ranks 1–42 are accepted: after rank 38 for
 2009-RTSS-Lemma5, 2009-RTSS-Theorem2 and 2014-RTCSA-Lemma4, and after rank 41 for
 2015-RTAS-Lemma8. See [`case_studies.csv`](case_studies.csv).
 
 | Case studies | Classic proof support | Ranks |
 |---|---|---|
+| 2007-RTSS-Theorem1 | global FP `bertogna_cirinei_response_time_bound_fp` and `workload_bounded_by_W` (same proof, simpler per-task bound) | 36, 40, 44, 47 |
 | 2007-RTSS-Theorem2 | `task_interference_le_workload` (direct counterpart) | 34 |
 | 2007-RTSS-Theorem4 | `workload_bounded_by_W` (direct counterpart) | 36 |
 | 2015-RTAS-Lemma8 | APA `bertogna_cirinei_response_time_bound_fp` (direct counterpart) | 35, 39, 43, 46 |

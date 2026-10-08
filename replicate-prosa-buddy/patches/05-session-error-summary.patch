@@ -1,0 +1,51 @@
+diff -ruN a/packages/opencode/src/tool/coq-session.ts b/packages/opencode/src/tool/coq-session.ts
+--- a/packages/opencode/src/tool/coq-session.ts	2026-10-07 18:54:32
++++ b/packages/opencode/src/tool/coq-session.ts	2026-10-07 18:54:32
+@@ -280,6 +280,23 @@
+   }
+ }
+ 
++// [replicate-prosa-buddy patch 13] The feedback summary used the first 3 non-empty stderr lines. With Prosa's
++// imports Rocq prints 16 notation warnings (~50 lines) before any error, so every failed tactic was reported
++// as the first warning and the real `Error:` (e.g. "No assumption in ...", stderr line 53 of 58 in Lemma3
++// run 20261007_165915) was never shown. Drop `File ...: Warning: ... [warning-name,...]` blocks and start the
++// summary at the first error block when there is one.
++function stderrSummary(stderr: string, maxLines = 8): string {
++  const withoutWarnings = stderr.replace(
++    /(?:File "[^"\n]*", line \d+, characters \d+-\d+:\s*\n)?Warning:[\s\S]*?\[[\w.,-]+\]\s*(?:\n|$)/g,
++    "",
++  )
++  const lines = withoutWarnings.split("\n").filter((line) => line.trim())
++  const errorAt = lines.findIndex((line) => /^Error\b/.test(line.trim()))
++  const start = errorAt > 0 && /^File "/.test(lines[errorAt - 1]) ? errorAt - 1 : Math.max(errorAt, 0)
++  const picked = lines.slice(start, start + maxLines)
++  return (picked.length > 0 ? picked : stderr.split("\n").filter((line) => line.trim()).slice(0, 3)).join(" | ")
++}
++
+ function classify(exit: number, stdout: string, stderr: string): EnvFeedback {
+   const err = stderr.toLowerCase()
+   if (exit === 0 && !err.includes("error")) {
+@@ -297,20 +314,20 @@
+     const missing = stderr.match(/(?:not found|cannot find)\s+(\S+)/i)?.[1]
+     return {
+       kind: "environment_problem",
+-      summary: stderr.split("\n").filter((l: string) => l.trim()).slice(0, 3).join(" | "),
++      summary: stderrSummary(stderr), // [replicate-prosa-buddy patch 13]
+       missing_symbol: missing,
+     }
+   }
+   if (err.includes("syntax error") || err.includes("parse error") || err.includes("illegal")) {
+     return {
+       kind: "syntax_or_engine_problem",
+-      summary: stderr.split("\n").filter((l: string) => l.trim()).slice(0, 3).join(" | "),
++      summary: stderrSummary(stderr), // [replicate-prosa-buddy patch 13]
+     }
+   }
+   // Default: environment problem
+   return {
+     kind: "environment_problem",
+-    summary: stderr.split("\n").filter((l: string) => l.trim()).slice(0, 3).join(" | "),
++    summary: stderrSummary(stderr), // [replicate-prosa-buddy patch 13]
+   }
+ }
+ 

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Single-theorem ProsaBuddy replication with gpt-6-luna via CLIProxyAPI (one case study per run).
 #
-# Mirrors scripts/run_ecrts_lemma3_rebuttal.sh (the original experiment) with:
+# Mirrors ProsaBuddy's scripts/scripts_junyi/run_ecrts_lemma3_rebuttal.sh (the original experiment) with:
 #   - one worker instead of two (single theorem run),
 #   - model codexproxy/gpt-6-luna, variant/reasoningEffort "max" (as in the original gpt-5.6-luna launcher),
 #   - local paths, Rocq 9.0.1 from the opam switch prosa-0.6.
@@ -76,7 +76,7 @@ echo "supervisor_dir=$SUPERVISOR_DIR"
 exec env -u OPENCODE_MODEL -u OPENCODE_VARIANT -u COQPATH -u ROCQPATH \
   "PATH=$ROCQ_BIN_DIR:$(dirname "$BUN_BIN"):/usr/bin:/bin:/usr/sbin:/sbin:/opt/homebrew/bin" \
   "BUN_BIN=$BUN_BIN" \
-  "OPENCODE_DIR=$R/opencode/packages/opencode" \
+  "OPENCODE_DIR=$R/prosabuddy/packages/opencode" \
   "OPENCODE_BIN=$SCRIPT_DIR/opencode_our_local.sh" \
   "OPENCODE_RUN_CONFIG=$SCRIPT_DIR/opencode_runner_config.env" \
   "XDG_DATA_HOME=$WORKER_ROOT/data" \
