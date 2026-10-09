@@ -21,9 +21,11 @@ import { ProofEditTransaction } from "@/session/proof-edit-transaction"
 const MAX_METADATA_LENGTH = 30_000
 const DEFAULT_TIMEOUT = Flag.OPENCODE_EXPERIMENTAL_BASH_DEFAULT_TIMEOUT_MS || 2 * 60 * 1000
 const DEFAULT_MAX_OUTPUT_BYTES = 8 * 1024 * 1024
-const DIRECT_COQ_COMPILER_ERROR =
-  "Do not run Coq/Rocq compilers or proof shells through bash. Use the dedicated coqc, coqtop, coq_session, or petanque tool instead so timeout, process cleanup, and trace errors are enforced."
-const COQ_COMPILER_WRAPPERS = new Set(["timeout", "gtimeout", "env", "command", "time", "nice", "nohup"])
+const DIRECT_LEAN_COMPILER_ERROR =
+  "Do not run Lean, Lake builds, or proof REPLs through bash. Use the dedicated lean_check, lean_query, lean_session, or checkpoint tool instead so timeout, process cleanup, and trace errors are enforced."
+// `lake` subcommands that compile, elaborate, or run project executables (Pantograph, cache) in the workspace.
+const LAKE_COMPILER_SUBCOMMANDS = new Set(["build", "env", "lean", "exe", "serve", "update"])
+const LEAN_COMPILER_WRAPPERS = new Set(["timeout", "gtimeout", "env", "command", "time", "nice", "nohup"])
 const SHELL_WRAPPERS = new Set(["bash", "sh", "zsh", "fish"])
 
 function bashMaxOutputBytes() {
@@ -77,26 +79,30 @@ function commandHead(text: string) {
   return path.basename(shellWord(text))
 }
 
-function isCoqCompilerInvocation(words: string[], index: number) {
+function isLeanCompilerInvocation(words: string[], index: number) {
   const head = commandHead(words[index] ?? "")
-  if (head === "coqc" || head === "coqtop") return true
-  return head === "rocq" && shellWord(words[index + 1] ?? "") === "c"
+  if (head === "lean") return true
+  return head === "lake" && LAKE_COMPILER_SUBCOMMANDS.has(shellWord(words[index + 1] ?? ""))
 }
 
-function assertNoDirectCoqCompiler(command: string[], commandText: string) {
+function assertNoDirectLeanCompiler(command: string[], commandText: string) {
   if (command.length === 0) return
   const head = commandHead(command[0])
 
-  if (isCoqCompilerInvocation(command, 0)) throw new Error(DIRECT_COQ_COMPILER_ERROR)
+  if (isLeanCompilerInvocation(command, 0)) throw new Error(DIRECT_LEAN_COMPILER_ERROR)
 
-  if (COQ_COMPILER_WRAPPERS.has(head)) {
+  if (LEAN_COMPILER_WRAPPERS.has(head)) {
     for (let index = 1; index < command.length; index++) {
-      if (isCoqCompilerInvocation(command, index)) throw new Error(DIRECT_COQ_COMPILER_ERROR)
+      if (isLeanCompilerInvocation(command, index)) throw new Error(DIRECT_LEAN_COMPILER_ERROR)
     }
   }
 
-  if (SHELL_WRAPPERS.has(head) && /\b(?:coqc|coqtop|rocq\s+c)\b/.test(commandText)) {
-    throw new Error(DIRECT_COQ_COMPILER_ERROR)
+  // `lean` must be a whole command word: `Solution.lean` and `lean-toolchain` are file names, not invocations.
+  if (
+    SHELL_WRAPPERS.has(head) &&
+    /(?:^|[\s;&|(`'"])(?:lean|lake\s+(?:build|env|lean|exe|serve|update))(?=$|[\s;&|)`'"])/.test(commandText)
+  ) {
+    throw new Error(DIRECT_LEAN_COMPILER_ERROR)
   }
 }
 
@@ -121,7 +127,7 @@ function assertNoProofTransactionShellMutation(input: {
   ].filter((candidate, index, all) => candidate && candidate !== "." && all.indexOf(candidate) === index)
   const mentionsTarget = candidates.some((candidate) =>
     new RegExp(`(?:^|[\\s=:/,(]|\\[)${escapeRegExp(candidate)}(?=$|[\\s:;,)\\]])`).test(unquoted),
-  ) || (/[*?][^\s]*\.v\b/.test(unquoted) && transaction.file.endsWith(".v"))
+  ) || (/[*?][^\s]*\.lean\b/.test(unquoted) && transaction.file.endsWith(".lean"))
   if (!mentionsTarget) return
 
   const targetAlternation = candidates.map(escapeRegExp).join("|")
@@ -143,7 +149,7 @@ function assertNoProofTransactionShellMutation(input: {
   throw new Error(
     `proof_transaction_shell_write_rejected: ${transaction.file} has active staged transaction ${transaction.transaction_id}. ` +
       "A shell write would bypass the transaction journal, authorized proof scope, rollback, and compiler-certificate merge. " +
-      "Read the staged file, then use edit, multiedit, write, or apply_patch; validate it with checkpoint/coqc before commit.",
+      "Read the staged file, then use edit, multiedit, write, or apply_patch; validate it with checkpoint/lean_check before commit.",
   )
 }
 
@@ -208,7 +214,7 @@ export const BashTool = Tool.define("bash", async () => {
           command.push(child.text)
         }
 
-        assertNoDirectCoqCompiler(command, commandText)
+        assertNoDirectLeanCompiler(command, commandText)
         assertNoProofTransactionShellMutation({
           sessionID: ctx.sessionID,
           cwd,

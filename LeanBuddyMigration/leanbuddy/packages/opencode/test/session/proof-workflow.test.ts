@@ -17,7 +17,7 @@ describe("session.proof-workflow lemma scheduling", () => {
   beforeEach(() => {
     scaffoldSpy = spyOn(SessionProofWorkflow.Validation, "scaffold").mockImplementation(async () => ({
       ok: true,
-      validator: "checkpoint-coqc",
+      validator: "checkpoint-lean",
       status: "ok",
     }))
     lspTouchSpy = spyOn(LSP, "touchFile").mockImplementation(async () => undefined)
@@ -2046,7 +2046,7 @@ describe("session.proof-workflow lemma scheduling", () => {
           theorem: "demo",
           admit_id: "gap_1",
           escalation_type: "blocked_by_sibling_syntax" as const,
-          reason: "checkpoint-coqc scaffold gate failed: preceding have leaves two focused goals",
+          reason: "checkpoint-lean scaffold gate failed: preceding have leaves two focused goals",
           region_start_line: scheduled.lemma_assignment.editable_region?.start_line,
           region_end_line: scheduled.lemma_assignment.editable_region?.end_line,
           region_fingerprint: scheduled.lemma_assignment.editable_region?.region_fingerprint,
@@ -2257,7 +2257,7 @@ describe("session.proof-workflow lemma scheduling", () => {
               info: { id: `msg_repair_${count}`, role: "assistant" },
               parts: Array.from({ length: count }, (_, index) => ({
                 type: "tool",
-                tool: index % 3 === 0 ? "coq_session" : index % 3 === 1 ? "read" : "grep",
+                tool: index % 3 === 0 ? "lean_session" : index % 3 === 1 ? "read" : "grep",
                 state: {
                   status: "completed",
                   input:
@@ -2414,7 +2414,7 @@ describe("session.proof-workflow lemma scheduling", () => {
           info: { id: `msg_lemma_${count}`, role: "assistant" },
           parts: Array.from({ length: count }, (_, index) => ({
             type: "tool",
-            tool: index % 2 === 0 ? "coq_session" : "read",
+            tool: index % 2 === 0 ? "lean_session" : "read",
             state: {
               status: "completed",
               input: index % 2 === 0 ? { op: "step" } : { filePath: file },
@@ -3223,7 +3223,7 @@ describe("session.proof-workflow lemma scheduling", () => {
         scaffoldSpy?.mockRestore()
         scaffoldSpy = spyOn(SessionProofWorkflow.Validation, "scaffold").mockImplementation(async () => ({
           ok: false,
-          validator: "checkpoint-coqc",
+          validator: "checkpoint-lean",
           status: "error",
           first_error_line: 7,
           failure_kind: "compiler_error",
@@ -3292,7 +3292,7 @@ describe("session.proof-workflow lemma scheduling", () => {
         scaffoldSpy?.mockRestore()
         scaffoldSpy = spyOn(SessionProofWorkflow.Validation, "scaffold").mockImplementation(async () => ({
           ok: false,
-          validator: "checkpoint-coqc",
+          validator: "checkpoint-lean",
           status: "error",
           first_error_line: 5,
           failure_kind: "compiler_error",
@@ -3504,7 +3504,7 @@ describe("session.proof-workflow lemma scheduling", () => {
           sessionID,
           file,
           source,
-          validator: "coqc",
+          validator: "lean_check",
           ok: true,
         })
         expect(lifecycle.action).toBe("certified")
@@ -3553,7 +3553,7 @@ describe("session.proof-workflow lemma scheduling", () => {
           sessionID: parent.id,
           file,
           source,
-          validator: "coqc",
+          validator: "lean_check",
           ok: true,
         })
         expect(first).toMatchObject({ action: "certified", admit_id: "gap_1" })
@@ -3569,7 +3569,7 @@ describe("session.proof-workflow lemma scheduling", () => {
           sessionID: child.id,
           file,
           source,
-          validator: "coqc",
+          validator: "lean_check",
           ok: true,
         })
         expect(repeated.action).toBe("unchanged")
@@ -3653,7 +3653,7 @@ describe("session.proof-workflow lemma scheduling", () => {
           sessionID: child.id,
           file,
           source: solvedFirst,
-          validator: "checkpoint-coqc",
+          validator: "checkpoint-lean",
           ok: true,
           validated_source_current: true,
         })
@@ -3707,7 +3707,7 @@ describe("session.proof-workflow lemma scheduling", () => {
           sessionID,
           file,
           source,
-          validator: "coqc",
+          validator: "lean_check",
           ok: true,
         })
         expect(SessionProofWorkflow.get(sessionID)?.queue[0]?.status).toBe("solved")
@@ -3760,7 +3760,7 @@ describe("session.proof-workflow lemma scheduling", () => {
           sessionID,
           file,
           source,
-          validator: "coqc",
+          validator: "lean_check",
           ok: true,
         })
         expect(SessionProofWorkflow.get(sessionID)?.queue.map((item) => item.status)).toEqual(["solved", "solved"])
@@ -3769,7 +3769,7 @@ describe("session.proof-workflow lemma scheduling", () => {
           sessionID,
           file,
           source,
-          validator: "coqc",
+          validator: "lean_check",
           ok: false,
           first_error_file: file,
           first_error_line: 9,
@@ -3830,7 +3830,7 @@ describe("session.proof-workflow lemma scheduling", () => {
           sessionID,
           file,
           source,
-          validator: "coqc",
+          validator: "lean_check",
           ok: false,
           first_error_file: file,
           first_error_line: qedLine,
@@ -3896,7 +3896,7 @@ describe("session.proof-workflow lemma scheduling", () => {
           sessionID,
           file,
           source: compiledSource,
-          validator: "coqc",
+          validator: "lean_check",
           ok: true,
         })
         expect(lifecycle.action).toBe("source_changed")
@@ -3919,7 +3919,7 @@ describe("session.proof-workflow lemma scheduling", () => {
         scaffoldSpy?.mockRestore()
         scaffoldSpy = spyOn(SessionProofWorkflow.Validation, "scaffold").mockImplementation(async () => ({
           ok: false,
-          validator: "checkpoint-coqc",
+          validator: "checkpoint-lean",
           status: "error",
           first_error_line: 5,
           failure_kind: "compiler_error",
@@ -3976,12 +3976,12 @@ describe("session.proof-workflow lemma scheduling", () => {
           valid
             ? {
                 ok: true,
-                validator: "checkpoint-coqc",
+                validator: "checkpoint-lean",
                 status: "ok",
               }
             : {
                 ok: false,
-                validator: "checkpoint-coqc",
+                validator: "checkpoint-lean",
                 status: "error",
                 first_error_line: 5,
                 failure_kind: "compiler_error",
@@ -4267,7 +4267,7 @@ describe("session.proof-workflow lemma scheduling", () => {
         const firstAdmitted = source.replace("have Hfirst : True.\n{\n}", "have Hfirst : True.\n{\n  admit.\n}")
         const admittedPrefixSpy = spyOn(SessionProofWorkflow.Validation, "prefix").mockImplementation(async () => ({
           ok: true,
-          validator: "checkpoint-coqc",
+          validator: "checkpoint-lean",
           status: "ok",
         }))
         const admittedPrefix = await SessionProofWorkflow.recordLemmaPrefixValidation({
@@ -4300,7 +4300,7 @@ describe("session.proof-workflow lemma scheduling", () => {
 
         const prefixSpy = spyOn(SessionProofWorkflow.Validation, "prefix").mockImplementation(async (_file, maskedSource) => {
           expect(maskedSource).toContain("have Hsecond : True.\n{\n  admit.\n}")
-          return { ok: true, validator: "checkpoint-coqc", status: "ok" }
+          return { ok: true, validator: "checkpoint-lean", status: "ok" }
         })
         const prefix = await SessionProofWorkflow.recordLemmaPrefixValidation({
           sessionID: lemmaSessionID,
@@ -4461,7 +4461,7 @@ describe("session.proof-workflow lemma scheduling", () => {
 
         const prefixSpy = spyOn(SessionProofWorkflow.Validation, "prefix").mockImplementation(async () => ({
           ok: true,
-          validator: "checkpoint-coqc",
+          validator: "checkpoint-lean",
           status: "ok",
         }))
         const validation = await SessionProofWorkflow.recordLemmaPrefixValidation({
@@ -4824,7 +4824,7 @@ describe("session.proof-workflow lemma scheduling", () => {
           sessionID: secondSession.id,
           file,
           source,
-          validator: "coqc",
+          validator: "lean_check",
           ok: true,
         })
         expect(lifecycle.action).toBe("certified")
@@ -5050,7 +5050,7 @@ describe("session.proof-workflow lemma scheduling", () => {
         scaffoldSpy?.mockRestore()
         scaffoldSpy = spyOn(SessionProofWorkflow.Validation, "scaffold").mockImplementation(async () => ({
           ok: false,
-          validator: "checkpoint-coqc",
+          validator: "checkpoint-lean",
           status: "error",
           first_error_line: 1,
           failure_kind: "compiler_error",
@@ -5089,7 +5089,7 @@ describe("session.proof-workflow lemma scheduling", () => {
         const state = SessionProofWorkflow.get(sessionID)
         expect(state?.queue[0]?.status).toBe("escalated")
         expect(state?.queue[0]?.escalation_type).toBe("blocked_by_sibling_syntax")
-        expect(state?.queue[0]?.escalation_reason).toContain("checkpoint-coqc scaffold gate failed")
+        expect(state?.queue[0]?.escalation_reason).toContain("checkpoint-lean scaffold gate failed")
 
         SessionProofWorkflow.clear(sessionID)
         SessionProof.clear(sessionID)
@@ -5107,7 +5107,7 @@ describe("session.proof-workflow lemma scheduling", () => {
         scaffoldSpy?.mockRestore()
         scaffoldSpy = spyOn(SessionProofWorkflow.Validation, "scaffold").mockImplementation(async () => ({
           ok: false,
-          validator: "checkpoint-coqc",
+          validator: "checkpoint-lean",
           status: "error",
           first_error_line: 5,
           failure_kind: "compiler_error",
@@ -5157,7 +5157,7 @@ describe("session.proof-workflow lemma scheduling", () => {
         scaffoldSpy?.mockRestore()
         scaffoldSpy = spyOn(SessionProofWorkflow.Validation, "scaffold").mockImplementation(async () => ({
           ok: false,
-          validator: "checkpoint-coqc",
+          validator: "checkpoint-lean",
           status: "error",
           first_error_line: 1,
           failure_kind: "compiler_error",
@@ -5241,7 +5241,7 @@ describe("session.proof-workflow lemma scheduling", () => {
         scaffoldSpy?.mockRestore()
         scaffoldSpy = spyOn(SessionProofWorkflow.Validation, "scaffold").mockImplementation(async () => ({
           ok: false,
-          validator: "checkpoint-coqc",
+          validator: "checkpoint-lean",
           status: "error",
           first_error_line: 1,
           failure_kind: "compiler_error",
@@ -6392,7 +6392,7 @@ describe("session.proof-workflow lemma scheduling", () => {
           sessionID,
           file,
           source: before,
-          validator: "coqc",
+          validator: "lean_check",
           ok: true,
         })
 
@@ -6454,7 +6454,7 @@ describe("session.proof-workflow lemma scheduling", () => {
           sessionID,
           file,
           source: before,
-          validator: "coqc",
+          validator: "lean_check",
           ok: true,
         })
 
@@ -6839,7 +6839,7 @@ describe("session.proof-workflow lemma scheduling", () => {
           sessionID,
           file,
           source: substantive,
-          validator: "checkpoint-coqc",
+          validator: "checkpoint-lean",
           ok: true,
         })
         expect(lifecycle.action).toBe("certified")

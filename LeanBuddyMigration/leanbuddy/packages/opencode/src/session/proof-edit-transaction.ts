@@ -1167,7 +1167,7 @@ export namespace ProofEditTransaction {
     }
   }
 
-  export function markAstAudited(input: { sessionID: string; file: string; source: string }) {
+  export function markGateChecked(input: { sessionID: string; file: string; source: string }) {
     const transaction = state().get(input.sessionID)
     if (!transaction || transaction.file !== normalize(input.file)) return undefined
     const sourceHash = hash(input.source)
@@ -1176,7 +1176,7 @@ export namespace ProofEditTransaction {
       ? hash(transaction.bestCommittableSource)
       : undefined
     if (sourceHash !== currentHash && sourceHash !== committableHash) {
-      throw new Error("proof_transaction_stale_view: AST audit receipt does not match staged or committable source")
+      throw new Error("proof_transaction_stale_view: final-gate receipt does not match staged or committable source")
     }
     transaction.astApprovedSourceHashes.add(sourceHash)
     return summary(transaction)
@@ -1482,17 +1482,17 @@ export namespace ProofEditTransaction {
 
   export async function finalize(
     sessionID: string,
-    options?: { handoffToSessionID?: string; handoffScope?: AuthorizedScope; requireAstAudit?: boolean },
+    options?: { handoffToSessionID?: string; handoffScope?: AuthorizedScope; requireGate?: boolean },
   ): Promise<FinalizeResult | undefined> {
     const transaction = state().get(sessionID)
     if (!transaction) return undefined
     const base = summary(transaction)
-    const astAuditPending = Boolean(
-      options?.requireAstAudit &&
+    const gatePending = Boolean(
+      options?.requireGate &&
       transaction.bestCommittableSource !== undefined &&
       !transaction.astApprovedSourceHashes.has(hash(transaction.bestCommittableSource)),
     )
-    if (transaction.bestCommittableSource === undefined || astAuditPending) {
+    if (transaction.bestCommittableSource === undefined || gatePending) {
       const handoffSessionID = options?.handoffToSessionID
       if (handoffSessionID && handoffSessionID !== sessionID) {
         const existing = state().get(handoffSessionID)
@@ -1557,10 +1557,10 @@ export namespace ProofEditTransaction {
     return { ...base, status: "committed", receipt: transaction.bestReceipt }
   }
 
-  export async function finalizeHandedOffAccepted(sessionID: string, options?: { requireAstAudit?: boolean }) {
+  export async function finalizeHandedOffAccepted(sessionID: string, options?: { requireGate?: boolean }) {
     const transaction = state().get(sessionID)
     if (!transaction?.handedOff || transaction.bestCommittableSource === undefined) return undefined
-    return finalize(sessionID, { requireAstAudit: options?.requireAstAudit })
+    return finalize(sessionID, { requireGate: options?.requireGate })
   }
 
   export function abort(sessionID: string) {

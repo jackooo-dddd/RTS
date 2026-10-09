@@ -21,8 +21,8 @@ import { EditTool } from "../../tool/edit"
 import { WriteTool } from "../../tool/write"
 import { TaskTool } from "../../tool/task"
 import { TodoWriteTool } from "../../tool/todo"
-import { CoqcTool } from "../../tool/coqc"
-import { CoqtopTool } from "../../tool/coqtop"
+import { LeanCheckTool } from "../../tool/lean-check"
+import { LeanQueryTool } from "../../tool/lean-query"
 import { Locale } from "../../util/locale"
 import { Trace } from "../../session/trace"
 
@@ -151,19 +151,19 @@ function edit(info: ToolProps<typeof EditTool>) {
   )
 }
 
-function coqc(info: ToolProps<typeof CoqcTool>) {
+function leanCheck(info: ToolProps<typeof LeanCheckTool>) {
   const file = normalizePath(info.input.filePath)
   const status = info.metadata.status === "success" ? "ok" : "fail"
   inline({
     icon: status === "ok" ? "✓" : "✗",
-    title: `coqc ${file}: ${status}`,
+    title: `lean_check ${file}: ${status}`,
   })
 }
 
-function coqtop(info: ToolProps<typeof CoqtopTool>) {
+function leanQuery(info: ToolProps<typeof LeanQueryTool>) {
   inline({
     icon: "⊢",
-    title: `coqtop ${info.input.command}`,
+    title: `lean_query ${info.input.command}`,
   })
 }
 
@@ -403,8 +403,8 @@ export const RunCommand = cmd({
           if (part.tool === "edit") return edit(props<typeof EditTool>(part))
           if (part.tool === "task") return task(props<typeof TaskTool>(part))
           if (part.tool === "todowrite") return todo(props<typeof TodoWriteTool>(part))
-          if (part.tool === "coqc") return coqc(props<typeof CoqcTool>(part))
-          if (part.tool === "coqtop") return coqtop(props<typeof CoqtopTool>(part))
+          if (part.tool === "lean_check") return leanCheck(props<typeof LeanCheckTool>(part))
+          if (part.tool === "lean_query") return leanQuery(props<typeof LeanQueryTool>(part))
           return fallback(part)
         } catch {
           return fallback(part)

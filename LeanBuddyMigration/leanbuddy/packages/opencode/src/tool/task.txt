@@ -32,7 +32,7 @@ Usage notes:
 13. Do not ask the lemma agent to quit after a small number of steps. Tell it to keep a stable proof loop: atomic tactic, goal query, edit/write, LSP diagnostics, compile checkpoint, rollback or repair from the first failing diagnostic, then continue.
 14. For Coq/Rocq proof tasks, do not use ssreflect repeat-rewrite syntax `rewrite !...` or `rewrite -!...`; proof tools reject it. Use explicit rewrites or a named normalization bridge instead.
 15. For Coq/Rocq proof tasks, do not use the `intuition` tactic; it generates opaque proof terms and is rejected by the proof tools. Use explicit tactics (`left`/`right`/`split`/`apply`/`exact`) instead.
-16. Proof-producing task submissions are structurally audited before handoff. On rejection the runtime resumes the same task_id with an `<ast-audit-rejection>` block; repair the current staged source from those exact reasons instead of starting a fresh task. A submission that still fails after the bounded repair loop is invalid and must be repaired by the parent before it can count as solved.
+16. Proof-producing task submissions are structurally audited before handoff. On rejection the runtime resumes the same task_id with an `<region-check-rejection>` block; repair the current staged source from those exact reasons instead of starting a fresh task. A submission that still fails after the bounded repair loop is invalid and must be repaired by the parent before it can count as solved.
 
 Example usage (NOTE: The agents below are fictional examples for illustration only - use the actual agents listed above):
 

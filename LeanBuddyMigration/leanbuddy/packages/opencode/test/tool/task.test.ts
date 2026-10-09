@@ -12,7 +12,7 @@ import * as SessionPromptModule from "../../src/session/prompt"
 import { Trace } from "../../src/session/trace"
 import type { Tool } from "../../src/tool/tool"
 import { TaskTool } from "../../src/tool/task"
-import { CoqAstAudit } from "../../src/tool/coq-ast-audit"
+import { LeanGate } from "../../src/tool/lean-gate"
 import { tmpdir } from "../fixture/fixture"
 
 const promptSchema = SessionPromptModule.SessionPrompt.prompt.schema
@@ -211,18 +211,18 @@ function regionLemmaAssignment() {
 describe("tool.task recursive proof agents", () => {
   let resolvePromptPartsSpy: ReturnType<typeof spyOn> | undefined
   let promptSpy: ReturnType<typeof spyOn> | undefined
-  let astAuditSpy: ReturnType<typeof spyOn> | undefined
+  let gateSpy: ReturnType<typeof spyOn> | undefined
 
   beforeEach(() => {
     resolvePromptPartsSpy = undefined
     promptSpy = undefined
-    astAuditSpy = undefined
+    gateSpy = undefined
   })
 
   afterEach(() => {
     resolvePromptPartsSpy?.mockRestore()
     promptSpy?.mockRestore()
-    astAuditSpy?.mockRestore()
+    gateSpy?.mockRestore()
   })
 
   test("prover, lemma, and fixer expose the expected layered proof workflow", async () => {
@@ -244,7 +244,7 @@ describe("tool.task recursive proof agents", () => {
         expect(lemma?.prompt).toContain("Long-Running Interactive Proof Loop")
         expect(lemma?.prompt).toContain("If the informal proof already supports a direct proof, write the line-by-line comments first and then prove directly from them")
         expect(PermissionNext.evaluate("lsp", "*", lemma!.permission).action).toBe("allow")
-        expect(PermissionNext.evaluate("petanque", "*", lemma!.permission).action).toBe("allow")
+        expect(PermissionNext.evaluate("lean_session", "*", lemma!.permission).action).toBe("allow")
         expect(PermissionNext.evaluate("task", "*", lemma!.permission).action).toBe("allow")
         expect(PermissionNext.evaluate("task", "lemma", lemma!.permission).action).toBe("deny")
 
@@ -658,7 +658,7 @@ describe("tool.task recursive proof agents", () => {
         )
 
         let audits = 0
-        astAuditSpy = spyOn(CoqAstAudit, "runForSession").mockImplementation(async (input: any) => {
+        gateSpy = spyOn(LeanGate, "runForSession").mockImplementation(async (input: any) => {
           audits += 1
           return audits === 1
             ? {
@@ -666,8 +666,7 @@ describe("tool.task recursive proof agents", () => {
                 stage: "submission",
                 mode: "required",
                 theorem: "demo",
-                reasons: [{ code: "PROOF_SIDE_EFFECT", message: "forbidden proof-body side effect", line: 6 }],
-                allowed_additions: [],
+                reasons: [{ code: "FORBIDDEN_TOKEN", message: "forbidden token(s) in the proof: run_cmd", line: 6 }],
                 diagnostics: [],
               }
             : {
@@ -676,7 +675,6 @@ describe("tool.task recursive proof agents", () => {
                 mode: "required",
                 theorem: "demo",
                 reasons: [],
-                allowed_additions: [],
                 diagnostics: [],
               }
         })
@@ -684,7 +682,7 @@ describe("tool.task recursive proof agents", () => {
         const tool = await TaskTool.init()
         const result = await tool.execute(
           {
-            description: "AST retry",
+            description: "region check retry",
             prompt: "Solve the assigned region.",
             subagent_type: "lemma",
             lemma_assignment: regionLemmaAssignment(),
@@ -694,10 +692,10 @@ describe("tool.task recursive proof agents", () => {
 
         expect(promptCalls).toBe(2)
         expect(new Set(promptSessions).size).toBe(1)
-        expect(resolvedPrompts.some((prompt) => prompt.includes("<ast-audit-rejection>"))).toBe(true)
-        expect(resolvedPrompts.some((prompt) => prompt.includes("PROOF_SIDE_EFFECT"))).toBe(true)
-        expect(result.metadata.ast_audit).toMatchObject({ status: "accepted", stage: "submission" })
-        expect(result.metadata.ast_audit_attempts).toBe(2)
+        expect(resolvedPrompts.some((prompt) => prompt.includes("<region-check-rejection>"))).toBe(true)
+        expect(resolvedPrompts.some((prompt) => prompt.includes("FORBIDDEN_TOKEN"))).toBe(true)
+        expect(result.metadata.region_check).toMatchObject({ status: "accepted", stage: "submission" })
+        expect(result.metadata.region_check_attempts).toBe(2)
         expect(result.metadata.proof_result_validation).toEqual({ valid: true, errors: [] })
 
         ProofEditTransaction.abort(session.id)

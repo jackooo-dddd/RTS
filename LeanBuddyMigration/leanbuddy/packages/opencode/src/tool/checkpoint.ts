@@ -11,7 +11,7 @@ import { SessionProofWorkflow } from "@/session/proof-workflow"
 import { parseCoqCompilerOutput } from "./coq-diagnostics"
 import { assertNoRewriteBangInCoqFile, assertNoIntuitionInCoqFile } from "./coq-style-guard"
 import { ProofEditTransaction } from "@/session/proof-edit-transaction"
-import { CoqAstAudit } from "./coq-ast-audit"
+import { LeanGate } from "./lean-gate"
 
 const DEFAULT_TIMEOUT_MS = 120_000
 
@@ -50,7 +50,7 @@ export const CheckpointTool = Tool.define("checkpoint", {
   parameters: z.object({
     file: z.string().describe("Path to the .v file to compile"),
     reason: z.enum(["node_completed", "bridge_lemma", "milestone"]).describe("Why this checkpoint is being taken"),
-    flags: z.string().optional().describe("Extra coqc flags"),
+    flags: z.string().optional().describe("Extra compiler flags"),
   }),
   async execute(params, ctx): Promise<{ title: string; output: string; metadata: Record<string, any> }> {
     let filepath = params.file
@@ -69,7 +69,7 @@ export const CheckpointTool = Tool.define("checkpoint", {
       throw new Error(`Invalid checkpoint reason: ${params.reason}. Allowed: ${ALLOWED_REASONS.join(", ")}`)
 
     await ctx.ask({
-      permission: "coqc",
+      permission: "lean_check",
       patterns: [filepath],
       always: ["*"],
       metadata: { checkpoint: true, reason: params.reason },
@@ -128,43 +128,42 @@ export const CheckpointTool = Tool.define("checkpoint", {
 
     if (code === 0) {
       const finalPreview = SessionProofWorkflow.previewFinalTheoremGate(ctx.sessionID, filepath, compiledSource)
-      const finalAstAudit = finalPreview.final_theorem_gate.ok
-        ? await CoqAstAudit.runForSession({
+      const finalGate = finalPreview.final_theorem_gate.ok
+        ? await LeanGate.runForSession({
             sessionID: ctx.sessionID,
             file: filepath,
             candidateSource: compiledSource,
             theorem: finalPreview.theorem,
             stage: "final",
             signal: ctx.abort,
-            extraFlags,
           })
         : undefined
-      if (finalAstAudit && !CoqAstAudit.passed(finalAstAudit)) {
+      if (finalGate && !LeanGate.passed(finalGate)) {
         return {
-          title: `checkpoint ${rel}: AST audit rejected`,
+          title: `checkpoint ${rel}: final gate rejected`,
           output: [
-            "status: ast_audit_rejected",
+            "status: final_gate_rejected",
             "compile_status: success",
             finalPreview.theorem ? `theorem: ${finalPreview.theorem}` : undefined,
-            "final_theorem_gate: compile/kernel checks passed, but the mandatory structural AST audit failed",
-            ...CoqAstAudit.formatReasons(finalAstAudit),
-            "next_action: the main prover must repair the current staged proof revision and run checkpoint or coqc again; this revision was not marked committable and was not finalized",
+            "final_theorem_gate: the file checks, but the final gate failed (see the reason codes below)",
+            ...LeanGate.formatReasons(finalGate),
+            "next_action: the main prover must repair the current staged proof revision and run checkpoint or lean_check again; this revision was not marked committable and was not finalized",
           ].filter((line): line is string => Boolean(line)).join("\n"),
           metadata: {
-            status: "ast_audit_rejected",
-            status_detail: "final_theorem_ast_rejected",
+            status: "final_gate_rejected",
+            status_detail: "final_theorem_gate_rejected",
             filepath,
-            errors: finalAstAudit.reasons.map((reason) => ({
+            errors: finalGate.reasons.map((reason) => ({
               line: reason.line ?? 0,
               message: `[${reason.code}] ${reason.message}`,
             })),
             final_theorem_gate: finalPreview.final_theorem_gate,
-            ast_audit: finalAstAudit,
+            final_gate: finalGate,
           },
         }
       }
-      if (finalAstAudit) {
-        ProofEditTransaction.markAstAudited({
+      if (finalGate) {
+        ProofEditTransaction.markGateChecked({
           sessionID: ctx.sessionID,
           file: filepath,
           source: compiledSource,
@@ -220,7 +219,7 @@ export const CheckpointTool = Tool.define("checkpoint", {
           : ProofEditTransaction.active(ctx.sessionID)
       if (proofStatus.final_theorem_gate.ok && proofStatus.proof_progress.workspace_committable) {
         proofTransaction =
-          (await ProofEditTransaction.finalizeHandedOffAccepted(ctx.sessionID, { requireAstAudit: true })) ?? proofTransaction
+          (await ProofEditTransaction.finalizeHandedOffAccepted(ctx.sessionID, { requireGate: true })) ?? proofTransaction
       }
 
       // Summarize warnings
@@ -269,7 +268,7 @@ export const CheckpointTool = Tool.define("checkpoint", {
           stagedTransaction
             ? `proof_transaction: ${proofStatus.proof_progress.workspace_committable ? `${proofStatus.proof_progress.level} snapshot updated` : "debug draft journaled for further repair"}`
             : undefined,
-          finalAstAudit ? `ast_audit: ${finalAstAudit.status}` : undefined,
+          finalGate ? `final_gate: ${finalGate.status}` : undefined,
           lemmaPrefixValidation?.ok
             ? `lemma_prefix_validation: ok - ${lemmaPrefixValidation.prefix_complete ? "current blocker complete" : lemmaPrefixValidation.message ?? "current prefix compiles but current blocker is still pending"}`
             : lemmaPrefixValidation
@@ -298,7 +297,7 @@ export const CheckpointTool = Tool.define("checkpoint", {
           reason: params.reason,
           proof_status: proofStatus,
           proof_region_lifecycle: proofRegionLifecycle,
-          ...(finalAstAudit ? { ast_audit: finalAstAudit } : {}),
+          ...(finalGate ? { final_gate: finalGate } : {}),
           ...(proofTransaction ? { proof_edit_transaction: proofTransaction } : {}),
           ...(lemmaPrefixValidation ? { lemma_prefix_validation: lemmaPrefixValidation } : {}),
         },

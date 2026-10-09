@@ -777,8 +777,8 @@ export namespace MessageV2 {
     maxReasoningChars?: number
   }
 
-  const CACHE_HEAVY_TOOLS = new Set(["read", "grep", "coqtop", "coqc", "coq_session", "checkpoint", "edit", "multiedit", "write", "task", "proof_plan"])
-  const CACHE_PROOF_TOOLS = new Set(["coqtop", "coqc", "coq_session", "checkpoint", "proof_plan"])
+  const CACHE_HEAVY_TOOLS = new Set(["read", "grep", "lean_query", "lean_check", "lean_session", "checkpoint", "edit", "multiedit", "write", "task", "proof_plan"])
+  const CACHE_PROOF_TOOLS = new Set(["lean_query", "lean_check", "lean_session", "checkpoint", "proof_plan"])
   const CACHE_EDIT_TOOLS = new Set(["edit", "multiedit", "write"])
 
   function normalizeCacheProjectionOptions(options?: CacheProjectionOptions) {

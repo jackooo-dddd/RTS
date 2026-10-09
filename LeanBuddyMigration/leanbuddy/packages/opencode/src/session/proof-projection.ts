@@ -55,7 +55,7 @@ export namespace ProofProjection {
     // state, asking rocq-lsp for the transaction's line number queries an older
     // source revision and can silently return a later sibling goal. Prefer the
     // assignment contract until the staged source is committed; region-scoped
-    // coq_session remains the source of exact intermediate tactic state.
+    // lean_session remains the source of exact intermediate tactic state.
     const stagedLemma = await stagedLemmaContext(agent, sessionID)
     const snap = stagedLemma ? undefined : await ProofContext.ensureFromBinding(sessionID)
     if (opts?.runtimeOnly) return { lines: runtime(agent, snap, opts, stagedLemma), snap }
@@ -90,7 +90,7 @@ export namespace ProofProjection {
       "Assigned goal:",
       context.assignment.goal,
       "",
-      "The rocq-lsp snapshot is intentionally suppressed because it would be computed from the older physical file and may name a sibling goal. Use the assigned goal as the entry contract and region-scoped `coq_session` for exact intermediate goals.",
+      "The rocq-lsp snapshot is intentionally suppressed because it would be computed from the older physical file and may name a sibling goal. Use the assigned goal as the entry contract and region-scoped `lean_session` for exact intermediate goals.",
       "</proof-context-lemma-assignment>",
     ].filter((line): line is string => line !== undefined)
   }
@@ -234,9 +234,9 @@ export namespace ProofProjection {
       "- First produce a concrete informal proof for the assigned gap.",
       "- Treat that informal proof as the controlling local proof plan for the rest of the session.",
       "- Once that informal proof is concrete enough, stop planning and write the first faithful local proof text or minimal local skeleton immediately.",
-      "- After the informal proof, open and use `coq_session` or `petanque` for atomic tactics, goal queries, snapshots, and rollback whenever possible.",
-      "- Use `lsp proofGoals` and edit/write LSP diagnostics as first-class proof feedback; use `coqc` at coherent milestones and before returning.",
-      "- Use `coqtop`/`grep`/broad reads only for a blocker exposed by the current goal or failed step, and immediately feed the result into an edit, proof-session step, or rollback decision.",
+      "- After the informal proof, open and use `lean_session` for atomic tactics, goal queries, snapshots, and rollback whenever possible.",
+      "- Use `lsp proofGoals` and edit/write LSP diagnostics as first-class proof feedback; use `lean_check` at coherent milestones and before returning.",
+      "- Use `lean_query`/`grep`/broad reads only for a blocker exposed by the current goal or failed step, and immediately feed the result into an edit, proof-session step, or rollback decision.",
       "- Do not use ssreflect repeat-rewrite syntax `rewrite !...` or `rewrite -!...`; write repeated rewrites explicitly one step at a time, or introduce a named normalization/bridge lemma.",
       "- Do not use the `intuition` tactic; it generates opaque proof terms and is rejected. Use explicit tactics (`left`/`right`/`split`/`apply`/`exact`) instead.",
       "- If a compressed `by`, rewrite, bullet, bigop, or arithmetic line fails, expand and diagnose the first failing line before doing more library search.",
@@ -303,7 +303,7 @@ export namespace ProofProjection {
       "- If the target file is still unchanged, stop circling and write the first concrete proof tactic, bridge claim, or proof fragment now.",
       "- Do not add new section-level, theorem-level, or global assumptions.",
       "- Do not declare the theorem false from a partial proof state; audit the live goal, hypotheses, imports, and visible facts first.",
-      "- Finish by writing executable proof text to the file and validating with coqc.",
+      "- Finish by writing executable proof text to the file and validating with lean_check.",
     )
 
     if (!snap.fresh) lines.push("", "(snapshot may be stale)")

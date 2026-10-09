@@ -69,7 +69,7 @@ describe("tool.bash", () => {
     }
   })
 
-  test("rejects direct coqc invocation", async () => {
+  test("rejects direct lean invocation", async () => {
     await using tmp = await tmpdir({ git: true })
     await Instance.provide({
       directory: tmp.path,
@@ -78,17 +78,17 @@ describe("tool.bash", () => {
         await expect(
           bash.execute(
             {
-              command: 'coqc "lemma3.v"',
-              description: "Compile Coq file",
+              command: 'lean "Solution.lean"',
+              description: "Compile Lean file",
             },
             ctx,
           ),
-        ).rejects.toThrow("Use the dedicated coqc")
+        ).rejects.toThrow("Use the dedicated lean_check")
       },
     })
   })
 
-  test("rejects direct coqtop invocation", async () => {
+  test("rejects direct lake env lean invocation", async () => {
     await using tmp = await tmpdir({ git: true })
     await Instance.provide({
       directory: tmp.path,
@@ -97,17 +97,17 @@ describe("tool.bash", () => {
         await expect(
           bash.execute(
             {
-              command: 'coqtop -quiet < "query.v"',
-              description: "Run Coq query",
+              command: 'lake env lean "Solution.lean"',
+              description: "Run Lean through lake",
             },
             ctx,
           ),
-        ).rejects.toThrow("Use the dedicated coqc")
+        ).rejects.toThrow("Use the dedicated lean_check")
       },
     })
   })
 
-  test("rejects wrapped Coq compiler invocations", async () => {
+  test("rejects wrapped Lean build invocations", async () => {
     await using tmp = await tmpdir({ git: true })
     await Instance.provide({
       directory: tmp.path,
@@ -116,12 +116,12 @@ describe("tool.bash", () => {
         await expect(
           bash.execute(
             {
-              command: "timeout 600 rocq c lemma3.v",
+              command: "timeout 600 lake build CaseStudies.ECRTS2005.Lemma3.Solution",
               description: "Compile with timeout",
             },
             ctx,
           ),
-        ).rejects.toThrow("Use the dedicated coqc")
+        ).rejects.toThrow("Use the dedicated lean_check")
       },
     })
   })

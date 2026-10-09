@@ -23,7 +23,7 @@ describe("session.trace request", () => {
             agent: "prover",
             system: ["stable system prefix"],
             messages: [{ role: "user", content: "prove the lemma" }],
-            tools: ["read", "coqc"],
+            tools: ["read", "lean_check"],
             temperature: 0,
             topP: 1,
             topK: 40,
@@ -52,7 +52,7 @@ describe("session.trace request", () => {
             agent: "prover",
             system: ["stable system prefix"],
             messages: [{ role: "user", content: "continue proof" }],
-            tools: ["read", "coqc"],
+            tools: ["read", "lean_check"],
             providerOptions: { openai: { promptCacheKey: "ses_trace", store: false } },
             cache: {
               promptCacheKey: "ses_trace",

@@ -1,6 +1,6 @@
 import z from "zod"
 import { Tool } from "./tool"
-import DESCRIPTION from "./coq-session.txt"
+import DESCRIPTION from "./lean-session.txt"
 import { createHash, randomBytes } from "crypto"
 import { Instance } from "../project/instance"
 import path from "path"
@@ -586,7 +586,7 @@ async function synchronizeSession(sessionID: string, session: CoqSessionState, s
   return { ok: false as const }
 }
 
-export const CoqSessionTool = Tool.define("coq_session", {
+export const LeanSessionTool = Tool.define("lean_session", {
   description: DESCRIPTION,
   parameters: z.object({
     op: z.enum(["open", "step", "goal", "inspect", "snapshot", "undo", "close", "status"]).describe("Session operation"),
@@ -616,7 +616,7 @@ export const CoqSessionTool = Tool.define("coq_session", {
   }),
   async execute(params, ctx): Promise<{ title: string; output: string; metadata: Record<string, any> }> {
     await ctx.ask({
-      permission: "coq_session",
+      permission: "lean_session",
       patterns: ["*"],
       always: ["*"],
       metadata: { op: params.op },

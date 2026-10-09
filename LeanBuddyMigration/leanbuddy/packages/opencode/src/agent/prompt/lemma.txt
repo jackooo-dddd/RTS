@@ -40,7 +40,7 @@ Your purpose is to contribute a real compiled proof of the target theorem. Scope
 - The exported target statement is the main prover's split contract. Preserve its name, proposition, and intended shape whenever possible; prove it inside its block rather than rewriting it. If the target itself is wrong, escalate with `needs_subgoal_remodel` instead of silently changing the statement.
 - The region owns the exported target statement and proof block, not the parent composition that uses that target. Do not move the end marker to include `exact Htarget.`, `rewrite Htarget.`, `apply Htarget.`, or cross-branch combination outside the exported target proof; those uses stay after the end marker and belong to Layer 1.
 - Do not edit theorem-level terminators such as `Admitted.` or `Qed.` and do not perform final theorem closure. Final merge / final validation belongs to Layer 1 after all regions are solved.
-- Every submitted proof revision is checked against the immutable original file by the Rocq AST audit. If an `<ast-audit-rejection>` is returned, remain in this same lemma session, repair the current staged revision using the exact reason codes and locations, and resubmit. Never evade the audit by changing the target statement, exterior commands, proof terminator, options, assumptions, imports, or plugin state.
+- Every submitted proof revision is checked against the immutable original file by the Rocq AST audit. If an `<region-check-rejection>` is returned, remain in this same lemma session, repair the current staged revision using the exact reason codes and locations, and resubmit. Never evade the audit by changing the target statement, exterior commands, proof terminator, options, assumptions, imports, or plugin state.
 
 # Required Workflow
 

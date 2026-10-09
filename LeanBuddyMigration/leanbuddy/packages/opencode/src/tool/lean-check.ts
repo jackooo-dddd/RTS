@@ -1,6 +1,6 @@
 import z from "zod"
 import { Tool } from "./tool"
-import DESCRIPTION from "./coqc.txt"
+import DESCRIPTION from "./lean-check.txt"
 import { Instance } from "../project/instance"
 import path from "path"
 import { Filesystem } from "../util/filesystem"
@@ -10,7 +10,7 @@ import { formatCoqSkillHints } from "./coq-skill-hints"
 import { SessionProofWorkflow } from "@/session/proof-workflow"
 import { parseCoqCompilerOutput } from "./coq-diagnostics"
 import { ProofEditTransaction } from "@/session/proof-edit-transaction"
-import { CoqAstAudit } from "./coq-ast-audit"
+import { LeanGate } from "./lean-gate"
 
 const DEFAULT_TIMEOUT_MS = 120_000
 
@@ -26,7 +26,7 @@ function formatMs(ms: number) {
   return `${ms}ms`
 }
 
-export const CoqcTool = Tool.define("coqc", {
+export const LeanCheckTool = Tool.define("lean_check", {
   description: DESCRIPTION,
   parameters: z.object({
     filePath: z.string().describe("Absolute path to the .v file to compile"),
@@ -55,7 +55,7 @@ export const CoqcTool = Tool.define("coqc", {
     assertNoIntuitionInCoqFile(filepath, coqcSource)
 
     await ctx.ask({
-      permission: "coqc",
+      permission: "lean_check",
       patterns: [filepath],
       always: ["*"],
       metadata: { filepath },
@@ -116,44 +116,43 @@ export const CoqcTool = Tool.define("coqc", {
 
     if (code === 0) {
       const finalPreview = SessionProofWorkflow.previewFinalTheoremGate(ctx.sessionID, filepath, coqcSource)
-      const finalAstAudit = finalPreview.final_theorem_gate.ok
-        ? await CoqAstAudit.runForSession({
+      const finalGate = finalPreview.final_theorem_gate.ok
+        ? await LeanGate.runForSession({
             sessionID: ctx.sessionID,
             file: filepath,
             candidateSource: coqcSource,
             theorem: finalPreview.theorem,
             stage: "final",
             signal: ctx.abort,
-            extraFlags,
           })
         : undefined
-      if (finalAstAudit && !CoqAstAudit.passed(finalAstAudit)) {
+      if (finalGate && !LeanGate.passed(finalGate)) {
         return {
-          title: `coqc ${rel}: AST audit rejected`,
+          title: `lean_check ${rel}: final gate rejected`,
           output: [
-            "status: ast_audit_rejected",
+            "status: final_gate_rejected",
             "compile_status: success",
-            "status_detail: final_theorem_ast_rejected",
+            "status_detail: final_theorem_gate_rejected",
             finalPreview.theorem ? `theorem: ${finalPreview.theorem}` : undefined,
-            "final_theorem_gate: compile/kernel checks passed, but the mandatory structural AST audit failed",
-            ...CoqAstAudit.formatReasons(finalAstAudit),
+            "final_theorem_gate: the file checks, but the final gate failed (see the reason codes below)",
+            ...LeanGate.formatReasons(finalGate),
             "next_action: the main prover must repair the current staged proof revision and run coqc again; this revision was not marked committable and was not finalized",
           ].filter((line): line is string => Boolean(line)).join("\n"),
           metadata: {
-            status: "ast_audit_rejected",
-            status_detail: "final_theorem_ast_rejected",
+            status: "final_gate_rejected",
+            status_detail: "final_theorem_gate_rejected",
             filepath,
-            errors: finalAstAudit.reasons.map((reason) => ({
+            errors: finalGate.reasons.map((reason) => ({
               line: reason.line ?? 0,
               message: `[${reason.code}] ${reason.message}`,
             })),
             final_theorem_gate: finalPreview.final_theorem_gate,
-            ast_audit: finalAstAudit,
+            final_gate: finalGate,
           },
         }
       }
-      if (finalAstAudit) {
-        ProofEditTransaction.markAstAudited({
+      if (finalGate) {
+        ProofEditTransaction.markGateChecked({
           sessionID: ctx.sessionID,
           file: filepath,
           source: coqcSource,
@@ -169,7 +168,7 @@ export const CoqcTool = Tool.define("coqc", {
         sessionID: ctx.sessionID,
         file: filepath,
         source: coqcSource,
-        validator: "coqc",
+        validator: "lean_check",
         ok: true,
         validated_source_current: stagedTransaction,
       })
@@ -211,7 +210,7 @@ export const CoqcTool = Tool.define("coqc", {
           : ProofEditTransaction.active(ctx.sessionID)
       if (proofStatus.final_theorem_gate.ok && proofStatus.proof_progress.workspace_committable) {
         proofTransaction =
-          (await ProofEditTransaction.finalizeHandedOffAccepted(ctx.sessionID, { requireAstAudit: true })) ?? proofTransaction
+          (await ProofEditTransaction.finalizeHandedOffAccepted(ctx.sessionID, { requireGate: true })) ?? proofTransaction
       }
       const toolStatus = decompositionCheckpoint
         ? decompositionCheckpoint.terminal_ready
@@ -242,7 +241,7 @@ export const CoqcTool = Tool.define("coqc", {
           proofStatus.final_theorem_gate.ok
             ? "final_theorem_gate: ok"
             : `final_theorem_gate: fail - ${proofStatus.final_theorem_gate.reason}`,
-          finalAstAudit ? `ast_audit: ${finalAstAudit.status}` : undefined,
+          finalGate ? `final_gate: ${finalGate.status}` : undefined,
           lemmaPrefixValidation?.ok
             ? `lemma_prefix_validation: ok - ${lemmaPrefixValidation.prefix_complete ? "current blocker complete" : lemmaPrefixValidation.message ?? "current prefix compiles but current blocker is still pending"}`
             : lemmaPrefixValidation
@@ -272,7 +271,7 @@ export const CoqcTool = Tool.define("coqc", {
           errors: [] as { line: number; message: string }[],
           proof_status: proofStatusMetadata,
           proof_region_lifecycle: proofRegionLifecycle,
-          ...(finalAstAudit ? { ast_audit: finalAstAudit } : {}),
+          ...(finalGate ? { final_gate: finalGate } : {}),
           ...(proofTransaction ? { proof_edit_transaction: proofTransaction } : {}),
           ...(lemmaPrefixValidation ? { lemma_prefix_validation: lemmaPrefixValidation } : {}),
         },
@@ -293,7 +292,7 @@ export const CoqcTool = Tool.define("coqc", {
       sessionID: ctx.sessionID,
       file: filepath,
       source: coqcSource,
-      validator: "coqc",
+      validator: "lean_check",
       ok: false,
       first_error_file: diagnostics.firstError?.file,
       first_error_line: diagnostics.firstError?.line,

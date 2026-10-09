@@ -202,7 +202,7 @@ describe("session.prompt accepted-plan materialization tool gate", () => {
     ]) {
       const messages = [{ parts: [
         { type: "tool", tool: "read", state: { status: "completed", input: { filePath: "/tmp/demo.v" } } },
-        { type: "tool", tool: "coq_session", state: { status: "completed", input: { op: "step", tactic: "idtac." }, metadata } },
+        { type: "tool", tool: "lean_session", state: { status: "completed", input: { op: "step", tactic: "idtac." }, metadata } },
       ] }] as any
       expect(SessionPrompt.acceptedPlanMaterializationLookupStreakForTest(messages, "/tmp/demo.v")).toBe(1)
     }
@@ -249,14 +249,14 @@ describe("session.prompt accepted-plan materialization tool gate", () => {
       read: {},
       grep: {},
       edit: {},
-      coq_session: {},
+      lean_session: {},
       checkpoint: {},
     }
 
     const gate = SessionPrompt.applyAcceptedPlanMaterializationToolGate(tools, 15)
 
     expect(gate).toMatchObject({ active: false, warning_limit: 12, hard_limit: 16 })
-    expect(Object.keys(tools).sort()).toEqual(["checkpoint", "coq_session", "edit", "grep", "read"])
+    expect(Object.keys(tools).sort()).toEqual(["checkpoint", "edit", "grep", "lean_session", "read"])
   })
 
   test("gates broad lookup without changing the provider tool schema", async () => {
@@ -266,7 +266,7 @@ describe("session.prompt accepted-plan materialization tool gate", () => {
       grep: executable(),
       glob: executable(),
       lsp: executable(),
-      coqtop: executable(),
+      lean_query: executable(),
       bash: executable(),
       task: executable(),
       proof_plan: executable(),
@@ -274,10 +274,9 @@ describe("session.prompt accepted-plan materialization tool gate", () => {
       multiedit: {},
       write: {},
       apply_patch: {},
-      coq_session: {},
-      petanque: {},
+      lean_session: {},
       checkpoint: {},
-      coqc: {},
+      lean_check: {},
     }
 
     const gate = SessionPrompt.applyAcceptedPlanMaterializationToolGate(tools, 16)
@@ -288,7 +287,7 @@ describe("session.prompt accepted-plan materialization tool gate", () => {
       "grep",
       "glob",
       "lsp",
-      "coqtop",
+      "lean_query",
       "bash",
       "task",
       "proof_plan",
@@ -297,18 +296,17 @@ describe("session.prompt accepted-plan materialization tool gate", () => {
       "apply_patch",
       "bash",
       "checkpoint",
-      "coq_session",
-      "coqc",
+      "lean_session",
+      "lean_check",
       "edit",
       "glob",
       "grep",
       "lsp",
       "multiedit",
-      "petanque",
       "proof_plan",
       "read",
       "task",
-      "coqtop",
+      "lean_query",
       "write",
     ].sort())
     const blocked = await (tools.read as { execute: () => Promise<{ output: string }> }).execute()
@@ -336,7 +334,7 @@ describe("session.prompt accepted-plan materialization tool gate", () => {
           },
           {
             type: "tool",
-            tool: "coqc",
+            tool: "lean_check",
             state: { status: "completed", input: { filePath: targetFile } },
           },
           {
@@ -368,7 +366,7 @@ describe("session.prompt accepted-plan materialization tool gate", () => {
           },
           {
             type: "tool",
-            tool: "coq_session",
+            tool: "lean_session",
             state: { status: "completed", input: { op: "step", tactic: "intros." } },
           },
         ],

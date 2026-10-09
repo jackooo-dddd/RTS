@@ -6,9 +6,9 @@ import { SessionProof } from "../../src/session/session-proof"
 import { SessionProofWorkflow } from "../../src/session/proof-workflow"
 import * as CoqProject from "../../src/tool/coq-project"
 import {
-  CoqSessionTool,
+  LeanSessionTool,
   findContextNormalizationAudit,
-} from "../../src/tool/coq-session"
+} from "../../src/tool/lean-session"
 import type { Tool } from "../../src/tool/tool"
 import { tmpdir } from "../fixture/fixture"
 
@@ -56,7 +56,7 @@ function bindAssignedRegion(sessionID: string, file: string, source: string) {
   })
 }
 
-describe("tool.coq_session context inspection", () => {
+describe("tool.lean_session context inspection", () => {
   let contextSpy: ReturnType<typeof spyOn> | undefined
   let runSpy: ReturnType<typeof spyOn> | undefined
 
@@ -79,7 +79,7 @@ describe("tool.coq_session context inspection", () => {
         if (code.includes("PROSABUDDY_ENTRY_GOAL_MATCH")) throw new Error("Coq process timed out after 30000ms")
         return { exit: 0, stdout: "1 goal\n============================\nFalse", stderr: "" }
       })
-      const tool = await CoqSessionTool.init()
+      const tool = await LeanSessionTool.init()
       await expect(tool.execute({ op: "open", file, theorem: "demo" }, context(session.id))).rejects.toThrow("Coq process timed out")
       SessionProofWorkflow.clear(session.id)
       SessionProof.clear(session.id)
@@ -100,7 +100,7 @@ describe("tool.coq_session context inspection", () => {
         "(* proof_region end admit_id: gap_1 *)", "exact I.", "Admitted.",
       ].join("\n")
       await Bun.write(file, source)
-      const tool = await CoqSessionTool.init()
+      const tool = await LeanSessionTool.init()
       for (const [expected, matches] of [
         ["forall n, Nat.add n 0 = n", true], ["forall n, Nat.add n 0 = S n", false],
         ["G", false], ["_", false],
@@ -163,7 +163,7 @@ describe("tool.coq_session context inspection", () => {
           return { exit: 1, stdout: "", stderr: "Error: Syntax error while parsing the inspection." }
         })
 
-        const tool = await CoqSessionTool.init()
+        const tool = await LeanSessionTool.init()
         const cases = ["convertible", "not_convertible", "inconclusive"] as const
         for (const [index, expected] of cases.entries()) {
           auditOutcome = expected
@@ -225,7 +225,7 @@ describe("tool.coq_session context inspection", () => {
           stderr: "",
         }))
 
-        const tool = await CoqSessionTool.init()
+        const tool = await LeanSessionTool.init()
         const ctx = context("coq-open-blank-inspect-fields")
         const opened = await tool.execute(
           { op: "open", file, theorem: "demo", left_expression: "", right_expression: "" },
@@ -265,7 +265,7 @@ describe("tool.coq_session context inspection", () => {
           return { exit: 0, stdout: "1 goal\n\n============================\nTrue", stderr: "" }
         })
 
-        const tool = await CoqSessionTool.init()
+        const tool = await LeanSessionTool.init()
         const ctx = context("coq-inspect-injection")
         await tool.execute({ op: "open", file, theorem: "demo" }, ctx)
         await expect(
@@ -326,7 +326,7 @@ describe("tool.coq_session context inspection", () => {
           stderr: "",
         }))
 
-        const tool = await CoqSessionTool.init()
+        const tool = await LeanSessionTool.init()
         const ctx = context(session.id)
         await expect(
           tool.execute({ op: "open", file, theorem: "demo", scope: "theorem" }, ctx),
@@ -378,7 +378,7 @@ describe("tool.coq_session context inspection", () => {
             : { exit: 0, stdout: "1 goal\n\n============================\nTrue", stderr: "" },
         )
 
-        const tool = await CoqSessionTool.init()
+        const tool = await LeanSessionTool.init()
         const ctx = context(session.id, "prover")
         const opened = await tool.execute(
           {
@@ -459,7 +459,7 @@ describe("tool.coq_session context inspection", () => {
             : { exit: 0, stdout: "1 goal\n\n============================\nTrue", stderr: "" },
         )
 
-        const tool = await CoqSessionTool.init()
+        const tool = await LeanSessionTool.init()
         const opened = await tool.execute(
           { op: "open", file, theorem: "demo" },
           context(resumed.id, "prover"),
@@ -525,7 +525,7 @@ describe("tool.coq_session context inspection", () => {
             : { exit: 0, stdout: "1 goal\n\n============================\nTrue", stderr: "" },
         )
 
-        const tool = await CoqSessionTool.init()
+        const tool = await LeanSessionTool.init()
         const ctx = context(session.id)
         await tool.execute({ op: "open", file, theorem: "demo" }, ctx)
 
@@ -580,7 +580,7 @@ describe("tool.coq_session context inspection", () => {
           .update("H : True ============================ True")
           .digest("hex")
 
-        const tool = await CoqSessionTool.init()
+        const tool = await LeanSessionTool.init()
         const ctx = context(session.id)
         const opened = await tool.execute(
           {
@@ -643,7 +643,7 @@ describe("tool.coq_session context inspection", () => {
             ? { exit: 0, stdout: "No more goals.", stderr: "" }
             : { exit: 0, stdout: "1 goal\n\n============================\nright <= left", stderr: "" },
         )
-        const tool = await CoqSessionTool.init()
+        const tool = await LeanSessionTool.init()
         const ctx = context(session.id)
         const opened = await tool.execute(
           {
@@ -697,7 +697,7 @@ describe("tool.coq_session context inspection", () => {
             : { exit: 0, stdout: "1 goal\n\n============================\nFalse", stderr: "" }
         })
 
-        const tool = await CoqSessionTool.init()
+        const tool = await LeanSessionTool.init()
         const ctx = context(session.id)
         await tool.execute({ op: "open", file, theorem: "demo" }, ctx)
         const blocked = await tool.execute({ op: "step", tactic: "exact I." }, ctx)

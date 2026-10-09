@@ -6,7 +6,7 @@ import { ProofEditTransaction } from "../../src/session/proof-edit-transaction"
 import { EditTool } from "../../src/tool/edit"
 import { ApplyPatchTool } from "../../src/tool/apply_patch"
 import { CheckpointTool } from "../../src/tool/checkpoint"
-import { CoqcTool } from "../../src/tool/coqc"
+import { LeanCheckTool } from "../../src/tool/lean-check"
 import { FileTime } from "../../src/file/time"
 import { Session } from "../../src/session"
 import { SessionProof } from "../../src/session/session-proof"
@@ -1264,13 +1264,13 @@ describe("proof edit transaction", () => {
 
         const handedOff = await ProofEditTransaction.finalize("ast-child", {
           handoffToSessionID: "ast-parent",
-          requireAstAudit: true,
+          requireGate: true,
         })
         expect(handedOff?.status).toBe("handed_off")
         expect(await fs.readFile(file, "utf-8")).toBe(baseline)
 
-        ProofEditTransaction.markAstAudited({ sessionID: "ast-parent", file, source: proved })
-        const committed = await ProofEditTransaction.finalize("ast-parent", { requireAstAudit: true })
+        ProofEditTransaction.markGateChecked({ sessionID: "ast-parent", file, source: proved })
+        const committed = await ProofEditTransaction.finalize("ast-parent", { requireGate: true })
         expect(committed?.status).toBe("committed")
         expect(await fs.readFile(file, "utf-8")).toBe(proved)
       },
@@ -1412,7 +1412,7 @@ describe("proof edit transaction", () => {
 
         const checkpoint = await CheckpointTool.init()
         const result = await checkpoint.execute({ file, reason: "milestone" }, context(child.id))
-        expect(result.metadata.status).toBe("ast_audit_rejected")
+        expect(result.metadata.status).toBe("final_gate_rejected")
         expect(result.output).toContain("PROOF_SIDE_EFFECT")
         expect(ProofEditTransaction.active(child.id)?.committable_snapshot).toBe(false)
         expect(await fs.readFile(file, "utf-8")).toBe(admitted)
@@ -1425,7 +1425,7 @@ describe("proof edit transaction", () => {
     })
   }, 30_000)
 
-  test("coqc rejects the same compiling AST violation before finalizing a handed-off proof", async () => {
+  test("lean_check rejects the same compiling AST violation before finalizing a handed-off proof", async () => {
     await using fixture = await tmpdir({ git: true })
     const file = path.join(fixture.path, "coqc_cheat.v")
     const admitted = "Lemma demo : True.\nProof.\n  exact I.\nQed.\n"
@@ -1448,9 +1448,9 @@ describe("proof edit transaction", () => {
         })
         ProofEditTransaction.stage({ sessionID: child.id, file, before: admitted, after: cheated })
 
-        const coqc = await CoqcTool.init()
-        const result = await coqc.execute({ filePath: file }, context(child.id))
-        expect(result.metadata.status).toBe("ast_audit_rejected")
+        const leanCheck = await LeanCheckTool.init()
+        const result = await leanCheck.execute({ filePath: file }, context(child.id))
+        expect(result.metadata.status).toBe("final_gate_rejected")
         expect(result.output).toContain("PROOF_SIDE_EFFECT")
         expect(ProofEditTransaction.active(child.id)?.committable_snapshot).toBe(false)
         expect(await fs.readFile(file, "utf-8")).toBe(admitted)

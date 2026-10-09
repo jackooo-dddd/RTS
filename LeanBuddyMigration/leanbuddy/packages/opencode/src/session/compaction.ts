@@ -92,7 +92,7 @@ export namespace SessionCompaction {
   export const PRUNE_MINIMUM = 20_000
   export const PRUNE_PROTECT = 40_000
 
-  const PRUNE_PROTECTED_TOOLS = ["skill", "todowrite", "todoread", "coqc", "coqtop", "proof_plan", "coq_session", "checkpoint"]
+  const PRUNE_PROTECTED_TOOLS = ["skill", "todowrite", "todoread", "lean_check", "lean_query", "proof_plan", "lean_session", "checkpoint"]
 
   // goes backwards through parts until there are 40_000 tokens worth of tool
   // calls. then erases output of previous tool calls. idea is to throw away old
@@ -225,7 +225,7 @@ export namespace SessionCompaction {
   - the earlier interaction trace for the current owned task: current progress, remaining work, blockers, dependencies, successful attempts, failed attempts, and guidance for the next attempt
   - important findings from file reads that materially affect this owned task, such as relevant definitions, imported facts, lemma types, equations, nearby proof patterns, paper-aligned local proof steps, and search results that changed the local proof strategy
   - failed edits, failed proof attempts, diagnostics, rollbacks, and lessons that should guide the next attempt
-  - validation state: last successful proof step or checkpoint, latest goal/hypotheses/error if available, current coq_session/petanque snapshot or tactic position if available, and the next validation action
+  - validation state: last successful proof step or checkpoint, latest goal/hypotheses/error if available, current lean_session goal state or tactic position if available, and the next validation action
 
   Treat the active proof transaction's staged revision as the source of truth when one exists; otherwise use the current .v file on disk. Do not rewrite, normalize, or replace proof text in the summary. Instead, record which transaction revision, .v file, proof_regions, admit IDs, validated fragments, or frozen boundaries must remain unchanged.
 
@@ -252,7 +252,7 @@ export namespace SessionCompaction {
 
   ## Local Goal And Proof State
 
-  [For proof subagents: current concrete goal, important hypotheses, local definitions, current case/branch/bullet/focus state, live proof error, and coq_session/petanque snapshot or tactic position if known.]
+  [For proof subagents: current concrete goal, important hypotheses, local definitions, current case/branch/bullet/focus state, live proof error, and lean_session goal state or tactic position if known.]
 
   ## Owned Proof Plan And Trace
 
@@ -260,7 +260,7 @@ export namespace SessionCompaction {
 
   ## Formal Progress
 
-  - validated: [Proof fragments or tactics validated by coq_session, petanque, LSP, coqc, or checkpoint]
+  - validated: [Proof fragments or tactics validated by lean_session, LSP diagnostics, lean_check, or checkpoint]
   - in_file_but_unvalidated: [Proof text currently in the file but not yet validated]
   - speculative_or_reverted: [Attempts that should not be treated as completed proof]
 

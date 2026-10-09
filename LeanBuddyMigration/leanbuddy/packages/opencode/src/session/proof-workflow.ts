@@ -60,7 +60,7 @@ export namespace SessionProofWorkflow {
     admit_id: z.string().min(1),
     region_fingerprint: z.string().min(1),
     compiler_signature: z.string().min(1),
-    validator: z.enum(["coqc", "checkpoint", "checkpoint-coqc"]),
+    validator: z.enum(["lean_check", "checkpoint", "checkpoint-lean"]),
     validated_at: z.number().int().positive(),
   })
   export type ValidationCertificate = z.infer<typeof ValidationCertificate>
@@ -68,7 +68,7 @@ export namespace SessionProofWorkflow {
   export const ValidationFailure = z.object({
     source_hash: z.string().min(1),
     compiler_signature: z.string().min(1),
-    validator: z.enum(["coqc", "checkpoint", "checkpoint-coqc"]),
+    validator: z.enum(["lean_check", "checkpoint", "checkpoint-lean"]),
     first_error_file: z.string().optional(),
     first_error_line: z.number().int().positive().optional(),
     message: z.string().optional(),
@@ -522,7 +522,7 @@ export namespace SessionProofWorkflow {
   const DEFAULT_RUNNING_LEASE_MS = 30 * 60_000
   const INFORMAL_PROOF_COMMENT = /\(\*[\s\S]*?\binformal proof\b[\s\S]*?\*\)/i
   const UNFINISHED_PROOF = /\bAdmitted\.|\bAbort\.|\bby\s+admit\.|\badmit\./
-  const WIDE_PROOF_EDIT_AGENTS = new Set(["prover", "fixer", "whole-lemma", "coq-prover", "coqprover"])
+  const WIDE_PROOF_EDIT_AGENTS = new Set(["prover", "fixer", "whole-lemma"])
   const FALLBACK_LOOKUP_WARNING_LIMIT = 5
   const FALLBACK_LOOKUP_STREAK_LIMIT = 20
   const FALLBACK_LOOKUP_REPEAT_LIMIT = 5
@@ -558,7 +558,7 @@ export namespace SessionProofWorkflow {
 
   export interface ValidationResult {
     ok: boolean
-    validator: "checkpoint-coqc"
+    validator: "checkpoint-lean"
     status: "ok" | "error"
     message?: string
     first_error_file?: string
@@ -1057,13 +1057,13 @@ export namespace SessionProofWorkflow {
     if (!file.endsWith(".v")) {
       return {
         ok: false,
-        validator: "checkpoint-coqc",
+        validator: "checkpoint-lean",
         status: "error",
         message: "scaffold gate only accepts .v files",
       }
     }
     if (!(await Filesystem.exists(file))) {
-      return { ok: false, validator: "checkpoint-coqc", status: "error", message: `file not found: ${file}` }
+      return { ok: false, validator: "checkpoint-lean", status: "error", message: `file not found: ${file}` }
     }
 
     const source = sourceOverride ?? (await Filesystem.readText(file))
@@ -1073,7 +1073,7 @@ export namespace SessionProofWorkflow {
     } catch (error) {
       return {
         ok: false,
-        validator: "checkpoint-coqc",
+        validator: "checkpoint-lean",
         status: "error",
         message: error instanceof Error ? error.message : String(error),
         failure_kind: "style_guard",
@@ -1102,7 +1102,7 @@ export namespace SessionProofWorkflow {
     } catch (error) {
       return {
         ok: false,
-        validator: "checkpoint-coqc",
+        validator: "checkpoint-lean",
         status: "error",
         message: error instanceof Error ? error.message : String(error),
         failure_kind: "spawn_error",
@@ -1112,7 +1112,7 @@ export namespace SessionProofWorkflow {
     if (result.timedOut) {
       return {
         ok: false,
-        validator: "checkpoint-coqc",
+        validator: "checkpoint-lean",
         status: "error",
         message: `checkpoint scaffold gate timed out after ${timeoutMs}ms`,
         failure_kind: "timeout",
@@ -1121,7 +1121,7 @@ export namespace SessionProofWorkflow {
     if (result.aborted) {
       return {
         ok: false,
-        validator: "checkpoint-coqc",
+        validator: "checkpoint-lean",
         status: "error",
         message: "checkpoint scaffold gate was aborted; process group was killed",
         failure_kind: "process_error",
@@ -1130,20 +1130,20 @@ export namespace SessionProofWorkflow {
     if (result.outputLimitExceeded) {
       return {
         ok: false,
-        validator: "checkpoint-coqc",
+        validator: "checkpoint-lean",
         status: "error",
         message: `checkpoint scaffold gate exceeded the ${options.maxOutputBytes ?? CoqProject.subprocessMaxOutputBytes()} byte output limit`,
         failure_kind: "process_error",
       }
     }
 
-    if (result.exit === 0) return { ok: true, validator: "checkpoint-coqc", status: "ok" }
+    if (result.exit === 0) return { ok: true, validator: "checkpoint-lean", status: "ok" }
 
     const parsed = parseCoqCompilerOutput(result.stdout, result.stderr)
     const firstError = parsed.firstError
     return {
       ok: false,
-      validator: "checkpoint-coqc",
+      validator: "checkpoint-lean",
       status: "error",
       first_error_file: firstError?.file,
       first_error_line: firstError?.line,
@@ -1200,7 +1200,7 @@ export namespace SessionProofWorkflow {
       } catch (error) {
         return {
           ok: false,
-          validator: "checkpoint-coqc",
+          validator: "checkpoint-lean",
           status: "error",
           message: error instanceof Error ? error.message : String(error),
           failure_kind: "spawn_error",
@@ -1210,7 +1210,7 @@ export namespace SessionProofWorkflow {
       if (result.timedOut) {
         return {
           ok: false,
-          validator: "checkpoint-coqc",
+          validator: "checkpoint-lean",
           status: "error",
           message: `lemma prefix checkpoint timed out after ${timeoutMs}ms`,
           failure_kind: "timeout",
@@ -1219,7 +1219,7 @@ export namespace SessionProofWorkflow {
       if (result.aborted) {
         return {
           ok: false,
-          validator: "checkpoint-coqc",
+          validator: "checkpoint-lean",
           status: "error",
           message: "lemma prefix checkpoint was aborted; process group was killed",
           failure_kind: "process_error",
@@ -1228,20 +1228,20 @@ export namespace SessionProofWorkflow {
       if (result.outputLimitExceeded) {
         return {
           ok: false,
-          validator: "checkpoint-coqc",
+          validator: "checkpoint-lean",
           status: "error",
           message: `lemma prefix checkpoint exceeded the ${options.maxOutputBytes ?? CoqProject.subprocessMaxOutputBytes()} byte output limit`,
           failure_kind: "process_error",
         }
       }
 
-      if (result.exit === 0) return { ok: true, validator: "checkpoint-coqc", status: "ok" }
+      if (result.exit === 0) return { ok: true, validator: "checkpoint-lean", status: "ok" }
 
       const parsed = parseCoqCompilerOutput(result.stdout, result.stderr)
       const firstError = parsed.firstError
       return {
         ok: false,
-        validator: "checkpoint-coqc",
+        validator: "checkpoint-lean",
         status: "error",
         first_error_file: firstError?.file,
         first_error_line: firstError?.line,
@@ -4509,7 +4509,7 @@ export namespace SessionProofWorkflow {
       return {
         ok: false,
         escalation_type: failure.escalation_type,
-        reason: `Solved proof_result did not pass checkpoint/coqc scaffold gate: ${failure.reason}`,
+        reason: `Solved proof_result did not pass checkpoint/lean_check scaffold gate: ${failure.reason}`,
       }
     }
 
@@ -6116,17 +6116,13 @@ export namespace SessionProofWorkflow {
   function isFallbackPassiveLookupPart(part: MessageV2.WithParts["parts"][number]) {
     if (part.type !== "tool" || part.state.status !== "completed") return false
     if (part.tool === "read" || part.tool === "grep" || part.tool === "glob" || part.tool === "lsp") return true
-    if (part.tool === "coqtop") {
+    if (part.tool === "lean_query") {
       const command = toolInputString(part.state.input, "command")
       return ["search", "check", "print", "eval"].includes(command)
     }
-    if (part.tool === "coq_session") {
+    if (part.tool === "lean_session") {
       const op = toolInputString(part.state.input, "op")
       return op === "open" || op === "goal" || op === "inspect"
-    }
-    if (part.tool === "petanque") {
-      const verb = toolInputString(part.state.input, "command") || toolInputString(part.state.input, "op")
-      return ["search", "check", "print", "goal", "inspect", "open"].includes(verb)
     }
     return false
   }
@@ -6139,16 +6135,12 @@ export namespace SessionProofWorkflow {
     }
     if (part.type !== "tool" || part.state.status !== "completed") return false
     if (
-      (part.tool === "edit" || part.tool === "write" || part.tool === "coqc" || part.tool === "checkpoint") &&
+      (part.tool === "edit" || part.tool === "write" || part.tool === "lean_check" || part.tool === "checkpoint") &&
       (!targetFile || toolInputTouchesFile(part.state.input, targetFile))
     ) {
       return true
     }
-    if (part.tool === "coq_session") return toolInputString(part.state.input, "op") === "step"
-    if (part.tool === "petanque") {
-      const verb = toolInputString(part.state.input, "command") || toolInputString(part.state.input, "op")
-      return Boolean(verb) && !["search", "check", "print", "goal", "inspect", "open"].includes(verb)
-    }
+    if (part.tool === "lean_session") return toolInputString(part.state.input, "op") === "step"
     return false
   }
 
@@ -6229,7 +6221,7 @@ export namespace SessionProofWorkflow {
       for (let partIndex = message.parts.length - 1; partIndex >= 0; partIndex--) {
         const part = message.parts[partIndex]
         if (part.type !== "tool" || part.state.status !== "completed") continue
-        if ((part.tool !== "coqc" && part.tool !== "checkpoint") || !toolInputTouchesFile(part.state.input, targetFile))
+        if ((part.tool !== "lean_check" && part.tool !== "checkpoint") || !toolInputTouchesFile(part.state.input, targetFile))
           continue
         const proofStatus = part.state.metadata.proof_status
         if (!proofStatus || typeof proofStatus !== "object") continue
@@ -6255,15 +6247,15 @@ export namespace SessionProofWorkflow {
       for (let partIndex = message.parts.length - 1; partIndex >= 0; partIndex--) {
         const part = message.parts[partIndex]
         if (part.type !== "tool" || part.state.status !== "completed") continue
-        if ((part.tool !== "coqc" && part.tool !== "checkpoint") || !toolInputTouchesFile(part.state.input, targetFile))
+        if ((part.tool !== "lean_check" && part.tool !== "checkpoint") || !toolInputTouchesFile(part.state.input, targetFile))
           continue
         const metadata = part.state.metadata
         if (!metadata || typeof metadata !== "object") continue
-        if ("status" in metadata && metadata.status === "ast_audit_rejected") {
+        if ("status" in metadata && metadata.status === "final_gate_rejected") {
           return {
             accepted: false,
             unfinishedCount: undefined,
-            statusDetail: "final_theorem_ast_rejected",
+            statusDetail: "final_theorem_gate_rejected",
             time: part.state.time.end,
           }
         }
@@ -6300,7 +6292,7 @@ export namespace SessionProofWorkflow {
       for (const part of message.parts) {
         if (part.type !== "tool" || part.state.status !== "completed") continue
         if (after !== undefined && part.state.time.end <= after) continue
-        if ((part.tool !== "coqc" && part.tool !== "checkpoint") || !toolInputTouchesFile(part.state.input, targetFile))
+        if ((part.tool !== "lean_check" && part.tool !== "checkpoint") || !toolInputTouchesFile(part.state.input, targetFile))
           continue
         const metadata = part.state.metadata
         if (!metadata || typeof metadata !== "object") continue
@@ -7408,7 +7400,7 @@ export namespace SessionProofWorkflow {
     if (!validatedRange || !currentRange) {
       return {
         ok: false,
-        validator: "checkpoint-coqc",
+        validator: "checkpoint-lean",
         status: "error",
         message: `lemma prefix checkpoint cannot find assigned proof_region ${assignment.admit_id}.`,
       }
@@ -7417,14 +7409,14 @@ export namespace SessionProofWorkflow {
     const hole = firstSequentialHole(validatedRange.text)
     if (!hole) {
       setValidatedLemmaSource(input.sessionID, input.file, input.source)
-      return { ok: true, validator: "checkpoint-coqc", status: "ok" }
+      return { ok: true, validator: "checkpoint-lean", status: "ok" }
     }
 
     const protectedSuffix = validatedRange.text.slice(hole.end)
     if (!currentRange.text.endsWith(protectedSuffix)) {
       return {
         ok: false,
-        validator: "checkpoint-coqc",
+        validator: "checkpoint-lean",
         status: "error",
         message: `lemma prefix checkpoint refused admit_id ${assignment.admit_id}: text after the current first hole changed before that hole was validated.`,
       }
@@ -7468,7 +7460,7 @@ export namespace SessionProofWorkflow {
     if (!getValidatedLemmaSource(input.sessionID, input.file)) {
       if (lemmaResumesMissingBaseline.has(input.sessionID)) {
         throw new Error(
-          `lemma resume for admit_id ${assignment.admit_id} has no trusted validated prefix baseline; run checkpoint/coqc successfully before editing further.`,
+          `lemma resume for admit_id ${assignment.admit_id} has no trusted validated prefix baseline; run checkpoint/lean_check successfully before editing further.`,
         )
       }
       setValidatedLemmaSource(input.sessionID, input.file, input.before)
@@ -7987,7 +7979,7 @@ export namespace SessionProofWorkflow {
       const scaffold: ValidationResult = previousFailure
         ? {
             ok: false,
-            validator: "checkpoint-coqc",
+            validator: "checkpoint-lean",
             status: "error",
             message: previousFailure.message,
             first_error_file: previousFailure.first_error_file,

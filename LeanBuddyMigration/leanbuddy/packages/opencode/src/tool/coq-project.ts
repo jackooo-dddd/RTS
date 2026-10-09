@@ -86,9 +86,19 @@ async function readBounded(
   return Buffer.concat(chunks).toString("utf8")
 }
 
+/**
+ * Prefix that starts `args` as the leader of a new process group, so a timeout can kill the whole tree
+ * (`lake` spawns `lean`). Linux has `setsid`; macOS has none, so use perl's `setpgrp` there.
+ */
+function processGroupPrefix(): string[] {
+  if (process.platform === "win32") return []
+  if (which("setsid")) return ["setsid"]
+  return ["perl", "-e", "setpgrp(0, 0); exec @ARGV or die $!", "--"]
+}
+
 /** Run a bounded subprocess in its own process group. */
 export async function runProcess(args: string[], cwd: string, options: ProcessOptions = {}): Promise<ProcessResult> {
-  const runArgs = process.platform === "win32" ? args : ["setsid", ...args]
+  const runArgs = [...processGroupPrefix(), ...args]
   const proc = Bun.spawn(runArgs, { stdout: "pipe", stderr: "pipe", cwd })
   const timeoutMs = options.timeoutMs ?? coqTimeoutMs()
   const maxOutputBytes = options.maxOutputBytes ?? subprocessMaxOutputBytes()

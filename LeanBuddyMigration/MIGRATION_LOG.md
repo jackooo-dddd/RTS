@@ -144,7 +144,54 @@ replacements must pass.
 
 ## Deviations and note corrections
 
-(none yet)
+| # | Note / decision | What the notes say | What was done, and why | Phase |
+|---|---|---|---|---|
+| V1 | BACKEND_DECISION *First spike* 1 | `frontend.distil` returns goals "in the order of the `sorry`s" | Pantograph 0.3.19 returns them in **reverse** source order (3 regions → h3, h2, h1; `cases` branches → last first; Init-only tests, real-package test pending). Map goals to `admit_id`s by reversed order **and** check each target against the region's declared statement. | 1 |
+| V2 | runner revision §4 (bash allow-list `lake env lean`, `lake build`) vs `bash-revision.md` (block compiler calls in bash) | contradictory | bash guard blocks `lean` and `lake build/env/lean/exe/serve/update` and points to `lean_check`/`lean_query`/`lean_session`/`checkpoint` (same design as the Rocq guard, which also refused `coqc` despite the runner's allow-list). The runner's bash allow-list becomes moot (fix in Phase 8). | 2 |
+| V3 | (none) | — | `runProcess` wrapped every subprocess in `setsid`, which macOS lacks: every Lean/Lake call would fail on the Mac. It now uses `setsid` when present and `perl -e 'setpgrp; exec'` otherwise (verified: a timed-out process tree is killed completely). | 3 |
+| V4 | gap-revisions §4, K9 ("in benchmark mode the gate calls `check.py` itself") | gate = `check.py` | `check.py` reads the solution from disk, but `checkpoint` gates the *staged* (uncommitted) source. The gate runs `check.py` itself when the candidate equals the file on disk, and otherwise the same five checks in TypeScript on a temporary sibling copy (statement probe and `#print axioms` appended). A unit test keeps the token list and allowed axioms identical to `check.py`; the integration test checks the verdicts on the reference and on the `sorry`/`axiom`/`native_decide` variants. The runner's success test stays `check.py` in a fresh verification copy (D14). | 3 |
+| V5 | task.ts audit revision (`sorry` allowed "only where the assignment allows a split") | — | the submission stage allows `sorry` in the proof (a `split` result legitimately leaves sub-regions open); "solved" is decided from the source (S26), not by this check. | 3 |
+| V6 | D2 (`coq-check` → `lean-check-file` or merge) | prefer merging | the custom tool `.opencode/tool/coq-check.ts` was deleted; `lean_check` covers it. | 2 |
+
+**Needs a user decision (reported, not blocking):** the 130-theorem benchmark's `prosa-theorems/check.py` requires the
+task file to differ from the prepared file *only inside the proof* (rule 2), so an added `import` fails there, while
+K1's general-case rule lets the gate accept package imports. For those tasks the gate should follow the benchmark
+(no header change); proposed handling in Phase 8.
 
 ## Phase log
 
+### Phase 1 (in progress) — Lean environment and Pantograph
+
+- Master copy `~/leanbuddy-work/lean-prosa-v06-master/` (no `Solutions/`); `lake exe cache get`: 8,690 Mathlib files.
+  `lake build` is slow on the Mac: 4–7 parallel `lean` processes of 1.2–3.3 GB each on 16 GB RAM (plus IDEs) swap,
+  so each module waits on I/O (~10 % CPU). Timing and `.lake/build` size recorded when it finishes.
+- Pantograph `92d4818` built in `~/leanbuddy-work/Pantograph` (`lake build repl`, 69 s; `repl --version` = 0.3.19).
+- Smoke tests with `repl Init`: `show` rejects a non-defeq statement and accepts `show _` (holes must be rejected
+  before the check); `frontend.distil` on text with an `import` line fails ("invalid 'import' command"); one error
+  anywhere aborts `distil`; goal order is reversed (V1). Spike driver: `leanbuddy/scripts/pantograph-spike/`
+  (`spike.py`, `pantograph.py`, `gate_check.py`, `stage_copy.sh` = D14 staging prototype).
+
+### Phase 2 — tool surface (D2, D3, D6)
+
+- Tools renamed (files and IDs): `coqc`→`lean_check` (`tool/lean-check.ts`), `coqtop`→`lean_query`
+  (`tool/lean-query.ts`), `coq_session`→`lean_session` (`tool/lean-session.ts`); `petanque` deleted (merged, D1);
+  custom tool `coq-check` deleted (V6). Their Rocq internals are replaced in Phase 4.
+- Every tool-name list updated: registry, agent permissions (prover and explorer now also get read-only `lsp`, D3;
+  explorer gets `lean_query`), accepted-plan hard gate (`lean_query`; `coq-proof-dag`/`pdf-read` dropped, GAPS §8),
+  passive/active classifiers in `prompt.ts` and `proof-workflow.ts` (petanque branches removed), message cache
+  sets, compaction prune list, CLI renderer, validator labels (`checkpoint-coqc`→`checkpoint-lean`), D6 agent
+  sets (`coq-prover` removed from `WIDE_PROBE_PROOF_AGENTS`/`WIDE_PROOF_EDIT_AGENTS`), config `tools` entries for
+  removed GitHub tools, and tool names inside runtime reminder strings (wording otherwise left for Phase 5).
+- bash guard: Lean/Lake compiler calls instead of `coqc`/`coqtop` (V2); `.lean` wildcard detection.
+
+### Phase 3 — final gate (D4, K1, K9)
+
+- New `tool/lean-gate.ts` (`LeanGate`, same public shape as `CoqAstAudit`), `tool/lean-source.ts` (comment
+  stripping and token list identical to `check.py`, header, declarations), `tool/lean-project.ts` (Lake root,
+  module names, `lake env lean` on a staged copy, `lake build`, diagnostics parser).
+- Callers switched: `checkpoint`, `lean_check` (status `final_gate_rejected`), `task` (stage `submission`,
+  `<region-check-rejection>`, V5). Vocabulary renamed (`markGateChecked`, `requireGate`, …).
+- Deleted: `coq-ast-audit.ts` and its test; `scripts/` OCaml classifier, Python validator, its tests/examples/docs,
+  and the elaboration-dump plugin (gap-revisions §4 `removed-files.md`).
+- Tests: `test/tool/lean-gate.test.ts` — 11 unit tests pass (token parity with `check.py`, header, declarations,
+  exterior rules incl. K1 imports, reason mapping, axioms parsing); 3 integration tests wait for the built package.

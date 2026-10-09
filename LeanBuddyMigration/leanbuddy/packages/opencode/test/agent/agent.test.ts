@@ -55,7 +55,7 @@ test("whole-lemma agent has focused proof permissions", async () => {
       expect(agent?.mode).toBe("primary")
       expect(agent?.native).toBe(true)
       expect(evalPerm(agent, "edit")).toBe("allow")
-      expect(evalPerm(agent, "coqtop")).toBe("allow")
+      expect(evalPerm(agent, "lean_query")).toBe("allow")
       expect(evalPerm(agent, "todowrite")).toBe("deny")
     },
   })

@@ -81,7 +81,7 @@ export namespace SessionPrompt {
     "grep",
     "glob",
     "lsp",
-    "coqtop",
+    "lean_query",
     "codesearch",
     "list",
     "bash",
@@ -89,8 +89,6 @@ export namespace SessionPrompt {
     "task",
     "skill",
     "proof_plan",
-    "coq-proof-dag",
-    "pdf-read",
   ] as const
 
   /** Ephemerally mark user messages that actually arrived after the last
@@ -315,7 +313,7 @@ export namespace SessionPrompt {
       "You are the primary theorem prover for the current file in direct Prosa proof mode.",
       "Prove the target theorem directly from the current theorem context and existing Prosa facts.",
       "Do not read proof.tex, do not build a paper-derived skeleton, and do not create proof_region/admit_id segmentation in this mode.",
-      "Direct-proof workflow: read the target theorem file; search the theorem conclusion's key symbols and hypothesis names in the current workspace and prosa/; inspect only directly relevant existing lemmas or proof patterns; build the strongest direct proof you can justify; compile with coqc.",
+      "Direct-proof workflow: read the target theorem file; search the theorem conclusion's key symbols and hypothesis names in the current workspace and prosa/; inspect only directly relevant existing lemmas or proof patterns; build the strongest direct proof you can justify; check it with lean_check.",
       "Keep the work in direct theorem proof mode. Prefer existing Prosa lemmas and small local adaptations over paper-structured decomposition.",
       "</direct-prosa-proof-runtime>",
     ].join("\n")
@@ -466,19 +464,15 @@ export namespace SessionPrompt {
           if (inspected.endsWith(".v") && inspected !== normalizedTarget) return true
           continue
         }
-        if (part.tool === "coqtop") {
+        if (part.tool === "lean_query") {
           const command = toolInputString(part.state.input, "command")
           if (["check", "search", "print"].includes(command)) return true
           continue
         }
-        if (part.tool === "coq_session") {
+        if (part.tool === "lean_session") {
           const op = toolInputString(part.state.input, "op")
           if (["open", "goal", "inspect"].includes(op)) return true
           continue
-        }
-        if (part.tool === "petanque") {
-          const op = toolInputString(part.state.input, "command") || toolInputString(part.state.input, "op")
-          if (["open", "goal", "inspect", "check", "search", "print"].includes(op)) return true
         }
       }
     }
@@ -511,17 +505,13 @@ export namespace SessionPrompt {
   function isWholeLemmaPassiveLookupPart(part: any) {
     if (part?.type !== "tool" || part.state?.status !== "completed") return false
     if (part.tool === "read" || part.tool === "grep" || part.tool === "glob" || part.tool === "lsp") return true
-    if (part.tool === "coqtop") {
+    if (part.tool === "lean_query") {
       const command = toolInputString(part.state.input, "command")
       return ["search", "check", "print", "eval"].includes(command)
     }
-    if (part.tool === "coq_session") {
+    if (part.tool === "lean_session") {
       const op = toolInputString(part.state.input, "op")
       return op === "open" || op === "goal" || op === "inspect"
-    }
-    if (part.tool === "petanque") {
-      const verb = toolInputString(part.state.input, "command") || toolInputString(part.state.input, "op")
-      return ["search", "check", "print", "goal", "inspect", "open"].includes(verb)
     }
     return false
   }
@@ -536,15 +526,11 @@ export namespace SessionPrompt {
     if (proofEditTools.has(part.tool) && (!targetFile || toolInputTouchesFile(part.state.input, targetFile))) {
       return true
     }
-    if (part.tool === "coq_session") {
+    if (part.tool === "lean_session") {
       if (toolInputString(part.state.input, "op") !== "step") return false
       const metadata = part.state.metadata
       return metadata?.tactic_applied !== false &&
         (!metadata?.kind || metadata.kind === "proof_progress") && metadata?.summary?.changed !== false
-    }
-    if (part.tool === "petanque") {
-      const verb = toolInputString(part.state.input, "command") || toolInputString(part.state.input, "op")
-      return Boolean(verb) && !["search", "check", "print", "goal", "inspect", "open"].includes(verb)
     }
     return false
   }
@@ -568,7 +554,7 @@ export namespace SessionPrompt {
         if (isWholeLemmaActiveProofAttemptPart(part, targetFile)) return streak
         // Invalid tool calls, validation, and bookkeeping are not proof
         // materialization.  Keep scanning past them so the hard gate cannot be
-        // escaped by an unavailable lookup or an unchanged coqc/checkpoint.
+        // escaped by an unavailable lookup or an unchanged lean_check/checkpoint.
       }
     }
     return streak
@@ -1253,13 +1239,13 @@ export namespace SessionPrompt {
               `revision: ${recoveredProofEditTransaction.revision}`,
               `source_hash: ${recoveredProofEditTransaction.source_hash}`,
               `validation_pending: ${recoveredProofEditTransaction.validation_pending}`,
-              "The recovered staged source exposed by read/edit/multiedit/write/apply_patch/checkpoint/coqc is the authoritative proof state for this turn.",
+              "The recovered staged source exposed by read/edit/multiedit/write/apply_patch/checkpoint/lean_check is the authoritative proof state for this turn.",
               "The ordinary workspace file on disk may intentionally be older until a compiler-accepted transaction snapshot is committed.",
-              "Before lemma dispatch, proof planning, Coq-session use, or proof edits, read the target .v file through the read tool. The controller will reject those state-dependent actions until this staged-revision resynchronization read occurs. checkpoint/coqc are safe before that read because they compile the authoritative staged source directly.",
+              "Before lemma dispatch, proof planning, `lean_session` use, or proof edits, read the target .v file through the read tool. The controller will reject those state-dependent actions until this staged-revision resynchronization read occurs. checkpoint/lean_check are safe before that read because they compile the authoritative staged source directly.",
               "Do not use bash, cat, or a direct disk read to reconstruct proof state, and do not rewrite compiler-certified regions merely because the disk file is stale.",
-              "Read the target through the read tool and continue with the smallest edit against that staged revision. If finalization reports only the theorem terminator remains, edit only that terminator and run the final checkpoint/coqc.",
+              "Read the target through the read tool and continue with the smallest edit against that staged revision. If finalization reports only the theorem terminator remains, edit only that terminator and run the final checkpoint/lean_check.",
               recoveredProofEditTransaction.validation_pending
-                ? "The controller will not dispatch an ordinary lemma task from this draft until the exact staged revision receives a compiler-backed checkpoint/coqc receipt."
+                ? "The controller will not dispatch an ordinary lemma task from this draft until the exact staged revision receives a compiler-backed checkpoint/lean_check receipt."
                 : undefined,
               "</proof-edit-transaction-recovery>",
             ].filter((line): line is string => Boolean(line)).join("\n"),
@@ -1583,10 +1569,9 @@ export namespace SessionPrompt {
       const hasWholeLemmaStartupLookup =
         hasCompletedTool(msgs, "grep") ||
         hasCompletedTool(msgs, "glob") ||
-        hasCompletedTool(msgs, "coq_session") ||
-        hasCompletedTool(msgs, "petanque") ||
+        hasCompletedTool(msgs, "lean_session") ||
         hasCompletedTool(msgs, "lsp") ||
-        hasCompletedTool(msgs, "coqtop")
+        hasCompletedTool(msgs, "lean_query")
       const wholeLemmaLookupStreak =
         agent.name === "whole-lemma" && !hasProofFileEdit ? wholeLemmaPassiveLookupStreak(msgs, currentProofFile) : 0
       const lemmaContinuation = agent.name === "prover" ? await lemmaContinuationPrompt(sessionID, msgs) : undefined
@@ -1671,7 +1656,7 @@ export namespace SessionPrompt {
             `The accepted plan has now been followed by ${acceptedPlanLookupStreak} consecutive passive lookup or inspection calls without a proof-file edit or active proof step.`,
             `The soft reminder began at ${acceptedPlanMaterializationToolGate.warning_limit}; the bounded grace window ended at ${acceptedPlanMaterializationToolGate.hard_limit}.`,
             "Broad lookup tools remain visible so the provider tool schema and KV-cache prefix stay stable, but calls to them return a deterministic gate diagnostic because another lookup cannot establish materialization progress.",
-            "Make one reversible target proof edit, or use an available active `coq_session`/`petanque` proof step on the first planned region. A concrete proof attempt resets this gate and restores narrow blocker-driven lookup on the following turn.",
+            "Make one reversible target proof edit, or use an available active `lean_session` proof step on the first planned region. A concrete proof attempt resets this gate and restores narrow blocker-driven lookup on the following turn.",
             "Validation tools remain available. The gate does not change the accepted semantic DAG, select a theorem-specific route, or require a successful proof step before lookup can resume.",
             acceptedPlanMaterializationToolGate.blocked_tools.length > 0
               ? `Temporarily gated tools: ${acceptedPlanMaterializationToolGate.blocked_tools.join(", ")}.`
@@ -1693,8 +1678,8 @@ export namespace SessionPrompt {
             "<accepted-plan-materialization-liveness>",
             `The accepted plan has been followed by ${acceptedPlanLookupStreak} consecutive read-only lookup or inspection calls without a proof-file edit or an active proof step.`,
             "The accepted semantic DAG remains authoritative, and the evidence pass is now sufficient to begin a reversible proof transaction.",
-            "Your next non-validation action must materialize the smallest useful first-level skeleton in the target theorem, or make one concrete `coq_session`/`petanque` proof step for the first planned region and immediately transfer the validated fragment into that skeleton.",
-            "Do not issue another broad `read`, `grep`, `glob`, or `coqtop` Check/Search/Print burst before that concrete attempt. If the attempt exposes one exact missing identifier, premise, or target-shape error, perform only the narrow lookup needed for that blocker and then return to materialization.",
+            "Your next non-validation action must materialize the smallest useful first-level skeleton in the target theorem, or make one concrete `lean_session` proof step for the first planned region and immediately transfer the validated fragment into that skeleton.",
+            "Do not issue another broad `read`, `grep`, `glob`, or `lean_query` burst before that concrete attempt. If the attempt exposes one exact missing identifier, premise, or target-shape error, perform only the narrow lookup needed for that blocker and then return to materialization.",
             "Temporary admits are permitted only inside the accepted first-level proof regions while establishing the Phase-1 scaffold; they are not proof success and must later be discharged before final `Qed.`.",
             "This is a liveness reminder, not a semantic-route lock: compiler evidence may still justify the workflow's bounded accepted-plan repair revision.",
             "</accepted-plan-materialization-liveness>",
@@ -1734,7 +1719,7 @@ export namespace SessionPrompt {
           [
             "<decomposition-evidence-required>",
             "Before the first skeleton edit, perform one bounded semantic inspection tied to the theorem's conclusion or hypotheses.",
-            "Open one directly relevant Prosa/MathComp declaration or analogous proof, or inspect the exact live goal with `coq_session`/`coqtop`.",
+            "Open one directly relevant Prosa/MathComp declaration or analogous proof, or inspect the exact live goal with `lean_session`/`lean_query`.",
             "A grep listing alone is candidate discovery, not an evidence receipt. Do not perform a broad search batch.",
             "</decomposition-evidence-required>",
           ].join("\n"),
@@ -1943,7 +1928,7 @@ export namespace SessionPrompt {
             "<whole-lemma-lookup-required>",
             "You have read the theorem file but have not yet inspected any proof support in this session.",
             "Your next non-validation action must inspect the live goal or perform one targeted lookup tied to the theorem conclusion or hypothesis names.",
-            "Use `grep`, `glob`, `coq_session`, `petanque`, `lsp`, or `coqtop` to inspect directly relevant Prosa facts or goal state before your first proof edit.",
+            "Use `grep`, `glob`, `lean_session`, `lsp`, or `lean_query` to inspect directly relevant Prosa facts or goal state before your first proof edit.",
             "Do not guess a proof script before that targeted lookup.",
             "</whole-lemma-lookup-required>",
           ].join("\n"),
@@ -1973,9 +1958,9 @@ export namespace SessionPrompt {
             "<whole-lemma-active-proof-loop>",
             "You have read the theorem file and performed at least one targeted lookup or live-goal inspection.",
             "Continue querying Prosa when the current goal or a failed tactic exposes a concrete missing fact, but avoid staying in a pure lookup streak.",
-            "Prefer to turn the useful lookup result into proof action soon: open or continue a `coq_session`/`petanque` proof loop, run one small advancing tactic, or write a small concrete proof fragment to the theorem file.",
-            "When a proof-loop tactic changes the goal in a promising way, mirror that validated step into the file promptly, then use LSP diagnostics, `coq_session`/`petanque`, and `coqc` feedback to repair the next failing line.",
-            "Broad `grep`, `glob`, `read`, `coqtop Check/Print/Search`, or pure `petanque Check/Print/Search` calls should be tied to a specific current-goal blocker, not used as a substitute for trying proof steps.",
+            "Prefer to turn the useful lookup result into proof action soon: open or continue a `lean_session` proof loop, run one small advancing tactic, or write a small concrete proof fragment to the theorem file.",
+            "When a proof-loop tactic changes the goal in a promising way, mirror that validated step into the file promptly, then use LSP diagnostics, `lean_session`, and `lean_check` feedback to repair the next failing line.",
+            "Broad `grep`, `glob`, `read`, or `lean_query` calls should be tied to a specific current-goal blocker, not used as a substitute for trying proof steps.",
             "</whole-lemma-active-proof-loop>",
           ].join("\n"),
         ))
@@ -1986,8 +1971,8 @@ export namespace SessionPrompt {
             "<whole-lemma-lookup-streak>",
             `Your most recent completed actions end with ${wholeLemmaLookupStreak} consecutive lookup or inspection calls and still no proof-file edit.`,
             "That usually means lookup has stopped paying for itself.",
-            "Prefer your next non-validation action to be one concrete proof-loop attempt: a `coq_session`/`petanque` step that tries to advance the live goal, or a small proof edit in the theorem file.",
-            "After that attempt, use `coqc`, diagnostics, or the next live goal to identify the exact blocker, and only then do the narrowest follow-up lookup needed to repair it.",
+            "Prefer your next non-validation action to be one concrete proof-loop attempt: a `lean_session` step that tries to advance the live goal, or a small proof edit in the theorem file.",
+            "After that attempt, use `lean_check`, diagnostics, or the next live goal to identify the exact blocker, and only then do the narrowest follow-up lookup needed to repair it.",
             "Avoid another broad lookup burst unless you can name the precise missing lemma, identifier, or side condition that the imminent proof step depends on.",
             "</whole-lemma-lookup-streak>",
           ].join("\n"),

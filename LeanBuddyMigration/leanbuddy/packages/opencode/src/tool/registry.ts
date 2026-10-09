@@ -22,12 +22,11 @@ import type { Agent } from "../agent/agent"
 import { Tool } from "./tool"
 import { Instance } from "../project/instance"
 import { Log } from "@/util/log"
-import { CoqcTool } from "./coqc"
-import { CoqtopTool } from "./coqtop"
+import { LeanCheckTool } from "./lean-check"
+import { LeanQueryTool } from "./lean-query"
 import { ProofPlanTool } from "./proof-plan"
-import { CoqSessionTool } from "./coq-session"
+import { LeanSessionTool } from "./lean-session"
 import { CheckpointTool } from "./checkpoint"
-import { PetanqueTool } from "./petanque"
 import { Config } from "@/config/config"
 import fs from "fs/promises"
 import path from "path"
@@ -59,12 +58,11 @@ export namespace ToolRegistry {
     BatchTool,
     SkillTool,
     ApplyPatchTool,
-    CoqcTool,
-    CoqtopTool,
+    LeanCheckTool,
+    LeanQueryTool,
     ProofPlanTool,
-    CoqSessionTool,
+    LeanSessionTool,
     CheckpointTool,
-    PetanqueTool,
   ]
 
   function zodFromCustomArg(input: any): z.ZodType {

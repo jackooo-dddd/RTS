@@ -1,13 +1,13 @@
 import z from "zod"
 import { Tool } from "./tool"
-import DESCRIPTION from "./coqtop.txt"
+import DESCRIPTION from "./lean-query.txt"
 import { Instance } from "../project/instance"
 import path from "path"
 import * as CoqProject from "./coq-project"
 import { assertNoRewriteBang, assertNoIntuition } from "./coq-style-guard"
 import { formatCoqSkillHints } from "./coq-skill-hints"
 
-export const CoqtopTool = Tool.define("coqtop", {
+export const LeanQueryTool = Tool.define("lean_query", {
   description: DESCRIPTION,
   parameters: z.object({
     command: z.enum(["check", "search", "print", "state", "eval"]).describe("The coqtop command to execute"),
@@ -23,7 +23,7 @@ export const CoqtopTool = Tool.define("coqtop", {
   }),
   async execute(params, ctx) {
     await ctx.ask({
-      permission: "coqtop",
+      permission: "lean_query",
       patterns: ["*"],
       always: ["*"],
       metadata: { command: params.command },

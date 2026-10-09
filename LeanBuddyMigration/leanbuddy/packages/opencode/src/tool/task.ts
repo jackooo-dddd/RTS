@@ -24,9 +24,9 @@ import { Trace } from "@/session/trace"
 import path from "path"
 import { Filesystem } from "@/util/filesystem"
 import { Instance } from "@/project/instance"
-import { currentCoqProofState, findContextNormalizationAudit } from "./coq-session"
+import { currentCoqProofState, findContextNormalizationAudit } from "./lean-session"
 import { ProofEditTransaction } from "@/session/proof-edit-transaction"
-import { CoqAstAudit } from "./coq-ast-audit"
+import { LeanGate } from "./lean-gate"
 
 const assignment = LemmaAssignmentSchema
 
@@ -52,7 +52,7 @@ const parameters = z.object({
 const MAX_LEMMA_RECURSION_DEPTH = 4
 const MAX_LEMMA_CHILDREN = 1
 const LEMMA_STACK_MODE = "dfs_lifo" as const
-const WIDE_PROBE_PROOF_AGENTS = new Set(["fixer", "coq-prover", "coqprover"])
+const WIDE_PROBE_PROOF_AGENTS = new Set(["fixer"])
 const WIDE_FALLBACK_PROOF_AGENTS = new Set(["whole-lemma"])
 const PROOF_PRODUCING_AGENTS = new Set(["lemma", "prover", ...WIDE_PROBE_PROOF_AGENTS, ...WIDE_FALLBACK_PROOF_AGENTS])
 
@@ -379,7 +379,7 @@ function withProofEditTransactionRecovery(
       ? "This fresh repair branch starts from the best compiler-certified snapshot. The newer unaccepted draft remains journaled under preserved_draft_revision; use its evidence from the handoff, but do not make it the active baseline unless it earns a compiler certificate."
       : "Continue from the current journaled draft and preserve every compiler-certified fragment.",
     transaction.validation_pending
-      ? "This exact staged revision is still pending validation. Run checkpoint/coqc and obtain a compiler-backed receipt before ordinary lemma redispatch; if validation fails, repair or remodel this staged region first."
+      ? "This exact staged revision is still pending validation. Run checkpoint/lean_check and obtain a compiler-backed receipt before ordinary lemma redispatch; if validation fails, repair or remodel this staged region first."
       : undefined,
     "First read the current authorized staged region. On proof_transaction_stale_view, re-read and create a new local patch; do not reconstruct from the older workspace source.",
     "</proof-edit-transaction-recovery>",
@@ -399,16 +399,16 @@ function withProofRepairHandoff(prompt: string, handoff: unknown) {
   ].join("\n")
 }
 
-function astAuditRepairPrompt(result: CoqAstAudit.Result, attempt: number, maxRepairs: number) {
+function regionCheckRepairPrompt(result: LeanGate.Result, attempt: number, maxRepairs: number) {
   return [
-    "<ast-audit-rejection>",
+    "<region-check-rejection>",
     `stage: ${result.stage}`,
     `repair_attempt: ${attempt}/${maxRepairs}`,
-    ...CoqAstAudit.formatReasons(result),
-    "Your submitted proof revision was not accepted by the structural Rocq AST audit.",
-    "Continue in this same subagent session and repair the current staged source. Preserve the original target declaration and every command outside your authorized proof scope; do not replace Qed with Admitted/Defined/Abort or introduce axioms, options, proof modes, meta commands, controls, attributes, or untrusted imports/plugins.",
+    ...LeanGate.formatReasons(result),
+    "Your submitted proof revision was not accepted by the region check.",
+    "Continue in this same subagent session and repair the current staged source. Preserve the original target declaration and everything outside its proof (imports of this package's modules may be added); do not introduce `admit`, `axiom`, `unsafe`, `implemented_by`, `@[extern]`, debug options, or meta-programming commands (`#eval`, `run_cmd`, `elab`, …).",
     "Use the exact reason codes and locations above, then submit the required structured result again. Do not merely explain the failure.",
-    "</ast-audit-rejection>",
+    "</region-check-rejection>",
   ].join("\n")
 }
 
@@ -623,11 +623,11 @@ function withLemmaAssignment(prompt: string, item: LemmaAssignment) {
     "- A failed validation still permits and expects edits inside the current first unresolved block; repair that block before any broad lookup or escalation. Avoid both read-only stalling and disconnected proof edits.",
     "- Preserve existing proof-block braces as partition boundaries; solve the current block by inserting proof text inside `{ ... }`.",
     "- Do not escalate merely because the proof is long, brittle, or difficult to find; escalation must cite concrete evidence such as a stable blocked goal, missing premise, failed local bridge attempt, wrong target shape, or non-local dependency.",
-    "- Use persistent Coq/LSP tools (`coq_session`, `petanque`, `lsp proofGoals`) to validate small proof steps before committing large scripts.",
+    "- Use persistent Coq/LSP tools (`lean_session`) to validate small proof steps before committing large scripts.",
     "- Do not use `rewrite !...` or `rewrite -!...`; write repeated rewrites explicitly one step at a time or introduce a named normalization bridge.",
     "- Do not use the `intuition` tactic; it generates opaque proof terms and is rejected. Use explicit tactics (`left`/`right`/`split`/`apply`/`exact`) instead.",
     "- If you escalate with needs_context_strengthening, it means an explicit bridge must be derived and threaded from existing hypotheses; do not request new section-level, theorem-level, or global assumptions.",
-    "- Use `coq_session inspect` before needs_context_strengthening only when the escalation specifically depends on hidden arguments, Section/Module instantiation, implicit arguments, or alias normalization; do not make this audit a generic prerequisite for other context blockers.",
+    "- Use `lean_session inspect` before needs_context_strengthening only when the escalation specifically depends on hidden arguments, Section/Module instantiation, implicit arguments, or alias normalization; do not make this audit a generic prerequisite for other context blockers.",
     "- For that narrow case, record attempt_report.context_mismatch_basis and copy the returned context_audit metadata exactly. A convertible or inconclusive/missing audit triggers at most one targeted same-session retry; after that retry, structured escalation is still allowed. Verified non-convertibility plus attempt_report.failed_local_bridge may escalate immediately.",
     "- If you escalate, include escalation_type. Use needs_subgoal_remodel with a remodel_request when the assigned target statement or region shape is wrong.",
     "</lemma-assignment>",
@@ -1002,7 +1002,7 @@ export const TaskTool = Tool.define("task", async (ctx) => {
         : undefined
       const proofEditTransactionFinalizeOptions = proofEditTransactionStart
         ? {
-            requireAstAudit: true,
+            requireGate: true,
             ...(params.lemma_assignment || params.proof_repair_assignment || proofEditTransactionStart.handed_off
               ? {
                   handoffToSessionID: ctx.sessionID,
@@ -1072,10 +1072,10 @@ export const TaskTool = Tool.define("task", async (ctx) => {
       }
 
       let result: Awaited<ReturnType<typeof SessionPrompt.prompt>>
-      const astAuditAttempts: CoqAstAudit.Result[] = []
+      const regionCheckAttempts: LeanGate.Result[] = []
       try {
         let nextParts = promptParts
-        const maxRepairs = CoqAstAudit.maxSubmissionRepairs()
+        const maxRepairs = LeanGate.maxSubmissionRepairs()
         while (true) {
           result = await SessionPrompt.prompt({
             messageID: Identifier.ascending("message"),
@@ -1092,17 +1092,19 @@ export const TaskTool = Tool.define("task", async (ctx) => {
           if (!proofEditTransactionStart) break
           const candidateSource = ProofEditTransaction.source(session.id, proofEditTransactionStart.file)
           if (candidateSource === undefined) break
-          const audit = await CoqAstAudit.runForSession({
+          const audit = await LeanGate.runForSession({
             sessionID: session.id,
             file: proofEditTransactionStart.file,
             candidateSource,
             theorem: params.lemma_assignment?.theorem ?? params.proof_repair_assignment?.theorem,
             stage: "submission",
             signal: ctx.abort,
+            // A split result legitimately leaves `sorry` in sub-regions; "solved" is decided from the source (S26).
+            allowSorry: true,
           })
-          astAuditAttempts.push(audit)
-          if (CoqAstAudit.passed(audit)) {
-            ProofEditTransaction.markAstAudited({
+          regionCheckAttempts.push(audit)
+          if (LeanGate.passed(audit)) {
+            ProofEditTransaction.markGateChecked({
               sessionID: session.id,
               file: proofEditTransactionStart.file,
               source: candidateSource,
@@ -1113,14 +1115,14 @@ export const TaskTool = Tool.define("task", async (ctx) => {
           // missing/broken auditor. Return operational failures immediately
           // to the parent instead of spending proof attempts on infrastructure.
           if (audit.status === "error") break
-          if (astAuditAttempts.length > maxRepairs) break
+          if (regionCheckAttempts.length > maxRepairs) break
           nextParts = await SessionPrompt.resolvePromptParts(
-            astAuditRepairPrompt(audit, astAuditAttempts.length, maxRepairs),
+            regionCheckRepairPrompt(audit, regionCheckAttempts.length, maxRepairs),
           )
         }
       } catch (error) {
         // Preserve compiler-certified and draft work if the child fails while
-        // formatting its response. With requireAstAudit enabled, an unaudited
+        // formatting its response. With requireGate enabled, an unaudited
         // compiler snapshot is handed back/recovered rather than committed.
         await ProofEditTransaction.finalize(session.id, proofEditTransactionFinalizeOptions)
         proofEditTransactionFinalized = true
@@ -1133,20 +1135,20 @@ export const TaskTool = Tool.define("task", async (ctx) => {
       // Extract structured proof result if present in subagent output
       const structured = extractProofResult(text)
       const proofResult = structured ? inspectProofResult(structured, lemmaRuntime, lemmaCurrentStep) : undefined
-      const finalAstAudit = astAuditAttempts.at(-1)
+      const finalGate = regionCheckAttempts.at(-1)
       const proofResultValidation = proofResult
-        ? finalAstAudit && !CoqAstAudit.passed(finalAstAudit)
+        ? finalGate && !LeanGate.passed(finalGate)
           ? {
               valid: false,
               errors: [
                 ...proofResult.validation.errors,
-                ...finalAstAudit.reasons.map((reason) => `AST audit [${reason.code}]: ${reason.message}`),
+                ...finalGate.reasons.map((reason) => `region check [${reason.code}]: ${reason.message}`),
               ],
             }
           : proofResult.validation
         : undefined
       const auditReview = contextAuditReview(proofResult, session.id)
-      const proofTrace = finalAstAudit && !CoqAstAudit.passed(finalAstAudit)
+      const proofTrace = finalGate && !LeanGate.passed(finalGate)
         ? undefined
         : proofResultTrace({
             parentSessionID: ctx.sessionID,
@@ -1190,14 +1192,14 @@ export const TaskTool = Tool.define("task", async (ctx) => {
               "</proof_result_validation_error>",
             ].join("\n")
           : ""
-      const astAuditBlock =
-        finalAstAudit && !CoqAstAudit.passed(finalAstAudit)
+      const regionCheckBlock =
+        finalGate && !LeanGate.passed(finalGate)
           ? [
               "",
-              "<ast_audit_rejection>",
-              ...CoqAstAudit.formatReasons(finalAstAudit),
-              "The same subagent exhausted its automatic AST-audit repair attempts; the staged revision was handed back to the parent for repair or explicit redispatch.",
-              "</ast_audit_rejection>",
+              "<region_check_rejection>",
+              ...LeanGate.formatReasons(finalGate),
+              "The same subagent exhausted its automatic region-check repair attempts; the staged revision was handed back to the parent for repair or explicit redispatch.",
+              "</region_check_rejection>",
             ].join("\n")
           : ""
 
@@ -1208,7 +1210,7 @@ export const TaskTool = Tool.define("task", async (ctx) => {
         text,
         "</task_result>",
         validationBlock,
-        astAuditBlock,
+        regionCheckBlock,
       ].join("\n")
 
       return {
@@ -1230,7 +1232,7 @@ export const TaskTool = Tool.define("task", async (ctx) => {
           ...(proofTrace ? { proof_result_trace: proofTrace } : {}),
           ...(proofEditTransactionStart ? { proof_edit_transaction_start: proofEditTransactionStart } : {}),
           ...(proofEditTransaction ? { proof_edit_transaction: proofEditTransaction } : {}),
-          ...(finalAstAudit ? { ast_audit: finalAstAudit, ast_audit_attempts: astAuditAttempts.length } : {}),
+          ...(finalGate ? { region_check: finalGate, region_check_attempts: regionCheckAttempts.length } : {}),
           ...(fixer ? { fixer } : {}),
           ...(diagnosis ? { diagnosis } : {}),
         },
