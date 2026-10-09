@@ -170,6 +170,8 @@ replacements must pass.
 | V6 | D2 (`coq-check` → `lean-check-file` or merge) | prefer merging | the custom tool `.opencode/tool/coq-check.ts` was deleted; `lean_check` covers it. | 2 |
 | V7 | `lean_session-equivalence.md` (backstop `expr.echo` fails on holes) | `expr.echo` rejects a hole | it does not (returns a metavariable); the `have _probe` probe does. Token scanner = primary rule. BACKEND_DECISION *Spike results* 5. | 1 |
 | V8 | gate test expectation | `native_decide` shows as `Lean.ofReduceBool` | Lean 4.33 adds an auxiliary axiom `<decl>._native.native_decide.ax_…`; both the gate and `check.py` reject it as non-standard. | 1 |
+| V10 | BACKEND_DECISION (Pantograph commands) | `env.catalog {}` returns the names | in 0.3.19 `env.catalog` takes a required `filename` and writes one name per line to it (the README example is outdated); the JSON decoder also requires fields that have defaults (`frontend.process` needs `newConstants`, `env.catalog` needs `invertFilter`). The client passes all of them. | 4 |
+| V11 | coqtop note (`state`, `eval` commands) | port them | `lean_query` has `check`, `print`, `search` only: goals come from `lean_session`, and `#eval` is forbidden by D4. | 4 |
 | V9 | gate (D4) | — | the gate returns `disabled` (`GATE_NOT_LEAN`) for non-`.lean` files instead of judging them (two task tests with Rocq fixtures regressed otherwise; the fixtures are ported in Phase 5). | 3 |
 
 **Packaging bug found (needs a user decision):** 19 of the 22 `proof.tex` files of `Deliverables/lean-prosa-v06` have
@@ -238,3 +240,23 @@ K1's general-case rule lets the gate accept package imports. For those tasks the
   rules incl. K1 imports, reason mapping, axioms parsing) and 3 integration tests on the built package (PC): **14/14
   pass**. Integration found one bug (the probe re-declared `universe u v`; now fresh universe names). `task.test.ts`
   13/13 on the PC after V9.
+
+### Phase 4 — Lean tools on Pantograph (PC)
+
+- `tool/pantograph.ts`: REPL client — one process per (project, import list), started as `lake env <repl> <imports>`,
+  serialised requests, wall-clock timeout with kill and restart, RSS watchdog (default 12 GB), error classes
+  (`command` vs `backend`; backend errors are tool errors, free under D5), generation counter that invalidates old
+  state handles.
+- `lean_session` rewritten (see commit message): states from the staged file (header stripped, regions masked to
+  `(by sorry)`, text cut after the target), region goal found among the `distil` goals and confirmed with `show`,
+  own-goal tracking by name, snapshot/undo by handle, re-open + replay on a source change or restart, expected goal
+  by definitional equality, `inspect` by `rfl`, forbidden tactics refused. `LeanEquivalence.equivalentClosed` is the
+  D10 service for closed statements.
+- `lean_query`: `#check`/`#print` through `frontend.process` on the file up to the target (the file's `open`s apply —
+  `Lemma3_05_statement` resolves by its short name), name `search` over the environment catalog (V10, V11).
+- `lean_check` and `checkpoint`: the compile step is now `LeanProject.compile` (rebuild imported helper modules,
+  then `lake env lean` on a hidden sibling copy of the staged source); workflow hooks unchanged (their Rocq-oriented
+  classifiers are Phase 5: e.g. `has_unfinished_proof` and the final-theorem preview do not yet understand Lean).
+- Tool descriptions (`lean-session.txt`, `lean-query.txt`, `lean-check.txt`, `checkpoint.txt`) rewritten for Lean.
+- Tests on the PC (built package): lean-tools.integration 2, lean-session 8, lean-gate 14, lean-region 6,
+  lean-term 5 = **35/35 pass**.

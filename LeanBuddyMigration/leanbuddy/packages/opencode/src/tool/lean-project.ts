@@ -104,6 +104,67 @@ export namespace LeanProject {
     return out
   }
 
+  export type CompileResult = {
+    ok: boolean
+    errors: Diagnostic[]
+    warnings: Diagnostic[]
+    /** `declaration uses 'sorry'` warnings (unfinished proofs). */
+    sorries: Diagnostic[]
+    timedOut: boolean
+    aborted: boolean
+    outputLimitExceeded: boolean
+    /** Helper modules that had to be rebuilt first, and that build's failure output if any. */
+    helpers: string[]
+    helperFailure?: string
+    output: string
+  }
+
+  /**
+   * Check `source` as the content of `file` (the staged revision; the disk file is never touched): first `lake build`
+   * the project modules it imports that live next to it under `CaseStudies/` (helper modules the agent may write; a
+   * no-op when up to date), then `lake env lean` on a temporary sibling copy.
+   */
+  export async function compile(file: string, source: string, options: ProcessOptions = {}): Promise<CompileResult> {
+    const root = findRoot(file)
+    if (!root) throw new Error(`no Lake project contains ${file}`)
+    const own = moduleName(root, file)
+    const helpers = [...source.matchAll(/^import\s+(CaseStudies\.[^\s]+)/gm)]
+      .map((m) => m[1])
+      .filter((m) => m !== own && !/\.Statement$/.test(m) && Filesystem.stat(moduleFile(root, m)))
+    const empty = { errors: [], warnings: [], sorries: [], timedOut: false, aborted: false, outputLimitExceeded: false }
+    if (helpers.length) {
+      const built = await build(root, helpers, options)
+      if (failed(built)) {
+        const output = (built.stdout + "\n" + built.stderr).trim()
+        return {
+          ...empty,
+          ok: false,
+          errors: parseDiagnostics(output).filter((d) => d.severity === "error"),
+          timedOut: built.timedOut,
+          aborted: built.aborted,
+          outputLimitExceeded: built.outputLimitExceeded,
+          helpers,
+          helperFailure: output.slice(-4000),
+          output,
+        }
+      }
+    }
+    const { result, diagnostics } = await checkSource(root, file, source, options)
+    const errors = diagnostics.filter((d) => d.severity === "error")
+    const warnings = diagnostics.filter((d) => d.severity === "warning")
+    return {
+      ok: !failed(result) && errors.length === 0,
+      errors,
+      warnings,
+      sorries: warnings.filter((d) => /declaration uses [`']sorry[`']/.test(d.message)),
+      timedOut: result.timedOut,
+      aborted: result.aborted,
+      outputLimitExceeded: result.outputLimitExceeded,
+      helpers,
+      output: (result.stdout + "\n" + result.stderr).trim(),
+    }
+  }
+
   export function failed(result: ProcessResult) {
     return result.exit !== 0 || result.timedOut || result.aborted || result.outputLimitExceeded
   }

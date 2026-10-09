@@ -4,33 +4,22 @@ import DESCRIPTION from "./lean-check.txt"
 import { Instance } from "../project/instance"
 import path from "path"
 import { Filesystem } from "../util/filesystem"
-import * as CoqProject from "./coq-project"
-import { assertNoRewriteBangInCoqFile, assertNoIntuitionInCoqFile } from "./coq-style-guard"
 import { formatCoqSkillHints } from "./coq-skill-hints"
 import { SessionProofWorkflow } from "@/session/proof-workflow"
-import { parseCoqCompilerOutput } from "./coq-diagnostics"
 import { ProofEditTransaction } from "@/session/proof-edit-transaction"
 import { LeanGate } from "./lean-gate"
-
-const DEFAULT_TIMEOUT_MS = 120_000
-
-function coqcTimeoutMs() {
-  const raw = process.env.OPENCODE_COQC_TIMEOUT_MS
-  if (!raw) return DEFAULT_TIMEOUT_MS
-  const parsed = Number.parseInt(raw, 10)
-  return Number.isFinite(parsed) && parsed > 0 ? parsed : DEFAULT_TIMEOUT_MS
-}
+import { LeanProject } from "./lean-project"
 
 function formatMs(ms: number) {
   if (ms % 1000 === 0) return `${ms / 1000}s`
   return `${ms}ms`
 }
 
+/** `lean_check`: elaborate the staged revision of a `.lean` file with the project's Lean (DECISIONS D2). */
 export const LeanCheckTool = Tool.define("lean_check", {
   description: DESCRIPTION,
   parameters: z.object({
-    filePath: z.string().describe("Absolute path to the .v file to compile"),
-    flags: z.string().optional().describe("Extra coqc flags (e.g. '-Q dir Module'). Project flags from _CoqProject are auto-detected."),
+    filePath: z.string().describe("Path to the .lean file to check (its staged revision is checked)"),
   }),
   async execute(params, ctx): Promise<{ title: string; output: string; metadata: Record<string, any> }> {
     let filepath = params.filePath
@@ -42,17 +31,15 @@ export const LeanCheckTool = Tool.define("lean_check", {
       throw new Error(`File must be within workspace: ${Instance.directory}`)
     }
 
-    if (!filepath.endsWith(".v")) {
-      throw new Error("File must be a .v (Coq source) file")
+    if (!filepath.endsWith(".lean")) {
+      throw new Error("File must be a .lean (Lean source) file")
     }
 
     const stat = Filesystem.stat(filepath)
     if (!stat) throw new Error(`File not found: ${filepath}`)
 
     const stagedTransaction = ProofEditTransaction.isTarget(ctx.sessionID, filepath)
-    const coqcSource = await ProofEditTransaction.readSource(ctx.sessionID, filepath)
-    assertNoRewriteBangInCoqFile(filepath, coqcSource)
-    assertNoIntuitionInCoqFile(filepath, coqcSource)
+    const stagedSource = await ProofEditTransaction.readSource(ctx.sessionID, filepath)
 
     await ctx.ask({
       permission: "lean_check",
@@ -61,36 +48,14 @@ export const LeanCheckTool = Tool.define("lean_check", {
       metadata: { filepath },
     })
 
-    // Resolve and normalize _CoqProject/_RocqProject flags through the same
-    // helper used by scaffold and checkpoint validation.
-    const resolved = await CoqProject.resolve(filepath)
-
-    const extraFlags = params.flags ? params.flags.split(/\s+/).filter(Boolean) : []
-    let code: number
-    let stdout = ""
-    let stderr = ""
-    let timedOut = false
-    let aborted = false
-    let outputLimitExceeded = false
-    let stagedValidation: SessionProofWorkflow.ValidationResult | undefined
-    if (stagedTransaction) {
-      stagedValidation = await SessionProofWorkflow.Validation.prefix(filepath, coqcSource, extraFlags, {
-        signal: ctx.abort,
-      })
-      code = stagedValidation.ok ? 0 : 1
-      stderr = stagedValidation.message ?? ""
-    } else {
-      // Use rocq c for Rocq 9.0+, coqc for older versions
-      const args = [...CoqProject.coqcCmd(), ...resolved.flags, ...extraFlags, filepath]
-      const timeoutMs = coqcTimeoutMs()
-      const result = await CoqProject.runProcess(args, resolved.cwd, { timeoutMs, signal: ctx.abort })
-      code = result.exit
-      stdout = result.stdout
-      stderr = result.stderr
-      timedOut = result.timedOut
-      aborted = result.aborted
-      outputLimitExceeded = result.outputLimitExceeded
-    }
+    const timeoutMs = LeanProject.timeoutMs()
+    const compiled = await LeanProject.compile(filepath, stagedSource, { timeoutMs, signal: ctx.abort })
+    const code = compiled.ok ? 0 : 1
+    const stdout = compiled.output
+    const stderr = ""
+    const timedOut = compiled.timedOut
+    const aborted = compiled.aborted
+    const outputLimitExceeded = compiled.outputLimitExceeded
 
     const rel = path.relative(Instance.directory, filepath)
 
@@ -102,25 +67,25 @@ export const LeanCheckTool = Tool.define("lean_check", {
         .filter(Boolean)
         .join("\n")
       throw new Error(
-        [`coqc timed out after ${formatMs(coqcTimeoutMs())} while compiling ${rel}; process group was killed.`, partial]
+        [`lean_check timed out after ${formatMs(timeoutMs)} while checking ${rel}; process group was killed.`, partial]
           .filter(Boolean)
-          .join("\n") + formatCoqSkillHints(partial || "coqc timed out"),
+          .join("\n"),
       )
     }
-    if (aborted) throw new Error(`coqc was aborted while compiling ${rel}; process group was killed.`)
+    if (aborted) throw new Error(`lean_check was aborted while checking ${rel}; process group was killed.`)
     if (outputLimitExceeded) {
       throw new Error(
-        `coqc exceeded the ${CoqProject.subprocessMaxOutputBytes()} byte output limit while compiling ${rel}; process group was killed.`,
+        `lean_check exceeded the output limit while checking ${rel}; process group was killed.`,
       )
     }
 
     if (code === 0) {
-      const finalPreview = SessionProofWorkflow.previewFinalTheoremGate(ctx.sessionID, filepath, coqcSource)
+      const finalPreview = SessionProofWorkflow.previewFinalTheoremGate(ctx.sessionID, filepath, stagedSource)
       const finalGate = finalPreview.final_theorem_gate.ok
         ? await LeanGate.runForSession({
             sessionID: ctx.sessionID,
             file: filepath,
-            candidateSource: coqcSource,
+            candidateSource: stagedSource,
             theorem: finalPreview.theorem,
             stage: "final",
             signal: ctx.abort,
@@ -136,7 +101,7 @@ export const LeanCheckTool = Tool.define("lean_check", {
             finalPreview.theorem ? `theorem: ${finalPreview.theorem}` : undefined,
             "final_theorem_gate: the file checks, but the final gate failed (see the reason codes below)",
             ...LeanGate.formatReasons(finalGate),
-            "next_action: the main prover must repair the current staged proof revision and run coqc again; this revision was not marked committable and was not finalized",
+            "next_action: the main prover must repair the current staged proof revision and run lean_check again; this revision was not marked committable and was not finalized",
           ].filter((line): line is string => Boolean(line)).join("\n"),
           metadata: {
             status: "final_gate_rejected",
@@ -155,19 +120,19 @@ export const LeanCheckTool = Tool.define("lean_check", {
         ProofEditTransaction.markGateChecked({
           sessionID: ctx.sessionID,
           file: filepath,
-          source: coqcSource,
+          source: stagedSource,
         })
       }
       const lemmaPrefixValidation = await SessionProofWorkflow.recordLemmaPrefixValidation({
         sessionID: ctx.sessionID,
         agent: ctx.agent,
         file: filepath,
-        source: coqcSource,
+        source: stagedSource,
       })
       const proofRegionLifecycle = await SessionProofWorkflow.recordCompilerResult({
         sessionID: ctx.sessionID,
         file: filepath,
-        source: coqcSource,
+        source: stagedSource,
         validator: "lean_check",
         ok: true,
         validated_source_current: stagedTransaction,
@@ -175,11 +140,11 @@ export const LeanCheckTool = Tool.define("lean_check", {
       const proofStatus = SessionProofWorkflow.classifyCoqcSuccess(
         ctx.sessionID,
         filepath,
-        coqcSource,
+        stagedSource,
         proofRegionLifecycle,
       )
       const decompositionCheckpoint = SessionProofWorkflow.decompositionModeEnabled()
-        ? SessionProofWorkflow.classifyDecompositionCheckpoint(ctx.sessionID, filepath, coqcSource)
+        ? SessionProofWorkflow.classifyDecompositionCheckpoint(ctx.sessionID, filepath, stagedSource)
         : undefined
       const proofStatusMetadata: unknown = proofStatus
       const statusDetail: string = proofStatus.status_detail
@@ -187,7 +152,7 @@ export const LeanCheckTool = Tool.define("lean_check", {
         ? ProofEditTransaction.markAccepted({
             sessionID: ctx.sessionID,
             file: filepath,
-            source: coqcSource,
+            source: stagedSource,
             level: proofStatus.proof_progress.level === "structural" ? "structural" : "hard",
             receipt: proofStatus.proof_progress.receipt,
           })
@@ -196,7 +161,7 @@ export const LeanCheckTool = Tool.define("lean_check", {
           ? ProofEditTransaction.markCertifiedRecovery({
               sessionID: ctx.sessionID,
               file: filepath,
-              source: coqcSource,
+              source: stagedSource,
               level: proofStatus.proof_progress.level,
               receipt: proofStatus.proof_progress.receipt,
             })
@@ -204,7 +169,7 @@ export const LeanCheckTool = Tool.define("lean_check", {
           ? ProofEditTransaction.markDebug({
               sessionID: ctx.sessionID,
               file: filepath,
-              source: coqcSource,
+              source: stagedSource,
               receipt: proofStatus.proof_progress.receipt,
             })
           : ProofEditTransaction.active(ctx.sessionID)
@@ -218,7 +183,7 @@ export const LeanCheckTool = Tool.define("lean_check", {
           : "decomposition_incomplete"
         : "success"
       return {
-        title: `coqc ${rel}: ${decompositionCheckpoint ? toolStatus : statusDetail}`,
+        title: `lean_check ${rel}: ${decompositionCheckpoint ? toolStatus : statusDetail}`,
         output: [
           `status: ${toolStatus}`,
           decompositionCheckpoint ? "compile_status: success" : undefined,
@@ -252,9 +217,10 @@ export const LeanCheckTool = Tool.define("lean_check", {
             ? `decomposition_checkpoint: ${JSON.stringify(decompositionCheckpoint)}`
             : undefined,
           statusDetail === "compile_success_nonfinal" && !proofStatus.proof_progress.accepted
-            ? "next_action: this compile is not accepted proof progress; obtain a new proof_region compiler certificate or complete the final Qed proof"
+            ? "next_action: this check is not accepted proof progress; obtain a new proof_region certificate or complete the theorem without `sorry`"
             : undefined,
-          stdout.trim() ? `output:\n${stdout.trim()}` : undefined,
+          compiled.sorries.length ? `unfinished: ${compiled.sorries.length} declaration(s) use \`sorry\` (lines ${compiled.sorries.map((d) => d.line).join(", ")})` : undefined,
+          compiled.warnings.length > compiled.sorries.length ? `warnings: ${compiled.warnings.length - compiled.sorries.length}` : undefined,
         ].filter((line): line is string => Boolean(line)).join("\n"),
         metadata: {
           status: toolStatus,
@@ -278,20 +244,16 @@ export const LeanCheckTool = Tool.define("lean_check", {
       }
     }
 
-    const diagnostics = parseCoqCompilerOutput(stdout, stderr)
-    if (stagedValidation) {
-      diagnostics.firstError = {
-        severity: "error",
-        file: filepath,
-        line: stagedValidation.first_error_line,
-        message: stagedValidation.message ?? "staged Coq compilation failed",
-      }
-      diagnostics.errors = [diagnostics.firstError]
+    const firstError = compiled.errors[0]
+    const diagnostics = {
+      firstError: firstError ? { severity: "error", file: filepath, line: firstError.line, message: firstError.message } : undefined,
+      errors: compiled.errors.map((error) => ({ severity: "error", file: filepath, line: error.line, message: error.message })),
+      output: compiled.helperFailure ? `helper module build failed:\n${compiled.helperFailure}` : compiled.output.slice(-4000),
     }
     const proofRegionLifecycle = await SessionProofWorkflow.recordCompilerResult({
       sessionID: ctx.sessionID,
       file: filepath,
-      source: coqcSource,
+      source: stagedSource,
       validator: "lean_check",
       ok: false,
       first_error_file: diagnostics.firstError?.file,
@@ -299,7 +261,7 @@ export const LeanCheckTool = Tool.define("lean_check", {
       first_error_message: diagnostics.firstError?.message,
       validated_source_current: stagedTransaction,
     })
-    const proofStatus = SessionProofWorkflow.classifyCoqcFailure(ctx.sessionID, filepath, coqcSource, {
+    const proofStatus = SessionProofWorkflow.classifyCoqcFailure(ctx.sessionID, filepath, stagedSource, {
       first_error_line: diagnostics.firstError?.line,
       first_error_message: diagnostics.firstError?.message,
       lifecycle: proofRegionLifecycle,
@@ -309,7 +271,7 @@ export const LeanCheckTool = Tool.define("lean_check", {
       ? ProofEditTransaction.markCertifiedRecovery({
           sessionID: ctx.sessionID,
           file: filepath,
-          source: coqcSource,
+          source: stagedSource,
           level: proofStatus.proof_progress.level,
           receipt: proofStatus.proof_progress.receipt,
         })
@@ -317,7 +279,7 @@ export const LeanCheckTool = Tool.define("lean_check", {
         ? ProofEditTransaction.markDebug({
             sessionID: ctx.sessionID,
             file: filepath,
-            source: coqcSource,
+            source: stagedSource,
             receipt: proofStatus.proof_progress.receipt,
           })
         : ProofEditTransaction.active(ctx.sessionID)
@@ -325,7 +287,7 @@ export const LeanCheckTool = Tool.define("lean_check", {
       sessionID: ctx.sessionID,
       agent: ctx.agent,
       file: filepath,
-      source: coqcSource,
+      source: stagedSource,
     })
     const errors = diagnostics.errors.map((error) => ({ line: error.line ?? 0, message: error.message }))
 
@@ -334,7 +296,7 @@ export const LeanCheckTool = Tool.define("lean_check", {
       : diagnostics.output
 
     return {
-      title: `coqc ${rel}: ${lemmaPrefixValidation?.ok ? "lemma-prefix-ok" : "fail"}`,
+      title: `lean_check ${rel}: ${lemmaPrefixValidation?.ok ? "lemma-prefix-ok" : "fail"}`,
       output: [
         "status: fail",
         lemmaPrefixValidation?.ok
@@ -343,7 +305,7 @@ export const LeanCheckTool = Tool.define("lean_check", {
             ? `lemma_prefix_validation: fail - ${lemmaPrefixValidation.message ?? "prefix checkpoint failed"}`
             : undefined,
         lemmaPrefixValidation?.ok && lemmaPrefixValidation.prefix_complete
-          ? "next_action: advance to the next local proof hole toward completing the target theorem; keep later partition braces intact"
+          ? "next_action: advance to the next local proof hole toward completing the target theorem; keep later proof regions intact"
           : lemmaPrefixValidation
             ? "next_action: repair the current first proof block with an edit toward a compiling theorem proof; do not switch to broad read-only search or unrelated edits"
             : undefined,

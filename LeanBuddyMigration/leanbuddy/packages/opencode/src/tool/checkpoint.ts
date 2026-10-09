@@ -5,21 +5,14 @@ import { Instance } from "../project/instance"
 import path from "path"
 import { Filesystem } from "../util/filesystem"
 import { createHash } from "crypto"
-import * as CoqProject from "./coq-project"
 import type { CheckpointResult } from "./proof-schema"
 import { SessionProofWorkflow } from "@/session/proof-workflow"
-import { parseCoqCompilerOutput } from "./coq-diagnostics"
-import { assertNoRewriteBangInCoqFile, assertNoIntuitionInCoqFile } from "./coq-style-guard"
 import { ProofEditTransaction } from "@/session/proof-edit-transaction"
 import { LeanGate } from "./lean-gate"
-
-const DEFAULT_TIMEOUT_MS = 120_000
+import { LeanProject } from "./lean-project"
 
 function checkpointTimeoutMs() {
-  const raw = process.env.OPENCODE_COQC_TIMEOUT_MS
-  if (!raw) return DEFAULT_TIMEOUT_MS
-  const parsed = Number.parseInt(raw, 10)
-  return Number.isFinite(parsed) && parsed > 0 ? parsed : DEFAULT_TIMEOUT_MS
+  return LeanProject.timeoutMs()
 }
 
 function formatMs(ms: number) {
@@ -48,21 +41,18 @@ const ALLOWED_REASONS = ["node_completed", "bridge_lemma", "milestone"]
 export const CheckpointTool = Tool.define("checkpoint", {
   description: DESCRIPTION,
   parameters: z.object({
-    file: z.string().describe("Path to the .v file to compile"),
+    file: z.string().describe("Path to the .lean file to check (its staged revision is checked)"),
     reason: z.enum(["node_completed", "bridge_lemma", "milestone"]).describe("Why this checkpoint is being taken"),
-    flags: z.string().optional().describe("Extra compiler flags"),
   }),
   async execute(params, ctx): Promise<{ title: string; output: string; metadata: Record<string, any> }> {
     let filepath = params.file
     if (!path.isAbsolute(filepath)) filepath = path.resolve(Instance.directory, filepath)
     if (!Filesystem.contains(Instance.directory, filepath))
       throw new Error(`File must be within workspace: ${Instance.directory}`)
-    if (!filepath.endsWith(".v")) throw new Error("File must be a .v (Coq source) file")
+    if (!filepath.endsWith(".lean")) throw new Error("File must be a .lean (Lean source) file")
     if (!Filesystem.stat(filepath)) throw new Error(`File not found: ${filepath}`)
     const stagedTransaction = ProofEditTransaction.isTarget(ctx.sessionID, filepath)
     const compiledSource = await ProofEditTransaction.readSource(ctx.sessionID, filepath)
-    assertNoRewriteBangInCoqFile(filepath, compiledSource)
-    assertNoIntuitionInCoqFile(filepath, compiledSource)
 
     // Validate checkpoint reason
     if (!ALLOWED_REASONS.includes(params.reason))
@@ -75,34 +65,14 @@ export const CheckpointTool = Tool.define("checkpoint", {
       metadata: { checkpoint: true, reason: params.reason },
     })
 
-    // Auto-detect _CoqProject flags using shared helper
-    const resolved = await CoqProject.resolve(filepath)
-
-    const extraFlags = params.flags ? params.flags.split(/\s+/).filter(Boolean) : []
-    let code: number
-    let stdout = ""
-    let stderr = ""
-    let timedOut = false
-    let aborted = false
-    let outputLimitExceeded = false
-    let stagedValidation: SessionProofWorkflow.ValidationResult | undefined
-    if (stagedTransaction) {
-      stagedValidation = await SessionProofWorkflow.Validation.prefix(filepath, compiledSource, extraFlags, {
-        signal: ctx.abort,
-      })
-      code = stagedValidation.ok ? 0 : 1
-      stderr = stagedValidation.message ?? ""
-    } else {
-      const args = [...CoqProject.coqcCmd(), ...resolved.flags, ...extraFlags, filepath]
-      const timeoutMs = checkpointTimeoutMs()
-      const result = await CoqProject.runProcess(args, resolved.cwd, { timeoutMs, signal: ctx.abort })
-      code = result.exit
-      stdout = result.stdout
-      stderr = result.stderr
-      timedOut = result.timedOut
-      aborted = result.aborted
-      outputLimitExceeded = result.outputLimitExceeded
-    }
+    const compiled = await LeanProject.compile(filepath, compiledSource, { timeoutMs: checkpointTimeoutMs(), signal: ctx.abort })
+    const code = compiled.ok ? 0 : 1
+    const stdout = compiled.output
+    const stderr = compiled.output
+    const timedOut = compiled.timedOut
+    const aborted = compiled.aborted
+    const outputLimitExceeded = compiled.outputLimitExceeded
+    const stagedValidation = undefined as undefined | { first_error_line?: number; message?: string }
 
     const rel = path.relative(Instance.directory, filepath)
 
@@ -122,7 +92,7 @@ export const CheckpointTool = Tool.define("checkpoint", {
     if (aborted) throw new Error(`checkpoint was aborted while compiling ${rel}; process group was killed.`)
     if (outputLimitExceeded) {
       throw new Error(
-        `checkpoint exceeded the ${CoqProject.subprocessMaxOutputBytes()} byte output limit while compiling ${rel}; process group was killed.`,
+        `checkpoint exceeded the output limit while checking ${rel}; process group was killed.`,
       )
     }
 
@@ -226,7 +196,7 @@ export const CheckpointTool = Tool.define("checkpoint", {
       const warns = stderr.split("\n").filter((l: string) => l.includes("Warning")).map((l: string) => l.trim())
       const grouped: Record<string, number> = {}
       for (const w of warns) {
-        const cat = w.match(/Warning:\s*(\S+)/)?.[1] ?? "other"
+        const cat = /declaration uses [`']sorry[`']/.test(w) ? "sorry" : /unused/.test(w) ? "unused" : "other"
         grouped[cat] = (grouped[cat] ?? 0) + 1
       }
       const summary = Object.entries(grouped).map(([k, v]) => `${k}: ${v}`).join(", ")
@@ -304,8 +274,12 @@ export const CheckpointTool = Tool.define("checkpoint", {
       }
     }
 
-    const diagnostics = parseCoqCompilerOutput(stdout, stderr)
-    const lines = stderr.split("\n")
+    const leanFirst = compiled.errors[0]
+    const diagnostics = {
+      firstError: leanFirst ? { file: filepath, line: leanFirst.line, message: leanFirst.message } : undefined,
+      output: compiled.helperFailure ? `helper module build failed:\n${compiled.helperFailure}` : compiled.output.slice(-4000),
+    }
+    const lines = compiled.warnings.map((w) => `Warning: ${w.message.split("\n")[0]}`)
     const firstFile = stagedValidation ? filepath : (diagnostics.firstError?.file ?? null)
     const firstLine = stagedValidation?.first_error_line ?? diagnostics.firstError?.line ?? null
     const firstMsg = stagedValidation?.message ?? diagnostics.firstError?.message ?? null
@@ -314,7 +288,7 @@ export const CheckpointTool = Tool.define("checkpoint", {
     const warns = lines.filter((l: string) => l.includes("Warning")).map((l: string) => l.trim())
     const grouped: Record<string, number> = {}
     for (const w of warns) {
-      const cat = w.match(/Warning:\s*(\S+)/)?.[1] ?? "other"
+      const cat = /declaration uses [`']sorry[`']/.test(w) ? "sorry" : /unused/.test(w) ? "unused" : "other"
       grouped[cat] = (grouped[cat] ?? 0) + 1
     }
     const warnSummary = Object.entries(grouped).map(([k, v]) => `${k}: ${v}`)
