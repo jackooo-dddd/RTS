@@ -9,7 +9,7 @@
 3. 执行与语言服务工具：shell 命令、LSP 查询。
 4. Web 与外部知识工具：抓网页、网页搜索、代码/API 文档搜索。
 5. 会话编排工具：子代理、并行工具调用、技能加载、todo、提问、计划模式切换。
-6. Coq/Rocq 证明工具：编译、coqtop 查询、交互式 proof session、Petanque、checkpoint、proof plan 抽取。
+6. Lean 证明工具：`lean_check` 检查、`lean_query` 查询、`lean_session` 交互式证明（Pantograph）、checkpoint 与 final gate、proof plan。
 7. 描述文件：同名 `.txt` 大多是工具描述 prompt，被对应 `.ts` 文件 import。
 
 ## 核心框架
@@ -42,12 +42,12 @@
 | `edit` | [edit.ts](edit.ts) | 单文件字符串替换。会做 FileTime 防覆盖检查、权限确认、diff 元数据、LSP diagnostics，并内置多种 fallback 匹配策略。 |
 | `multiedit` | [multiedit.ts](multiedit.ts) | 对同一个文件顺序执行多个 `edit`。内部直接初始化并调用 `EditTool`。 |
 | `write` | [write.ts](write.ts) | 完整写入文件。会生成 diff、请求 edit 权限、发布文件事件、触发 LSP diagnostics。 |
-| `bash` | [bash.ts](bash.ts) | 运行 shell 命令。会用 tree-sitter 解析命令、请求 bash/外部目录权限、合并 stdout/stderr、支持 timeout 和 abort。禁止用 bash 直接跑 Coq/Rocq 编译器或 proof shell。 |
+| `bash` | [bash.ts](bash.ts) | 运行 shell 命令。会用 tree-sitter 解析命令、请求 bash/外部目录权限、合并 stdout/stderr、支持 timeout 和 abort。禁止用 bash 直接跑 `lean`/`lake build`/`lake env` 等 Lean 命令。 |
 | `task` | [task.ts](task.ts) | 创建或恢复子代理任务。对 prover/lemma 证明工作流有专门门禁和 structured result 校验。 |
 | `todowrite` | [todo.ts](todo.ts) | 写入当前 session 的 todo list。 |
 | `todoread` | [todo.ts](todo.ts) | 读取当前 session 的 todo list。 |
 | `list` | [ls.ts](ls.ts) | 列出目录树。基于 ripgrep 文件扫描，默认忽略 `node_modules`、`.git`、`dist`、`.venv` 等目录，限制 100 个文件。 |
-| `lsp` | [lsp.ts](lsp.ts) | 调用 LSP 能力：定义、引用、hover、symbols、call hierarchy、implementation、Rocq/Coq proof goals。 |
+| `lsp` | [lsp.ts](lsp.ts) | 调用 LSP 能力：定义、引用、hover、symbols、call hierarchy、implementation。Lean 文件由项目的 Lean server（`lake serve`）处理；没有 goal 操作（DECISIONS D3）。 |
 | `plan_exit` | [plan.ts](plan.ts) | 计划完成后询问用户是否切换到 build agent，并插入 synthetic user message。 |
 | `question` | [question.ts](question.ts) | 向用户提问并把答案返回给模型。 |
 | `webfetch` | [webfetch.ts](webfetch.ts) | 获取 URL 内容，支持 text/markdown/html，HTML 可转 markdown/text，图片作为 attachment 返回。 |
@@ -56,12 +56,11 @@
 | `batch` | [batch.ts](batch.ts) | 并行执行多个已注册工具调用。最多 25 个，不允许嵌套 `batch`，不能 batch 外部 MCP/environment 工具。 |
 | `skill` | [skill.ts](skill.ts) | 加载可用 skill 的完整说明，并抽样列出 skill 目录内文件。会按 agent 权限过滤 skill。 |
 | `apply_patch` | [apply_patch.ts](apply_patch.ts) | 应用 opencode 自定义 patch 格式，支持 add/update/delete/move，多文件统一权限请求、文件事件、LSP diagnostics。 |
-| `coqc` | [coqc.ts](coqc.ts) | 编译 `.v` 文件。自动读取 `_CoqProject`/`_RocqProject` flags，Rocq 环境优先用 `rocq c`，默认 120s 超时。 |
-| `coqtop` | [coqtop.ts](coqtop.ts) | 用 `coqtop`/`rocq top` 执行 `check/search/print/state/eval`，支持 context 和 project flags。 |
-| `proof_plan` | [proof-plan.ts](proof-plan.ts) | 把自然语言 proof text 粗略抽取成 `ProofPlanStep[]`，供 theorem-level 分解使用。 |
-| `coq_session` | [coq-session.ts](coq-session.ts) | 基于 coqtop batch 重放的交互式证明 session。支持 open/step/goal/snapshot/undo/close/status。 |
-| `checkpoint` | [checkpoint.ts](checkpoint.ts) | checkpoint-only 编译检查。要求 reason 是 `node_completed`、`bridge_lemma` 或 `milestone`，并判断错误是否和上次相同。 |
-| `petanque` | [petanque.ts](petanque.ts) | 通过 rocq-lsp Petanque API 做增量 proof step，比 `coq_session` 更接近 LSP 服务器状态。 |
+| `lean_check` | [lean-check.ts](lean-check.ts) | 用 `lake env lean --json` 检查 staged 的目标文件（先重建被 import 的 helper 模块）；目标定理完整时同时跑 final gate。 |
+| `lean_query` | [lean-query.ts](lean-query.ts) | `#check`/`#print`（Pantograph `frontend.process`，文件前缀环境）和声明名 `search`（`env.catalog`）。 |
+| `proof_plan` | [proof-plan.ts](proof-plan.ts) | 审查结构化 proof DAG；接受后锁定，只能用 action `amend` 加 bridge 节点（最多 3 次，DECISIONS D9）。 |
+| `lean_session` | [lean-session.ts](lean-session.ts) | 基于 Pantograph 的交互式证明 session：open/step/goal/inspect/snapshot/undo/close/status。 |
+| `checkpoint` | [checkpoint.ts](checkpoint.ts) | checkpoint-only 检查 staged 源码，并在定理完整时跑 final gate。 |
 
 注意：[plan.ts](plan.ts) 里还有 `PlanEnterTool` 的代码，但目前整段被注释，且没有在 [registry.ts](registry.ts) 注册；实际可用的是 `plan_exit`。
 
@@ -90,7 +89,7 @@
 - `write` 是完整写入。适合新文件或重写整个文件。
 - `apply_patch` 是多文件结构化 patch。它先解析 hunk，推导所有新内容，统一请求一次权限，再实际写入/删除/移动文件。
 
-所有会写 `.v` 文件的工具都会调用 [coq-style-guard.ts](coq-style-guard.ts)，拒绝 ssreflect repeat-rewrite 形式 `rewrite !...` 和 `rewrite -!...`。
+写 `.lean` 文件后，edit/write/apply_patch 的结果附带 Lean diagnostics；有错误时附加 [lean-skill-hints.ts](lean-skill-hints.ts) 给出的可选 skill 提示。
 
 ## Bash 工具
 
@@ -103,7 +102,7 @@
 - stdout/stderr 合并采集，同时把最多 30,000 字符的输出写进 metadata 供 UI 实时显示。
 - timeout 默认来自 `OPENCODE_EXPERIMENTAL_BASH_DEFAULT_TIMEOUT_MS`，否则是 2 分钟；超时或 abort 会杀进程树。
 
-特别重要：它会拒绝直接或包装后的 `coqc`、`coqtop`、`rocq c`，包括 `timeout ... coqc`、`bash -c "coqc ..."` 这类形式。Coq/Rocq 必须用专用工具，这样才能强制超时、进程清理和 proof trace 约束。
+特别重要：它会拒绝直接或包装后的 `lean`、`lake build`、`lake env`、`lake exe`、`lake serve`、`lake update`。Lean 必须用专用工具（`lean_check`、`lean_query`、`lean_session`、`checkpoint`），这样才能保证 staging、超时、进程清理和 final gate。
 
 ## LSP 工具
 
@@ -118,9 +117,8 @@
 - `prepareCallHierarchy`
 - `incomingCalls`
 - `outgoingCalls`
-- `proofGoals`
 
-调用前会确认文件存在、对应语言有 LSP client，并 touch 文件。`proofGoals` 还会更新 `ProofContext` 和 `SessionProof`，把当前 Coq/Rocq proof 位置绑定到会话里。
+调用前会确认文件存在、对应语言有 LSP client，并 touch 文件。Lean 的 goal 状态来自 `lean_session`（Pantograph），不来自 LSP。
 
 ## Web 与外部知识工具
 
@@ -149,7 +147,7 @@
 - fresh `lemma` task 必须带完整 `lemma_assignment`：`file`、`theorem`、`admit_id`、`goal`、`replace`、`skeleton`、`done`；`admit_id` 用来定位整个 proof_region，替换单位也是整个 region。region 应包住导出的 local target 命题声明和完整 `{ ... }` 证明块，而不是只包住大括号内部；但该 target 命题声明是 prover 拆分出的子目标契约，lemma 应尽量保留，只在 proof body、注释和 same-region helper 上写东西，目标形状错了再 escalate/remodel。
 - fresh `lemma` task 必须严格按 proof_region 文件顺序调度：当前第一个未 solved 的 region 是唯一可启动对象；前面的 region 只要还是 pending、running、split 或 escalated，就会阻塞后面的 region。
 - `prover` 调 fresh `lemma` 前，如果附近有 `proof.tex`，必须已经读过它。
-- `prover` 必须先用 `proof_plan` 或把 theorem-level skeleton 写进目标 `.v` 文件，让 gap 显式化。
+- `prover` 必须先用 `proof_plan` 或把 theorem-level skeleton 写进目标 `.lean` 文件，让 gap 显式化。
 - 同一个 assistant turn 只允许启动一个 fresh lemma task。
 - `lemma` 可以在自己的 proof_region 所有权内选择直证、添加 same-region helper，或拆成更小的 child obligations；它不能再调用新的 `lemma` subagent，`split` 只表示同一个 lemma session 后续按 DFS/LIFO 继续。
 - lemma 输出若包含 `<proof_result>...</proof_result>`，会按 `solved | split | escalate` schema 校验，并把 normalized result、validation 和 summary 放进 metadata。
@@ -170,94 +168,49 @@
 - `question` 调 UI 询问用户，返回用户答案。
 - `plan_exit` 用于 plan agent 完成计划后询问是否切到 build agent；用户同意后写 synthetic user message。
 
-## Coq/Rocq 工具链
+## Lean 工具链
 
-这个目录里 Coq/Rocq 相关代码很多，因为当前 opencode 分支把证明工作流当作一等能力处理。
+后端分工（BACKEND_DECISION）：Pantograph 负责交互式证明状态，Lean LSP（`lake serve`）负责 diagnostics 和只读查询，`lake build` + `#print axioms` 负责最终验证。
 
 ### 公共辅助模块
 
 | 文件 | 作用 |
 | --- | --- |
-| [coq-project.ts](coq-project.ts) | 自动检测 `_RocqProject` 或 `_CoqProject`，解析 flags，判断是否有 `rocq` binary，并在 `coqc/coqtop/coq_session` 中复用。 |
-| [proof-schema.ts](proof-schema.ts) | 定义 `ProofPlanStep`、`EnvFeedback`、`TacticRecord`、`CoqProjectContext`、`SessionSummary`、`CoqSessionState`、`CheckpointResult` 等结构。 |
-| [coq-style-guard.ts](coq-style-guard.ts) | 用一个正则拒绝 `rewrite !...` 和 `rewrite -!...` 这类 repeat-rewrite。写文件、patch、coqc、coqtop state/eval、coq_session step、petanque run 都会用到。 |
+| [lean-project.ts](lean-project.ts) | 找 Lake 根目录、模块名，`lake env lean --json` 检查（staged 源码写到隐藏的兄弟文件），`lake build`，解析 JSON diagnostics。 |
+| [lean-source.ts](lean-source.ts) | 与 `benchmark/check.py` 一致的 forbidden token 列表、注释剥离、文件头与声明解析、允许的 axiom 列表。 |
+| [lean-gate.ts](lean-gate.ts) | proof-integrity gate（DECISIONS D4）：submission 阶段（statement 和 region 外文本不变、无 forbidden token、region 能 elaborate）和 final 阶段（frozen statement、`lake build`、`#print axioms`）。 |
+| [pantograph.ts](pantograph.ts) | Pantograph REPL 客户端：每个（项目, import 列表）一个进程，串行请求，超时、RSS 上限，命令错误与后端错误分开。 |
+| [lean-region.ts](lean-region.ts) | `proof_region` 标记与 `have h : P := (by … )` 包装的解析（真正的括号匹配）、把 region 证明替换成 `sorry`。 |
+| [lean-term.ts](lean-term.ts) | token 级扫描，拒绝 hole 和不完整的表达式。 |
+| [lean-statement-check.ts](lean-statement-check.ts) | 用 elaboration（`Iff.rfl` 探针）比较 root goal、region target 与 plan 的 `normal_form`（DECISIONS D10，K6/K7）。 |
+| [lean-skill-hints.ts](lean-skill-hints.ts) | 把 Lean diagnostics 映射到 `.opencode/skill/` 下的 skill 名。 |
+| [proof-premise-audit.ts](proof-premise-audit.ts) | 候选引理审查：`#check @C`，以及在定理上下文中 `apply C` 后 trace 剩余前提。 |
+| [proof-schema.ts](proof-schema.ts) | `ProofPlanStep`、`ProofPlanAmendment`、`EnvFeedback`、`SessionSummary`、`CheckpointResult` 等 schema。 |
+| [../util/bounded-process.ts](../util/bounded-process.ts) | 有界子进程：独立进程组、超时、输出上限、abort。 |
 
-### `coqc`
+### `lean_check`、`checkpoint`
 
-[coqc.ts](coqc.ts) 编译单个 `.v` 文件：
+两者都检查当前 staged revision（不是磁盘上较旧的文件）。结果绑定到 source hash，记录 region 证书（region 内无 `sorry` 且无错误即认证），并给出 `lemma_prefix_validation`。目标定理中没有 `sorry` 时会跑 final gate，`status: final_gate_rejected` 表示被拒绝。
 
-- 文件必须在 workspace 内，并且后缀是 `.v`。
-- 编译前读取文件并跑 `coq-style-guard`。
-- 向上查找 `_RocqProject`/`_CoqProject`，自动带上 flags。
-- 如果系统有 `rocq`，用 `rocq c`；否则用 `coqc`。
-- 非 Windows 下通过 `setsid` 启动，超时后先 `SIGTERM`，再 `SIGKILL`。
-- 默认超时 120 秒，可用 `OPENCODE_COQC_TIMEOUT_MS` 覆盖。
-- 失败时解析 `File "...", line N` 格式，输出第一批错误摘要和 metadata errors。
+### `lean_session`
 
-### `coqtop`
+从 staged 源码打开 region 或定理的 goal state（`frontend.distil`，去掉文件头、region 证明替换为 `sorry`），逐条运行 tactic，snapshot/undo，`inspect` 用 `rfl` 检查定义等价。源码变化或进程重启后会重新打开并重放 tactic；对不上时报告 `session_state_desync`。
 
-[coqtop.ts](coqtop.ts) 用 batch 模式查询 Coq/Rocq：
+### `lean_query`
 
-- `check` 生成 `Check input.`
-- `search` 生成 `Search input.`
-- `print` 生成 `Print input.`
-- `state` 会执行 input 再 `Show.`
-- `eval` 原样执行 input。
-
-它会把 context 和命令写入临时 `.v` 文件，再用 `-l` 加载，最后清理临时文件。`state/eval` 会拒绝 repeat-rewrite。
-
-### `coq_session`
-
-[coq-session.ts](coq-session.ts) 是内存中的 proof session，key 是 `ctx.sessionID`。它不是常驻 coqtop 进程，而是每次用已成功 tactic history 重建脚本，再 batch 执行新 tactic 或 `Show.`。
-
-支持操作：
-
-- `open`：从文件中定位 theorem/lemma/proposition/corollary，截取到 `Proof.` 或声明结束，解析 section context，初始化目标和假设。
-- `step`：执行一个 tactic。限制最多 3 个 tactic sentence，成功则更新 focused goal，失败则记录 error class。
-- `goal`：重新查询当前 goal。
-- `snapshot`：保存当前 tactic index、goal、hyps、summary。
-- `undo`：回滚到指定 snapshot。
-- `status`：查看 session 摘要。
-- `close`：删除内存 session。
-
-反馈会被粗分为：`proof_progress`、`environment_problem`、`syntax_or_engine_problem`。
-
-### `petanque`
-
-[petanque.ts](petanque.ts) 走 rocq-lsp 的 Petanque API，更适合增量证明探索：
-
-- `start`：按 theorem 名称或文件 position 启动 proof state。
-- `run`：在当前 state 执行 tactic，成功后更新 server state 并查询 goals。
-- `goals`：读取当前 goals。
-- `close`：清除当前 session 的本地记录。
-
-它维护 `state` 和 history，但当前工具接口没有单独暴露 rollback 操作。
-
-### `checkpoint`
-
-[checkpoint.ts](checkpoint.ts) 是 checkpoint-only 编译检查：
-
-- reason 只能是 `node_completed`、`bridge_lemma`、`milestone`。
-- 成功时汇总 warnings。
-- 失败时提取 first error file/line/message。
-- 对同一 session+file 计算错误 hash，若连续 checkpoint 得到同一错误，会标记 `same_as_previous`。
-
-实现上它复用了 project flags 解析，但当前命令数组直接从 `coqc` 开始，而不是像 `coqc.ts` 那样通过 `CoqProject.coqcCmd()` 自动选择 `rocq c`。
+`check`/`print` 在文件前缀的环境里运行 `#check`/`#print`；`search` 搜索环境中的声明名。
 
 ### `proof_plan`
 
-[proof-plan.ts](proof-plan.ts) 是 proof text 到 Coq proof DAG 的规划工具。它按 markdown header、`Step N`、`Lemma`、`Theorem`、`Claim`、编号行等识别纸面步骤，但输出的是 `ProofPlan` 对象而不是裸 step 数组：`nodes`、`edges`、`ready_nodes` 和 `planner_contract`。
-
-每个 DAG node 包含 `kind`、`depends_on`、`source`、`input`、`output`、`layer`、`expected`、`target_normal_form`、`prosa_candidate_lemmas`、`mathcomp_candidate_lemmas` 和 `target` shape review。`prover` 需要把选中的 node materialize 到 `proof_region` marker 上，至少包括 `plan_node`、`depends_on`、`source`、`input`、`output`、`layer`、`expected`、`normal_form` 和 `evidence`，否则 workflow locality gate 不会派发给 `lemma`。
+审查结构化 DAG（节点、依赖、候选引理的角色与前提审查、`normal_form` 必须是 Lean 命题）。接受后计划锁定；只有 action `amend` 能在升级的 region 之前加一个 bridge 节点，最多接受 3 次，被拒绝的 amendment 不计数（DECISIONS D9）。
 
 ## `.txt` 描述文件
 
-多数 `.txt` 文件是工具描述 prompt，例如 [read.txt](read.txt)、[bash.txt](bash.txt)、[task.txt](task.txt)、[coqc.txt](coqc.txt)。它们会被对应 `.ts` import，然后作为 tool description 暴露给模型。
+多数 `.txt` 文件是工具描述 prompt，例如 [read.txt](read.txt)、[bash.txt](bash.txt)、[task.txt](task.txt)、[lean-check.txt](lean-check.txt)。它们会被对应 `.ts` import，然后作为 tool description 暴露给模型。
 
 有几点需要注意：
 
 - [plan-enter.txt](plan-enter.txt) 存在，但 `PlanEnterTool` 目前被注释掉，所以它不是活跃工具描述。
-- `petanque` 的 description 直接写在 [petanque.ts](petanque.ts) 里，没有单独 `petanque.txt`。
 - `invalid` 和 `todoread` 的 description 也是代码里内联。
 
 ## 新增工具时的惯例
@@ -271,4 +224,4 @@
 5. 涉及敏感动作时先 `ctx.ask()` 请求对应权限。
 6. 涉及文件写入时发布 `File.Event.Edited` 和 `FileWatcher.Event.Updated`，并 touch LSP 收集 diagnostics。
 7. 输出可能很大时依赖 `Tool.define()` 的自动截断，或自己在 metadata 中显式设置 `truncated`。
-8. 若会写 `.v` 或执行 Coq tactic，应调用 [coq-style-guard.ts](coq-style-guard.ts)，保持证明风格约束一致。
+8. 若会写 `.lean` 证明文件，应经过 proof edit transaction，并让 checkpoint/`lean_check` 检查 staged revision。

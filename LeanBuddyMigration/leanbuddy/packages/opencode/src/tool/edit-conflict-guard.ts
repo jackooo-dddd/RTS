@@ -1,6 +1,7 @@
 import path from "path"
 import { createHash } from "crypto"
 import { Instance } from "../project/instance"
+import { LeanProofSource } from "../session/lean-proof-source"
 
 type Conflict = {
   count: number
@@ -23,15 +24,11 @@ function hash(source: string) {
   return createHash("sha256").update(source).digest("hex")
 }
 
+/** The current text around the last theorem's proof (from its declaration line), or the file's last 80 lines. */
 function proofExcerpt(source: string) {
   const lines = source.split(/\r?\n/)
-  let start = -1
-  for (let index = lines.length - 1; index >= 0; index--) {
-    if (lines[index]?.trim() === "Proof.") {
-      start = index
-      break
-    }
-  }
+  const span = LeanProofSource.theoremSpans(source).filter((entry) => entry.proofStart !== undefined).at(-1)
+  let start = span ? source.slice(0, span.start).split(/\r?\n/).length - 1 : -1
   if (start < 0) start = Math.max(0, lines.length - 80)
   const selected = lines.slice(start, Math.min(lines.length, start + 100))
   const excerpt = selected.map((line, index) => `${start + index + 1}: ${line}`).join("\n")

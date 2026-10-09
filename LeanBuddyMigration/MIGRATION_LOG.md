@@ -45,118 +45,118 @@ replacements must pass.
 
 | # | Note | Status | Phase | Commit / remark |
 |---|---|---|---|---|
-| 1 | [BACKEND_DECISION.md](migration-suggestions/BACKEND_DECISION.md) | todo | 1, 4 | |
-| 2 | [gap-revisions/01-prompt.ts-revision.md](migration-suggestions/gap-revisions/01-prompt.ts-revision.md) | todo | 3–8 | |
-| 3 | [gap-revisions/02-system-prompts/coqprover.txt-revision.md](migration-suggestions/gap-revisions/02-system-prompts/coqprover.txt-revision.md) | todo | 3–8 | |
-| 4 | [gap-revisions/02-system-prompts/proof-workflow-principles.txt-revision.md](migration-suggestions/gap-revisions/02-system-prompts/proof-workflow-principles.txt-revision.md) | todo | 3–8 | |
-| 5 | [gap-revisions/02-system-prompts/system.ts-revision.md](migration-suggestions/gap-revisions/02-system-prompts/system.ts-revision.md) | todo | 3–8 | |
-| 6 | [gap-revisions/03-small-source-files/agent.ts-revision.md](migration-suggestions/gap-revisions/03-small-source-files/agent.ts-revision.md) | todo | 3–8 | |
-| 7 | [gap-revisions/03-small-source-files/compaction.ts-revision.md](migration-suggestions/gap-revisions/03-small-source-files/compaction.ts-revision.md) | todo | 3–8 | |
-| 8 | [gap-revisions/03-small-source-files/message-v2.ts-revision.md](migration-suggestions/gap-revisions/03-small-source-files/message-v2.ts-revision.md) | todo | 3–8 | |
-| 9 | [gap-revisions/03-small-source-files/run.ts-revision.md](migration-suggestions/gap-revisions/03-small-source-files/run.ts-revision.md) | todo | 3–8 | |
-| 10 | [gap-revisions/03-small-source-files/tui-dialog-status.tsx-revision.md](migration-suggestions/gap-revisions/03-small-source-files/tui-dialog-status.tsx-revision.md) | todo | 3–8 | |
-| 11 | [gap-revisions/03-small-source-files/tui-lsp.ts-revision.md](migration-suggestions/gap-revisions/03-small-source-files/tui-lsp.ts-revision.md) | todo | 3–8 | |
-| 12 | [gap-revisions/03-small-source-files/tui-sidebar.tsx-revision.md](migration-suggestions/gap-revisions/03-small-source-files/tui-sidebar.tsx-revision.md) | todo | 3–8 | |
-| 13 | [gap-revisions/03-small-source-files/tui-sync.tsx-revision.md](migration-suggestions/gap-revisions/03-small-source-files/tui-sync.tsx-revision.md) | todo | 3–8 | |
-| 14 | [gap-revisions/04-audit-backend/checkpoint.ts-audit-revision.md](migration-suggestions/gap-revisions/04-audit-backend/checkpoint.ts-audit-revision.md) | todo | 3 | |
-| 15 | [gap-revisions/04-audit-backend/coq-ast-audit.ts-revision.md](migration-suggestions/gap-revisions/04-audit-backend/coq-ast-audit.ts-revision.md) | todo | 3 | |
-| 16 | [gap-revisions/04-audit-backend/coqc.ts-audit-revision.md](migration-suggestions/gap-revisions/04-audit-backend/coqc.ts-audit-revision.md) | todo | 3 | |
-| 17 | [gap-revisions/04-audit-backend/removed-files.md](migration-suggestions/gap-revisions/04-audit-backend/removed-files.md) | todo | 3 | |
-| 18 | [gap-revisions/04-audit-backend/task.ts-audit-revision.md](migration-suggestions/gap-revisions/04-audit-backend/task.ts-audit-revision.md) | todo | 3 | |
-| 19 | [gap-revisions/04-audit-backend/validate_classified_ast.py-revision.md](migration-suggestions/gap-revisions/04-audit-backend/validate_classified_ast.py-revision.md) | todo | 3 | |
-| 20 | [gap-revisions/05-benchmark-runner/opencode_our_local.sh-revision.md](migration-suggestions/gap-revisions/05-benchmark-runner/opencode_our_local.sh-revision.md) | todo | 8 | |
-| 21 | [gap-revisions/05-benchmark-runner/opencode_our_prompt.md-revision.md](migration-suggestions/gap-revisions/05-benchmark-runner/opencode_our_prompt.md-revision.md) | todo | 8 | |
-| 22 | [gap-revisions/05-benchmark-runner/opencode_runner_config-revision.md](migration-suggestions/gap-revisions/05-benchmark-runner/opencode_runner_config-revision.md) | todo | 8 | |
-| 23 | [gap-revisions/05-benchmark-runner/run_casestudy_opencode_minprosa.py-revision.md](migration-suggestions/gap-revisions/05-benchmark-runner/run_casestudy_opencode_minprosa.py-revision.md) | todo | 8 | |
-| 24 | [gap-revisions/05-benchmark-runner/run_casestudy_our_minprosa.py-revision.md](migration-suggestions/gap-revisions/05-benchmark-runner/run_casestudy_our_minprosa.py-revision.md) | todo | 8 | |
-| 25 | [gap-revisions/07-tests/session__message-v2.test.ts-revision.md](migration-suggestions/gap-revisions/07-tests/session__message-v2.test.ts-revision.md) | todo | 3–5 | |
-| 26 | [gap-revisions/07-tests/session__prompt.test.ts-revision.md](migration-suggestions/gap-revisions/07-tests/session__prompt.test.ts-revision.md) | todo | 3–5 | |
-| 27 | [gap-revisions/07-tests/session__proof-edit-transaction.test.ts-revision.md](migration-suggestions/gap-revisions/07-tests/session__proof-edit-transaction.test.ts-revision.md) | todo | 3–5 | |
-| 28 | [gap-revisions/07-tests/session__proof-projection.test.ts-revision.md](migration-suggestions/gap-revisions/07-tests/session__proof-projection.test.ts-revision.md) | todo | 3–5 | |
-| 29 | [gap-revisions/07-tests/session__proof-route-ledger.test.ts-revision.md](migration-suggestions/gap-revisions/07-tests/session__proof-route-ledger.test.ts-revision.md) | todo | 3–5 | |
-| 30 | [gap-revisions/07-tests/session__proof-workflow.test.ts-revision.md](migration-suggestions/gap-revisions/07-tests/session__proof-workflow.test.ts-revision.md) | todo | 3–5 | |
-| 31 | [gap-revisions/07-tests/session__system.test.ts-revision.md](migration-suggestions/gap-revisions/07-tests/session__system.test.ts-revision.md) | todo | 3–5 | |
-| 32 | [gap-revisions/07-tests/session__trace.test.ts-revision.md](migration-suggestions/gap-revisions/07-tests/session__trace.test.ts-revision.md) | todo | 3–5 | |
-| 33 | [gap-revisions/07-tests/test_opencode_runner_config.py-revision.md](migration-suggestions/gap-revisions/07-tests/test_opencode_runner_config.py-revision.md) | todo | 3–5 | |
-| 34 | [gap-revisions/07-tests/test_run_casestudy_continuation_prompt.py-revision.md](migration-suggestions/gap-revisions/07-tests/test_run_casestudy_continuation_prompt.py-revision.md) | todo | 3–5 | |
-| 35 | [gap-revisions/07-tests/test_run_casestudy_decompose.py-revision.md](migration-suggestions/gap-revisions/07-tests/test_run_casestudy_decompose.py-revision.md) | todo | 3–5 | |
-| 36 | [gap-revisions/07-tests/tool__apply_patch.test.ts-revision.md](migration-suggestions/gap-revisions/07-tests/tool__apply_patch.test.ts-revision.md) | todo | 3–5 | |
-| 37 | [gap-revisions/07-tests/tool__bash.test.ts-revision.md](migration-suggestions/gap-revisions/07-tests/tool__bash.test.ts-revision.md) | todo | 3–5 | |
-| 38 | [gap-revisions/07-tests/tool__coq-ast-audit.test.ts-revision.md](migration-suggestions/gap-revisions/07-tests/tool__coq-ast-audit.test.ts-revision.md) | todo | 3–5 | |
-| 39 | [gap-revisions/07-tests/tool__coq-diagnostics.test.ts-revision.md](migration-suggestions/gap-revisions/07-tests/tool__coq-diagnostics.test.ts-revision.md) | todo | 3–5 | |
-| 40 | [gap-revisions/07-tests/tool__coq-project.test.ts-revision.md](migration-suggestions/gap-revisions/07-tests/tool__coq-project.test.ts-revision.md) | todo | 3–5 | |
-| 41 | [gap-revisions/07-tests/tool__coq-session.test.ts-revision.md](migration-suggestions/gap-revisions/07-tests/tool__coq-session.test.ts-revision.md) | todo | 3–5 | |
-| 42 | [gap-revisions/07-tests/tool__coq-skill-hints.test.ts-revision.md](migration-suggestions/gap-revisions/07-tests/tool__coq-skill-hints.test.ts-revision.md) | todo | 3–5 | |
-| 43 | [gap-revisions/07-tests/tool__edit.test.ts-revision.md](migration-suggestions/gap-revisions/07-tests/tool__edit.test.ts-revision.md) | todo | 3–5 | |
-| 44 | [gap-revisions/07-tests/tool__grep.test.ts-revision.md](migration-suggestions/gap-revisions/07-tests/tool__grep.test.ts-revision.md) | todo | 3–5 | |
-| 45 | [gap-revisions/07-tests/tool__proof-premise-audit.test.ts-revision.md](migration-suggestions/gap-revisions/07-tests/tool__proof-premise-audit.test.ts-revision.md) | todo | 3–5 | |
-| 46 | [gap-revisions/07-tests/tool__proof-review.test.ts-revision.md](migration-suggestions/gap-revisions/07-tests/tool__proof-review.test.ts-revision.md) | todo | 3–5 | |
-| 47 | [gap-revisions/07-tests/tool__proof-schema.test.ts-revision.md](migration-suggestions/gap-revisions/07-tests/tool__proof-schema.test.ts-revision.md) | todo | 3–5 | |
-| 48 | [gap-revisions/07-tests/tool__read.test.ts-revision.md](migration-suggestions/gap-revisions/07-tests/tool__read.test.ts-revision.md) | todo | 3–5 | |
-| 49 | [gap-revisions/07-tests/tool__task.test.ts-revision.md](migration-suggestions/gap-revisions/07-tests/tool__task.test.ts-revision.md) | todo | 3–5 | |
-| 50 | [gap-revisions/07-tests/tool__write.test.ts-revision.md](migration-suggestions/gap-revisions/07-tests/tool__write.test.ts-revision.md) | todo | 3–5 | |
-| 51 | [known-problem-fixes/lean_session-equivalence.md](migration-suggestions/known-problem-fixes/lean_session-equivalence.md) | todo | 4 | |
-| 52 | [known-problem-fixes/lemma.txt-fixes.md](migration-suggestions/known-problem-fixes/lemma.txt-fixes.md) | todo | 5 | |
-| 53 | [known-problem-fixes/prompt.ts-fixes.md](migration-suggestions/known-problem-fixes/prompt.ts-fixes.md) | todo | 5 | |
-| 54 | [known-problem-fixes/proof-context.ts-fixes.md](migration-suggestions/known-problem-fixes/proof-context.ts-fixes.md) | todo | 5 | |
-| 55 | [known-problem-fixes/proof-plan.ts-fixes.md](migration-suggestions/known-problem-fixes/proof-plan.ts-fixes.md) | todo | 5 | |
-| 56 | [known-problem-fixes/proof-projection.ts-fixes.md](migration-suggestions/known-problem-fixes/proof-projection.ts-fixes.md) | todo | 5 | |
-| 57 | [known-problem-fixes/proof-schema.ts-fixes.md](migration-suggestions/known-problem-fixes/proof-schema.ts-fixes.md) | todo | 5 | |
-| 58 | [known-problem-fixes/proof-workflow.ts-fixes.md](migration-suggestions/known-problem-fixes/proof-workflow.ts-fixes.md) | todo | 5 | |
-| 59 | [known-problem-fixes/prover.txt-fixes.md](migration-suggestions/known-problem-fixes/prover.txt-fixes.md) | todo | 5 | |
-| 60 | [known-problem-fixes/provider.ts-fixes.md](migration-suggestions/known-problem-fixes/provider.ts-fixes.md) | todo | 5 | |
-| 61 | [known-problem-fixes/whole-lemma.txt-fixes.md](migration-suggestions/known-problem-fixes/whole-lemma.txt-fixes.md) | todo | 5 | |
-| 62 | [prompt-advices/prompt_revision.md](migration-suggestions/prompt-advices/prompt_revision.md) | todo | 5 | |
-| 63 | [skill-advices/count-bridging/SKILL.md](migration-suggestions/skill-advices/count-bridging/SKILL.md) | todo | 5 | |
-| 64 | [skill-advices/failure-signature/SKILL.md](migration-suggestions/skill-advices/failure-signature/SKILL.md) | todo | 5 | |
-| 65 | [skill-advices/goal/SKILL.md](migration-suggestions/skill-advices/goal/SKILL.md) | todo | 5 | |
-| 66 | [skill-advices/guide/SKILL.md](migration-suggestions/skill-advices/guide/SKILL.md) | todo | 5 | |
-| 67 | [skill-advices/math/SKILL.md](migration-suggestions/skill-advices/math/SKILL.md) | todo | 5 | |
-| 68 | [skill-advices/parameter/SKILL.md](migration-suggestions/skill-advices/parameter/SKILL.md) | todo | 5 | |
-| 69 | [skill-advices/prosabuddy-guard-recovery/SKILL.md](migration-suggestions/skill-advices/prosabuddy-guard-recovery/SKILL.md) | todo | 5 | |
-| 70 | [skill-advices/tactics/SKILL.md](migration-suggestions/skill-advices/tactics/SKILL.md) | todo | 5 | |
-| 71 | [tools-advices/01-core-tools/checkpoint-revision.md](migration-suggestions/tools-advices/01-core-tools/checkpoint-revision.md) | todo | 2/5 | |
-| 72 | [tools-advices/01-core-tools/coq-session-revision.md](migration-suggestions/tools-advices/01-core-tools/coq-session-revision.md) | todo | 2/5 | |
-| 73 | [tools-advices/01-core-tools/coqc-revision.md](migration-suggestions/tools-advices/01-core-tools/coqc-revision.md) | todo | 2/5 | |
-| 74 | [tools-advices/01-core-tools/coqtop-revision.md](migration-suggestions/tools-advices/01-core-tools/coqtop-revision.md) | todo | 2/5 | |
-| 75 | [tools-advices/01-core-tools/petanque-revision.md](migration-suggestions/tools-advices/01-core-tools/petanque-revision.md) | todo | 2/5 | |
-| 76 | [tools-advices/01-core-tools/proof-plan-revision.md](migration-suggestions/tools-advices/01-core-tools/proof-plan-revision.md) | todo | 2/5 | |
-| 77 | [tools-advices/02-adapted-tools/apply_patch-revision.md](migration-suggestions/tools-advices/02-adapted-tools/apply_patch-revision.md) | todo | 2/5 | |
-| 78 | [tools-advices/02-adapted-tools/bash-revision.md](migration-suggestions/tools-advices/02-adapted-tools/bash-revision.md) | todo | 2/5 | |
-| 79 | [tools-advices/02-adapted-tools/edit-revision.md](migration-suggestions/tools-advices/02-adapted-tools/edit-revision.md) | todo | 2/5 | |
-| 80 | [tools-advices/02-adapted-tools/lsp-revision.md](migration-suggestions/tools-advices/02-adapted-tools/lsp-revision.md) | todo | 2/5 | |
-| 81 | [tools-advices/02-adapted-tools/multiedit-revision.md](migration-suggestions/tools-advices/02-adapted-tools/multiedit-revision.md) | todo | 2/5 | |
-| 82 | [tools-advices/02-adapted-tools/read-revision.md](migration-suggestions/tools-advices/02-adapted-tools/read-revision.md) | todo | 2/5 | |
-| 83 | [tools-advices/02-adapted-tools/task-revision.md](migration-suggestions/tools-advices/02-adapted-tools/task-revision.md) | todo | 2/5 | |
-| 84 | [tools-advices/02-adapted-tools/write-revision.md](migration-suggestions/tools-advices/02-adapted-tools/write-revision.md) | todo | 2/5 | |
-| 85 | [tools-advices/03-custom-tools/coq-check-revision.md](migration-suggestions/tools-advices/03-custom-tools/coq-check-revision.md) | todo | 2/5 | |
-| 86 | [tools-advices/04-helper-modules/coq-ast-audit-revision.md](migration-suggestions/tools-advices/04-helper-modules/coq-ast-audit-revision.md) | todo | 2/5 | |
-| 87 | [tools-advices/04-helper-modules/coq-diagnostics-revision.md](migration-suggestions/tools-advices/04-helper-modules/coq-diagnostics-revision.md) | todo | 2/5 | |
-| 88 | [tools-advices/04-helper-modules/coq-project-revision.md](migration-suggestions/tools-advices/04-helper-modules/coq-project-revision.md) | todo | 2/5 | |
-| 89 | [tools-advices/04-helper-modules/coq-skill-hints-revision.md](migration-suggestions/tools-advices/04-helper-modules/coq-skill-hints-revision.md) | todo | 2/5 | |
-| 90 | [tools-advices/04-helper-modules/coq-style-guard-revision.md](migration-suggestions/tools-advices/04-helper-modules/coq-style-guard-revision.md) | todo | 2/5 | |
-| 91 | [tools-advices/04-helper-modules/edit-conflict-guard-revision.md](migration-suggestions/tools-advices/04-helper-modules/edit-conflict-guard-revision.md) | todo | 2/5 | |
-| 92 | [tools-advices/04-helper-modules/proof-plan-identifiers-revision.md](migration-suggestions/tools-advices/04-helper-modules/proof-plan-identifiers-revision.md) | todo | 2/5 | |
-| 93 | [tools-advices/04-helper-modules/proof-premise-audit-revision.md](migration-suggestions/tools-advices/04-helper-modules/proof-premise-audit-revision.md) | todo | 2/5 | |
-| 94 | [tools-advices/04-helper-modules/proof-schema-revision.md](migration-suggestions/tools-advices/04-helper-modules/proof-schema-revision.md) | todo | 2/5 | |
-| 95 | [tools-advices/04-helper-modules/registry-revision.md](migration-suggestions/tools-advices/04-helper-modules/registry-revision.md) | todo | 2/5 | |
-| 96 | [tools-advices/04-helper-modules/tool-revision.md](migration-suggestions/tools-advices/04-helper-modules/tool-revision.md) | todo | 2/5 | |
-| 97 | [tools-advices/05-session-workflow/lemma-assignment-revision.md](migration-suggestions/tools-advices/05-session-workflow/lemma-assignment-revision.md) | todo | 2/5 | |
-| 98 | [tools-advices/05-session-workflow/proof-context-revision.md](migration-suggestions/tools-advices/05-session-workflow/proof-context-revision.md) | todo | 2/5 | |
-| 99 | [tools-advices/05-session-workflow/proof-edit-transaction-revision.md](migration-suggestions/tools-advices/05-session-workflow/proof-edit-transaction-revision.md) | todo | 2/5 | |
-| 100 | [tools-advices/05-session-workflow/proof-policy-revision.md](migration-suggestions/tools-advices/05-session-workflow/proof-policy-revision.md) | todo | 2/5 | |
-| 101 | [tools-advices/05-session-workflow/proof-projection-revision.md](migration-suggestions/tools-advices/05-session-workflow/proof-projection-revision.md) | todo | 2/5 | |
-| 102 | [tools-advices/05-session-workflow/proof-route-ledger-revision.md](migration-suggestions/tools-advices/05-session-workflow/proof-route-ledger-revision.md) | todo | 2/5 | |
-| 103 | [tools-advices/05-session-workflow/proof-workflow-revision.md](migration-suggestions/tools-advices/05-session-workflow/proof-workflow-revision.md) | todo | 2/5 | |
-| 104 | [tools-advices/05-session-workflow/session-proof-revision.md](migration-suggestions/tools-advices/05-session-workflow/session-proof-revision.md) | todo | 2/5 | |
-| 105 | [tools-advices/06-session-storage/proof-edit-transaction.sql-revision.md](migration-suggestions/tools-advices/06-session-storage/proof-edit-transaction.sql-revision.md) | todo | 2/5 | |
-| 106 | [tools-advices/06-session-storage/proof-route-ledger.sql-revision.md](migration-suggestions/tools-advices/06-session-storage/proof-route-ledger.sql-revision.md) | todo | 2/5 | |
-| 107 | [tools-advices/06-session-storage/session-proof-workflow.sql-revision.md](migration-suggestions/tools-advices/06-session-storage/session-proof-workflow.sql-revision.md) | todo | 2/5 | |
-| 108 | [tools-advices/06-session-storage/session-proof.sql-revision.md](migration-suggestions/tools-advices/06-session-storage/session-proof.sql-revision.md) | todo | 2/5 | |
-| 109 | [tools-advices/07-lsp/client-revision.md](migration-suggestions/tools-advices/07-lsp/client-revision.md) | todo | 2/5 | |
-| 110 | [tools-advices/07-lsp/index-revision.md](migration-suggestions/tools-advices/07-lsp/index-revision.md) | todo | 2/5 | |
-| 111 | [tools-advices/07-lsp/language-revision.md](migration-suggestions/tools-advices/07-lsp/language-revision.md) | todo | 2/5 | |
-| 112 | [tools-advices/07-lsp/server-revision.md](migration-suggestions/tools-advices/07-lsp/server-revision.md) | todo | 2/5 | |
+| 1 | [BACKEND_DECISION.md](migration-suggestions/BACKEND_DECISION.md) | deviated | 1, 4 | Phases 1/4; V1, V7, V10 |
+| 2 | [gap-revisions/01-prompt.ts-revision.md](migration-suggestions/gap-revisions/01-prompt.ts-revision.md) | done | 3–8 | 5b (§1–§10, K3/K4/S14 in prompt.ts) |
+| 3 | [gap-revisions/02-system-prompts/coqprover.txt-revision.md](migration-suggestions/gap-revisions/02-system-prompts/coqprover.txt-revision.md) | done | 3–8 | 5e (V18) |
+| 4 | [gap-revisions/02-system-prompts/proof-workflow-principles.txt-revision.md](migration-suggestions/gap-revisions/02-system-prompts/proof-workflow-principles.txt-revision.md) | done | 3–8 | 5e (V18) |
+| 5 | [gap-revisions/02-system-prompts/system.ts-revision.md](migration-suggestions/gap-revisions/02-system-prompts/system.ts-revision.md) | done | 3–8 | 5e (V18) |
+| 6 | [gap-revisions/03-small-source-files/agent.ts-revision.md](migration-suggestions/gap-revisions/03-small-source-files/agent.ts-revision.md) | done | 3–8 | 2–5 (agent/compaction/message-v2/run.ts; TUI in 5d) |
+| 7 | [gap-revisions/03-small-source-files/compaction.ts-revision.md](migration-suggestions/gap-revisions/03-small-source-files/compaction.ts-revision.md) | done | 3–8 | 2–5 (agent/compaction/message-v2/run.ts; TUI in 5d) |
+| 8 | [gap-revisions/03-small-source-files/message-v2.ts-revision.md](migration-suggestions/gap-revisions/03-small-source-files/message-v2.ts-revision.md) | done | 3–8 | 2–5 (agent/compaction/message-v2/run.ts; TUI in 5d) |
+| 9 | [gap-revisions/03-small-source-files/run.ts-revision.md](migration-suggestions/gap-revisions/03-small-source-files/run.ts-revision.md) | done | 3–8 | 2–5 (agent/compaction/message-v2/run.ts; TUI in 5d) |
+| 10 | [gap-revisions/03-small-source-files/tui-dialog-status.tsx-revision.md](migration-suggestions/gap-revisions/03-small-source-files/tui-dialog-status.tsx-revision.md) | done | 3–8 | 2–5 (agent/compaction/message-v2/run.ts; TUI in 5d) |
+| 11 | [gap-revisions/03-small-source-files/tui-lsp.ts-revision.md](migration-suggestions/gap-revisions/03-small-source-files/tui-lsp.ts-revision.md) | done | 3–8 | 2–5 (agent/compaction/message-v2/run.ts; TUI in 5d) |
+| 12 | [gap-revisions/03-small-source-files/tui-sidebar.tsx-revision.md](migration-suggestions/gap-revisions/03-small-source-files/tui-sidebar.tsx-revision.md) | done | 3–8 | 2–5 (agent/compaction/message-v2/run.ts; TUI in 5d) |
+| 13 | [gap-revisions/03-small-source-files/tui-sync.tsx-revision.md](migration-suggestions/gap-revisions/03-small-source-files/tui-sync.tsx-revision.md) | done | 3–8 | 2–5 (agent/compaction/message-v2/run.ts; TUI in 5d) |
+| 14 | [gap-revisions/04-audit-backend/checkpoint.ts-audit-revision.md](migration-suggestions/gap-revisions/04-audit-backend/checkpoint.ts-audit-revision.md) | deviated | 3 | 3 (lean-gate; V4, V5, V9) |
+| 15 | [gap-revisions/04-audit-backend/coq-ast-audit.ts-revision.md](migration-suggestions/gap-revisions/04-audit-backend/coq-ast-audit.ts-revision.md) | deviated | 3 | 3 (lean-gate; V4, V5, V9) |
+| 16 | [gap-revisions/04-audit-backend/coqc.ts-audit-revision.md](migration-suggestions/gap-revisions/04-audit-backend/coqc.ts-audit-revision.md) | deviated | 3 | 3 (lean-gate; V4, V5, V9) |
+| 17 | [gap-revisions/04-audit-backend/removed-files.md](migration-suggestions/gap-revisions/04-audit-backend/removed-files.md) | deviated | 3 | 3 (lean-gate; V4, V5, V9) |
+| 18 | [gap-revisions/04-audit-backend/task.ts-audit-revision.md](migration-suggestions/gap-revisions/04-audit-backend/task.ts-audit-revision.md) | deviated | 3 | 3 (lean-gate; V4, V5, V9) |
+| 19 | [gap-revisions/04-audit-backend/validate_classified_ast.py-revision.md](migration-suggestions/gap-revisions/04-audit-backend/validate_classified_ast.py-revision.md) | deviated | 3 | 3 (lean-gate; V4, V5, V9) |
+| 20 | [gap-revisions/05-benchmark-runner/opencode_our_local.sh-revision.md](migration-suggestions/gap-revisions/05-benchmark-runner/opencode_our_local.sh-revision.md) | todo | 8 | Phase 8 (runner; awaits user go-ahead) |
+| 21 | [gap-revisions/05-benchmark-runner/opencode_our_prompt.md-revision.md](migration-suggestions/gap-revisions/05-benchmark-runner/opencode_our_prompt.md-revision.md) | todo | 8 | Phase 8 (runner; awaits user go-ahead) |
+| 22 | [gap-revisions/05-benchmark-runner/opencode_runner_config-revision.md](migration-suggestions/gap-revisions/05-benchmark-runner/opencode_runner_config-revision.md) | todo | 8 | Phase 8 (runner; awaits user go-ahead) |
+| 23 | [gap-revisions/05-benchmark-runner/run_casestudy_opencode_minprosa.py-revision.md](migration-suggestions/gap-revisions/05-benchmark-runner/run_casestudy_opencode_minprosa.py-revision.md) | todo | 8 | Phase 8 (runner; awaits user go-ahead) |
+| 24 | [gap-revisions/05-benchmark-runner/run_casestudy_our_minprosa.py-revision.md](migration-suggestions/gap-revisions/05-benchmark-runner/run_casestudy_our_minprosa.py-revision.md) | todo | 8 | Phase 8 (runner; awaits user go-ahead) |
+| 25 | [gap-revisions/07-tests/session__message-v2.test.ts-revision.md](migration-suggestions/gap-revisions/07-tests/session__message-v2.test.ts-revision.md) | done | 3–5 | tests ported with their modules (3–5) |
+| 26 | [gap-revisions/07-tests/session__prompt.test.ts-revision.md](migration-suggestions/gap-revisions/07-tests/session__prompt.test.ts-revision.md) | done | 3–5 | tests ported with their modules (3–5) |
+| 27 | [gap-revisions/07-tests/session__proof-edit-transaction.test.ts-revision.md](migration-suggestions/gap-revisions/07-tests/session__proof-edit-transaction.test.ts-revision.md) | done | 3–5 | tests ported with their modules (3–5) |
+| 28 | [gap-revisions/07-tests/session__proof-projection.test.ts-revision.md](migration-suggestions/gap-revisions/07-tests/session__proof-projection.test.ts-revision.md) | done | 3–5 | tests ported with their modules (3–5) |
+| 29 | [gap-revisions/07-tests/session__proof-route-ledger.test.ts-revision.md](migration-suggestions/gap-revisions/07-tests/session__proof-route-ledger.test.ts-revision.md) | done | 3–5 | tests ported with their modules (3–5) |
+| 30 | [gap-revisions/07-tests/session__proof-workflow.test.ts-revision.md](migration-suggestions/gap-revisions/07-tests/session__proof-workflow.test.ts-revision.md) | done | 3–5 | tests ported with their modules (3–5) |
+| 31 | [gap-revisions/07-tests/session__system.test.ts-revision.md](migration-suggestions/gap-revisions/07-tests/session__system.test.ts-revision.md) | done | 3–5 | tests ported with their modules (3–5) |
+| 32 | [gap-revisions/07-tests/session__trace.test.ts-revision.md](migration-suggestions/gap-revisions/07-tests/session__trace.test.ts-revision.md) | done | 3–5 | tests ported with their modules (3–5) |
+| 33 | [gap-revisions/07-tests/test_opencode_runner_config.py-revision.md](migration-suggestions/gap-revisions/07-tests/test_opencode_runner_config.py-revision.md) | todo | 3–5 | Phase 8 (runner tests) |
+| 34 | [gap-revisions/07-tests/test_run_casestudy_continuation_prompt.py-revision.md](migration-suggestions/gap-revisions/07-tests/test_run_casestudy_continuation_prompt.py-revision.md) | todo | 3–5 | Phase 8 (runner tests) |
+| 35 | [gap-revisions/07-tests/test_run_casestudy_decompose.py-revision.md](migration-suggestions/gap-revisions/07-tests/test_run_casestudy_decompose.py-revision.md) | todo | 3–5 | Phase 8 (runner tests) |
+| 36 | [gap-revisions/07-tests/tool__apply_patch.test.ts-revision.md](migration-suggestions/gap-revisions/07-tests/tool__apply_patch.test.ts-revision.md) | done | 3–5 | 5a/5e |
+| 37 | [gap-revisions/07-tests/tool__bash.test.ts-revision.md](migration-suggestions/gap-revisions/07-tests/tool__bash.test.ts-revision.md) | done | 3–5 | 5a/5e |
+| 38 | [gap-revisions/07-tests/tool__coq-ast-audit.test.ts-revision.md](migration-suggestions/gap-revisions/07-tests/tool__coq-ast-audit.test.ts-revision.md) | done | 3–5 | module removed; replaced by lean-gate / lean-project / bounded-process / lean-session / lean-skill-hints tests |
+| 39 | [gap-revisions/07-tests/tool__coq-diagnostics.test.ts-revision.md](migration-suggestions/gap-revisions/07-tests/tool__coq-diagnostics.test.ts-revision.md) | done | 3–5 | module removed; replaced by lean-gate / lean-project / bounded-process / lean-session / lean-skill-hints tests |
+| 40 | [gap-revisions/07-tests/tool__coq-project.test.ts-revision.md](migration-suggestions/gap-revisions/07-tests/tool__coq-project.test.ts-revision.md) | done | 3–5 | module removed; replaced by lean-gate / lean-project / bounded-process / lean-session / lean-skill-hints tests |
+| 41 | [gap-revisions/07-tests/tool__coq-session.test.ts-revision.md](migration-suggestions/gap-revisions/07-tests/tool__coq-session.test.ts-revision.md) | done | 3–5 | module removed; replaced by lean-gate / lean-project / bounded-process / lean-session / lean-skill-hints tests |
+| 42 | [gap-revisions/07-tests/tool__coq-skill-hints.test.ts-revision.md](migration-suggestions/gap-revisions/07-tests/tool__coq-skill-hints.test.ts-revision.md) | done | 3–5 | module removed; replaced by lean-gate / lean-project / bounded-process / lean-session / lean-skill-hints tests |
+| 43 | [gap-revisions/07-tests/tool__edit.test.ts-revision.md](migration-suggestions/gap-revisions/07-tests/tool__edit.test.ts-revision.md) | done | 3–5 | 3–5 |
+| 44 | [gap-revisions/07-tests/tool__grep.test.ts-revision.md](migration-suggestions/gap-revisions/07-tests/tool__grep.test.ts-revision.md) | done | 3–5 | 3–5 |
+| 45 | [gap-revisions/07-tests/tool__proof-premise-audit.test.ts-revision.md](migration-suggestions/gap-revisions/07-tests/tool__proof-premise-audit.test.ts-revision.md) | done | 3–5 | 3–5 |
+| 46 | [gap-revisions/07-tests/tool__proof-review.test.ts-revision.md](migration-suggestions/gap-revisions/07-tests/tool__proof-review.test.ts-revision.md) | done | 3–5 | 3–5 |
+| 47 | [gap-revisions/07-tests/tool__proof-schema.test.ts-revision.md](migration-suggestions/gap-revisions/07-tests/tool__proof-schema.test.ts-revision.md) | done | 3–5 | 3–5 |
+| 48 | [gap-revisions/07-tests/tool__read.test.ts-revision.md](migration-suggestions/gap-revisions/07-tests/tool__read.test.ts-revision.md) | done | 3–5 | 3–5 |
+| 49 | [gap-revisions/07-tests/tool__task.test.ts-revision.md](migration-suggestions/gap-revisions/07-tests/tool__task.test.ts-revision.md) | done | 3–5 | 3–5 |
+| 50 | [gap-revisions/07-tests/tool__write.test.ts-revision.md](migration-suggestions/gap-revisions/07-tests/tool__write.test.ts-revision.md) | done | 3–5 | 3–5 |
+| 51 | [known-problem-fixes/lean_session-equivalence.md](migration-suggestions/known-problem-fixes/lean_session-equivalence.md) | deviated | 4 | 4/5c: closed statements via Pantograph; root goal and region targets via compiler probes (V15) |
+| 52 | [known-problem-fixes/lemma.txt-fixes.md](migration-suggestions/known-problem-fixes/lemma.txt-fixes.md) | deviated | 5 | 5e (V17) |
+| 53 | [known-problem-fixes/prompt.ts-fixes.md](migration-suggestions/known-problem-fixes/prompt.ts-fixes.md) | done | 5 | 5b–5e |
+| 54 | [known-problem-fixes/proof-context.ts-fixes.md](migration-suggestions/known-problem-fixes/proof-context.ts-fixes.md) | done | 5 | 5b–5e |
+| 55 | [known-problem-fixes/proof-plan.ts-fixes.md](migration-suggestions/known-problem-fixes/proof-plan.ts-fixes.md) | deviated | 5 | 5b/5c (amend action; K6/K7 by V15) |
+| 56 | [known-problem-fixes/proof-projection.ts-fixes.md](migration-suggestions/known-problem-fixes/proof-projection.ts-fixes.md) | done | 5 | 5b–5e |
+| 57 | [known-problem-fixes/proof-schema.ts-fixes.md](migration-suggestions/known-problem-fixes/proof-schema.ts-fixes.md) | done | 5 | 5b–5e |
+| 58 | [known-problem-fixes/proof-workflow.ts-fixes.md](migration-suggestions/known-problem-fixes/proof-workflow.ts-fixes.md) | deviated | 5 | 5b/5c (V12, V13, V14) |
+| 59 | [known-problem-fixes/prover.txt-fixes.md](migration-suggestions/known-problem-fixes/prover.txt-fixes.md) | done | 5 | 5b–5e |
+| 60 | [known-problem-fixes/provider.ts-fixes.md](migration-suggestions/known-problem-fixes/provider.ts-fixes.md) | done | 5 | 5d (app side); runner check in Phase 8 |
+| 61 | [known-problem-fixes/whole-lemma.txt-fixes.md](migration-suggestions/known-problem-fixes/whole-lemma.txt-fixes.md) | done | 5 | 5b–5e |
+| 62 | [prompt-advices/prompt_revision.md](migration-suggestions/prompt-advices/prompt_revision.md) | done | 5 | 5e (V17, V18) |
+| 63 | [skill-advices/count-bridging/SKILL.md](migration-suggestions/skill-advices/count-bridging/SKILL.md) | done | 5 | 5f (V19) |
+| 64 | [skill-advices/failure-signature/SKILL.md](migration-suggestions/skill-advices/failure-signature/SKILL.md) | deviated | 5 | 5f: removed (V19) |
+| 65 | [skill-advices/goal/SKILL.md](migration-suggestions/skill-advices/goal/SKILL.md) | done | 5 | 5f (V19) |
+| 66 | [skill-advices/guide/SKILL.md](migration-suggestions/skill-advices/guide/SKILL.md) | done | 5 | 5f (V19) |
+| 67 | [skill-advices/math/SKILL.md](migration-suggestions/skill-advices/math/SKILL.md) | done | 5 | 5f (V19) |
+| 68 | [skill-advices/parameter/SKILL.md](migration-suggestions/skill-advices/parameter/SKILL.md) | done | 5 | 5f (V19) |
+| 69 | [skill-advices/prosabuddy-guard-recovery/SKILL.md](migration-suggestions/skill-advices/prosabuddy-guard-recovery/SKILL.md) | done | 5 | 5f (V19) |
+| 70 | [skill-advices/tactics/SKILL.md](migration-suggestions/skill-advices/tactics/SKILL.md) | deviated | 5 | 5f: removed (V19) |
+| 71 | [tools-advices/01-core-tools/checkpoint-revision.md](migration-suggestions/tools-advices/01-core-tools/checkpoint-revision.md) | done | 2/5 | 2–5 |
+| 72 | [tools-advices/01-core-tools/coq-session-revision.md](migration-suggestions/tools-advices/01-core-tools/coq-session-revision.md) | done | 2/5 | replaced by lean_session / lean_check / lean_query (2, 4) |
+| 73 | [tools-advices/01-core-tools/coqc-revision.md](migration-suggestions/tools-advices/01-core-tools/coqc-revision.md) | done | 2/5 | replaced by lean_session / lean_check / lean_query (2, 4) |
+| 74 | [tools-advices/01-core-tools/coqtop-revision.md](migration-suggestions/tools-advices/01-core-tools/coqtop-revision.md) | done | 2/5 | replaced by lean_session / lean_check / lean_query (2, 4) |
+| 75 | [tools-advices/01-core-tools/petanque-revision.md](migration-suggestions/tools-advices/01-core-tools/petanque-revision.md) | done | 2/5 | removed (D6); Pantograph lean_session (4) |
+| 76 | [tools-advices/01-core-tools/proof-plan-revision.md](migration-suggestions/tools-advices/01-core-tools/proof-plan-revision.md) | done | 2/5 | 2–5 |
+| 77 | [tools-advices/02-adapted-tools/apply_patch-revision.md](migration-suggestions/tools-advices/02-adapted-tools/apply_patch-revision.md) | done | 2/5 | 2–5 |
+| 78 | [tools-advices/02-adapted-tools/bash-revision.md](migration-suggestions/tools-advices/02-adapted-tools/bash-revision.md) | done | 2/5 | 2–5 |
+| 79 | [tools-advices/02-adapted-tools/edit-revision.md](migration-suggestions/tools-advices/02-adapted-tools/edit-revision.md) | done | 2/5 | 2–5 |
+| 80 | [tools-advices/02-adapted-tools/lsp-revision.md](migration-suggestions/tools-advices/02-adapted-tools/lsp-revision.md) | done | 2/5 | 2–5 |
+| 81 | [tools-advices/02-adapted-tools/multiedit-revision.md](migration-suggestions/tools-advices/02-adapted-tools/multiedit-revision.md) | done | 2/5 | 2–5 |
+| 82 | [tools-advices/02-adapted-tools/read-revision.md](migration-suggestions/tools-advices/02-adapted-tools/read-revision.md) | done | 2/5 | 2–5 |
+| 83 | [tools-advices/02-adapted-tools/task-revision.md](migration-suggestions/tools-advices/02-adapted-tools/task-revision.md) | done | 2/5 | 2–5 |
+| 84 | [tools-advices/02-adapted-tools/write-revision.md](migration-suggestions/tools-advices/02-adapted-tools/write-revision.md) | done | 2/5 | 2–5 |
+| 85 | [tools-advices/03-custom-tools/coq-check-revision.md](migration-suggestions/tools-advices/03-custom-tools/coq-check-revision.md) | deviated | 2/5 | V6 (deleted, lean_check covers it) |
+| 86 | [tools-advices/04-helper-modules/coq-ast-audit-revision.md](migration-suggestions/tools-advices/04-helper-modules/coq-ast-audit-revision.md) | done | 2/5 | 3 (lean-gate.ts) |
+| 87 | [tools-advices/04-helper-modules/coq-diagnostics-revision.md](migration-suggestions/tools-advices/04-helper-modules/coq-diagnostics-revision.md) | done | 2/5 | 5e (lean-project JSON diagnostics; util/bounded-process) |
+| 88 | [tools-advices/04-helper-modules/coq-project-revision.md](migration-suggestions/tools-advices/04-helper-modules/coq-project-revision.md) | done | 2/5 | 5e (lean-project JSON diagnostics; util/bounded-process) |
+| 89 | [tools-advices/04-helper-modules/coq-skill-hints-revision.md](migration-suggestions/tools-advices/04-helper-modules/coq-skill-hints-revision.md) | done | 2/5 | 5e (lean-skill-hints; style guard removed, V18) |
+| 90 | [tools-advices/04-helper-modules/coq-style-guard-revision.md](migration-suggestions/tools-advices/04-helper-modules/coq-style-guard-revision.md) | done | 2/5 | 5e (lean-skill-hints; style guard removed, V18) |
+| 91 | [tools-advices/04-helper-modules/edit-conflict-guard-revision.md](migration-suggestions/tools-advices/04-helper-modules/edit-conflict-guard-revision.md) | done | 2/5 | 5g (excerpt from the last theorem proof) |
+| 92 | [tools-advices/04-helper-modules/proof-plan-identifiers-revision.md](migration-suggestions/tools-advices/04-helper-modules/proof-plan-identifiers-revision.md) | done | 2/5 | 2–5 |
+| 93 | [tools-advices/04-helper-modules/proof-premise-audit-revision.md](migration-suggestions/tools-advices/04-helper-modules/proof-premise-audit-revision.md) | done | 2/5 | 2–5 |
+| 94 | [tools-advices/04-helper-modules/proof-schema-revision.md](migration-suggestions/tools-advices/04-helper-modules/proof-schema-revision.md) | done | 2/5 | 2–5 |
+| 95 | [tools-advices/04-helper-modules/registry-revision.md](migration-suggestions/tools-advices/04-helper-modules/registry-revision.md) | done | 2/5 | 2–5 |
+| 96 | [tools-advices/04-helper-modules/tool-revision.md](migration-suggestions/tools-advices/04-helper-modules/tool-revision.md) | done | 2/5 | 2–5 |
+| 97 | [tools-advices/05-session-workflow/lemma-assignment-revision.md](migration-suggestions/tools-advices/05-session-workflow/lemma-assignment-revision.md) | done | 2/5 | 2–5 |
+| 98 | [tools-advices/05-session-workflow/proof-context-revision.md](migration-suggestions/tools-advices/05-session-workflow/proof-context-revision.md) | done | 2/5 | 5d (goals from lean_session; S25) |
+| 99 | [tools-advices/05-session-workflow/proof-edit-transaction-revision.md](migration-suggestions/tools-advices/05-session-workflow/proof-edit-transaction-revision.md) | done | 2/5 | 2–5 |
+| 100 | [tools-advices/05-session-workflow/proof-policy-revision.md](migration-suggestions/tools-advices/05-session-workflow/proof-policy-revision.md) | done | 2/5 | 2–5 |
+| 101 | [tools-advices/05-session-workflow/proof-projection-revision.md](migration-suggestions/tools-advices/05-session-workflow/proof-projection-revision.md) | done | 2/5 | 2–5 |
+| 102 | [tools-advices/05-session-workflow/proof-route-ledger-revision.md](migration-suggestions/tools-advices/05-session-workflow/proof-route-ledger-revision.md) | done | 2/5 | 2–5 |
+| 103 | [tools-advices/05-session-workflow/proof-workflow-revision.md](migration-suggestions/tools-advices/05-session-workflow/proof-workflow-revision.md) | done | 2/5 | 2–5 |
+| 104 | [tools-advices/05-session-workflow/session-proof-revision.md](migration-suggestions/tools-advices/05-session-workflow/session-proof-revision.md) | done | 2/5 | 2–5 |
+| 105 | [tools-advices/06-session-storage/proof-edit-transaction.sql-revision.md](migration-suggestions/tools-advices/06-session-storage/proof-edit-transaction.sql-revision.md) | done | 2/5 | no change needed (payload-level; as recommended) |
+| 106 | [tools-advices/06-session-storage/proof-route-ledger.sql-revision.md](migration-suggestions/tools-advices/06-session-storage/proof-route-ledger.sql-revision.md) | done | 2/5 | no change needed (payload-level; as recommended) |
+| 107 | [tools-advices/06-session-storage/session-proof-workflow.sql-revision.md](migration-suggestions/tools-advices/06-session-storage/session-proof-workflow.sql-revision.md) | done | 2/5 | no change needed (payload-level; as recommended) |
+| 108 | [tools-advices/06-session-storage/session-proof.sql-revision.md](migration-suggestions/tools-advices/06-session-storage/session-proof.sql-revision.md) | done | 2/5 | no change needed (payload-level; as recommended) |
+| 109 | [tools-advices/07-lsp/client-revision.md](migration-suggestions/tools-advices/07-lsp/client-revision.md) | done | 2/5 | 5d (Lean LSP) |
+| 110 | [tools-advices/07-lsp/index-revision.md](migration-suggestions/tools-advices/07-lsp/index-revision.md) | done | 2/5 | 5d (Lean LSP) |
+| 111 | [tools-advices/07-lsp/language-revision.md](migration-suggestions/tools-advices/07-lsp/language-revision.md) | done | 2/5 | 5d (Lean LSP) |
+| 112 | [tools-advices/07-lsp/server-revision.md](migration-suggestions/tools-advices/07-lsp/server-revision.md) | done | 2/5 | 5d (Lean LSP) |
 
 ## Deviations and note corrections
 
@@ -321,7 +321,22 @@ K1's general-case rule lets the gate accept package imports. For those tasks the
     `coq-style-guard.ts` and their tests deleted; unused `CoqProjectContext`/`CoqSessionState`/`TacticRecord`
     schemas removed; `coq-skill-hints.ts` → `lean-skill-hints.ts` (Lean diagnostics → Lean skill names).
   - Tests (PC): tool suite 270/271 → fixed the one prompt-text assertion; task 13/13.
-
-
 - 5f (skills): see V19; `lean-skill-hints.ts` points at these names. Skill tests 24/24 on the PC.
+- 5g: `edit-conflict-guard.ts` excerpt starts at the last theorem's proof (no `Proof.` search); tool README rewritten for
+  the Lean toolchain; last model-visible Rocq wording (proof-policy, checkpoint/task brace and `Qed` texts) replaced.
+
+### Phase 6 — consistency sweep (PC)
+
+- `grep -rniE "coq|rocq|petanque|ssreflect|mathcomp|admitted|qed\b|\.v\b"` over `src` and `.opencode`: remaining hits
+  are comments, the D13 legacy-name mapping (`mathcomp`/`coq_shape`/`coq:` accepted on input and mapped), and the
+  internal metric field `admitted_terminator_count` (always 0 in Lean, never shown as text). No prompt, tool
+  description, reminder or permission list mentions Rocq. `admit` remains only as a forbidden token / the `admit_id`
+  protocol name.
+- Typecheck clean (4/4 tasks).
+- Full suite on the PC (24 GB cap): **1518 pass, 20 skip, 3 fail** (Phase 0 baseline 1501/9/21). The 3 failures are the
+  baseline's oauth-browser 30 s timeouts (environment). Skips: Lean integration (env-gated), API-key and fsmonitor tests.
+- Lean integration against a D14-staged copy of the built package (`PROSABUDDY_LEAN_INTEGRATION=1`): **28/28**
+  (final gate accepts the reference and rejects `sorry`/axiom/`native_decide`; `lean_session` theorem and region scope,
+  re-open and replay, definitional goal comparison; `lean_query`/`lean_check`; K6/K7 statement checks).
+- Note status table: every note is done or deviated except the 8 Phase-8 runner notes.
 

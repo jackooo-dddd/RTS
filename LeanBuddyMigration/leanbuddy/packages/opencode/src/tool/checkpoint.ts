@@ -249,7 +249,7 @@ export const CheckpointTool = Tool.define("checkpoint", {
             ? `decomposition_checkpoint: ${JSON.stringify(decompositionCheckpoint)}`
             : undefined,
           proofStatus.status_detail === "compile_success_nonfinal" && !proofStatus.proof_progress.accepted
-            ? "next_action: this checkpoint is not accepted proof progress; obtain a new proof_region compiler certificate or complete the final Qed proof"
+            ? "next_action: this checkpoint is not accepted proof progress; obtain a new proof_region compiler certificate or complete the sorry-free final proof"
             : undefined,
           summary ? `warnings: ${summary}` : "no warnings",
         ].filter((line): line is string => Boolean(line)).join("\n"),
@@ -366,7 +366,7 @@ export const CheckpointTool = Tool.define("checkpoint", {
           ? `lemma_prefix_validation: fail - ${lemmaPrefixValidation.message ?? "prefix checkpoint failed"}`
           : "",
       lemmaPrefixValidation?.ok && lemmaPrefixValidation.prefix_complete
-        ? "next_action: advance to the next local proof hole toward completing the target theorem; keep later partition braces intact"
+        ? "next_action: advance to the next local proof hole toward completing the target theorem; keep later `sorry` holes intact"
         : lemmaPrefixValidation
           ? "next_action: repair the current first proof block with an edit toward a compiling theorem proof; do not switch to broad read-only search or unrelated edits"
           : "",

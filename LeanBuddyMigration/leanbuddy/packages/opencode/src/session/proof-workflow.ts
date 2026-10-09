@@ -1251,7 +1251,7 @@ export namespace SessionProofWorkflow {
     return text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
   }
 
-  const COQ_TARGET_KEYWORDS = new Set([
+  const TARGET_KEYWORDS = new Set([
     "at",
     "by",
     "do",
@@ -1325,7 +1325,7 @@ export namespace SessionProofWorkflow {
     if (
       scalarTarget &&
       /^[\p{L}_][\p{L}\p{N}_'!?]*$/u.test(scalarTarget) &&
-      !COQ_TARGET_KEYWORDS.has(scalarTarget.toLowerCase())
+      !TARGET_KEYWORDS.has(scalarTarget.toLowerCase())
     ) {
       return scalarTarget
     }
@@ -6647,7 +6647,7 @@ export namespace SessionProofWorkflow {
         : ""
       const reason = tripped
         ? `theorem-repair child reached the semantic liveness cutoff after ${actionCount} tool actions without a new compiler-backed proof progress receipt${compilerDetail}`
-        : `theorem-repair child has performed ${actionCount} tool actions without a new compiler-backed proof progress receipt${compilerDetail}; preserve exploration freedom, but do not submit the same compiler state a third time and target a new certificate, discharged premise/debt, or final Qed`
+        : `theorem-repair child has performed ${actionCount} tool actions without a new compiler-backed proof progress receipt${compilerDetail}; preserve exploration freedom, but do not submit the same compiler state a third time and target a new certificate, discharged premise/debt, or the sorry-free final proof`
       const guard: FallbackGuard = {
         blocker_admit_id: repairWorkerAssignment.admit_id,
         theorem_fingerprint: theoremFingerprint(source, repairWorkerAssignment.theorem),

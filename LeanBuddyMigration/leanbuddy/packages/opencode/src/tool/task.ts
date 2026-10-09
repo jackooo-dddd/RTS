@@ -544,7 +544,7 @@ function withLemmaRuntimeGuardrail(prompt: string, runtime: LemmaTaskRuntime) {
     `stack_mode: ${runtime.stack_mode}`,
     `max_children_per_split: ${runtime.max_children}`,
     "ownership: edit only the assigned proof_region; preserve its exported target when possible and never edit the theorem terminator.",
-    "prefix: solve and validate the first unresolved local block before touching later local proof holes; preserve partition braces.",
+    "prefix: solve and validate the first unresolved local block before touching later local proof holes; keep later holes as `sorry`.",
     "validation: after a failed proof change, use the first diagnostic to repair the same block from the authoritative staged revision.",
     "split: keep local decomposition in this session and expose only the immediate smaller blocker; do not dispatch another lemma worker.",
     "freedom: direct proof, same-region helpers, and evidence-backed local remodeling requests remain available.",
@@ -562,7 +562,7 @@ function withLemmaAssignment(prompt: string, item: LemmaAssignment) {
         `- editable_region.mode: ${item.editable_region.mode}`,
         `- editable_region.lines: ${item.editable_region.start_line}-${item.editable_region.end_line}`,
         `- can_add_sibling_helpers: ${item.editable_region.can_add_sibling_helpers}`,
-        "- The assigned proof_region should include the exported target statement and its complete `{ ... }` proof block, not just the text inside that target's braces.",
+        "- The assigned proof_region should include the complete exported target `have h : P := (by … )`, not just the tactics inside its `by`.",
         "- Treat the exported target statement as the prover-authored subgoal contract: prefer writing proof text inside its block and adding same-region helpers before it, not changing its name or proposition.",
         "- You may edit text inside the proof_region begin/end markers, including adding sibling helper have/assert/pose statements before the target have/assert.",
         "- You must not edit text before the editable region or after it.",
@@ -831,7 +831,7 @@ export const TaskTool = Tool.define("task", async (ctx) => {
         })
         if (sibling) {
           throw new Error(
-            "launch only one fresh lemma task per assistant turn; wait for that admit result before dispatching the next lemma task",
+            "launch only one fresh lemma task per assistant turn; wait for that region's result before dispatching the next lemma task",
           )
         }
 
