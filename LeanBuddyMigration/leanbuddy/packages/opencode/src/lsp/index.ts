@@ -16,9 +16,7 @@ export namespace LSP {
 
   export const Event = {
     Updated: BusEvent.define("lsp.updated", z.object({})),
-    RocqServerStatus: LSPClient.Event.RocqServerStatus,
-    RocqFileProgress: LSPClient.Event.RocqFileProgress,
-    RocqExecutionInformation: LSPClient.Event.RocqExecutionInformation,
+    LeanFileProgress: LSPClient.Event.LeanFileProgress,
   }
 
   export const Range = z
@@ -63,72 +61,6 @@ export namespace LSP {
       ref: "DocumentSymbol",
     })
   export type DocumentSymbol = z.infer<typeof DocumentSymbol>
-
-  const RocqHyp = z.object({
-    names: z.array(z.string()),
-    ty: z.string(),
-  })
-
-  const RocqGoal = z.object({
-    hyps: z.array(RocqHyp),
-    ty: z.string(),
-  })
-
-  const RocqGoalConfig = z.object({
-    goals: z.array(RocqGoal),
-    stack: z.array(z.tuple([z.array(RocqGoal), z.array(RocqGoal)]).or(z.array(z.any()))).catch([]),
-    bullet: z.string().nullable().optional(),
-    shelf: z.array(RocqGoal).catch([]),
-    given_up: z.array(RocqGoal).catch([]),
-  })
-
-  const RocqMessage = z.object({
-    level: z.number().optional(),
-    text: z.string(),
-    range: Range.optional(),
-  })
-
-  export const RocqGoals = RocqGoalConfig
-  export type RocqGoals = z.infer<typeof RocqGoals>
-
-  export const RocqGoalAnswer = z.object({
-    textDocument: z
-      .object({
-        uri: z.string(),
-        version: z.number().optional(),
-      })
-      .optional(),
-    position: z
-      .object({
-        line: z.number(),
-        character: z.number(),
-      })
-      .optional(),
-    range: Range.optional(),
-    goals: RocqGoalConfig.optional(),
-    messages: z.array(z.union([z.string(), RocqMessage])).catch([]),
-    error: z.string().optional(),
-  })
-  export type RocqGoalAnswer = z.infer<typeof RocqGoalAnswer>
-
-  export const RocqPetanqueResult = z.object({
-    st: z.number(),
-    hash: z.number().optional(),
-    proof_finished: z.boolean(),
-    feedback: z.array(z.tuple([z.number(), z.string()])).default([]),
-  })
-  export type RocqPetanqueResult = z.infer<typeof RocqPetanqueResult>
-
-  export const RocqErrorData = z.object({
-    feedback: z.array(
-      z.object({
-        level: z.number().optional(),
-        text: z.string(),
-        range: Range.optional(),
-      }),
-    ),
-  })
-  export type RocqErrorData = z.infer<typeof RocqErrorData>
 
   const filterExperimentalServers = (servers: Record<string, LSPServer.Info>) => {
     if (Flag.OPENCODE_EXPERIMENTAL_LSP_TY) {
@@ -233,47 +165,22 @@ export namespace LSP {
     return state()
   }
 
-  const RocqState = z.union([z.literal("Busy"), z.literal("Idle"), z.literal("Stopped")])
-
-  const RocqProgress = z
+  const LeanProgress = z
     .object({
       path: z.string(),
+      /** Ranges still being elaborated; 0 = processed. */
       count: z.number(),
     })
     .meta({
-      ref: "LSPRocqProgress",
+      ref: "LSPLeanProgress",
     })
 
-  const RocqExecution = z
+  const LeanStatus = z
     .object({
-      path: z.string(),
-      range: Range.optional(),
+      progress: z.array(LeanProgress),
     })
     .meta({
-      ref: "LSPRocqExecution",
-    })
-
-  const RocqCurrent = z
-    .object({
-      path: z.string(),
-      goal: z.string().optional(),
-      hyps: z.array(z.string()),
-      error: z.string().optional(),
-    })
-    .meta({
-      ref: "LSPRocqCurrent",
-    })
-
-  const RocqStatus = z
-    .object({
-      state: RocqState.optional(),
-      modname: z.string().optional(),
-      progress: z.array(RocqProgress),
-      execution: z.array(RocqExecution),
-      current: RocqCurrent.optional(),
-    })
-    .meta({
-      ref: "LSPRocqStatus",
+      ref: "LSPLeanStatus",
     })
 
   export const Status = z
@@ -282,7 +189,7 @@ export namespace LSP {
       name: z.string(),
       root: z.string(),
       status: z.union([z.literal("connected"), z.literal("error")]),
-      rocq: RocqStatus.optional(),
+      lean: LeanStatus.optional(),
     })
     .meta({
       ref: "LSPStatus",
@@ -296,31 +203,15 @@ export namespace LSP {
         name: x.servers[client.serverID].id,
         root: path.relative(Instance.directory, client.root),
         status: "connected" as const,
-        rocq:
-          client.serverID === "rocq-lsp"
+        lean:
+          client.serverID === "lean"
             ? {
-                state: client.rocq.serverStatus?.status,
-                modname: client.rocq.serverStatus?.modname,
-                progress: [...client.rocq.fileProgress.values()]
+                progress: [...client.lean.fileProgress.values()]
                   .map((item) => ({
                     path: path.relative(client.root, fileURLToPath(item.uri)),
                     count: item.processing.length,
                   }))
                   .toSorted((a, b) => a.path.localeCompare(b.path)),
-                execution: [...client.rocq.executionInformation.values()]
-                  .map((item) => ({
-                    path: path.relative(client.root, fileURLToPath(item.uri)),
-                    range: item.range,
-                  }))
-                  .toSorted((a, b) => a.path.localeCompare(b.path)),
-                current: client.rocq.current
-                  ? {
-                      path: path.relative(client.root, fileURLToPath(client.rocq.current.uri)),
-                      goal: client.rocq.current.goal,
-                      hyps: client.rocq.current.hyps,
-                      error: client.rocq.current.error,
-                    }
-                  : undefined,
               }
             : undefined,
       })),
@@ -636,122 +527,14 @@ export namespace LSP {
     }
   }
 
-  function isRocq(client: LSPClient.Info) {
-    return client.serverID === "rocq-lsp"
-  }
-
-  async function runRocq<T>(file: string, input: (client: LSPClient.Info) => Promise<T>) {
-    const clients = await getClients(file)
-    const client = clients.find(isRocq)
-    if (!client) throw new Error("rocq-lsp is not available. Install via: opam install coq-lsp")
-    return input(client)
-  }
-
-  export async function rocqGoals(input: {
-    file: string
-    line: number
-    character: number
-    mode?: "Prev" | "After"
-    command?: string
-    pp_format?: "Str" | "Pp" | "Box"
-    compact?: boolean
-  }) {
-    await touchFile(input.file)
-    const result = await runRocq(input.file, (client) =>
-      client.connection.sendRequest("proof/goals", {
-        textDocument: {
-          uri: pathToFileURL(input.file).href,
-        },
-        position: {
-          line: input.line,
-          character: input.character,
-        },
-        ...(input.mode ? { mode: input.mode } : {}),
-        ...(input.command ? { command: input.command } : {}),
-        ...(input.pp_format ? { pp_format: input.pp_format } : {}),
-        ...(typeof input.compact === "boolean" ? { compact: input.compact } : {}),
-      }),
+  /**
+   * S25: the sha256 of the source text the current diagnostics for `file` were computed for, when every server that
+   * reported diagnostics for it agrees (undefined when unknown).
+   */
+  export async function diagnosticsSourceHash(file: string) {
+    const hashes = new Set(
+      (await getClients(file)).map((client) => client.diagnosticsSourceHash(file)).filter(Boolean),
     )
-    return RocqGoalAnswer.parse(result)
-  }
-
-  export async function rocqDocument(input: { file: string; ast?: boolean; goals?: "Str" | "Pp" }) {
-    await touchFile(input.file)
-    return runRocq(input.file, (client) =>
-      client.connection.sendRequest("coq/getDocument", {
-        textDocument: {
-          uri: pathToFileURL(input.file).href,
-        },
-        ...(input.ast ? { ast: true } : {}),
-        ...(input.goals ? { goals: input.goals } : {}),
-      }),
-    )
-  }
-
-  export async function rocqSaveVo(input: { file: string }) {
-    await touchFile(input.file)
-    return runRocq(input.file, (client) =>
-      client.connection.sendRequest("coq/saveVo", {
-        textDocument: {
-          uri: pathToFileURL(input.file).href,
-        },
-      }),
-    )
-  }
-
-  export async function rocqPetanqueStart(input: {
-    file: string
-    theorem?: string
-    position?: { line: number; character: number }
-  }) {
-    await touchFile(input.file)
-    return runRocq(input.file, async (client) => {
-      const uri = pathToFileURL(input.file).href
-      const result = input.theorem
-        ? await client.connection.sendRequest("petanque/start", {
-            uri,
-            thm: input.theorem,
-          })
-        : await client.connection.sendRequest("petanque/get_state_at_pos", {
-            uri,
-            position: input.position,
-          })
-      return RocqPetanqueResult.omit({ feedback: true }).parse(result)
-    })
-  }
-
-  export async function rocqPetanqueRun(input: { file: string; state: number; tactic: string }) {
-    await touchFile(input.file)
-    try {
-      const result = await runRocq(input.file, (client) =>
-        client.connection.sendRequest("petanque/run", {
-          st: input.state,
-          tac: input.tactic,
-        }),
-      )
-      return {
-        ok: true as const,
-        result: RocqPetanqueResult.parse(result),
-      }
-    } catch (error: any) {
-      const data = RocqErrorData.safeParse(error?.data)
-      return {
-        ok: false as const,
-        error: {
-          message: error?.message || error?.data?.message || String(error),
-          feedback: data.success ? data.data.feedback : [],
-        },
-      }
-    }
-  }
-
-  export async function rocqPetanqueGoals(input: { file: string; state: number }) {
-    await touchFile(input.file)
-    const result = await runRocq(input.file, (client) =>
-      client.connection.sendRequest("petanque/goals", {
-        st: input.state,
-      }),
-    )
-    return RocqGoalConfig.parse(result)
+    return hashes.size === 1 ? [...hashes][0] : undefined
   }
 }

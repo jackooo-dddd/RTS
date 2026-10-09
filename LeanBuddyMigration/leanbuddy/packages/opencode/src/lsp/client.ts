@@ -7,6 +7,7 @@ import type { Diagnostic as VSCodeDiagnostic } from "vscode-languageserver-types
 import { Log } from "../util/log"
 import { LANGUAGE_EXTENSIONS } from "./language"
 import z from "zod"
+import { createHash } from "crypto"
 import type { LSPServer } from "./server"
 import { NamedError } from "@opencode-ai/util/error"
 import { withTimeout } from "../util/timeout"
@@ -15,24 +16,7 @@ import { Filesystem } from "../util/filesystem"
 
 const DIAGNOSTICS_DEBOUNCE_MS = 150
 
-const RocqFeedback = z.object({
-  level: z.number().optional(),
-  text: z.string(),
-  range: z
-    .object({
-      start: z.object({
-        line: z.number(),
-        character: z.number(),
-      }),
-      end: z.object({
-        line: z.number(),
-        character: z.number(),
-      }),
-    })
-    .optional(),
-})
-
-const RocqStateRange = z.object({
+const LeanRange = z.object({
   start: z.object({
     line: z.number(),
     character: z.number(),
@@ -43,32 +27,12 @@ const RocqStateRange = z.object({
   }),
 })
 
-const RocqGoalHyp = z.object({
-  names: z.array(z.string()),
-  ty: z.string(),
-})
-
-const RocqCurrentGoal = z.object({
-  hyps: z.array(RocqGoalHyp),
-  ty: z.string(),
-})
-
-const RocqGoalSnapshot = z.object({
-  goals: z
-    .object({
-      goals: z.array(RocqCurrentGoal),
-    })
-    .optional(),
-  error: z.string().optional(),
-})
-
 export namespace LSPClient {
   const log = Log.create({ service: "lsp.client" })
 
   export type Info = NonNullable<Awaited<ReturnType<typeof create>>>
 
   export type Diagnostic = VSCodeDiagnostic
-  export type RocqFeedback = z.infer<typeof RocqFeedback>
 
   export const InitializeError = NamedError.create(
     "LSPInitializeError",
@@ -85,36 +49,20 @@ export namespace LSPClient {
         path: z.string(),
       }),
     ),
-    RocqServerStatus: BusEvent.define(
-      "lsp.client.rocq.server-status",
-      z.object({
-        serverID: z.string(),
-        root: z.string(),
-        status: z.union([z.literal("Busy"), z.literal("Idle"), z.literal("Stopped")]),
-        modname: z.string().optional(),
-      }),
-    ),
-    RocqFileProgress: BusEvent.define(
-      "lsp.client.rocq.file-progress",
+    /** Lean server `$/lean/fileProgress`: the ranges still being elaborated (empty = the file is processed). */
+    LeanFileProgress: BusEvent.define(
+      "lsp.client.lean.file-progress",
       z.object({
         serverID: z.string(),
         root: z.string(),
         uri: z.string(),
+        version: z.number().optional(),
         processing: z.array(
           z.object({
-            range: RocqStateRange,
+            range: LeanRange,
             kind: z.number().optional(),
           }),
         ),
-      }),
-    ),
-    RocqExecutionInformation: BusEvent.define(
-      "lsp.client.rocq.execution-information",
-      z.object({
-        serverID: z.string(),
-        root: z.string(),
-        uri: z.string(),
-        range: RocqStateRange.optional(),
       }),
     ),
   }
@@ -129,82 +77,21 @@ export namespace LSPClient {
     )
 
     const diagnostics = new Map<string, Diagnostic[]>()
-    const rocq = {
-      serverStatus: null as null | {
-        status: "Busy" | "Idle" | "Stopped"
-        modname?: string
-      },
+    const lean = {
       fileProgress: new Map<
         string,
         {
           uri: string
-          processing: { range: z.infer<typeof RocqStateRange>; kind?: number }[]
+          version?: number
+          processing: { range: z.infer<typeof LeanRange>; kind?: number }[]
         }
       >(),
-      executionInformation: new Map<string, { uri: string; range?: z.infer<typeof RocqStateRange> }>(),
-      current: null as null | {
-        uri: string
-        goal?: string
-        hyps: string[]
-        error?: string
-      },
-      goalSeq: 0,
     }
+    // S25: the source hash of every document version sent to the server, and of the version each file's current
+    // diagnostics belong to, so callers can drop diagnostics computed for an older revision.
+    const versionHashes = new Map<string, Map<number, string>>()
+    const diagnosticHashes = new Map<string, string>()
 
-    async function refreshCurrent(info: { uri: string; range?: z.infer<typeof RocqStateRange> }) {
-      const seq = ++rocq.goalSeq
-      if (!info.range) {
-        if (seq !== rocq.goalSeq) return
-        rocq.current = {
-          uri: info.uri,
-          hyps: [],
-        }
-        return
-      }
-
-      const result = await connection
-        .sendRequest("proof/goals", {
-          textDocument: {
-            uri: info.uri,
-          },
-          position: {
-            line: info.range.end.line,
-            character: info.range.end.character,
-          },
-          mode: "After",
-          pp_format: "Str",
-          compact: true,
-        })
-        .catch(() => undefined)
-
-      if (seq !== rocq.goalSeq) return
-      if (!result) {
-        rocq.current = {
-          uri: info.uri,
-          hyps: [],
-          error: "Unable to load current goal",
-        }
-        return
-      }
-
-      const parsed = RocqGoalSnapshot.safeParse(result)
-      if (!parsed.success) {
-        rocq.current = {
-          uri: info.uri,
-          hyps: [],
-          error: "Unable to parse current goal",
-        }
-        return
-      }
-
-      const goal = parsed.data.goals?.goals[0]
-      rocq.current = {
-        uri: info.uri,
-        goal: goal?.ty,
-        hyps: goal?.hyps.map((item) => `${item.names.join(", ")}: ${item.ty}`) ?? [],
-        error: parsed.data.error,
-      }
-    }
     connection.onNotification("textDocument/publishDiagnostics", (params) => {
       const filePath = Filesystem.normalizePath(fileURLToPath(params.uri))
       l.info("textDocument/publishDiagnostics", {
@@ -213,76 +100,41 @@ export namespace LSPClient {
       })
       const exists = diagnostics.has(filePath)
       diagnostics.set(filePath, params.diagnostics)
+      const hashes = versionHashes.get(filePath)
+      const version = typeof params.version === "number" ? params.version : files[filePath]
+      const hash = version !== undefined ? hashes?.get(version) : undefined
+      if (hash) diagnosticHashes.set(filePath, hash)
+      else diagnosticHashes.delete(filePath)
       if (!exists && input.serverID === "typescript") return
       Bus.publish(Event.Diagnostics, { path: filePath, serverID: input.serverID })
     })
-    connection.onNotification("$/coq/serverStatus", (params) => {
-      if (input.serverID !== "rocq-lsp") return
-      const status = z
-        .object({
-          status: z.union([z.literal("Busy"), z.literal("Idle"), z.literal("Stopped")]),
-          modname: z.string().optional(),
-        })
-        .safeParse(params)
-      if (!status.success) return
-      rocq.serverStatus = status.data
-      Bus.publish(Event.RocqServerStatus, {
-        serverID: input.serverID,
-        root: input.root,
-        ...status.data,
-      })
-    })
-    connection.onNotification("$/coq/fileProgress", (params) => {
-      if (input.serverID !== "rocq-lsp") return
+    connection.onNotification("$/lean/fileProgress", (params) => {
       const progress = z
         .object({
           textDocument: z.object({
             uri: z.string(),
+            version: z.number().optional(),
           }),
           processing: z.array(
             z.object({
-              range: RocqStateRange,
+              range: LeanRange,
               kind: z.number().optional(),
             }),
           ),
         })
         .safeParse(params)
       if (!progress.success) return
-      rocq.fileProgress.set(progress.data.textDocument.uri, {
+      lean.fileProgress.set(progress.data.textDocument.uri, {
         uri: progress.data.textDocument.uri,
+        version: progress.data.textDocument.version,
         processing: progress.data.processing,
       })
-      Bus.publish(Event.RocqFileProgress, {
+      Bus.publish(Event.LeanFileProgress, {
         serverID: input.serverID,
         root: input.root,
         uri: progress.data.textDocument.uri,
+        version: progress.data.textDocument.version,
         processing: progress.data.processing,
-      })
-    })
-    connection.onNotification("$/coq/executionInformation", async (params) => {
-      if (input.serverID !== "rocq-lsp") return
-      const info = z
-        .object({
-          textDocument: z.object({
-            uri: z.string(),
-          }),
-          range: RocqStateRange.optional(),
-        })
-        .safeParse(params)
-      if (!info.success) return
-      rocq.executionInformation.set(info.data.textDocument.uri, {
-        uri: info.data.textDocument.uri,
-        range: info.data.range,
-      })
-      await refreshCurrent({
-        uri: info.data.textDocument.uri,
-        range: info.data.range,
-      })
-      Bus.publish(Event.RocqExecutionInformation, {
-        serverID: input.serverID,
-        root: input.root,
-        uri: info.data.textDocument.uri,
-        range: info.data.range,
       })
     })
     connection.onRequest("window/workDoneProgress/create", (params) => {
@@ -361,6 +213,14 @@ export namespace LSPClient {
       [path: string]: number
     } = {}
 
+    function rememberVersion(file: string, version: number, text: string) {
+      const key = Filesystem.normalizePath(file)
+      const hashes = versionHashes.get(key) ?? new Map<number, string>()
+      hashes.set(version, createHash("sha256").update(text).digest("hex"))
+      for (const old of [...hashes.keys()].filter((entry) => entry < version - 8)) hashes.delete(old)
+      versionHashes.set(key, hashes)
+    }
+
     const result = {
       root: input.root,
       get serverID() {
@@ -390,6 +250,7 @@ export namespace LSPClient {
 
             const next = version + 1
             files[input.path] = next
+            rememberVersion(input.path, next, text)
             log.info("textDocument/didChange", {
               path: input.path,
               version: next,
@@ -425,14 +286,19 @@ export namespace LSPClient {
             },
           })
           files[input.path] = 0
+          rememberVersion(input.path, 0, text)
           return
         },
       },
       get diagnostics() {
         return diagnostics
       },
-      get rocq() {
-        return rocq
+      get lean() {
+        return lean
+      },
+      /** S25: sha256 of the source text the current diagnostics of `file` were computed for (undefined if unknown). */
+      diagnosticsSourceHash(file: string) {
+        return diagnosticHashes.get(Filesystem.normalizePath(file))
       },
       async waitForDiagnostics(input: { path: string }) {
         const normalizedPath = Filesystem.normalizePath(

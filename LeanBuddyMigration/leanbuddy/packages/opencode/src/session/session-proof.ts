@@ -245,16 +245,9 @@ export namespace SessionProof {
         if (b.file === event.properties.path) markStale(sid)
       }
     })
-    Bus.subscribe(LSP.Event.RocqExecutionInformation, (event) => {
+    Bus.subscribe(LSP.Event.LeanFileProgress, (event) => {
       for (const [sid, b] of cache) {
-        if (b.file.endsWith(event.properties.uri) || event.properties.uri.endsWith(b.file.split("/").pop()!))
-          markStale(sid)
-      }
-    })
-    Bus.subscribe(LSP.Event.RocqFileProgress, (event) => {
-      for (const [sid, b] of cache) {
-        if (b.file.endsWith(event.properties.uri) || event.properties.uri.endsWith(b.file.split("/").pop()!))
-          markStale(sid)
+        if (pathToFileURL(b.file).href === event.properties.uri) markStale(sid)
       }
     })
     log.info("subscribed to LSP events for stale marking")

@@ -980,6 +980,13 @@ export namespace SessionPrompt {
         }
         throw e
       })
+      // K10 (D12): a proof agent's model must declare its context window, or compaction is silently disabled.
+      if (proofAgents.has(lastUser.agent) && !(model.limit.context > 0)) {
+        throw new Error(
+          `model ${model.providerID}/${model.id} declares no limit.context; proof agents need it for compaction. ` +
+            'Add "limit": {"context": <tokens>, "output": <tokens>} to this model in the provider configuration.',
+        )
+      }
       const task = tasks.pop()
 
       // pending subtask

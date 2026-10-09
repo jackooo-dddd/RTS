@@ -72,11 +72,11 @@ function fallback(part: ToolPart) {
   })
 }
 
-function looksLikeCoqProofBenchmarkPrompt(message: string) {
-  return /\b(?:Coq|Rocq)\b[\s\S]*\btheorem[- ]proving\b/i.test(message) ||
-    /\btarget file\b[\s\S]{0,120}`?[^`\s]+\.v`?/i.test(message) ||
-    /\btheorem to prove\b[\s\S]{0,120}`?[A-Za-z0-9_']+`?/i.test(message) ||
-    /\bcoqc\s+[^\s`]+\.v\b/i.test(message)
+function looksLikeLeanProofBenchmarkPrompt(message: string) {
+  return /\bLean\b[\s\S]*\btheorem[- ]proving\b/i.test(message) ||
+    /\btarget file\b[\s\S]{0,120}`?[^`\s]+\.lean`?/i.test(message) ||
+    /\btheorem to prove\b[\s\S]{0,120}`?[A-Za-z0-9_'.]+`?/i.test(message) ||
+    /\b(?:lake env lean|lean_check)\s+[^\s`]+\.lean\b/i.test(message)
 }
 
 function glob(info: ToolProps<typeof GlobTool>) {
@@ -336,7 +336,7 @@ export const RunCommand = cmd({
     }
 
     const traceRequests = args.traceRequests === true || Flag.OPENCODE_TRACE_REQUESTS
-    const inferredAgent = !args.agent && looksLikeCoqProofBenchmarkPrompt(message) ? "prover" : undefined
+    const inferredAgent = !args.agent && looksLikeLeanProofBenchmarkPrompt(message) ? "prover" : undefined
 
     const rules: PermissionNext.Ruleset = [
       {

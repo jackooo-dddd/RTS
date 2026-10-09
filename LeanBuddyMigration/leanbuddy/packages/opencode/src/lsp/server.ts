@@ -66,13 +66,6 @@ export namespace LSPServer {
     spawn(root: string, input?: SpawnOptions): Promise<Handle | undefined>
   }
 
-  const RocqDefaults = {
-    check_only_on_request: false,
-    goal_after_tactic: true,
-    send_perf_data: false,
-    pp_type: 0,
-  } as const
-
   export const Deno: Info = {
     id: "deno",
     root: async (file) => {
@@ -2068,24 +2061,24 @@ export namespace LSPServer {
     },
   }
 
-  export const RocqLsp: Info = {
-    id: "rocq-lsp",
-    extensions: [".v"],
-    root: NearestRoot(["_RocqProject", "_CoqProject", "Makefile.conf", "dune-project"]),
+  /**
+   * Lean 4 (DECISIONS D3): `lake serve` in the Lake project root, so the server uses the project's toolchain and
+   * package paths. Used for diagnostics and read-only lookups (hover, definitions, references, symbols); goal states
+   * come from Pantograph (`lean_session`). `OPENCODE_LAKE` overrides the `lake` binary.
+   */
+  export const LeanLsp: Info = {
+    id: "lean",
+    extensions: [".lean"],
+    root: NearestRoot(["lakefile.lean", "lakefile.toml", "lean-toolchain"]),
     async spawn(root, input) {
-      // Try coq-lsp (works for both Coq 8.x and Rocq 9.x)
-      let bin = which("coq-lsp")
+      const bin = process.env.OPENCODE_LAKE?.trim() || which("lake")
       if (!bin) {
-        // Try rocq-lsp as alternative
-        bin = which("rocq-lsp")
-      }
-      if (!bin) {
-        log.info("coq-lsp/rocq-lsp not found, please install via opam: opam install coq-lsp")
+        log.info("lake not found; install Lean with elan (https://github.com/leanprover/elan)")
         return
       }
-      log.info("starting rocq-lsp", { bin, root })
+      log.info("starting lean server", { bin, root })
       return {
-        process: spawn(bin, [], {
+        process: spawn(bin, ["serve"], {
           cwd: root,
           env: {
             ...process.env,
@@ -2093,7 +2086,6 @@ export namespace LSPServer {
           },
         }),
         initialization: {
-          ...RocqDefaults,
           ...input?.initialization,
         },
       }

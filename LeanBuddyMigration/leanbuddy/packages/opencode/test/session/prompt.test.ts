@@ -23,7 +23,7 @@ test("controller stop text is completed so the CLI can emit its reason", async (
         test: {
           npm: "@ai-sdk/openai-compatible",
           options: { apiKey: "test", baseURL: "http://127.0.0.1:1/v1" },
-          models: { test: { name: "Test" } },
+          models: { test: { name: "Test", limit: { context: 200000, output: 32000 } } },
         },
       },
     },
@@ -128,7 +128,7 @@ describe("session.prompt accepted-plan materialization tool gate", () => {
     await using tmp = await tmpdir({ git: true, config: {
       provider: { test: {
         npm: "@ai-sdk/openai-compatible", options: { apiKey: "test", baseURL: "http://127.0.0.1:1/v1" },
-        models: { test: { name: "Test" } },
+        models: { test: { name: "Test", limit: { context: 200000, output: 32000 } } },
       } },
     } })
     await Instance.provide({ directory: tmp.path, fn: async () => {

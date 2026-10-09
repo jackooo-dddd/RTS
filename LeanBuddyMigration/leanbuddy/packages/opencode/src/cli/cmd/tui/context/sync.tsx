@@ -112,9 +112,7 @@ export const { use: useSync, provider: SyncProvider } = createSimpleContext({
       const event = e.details
       const type = event.type as string
       if (
-        type === "lsp.client.rocq.server-status" ||
-        type === "lsp.client.rocq.file-progress" ||
-        type === "lsp.client.rocq.execution-information"
+        type === "lsp.client.lean.file-progress"
       ) {
         refreshLsp()
         return

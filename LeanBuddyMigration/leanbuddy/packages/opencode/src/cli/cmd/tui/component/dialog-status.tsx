@@ -4,7 +4,7 @@ import { useTheme } from "../context/theme"
 import { useDialog } from "@tui/ui/dialog"
 import { useSync } from "@tui/context/sync"
 import { For, Match, Switch, Show, createMemo } from "solid-js"
-import { pickLsp, rocqEnv, rocqExecution, rocqGoal, rocqProgress } from "../util/lsp"
+import { pickLsp, leanProgress } from "../util/lsp"
 
 export type DialogStatusProps = {}
 
@@ -12,11 +12,6 @@ export function DialogStatus() {
   const sync = useSync()
   const { theme } = useTheme()
   const dialog = useDialog()
-  const rocqTone = (state?: "Busy" | "Idle" | "Stopped") => {
-    if (state === "Busy") return theme.warning
-    if (state === "Idle") return theme.success
-    return theme.textMuted
-  }
 
   const enabledFormatters = createMemo(() => sync.data.formatter.filter((f) => f.enabled))
   const lsp = createMemo(() => pickLsp(sync.data.lsp, sync.data.path.directory || process.cwd()))
@@ -121,75 +116,12 @@ export function DialogStatus() {
                     <b>{item.id}</b> <span style={{ fg: theme.textMuted }}>{item.root}</span>
                   </text>
                 </box>
-                <Show when={item.rocq}>
-                  {(rocq) => (
+                <Show when={item.lean}>
+                  {(lean) => (
                     <box paddingLeft={2} flexDirection="column">
-                      <text fg={rocqTone(rocq().state)} wrapMode="word">
-                        {(rocq().state ?? "Starting") + (rocq().modname ? ` ${rocq().modname}` : "")}
+                      <text fg={leanProgress(lean()) ? theme.warning : theme.success} wrapMode="word">
+                        {leanProgress(lean()) ?? "Ready"}
                       </text>
-                      <Show when={rocqProgress(rocq())}>
-                        {(line) => (
-                          <text fg={theme.textMuted} wrapMode="word">
-                            {line()}
-                          </text>
-                        )}
-                      </Show>
-                      <Show when={rocqExecution(rocq())}>
-                        {(line) => (
-                          <text fg={theme.textMuted} wrapMode="word">
-                            {line()}
-                          </text>
-                        )}
-                      </Show>
-                      <Show when={rocq().current?.path}>
-                        {(file) => (
-                          <text fg={theme.textMuted} wrapMode="word">
-                            {file()}
-                          </text>
-                        )}
-                      </Show>
-                      <box flexDirection="row" gap={1} paddingTop={1}>
-                        <box
-                          flexGrow={1}
-                          minWidth={0}
-                          flexDirection="column"
-                          border={true}
-                          title=" Current Env Var "
-                          titleAlignment="center"
-                          backgroundColor={theme.backgroundElement}
-                          borderColor={theme.borderActive}
-                          paddingLeft={1}
-                          paddingRight={1}
-                          paddingTop={1}
-                          paddingBottom={1}
-                        >
-                          <For each={rocqEnv(rocq())}>
-                            {(line) => (
-                              <text fg={theme.textMuted} wrapMode="word">
-                                {line}
-                              </text>
-                            )}
-                          </For>
-                        </box>
-                        <box
-                          flexGrow={1}
-                          minWidth={0}
-                          flexDirection="column"
-                          border={true}
-                          title=" Current Goal "
-                          titleAlignment="center"
-                          backgroundColor={theme.backgroundElement}
-                          borderColor={theme.borderActive}
-                          paddingLeft={1}
-                          paddingRight={1}
-                          paddingTop={1}
-                          paddingBottom={1}
-                        >
-                          <text fg={theme.textMuted} wrapMode="word">
-                            {rocqGoal(rocq())}
-                          </text>
-                        </box>
-                      </box>
                     </box>
                   )}
                 </Show>

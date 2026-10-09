@@ -106,7 +106,7 @@ export const LANGUAGE_EXTENSIONS: Record<string, string> = {
   ".mjs": "javascript",
   ".cjs": "javascript",
   ".vue": "vue",
-  ".v": "rocq",
+  ".lean": "lean",
   ".zig": "zig",
   ".zon": "zig",
   ".astro": "astro",

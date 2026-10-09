@@ -292,4 +292,18 @@ K1's general-case rule lets the gate accept package imports. For those tasks the
   **1528 pass, 20 skip, 4 fail** (baseline 1501/9/21); 3 failures are the baseline's oauth-browser timeouts, the
   4th was a fixture leftover (fixed). New tests: `known-problem-fixes.test.ts` (K4, K5, K8, S14, S26),
   `lean-statement-check.test.ts` (K6, K7); with proof-review, proof-workflow, prompt, task, bash: all pass on the PC.
+- 5d (LSP, S25, K10):
+  - `lsp/server.ts`: `LeanLsp` (`lake serve` in the Lake root, `.lean`; `OPENCODE_LAKE` override) replaces rocq-lsp;
+    `language.ts` maps `.lean`. `lsp/client.ts`: `$/lean/fileProgress` state/event (`lsp.client.lean.file-progress`)
+    replaces the Rocq server-status/progress/execution/goal machinery; `lsp/index.ts` drops `rocqGoals`,
+    `rocqDocument`, `rocqSaveVo`, Petanque and their schemas (D3), status reports Lean progress.
+  - S25: the client records the sha256 of every document version it sends and of the version each diagnostics set
+    belongs to (`LSP.diagnosticsSourceHash`); `ProofContext.snapshot` drops diagnostics for another revision and says
+    "diagnostics pending for revision …". Snapshot goals come from the session's `lean_session` state (D3).
+  - `lsp` tool: `proofGoals` removed (D3, D12/K11); description points to `lean_session`. TUI sidebar/status show
+    Lean processing state; `run.ts` detects Lean benchmark prompts.
+  - K10: a proof agent whose model has no `limit.context` fails at the turn start with a clear message (the runner
+    check is Phase 8).
+  - Tests (PC): new `lean-lsp.integration.test.ts` (real `lake serve`: diagnostics + S25 hash), LSP/projection/
+    compaction/known-problem 40/40, prompt 18/18.
 

@@ -4,6 +4,9 @@ import { LSPClient } from "../lsp/client"
 import { Log } from "../util/log"
 import { Instance } from "../project/instance"
 import path from "path"
+import { createHash } from "crypto"
+import { pathToFileURL } from "url"
+import { ProofEditTransaction } from "./proof-edit-transaction"
 
 /**
  * Proof binding: which file + position a session is currently tracking.
@@ -16,8 +19,8 @@ export interface ProofBinding {
 }
 
 /**
- * Live proof context snapshot aggregated from rocq-lsp.
- * Produced by ProofContext.snapshot() and injected into prompts / pre-tool hooks.
+ * Live proof context snapshot: goals from the session's `lean_session` state (Pantograph, DECISIONS D3), diagnostics
+ * from the Lean server. Produced by ProofContext.snapshot() and injected into prompts / pre-tool hooks.
  */
 export interface ProofSnapshot {
   file: string
@@ -25,6 +28,10 @@ export interface ProofSnapshot {
   goal?: string
   hyps: string[]
   errors: { line: number; col: number; message: string }[]
+  /** S25: sha256 of the staged source the snapshot describes. */
+  source_hash?: string
+  /** S25: set when the server's diagnostics belong to another revision (they are then not shown). */
+  diagnostics_note?: string
   timestamp: number
   fresh: boolean
 }
@@ -86,31 +93,23 @@ export namespace ProofContext {
   ): Promise<ProofSnapshot> {
     log.info("snapshot", { sessionID, file, position })
 
-    // 1. Touch file and wait for diagnostics
+    // 1. Touch file, wait for diagnostics and for the Lean server to finish processing it
     await LSP.touchFile(file, true)
+    await waitProcessed(file, 2000)
 
-    // 2. Wait briefly for rocq-lsp to settle (server status → Idle)
-    await waitIdle(file, 2000)
+    // 2. Goals: the session's lean_session state, when it belongs to the current staged source (D3: no LSP goals)
+    const source = await ProofEditTransaction.readSource(sessionID, file).catch(() => undefined)
+    const sourceHash = source === undefined ? undefined : createHash("sha256").update(source).digest("hex")
+    const { currentProofState } = await import("../tool/lean-session")
+    const state = currentProofState(sessionID)
+    const stateCurrent = Boolean(state && (!state.source_hash || !sourceHash || state.source_hash === sourceHash))
+    const goal = stateCurrent ? state?.goal : undefined
+    const hyps = stateCurrent ? (state?.hypotheses ?? []) : []
 
-    // 3. Fetch proof/goals at position
-    const goals = await LSP.rocqGoals({
-      file,
-      line: position.line,
-      character: position.character,
-      mode: "After",
-      pp_format: "Str",
-      compact: true,
-    }).catch((err) => {
-      log.error("failed to fetch proof goals", { err })
-      return undefined
-    })
-
-    const first = goals?.goals?.goals[0]
-    const hyps = first?.hyps.map((h) => `${h.names.join(", ")}: ${h.ty}`) ?? []
-    const goal = first?.ty
-
-    // 4. Collect errors (severity 1 = error) for this file
-    const diags = await LSP.diagnostics()
+    // 3. Errors (severity 1) — S25: only diagnostics computed for the current staged source are shown
+    const diagnosticsHash = await LSP.diagnosticsSourceHash(file)
+    const diagnosticsCurrent = !sourceHash || !diagnosticsHash || diagnosticsHash === sourceHash
+    const diags = diagnosticsCurrent ? await LSP.diagnostics() : {}
     const raw = diags[file] ?? []
     const errors = raw
       .filter((d) => (d.severity ?? 1) === 1)
@@ -119,15 +118,12 @@ export namespace ProofContext {
         col: d.range.start.character + 1,
         message: d.message,
       }))
-
-    // Also include error from goal answer messages
-    if (goals?.error) {
-      errors.push({ line: position.line + 1, col: position.character + 1, message: goals.error })
+    if (state?.last_error && stateCurrent) {
+      errors.push({ line: position.line + 1, col: position.character + 1, message: state.last_error })
     }
-    for (const msg of goals?.messages ?? []) {
-      const text = typeof msg === "string" ? msg : msg.text
-      if (text) errors.push({ line: position.line + 1, col: position.character + 1, message: text })
-    }
+    const diagnosticsNote = diagnosticsCurrent
+      ? undefined
+      : `diagnostics pending for revision ${sourceHash?.slice(0, 12)} (the server's diagnostics belong to an older revision and are not shown)`
 
     const snap: ProofSnapshot = {
       file,
@@ -135,6 +131,8 @@ export namespace ProofContext {
       goal,
       hyps,
       errors,
+      source_hash: sourceHash,
+      diagnostics_note: diagnosticsNote,
       timestamp: Date.now(),
       fresh: true,
     }
@@ -188,6 +186,7 @@ export namespace ProofContext {
     lines.push("", "Goal:")
     lines.push(snap.goal ?? "(no goal)")
 
+    if (snap.diagnostics_note) lines.push("", `(${snap.diagnostics_note})`)
     if (snap.errors.length > 0) {
       lines.push("", "Errors:")
       for (const e of snap.errors) {
@@ -222,19 +221,9 @@ export namespace ProofContext {
         }
       }
     })
-    Bus.subscribe(LSP.Event.RocqExecutionInformation, (event) => {
+    Bus.subscribe(LSP.Event.LeanFileProgress, (event) => {
       for (const [sid, b] of bindings) {
-        // Match by relative path within root — execution info uses relative paths
-        if (b.file.endsWith(event.properties.uri) || event.properties.uri.endsWith(path.basename(b.file))) {
-          markStale(sid)
-        }
-      }
-    })
-    Bus.subscribe(LSP.Event.RocqFileProgress, (event) => {
-      for (const [sid, b] of bindings) {
-        if (b.file.endsWith(event.properties.uri) || event.properties.uri.endsWith(path.basename(b.file))) {
-          markStale(sid)
-        }
+        if (pathToFileURL(b.file).href === event.properties.uri) markStale(sid)
       }
     })
     log.info("subscribed to LSP events for stale marking")
@@ -242,21 +231,16 @@ export namespace ProofContext {
 
   // ── internal helpers ──
 
-  async function waitIdle(file: string, timeout: number): Promise<void> {
-    // Check current status first
-    const statuses = await LSP.status()
-    const rocq = statuses.find((s) => s.id === "rocq-lsp")
-    if (rocq?.rocq?.state === "Idle") return
-
-    // Wait for Idle event with timeout
+  /** Wait until the Lean server reports no ranges left to process for `file` (or `timeout` ms). */
+  async function waitProcessed(file: string, timeout: number): Promise<void> {
+    const uri = pathToFileURL(file).href
     return new Promise<void>((resolve) => {
       let timer: ReturnType<typeof setTimeout> | undefined
-      const unsub = Bus.subscribe(LSP.Event.RocqServerStatus, (event) => {
-        if (event.properties.status === "Idle") {
-          if (timer) clearTimeout(timer)
-          unsub()
-          resolve()
-        }
+      const unsub = Bus.subscribe(LSP.Event.LeanFileProgress, (event) => {
+        if (event.properties.uri !== uri || event.properties.processing.length > 0) return
+        if (timer) clearTimeout(timer)
+        unsub()
+        resolve()
       })
       timer = setTimeout(() => {
         unsub()
