@@ -177,4 +177,5 @@ Second review (same day):
 | `show b` accepts holes (`_`, `?x`) as equivalent to anything | `lean_session-equivalence.md` *No holes* (reject before the check; a leftover-metavariable check cannot catch it); `coq-session-revision.md` §6 |
 | D10 prose said the marker carries only `plan_node`/`admit_id` | D10 prose now points to the field table (five marker fields) |
 | 0.3.19 has no git tag; commit is on `dev` | BACKEND_DECISION and TARGET_ENVIRONMENT: check out the full commit |
+| The hole rule ("`_` anywhere except as a binder") would reject every name with an underscore, and also unsolved universe levels `?u.N` | `lean_session-equivalence.md` *No holes*: token-level scan with Lean identifier rules; `?u.N` in universe positions mapped to `_`; spike item 5 lists accepted/rejected examples |
 | tools-advices README pointed compilation at `Prosa-Shunqi/` | links and wording now use `Deliverables/lean-prosa-v06/` (same files); GAPS references list too |

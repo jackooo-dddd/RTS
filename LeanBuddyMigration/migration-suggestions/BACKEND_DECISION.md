@@ -111,6 +111,8 @@ On the PC, with the package built and Pantograph `92d4818` built, check with sma
 4. **Root goal**: `goal.start {"expr": "<statement>.{u, v}", "levels": ["u", "v"]}` on a real task, then
    `unfold`, then `show <unfolded statement>` succeeds and `show <statement with Type 0>` fails.
 5. **Holes**: `show _` and `show ?x` succeed on any goal (why holes are rejected before the check,
-   `lean_session-equivalence.md`); the stand-alone elaboration probe described there fails on them.
+   `lean_session-equivalence.md`); the stand-alone elaboration probe described there fails on them. The token
+   scanner accepts `Lemma3_05_statement`, `job_cost`, `List.get?`, `fun _ => …` and `Sort ?u.12` (mapped to
+   `Sort _`), and rejects `f _ x`, `?x`, `?_` and `sorry`.
 6. **Limits**: a deliberately slow `simp`/`decide` under `options.set {"timeout": …}` and `maxHeartbeats`; the
    process memory under one full Mathlib + Prosa import.

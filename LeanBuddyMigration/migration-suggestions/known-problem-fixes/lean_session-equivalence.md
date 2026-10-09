@@ -27,10 +27,24 @@ elaborates(file, theorem, a: string) -> ok | error
 - Security: `a`/`b` must be pure terms (no `by`, no commands, no `#`-commands) — same rule as the entry-goal check.
 - **No holes.** `show b` unifies, so a `b` containing `_`, `?x` or `?_` matches almost anything and would be
   reported `equivalent`. A check for leftover metavariables after `show` does not help: unification has assigned
-  them. So, before any check, reject `b` (and `a`) if it contains `sorry`, a `?`-hole, or `_` anywhere except as a
-  binder name (`fun _ =>`, `∀ _,`, `∃ _,`); report `b_does_not_elaborate` with the reason. Pretty-printed Lean
-  goals never contain these, so genuine statements are not affected. The same rule applies to `normal_form`,
-  `root_goal` and the entry-goal check (tools-advices `coq-session-revision.md` §6). Backstop, to confirm in the
+  them. So, before any check, scan `b` (and `a`) **token by token, never as a substring**:
+  - Split the text with Lean's identifier rules: an identifier starts with a letter or `_` and continues with
+    letters, digits, `_`, `'`, `!`, `?` and subscripts, may have `.`-separated parts, and may be quoted `«…»`.
+    Underscores *inside* identifiers are ordinary (`Lemma3_05_statement`, `job_cost`, `task_cost`), and so is a
+    trailing `?`/`!` (`List.get?`, `Option.get!`).
+  - Reject a **term hole**: `_` as a standalone token (not part of an identifier) in term position; a `?` that
+    *starts* a token and is followed by an identifier or `_` (`?x`, `?_`) in term position; the identifiers
+    `sorry` and `sorryAx`. A standalone `_` as a binder name stays allowed (`fun _ =>`, `∀ _,`, `∃ _,`, `(_ : T)`).
+  - Allow **universe-level metavariables**: pretty-printed goals occasionally show an unsolved level such as
+    `Sort ?u.123`, `Type ?u.123` or `.{?u.123}`. In a universe position (after `Sort`/`Type`, inside `.{…}`) such a
+    `?u.N` is replaced by the level hole `_` before elaboration instead of being rejected. A level hole can only
+    generalise a universe, not absorb a subterm, and the frozen statement is still what `check.py` proves. The
+    tool's own goal printing uses the theorem's level names (`u`, `v`), so this should be rare.
+  - On rejection report `b_does_not_elaborate` with the offending token. Genuine statements (pretty-printed goals,
+    Prosa names) contain no term holes, so they are not affected.
+
+  The same rule applies to `normal_form`, `root_goal` and the entry-goal check (tools-advices
+  `coq-session-revision.md` §6). Backstop, to confirm in the
   spike: elaborate `b` alone first — `expr.echo {"expr": b, "type": "Prop", "levels": …}` for a closed root goal,
   or `have _probe : (b) := sorry` on the region's goal state — which fails with "don't know how to synthesize
   placeholder" when a hole is left.
