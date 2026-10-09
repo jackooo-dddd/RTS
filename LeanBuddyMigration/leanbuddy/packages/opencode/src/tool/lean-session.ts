@@ -1,203 +1,82 @@
 import z from "zod"
+import path from "path"
+import { createHash, randomBytes } from "crypto"
 import { Tool } from "./tool"
 import DESCRIPTION from "./lean-session.txt"
-import { createHash, randomBytes } from "crypto"
 import { Instance } from "../project/instance"
-import path from "path"
-import * as CoqProject from "./coq-project"
-import type { CoqSessionState, EnvFeedback, TacticRecord, SessionSummary } from "./proof-schema"
-import { assertNoRewriteBang, assertNoIntuition } from "./coq-style-guard"
-import { formatCoqSkillHints } from "./coq-skill-hints"
-import {
-  ContextNormalizationAuditSchema,
-  type ContextNormalizationAudit,
-} from "@/session/lemma-assignment"
+import type { EnvFeedback, SessionSummary } from "./proof-schema"
+import { ContextNormalizationAuditSchema, type ContextNormalizationAudit } from "@/session/lemma-assignment"
 import { SessionProofWorkflow } from "@/session/proof-workflow"
 import { ProofEditTransaction } from "@/session/proof-edit-transaction"
+import { LeanProject } from "./lean-project"
+import { LeanSource } from "./lean-source"
+import { LeanRegion } from "./lean-region"
+import { LeanTerm } from "./lean-term"
+import { Pantograph } from "./pantograph"
 
-function rid() {
-  return "snap_" + randomBytes(4).toString("hex")
+/**
+ * `lean_session`: interactive Lean proof states through Pantograph (DECISIONS D1, D2; BACKEND_DECISION.md).
+ *
+ * Goal states always come from the staged source (rule 2): the file body without its import header (the REPL is
+ * started with those imports), every delegated region's proof masked to `(by sorry)` so that one broken region cannot
+ * hide the others, and the text cut after the target declaration. `frontend.distil` then returns the declaration's
+ * goals; a region's goal is found among them (they come in reverse source order) and confirmed with
+ * `show <region statement>`. A session holds Pantograph state handles; they belong to one source hash and one REPL
+ * generation (rule 3): when either changes, the session re-opens from the source and replays its successful tactics.
+ * The source file stays the authority (rule 1): a "no goals" here is not a certificate.
+ */
+
+function fingerprint(text: string) {
+  return createHash("sha256").update(text).digest("hex")
 }
-
-// In-memory session storage
-const sessions = new Map<string, CoqSessionState>()
-const contextAudits = new Map<string, Map<string, ContextNormalizationAudit>>()
-const MAX_CONTEXT_AUDITS_PER_SESSION = 16
-const MAX_CONTEXT_AUDIT_SESSIONS = 256
-const verifiedEntryGoals = new Set<string>()
 
 function compactText(text: string, limit = 240) {
   const normalized = text.replace(/\s+/g, " ").trim()
   return normalized.length <= limit ? normalized : normalized.slice(0, limit - 3) + "..."
 }
 
-function fingerprint(text: string) {
-  return createHash("sha256").update(text).digest("hex")
+type TacticRecord = { tactic: string; result: "success" | "failure"; feedback: EnvFeedback; time: string }
+
+type Snapshot = {
+  id: string
+  stateId: number
+  generation: number
+  goals: Pantograph.Goal[]
+  tactic_index: number
+  summary?: SessionSummary
 }
 
-function normalizedGoalText(text: string) {
-  return text
-    .replace(/^\s*\d+\s+(?:sub)?goals?\s*/i, "")
-    .replace(/^\s*goal\s+\d+(?:\s*\/\s*\d+)?\s*:\s*/gim, "")
-    .replace(/File "[^"]+", line \d+, characters \d+-\d+:[\s\S]*?(?=\n\S|$)/g, " ")
-    .replace(/\s+/g, " ")
-    .trim()
+export type LeanSessionState = {
+  session_id: string
+  file: string
+  theorem: string
+  scope: "theorem" | "assigned_region"
+  admit_id?: string
+  /** Region statement (the exported `have` type), for region scope. */
+  region_statement?: string
+  expected_goal?: string
+  root: string
+  modules: string[]
+  source_hash: string
+  generation: number
+  /** Goal names of the declaration that this session does not own (other regions, the trailing goal). */
+  foreign: string[]
+  stateId: number
+  goals: Pantograph.Goal[]
+  tactic_history: TacticRecord[]
+  snapshots: Record<string, Snapshot>
+  last_error: string | null
+  desync_count: number
+  summary?: SessionSummary
+  /** Pretty-printed entry goal and its fingerprint (for workflow consumers). */
+  entry_goal: string
+  entry_fingerprint: string
 }
 
-function goalConclusion(text: string) {
-  const separator = text.lastIndexOf("============================")
-  return normalizedGoalText(separator >= 0 ? text.slice(separator + "============================".length) : text)
-}
-
-function remainingGoals(text: string) {
-  const match = text.match(/(\d+)\s+(?:sub)?goals?/i)
-  if (match) return Number.parseInt(match[1])
-  if (/no more goals|no goals?/i.test(text)) return 0
-  return undefined
-}
-
-function goalIdentity(text: string) {
-  const strict = text.replace(/\s+/g, " ").trim()
-  const semantic = normalizedGoalText(text)
-  const conclusion = goalConclusion(text)
-  return {
-    strict_fingerprint: fingerprint(strict),
-    semantic_fingerprint: fingerprint(semantic),
-    conclusion_fingerprint: fingerprint(conclusion),
-    conclusion,
-    remaining_goals: remainingGoals(text),
-  }
-}
-
-function normalizedComparisonVariants(text: string) {
-  const normalized = normalizedGoalText(text)
-  const variants = new Set([normalized])
-  let round = 0
-  let square = 0
-  let curly = 0
-
-  for (let index = 0; index < normalized.length; index++) {
-    const char = normalized[index]
-    if (char === "(") round += 1
-    else if (char === ")") round = Math.max(0, round - 1)
-    else if (char === "[") square += 1
-    else if (char === "]") square = Math.max(0, square - 1)
-    else if (char === "{") curly += 1
-    else if (char === "}") curly = Math.max(0, curly - 1)
-    if (round !== 0 || square !== 0 || curly !== 0) continue
-
-    const pair = normalized.slice(index, index + 2)
-    const singleComparison = char === ">" && normalized[index - 1] !== "=" && normalized[index + 1] !== "="
-    if (pair !== ">=" && !singleComparison) continue
-    const width = pair === ">=" ? 2 : 1
-    const left = normalized.slice(0, index).trim()
-    const right = normalized.slice(index + width).trim()
-    if (!left || !right) continue
-    variants.add(normalizedGoalText(`${right} ${pair === ">=" ? "<=" : "<"} ${left}`))
-    break
-  }
-  return variants
-}
-
-function expectedGoalMatches(actual: ReturnType<typeof goalIdentity>, expectedGoal: string, expectedFingerprint?: string) {
-  if (actual.remaining_goals !== undefined && actual.remaining_goals !== 1) return false
-  const expectedVariants = normalizedComparisonVariants(expectedGoal)
-  // Assignment fingerprints have historically been produced from either the
-  // full normalized goal (including hypotheses) or the conclusion alone.
-  // Coq also prints `lhs >= rhs` canonically as `rhs <= lhs`; include that
-  // notation-equivalent conclusion before declaring a session desynchronized.
-  const candidateFingerprints = new Set([
-    expectedFingerprint,
-    ...[...expectedVariants].map(fingerprint),
-  ].filter((value): value is string => Boolean(value)))
-  const fingerprintMatches =
-    candidateFingerprints.has(actual.semantic_fingerprint) ||
-    candidateFingerprints.has(actual.conclusion_fingerprint)
-  return fingerprintMatches || expectedVariants.has(actual.conclusion)
-}
-
-async function verifyEntryGoal(
-  actual: ReturnType<typeof goalIdentity>,
-  expectedGoal: string | undefined,
-  expectedFingerprint: string | undefined,
-  prefix: string,
-  file: string | undefined,
-  signal?: AbortSignal,
-) {
-  if (!expectedGoal || expectedGoalMatches(actual, expectedGoal, expectedFingerprint)) return true
-  if (actual.remaining_goals !== 1) return false
-  const expected = expectedGoal.replace(/\s+/g, " ").trim()
-  const key = fingerprint([file, prefix, actual.conclusion, expected].join("\n"))
-  if (verifiedEntryGoals.has(key)) return true
-  try {
-    assertAuditExpression("expected_goal", expected)
-  } catch {
-    return false
-  }
-  // Elaborate the expected proposition in the live context. Kernel conversion
-  // handles inferred binder types without weakening the goal contract. This
-  // isolated replay never enters the session's tactic history.
-  const suffix = randomBytes(4).toString("hex")
-  const goal = `__prosabuddy_goal_${suffix}`
-  const sort = `__prosabuddy_sort_${suffix}`
-  const target = `__prosabuddy_target_${suffix}`
-  const probe = [
-    prefix,
-    `lazymatch goal with |- ?${goal} =>`,
-    `  let ${sort} := type of ${goal} in`,
-    `  let ${target} := constr:((${expected}) : ${sort}) in`,
-    `  tryif has_evar ${goal} then fail 1 "unresolved live goal" else idtac;`,
-    `  tryif has_evar ${target} then fail 1 "unresolved expected goal" else idtac;`,
-    `  let checked := constr:(@Coq.Init.Logic.eq_refl ${sort} ${goal} : @Coq.Init.Logic.eq ${sort} ${goal} ${target}) in`,
-    '  idtac "PROSABUDDY_ENTRY_GOAL_MATCH"',
-    "end.",
-  ].join("\n")
-  // Compiler and timeout failures remain tool errors, not semantic mismatches.
-  const result = await CoqProject.run(probe, file, undefined, { signal, timeoutMs: 30_000 })
-  const matched = result.exit === 0 && result.stdout.includes("PROSABUDDY_ENTRY_GOAL_MATCH")
-  if (matched) {
-    if (verifiedEntryGoals.size >= 128) verifiedEntryGoals.clear()
-    verifiedEntryGoals.add(key)
-  }
-  return matched
-}
-
-function assertAuditExpression(label: string, expression: string) {
-  if (expression.includes("\n") || expression.includes("\r")) {
-    throw new Error(`${label} must be one bounded Coq expression without newlines`)
-  }
-  if (/\p{Cc}/u.test(expression) || /[";]/.test(expression)) {
-    throw new Error(`${label} contains control, string, or tactic-separator syntax`)
-  }
-  if (
-    /\(\*|\*\)|\b(?:Qed|Defined|Admitted|Abort|Proof|Goal|Theorem|Lemma|Definition|Fact|Remark|Example|Ltac|Tactic|Require|Import|Export|Redirect|Print|Check|Search|Locate|About|Eval|Compute|Set|Unset|Open|Close|Module|Section|End|Variable|Variables|Context|Axiom|Parameter|Parameters|Inductive|CoInductive|Record|Class|Instance|Program|Obligation|Hint|Notation|Infix|Arguments|Canonical|Coercion|Scheme|Declare)\b/i.test(
-      expression,
-    )
-  ) {
-    throw new Error(`${label} contains command or tactic syntax; inspect accepts expressions only`)
-  }
-  const opening = new Map<string, string>([[")", "("], ["]", "["], ["}", "{"]])
-  const stack: string[] = []
-  for (let index = 0; index < expression.length; index++) {
-    const char = expression[index]
-    if (char === "(" || char === "[" || char === "{") stack.push(char)
-    else if (opening.has(char)) {
-      if (stack.pop() !== opening.get(char)) {
-        throw new Error(`${label} has unbalanced delimiters and could escape the audit term`)
-      }
-    }
-    if (char === ".") {
-      const previous = expression[index - 1]
-      const next = expression[index + 1]
-      if (!previous || !next || !/[A-Za-z0-9_']/.test(previous) || !/[A-Za-z0-9_']/.test(next)) {
-        throw new Error(`${label} contains a Coq sentence terminator; inspect accepts one term only`)
-      }
-    }
-  }
-  if (stack.length > 0) {
-    throw new Error(`${label} has unbalanced delimiters and could escape the audit term`)
-  }
-}
+const sessions = new Map<string, LeanSessionState>()
+const contextAudits = new Map<string, Map<string, ContextNormalizationAudit>>()
+const MAX_CONTEXT_AUDITS_PER_SESSION = 16
+const MAX_CONTEXT_AUDIT_SESSIONS = 256
 
 function recordContextAudit(sessionID: string, audit: ContextNormalizationAudit) {
   const parsed = ContextNormalizationAuditSchema.parse({ ...audit, verified: true })
@@ -221,884 +100,625 @@ export function findContextNormalizationAudit(sessionID: string, auditID: string
   return contextAudits.get(sessionID)?.get(auditID)
 }
 
-export function currentCoqProofState(sessionID: string) {
+/** The live proof state of a session (consumed by the task tool for lemma handoffs). */
+export function currentProofState(sessionID: string) {
   const session = sessions.get(sessionID)
   if (!session) return undefined
   return {
-    goal: session.focused_goal,
-    hypotheses: [...session.local_hyps],
-    goal_fingerprint: session.semantic_goal_fingerprint,
-    expected_goal_fingerprint: session.expected_goal_fingerprint,
+    goal: renderGoals(session.goals),
+    hypotheses: session.goals[0]?.vars.map(renderVar) ?? [],
+    goal_fingerprint: fingerprint(renderGoals(session.goals)),
+    expected_goal_fingerprint: session.expected_goal ? fingerprint(session.expected_goal) : undefined,
     source_hash: session.source_hash,
-    certified_prefix_fingerprint: session.certified_prefix_fingerprint,
-    admit_id: session.region_admit_id,
+    certified_prefix_fingerprint: session.source_hash,
+    admit_id: session.admit_id,
     last_error: session.last_error,
   }
 }
 
-function auditOutcome(exit: number, output: string): ContextNormalizationAudit["outcome"] {
-  if (exit === 0) return "convertible"
-  if (/unable to unify|cannot unify|not convertible|reflexivity tactic failed/i.test(output)) {
-    return "not_convertible"
+function renderVar(v: Pantograph.Variable) {
+  const name = v.isInaccessible && !v.userName.endsWith("✝") ? `${v.userName}✝` : v.userName
+  // A masked region's `have` shows up with a metavariable value (`:= ?m.2`); that is not information for the agent.
+  const value = v.value?.pp && !/^\?m\.\d+$/.test(v.value.pp.trim()) ? ` := ${v.value.pp}` : ""
+  return `${name} : ${v.type?.pp ?? "?"}${value}`
+}
+
+/** Goals in Lean's usual display (`hyps ⊢ target`), numbered when there are several. */
+export function renderGoals(goals: Pantograph.Goal[]) {
+  if (!goals.length) return "No goals"
+  return goals
+    .map((g, i) => {
+      const head = goals.length > 1 ? `case ${i + 1}/${goals.length}${g.userName ? ` (${g.userName})` : ""}\n` : ""
+      return head + [...g.vars.map(renderVar), `⊢ ${g.target.pp ?? "?"}`].join("\n")
+    })
+    .join("\n\n")
+}
+
+function classify(messages: Pantograph.Message[] = []): EnvFeedback {
+  const text = messages.map((m) => m.data).join("\n")
+  const summary = compactText(text, 600) || "tactic failed"
+  if (/unknown (?:identifier|constant)|unknownIdentifier|unknown namespace|failed to synthesize/i.test(text)) {
+    const missing = /unknown (?:identifier|constant) [`'‘]?([^`'’\s]+)/i.exec(text)?.[1]
+    return { kind: "environment_problem", summary, missing_symbol: missing }
   }
-  return "inconclusive"
+  if (/unexpected token|expected|unknown tactic|parse error/i.test(text)) return { kind: "syntax_or_engine_problem", summary }
+  return { kind: "environment_problem", summary }
 }
 
-/** Compute frontier view from current session state */
-function frontier(session: CoqSessionState): string {
-  const parts = [`Goal: ${session.focused_goal.slice(0, 300)}`]
-  if (session.local_hyps.length > 0) parts.push(`Hyps: ${session.local_hyps.join(", ")}`)
-  return parts.join("\n")
-}
-
-/** Build a SessionSummary from current state and feedback */
-function summarize(session: CoqSessionState, fb?: EnvFeedback, prev?: string): SessionSummary {
-  const last = session.tactic_history[session.tactic_history.length - 1]
+function summarize(session: LeanSessionState, fb?: EnvFeedback, previous?: string): SessionSummary {
+  const last = session.tactic_history.at(-1)
+  const now = renderGoals(session.goals)
   return {
     last_success: last?.result === "success" ? last.tactic : session.summary?.last_success ?? null,
     last_failure: last?.result === "failure" ? last.tactic : session.summary?.last_failure ?? null,
     last_error_class: fb ? fb.kind : session.summary?.last_error_class ?? null,
-    remaining_goals: fb?.remaining_goals ?? session.summary?.remaining_goals ?? null,
-    frontier: frontier(session),
-    changed: prev !== session.focused_goal,
+    remaining_goals: session.goals.length,
+    frontier: compactText(now, 300),
+    changed: previous !== undefined && previous !== now,
   }
 }
 
-function classify(exit: number, stdout: string, stderr: string): EnvFeedback {
-  const err = stderr.toLowerCase()
-  if (exit === 0 && !err.includes("error")) {
-    // Parse goal from output
-    const goal = stdout.match(/\d+ (?:sub)?goals?\s*\n([\s\S]*?)(?:\n\n|$)/)?.[1]?.trim()
-    const remaining = stdout.match(/(\d+) (?:sub)?goals?/)?.[1]
-    return {
-      kind: "proof_progress",
-      summary: goal ? `Goal: ${goal.slice(0, 200)}` : "Tactic succeeded",
-      new_goal: goal,
-      remaining_goals: remaining ? parseInt(remaining) : undefined,
-    }
-  }
-  if (err.includes("not found") || err.includes("unable to unify") || err.includes("no matching") || err.includes("cannot find")) {
-    const missing = stderr.match(/(?:not found|cannot find)\s+(\S+)/i)?.[1]
-    return {
-      kind: "environment_problem",
-      summary: stderr.split("\n").filter((l: string) => l.trim()).slice(0, 3).join(" | "),
-      missing_symbol: missing,
-    }
-  }
-  if (err.includes("syntax error") || err.includes("parse error") || err.includes("illegal")) {
-    return {
-      kind: "syntax_or_engine_problem",
-      summary: stderr.split("\n").filter((l: string) => l.trim()).slice(0, 3).join(" | "),
-    }
-  }
-  // Default: environment problem
-  return {
-    kind: "environment_problem",
-    summary: stderr.split("\n").filter((l: string) => l.trim()).slice(0, 3).join(" | "),
-  }
+// ---------------------------------------------------------------------------------------------------------------
+// Building goal states from the staged source
+
+type Prepared = {
+  root: string
+  modules: string[]
+  body: string
+  bodyLine: number
+  decl: LeanSource.Declaration
+  regions: LeanRegion.Region[]
+  region?: LeanRegion.Region
 }
 
-function buildScript(session: CoqSessionState, extra?: string): string {
-  // Reconstruct from project preamble if available, else fall back to loaded_file
-  const base = session.project?.preamble ?? session.loaded_file
-  const parts = [base]
-  // Replay tactic history for successful tactics
-  for (const t of session.tactic_history) {
-    if (t.result === "success") parts.push(t.tactic)
+/** Header split, masked regions, text cut after the target declaration (positions are body-relative). */
+export function prepareSource(file: string, content: string, theorem: string, admitID?: string): Prepared {
+  const root = LeanProject.findRoot(file)
+  if (!root) throw new Error(`no Lake project contains ${file}`)
+  const header = LeanSource.header(content)
+  const body = content.slice(header.bodyOffset)
+  const decl = LeanSource.findDeclaration(body, theorem)
+  if (!decl || decl.assign === undefined) throw new Error(`declaration ${theorem} with a proof was not found in ${path.basename(file)}`)
+  const parsed = LeanRegion.parse(body)
+  const regions = parsed.regions.filter((r) => r.beginStart >= decl.start && r.endEnd <= decl.end)
+  const region = admitID ? regions.find((r) => r.admit_id === admitID) : undefined
+  if (admitID && !region) {
+    const error = parsed.errors.find((e) => e.admit_id === admitID)
+    throw new Error(`proof_region ${admitID} not found in ${theorem}${error ? `: ${error.message}` : ""}`)
   }
-  if (extra) parts.push(extra)
-  return parts.join("\n")
+  if (region && !region.target) throw new Error(`proof_region ${admitID} has no \`have … := (by …)\` target`)
+  const masked = LeanRegion.maskRegions(body.slice(0, decl.end), regions.filter((r) => r.target))
+  return { root, modules: header.imports, body: masked, bodyLine: header.bodyLine, decl, regions, region }
 }
 
-/** Run coqtop using session's stored project context when available */
-async function runSession(
-  session: CoqSessionState,
-  code: string,
-  signal?: AbortSignal,
-): Promise<{ exit: number; stdout: string; stderr: string }> {
-  if (session.project) {
-    return CoqProject.run(code, session.project.file, session.project.flags.length > 0 ? [] : undefined, { signal })
-  }
-  return CoqProject.run(code, undefined, undefined, { signal })
+/** Body text for a theorem-scope session: the declaration's proof replaced by `sorry`. */
+function theoremScopeBody(prepared: Prepared) {
+  const declStart = prepared.decl.start
+  const masked = prepared.body
+  const assign = LeanSource.findDeclaration(masked.slice(declStart), prepared.decl.name)?.assign
+  if (assign === undefined) throw new Error(`could not locate the proof of ${prepared.decl.name}`)
+  return masked.slice(0, declStart + assign) + ":= by\n  sorry\n"
 }
 
-function theoremStartContext(content: string, theorem: string) {
-  const lines = content.split("\n")
-  let ctxEnd = lines.length
-  for (let index = 0; index < lines.length; index++) {
-    if (!lines[index].match(new RegExp(`(Theorem|Lemma|Proposition|Corollary)\\s+${theorem.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`))) continue
-    for (let cursor = index; cursor < lines.length; cursor++) {
-      const trimmed = lines[cursor].trim()
-      if (trimmed === "Proof." || trimmed.startsWith("Proof ") || trimmed === "Proof with") {
-        ctxEnd = cursor + 1
-        break
-      }
-      if (trimmed.endsWith(".") && cursor > index) {
-        ctxEnd = cursor + 1
-        break
-      }
+type Entry = { stateId: number; goals: Pantograph.Goal[]; foreign: string[]; generation: number }
+
+async function distilLast(proc: Pantograph.Process, body: string, bodyLine: number) {
+  let reply: { targets: { stateId: number; goals: Pantograph.Goal[] }[] }
+  try {
+    reply = await proc.request("frontend.distil", { file: body, ignoreValues: false })
+  } catch (error) {
+    if (error instanceof Pantograph.PantographError && error.kind === "command") {
+      // positions in the message are body-relative; report file lines
+      const message = error.message.replace(/<anonymous>:(\d+):(\d+)/g, (_, l, c) => `line ${Number(l) + bodyLine}:${c}`)
+      throw new Error(`the staged file does not elaborate up to the target: ${compactText(message, 1500)}`)
     }
-    break
+    throw error
   }
-  return { lines, ctxEnd, loaded: lines.slice(0, ctxEnd).join("\n") }
+  const target = reply.targets.at(-1)
+  if (!target) throw new Error("the target declaration has no open goal (is its proof already complete?)")
+  return target
 }
 
-const MAX_COMPILER_ERROR_BACKTRACK_LINES = 128
-
-async function compilerErrorReplay(input: {
-  content: string
-  file: string
-  theorem: string
-  compilerError: SessionProofWorkflow.LatestCompilerError
-  context?: string
-  signal?: AbortSignal
-}) {
-  const theoremContext = theoremStartContext(input.content, input.theorem)
-  const anchorLine = input.compilerError.anchor.line
-  if (!anchorLine) {
-    throw new Error("session_state_desync: stored compiler error has no source line")
+async function openEntry(prepared: Prepared, scope: "theorem" | "assigned_region"): Promise<Entry> {
+  const proc = Pantograph.forProject(prepared.root, prepared.modules)
+  if (scope === "theorem") {
+    const target = await distilLast(proc, theoremScopeBody(prepared), prepared.bodyLine)
+    return { stateId: target.stateId, goals: target.goals, foreign: [], generation: proc.generation }
   }
-  const lines = theoremContext.lines
-  const theoremEntryLine = theoremContext.ctxEnd
-  const anchoredLine = Math.min(lines.length - 1, Math.max(theoremEntryLine, anchorLine - 1))
-  const earliestLine = Math.max(theoremEntryLine, anchoredLine - MAX_COMPILER_ERROR_BACKTRACK_LINES)
-  let lastDiagnostic = ""
-
-  for (let line = anchoredLine; line >= earliestLine; line--) {
-    const prefix = lines.slice(0, line).join("\n")
-    const loaded = input.context ? `${input.context}\n${prefix}` : prefix
-    const result = await CoqProject.run(`${loaded}\nShow.`, input.file, undefined, { signal: input.signal })
-    if (result.exit === 0) {
-      const goal = CoqProject.cleanOutput(result.stdout)
-      if (goal && !/no more goals/i.test(goal)) {
-        return {
-          prefix,
-          loaded,
-          proof_position: { line, character: 0 },
-          resynchronized_line: line + 1,
-          result,
-          goal,
-        }
-      }
-    }
-    lastDiagnostic = compactText([result.stdout, result.stderr].filter(Boolean).join("\n"), 1000)
-  }
-
-  throw new Error(
-    [
-      `session_state_desync: could not replay a valid proof prefix before compiler error line ${anchorLine}`,
-      `searched_lines=${earliestLine + 1}-${anchoredLine + 1}`,
-      lastDiagnostic ? `last_diagnostic=${lastDiagnostic}` : undefined,
-      "Re-open with scope=theorem only if theorem-start proof search is intentional.",
-    ].filter((line): line is string => Boolean(line)).join(" "),
+  const region = prepared.region!
+  const target = await distilLast(proc, prepared.body, prepared.bodyLine)
+  const statement = region.target!.statement
+  const scan = LeanTerm.scan(statement)
+  if (!scan.ok) throw new Error(`region ${region.admit_id} statement is not a closed proposition: ${scan.reason}`)
+  // Regions come back in reverse source order; try the expected position first, then the others.
+  const order = [...prepared.regions].filter((r) => r.target).sort((a, b) => a.target!.open - b.target!.open)
+  const position = order.findIndex((r) => r.admit_id === region.admit_id)
+  // [trailing goal?, r(n-1), …, r0]: region at source position p sits at goals.length - 1 - p
+  const expectedIndex = target.goals.length - 1 - position
+  const indices = [expectedIndex, ...target.goals.map((_, i) => i).filter((i) => i !== expectedIndex)].filter(
+    (i) => i >= 0 && i < target.goals.length,
   )
-}
-
-function offsetAt(content: string, position: { line: number; character: number }) {
-  const lines = content.split("\n")
-  if (position.line < 0 || position.line >= lines.length) return undefined
-  if (position.character < 0 || position.character > lines[position.line].length) return undefined
-  let offset = 0
-  for (let index = 0; index < position.line; index++) offset += lines[index].length + 1
-  return offset + position.character
-}
-
-function hypothesesFromGoal(goal: string) {
-  const separator = goal.lastIndexOf("============================")
-  if (separator < 0) return []
-  return goal
-    .slice(0, separator)
-    .replace(/^\s*\d+\s+(?:sub)?goals?\s*/i, "")
-    .split("\n")
-    .map((line) => line.trim())
-    .filter(Boolean)
-}
-
-async function refreshAssignedRegionBase(sessionID: string, session: CoqSessionState) {
-  if (!session.source_file || !session.project) return false
-  const content = await ProofEditTransaction.readSource(sessionID, session.source_file)
-  if (session.region_binding === "compiler_error") {
-    const currentSourceHash = fingerprint(content)
-    if (currentSourceHash === session.source_hash) return false
-    const persisted = SessionProofWorkflow.latestCompilerError(
-      sessionID,
-      session.source_file,
-      session.project.theorem,
-    )
-    const compilerError = persisted ?? (
-      session.compiler_error_line
-        ? {
-            normalized_file: path.normalize(session.source_file),
-            source_hash: session.compiler_error_source_hash ?? session.source_hash ?? currentSourceHash,
-            anchor: {
-              theorem: session.project.theorem,
-              scope: `theorem:${session.project.theorem}:spine`,
-              region_order: 0,
-              sentence_index: 0,
-              line: session.compiler_error_line,
-              normalized_error: session.compiler_error_message ?? "Rocq compiler error",
-            },
-            message: session.compiler_error_message ?? "Rocq compiler error",
-            recorded_at: Date.now(),
-          }
-        : undefined
-    )
-    if (!compilerError) {
-      throw new Error("session_state_desync: compiler-error session lost its persisted error anchor")
-    }
-    const replay = await compilerErrorReplay({
-      content,
-      file: session.source_file,
-      theorem: session.project.theorem,
-      compilerError,
-      context: session.open_context,
+  for (const goalId of indices) {
+    const shown = await proc.request<Pantograph.TacticResult>("goal.tactic", {
+      stateId: target.stateId,
+      goalId,
+      tactic: `show ${scan.text}`,
     })
-    session.loaded_file = replay.loaded
-    session.project = await CoqProject.context(session.source_file, session.project.theorem, replay.loaded)
-    session.certified_prefix_fingerprint = fingerprint(replay.prefix)
-    session.proof_position = replay.proof_position
-    session.source_hash = currentSourceHash
-    session.compiler_error_line = compilerError.anchor.line
-    session.compiler_error_message = compilerError.message
-    session.compiler_error_source_hash = compilerError.source_hash
-    session.resynchronized_line = replay.resynchronized_line
-    session.expected_goal = undefined
-    session.expected_goal_fingerprint = undefined
-    session.tactic_history = []
-    session.snapshots = {}
-    return true
+    if (!shown.goals || shown.nextStateId === undefined) continue
+    const others = target.goals.filter((_, i) => i !== goalId).map((g) => g.name)
+    const ours = shown.goals.filter((g) => !others.includes(g.name))
+    if (ours.length !== 1) continue
+    return { stateId: shown.nextStateId, goals: shown.goals, foreign: others, generation: proc.generation }
   }
-  if (session.region_binding === "explicit") {
-    if (!session.proof_position) {
-      throw new Error("session_state_desync: explicit proof_region session has no proof_position")
-    }
-    const offset = offsetAt(content, session.proof_position)
-    if (offset === undefined) {
-      throw new Error(
-        `session_state_desync: explicit proof_region ${session.region_admit_id ?? "unnamed"} proof_position is unavailable`,
-      )
-    }
-    const prefix = content.slice(0, offset)
-    const prefixFingerprint = fingerprint(prefix)
-    let changed = false
-    if (prefixFingerprint !== session.certified_prefix_fingerprint) {
-      const loaded = session.open_context ? `${session.open_context}\n${prefix}` : prefix
-      session.loaded_file = loaded
-      session.project = await CoqProject.context(session.source_file, session.project.theorem, loaded)
-      session.certified_prefix_fingerprint = prefixFingerprint
-      changed = true
-    }
-    session.source_hash = fingerprint(content)
-    return changed
-  }
-  if (!session.region_admit_id) return false
-  const region = SessionProofWorkflow.assignedRegionSessionContext(
-    sessionID,
-    session.source_file,
-    session.project.theorem,
-    content,
-    session.region_admit_id,
-  )
-  if (!region) throw new Error(`session_state_desync: active assignment for ${session.region_admit_id} is unavailable`)
-  let changed = false
-  if (region.certified_prefix_fingerprint !== session.certified_prefix_fingerprint) {
-    const loaded = session.open_context ? `${session.open_context}\n${region.prefix}` : region.prefix
-    session.loaded_file = loaded
-    session.project = await CoqProject.context(session.source_file, session.project.theorem, loaded)
-    session.certified_prefix_fingerprint = region.certified_prefix_fingerprint
-    session.proof_position = region.proof_position
-    changed = true
-  }
-  session.source_hash = region.source_hash
-  session.expected_goal = region.expected_goal
-  session.expected_goal_fingerprint = region.expected_goal_fingerprint
-  return changed
+  throw new Error(`session_state_desync: no goal of ${prepared.decl.name} matches the statement of proof_region ${region.admit_id}`)
 }
 
-async function synchronizeSession(sessionID: string, session: CoqSessionState, signal?: AbortSignal) {
-  const expectedCurrent = session.semantic_goal_fingerprint
-  for (let attempt = 1; attempt <= 2; attempt++) {
-    let prefixChanged = false
-    try {
-      prefixChanged = await refreshAssignedRegionBase(sessionID, session)
-    } catch (error) {
-      session.last_error = error instanceof Error ? error.message : String(error)
-      session.desync_count = attempt
-      continue
+function ownGoals(session: { goals: Pantograph.Goal[]; foreign: string[] }) {
+  return session.goals.filter((g) => !session.foreign.includes(g.name))
+}
+
+async function runTactic(session: LeanSessionState, tactic: string) {
+  const proc = Pantograph.forProject(session.root, session.modules)
+  const own = ownGoals(session)
+  if (!own.length) return { reply: { messages: [{ severity: "error", data: "no goals remain in this session" }] } as Pantograph.TacticResult, proc }
+  const goalId = session.goals.findIndex((g) => g.name === own[0].name)
+  const reply = await proc.request<Pantograph.TacticResult>("goal.tactic", { stateId: session.stateId, goalId, tactic })
+  return { reply, proc }
+}
+
+/** Re-open from the current source and replay the successful tactics (source changed or REPL restarted). */
+async function resynchronize(sessionID: string, session: LeanSessionState) {
+  const content = await ProofEditTransaction.readSource(sessionID, session.file)
+  const hash = fingerprint(content)
+  const proc = Pantograph.forProject(session.root, session.modules)
+  if (hash === session.source_hash && proc.generation === session.generation) return { ok: true as const, resynced: false }
+  const prepared = prepareSource(session.file, content, session.theorem, session.scope === "assigned_region" ? session.admit_id : undefined)
+  if (prepared.modules.join(" ") !== session.modules.join(" ")) session.modules = prepared.modules
+  const entry = await openEntry(prepared, session.scope)
+  Object.assign(session, { stateId: entry.stateId, goals: entry.goals, foreign: entry.foreign, generation: entry.generation, source_hash: hash })
+  for (const record of session.tactic_history.filter((r) => r.result === "success")) {
+    const { reply } = await runTactic(session, record.tactic)
+    if (!reply.goals || reply.nextStateId === undefined) {
+      session.last_error = `session_state_desync: replaying \`${record.tactic}\` on the changed source failed: ${compactText(reply.messages?.map((m) => m.data).join(" ") ?? "", 600)}`
+      session.desync_count++
+      return { ok: false as const }
     }
-    const result = await runSession(session, buildScript(session, "Show."), signal)
-    if (result.exit !== 0) {
-      session.last_error = compactText([result.stdout, result.stderr].filter(Boolean).join("\n"), 1000)
-      session.desync_count = attempt
-      continue
-    }
-    const goal = CoqProject.cleanOutput(result.stdout)
-    const identity = goalIdentity(goal)
-    const currentMatches = session.region_binding === "compiler_error" && prefixChanged
-      ? true
-      : expectedCurrent
-        ? identity.semantic_fingerprint === expectedCurrent
-        : true
-    const entryMatches = currentMatches && (
-      session.tactic_history.filter((record) => record.result === "success").length > 0 ||
-      await verifyEntryGoal(
-        identity, session.expected_goal, session.expected_goal_fingerprint,
-        session.loaded_file, session.source_file ?? session.project?.file, signal,
-      )
-    )
-    if (currentMatches && entryMatches) {
-      session.focused_goal = goal
-      session.local_hyps = hypothesesFromGoal(goal)
-      session.goal_fingerprint = identity.strict_fingerprint
-      session.semantic_goal_fingerprint = identity.semantic_fingerprint
-      session.desync_count = 0
-      session.last_error = null
-      if (session.region_binding === "compiler_error" && prefixChanged) {
-        session.snapshots = {
-          initial: {
-            id: "initial",
-            goal,
-            hyps: [...session.local_hyps],
-            tactic_index: 0,
-            context: session.loaded_file,
-            goal_fingerprint: identity.strict_fingerprint,
-            semantic_goal_fingerprint: identity.semantic_fingerprint,
-            summary: session.summary,
-          },
-        }
-      }
-      return { ok: true as const, resynced: prefixChanged || attempt > 1, identity }
-    }
-    session.last_error = [
-      "session_state_desync:",
-      `current_goal_match=${currentMatches}`,
-      `current_expected=${expectedCurrent ?? "none"}`,
-      `current_observed=${identity.semantic_fingerprint}`,
-      `entry_goal_match=${entryMatches}`,
-      `entry_expected=${session.expected_goal_fingerprint ?? "none"}`,
-      `entry_observed_semantic=${identity.semantic_fingerprint}`,
-      `entry_observed_conclusion=${identity.conclusion_fingerprint}`,
-      `expected_goal=${compactText(session.expected_goal ?? "none", 1000)}`,
-      `actual_goal=${compactText(identity.conclusion, 1000)}`,
-    ].join(" ")
-    session.desync_count = attempt
+    session.stateId = reply.nextStateId
+    session.goals = reply.goals
   }
-  return { ok: false as const }
+  session.snapshots = {}
+  session.desync_count = 0
+  return { ok: true as const, resynced: true }
+}
+
+function assertTactic(tactic: string) {
+  const hits = LeanSource.forbiddenTokens(tactic)
+  if (hits.length) throw new Error(`lean_session step rejects forbidden tokens: ${hits.join(", ")}`)
+  if (/\bnative_decide\b/.test(tactic)) throw new Error("lean_session step rejects `native_decide` (its axiom is rejected by the final gate)")
+  if (tactic.length > 4000) throw new Error("lean_session step accepts one tactic or a short tactic block")
+}
+
+function backendMessage(error: unknown) {
+  if (error instanceof Pantograph.PantographError) return `${error.kind === "backend" ? "backend_error" : "command_error"} [${error.code}]: ${error.message}`
+  return error instanceof Error ? error.message : String(error)
 }
 
 export const LeanSessionTool = Tool.define("lean_session", {
   description: DESCRIPTION,
   parameters: z.object({
     op: z.enum(["open", "step", "goal", "inspect", "snapshot", "undo", "close", "status"]).describe("Session operation"),
-    file: z.string().optional().describe("Path to .v file containing the theorem (for open)"),
+    file: z.string().optional().describe("Path to the .lean file containing the theorem (for open)"),
     theorem: z.string().optional().describe("Theorem name to prove (for open)"),
-    tactic: z.string().optional().describe("Single tactic to apply (for step)"),
-    snapshot_id: z.string().optional().describe("Snapshot ID to rollback to (for undo)"),
-    context: z.string().optional().describe("Additional Coq context to load before the theorem (for open)"),
+    tactic: z.string().optional().describe("One Lean tactic (or a short tactic block) to run on the session's first goal (for step)"),
+    snapshot_id: z.string().optional().describe("Snapshot ID to return to (for undo)"),
     scope: z
-      .enum(["theorem", "assigned_region", "compiler_error"])
+      .enum(["theorem", "assigned_region"])
       .optional()
-      .describe("Open at theorem start, the active assigned proof_region, or the latest persisted compiler error"),
-    admit_id: z.string().optional().describe("Assigned proof_region identifier for a region-scoped open"),
-    proof_position: z
-      .object({ line: z.number().int().nonnegative(), character: z.number().int().nonnegative() })
-      .optional()
-      .describe("Explicit 0-based proof entry position for a region-scoped open"),
-    expected_goal: z.string().optional().describe("Expected proof-region entry goal used for desynchronization checks"),
-    expected_goal_fingerprint: z.string().optional().describe("Normalized expected goal fingerprint"),
+      .describe("Open at the theorem's proof start, or at the active assigned proof_region"),
+    admit_id: z.string().optional().describe("proof_region identifier for a region-scoped open"),
+    expected_goal: z.string().optional().describe("Expected region entry proposition (checked by elaboration, not text)"),
     symbols: z
-      .array(z.string().regex(/^[A-Za-z_][A-Za-z0-9_']*(?:\.[A-Za-z_][A-Za-z0-9_']*)*$/))
+      .array(z.string().regex(/^[\p{L}_][\p{L}\p{N}_'!?]*(?:\.[\p{L}_][\p{L}\p{N}_'!?]*)*$/u))
       .max(8)
       .optional()
-      .describe("Small list of qualified symbols to Check during a read-only context inspection"),
-    left_expression: z.string().max(1000).optional().describe("Left Coq expression for inspect convertibility"),
-    right_expression: z.string().max(1000).optional().describe("Right Coq expression for inspect convertibility"),
+      .describe("Up to eight declaration names whose types to show during inspect"),
+    left_expression: z.string().max(2000).optional().describe("Left Lean term for inspect (definitional equality test)"),
+    right_expression: z.string().max(2000).optional().describe("Right Lean term for inspect"),
   }),
   async execute(params, ctx): Promise<{ title: string; output: string; metadata: Record<string, any> }> {
-    await ctx.ask({
-      permission: "lean_session",
-      patterns: ["*"],
-      always: ["*"],
-      metadata: { op: params.op },
-    })
-
+    await ctx.ask({ permission: "lean_session", patterns: ["*"], always: ["*"], metadata: { op: params.op } })
     const key = ctx.sessionID
 
-    switch (params.op) {
-      case "open": {
-        if (!params.file) throw new Error("open requires file path")
-        if (!params.theorem) throw new Error("open requires theorem name")
-
-        let filepath = params.file
-        if (!path.isAbsolute(filepath)) filepath = path.resolve(Instance.directory, filepath)
-        ProofEditTransaction.assertStagedReadSynchronized(ctx.sessionID, filepath, "opening a Coq session")
-        const content = await ProofEditTransaction.readSource(ctx.sessionID, filepath)
-        const theoremContext = theoremStartContext(content, params.theorem)
-        const liveLemmaAssignment = SessionProofWorkflow.activeLemmaAssignment(ctx.sessionID)
-        if (ctx.agent === "lemma" && liveLemmaAssignment && params.scope === "theorem") {
-          throw new Error(
-            `session_state_desync: lemma worker ${ctx.sessionID} is assigned to proof_region ${liveLemmaAssignment.admit_id}; theorem-scope open is not permitted`,
-          )
-        }
-        const assignedRegion = params.scope === "theorem" || params.scope === "compiler_error"
-          ? undefined
-          : SessionProofWorkflow.assignedRegionSessionContext(
-              ctx.sessionID,
-              filepath,
-              params.theorem,
-              content,
-              params.admit_id,
+    try {
+      switch (params.op) {
+        case "open": {
+          if (!params.file) throw new Error("open requires file")
+          if (!params.theorem) throw new Error("open requires theorem")
+          const file = path.isAbsolute(params.file) ? params.file : path.resolve(Instance.directory, params.file)
+          if (!file.endsWith(".lean")) throw new Error("lean_session works on .lean files")
+          ProofEditTransaction.assertStagedReadSynchronized(ctx.sessionID, file, "opening a Lean session")
+          const assignment = SessionProofWorkflow.activeLemmaAssignment(ctx.sessionID)
+          if (ctx.agent === "lemma" && assignment && params.scope === "theorem") {
+            throw new Error(
+              `session_state_desync: lemma worker ${ctx.sessionID} is assigned to proof_region ${assignment.admit_id}; theorem-scope open is not permitted`,
             )
-        const explicitOffset = params.proof_position ? offsetAt(content, params.proof_position) : undefined
-        if (params.scope === "assigned_region" && !assignedRegion && explicitOffset === undefined) {
-          throw new Error("assigned_region open requires a live lemma assignment or an explicit proof_position")
-        }
-        const persistedCompilerError =
-          !assignedRegion && explicitOffset === undefined && params.scope !== "theorem"
-            ? SessionProofWorkflow.latestCompilerError(ctx.sessionID, filepath, params.theorem)
-            : undefined
-        if (params.scope === "compiler_error" && !persistedCompilerError) {
-          throw new Error(`compiler_error open requires a persisted Rocq error for ${params.theorem}`)
-        }
-        const compilerReplay = persistedCompilerError
-          ? await compilerErrorReplay({
-              content,
-              file: filepath,
-              theorem: params.theorem,
-              compilerError: persistedCompilerError,
-              context: params.context,
-              signal: ctx.abort,
-            })
-          : undefined
-        const proofPosition = assignedRegion?.proof_position ?? params.proof_position ?? compilerReplay?.proof_position
-        const loaded = assignedRegion?.prefix ??
-          (explicitOffset !== undefined ? content.slice(0, explicitOffset) : compilerReplay?.prefix ?? theoremContext.loaded)
-        const extra = compilerReplay?.loaded ?? (params.context ? params.context + "\n" + loaded : loaded)
-        const expectedGoal = params.expected_goal ?? assignedRegion?.expected_goal
-        const expectedGoalFingerprint = params.expected_goal_fingerprint ?? assignedRegion?.expected_goal_fingerprint ??
-          (expectedGoal ? fingerprint(normalizedGoalText(expectedGoal)) : undefined)
-        const regionAdmitID = compilerReplay ? undefined : assignedRegion?.assignment.admit_id ?? params.admit_id
-        const regionScoped = Boolean(assignedRegion || explicitOffset !== undefined || params.scope === "assigned_region")
-        const compilerScoped = Boolean(compilerReplay)
-        const regionBinding = assignedRegion
-          ? "assigned" as const
-          : compilerScoped
-            ? "compiler_error" as const
-            : regionScoped
-              ? "explicit" as const
-              : undefined
-        const ctxEnd = proofPosition ? proofPosition.line + 1 : theoremContext.ctxEnd
-        const lines = theoremContext.lines
-
-        // Detect enclosing Section and its Variable/Hypothesis/Context declarations
-        const vars: string[] = []
-        let depth = 0
-        let section: string | null = null
-        for (let i = 0; i < ctxEnd; i++) {
-          const trimmed = lines[i].trim()
-          const open = trimmed.match(/^Section\s+(\w+)\s*\./)
-          if (open) {
-            depth++
-            section = open[1]
           }
-          if (trimmed.match(/^End\s+\w+\s*\./)) depth--
-          if (depth > 0 && trimmed.match(/^(Variable|Variables|Hypothesis|Hypotheses|Context)\b/)) {
-            vars.push(trimmed)
+          const admitID = params.scope === "theorem" ? undefined : params.admit_id ?? assignment?.admit_id
+          const scope = admitID ? ("assigned_region" as const) : ("theorem" as const)
+          if (params.scope === "assigned_region" && !admitID) throw new Error("assigned_region open requires admit_id or a live lemma assignment")
+          const content = await ProofEditTransaction.readSource(ctx.sessionID, file)
+          const prepared = prepareSource(file, content, params.theorem, admitID)
+          const entry = await openEntry(prepared, scope)
+          const session: LeanSessionState = {
+            session_id: "sess_" + randomBytes(4).toString("hex"),
+            file,
+            theorem: params.theorem,
+            scope,
+            admit_id: admitID,
+            region_statement: prepared.region?.target?.statement,
+            expected_goal: params.expected_goal,
+            root: prepared.root,
+            modules: prepared.modules,
+            source_hash: fingerprint(content),
+            generation: entry.generation,
+            foreign: entry.foreign,
+            stateId: entry.stateId,
+            goals: entry.goals,
+            tactic_history: [],
+            snapshots: {},
+            last_error: null,
+            desync_count: 0,
+            entry_goal: "",
+            entry_fingerprint: "",
           }
-        }
-
-        // Resolve and persist project context
-        const proj = await CoqProject.context(filepath, params.theorem, extra)
-
-        // Run initial query to get the goal
-        const result = compilerReplay?.result ?? await CoqProject.run(extra + "\nShow.", filepath, undefined, { signal: ctx.abort })
-        const goal = compilerReplay?.goal ?? CoqProject.cleanOutput(result.stdout)
-        const hyps = hypothesesFromGoal(goal)
-        const identity = goalIdentity(goal)
-        const entryMatches =
-          result.exit === 0 && await verifyEntryGoal(
-            identity, expectedGoal, expectedGoalFingerprint, extra, filepath, ctx.abort,
-          )
-        const desyncCount = entryMatches ? 0 : 2
-
-        const sid = "sess_" + randomBytes(4).toString("hex")
-        const initial: SessionSummary = {
-          last_success: null,
-          last_failure: null,
-          last_error_class: null,
-          remaining_goals: null,
-          frontier: `Goal: ${goal.slice(0, 300)}`,
-          changed: false,
-        }
-        const session: CoqSessionState = {
-          session_id: sid,
-          loaded_file: extra,
-          focused_goal: goal,
-          local_hyps: hyps,
-          tactic_history: [],
-          snapshots: {
-            initial: {
-              id: "initial",
-              goal,
-              hyps,
-              tactic_index: 0,
-              context: extra,
-              goal_fingerprint: identity.strict_fingerprint,
-              semantic_goal_fingerprint: identity.semantic_fingerprint,
-              summary: initial,
-            },
-          },
-          last_error: null,
-          warning_summary: [],
-          project: proj,
-          source_file: filepath,
-          open_context: params.context,
-          source_hash: assignedRegion?.source_hash ?? fingerprint(content),
-          certified_prefix_fingerprint: assignedRegion?.certified_prefix_fingerprint ?? fingerprint(loaded),
-          region_admit_id: regionAdmitID,
-          region_binding: regionBinding,
-          proof_position: proofPosition,
-          compiler_error_line: persistedCompilerError?.anchor.line,
-          compiler_error_message: persistedCompilerError?.message,
-          compiler_error_source_hash: persistedCompilerError?.source_hash,
-          resynchronized_line: compilerReplay?.resynchronized_line,
-          goal_fingerprint: identity.strict_fingerprint,
-          semantic_goal_fingerprint: identity.semantic_fingerprint,
-          expected_goal: expectedGoal,
-          expected_goal_fingerprint: expectedGoalFingerprint,
-          desync_count: desyncCount,
-          summary: initial,
-        }
-        sessions.set(key, session)
-
-        // Build section context hint for the agent
-        let hint = ""
-        if (vars.length > 0) {
-          hint = `\n\n[Section context: ${section ?? "anonymous"}]\n`
-            + `Section variables (will become forall when Section closes):\n`
-            + vars.map((v) => `  ${v}`).join("\n")
-            + `\nNOTE: Lemmas proved in this Section will have these as forall-quantified args outside the Section. Use apply/eapply/specialize to instantiate them — do NOT use strong induction to re-derive.`
-        }
-
-        return {
-          title: entryMatches
-            ? `Session opened for ${params.theorem}${regionAdmitID ? `:${regionAdmitID}` : ""}`
-            : `session_state_desync: ${params.theorem}${regionAdmitID ? `:${regionAdmitID}` : ""}`,
-          output: entryMatches
-            ? [
-                `Session ${sid}`,
-                compilerScoped
-                  ? `Scope: compiler error near line ${persistedCompilerError?.anchor.line} (resynchronized before line ${compilerReplay?.resynchronized_line})`
-                  : `Scope: ${regionScoped ? `proof_region ${regionAdmitID ?? "explicit"}` : "theorem start"}`,
-                compilerScoped ? `Compiler error: ${persistedCompilerError?.message}` : undefined,
-                compilerScoped && persistedCompilerError
-                  ? `Compiler source exact match: ${persistedCompilerError.source_hash === fingerprint(content)}`
-                  : undefined,
-                `Goal fingerprint: ${identity.semantic_fingerprint}`,
-                `Goal:\n${goal}`,
-                `Hypotheses: ${hyps.length > 0 ? hyps.join(", ") : "(none detected)"}${hint}`,
-              ].filter((line): line is string => Boolean(line)).join("\n")
-            : `session_state_desync\nexpected_goal_fingerprint: ${expectedGoalFingerprint ?? "unknown"}\nactual_goal_fingerprint: ${identity.conclusion_fingerprint}\nactual_remaining_goals: ${identity.remaining_goals ?? "unknown"}\nexpected_goal: ${expectedGoal ?? "unknown"}\nactual_goal: ${identity.conclusion}\nThe session was opened but tactics are blocked until automatic resynchronization succeeds.`,
-          metadata: {
-            op: "open",
-            session_id: sid,
-            section_vars: vars,
-            scope: compilerScoped ? "compiler_error" : regionScoped ? "assigned_region" : "theorem",
-            region_binding: regionBinding,
-            admit_id: regionAdmitID,
-            compiler_error_line: persistedCompilerError?.anchor.line,
-            compiler_error_message: persistedCompilerError?.message,
-            compiler_error_source_exact_match: persistedCompilerError
-              ? persistedCompilerError.source_hash === fingerprint(content)
-              : undefined,
-            resynchronized_line: compilerReplay?.resynchronized_line,
-            goal_fingerprint: identity.semantic_fingerprint,
-            expected_goal_fingerprint: expectedGoalFingerprint,
-            kind: entryMatches ? "proof_progress" : "session_state_desync",
-          },
-        }
-      }
-
-      case "step": {
-        const session = sessions.get(key)
-        if (!session) throw new Error("No session open. Use open first.")
-        if (!params.tactic) throw new Error("step requires a tactic")
-        assertNoRewriteBang(params.tactic, "coq_session step tactic")
-        assertNoIntuition(params.tactic, "coq_session step tactic")
-
-        // Enforce single-tactic rule: reject if > 3 sentences
-        const count = params.tactic.split(".").filter((s) => s.trim()).length
-        if (count > 3) throw new Error("step() accepts at most 3 tactic sentences. Break into smaller steps.")
-
-        const synchronized = await synchronizeSession(key, session, ctx.abort)
-        if (!synchronized.ok) {
+          session.goals = entry.goals
+          const shown = renderGoals(ownGoals(session))
+          session.entry_goal = shown
+          session.entry_fingerprint = fingerprint(shown)
+          session.snapshots.initial = {
+            id: "initial",
+            stateId: entry.stateId,
+            generation: entry.generation,
+            goals: entry.goals,
+            tactic_index: 0,
+          }
+          // Expected entry goal: compared by elaboration on the live goal (D10), never by text.
+          let entryMatches = true
+          if (params.expected_goal) {
+            const scan = LeanTerm.scan(params.expected_goal)
+            if (!scan.ok) entryMatches = false
+            else {
+              const { reply } = await runTactic(session, `show ${scan.text}`)
+              entryMatches = Boolean(reply.goals)
+            }
+          }
+          if (!entryMatches) session.desync_count = 2
+          session.summary = summarize(session)
+          sessions.set(key, session)
           return {
-            title: "session_state_desync",
+            title: entryMatches
+              ? `Session opened for ${params.theorem}${admitID ? `:${admitID}` : ""}`
+              : `session_state_desync: ${params.theorem}${admitID ? `:${admitID}` : ""}`,
             output: [
-              "session_state_desync",
-              `admit_id: ${session.region_admit_id ?? "theorem"}`,
-              `expected_goal_fingerprint: ${session.semantic_goal_fingerprint ?? session.expected_goal_fingerprint ?? "unknown"}`,
-              `desync_count: ${session.desync_count}`,
-              session.last_error ? `reason: ${session.last_error}` : undefined,
-              session.region_binding === "compiler_error"
-                ? "The tactic was not submitted. Reopen the compiler-error scope; use theorem scope only for an intentional route restart."
-                : "The tactic was not submitted. Reopen the assigned region after checking the certified prefix and assignment goal.",
-            ].filter((line): line is string => Boolean(line)).join("\n"),
+              `Session ${session.session_id}`,
+              `Scope: ${admitID ? `proof_region ${admitID}` : "theorem start"}`,
+              entryMatches ? undefined : `session_state_desync: the live goal is not definitionally equal to expected_goal (${compactText(params.expected_goal ?? "", 400)})`,
+              `Goal:\n${shown}`,
+            ]
+              .filter((line): line is string => Boolean(line))
+              .join("\n"),
+            metadata: {
+              op: "open",
+              session_id: session.session_id,
+              scope,
+              admit_id: admitID,
+              goal_fingerprint: session.entry_fingerprint,
+              kind: entryMatches ? "proof_progress" : "session_state_desync",
+            },
+          }
+        }
+
+        case "step": {
+          const session = sessions.get(key)
+          if (!session) throw new Error("No session open. Use open first.")
+          if (!params.tactic) throw new Error("step requires a tactic")
+          assertTactic(params.tactic)
+          if (session.desync_count >= 2) {
+            return {
+              title: "session_state_desync",
+              output: `session_state_desync\n${session.last_error ?? "the session's entry goal does not match"}\nThe tactic was not run. Re-open the session.`,
+              metadata: { op: "step", session_id: session.session_id, kind: "session_state_desync", tactic_applied: false },
+            }
+          }
+          const sync = await resynchronize(key, session)
+          if (!sync.ok) {
+            return {
+              title: "session_state_desync",
+              output: `session_state_desync\n${session.last_error}\nThe tactic was not run. Re-open the session.`,
+              metadata: { op: "step", session_id: session.session_id, kind: "session_state_desync", admit_id: session.admit_id, tactic_applied: false },
+            }
+          }
+          const previous = renderGoals(ownGoals(session))
+          const { reply } = await runTactic(session, params.tactic)
+          const ok = Boolean(reply.goals) && reply.nextStateId !== undefined
+          const feedback: EnvFeedback = ok
+            ? {
+                kind: "proof_progress",
+                summary: ownGoals({ goals: reply.goals!, foreign: session.foreign }).length ? "tactic succeeded" : "no goals remain in this session",
+                remaining_goals: ownGoals({ goals: reply.goals!, foreign: session.foreign }).length,
+              }
+            : classify(reply.messages)
+          session.tactic_history.push({ tactic: params.tactic, result: ok ? "success" : "failure", feedback, time: new Date().toISOString() })
+          if (ok) {
+            session.stateId = reply.nextStateId!
+            session.goals = reply.goals!
+            session.last_error = null
+          } else session.last_error = feedback.summary
+          session.summary = summarize(session, feedback, previous)
+          const now = renderGoals(ownGoals(session))
+          const warnings = (reply.messages ?? []).filter((m) => m.severity !== "error").map((m) => m.data)
+          return {
+            title: `step: ${params.tactic.slice(0, 40)} [${feedback.kind}]`,
+            output: [
+              `[${feedback.kind}] ${feedback.summary}`,
+              warnings.length ? `messages: ${compactText(warnings.join(" | "), 600)}` : undefined,
+              reply.hasSorry ? "warning: the resulting proof term contains `sorry`" : undefined,
+              `Goal:\n${now.slice(0, 4000)}`,
+            ]
+              .filter((line): line is string => Boolean(line))
+              .join("\n"),
             metadata: {
               op: "step",
               session_id: session.session_id,
-              kind: "session_state_desync",
-              admit_id: session.region_admit_id,
-              desync_count: session.desync_count,
-              tactic_applied: false,
+              kind: feedback.kind,
+              resynced: sync.resynced,
+              goal_fingerprint: fingerprint(now),
+              remaining_goals: ownGoals(session).length,
+              admit_id: session.admit_id,
             },
           }
         }
 
-        const prev = session.focused_goal
-
-        // Build script with current history + new tactic + Show.
-        const script = buildScript(session, params.tactic + "\nShow.")
-        const result = await runSession(session, script, ctx.abort)
-        const fb = classify(result.exit, result.stdout, result.stderr)
-
-        const record: TacticRecord = {
-          tactic: params.tactic,
-          result: fb.kind === "proof_progress" ? "success" : "failure",
-          feedback: fb,
-          time: new Date().toISOString(),
-        }
-        session.tactic_history.push(record)
-
-        const cleaned = CoqProject.cleanOutput(result.stdout)
-        if (fb.kind === "proof_progress") {
-          session.focused_goal = cleaned || fb.new_goal || "No goals"
-          const identity = goalIdentity(session.focused_goal)
-          session.local_hyps = hypothesesFromGoal(session.focused_goal)
-          session.goal_fingerprint = identity.strict_fingerprint
-          session.semantic_goal_fingerprint = identity.semantic_fingerprint
-          session.desync_count = 0
-        } else {
-          session.last_error = fb.summary
-        }
-
-        // Update session summary
-        session.summary = summarize(session, fb, prev)
-
-        return {
-          title: `step: ${params.tactic.slice(0, 40)}... [${fb.kind}]`,
-          output: `[${fb.kind}] ${fb.summary}\n\nGoal: ${session.focused_goal.slice(0, 500)}${
-            fb.kind === "proof_progress" ? "" : formatCoqSkillHints(`${fb.summary}\n${session.focused_goal}`)
-          }`,
-          metadata: {
-            op: "step" as string,
-            session_id: session.session_id,
-            kind: fb.kind,
-            resynced: synchronized.resynced,
-            goal_fingerprint: session.semantic_goal_fingerprint,
-            admit_id: session.region_admit_id,
-          },
-        }
-      }
-
-      case "goal": {
-        const session = sessions.get(key)
-        if (!session) throw new Error("No session open. Use open first.")
-
-        const prev = session.focused_goal
-        const synchronized = await synchronizeSession(key, session, ctx.abort)
-        if (!synchronized.ok) {
+        case "goal": {
+          const session = sessions.get(key)
+          if (!session) throw new Error("No session open. Use open first.")
+          const sync = await resynchronize(key, session)
+          if (!sync.ok) {
+            return {
+              title: "session_state_desync",
+              output: `session_state_desync\n${session.last_error}`,
+              metadata: { op: "goal", session_id: session.session_id, kind: "session_state_desync", admit_id: session.admit_id },
+            }
+          }
+          const now = renderGoals(ownGoals(session))
           return {
-            title: "session_state_desync",
-            output: `session_state_desync\nadmit_id: ${session.region_admit_id ?? "theorem"}\ndesync_count: ${session.desync_count}${session.last_error ? `\nreason: ${session.last_error}` : ""}`,
+            title: "Current goal",
+            output: `Goal:\n${now}\nRemaining: ${ownGoals(session).length}`,
             metadata: {
               op: "goal",
               session_id: session.session_id,
-              kind: "session_state_desync",
-              admit_id: session.region_admit_id,
+              kind: "proof_progress",
+              goal_fingerprint: fingerprint(now),
+              admit_id: session.admit_id,
+              resynced: sync.resynced,
             },
           }
         }
-        const cleaned = session.focused_goal
-        const remaining = synchronized.identity.remaining_goals
 
-        // Update summary
-        session.summary = summarize(session, undefined, prev)
-
-        return {
-          title: "Current goal",
-          output: `Goal fingerprint: ${session.semantic_goal_fingerprint}\nGoal:\n${cleaned}\nHypotheses: ${session.local_hyps.join(", ") || "(none)"}\nRemaining: ${remaining ?? "unknown"}`,
-          metadata: {
-            op: "goal" as string,
-            session_id: session.session_id,
-            kind: "proof_progress",
-            goal_fingerprint: session.semantic_goal_fingerprint,
-            admit_id: session.region_admit_id,
-            resynced: synchronized.resynced,
-          },
-        }
-      }
-
-      case "inspect": {
-        const session = sessions.get(key)
-        if (!session) throw new Error("No session open. Use open first.")
-        if (!params.left_expression || !params.right_expression) {
-          throw new Error("inspect requires left_expression and right_expression")
-        }
-        assertAuditExpression("left_expression", params.left_expression)
-        assertAuditExpression("right_expression", params.right_expression)
-        const synchronized = await synchronizeSession(key, session, ctx.abort)
-        if (!synchronized.ok) {
+        case "inspect": {
+          const session = sessions.get(key)
+          if (!session) throw new Error("No session open. Use open first.")
+          if (!params.left_expression || !params.right_expression) throw new Error("inspect requires left_expression and right_expression")
+          for (const [label, text] of [["left_expression", params.left_expression], ["right_expression", params.right_expression]] as const) {
+            LeanTerm.assertPureTerm(label, text)
+            const scan = LeanTerm.scan(text)
+            if (!scan.ok) throw new Error(`${label}: ${scan.reason}`)
+          }
+          const sync = await resynchronize(key, session)
+          if (!sync.ok) {
+            return {
+              title: "session_state_desync",
+              output: "session_state_desync: inspection was not run because the live goal could not be resynchronized",
+              metadata: { op: "inspect", session_id: session.session_id, kind: "session_state_desync" },
+            }
+          }
+          const proc = Pantograph.forProject(session.root, session.modules)
+          const symbols = params.symbols ?? []
+          const types: string[] = []
+          for (const symbol of symbols) {
+            try {
+              const info = await proc.request<{ type?: Pantograph.Expression }>("env.inspect", { name: symbol })
+              types.push(`${symbol} : ${info.type?.pp ?? "?"}`)
+            } catch (error) {
+              types.push(`${symbol}: ${backendMessage(error)}`)
+            }
+          }
+          const { reply } = await runTactic(session, `have __lb_audit : (${params.left_expression}) = (${params.right_expression}) := rfl`)
+          const diagnostic = compactText((reply.messages ?? []).map((m) => m.data).join("\n"), 1000)
+          const outcome: ContextNormalizationAudit["outcome"] = reply.goals
+            ? "convertible"
+            : /type mismatch|not definitionally equal|failed to unify|The rfl tactic/i.test(diagnostic)
+              ? "not_convertible"
+              : "inconclusive"
+          const audit = recordContextAudit(key, {
+            audit_id: "audit_" + randomBytes(6).toString("hex"),
+            outcome,
+            inspected_symbols: symbols,
+            left_expression: params.left_expression,
+            right_expression: params.right_expression,
+            left_summary: compactText(params.left_expression),
+            right_summary: compactText(params.right_expression),
+            goal_fingerprint: fingerprint(renderGoals(ownGoals(session))),
+            hypotheses_fingerprint: fingerprint((ownGoals(session)[0]?.vars ?? []).map(renderVar).join("\n")),
+            diagnostic: diagnostic || undefined,
+            verified: true,
+          })
           return {
-            title: "session_state_desync",
-            output: "session_state_desync: context inspection was not run because the live goal could not be resynchronized",
-            metadata: { op: "inspect", session_id: session.session_id, kind: "session_state_desync" },
+            title: `Context audit: ${audit.outcome}`,
+            output: [
+              `audit_id: ${audit.audit_id}`,
+              `outcome: ${audit.outcome}`,
+              `left: ${audit.left_summary}`,
+              `right: ${audit.right_summary}`,
+              types.length ? `symbols:\n${types.join("\n")}` : undefined,
+              audit.diagnostic ? `diagnostic: ${audit.diagnostic}` : undefined,
+              "next_action: treat this as diagnostic evidence only; convertible favors a local bridge, not proof completion",
+            ]
+              .filter((line): line is string => Boolean(line))
+              .join("\n"),
+            metadata: { op: "inspect", session_id: session.session_id, context_audit: audit },
           }
         }
 
-        const symbols = params.symbols ?? []
-        const auditID = "audit_" + randomBytes(6).toString("hex")
-        const assertion = `__prosabuddy_context_audit_${auditID.slice(-8)}`
-        const commands = [
-          ...symbols.map((symbol) => `Check ${symbol}.`),
-          `assert (${assertion} : (${params.left_expression}) = (${params.right_expression})) by reflexivity.`,
-          `clear ${assertion}.`,
-          "Show.",
-        ]
-        const result = await runSession(session, buildScript(session, commands.join("\n")), ctx.abort)
-        const diagnostic = compactText([result.stdout, result.stderr].filter(Boolean).join("\n"), 1000)
-        const audit = recordContextAudit(key, {
-          audit_id: auditID,
-          outcome: auditOutcome(result.exit, diagnostic),
-          inspected_symbols: symbols,
-          left_expression: params.left_expression,
-          right_expression: params.right_expression,
-          left_summary: compactText(params.left_expression),
-          right_summary: compactText(params.right_expression),
-          goal_fingerprint: session.semantic_goal_fingerprint ?? fingerprint(session.focused_goal),
-          hypotheses_fingerprint: fingerprint(session.local_hyps.join("\n")),
-          diagnostic: diagnostic || undefined,
-          verified: true,
-        })
+        case "snapshot": {
+          const session = sessions.get(key)
+          if (!session) throw new Error("No session open. Use open first.")
+          const id = "snap_" + randomBytes(4).toString("hex")
+          session.snapshots[id] = {
+            id,
+            stateId: session.stateId,
+            generation: session.generation,
+            goals: session.goals,
+            tactic_index: session.tactic_history.length,
+            summary: session.summary ? { ...session.summary } : undefined,
+          }
+          return {
+            title: `Snapshot created: ${id}`,
+            output: `Snapshot ${id} at tactic ${session.tactic_history.length}\nGoal:\n${renderGoals(ownGoals(session)).slice(0, 4000)}`,
+            metadata: { op: "snapshot", session_id: session.session_id },
+          }
+        }
 
+        case "undo": {
+          const session = sessions.get(key)
+          if (!session) throw new Error("No session open. Use open first.")
+          if (!params.snapshot_id) throw new Error("undo requires snapshot_id")
+          const snap = session.snapshots[params.snapshot_id]
+          if (!snap) throw new Error(`Snapshot not found: ${params.snapshot_id}. Available: ${Object.keys(session.snapshots).join(", ")}`)
+          session.tactic_history = session.tactic_history.slice(0, snap.tactic_index)
+          if (snap.generation === Pantograph.forProject(session.root, session.modules).generation) {
+            session.stateId = snap.stateId
+            session.goals = snap.goals
+          } else {
+            // the REPL restarted: rebuild from the source and replay the kept history
+            session.generation = -1
+            const sync = await resynchronize(key, session)
+            if (!sync.ok) throw new Error(session.last_error ?? "could not rebuild the snapshot")
+          }
+          session.last_error = null
+          session.desync_count = 0
+          session.summary = snap.summary ? { ...snap.summary } : session.summary
+          return {
+            title: `Rolled back to snapshot ${params.snapshot_id}`,
+            output: `Restored to tactic ${snap.tactic_index}\nGoal:\n${renderGoals(ownGoals(session)).slice(0, 4000)}`,
+            metadata: { op: "undo", session_id: session.session_id },
+          }
+        }
+
+        case "close": {
+          const session = sessions.get(key)
+          if (!session) throw new Error("No session open. Use open first.")
+          const successes = session.tactic_history.filter((t) => t.result === "success").length
+          const failures = session.tactic_history.length - successes
+          sessions.delete(key)
+          return {
+            title: "Session closed",
+            output: `Session ${session.session_id} closed. ${successes} successful, ${failures} failed tactics. ${Object.keys(session.snapshots).length} snapshots.`,
+            metadata: { op: "close", session_id: session.session_id },
+          }
+        }
+
+        case "status": {
+          const session = sessions.get(key)
+          if (!session) throw new Error("No session open. Use open first.")
+          const lines = [
+            `Session: ${session.session_id}`,
+            `Scope: ${session.admit_id ? `proof_region ${session.admit_id}` : "theorem"}`,
+            `Desync count: ${session.desync_count}`,
+            `Goal:\n${renderGoals(ownGoals(session)).slice(0, 4000)}`,
+            `Tactics: ${session.tactic_history.length} (${session.tactic_history.filter((t) => t.result === "success").length} ok)`,
+            `Snapshots: ${Object.keys(session.snapshots).join(", ")}`,
+            session.last_error ? `Last error: ${session.last_error}` : "",
+          ].filter(Boolean)
+          return { title: "Session status", output: lines.join("\n"), metadata: { op: "status", session_id: session.session_id } }
+        }
+
+        default:
+          throw new Error(`Unknown operation: ${params.op}`)
+      }
+    } catch (error) {
+      // Backend failures are tool errors (free under D5), never a semantic mismatch.
+      if (error instanceof Pantograph.PantographError && error.kind === "backend") {
         return {
-          title: `Context audit: ${audit.outcome}`,
-          output: [
-            `audit_id: ${audit.audit_id}`,
-            `outcome: ${audit.outcome}`,
-            `left: ${audit.left_summary}`,
-            `right: ${audit.right_summary}`,
-            symbols.length > 0 ? `symbols: ${symbols.join(", ")}` : undefined,
-            audit.diagnostic ? `diagnostic: ${audit.diagnostic}` : undefined,
-            "next_action: treat this as diagnostic evidence only; convertible favors a local bridge, not proof completion, while inconclusive does not forbid structured escalation after one targeted retry",
-          ]
-            .filter((line): line is string => Boolean(line))
-            .join("\n"),
-          metadata: { op: "inspect", session_id: session.session_id, context_audit: audit },
+          title: "lean_session backend error",
+          output: `backend_error [${error.code}]: ${error.message}\nThis is a tool failure, not a proof result. Retry the operation; the session re-opens from the source.`,
+          metadata: { op: params.op, kind: "backend_error", code: error.code },
         }
       }
-
-      case "snapshot": {
-        const session = sessions.get(key)
-        if (!session) throw new Error("No session open. Use open first.")
-
-        const id = rid()
-        session.snapshots[id] = {
-          id,
-          goal: session.focused_goal,
-          hyps: [...session.local_hyps],
-          tactic_index: session.tactic_history.length,
-          context: buildScript(session),
-          goal_fingerprint: session.goal_fingerprint,
-          semantic_goal_fingerprint: session.semantic_goal_fingerprint,
-          summary: session.summary ? { ...session.summary } : undefined,
-        }
-
-        return {
-          title: `Snapshot created: ${id}`,
-          output: `Snapshot ${id} at tactic index ${session.tactic_history.length}\nGoal: ${session.focused_goal.slice(0, 200)}`,
-          metadata: { op: "snapshot" as string, session_id: session.session_id },
-        }
-      }
-
-      case "undo": {
-        const session = sessions.get(key)
-        if (!session) throw new Error("No session open. Use open first.")
-        if (!params.snapshot_id) throw new Error("undo requires snapshot_id")
-
-        const snap = session.snapshots[params.snapshot_id]
-        if (!snap) throw new Error(`Snapshot not found: ${params.snapshot_id}. Available: ${Object.keys(session.snapshots).join(", ")}`)
-
-        // Rollback: truncate tactic history to snapshot point
-        session.tactic_history = session.tactic_history.slice(0, snap.tactic_index)
-        session.focused_goal = snap.goal
-        session.local_hyps = [...snap.hyps]
-        session.goal_fingerprint = snap.goal_fingerprint ?? goalIdentity(snap.goal).strict_fingerprint
-        session.semantic_goal_fingerprint =
-          snap.semantic_goal_fingerprint ?? goalIdentity(snap.goal).semantic_fingerprint
-        session.desync_count = 0
-        session.last_error = null
-        // Restore summary from snapshot or reset
-        session.summary = snap.summary ? { ...snap.summary } : session.summary
-
-        return {
-          title: `Rolled back to snapshot ${params.snapshot_id}`,
-          output: `Restored to tactic index ${snap.tactic_index}\nGoal: ${snap.goal.slice(0, 200)}`,
-          metadata: { op: "undo" as string, session_id: session.session_id },
-        }
-      }
-
-      case "close": {
-        const session = sessions.get(key)
-        if (!session) throw new Error("No session open. Use open first.")
-
-        const successes = session.tactic_history.filter((t) => t.result === "success").length
-        const failures = session.tactic_history.filter((t) => t.result === "failure").length
-        const summary = `Session ${session.session_id} closed. ${successes} successful, ${failures} failed tactics. ${Object.keys(session.snapshots).length} snapshots.`
-
-        sessions.delete(key)
-
-        return {
-          title: "Session closed",
-          output: summary,
-          metadata: { op: "close", session_id: session.session_id },
-        }
-      }
-
-      case "status": {
-        const session = sessions.get(key)
-        if (!session) throw new Error("No session open. Use open first.")
-
-        const lines = [
-          `Session: ${session.session_id}`,
-          `Scope: ${
-            session.region_binding === "compiler_error"
-              ? `compiler error near line ${session.compiler_error_line ?? "unknown"}`
-              : session.region_admit_id
-                ? `proof_region ${session.region_admit_id}`
-                : "theorem"
-          }`,
-          session.region_binding === "compiler_error" && session.resynchronized_line
-            ? `Resynchronized before line: ${session.resynchronized_line}`
-            : "",
-          `Goal fingerprint: ${session.semantic_goal_fingerprint ?? "unknown"}`,
-          `Desync count: ${session.desync_count}`,
-          `Goal: ${session.focused_goal.slice(0, 300)}`,
-          `Hypotheses: ${session.local_hyps.join(", ") || "(none)"}`,
-          `Tactics: ${session.tactic_history.length} (${session.tactic_history.filter((t) => t.result === "success").length} ok, ${session.tactic_history.filter((t) => t.result === "failure").length} fail)`,
-          `Snapshots: ${Object.keys(session.snapshots).join(", ")}`,
-          session.last_error ? `Last error: ${session.last_error}` : "",
-        ].filter(Boolean)
-
-        return {
-          title: "Session status",
-          output: lines.join("\n"),
-          metadata: { op: "status", session_id: session.session_id },
-        }
-      }
-
-      default:
-        throw new Error(`Unknown operation: ${params.op}`)
+      throw error
     }
   },
 })
+
+// ---------------------------------------------------------------------------------------------------------------
+// Statement-equivalence service (DECISIONS D10, known-problem-fixes/lean_session-equivalence.md)
+
+export namespace LeanEquivalence {
+  export type Verdict = "equivalent" | "different" | "a_does_not_elaborate" | "b_does_not_elaborate" | "backend_error"
+
+  const cache = new Map<string, { verdict: Verdict; detail?: string }>()
+
+  function normalize(text: string) {
+    return text.replace(/\s+/g, " ").replace(/\(\s+/g, "(").replace(/\s+\)/g, ")").trim()
+  }
+
+  /**
+   * Compare two closed propositions (e.g. a plan's `root_goal` with the theorem's statement) in the context of the
+   * Lake project of `file`: `goal.start a`, then `show b` (definitional equality, default transparency). `levels`
+   * declares the universe names the statements use.
+   */
+  export async function equivalentClosed(input: {
+    file: string
+    modules: string[]
+    a: string
+    b: string
+    levels?: string[]
+  }): Promise<{ verdict: Verdict; detail?: string }> {
+    if (normalize(input.a) === normalize(input.b)) return { verdict: "equivalent" }
+    const scanA = LeanTerm.scan(input.a)
+    if (!scanA.ok) return { verdict: "a_does_not_elaborate", detail: scanA.reason }
+    const scanB = LeanTerm.scan(input.b)
+    if (!scanB.ok) return { verdict: "b_does_not_elaborate", detail: scanB.reason }
+    const root = LeanProject.findRoot(input.file)
+    if (!root) return { verdict: "backend_error", detail: "no Lake project" }
+    const key = fingerprint([root, input.modules.join(" "), scanA.text, scanB.text, (input.levels ?? []).join(",")].join("\n"))
+    const cached = cache.get(key)
+    if (cached) return cached
+    const proc = Pantograph.forProject(root, input.modules)
+    let verdict: { verdict: Verdict; detail?: string }
+    try {
+      const start = await proc.request<{ stateId: number }>("goal.start", { expr: scanA.text, ...(input.levels?.length ? { levels: input.levels } : {}) })
+      const shown = await proc.request<Pantograph.TacticResult>("goal.tactic", {
+        stateId: start.stateId,
+        tactic: `set_option maxHeartbeats 200000 in show ${scanB.text}`,
+      })
+      if (shown.goals) verdict = { verdict: "equivalent" }
+      else {
+        const detail = (shown.messages ?? []).map((m) => m.data).join("\n")
+        verdict = /not definitionally equal|type mismatch/i.test(detail)
+          ? { verdict: "different", detail: compactText(detail, 600) }
+          : { verdict: "b_does_not_elaborate", detail: compactText(detail, 600) }
+      }
+    } catch (error) {
+      verdict =
+        error instanceof Pantograph.PantographError && error.kind === "command"
+          ? { verdict: "a_does_not_elaborate", detail: compactText(error.message, 600) }
+          : { verdict: "backend_error", detail: backendMessage(error) }
+    }
+    if (verdict.verdict !== "backend_error") {
+      if (cache.size > 512) cache.clear()
+      cache.set(key, verdict)
+    }
+    return verdict
+  }
+}

@@ -24,7 +24,7 @@ import { Trace } from "@/session/trace"
 import path from "path"
 import { Filesystem } from "@/util/filesystem"
 import { Instance } from "@/project/instance"
-import { currentCoqProofState, findContextNormalizationAudit } from "./lean-session"
+import { currentProofState, findContextNormalizationAudit } from "./lean-session"
 import { ProofEditTransaction } from "@/session/proof-edit-transaction"
 import { LeanGate } from "./lean-gate"
 
@@ -1035,7 +1035,7 @@ export const TaskTool = Tool.define("task", async (ctx) => {
         const stagedSource = ProofEditTransaction.source(session.id, repairFile) ??
           (await Filesystem.exists(repairFile) ? await Filesystem.readText(repairFile) : undefined)
         if (stagedSource !== undefined) {
-          const liveProofState = currentCoqProofState(ctx.sessionID)
+          const liveProofState = currentProofState(ctx.sessionID)
           const liveProofStateMatchesBaseline = Boolean(
             liveProofState &&
             proofEditTransactionStart &&

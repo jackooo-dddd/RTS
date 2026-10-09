@@ -1,18 +1,14 @@
-import { afterEach, describe, expect, spyOn, test } from "bun:test"
-import { createHash } from "crypto"
+import { afterAll, describe, expect, test } from "bun:test"
+import fs from "fs"
+import path from "path"
 import { Instance } from "../../src/project/instance"
 import { Session } from "../../src/session"
-import { SessionProof } from "../../src/session/session-proof"
-import { SessionProofWorkflow } from "../../src/session/proof-workflow"
-import * as CoqProject from "../../src/tool/coq-project"
-import {
-  LeanSessionTool,
-  findContextNormalizationAudit,
-} from "../../src/tool/lean-session"
+import { LeanSessionTool, LeanEquivalence, prepareSource, renderGoals } from "../../src/tool/lean-session"
+import { Pantograph } from "../../src/tool/pantograph"
 import type { Tool } from "../../src/tool/tool"
 import { tmpdir } from "../fixture/fixture"
 
-function context(sessionID: string, agent: Tool.Context["agent"] = "lemma"): Tool.Context {
+function context(sessionID: string, agent: Tool.Context["agent"] = "prover"): Tool.Context {
   return {
     sessionID,
     messageID: `msg_${sessionID}`,
@@ -25,697 +21,244 @@ function context(sessionID: string, agent: Tool.Context["agent"] = "lemma"): Too
   }
 }
 
-function assignedRegionSource(note = "") {
-  return [
-    "Lemma demo : True.",
-    "Proof.",
-    "(* proof_region begin owner: lemma admit_id: gap_1 theorem: demo kind: pointwise_semantic_bridge target: Hgap *)",
-    note,
-    "have Hgap : True.",
-    "{",
-    "  admit. (* admit_id: gap_1 *)",
-    "}",
-    "(* proof_region end admit_id: gap_1 *)",
-    "exact Hgap.",
-    "Admitted.",
-    "",
-  ].filter((line) => line !== "").join("\n")
+const HEADER = "import CaseStudies.ECRTS2005.Lemma3.Statement\n\n"
+const OPENS = [
+  "namespace CaseStudies.ECRTS2005.Lemma3",
+  "open CaseStudies.ECRTS2005.Lemma3.ResponseTimeAnalysisEDF",
+  "universe u v",
+  "",
+].join("\n")
+const INTROS =
+  "intro sporadic_task _ task_cost task_period task_deadline Job _ job_arrival job_cost job_deadline job_task arr_seq"
+
+function testFile(regionA = "sorry", regionB = "sorry") {
+  return (
+    HEADER +
+    OPENS +
+    [
+      "theorem lb_session_test : Lemma3_05_statement.{u, v} := by",
+      "  unfold Lemma3_05_statement",
+      `  ${INTROS}`,
+      "  /- proof_region begin owner: lemma admit_id: A theorem: lb_session_test target: hA plan_node: n1 -/",
+      "  have hA : ∀ j : Job, job_cost j = job_cost j := (by",
+      `    ${regionA}`,
+      "  )",
+      "  /- proof_region end admit_id: A -/",
+      "  /- proof_region begin owner: lemma admit_id: B theorem: lb_session_test target: hB plan_node: n2 -/",
+      "  have hB : ∀ j : Job, job_arrival j + 0 = job_arrival j := (by",
+      `    ${regionB}`,
+      "  )",
+      "  /- proof_region end admit_id: B -/",
+      "  sorry",
+      "",
+      "end CaseStudies.ECRTS2005.Lemma3",
+      "",
+    ].join("\n")
+  )
 }
 
-function bindAssignedRegion(sessionID: string, file: string, source: string) {
-  SessionProof.set(sessionID, file, { line: 1, character: 0 }, "manual")
-  SessionProofWorkflow.refresh(sessionID, file, source)
-  SessionProofWorkflow.bindActiveLemmaAssignment(sessionID, {
-    file,
-    theorem: "demo",
-    admit_id: "gap_1",
-    goal: "True",
-    replace: "Replace proof_region gap_1 while preserving Hgap : True.",
-    skeleton: source,
-    done: "Return a compiler-checkable proof of Hgap with no admit.",
-  })
-}
-
-describe("tool.lean_session context inspection", () => {
-  let contextSpy: ReturnType<typeof spyOn> | undefined
-  let runSpy: ReturnType<typeof spyOn> | undefined
-
-  afterEach(() => {
-    contextSpy?.mockRestore()
-    runSpy?.mockRestore()
-    contextSpy = undefined
-    runSpy = undefined
+describe("lean_session source preparation", () => {
+  test("strips the header, masks every region and cuts after the target", () => {
+    const dir = fs.mkdtempSync("/tmp/lb-session-")
+    fs.writeFileSync(path.join(dir, "lakefile.lean"), "")
+    const file = path.join(dir, "Test.lean")
+    const prepared = prepareSource(file, testFile("exact fun j => rfl", "simp"), "lb_session_test", "B")
+    expect(prepared.modules).toEqual(["CaseStudies.ECRTS2005.Lemma3.Statement"])
+    expect(prepared.body).not.toContain("import ")
+    expect(prepared.body).toContain("have hA : ∀ j : Job, job_cost j = job_cost j := (by sorry)")
+    expect(prepared.body).toContain("have hB : ∀ j : Job, job_arrival j + 0 = job_arrival j := (by sorry)")
+    expect(prepared.body).not.toContain("end CaseStudies")
+    expect(prepared.region?.target?.statement).toBe("∀ j : Job, job_arrival j + 0 = job_arrival j")
+    expect(() => prepareSource(file, testFile(), "lb_session_test", "C")).toThrow("proof_region C not found")
+    expect(() => prepareSource(file, testFile(), "nope")).toThrow("not found")
   })
 
-  test("entry comparison timeouts stay tool errors instead of goal desynchronization", async () => {
+  test("renders goals in Lean's display", () => {
+    const goal: Pantograph.Goal = {
+      name: "_uniq.1",
+      target: { pp: "n + 0 = n" },
+      vars: [{ name: "_uniq.0", userName: "n", type: { pp: "Nat" } }],
+    }
+    expect(renderGoals([goal])).toBe("n : Nat\n⊢ n + 0 = n")
+    expect(renderGoals([])).toBe("No goals")
+    expect(renderGoals([goal, goal])).toContain("case 2/2")
+  })
+
+  test("a missing Pantograph binary is a backend tool error, not a proof result", async () => {
     await using tmp = await tmpdir({ git: true })
-    await Instance.provide({ directory: tmp.path, fn: async () => {
-      const session = await Session.create({})
-      const file = `${tmp.path}/entry-timeout.v`
-      const source = assignedRegionSource()
-      await Bun.write(file, source)
-      bindAssignedRegion(session.id, file, source)
-      runSpy = spyOn(CoqProject, "run").mockImplementation(async (code) => {
-        if (code.includes("PROSABUDDY_ENTRY_GOAL_MATCH")) throw new Error("Coq process timed out after 30000ms")
-        return { exit: 0, stdout: "1 goal\n============================\nFalse", stderr: "" }
+    const previous = process.env.OPENCODE_PANTOGRAPH_REPL
+    process.env.OPENCODE_PANTOGRAPH_REPL = path.join(tmp.path, "no-such-repl")
+    try {
+      await Instance.provide({
+        directory: tmp.path,
+        fn: async () => {
+          await Bun.write(path.join(tmp.path, "lakefile.lean"), "")
+          const file = path.join(tmp.path, "Test.lean")
+          await Bun.write(file, testFile())
+          const session = await Session.create({})
+          const tool = await LeanSessionTool.init()
+          const result = await tool.execute({ op: "open", file, theorem: "lb_session_test", scope: "theorem" }, context(session.id))
+          expect(result.metadata).toMatchObject({ kind: "backend_error", code: "PANTOGRAPH_UNAVAILABLE" })
+          expect(result.output).toContain("not a proof result")
+          await Session.remove(session.id)
+        },
       })
-      const tool = await LeanSessionTool.init()
-      await expect(tool.execute({ op: "open", file, theorem: "demo" }, context(session.id))).rejects.toThrow("Coq process timed out")
-      SessionProofWorkflow.clear(session.id)
-      SessionProof.clear(session.id)
-      await Session.remove(session.id)
-    } })
+    } finally {
+      if (previous === undefined) delete process.env.OPENCODE_PANTOGRAPH_REPL
+      else process.env.OPENCODE_PANTOGRAPH_REPL = previous
+      Pantograph.shutdownAll()
+    }
+  })
+})
+
+/**
+ * Integration (built package, staged per D14; Pantograph 92d4818):
+ *   PROSABUDDY_LEAN_INTEGRATION=1 LEANBUDDY_TEST_PACKAGE=<run copy> OPENCODE_PANTOGRAPH_REPL=<…/bin/repl>
+ */
+const integration =
+  process.env.PROSABUDDY_LEAN_INTEGRATION === "1" && process.env.LEANBUDDY_TEST_PACKAGE && process.env.OPENCODE_PANTOGRAPH_REPL
+describe.skipIf(!integration)("lean_session on Pantograph (integration)", () => {
+  const root = process.env.LEANBUDDY_TEST_PACKAGE ?? ""
+  const file = path.join(root, "CaseStudies/ECRTS2005/Lemma3/LbSessionTest.lean")
+  afterAll(() => {
+    fs.rmSync(file, { force: true })
+    Pantograph.shutdownAll()
   })
 
-  test.skipIf(!Bun.which("coqtop") && !Bun.which("rocq"))("kernel-checks inferred binder types and rejects a different goal without changing the proof", async () => {
-    await using tmp = await tmpdir({ git: true })
-    await Instance.provide({ directory: tmp.path, fn: async () => {
-      const file = `${tmp.path}/kernel-entry.v`
-      const source = [
-        "From Coq Require Import Arith.",
-        "From Coq Require Import ssreflect.",
-        "Lemma demo : True.", "Proof.", "pose (G := False).",
-        "(* proof_region begin owner: lemma admit_id: gap_1 theorem: demo kind: semantic_bridge target: Hgap *)",
-        "have Hgap : forall n : nat, Nat.add n 0 = n.", "{ admit. }",
-        "(* proof_region end admit_id: gap_1 *)", "exact I.", "Admitted.",
-      ].join("\n")
-      await Bun.write(file, source)
-      const tool = await LeanSessionTool.init()
-      for (const [expected, matches] of [
-        ["forall n, Nat.add n 0 = n", true], ["forall n, Nat.add n 0 = S n", false],
-        ["G", false], ["_", false],
-      ] as const) {
-        const session = await Session.create({})
-        bindAssignedRegion(session.id, file, source)
-        SessionProofWorkflow.bindActiveLemmaAssignment(session.id, {
-          file, theorem: "demo", admit_id: "gap_1", goal: expected,
-          replace: "Preserve Hgap and prove its block.", skeleton: source, done: "Prove Hgap.",
-        })
-        const ctx = context(session.id)
-        const opened = await tool.execute({ op: "open", file, theorem: "demo", scope: "assigned_region" }, ctx)
-        expect(opened.metadata.kind).toBe(matches ? "proof_progress" : "session_state_desync")
-        const step = await tool.execute({ op: "step", tactic: "intro n." }, ctx)
-        expect(step.metadata.kind).toBe(matches ? "proof_progress" : "session_state_desync")
-        if (matches) expect(step.output).toContain("n + 0 = n")
-        else expect(step.metadata.tactic_applied).toBe(false)
-        expect(await Bun.file(file).text()).toBe(source)
-        await tool.execute({ op: "close" }, ctx)
-        SessionProofWorkflow.clear(session.id)
-        SessionProof.clear(session.id)
-        await Session.remove(session.id)
-      }
-    } })
-  })
-
-  test("inspect records verified read-only convertibility evidence without changing tactic state", async () => {
-    await using tmp = await tmpdir({ git: true })
-
+  const withSession = async (fn: (tool: Awaited<ReturnType<typeof LeanSessionTool.init>>, ctx: Tool.Context) => Promise<void>) => {
     await Instance.provide({
-      directory: tmp.path,
+      directory: root,
       fn: async () => {
-        const file = `${tmp.path}/inspect.v`
-        await Bun.write(file, ["Lemma demo : True.", "Proof.", "  exact I.", "Qed.", ""].join("\n"))
-
-        let auditOutcome: "convertible" | "not_convertible" | "inconclusive" = "convertible"
-        contextSpy = spyOn(CoqProject, "context").mockImplementation(async (_file, theorem, preamble) => ({
-          root: tmp.path,
-          file,
-          theorem,
-          project_path: null,
-          flags: [],
-          cwd: tmp.path,
-          preamble,
-        }))
-        runSpy = spyOn(CoqProject, "run").mockImplementation(async (code) => {
-          if (!code.includes("__prosabuddy_context_audit_")) {
-            return {
-              exit: 0,
-              stdout: "1 goal\n\n============================\nTrue",
-              stderr: "",
-            }
-          }
-          if (auditOutcome === "convertible") {
-            return { exit: 0, stdout: "1 goal\n\n============================\nTrue", stderr: "" }
-          }
-          if (auditOutcome === "not_convertible") {
-            return { exit: 1, stdout: "", stderr: "Error: Unable to unify right with left." }
-          }
-          return { exit: 1, stdout: "", stderr: "Error: Syntax error while parsing the inspection." }
-        })
-
+        const session = await Session.create({})
         const tool = await LeanSessionTool.init()
-        const cases = ["convertible", "not_convertible", "inconclusive"] as const
-        for (const [index, expected] of cases.entries()) {
-          auditOutcome = expected
-          const sessionID = `coq-inspect-${index}`
-          const ctx = context(sessionID)
-          await tool.execute({ op: "open", file, theorem: "demo" }, ctx)
-          const before = await tool.execute({ op: "status" }, ctx)
-          const inspected = await tool.execute(
-            {
-              op: "inspect",
-              symbols: ["I"],
-              left_expression: "True",
-              right_expression: "True",
-            },
-            ctx,
-          )
-          const after = await tool.execute({ op: "status" }, ctx)
-
-          expect(inspected.metadata.context_audit).toMatchObject({
-            outcome: expected,
-            inspected_symbols: ["I"],
-            left_expression: "True",
-            right_expression: "True",
-            verified: true,
-          })
-          const auditID = inspected.metadata.context_audit.audit_id as string
-          expect(findContextNormalizationAudit(sessionID, auditID)).toEqual(
-            inspected.metadata.context_audit,
-          )
-          expect(before.output).toContain("Tactics: 0 (0 ok, 0 fail)")
-          expect(after.output).toBe(before.output)
-
-          await tool.execute({ op: "close" }, ctx)
+        try {
+          await fn(tool, context(session.id))
+        } finally {
+          await tool.execute({ op: "close" }, context(session.id)).catch(() => {})
+          await Session.remove(session.id)
         }
       },
     })
-  })
+  }
 
-  test("open ignores blank inspect-only expressions while inspect still requires them", async () => {
-    await using tmp = await tmpdir({ git: true })
-
-    await Instance.provide({
-      directory: tmp.path,
-      fn: async () => {
-        const file = `${tmp.path}/open-with-blank-inspect-fields.v`
-        await Bun.write(file, ["Lemma demo : True.", "Proof.", "  exact I.", "Qed.", ""].join("\n"))
-        contextSpy = spyOn(CoqProject, "context").mockImplementation(async (_file, theorem, preamble) => ({
-          root: tmp.path,
-          file,
-          theorem,
-          project_path: null,
-          flags: [],
-          cwd: tmp.path,
-          preamble,
-        }))
-        runSpy = spyOn(CoqProject, "run").mockImplementation(async () => ({
-          exit: 0,
-          stdout: "1 goal\n\n============================\nTrue",
-          stderr: "",
-        }))
-
-        const tool = await LeanSessionTool.init()
-        const ctx = context("coq-open-blank-inspect-fields")
-        const opened = await tool.execute(
-          { op: "open", file, theorem: "demo", left_expression: "", right_expression: "" },
-          ctx,
-        )
-        expect(opened.metadata.op).toBe("open")
-
-        await expect(
-          tool.execute({ op: "inspect", left_expression: "", right_expression: "" }, ctx),
-        ).rejects.toThrow("inspect requires left_expression and right_expression")
-
-        await tool.execute({ op: "close" }, ctx)
-      },
-    })
-  })
-
-  test("inspect rejects expressions that can escape into vernacular commands", async () => {
-    await using tmp = await tmpdir({ git: true })
-
-    await Instance.provide({
-      directory: tmp.path,
-      fn: async () => {
-        const file = `${tmp.path}/inspect-injection.v`
-        await Bun.write(file, ["Lemma demo : True.", "Proof.", "  exact I.", "Qed.", ""].join("\n"))
-        contextSpy = spyOn(CoqProject, "context").mockImplementation(async (_file, theorem, preamble) => ({
-          root: tmp.path,
-          file,
-          theorem,
-          project_path: null,
-          flags: [],
-          cwd: tmp.path,
-          preamble,
-        }))
-        let injected = false
-        runSpy = spyOn(CoqProject, "run").mockImplementation(async (code) => {
-          if (code.includes("Redirect")) injected = true
-          return { exit: 0, stdout: "1 goal\n\n============================\nTrue", stderr: "" }
-        })
-
-        const tool = await LeanSessionTool.init()
-        const ctx = context("coq-inspect-injection")
-        await tool.execute({ op: "open", file, theorem: "demo" }, ctx)
-        await expect(
-          tool.execute(
-            {
-              op: "inspect",
-              left_expression:
-                'True) = (True)) by reflexivity. Redirect "/tmp/should-not-run" Print True. assert (__x : (True',
-              right_expression: "True",
-            },
-            ctx,
-          ),
-        ).rejects.toThrow()
-        expect(injected).toBe(false)
-
-        const qualified = await tool.execute(
-          {
-            op: "inspect",
-            left_expression: "Datatypes.True",
-            right_expression: "Datatypes.True",
-          },
-          ctx,
-        )
-        expect(qualified.metadata.context_audit.outcome).toBe("convertible")
-        await tool.execute({ op: "close" }, ctx)
-      },
-    })
-  })
-
-  test("lemma open defaults to the assigned proof-region entry goal", async () => {
-    await using tmp = await tmpdir({ git: true })
-
-    await Instance.provide({
-      directory: tmp.path,
-      fn: async () => {
-        const file = `${tmp.path}/assigned-region.v`
-        const source = assignedRegionSource()
-        const session = await Session.create({})
-        await Bun.write(file, source)
-        bindAssignedRegion(session.id, file, source)
-
-        const preambles: string[] = []
-        contextSpy = spyOn(CoqProject, "context").mockImplementation(async (_file, theorem, preamble) => {
-          preambles.push(preamble)
-          return {
-            root: tmp.path,
-            file,
-            theorem,
-            project_path: null,
-            flags: [],
-            cwd: tmp.path,
-            preamble,
-          }
-        })
-        runSpy = spyOn(CoqProject, "run").mockImplementation(async () => ({
-          exit: 0,
-          stdout: "1 goal\n\n============================\nTrue",
-          stderr: "",
-        }))
-
-        const tool = await LeanSessionTool.init()
-        const ctx = context(session.id)
-        await expect(
-          tool.execute({ op: "open", file, theorem: "demo", scope: "theorem" }, ctx),
-        ).rejects.toThrow("theorem-scope open is not permitted")
-        const opened = await tool.execute({ op: "open", file, theorem: "demo" }, ctx)
-
-        expect(opened.metadata).toMatchObject({
-          scope: "assigned_region",
-          admit_id: "gap_1",
-          kind: "proof_progress",
-        })
-        expect(opened.output).toContain("Scope: proof_region gap_1")
-        expect(opened.output).toContain("1 goal")
-        expect(preambles[0]?.trimEnd().endsWith("{")).toBe(true)
-        expect(preambles[0]).not.toContain("admit. (* admit_id: gap_1 *)")
-
-        await tool.execute({ op: "close" }, ctx)
-        SessionProofWorkflow.clear(session.id)
-        SessionProof.clear(session.id)
-        await Session.remove(session.id)
-      },
-    })
-  })
-
-  test("parent explicit proof-region open can step without a lemma assignment", async () => {
-    await using tmp = await tmpdir({ git: true })
-
-    await Instance.provide({
-      directory: tmp.path,
-      fn: async () => {
-        const file = `${tmp.path}/explicit-region.v`
-        const source = assignedRegionSource()
-        const session = await Session.create({})
-        await Bun.write(file, source)
-        SessionProof.set(session.id, file, { line: 1, character: 0 }, "manual")
-
-        contextSpy = spyOn(CoqProject, "context").mockImplementation(async (_file, theorem, preamble) => ({
-          root: tmp.path,
-          file,
-          theorem,
-          project_path: null,
-          flags: [],
-          cwd: tmp.path,
-          preamble,
-        }))
-        runSpy = spyOn(CoqProject, "run").mockImplementation(async (code) =>
-          code.includes("exact I.")
-            ? { exit: 0, stdout: "No more goals.", stderr: "" }
-            : { exit: 0, stdout: "1 goal\n\n============================\nTrue", stderr: "" },
-        )
-
-        const tool = await LeanSessionTool.init()
-        const ctx = context(session.id, "prover")
-        const opened = await tool.execute(
-          {
-            op: "open",
-            file,
-            theorem: "demo",
-            scope: "assigned_region",
-            admit_id: "gap_1",
-            proof_position: { line: 5, character: 2 },
-            expected_goal: "True",
-          },
-          ctx,
-        )
-        expect(opened.metadata).toMatchObject({
-          scope: "assigned_region",
-          region_binding: "explicit",
-          admit_id: "gap_1",
-        })
-
-        const stepped = await tool.execute({ op: "step", tactic: "exact I." }, ctx)
-        expect(stepped.metadata).toMatchObject({
-          kind: "proof_progress",
-          admit_id: "gap_1",
-        })
-        expect(stepped.output).toContain("[proof_progress]")
-        expect(stepped.output).not.toContain("active assignment")
-
-        await tool.execute({ op: "close" }, ctx)
-        SessionProofWorkflow.clear(session.id)
-        SessionProof.clear(session.id)
-        await Session.remove(session.id)
-      },
-    })
-  })
-
-  test("open defaults to the persisted compiler error and backtracks after source-line drift", async () => {
-    await using tmp = await tmpdir({ git: true })
-
-    await Instance.provide({
-      directory: tmp.path,
-      fn: async () => {
-        const file = `${tmp.path}/compiler-error-resync.v`
-        const failing = await Session.create({})
-        const resumed = await Session.create({})
-        const theoremRestart = await Session.create({})
-        const original = [
-          "Lemma demo : True.",
-          "Proof.",
-          "pose proof I as Hone.",
-          'fail 1 "broken".',
-          "exact I.",
-          "Qed.",
-          "",
-        ].join("\n")
-        const shifted = original.replace("pose proof I as Hone.\n", "")
-        await Bun.write(file, shifted)
-        SessionProofWorkflow.classifyCoqcFailure(failing.id, file, original, {
-          first_error_line: 4,
-          first_error_message: "Error: broken local tactic",
-        })
-
-        const preambles: string[] = []
-        contextSpy = spyOn(CoqProject, "context").mockImplementation(async (_file, theorem, preamble) => {
-          preambles.push(preamble)
-          return {
-            root: tmp.path,
-            file,
-            theorem,
-            project_path: null,
-            flags: [],
-            cwd: tmp.path,
-            preamble,
-          }
-        })
-        runSpy = spyOn(CoqProject, "run").mockImplementation(async (code) =>
-          code.includes('fail 1 "broken".')
-            ? { exit: 1, stdout: "", stderr: "Error: broken local tactic" }
-            : { exit: 0, stdout: "1 goal\n\n============================\nTrue", stderr: "" },
-        )
-
-        const tool = await LeanSessionTool.init()
-        const opened = await tool.execute(
-          { op: "open", file, theorem: "demo" },
-          context(resumed.id, "prover"),
-        )
-        expect(opened.metadata).toMatchObject({
-          scope: "compiler_error",
-          region_binding: "compiler_error",
-          compiler_error_line: 4,
-          compiler_error_source_exact_match: false,
-          resynchronized_line: 3,
-          kind: "proof_progress",
-        })
-        expect(opened.output).toContain("Compiler error: Error: broken local tactic")
-        expect(preambles[0]).not.toContain('fail 1 "broken".')
-
-        const restarted = await tool.execute(
-          { op: "open", file, theorem: "demo", scope: "theorem" },
-          context(theoremRestart.id, "prover"),
-        )
-        expect(restarted.metadata).toMatchObject({ scope: "theorem", kind: "proof_progress" })
-        expect(preambles.at(-1)?.trimEnd().endsWith("Proof.")).toBe(true)
-
-        await tool.execute({ op: "close" }, context(resumed.id, "prover"))
-        await tool.execute({ op: "close" }, context(theoremRestart.id, "prover"))
-        SessionProofWorkflow.clear(failing.id)
-        SessionProofWorkflow.clear(resumed.id)
-        SessionProofWorkflow.clear(theoremRestart.id)
-        await Session.remove(failing.id)
-        await Session.remove(resumed.id)
-        await Session.remove(theoremRestart.id)
-      },
-    })
-  })
-
-  test("step rebuilds a drifted certified prefix before replaying tactics", async () => {
-    await using tmp = await tmpdir({ git: true })
-
-    await Instance.provide({
-      directory: tmp.path,
-      fn: async () => {
-        const file = `${tmp.path}/prefix-drift.v`
-        const source = assignedRegionSource()
-        const session = await Session.create({})
-        await Bun.write(file, source)
-        bindAssignedRegion(session.id, file, source)
-
-        const preambles: string[] = []
-        contextSpy = spyOn(CoqProject, "context").mockImplementation(async (_file, theorem, preamble) => {
-          preambles.push(preamble)
-          return {
-            root: tmp.path,
-            file,
-            theorem,
-            project_path: null,
-            flags: [],
-            cwd: tmp.path,
-            preamble,
-          }
-        })
-        runSpy = spyOn(CoqProject, "run").mockImplementation(async (code) =>
-          code.includes("exact I.")
-            ? { exit: 0, stdout: "No more goals.", stderr: "" }
-            : { exit: 0, stdout: "1 goal\n\n============================\nTrue", stderr: "" },
-        )
-
-        const tool = await LeanSessionTool.init()
-        const ctx = context(session.id)
-        await tool.execute({ op: "open", file, theorem: "demo" }, ctx)
-
-        const drifted = assignedRegionSource("(* harmless certified-prefix note *)")
-        await Bun.write(file, drifted)
-        const stepped = await tool.execute({ op: "step", tactic: "exact I." }, ctx)
-
-        expect(stepped.metadata).toMatchObject({
-          kind: "proof_progress",
-          resynced: true,
-          admit_id: "gap_1",
-        })
-        expect(preambles).toHaveLength(2)
-        expect(preambles[1]).toContain("harmless certified-prefix note")
-
-        await tool.execute({ op: "close" }, ctx)
-        SessionProofWorkflow.clear(session.id)
-        SessionProof.clear(session.id)
-        await Session.remove(session.id)
-      },
-    })
-  })
-
-  test("accepts an expected fingerprint produced from the full semantic goal", async () => {
-    await using tmp = await tmpdir({ git: true })
-
-    await Instance.provide({
-      directory: tmp.path,
-      fn: async () => {
-        const file = `${tmp.path}/semantic-fingerprint.v`
-        const source = assignedRegionSource()
-        const session = await Session.create({})
-        await Bun.write(file, source)
-        bindAssignedRegion(session.id, file, source)
-
-        contextSpy = spyOn(CoqProject, "context").mockImplementation(async (_file, theorem, preamble) => ({
-          root: tmp.path,
-          file,
-          theorem,
-          project_path: null,
-          flags: [],
-          cwd: tmp.path,
-          preamble,
-        }))
-        const goal = "1 goal\n\nH : True\n============================\nTrue"
-        runSpy = spyOn(CoqProject, "run").mockImplementation(async (code) =>
-          code.includes("exact I.")
-            ? { exit: 0, stdout: "No more goals.", stderr: "" }
-            : { exit: 0, stdout: goal, stderr: "" },
-        )
-        const semanticFingerprint = createHash("sha256")
-          .update("H : True ============================ True")
-          .digest("hex")
-
-        const tool = await LeanSessionTool.init()
-        const ctx = context(session.id)
-        const opened = await tool.execute(
-          {
-            op: "open",
-            file,
-            theorem: "demo",
-            expected_goal: "True",
-            expected_goal_fingerprint: semanticFingerprint,
-          },
-          ctx,
-        )
+  test(
+    "theorem scope: opens the real goal, runs tactics, classifies failures",
+    async () => {
+      fs.writeFileSync(file, testFile())
+      await withSession(async (tool, ctx) => {
+        const opened = await tool.execute({ op: "open", file, theorem: "lb_session_test", scope: "theorem" }, ctx)
         expect(opened.metadata.kind).toBe("proof_progress")
+        // distil already presents the statement with its leading implicit binders introduced
+        expect(opened.output).toContain("task_cost")
+        const intro = await tool.execute({ op: "step", tactic: "intro task_cost task_period" }, ctx)
+        expect(intro.metadata.kind).toBe("proof_progress")
+        expect(intro.output).toContain("task_period : sporadic_task")
+        expect(intro.output).not.toContain("✝✝")
+        const bad = await tool.execute({ op: "step", tactic: "exact Nat.does_not_exist" }, ctx)
+        expect(bad.metadata.kind).toBe("environment_problem")
+        await expect(tool.execute({ op: "step", tactic: "sorry" }, ctx)).rejects.toThrow("forbidden")
+        await expect(tool.execute({ op: "step", tactic: "native_decide" }, ctx)).rejects.toThrow("native_decide")
+      })
+    },
+    600_000,
+  )
 
-        const stepped = await tool.execute({ op: "step", tactic: "exact I." }, ctx)
-        expect(stepped.metadata).toMatchObject({ kind: "proof_progress", admit_id: "gap_1" })
+  test(
+    "region scope: the region's own goal, steps, snapshot and undo",
+    async () => {
+      fs.writeFileSync(file, testFile("exact Nat.broken_on_purpose", "sorry"))
+      await withSession(async (tool, ctx) => {
+        // region A is broken: masking keeps B openable (BACKEND_DECISION spike 3)
+        const opened = await tool.execute({ op: "open", file, theorem: "lb_session_test", admit_id: "B" }, ctx)
+        expect(opened.metadata).toMatchObject({ kind: "proof_progress", scope: "assigned_region", admit_id: "B" })
+        expect(opened.output).toContain("⊢ ∀ (j : Job), job_arrival j + 0 = job_arrival j")
+        expect(opened.output).toContain("hA : ∀ (j : Job), job_cost j = job_cost j\n")
+        expect(opened.output).not.toContain("?m.")
+        const intro = await tool.execute({ op: "step", tactic: "intro j" }, ctx)
+        expect(intro.metadata.kind).toBe("proof_progress")
+        expect(intro.output).toContain("⊢ job_arrival j + 0 = job_arrival j")
+        const snap = await tool.execute({ op: "snapshot" }, ctx)
+        const id = /Snapshot (snap_[0-9a-f]+)/.exec(snap.output)![1]
+        const done = await tool.execute({ op: "step", tactic: "simp" }, ctx)
+        expect(done.metadata.remaining_goals).toBe(0)
+        expect(done.output).toContain("No goals")
+        const back = await tool.execute({ op: "undo", snapshot_id: id }, ctx)
+        expect(back.output).toContain("⊢ job_arrival j + 0 = job_arrival j")
+        const audit = await tool.execute({ op: "inspect", left_expression: "job_arrival j + 0", right_expression: "job_arrival j" }, ctx)
+        expect(audit.metadata.context_audit.outcome).toBe("convertible")
+        const different = await tool.execute({ op: "inspect", left_expression: "(1 : Nat)", right_expression: "2" }, ctx)
+        expect(different.metadata.context_audit.outcome).toBe("not_convertible")
+        await expect(tool.execute({ op: "inspect", left_expression: "_", right_expression: "1" }, ctx)).rejects.toThrow("hole")
+      })
+    },
+    600_000,
+  )
 
-        await tool.execute({ op: "close" }, ctx)
-        SessionProofWorkflow.clear(session.id)
-        SessionProof.clear(session.id)
-        await Session.remove(session.id)
-      },
-    })
-  })
-
-  test("accepts a greater-equal assignment goal when Coq prints the reversed less-equal form", async () => {
-    await using tmp = await tmpdir({ git: true })
-
-    await Instance.provide({
-      directory: tmp.path,
-      fn: async () => {
-        const file = `${tmp.path}/comparison-notation.v`
-        const source = assignedRegionSource()
-        const session = await Session.create({})
-        await Bun.write(file, source)
-        bindAssignedRegion(session.id, file, source)
-        const expected = "left >= right"
-        const expectedFingerprint = createHash("sha256").update(expected).digest("hex")
-        SessionProofWorkflow.bindActiveLemmaAssignment(session.id, {
-          file,
-          theorem: "demo",
-          admit_id: "gap_1",
-          goal: expected,
-          goal_fingerprint: expectedFingerprint,
-          replace: "Replace proof_region gap_1 while preserving its exported target.",
-          skeleton: source,
-          done: "Return a compiler-checkable proof with no admit.",
-        })
-
-        contextSpy = spyOn(CoqProject, "context").mockImplementation(async (_file, theorem, preamble) => ({
-          root: tmp.path,
-          file,
-          theorem,
-          project_path: null,
-          flags: [],
-          cwd: tmp.path,
-          preamble,
-        }))
-        runSpy = spyOn(CoqProject, "run").mockImplementation(async (code) =>
-          code.includes("exact I.")
-            ? { exit: 0, stdout: "No more goals.", stderr: "" }
-            : { exit: 0, stdout: "1 goal\n\n============================\nright <= left", stderr: "" },
-        )
-        const tool = await LeanSessionTool.init()
-        const ctx = context(session.id)
-        const opened = await tool.execute(
-          {
-            op: "open",
-            file,
-            theorem: "demo",
-          },
+  test(
+    "expected goal is compared by definitional equality, not text",
+    async () => {
+      fs.writeFileSync(file, testFile())
+      await withSession(async (tool, ctx) => {
+        const same = await tool.execute(
+          { op: "open", file, theorem: "lb_session_test", admit_id: "B", expected_goal: "∀ (j : Job), job_arrival j = job_arrival j" },
           ctx,
         )
-        expect(opened.metadata.kind).toBe("proof_progress")
+        expect(same.metadata.kind).toBe("proof_progress")
+        const other = await tool.execute(
+          { op: "open", file, theorem: "lb_session_test", admit_id: "B", expected_goal: "∀ (j : Job), job_cost j = 0" },
+          ctx,
+        )
+        expect(other.metadata.kind).toBe("session_state_desync")
+        const blocked = await tool.execute({ op: "step", tactic: "intro j" }, ctx)
+        expect(blocked.metadata).toMatchObject({ kind: "session_state_desync", tactic_applied: false })
+      })
+    },
+    600_000,
+  )
 
-        const stepped = await tool.execute({ op: "step", tactic: "exact I." }, ctx)
-        expect(stepped.metadata).toMatchObject({ kind: "proof_progress", admit_id: "gap_1" })
+  test(
+    "a source change re-opens from the file and replays the successful tactics",
+    async () => {
+      fs.writeFileSync(file, testFile())
+      await withSession(async (tool, ctx) => {
+        await tool.execute({ op: "open", file, theorem: "lb_session_test", admit_id: "B" }, ctx)
+        await tool.execute({ op: "step", tactic: "intro j" }, ctx)
+        fs.writeFileSync(file, testFile("intro j\n    rfl", "sorry"))
+        const goal = await tool.execute({ op: "goal" }, ctx)
+        expect(goal.metadata.resynced).toBe(true)
+        expect(goal.output).toContain("⊢ job_arrival j + 0 = job_arrival j")
+      })
+    },
+    600_000,
+  )
 
-        await tool.execute({ op: "close" }, ctx)
-        SessionProofWorkflow.clear(session.id)
-        SessionProof.clear(session.id)
-        await Session.remove(session.id)
-      },
-    })
-  })
-
-  test("two goal mismatches return session_state_desync without submitting the tactic", async () => {
-    await using tmp = await tmpdir({ git: true })
-
-    await Instance.provide({
-      directory: tmp.path,
-      fn: async () => {
-        const file = `${tmp.path}/goal-desync.v`
-        const source = assignedRegionSource()
-        const session = await Session.create({})
-        await Bun.write(file, source)
-        bindAssignedRegion(session.id, file, source)
-
-        contextSpy = spyOn(CoqProject, "context").mockImplementation(async (_file, theorem, preamble) => ({
-          root: tmp.path,
-          file,
-          theorem,
-          project_path: null,
-          flags: [],
-          cwd: tmp.path,
-          preamble,
-        }))
-        const submitted: string[] = []
-        let calls = 0
-        runSpy = spyOn(CoqProject, "run").mockImplementation(async (code) => {
-          submitted.push(code)
-          calls += 1
-          return calls === 1
-            ? { exit: 0, stdout: "1 goal\n\n============================\nTrue", stderr: "" }
-            : { exit: 0, stdout: "1 goal\n\n============================\nFalse", stderr: "" }
-        })
-
-        const tool = await LeanSessionTool.init()
-        const ctx = context(session.id)
-        await tool.execute({ op: "open", file, theorem: "demo" }, ctx)
-        const blocked = await tool.execute({ op: "step", tactic: "exact I." }, ctx)
-
-        expect(blocked.metadata).toMatchObject({
-          kind: "session_state_desync",
-          tactic_applied: false,
-          desync_count: 2,
-        })
-        expect(blocked.output).toContain("session_state_desync")
-        expect(submitted.filter((code) => code.includes("exact I."))).toHaveLength(0)
-        expect(submitted).toHaveLength(3)
-
-        await tool.execute({ op: "close" }, ctx)
-        SessionProofWorkflow.clear(session.id)
-        SessionProof.clear(session.id)
-        await Session.remove(session.id)
-      },
-    })
-  })
+  test(
+    "statement equivalence service: alpha-equivalent and defeq accepted, different rejected, holes refused",
+    async () => {
+      const modules = ["CaseStudies.ECRTS2005.Lemma3.Statement"]
+      const target = path.join(root, "CaseStudies/ECRTS2005/Lemma3/Solution.lean")
+      expect((await LeanEquivalence.equivalentClosed({ file: target, modules, a: "∀ n : Nat, n + 0 = n", b: "∀ (k : Nat), k + 0 = k" })).verdict).toBe(
+        "equivalent",
+      )
+      expect((await LeanEquivalence.equivalentClosed({ file: target, modules, a: "∀ n : Nat, n + 0 = n", b: "∀ n : Nat, n = n" })).verdict).toBe(
+        "equivalent",
+      )
+      expect((await LeanEquivalence.equivalentClosed({ file: target, modules, a: "∀ n : Nat, n + 0 = n", b: "∀ n : Nat, n + 1 = n" })).verdict).toBe(
+        "different",
+      )
+      expect((await LeanEquivalence.equivalentClosed({ file: target, modules, a: "∀ n : Nat, n + 0 = n", b: "_" })).verdict).toBe(
+        "b_does_not_elaborate",
+      )
+      const statement = "CaseStudies.ECRTS2005.Lemma3.ResponseTimeAnalysisEDF.Lemma3_05_statement"
+      const folded = await LeanEquivalence.equivalentClosed({
+        file: target,
+        modules,
+        a: `${statement}.{u, v}`,
+        b: `${statement}.{u, v}`,
+        levels: ["u", "v"],
+      })
+      expect(folded.verdict).toBe("equivalent")
+    },
+    600_000,
+  )
 })
