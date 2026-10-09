@@ -10,7 +10,22 @@ export namespace PackageRegistry {
     return process.execPath
   }
 
+  const INFO_TTL_MS = 10 * 60 * 1000
+  const infoCache = new Map<string, { at: number; value: Promise<string | null> }>()
+
+  /** `bun info`, shared by concurrent callers and remembered for INFO_TTL_MS: every project instance asks for the
+   * same package version, and a burst of instances otherwise starts one registry query (≈200 MB each) apiece. */
   export async function info(pkg: string, field: string, cwd?: string): Promise<string | null> {
+    const k = `${pkg}\u0000${field}`
+    const hit = infoCache.get(k)
+    if (hit && Date.now() - hit.at < INFO_TTL_MS) return hit.value
+    const value = query(pkg, field, cwd)
+    infoCache.set(k, { at: Date.now(), value })
+    value.then((v) => v === null && infoCache.delete(k)).catch(() => infoCache.delete(k))
+    return value
+  }
+
+  async function query(pkg: string, field: string, cwd?: string): Promise<string | null> {
     const result = Process.spawn([which(), "info", pkg, field], {
       cwd,
       stdout: "pipe",

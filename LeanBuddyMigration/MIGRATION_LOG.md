@@ -175,6 +175,8 @@ replacements must pass.
 | V9 | gate (D4) | — | the gate returns `disabled` (`GATE_NOT_LEAN`) for non-`.lean` files instead of judging them (two task tests with Rocq fixtures regressed otherwise; the fixtures are ported in Phase 5). | 3 |
 | V12 | proof-workflow fixes K4 | `planNextSubtask`/`suggestNextSubtask` return `{kind: "assignment"} \| {kind: "no_ready_region", …}` | the two functions keep returning an assignment or `undefined` (≈100 test call sites); a separate `schedulerStatus()` computes `{kind: "no_ready_region", reason, required_action, admit_ids}` from the same refreshed state, and `prompt.ts` injects it as `<scheduler-status>` whenever the prover has neither a lemma assignment nor a finalization reminder. Same information, same moment. | 5 |
 | V13 | D9 / proof-workflow fixes K2 | amendment unlocked by `needs_preceding_bridge` (or a remodel naming a missing fact) | unlocked by `needs_preceding_bridge`, `needs_uniqueness_bridge` (also a missing bridge fact), `needs_subgoal_remodel` (text detection of "names a missing fact" would be fragile), and by a K8 repeated-escalation block. The old one-shot whole-plan replacement after acceptance is removed (D9: locked except amendments); its three tests were rewritten as amendment tests. | 5 |
+| V15 | D10 (comparison "through `lean_session`, i.e. Pantograph") | Pantograph goal state | `tool/lean-statement-check.ts` decides equivalence with the compiler (`lake env lean` on a probe of the staged file): root goal = `theorem probe <binders> : (submitted) ↔ (conclusion) := Iff.rfl` after the file prefix; region target = `have probe : (target) ↔ (normal form) := by first \| (exact Iff.rfl; trace EQ) \| (trace NE; sorry)` inserted before the region (proofs masked to `sorry`). This gives the exact context (opens, section variables, local `intro`s before the region), which a closed Pantograph `goal.start` lacks; one compile covers all regions. Verdicts are cached; the materialization review consults the cache and is redone when new verdicts arrive; checks run at checkpoint/`lean_check`. A plain probe `:= Iff.rfl` was tried first: a failing probe stops the tactic block and drops earlier probes' messages, hence `first`. | 5 |
+| V16 | (none) — test harness | — | The PC full suite died in every memory cap: each test `Instance` ran `bun info @opencode-ai/plugin version` (config dependency check, ≈200 MB per process, through the proxy) and 47–134 ran at once. `PackageRegistry.info` is now shared and cached for 10 min per process, and `Config.installDependencies` runs once per directory at a time. Peak bun processes during the suite: 12. The 19:34 OOM incident was most likely this, not Lean. | 5 |
 | V14 | D10 / proof-workflow fixes K7 | `kind`/`layer` not compared | additionally, `refresh` copies `kind`/`layer` from the accepted plan node onto each parsed region, so the locality gate (which needs them) works when the marker omits them (D10 marker fields). File values remain only as a fallback for regions with no plan. | 5 |
 
 **Packaging bug found (needs a user decision):** 19 of the 22 `proof.tex` files of `Deliverables/lean-prosa-v06` have
@@ -279,12 +281,15 @@ K1's general-case rule lets the gate accept package imports. For those tasks the
     amendment.
   - K4: `<scheduler-status>` (V12). K8: per-region escalation history keyed by region fingerprint; 3 same-type
     escalations without a change block dispatch and unlock an amendment.
-  - K7 (part): plan-owned `kind`/`layer` (V14); `normal_form` compared with Lean-aware normalisation
-    (`normalizeTargetShape`). Elaboration-based comparison: pending.
+  - K7: plan-owned `kind`/`layer` (V14); region target vs plan `normal_form` and K6 root goal decided by elaboration
+    (V15); `normal_form` that is prose or truncated is a plan-review hard error (`normal_form_not_lean`); a real
+    root-goal mismatch is a mechanical (free) error.
   - S14: before a prover run ends, the current source must have been compiled by `checkpoint`/`lean_check`; otherwise
     one `<final-validation-required>` reminder per source revision.
   - prompt.ts gap-revision §1 wording (R2 closure, `sorry`, Lean proof file, Prosa/Mathlib).
   - Tests (PC): proof-review 39/39; proof-workflow + prompt + task 139/139.
-- Full-suite runs on the PC die in the 24 GB cap: the OOM dump shows 127 `bun` processes of ≈650 MB each in the scope
-  (not Lean). Being traced with a per-second sampler (`run-tests-sampled.sh`).
+- Full-suite runs on the PC died in the 24 GB cap (V16, fixed). First complete capped PC run of the ported tree:
+  **1528 pass, 20 skip, 4 fail** (baseline 1501/9/21); 3 failures are the baseline's oauth-browser timeouts, the
+  4th was a fixture leftover (fixed). New tests: `known-problem-fixes.test.ts` (K4, K5, K8, S14, S26),
+  `lean-statement-check.test.ts` (K6, K7); with proof-review, proof-workflow, prompt, task, bash: all pass on the PC.
 

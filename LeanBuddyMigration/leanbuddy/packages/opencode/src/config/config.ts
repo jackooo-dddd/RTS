@@ -245,7 +245,19 @@ export namespace Config {
     await Promise.all(deps)
   }
 
+  const installs = new Map<string, Promise<void>>()
+
+  /** One `bun install` per directory at a time: concurrent instances share it instead of each starting their own
+   * (on a proxied host every install runs with --no-cache; a burst of instances spawned 127 of them). */
   export async function installDependencies(dir: string) {
+    const running = installs.get(dir)
+    if (running) return running
+    const task = installDependenciesOnce(dir).finally(() => installs.delete(dir))
+    installs.set(dir, task)
+    return task
+  }
+
+  async function installDependenciesOnce(dir: string) {
     const pkg = path.join(dir, "package.json")
     const targetVersion = Installation.isLocal() ? "*" : Installation.VERSION
 

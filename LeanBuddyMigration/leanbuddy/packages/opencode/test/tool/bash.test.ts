@@ -227,13 +227,13 @@ describe("tool.bash", () => {
           const bash = await BashTool.init()
           const result = await bash.execute(
             {
-              command: "rg 'Lemma demo' theorem.lean 2>/dev/null",
+              command: "rg 'theorem demo' theorem.lean 2>/dev/null",
               description: "Search theorem source",
             },
             { ...ctx, sessionID: session.id },
           )
           expect(result.metadata.exit).toBe(0)
-          expect(result.metadata.output).toContain("Lemma demo")
+          expect(result.metadata.output).toContain("theorem demo")
         } finally {
           ProofEditTransaction.abort(session.id)
           await Session.remove(session.id)

@@ -24,6 +24,7 @@ import { ProofEditTransaction } from "./proof-edit-transaction"
 import { LeanProofSource } from "./lean-proof-source"
 import { Instance } from "@/project/instance"
 import { LeanProject } from "@/tool/lean-project"
+import { LeanStatementCheck } from "@/tool/lean-statement-check"
 import { Log } from "@/util/log"
 import {
   MAX_IDENTICAL_PLAN_METADATA_REPAIRS,
@@ -296,6 +297,8 @@ export namespace SessionProofWorkflow {
     metadata_mismatches: z.array(z.string()),
     reviewed_at: z.number().int().positive(),
     parser_version: z.number().int().optional(),
+    /** K7: `LeanStatementCheck.cacheGeneration()` when reviewed; a drifted review is redone after new verdicts. */
+    equivalence_generation: z.number().int().nonnegative().optional(),
   })
   export type DecompositionMaterializationReview = z.infer<typeof DecompositionMaterializationReview>
 
@@ -1586,6 +1589,43 @@ export namespace SessionProofWorkflow {
     return (value ?? "").replace(/\s+/g, " ").trim().toLowerCase()
   }
 
+  /** The proposition of a region's exported target (`P` of `have h : P := …`). */
+  function targetProposition(block: ParsedBlock) {
+    if (!block.targetName) return undefined
+    return LeanProofSource.targetDeclarations(block.blockText).find((entry) => entry.name === block.targetName)?.proposition
+  }
+
+  /** K7: a drifted review is stale once new elaboration verdicts exist (they may resolve a textual mismatch). */
+  function equivalenceCurrent(review: DecompositionMaterializationReview) {
+    return review.status !== "drifted" || review.equivalence_generation === LeanStatementCheck.cacheGeneration()
+  }
+
+  /** K7: decide, by elaboration, region targets whose text differs from their accepted plan normal form. */
+  async function checkRegionNormalForms(file: string, source: string) {
+    const pairs = new Map<string, string>()
+    const blocks = parseProofObligations(source)
+    for (const { state } of statesForFile(file)) {
+      const plan = state.decomposition_plan
+      if (plan?.status !== "accepted" || !plan.accepted_plan) continue
+      const nodes = new Map(plan.accepted_plan.nodes.map((node) => [node.node_id ?? node.paper_step_id, node]))
+      for (const block of blocks) {
+        const proposition = targetProposition(block)
+        if (block.theorem !== plan.theorem || !block.proofPlanNode || !proposition) continue
+        const node = nodes.get(block.proofPlanNode)
+        const normalForm = node?.target_normal_form ?? node?.target?.normal_form
+        if (!normalForm || normalizeTargetShape(normalForm) === normalizeTargetShape(proposition)) continue
+        if (LeanStatementCheck.cachedRegion(file, block.admit_id, proposition, normalForm)) continue
+        pairs.set(block.admit_id, normalForm)
+      }
+    }
+    if (pairs.size === 0) return
+    await LeanStatementCheck.regionTargets({
+      file,
+      source,
+      pairs: [...pairs].map(([admit_id, normal_form]) => ({ admit_id, normal_form })),
+    }).catch((error) => log.warn("region normal-form check failed", { file, error: String(error) }))
+  }
+
   /** D10: a region's `kind` and `layer` come from its accepted plan node; file values are only a legacy fallback. */
   function withPlanLabels(blocks: ParsedBlock[], plan: DecompositionPlanState | undefined) {
     const nodes = plan?.status === "accepted" ? plan.accepted_plan?.nodes : undefined
@@ -1664,12 +1704,24 @@ export namespace SessionProofWorkflow {
         })
       }
       // D10/K7: kind and layer are owned by the plan node and never compared with the file.
+      // K7 (D10): the region's exported target is compared with the plan normal form by elaboration in the region's
+      // context (verdicts cached by LeanStatementCheck at checkpoint/lean_check time); text equality is a shortcut.
       const expectedNormalForm = node.target_normal_form ?? node.target?.normal_form
+      const observedTarget = targetProposition(block) ?? block.targetNormalForm
       if (
         expectedNormalForm &&
-        normalizeTargetShape(expectedNormalForm) !== normalizeTargetShape(block.targetNormalForm ?? "")
+        normalizeTargetShape(expectedNormalForm) !== normalizeTargetShape(observedTarget ?? "")
       ) {
-        metadataMismatches.push(`${id}: target normal form differs from the accepted plan`)
+        const verdict = observedTarget
+          ? LeanStatementCheck.cachedRegion(planState.file, block.admit_id, observedTarget, expectedNormalForm)?.verdict
+          : undefined
+        if (verdict !== "equivalent") {
+          metadataMismatches.push(
+            verdict === "different"
+              ? `${id}: the region target is not definitionally equal to the accepted plan normal form`
+              : `${id}: the region target differs textually from the accepted plan normal form (run checkpoint to decide it by elaboration)`,
+          )
+        }
       }
     }
     const status =
@@ -1705,6 +1757,7 @@ export namespace SessionProofWorkflow {
           dependency_mismatches: dependencyMismatches,
           metadata_mismatches: metadataMismatches,
           parser_version: CONTRACT_PARSER_VERSION,
+          equivalence_generation: LeanStatementCheck.cacheGeneration(),
           reviewed_at: Date.now(),
         })
       : undefined
@@ -1731,6 +1784,7 @@ export namespace SessionProofWorkflow {
     const storedReviewCurrent = Boolean(
       planState.materialization_review &&
         planState.materialization_review.parser_version === CONTRACT_PARSER_VERSION &&
+        equivalenceCurrent(planState.materialization_review) &&
         (planState.materialization_review.theorem_source_hash
           ? planState.materialization_review.theorem_source_hash === currentTheoremSourceHash
           : planState.materialization_review.source_hash === sourceHash(source)),
@@ -2431,6 +2485,7 @@ export namespace SessionProofWorkflow {
   ])
 
   const MECHANICAL_PLAN_HARD_ERRORS = new Set([
+    "bound_root_goal_mismatch",
     "duplicate_node_id",
     "unknown_edge_endpoint",
     "self_cycle",
@@ -3006,6 +3061,7 @@ export namespace SessionProofWorkflow {
       const previousReviewCurrent = Boolean(
         previousReview &&
           previousReview.parser_version === CONTRACT_PARSER_VERSION &&
+          equivalenceCurrent(previousReview) &&
           (previousReview.theorem_source_hash
             ? previousReview.theorem_source_hash === currentTheoremSourceHash
             : previousReview.source_hash === sourceHash(source)),
@@ -4603,6 +4659,7 @@ export namespace SessionProofWorkflow {
     }
 
     noteCheckedSource(file, input.source)
+    await checkRegionNormalForms(file, input.source)
     const binding = SessionProof.get(input.sessionID)
     if (binding && normalizedWorkflowFile(binding.file) === file && !get(input.sessionID)) {
       refresh(input.sessionID, file, input.source)

@@ -19,6 +19,8 @@ import { ProofEditTransaction } from "@/session/proof-edit-transaction"
 import { Filesystem } from "@/util/filesystem"
 import { Instance } from "@/project/instance"
 import { auditPlanLibraryCandidates } from "./proof-premise-audit"
+import { LeanTerm } from "./lean-term"
+import { LeanStatementCheck } from "./lean-statement-check"
 import { normalizeProofPlanIdentifiers } from "./proof-plan-identifiers"
 
 export { normalizeProofPlanIdentifiers } from "./proof-plan-identifiers"
@@ -498,6 +500,7 @@ function issue(
 }
 
 const MECHANICAL_PLAN_HARD_ERRORS = new Set([
+  "bound_root_goal_mismatch",
   "duplicate_node_id",
   "unknown_edge_endpoint",
   "self_cycle",
@@ -510,6 +513,28 @@ const MECHANICAL_PLAN_HARD_ERRORS = new Set([
 
 export function hasOnlyMechanicalPlanHardErrors(review: z.infer<typeof ProofPlanReview>) {
   return review.hard_errors.length > 0 && review.hard_errors.every((entry) => MECHANICAL_PLAN_HARD_ERRORS.has(entry.code))
+}
+
+/** K7: why a normal form is not a Lean proposition (unbalanced or truncated text, or English prose), if it is not. */
+export function leanPropositionProblem(text: string | undefined) {
+  const value = (text ?? "").trim()
+  if (!value) return "it is empty"
+  const scan = LeanTerm.scan(value)
+  if (!scan.ok) return scan.reason
+  let depth = 0
+  for (const c of value) {
+    if ("([{⟨⦃".includes(c)) depth++
+    else if (")]}⟩⦄".includes(c) && --depth < 0) return "it has an unmatched closing bracket"
+  }
+  if (depth !== 0) return "it has an unclosed bracket (truncated?)"
+  const words = value.split(/\s+/)
+  const symbols = /[=≤≥<>→↔∧∨¬∀∃∑∏∈∉⊆⊂∩∪+*\/\-^%|:()\[\]⟨⟩{}·∘≠≡≃⁻¹!?@$&]/
+  // An application such as `P j a b` has no symbols either; prose also contains an English function word.
+  const english = /^(?:the|an|of|is|are|be|and|or|for|that|with|to|from|by|as|which|each|every|all|some|this|it|its|holds|shows|equals|between|over|into)$/i
+  if (words.length >= 3 && !symbols.test(value) && words.some((word) => english.test(word))) {
+    return `"${value.slice(0, 80)}" reads as prose`
+  }
+  return undefined
 }
 
 export function reviewProofPlan(plan: ProofPlanValue) {
@@ -570,6 +595,17 @@ export function reviewProofPlan(plan: ProofPlanValue) {
             "A delegated leaf has no declared DAG edge or parent consumer.",
             id,
           ),
+        )
+      }
+      // K7 (D10): the normal form becomes the locked reference for checkpoints, so it must be a Lean proposition.
+      const normalFormText = node.target_normal_form ?? node.target?.normal_form ?? node.formal_goal
+      const normalFormProblem = leanPropositionProblem(normalFormText)
+      if (normalFormProblem) {
+        hardErrors.push(
+          issue("hard_error", "normal_form_not_lean", `The delegated node's normal form is not a Lean proposition: ${normalFormProblem}.`, id, {
+            repair_hint:
+              "Write target_normal_form (or formal_goal) as the exact Lean proposition the region will export, in the theorem's notation, e.g. `job_arrival j ≤ t`; do not describe it in words.",
+          }),
         )
       }
       if ((node.layer === "semantic" || node.kind === "semantic_bridge" || node.kind === "pointwise_semantic_bridge") && !node.claim_delta) {
@@ -969,16 +1005,36 @@ export const ProofPlanTool = Tool.define("proof_plan", {
     }
     if (
       boundTarget &&
+      binding &&
+      boundSource &&
       submittedRootGoal &&
       normalizeGoal(submittedRootGoal) !== normalizeGoal(boundTarget.root_goal)
     ) {
-      bindingErrors.push(
-        issue(
-          "hard_error",
-          "bound_root_goal_mismatch",
-          "Submitted root_goal does not match the conclusion of the bound theorem.",
-        ),
-      )
+      // K6 (D10): a textual difference is decided by elaboration in the theorem's context; only a real difference
+      // (or an undecidable one) is a binding error.
+      const check = await LeanStatementCheck.rootGoal({
+        file: binding.file,
+        source: boundSource,
+        theorem: boundTarget.theorem,
+        submitted: submittedRootGoal,
+        signal: ctx.abort,
+      })
+      if (check.verdict !== "equivalent") {
+        bindingErrors.push(
+          issue(
+            "hard_error",
+            "bound_root_goal_mismatch",
+            check.verdict === "different"
+              ? "Submitted root_goal is not definitionally equal to the conclusion of the bound theorem."
+              : "Submitted root_goal differs textually from the bound theorem's conclusion and the elaboration check could not decide it.",
+            undefined,
+            {
+              repair_hint: `Use the bound theorem's conclusion exactly: ${boundTarget.root_goal.slice(0, 600)}`,
+              details: check.detail ? { lean: check.detail.slice(0, 900) } : undefined,
+            },
+          ),
+        )
+      }
     }
     if (boundProofFile && structuredSubmission && !hasDelegationCandidate && !hasExplicitLayer1Closure) {
       bindingErrors.push(
