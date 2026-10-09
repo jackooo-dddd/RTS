@@ -14,12 +14,11 @@ import { SessionStatus } from "../../src/session/status"
 import { tmpdir } from "../fixture/fixture"
 
 const source = [
-  "Module ResponseTimeAnalysisEDF.",
-  "Lemma Lemma3_05 : True.",
-  "Proof.",
-  "  exact I.",
-  "Qed.",
-  "End ResponseTimeAnalysisEDF.",
+  "namespace ResponseTimeAnalysisEDF",
+  "theorem Lemma3_05 : True := by",
+  "",
+  "  exact trivial",
+  "end ResponseTimeAnalysisEDF",
   "",
 ].join("\n")
 
@@ -39,10 +38,18 @@ function context(sessionID: string, onAsk: () => void = () => {}) {
   }
 }
 
+/** A minimal Lake project (core Lean only) so checkpoint/lean_check and the final gate run the real `lake env lean`. */
+async function leanProject(dir: string) {
+  await fs.writeFile(path.join(dir, "lakefile.lean"), "import Lake\nopen Lake DSL\npackage txn_test\n", "utf-8")
+  await fs.writeFile(path.join(dir, "lean-toolchain"), "leanprover/lean4:v4.33.1\n", "utf-8")
+}
+
+const hasLake = Boolean(Bun.which("lake"))
+
 describe("proof edit transaction", () => {
   test("allows a theorem-tail repair to add only the final newline", async () => {
     await using fixture = await tmpdir({ git: true })
-    const file = path.join(fixture.path, "lemma3-final-newline.v")
+    const file = path.join(fixture.path, "lemma3-final-newline.lean")
     const sourceWithoutFinalNewline = source.trimEnd()
     await fs.writeFile(file, sourceWithoutFinalNewline, "utf-8")
 
@@ -65,14 +72,14 @@ describe("proof edit transaction", () => {
         const result = await edit.execute(
           {
             filePath: file,
-            oldString: "  exact I.\nQed.\nEnd ResponseTimeAnalysisEDF.",
-            newString: "  pose proof I as H.\n  exact H.\nQed.\nEnd ResponseTimeAnalysisEDF.\n",
+            oldString: "  exact trivial\nend ResponseTimeAnalysisEDF",
+            newString: "  have H := trivial\n  exact H\nend ResponseTimeAnalysisEDF\n",
           },
           context(session.id),
         )
 
         expect(result.output).toContain("Edit staged in proof transaction")
-        expect(ProofEditTransaction.source(session.id, file)).toEndWith("End ResponseTimeAnalysisEDF.\n")
+        expect(ProofEditTransaction.source(session.id, file)).toEndWith("end ResponseTimeAnalysisEDF\n")
         expect(await fs.readFile(file, "utf-8")).toBe(sourceWithoutFinalNewline)
 
         ProofEditTransaction.abort(session.id)
@@ -84,7 +91,7 @@ describe("proof edit transaction", () => {
 
   test("rejects the worker2-style copied Qed and End suffix", async () => {
     await using fixture = await tmpdir({ git: true })
-    const file = path.join(fixture.path, "lemma3.v")
+    const file = path.join(fixture.path, "lemma3.lean")
     await fs.writeFile(file, source, "utf-8")
 
     await Instance.provide({
@@ -105,13 +112,12 @@ describe("proof edit transaction", () => {
           edit.execute(
             {
               filePath: file,
-              oldString: "Proof.\n  exact I.",
+              oldString: "\n  exact trivial",
               newString: [
-                "Proof.",
-                "  exact I.",
-                "Qed.",
-                "End ResponseTimeAnalysisEDF.",
-                "  unfold response_time_bounded_by.",
+                "",
+                "  exact trivial",
+                "end ResponseTimeAnalysisEDF",
+                "  unfold response_time_bounded_by",
               ].join("\n"),
             },
             context(sessionID),
@@ -125,7 +131,7 @@ describe("proof edit transaction", () => {
 
   test("journals an uncommittable draft and restores it across a fresh parent session", async () => {
     await using fixture = await tmpdir({ git: true })
-    const file = path.join(fixture.path, "lemma3.v")
+    const file = path.join(fixture.path, "lemma3.lean")
     await fs.writeFile(file, source, "utf-8")
 
     await Instance.provide({
@@ -145,14 +151,14 @@ describe("proof edit transaction", () => {
         const result = await edit.execute(
           {
             filePath: file,
-            oldString: "  exact I.",
-            newString: "  constructor.",
+            oldString: "  exact trivial",
+            newString: "  constructor",
           },
           context(sessionID),
         )
         expect(result.output).toContain("Edit staged in proof transaction")
         expect(await fs.readFile(file, "utf-8")).toBe(source)
-        expect(ProofEditTransaction.source(sessionID, file)).toContain("constructor.")
+        expect(ProofEditTransaction.source(sessionID, file)).toContain("constructor")
         expect(ProofEditTransaction.requiresValidation(sessionID, file)).toBe(true)
         expect(ProofEditTransaction.active(sessionID)?.validation_pending).toBe(true)
 
@@ -170,7 +176,7 @@ describe("proof edit transaction", () => {
         })
         expect(resumed?.transaction_id).toBe(finalized?.transaction_id)
         expect(resumed?.recovered).toBe(true)
-        expect(ProofEditTransaction.source("worker-unaccepted-resumed", file)).toContain("constructor.")
+        expect(ProofEditTransaction.source("worker-unaccepted-resumed", file)).toContain("constructor")
         ProofEditTransaction.abort("worker-unaccepted-resumed")
       },
     })
@@ -178,7 +184,7 @@ describe("proof edit transaction", () => {
 
   test("hands an uncommittable repair draft back to the parent without writing the workspace", async () => {
     await using fixture = await tmpdir({ git: true })
-    const file = path.join(fixture.path, "lemma3.v")
+    const file = path.join(fixture.path, "lemma3.lean")
     await fs.writeFile(file, source, "utf-8")
 
     await Instance.provide({
@@ -194,7 +200,7 @@ describe("proof edit transaction", () => {
           source,
           scope: { kind: "theorem_body", theorem: "Lemma3_05" },
         })
-        const childDraft = source.replace("  exact I.", "  constructor.")
+        const childDraft = source.replace("  exact trivial", "  constructor")
         ProofEditTransaction.stage({
           sessionID: childSessionID,
           file,
@@ -217,8 +223,8 @@ describe("proof edit transaction", () => {
           edit.execute(
             {
               filePath: file,
-              oldString: "  constructor.",
-              newString: "  pose proof I as H.\n  exact H.",
+              oldString: "  constructor",
+              newString: "  have H := trivial\n  exact H",
             },
             context(parentSessionID),
           ),
@@ -227,8 +233,8 @@ describe("proof edit transaction", () => {
         const parentResult = await edit.execute(
           {
             filePath: file,
-            oldString: "  constructor.",
-            newString: "  pose proof I as H.\n  exact H.",
+            oldString: "  constructor",
+            newString: "  have H := trivial\n  exact H",
           },
           context(parentSessionID),
         )
@@ -250,24 +256,23 @@ describe("proof edit transaction", () => {
 
   test("retargets a handed-off transaction to the next proof region without losing the staged prefix", async () => {
     await using fixture = await tmpdir({ git: true })
-    const file = path.join(fixture.path, "lemma3.v")
-    const beginOne = "(* proof_region begin owner: lemma admit_id: gap_1 theorem: Lemma3_05 *)"
-    const endOne = "(* proof_region end admit_id: gap_1 *)"
-    const beginTwo = "(* proof_region begin owner: lemma admit_id: gap_2 theorem: Lemma3_05 *)"
-    const endTwo = "(* proof_region end admit_id: gap_2 *)"
+    const file = path.join(fixture.path, "lemma3.lean")
+    const beginOne = "/- proof_region begin owner: lemma admit_id: gap_1 theorem: Lemma3_05 -/"
+    const endOne = "/- proof_region end admit_id: gap_1 -/"
+    const beginTwo = "/- proof_region begin owner: lemma admit_id: gap_2 theorem: Lemma3_05 -/"
+    const endTwo = "/- proof_region end admit_id: gap_2 -/"
     const regionSource = [
-      "Module ResponseTimeAnalysisEDF.",
-      "Lemma Lemma3_05 : True.",
-      "Proof.",
+      "namespace ResponseTimeAnalysisEDF",
+      "theorem Lemma3_05 : True := by",
+      "",
       beginOne,
-      "  have Hone : True. { admit. }",
+      "  have Hone : True := (by sorry)",
       endOne,
       beginTwo,
-      "  have Htwo : True. { admit. }",
+      "  have Htwo : True := (by sorry)",
       endTwo,
-      "  exact Hone.",
-      "Admitted.",
-      "End ResponseTimeAnalysisEDF.",
+      "  exact Hone",
+      "end ResponseTimeAnalysisEDF",
       "",
     ].join("\n")
     await fs.writeFile(file, regionSource, "utf-8")
@@ -291,7 +296,7 @@ describe("proof edit transaction", () => {
           },
         })
 
-        const firstSolved = regionSource.replace("have Hone : True. { admit. }", "have Hone : True. { exact I. }")
+        const firstSolved = regionSource.replace("have Hone : True := (by sorry)", "have Hone : True := (by exact trivial)")
         ProofEditTransaction.stage({
           sessionID: parentSessionID,
           file,
@@ -314,7 +319,7 @@ describe("proof edit transaction", () => {
         expect(transferred).toMatchObject({ scope: "proof_region", handed_off: true })
         expect(ProofEditTransaction.source(childSessionID, file)).toBe(firstSolved)
 
-        const bothSolved = firstSolved.replace("have Htwo : True. { admit. }", "have Htwo : True. { exact I. }")
+        const bothSolved = firstSolved.replace("have Htwo : True := (by sorry)", "have Htwo : True := (by exact trivial)")
         expect(() =>
           ProofEditTransaction.stage({
             sessionID: childSessionID,
@@ -325,7 +330,7 @@ describe("proof edit transaction", () => {
         ).not.toThrow()
         expect(ProofEditTransaction.source(childSessionID, file)).toBe(bothSolved)
 
-        const rewritesCertifiedPrefix = bothSolved.replace("have Hone : True. { exact I. }", "have Hone : True. { constructor. }")
+        const rewritesCertifiedPrefix = bothSolved.replace("have Hone : True := (by exact trivial)", "have Hone : True := (by constructor)")
         expect(() =>
           ProofEditTransaction.stage({
             sessionID: childSessionID,
@@ -342,21 +347,21 @@ describe("proof edit transaction", () => {
 
   test("supports multiple proof regions that share a generic end marker", async () => {
     await using fixture = await tmpdir({ git: true })
-    const file = path.join(fixture.path, "lemma4.v")
-    const beginOne = "(* proof_region begin owner: lemma admit_id: gap_1 theorem: Lemma4_05 *)"
-    const beginTwo = "(* proof_region begin owner: lemma admit_id: gap_2 theorem: Lemma4_05 *)"
-    const sharedEnd = "(* proof_region end *)"
+    const file = path.join(fixture.path, "lemma4.lean")
+    const beginOne = "/- proof_region begin owner: lemma admit_id: gap_1 theorem: Lemma4_05 -/"
+    const beginTwo = "/- proof_region begin owner: lemma admit_id: gap_2 theorem: Lemma4_05 -/"
+    const sharedEnd = "/- proof_region end -/"
     const regionSource = [
-      "Lemma Lemma4_05 : True.",
-      "Proof.",
+      "theorem Lemma4_05 : True := by",
+      "",
       beginOne,
-      "  have Hone : True. { admit. }",
+      "  have Hone : True := (by sorry)",
       sharedEnd,
       beginTwo,
-      "  have Htwo : True. { admit. }",
+      "  have Htwo : True := (by sorry)",
       sharedEnd,
-      "  exact Hone.",
-      "Admitted.",
+      "  exact Hone",
+      "",
       "",
     ].join("\n")
     await fs.writeFile(file, regionSource, "utf-8")
@@ -378,7 +383,7 @@ describe("proof edit transaction", () => {
           },
         })
 
-        const solvedFirst = regionSource.replace("have Hone : True. { admit. }", "have Hone : True. { exact I. }")
+        const solvedFirst = regionSource.replace("have Hone : True := (by sorry)", "have Hone : True := (by exact trivial)")
         expect(() =>
           ProofEditTransaction.stage({
             sessionID: "generic-end-child",
@@ -389,7 +394,7 @@ describe("proof edit transaction", () => {
         ).not.toThrow()
         expect(ProofEditTransaction.source("generic-end-child", file)).toBe(solvedFirst)
 
-        const siblingEdit = solvedFirst.replace("have Htwo : True. { admit. }", "have Htwo : True. { exact I. }")
+        const siblingEdit = solvedFirst.replace("have Htwo : True := (by sorry)", "have Htwo : True := (by exact trivial)")
         expect(() =>
           ProofEditTransaction.stage({
             sessionID: "generic-end-child",
@@ -405,7 +410,7 @@ describe("proof edit transaction", () => {
 
   test("recovers the latest theorem transaction across a fresh root session even when its scope changed", async () => {
     await using fixture = await tmpdir({ git: true })
-    const file = path.join(fixture.path, "lemma3.v")
+    const file = path.join(fixture.path, "lemma3.lean")
     await fs.writeFile(file, source, "utf-8")
 
     await Instance.provide({
@@ -420,7 +425,7 @@ describe("proof edit transaction", () => {
           source,
           scope: { kind: "theorem_spine", theorem: "Lemma3_05" },
         })
-        const remodeled = source.replace("  exact I.", "  pose proof I as H.\n  exact H.")
+        const remodeled = source.replace("  exact trivial", "  have H := trivial\n  exact H")
         ProofEditTransaction.stage({ sessionID: oldRoot, file, before: source, after: remodeled })
         expect((await ProofEditTransaction.finalize(oldRoot))?.status).toBe("recoverable")
 
@@ -434,7 +439,7 @@ describe("proof edit transaction", () => {
           source,
           scope: { kind: "theorem_body", theorem: "Lemma3_05" },
         })
-        const laterNarrowDraft = source.replace("  exact I.", "  constructor.")
+        const laterNarrowDraft = source.replace("  exact trivial", "  constructor")
         ProofEditTransaction.stage({
           sessionID: "later-narrow-worker",
           file,
@@ -474,13 +479,13 @@ describe("proof edit transaction", () => {
 
   test("fresh prover adopts an idle in-memory transaction instead of reading stale disk source", async () => {
     await using fixture = await tmpdir({ git: true })
-    const file = path.join(fixture.path, "lemma3.v")
+    const file = path.join(fixture.path, "lemma3.lean")
     await fs.writeFile(file, source, "utf-8")
 
     await Instance.provide({
       directory: fixture.path,
       fn: async () => {
-        const staged = source.replace("  exact I.", "  pose proof I as H.\n  exact H.")
+        const staged = source.replace("  exact trivial", "  have H := trivial\n  exact H")
         await ProofEditTransaction.begin({
           sessionID: "idle-old-root",
           parentSessionID: "",
@@ -516,23 +521,22 @@ describe("proof edit transaction", () => {
 
   test("fresh recovery preserves cumulative sibling-region edits", async () => {
     await using fixture = await tmpdir({ git: true })
-    const file = path.join(fixture.path, "lemma3.v")
-    const beginA = "(* proof_region begin admit_id: region_a *)"
-    const endA = "(* proof_region end admit_id: region_a *)"
-    const beginB = "(* proof_region begin admit_id: region_b *)"
-    const endB = "(* proof_region end admit_id: region_b *)"
+    const file = path.join(fixture.path, "lemma3.lean")
+    const beginA = "/- proof_region begin admit_id: region_a -/"
+    const endA = "/- proof_region end admit_id: region_a -/"
+    const beginB = "/- proof_region begin admit_id: region_b -/"
+    const endB = "/- proof_region end admit_id: region_b -/"
     const regionalSource = [
-      "Module ResponseTimeAnalysisEDF.",
-      "Lemma Lemma3_05 : True.",
-      "Proof.",
+      "namespace ResponseTimeAnalysisEDF",
+      "theorem Lemma3_05 : True := by",
+      "",
       beginA,
-      "  pose proof I as HA.",
+      "  have HA := trivial",
       endA,
       beginB,
-      "  exact I.",
+      "  exact trivial",
       endB,
-      "Qed.",
-      "End ResponseTimeAnalysisEDF.",
+      "end ResponseTimeAnalysisEDF",
       "",
     ].join("\n")
     await fs.writeFile(file, regionalSource, "utf-8")
@@ -553,7 +557,7 @@ describe("proof edit transaction", () => {
             endMarker: endA,
           },
         })
-        const afterA = regionalSource.replace("  pose proof I as HA.", "  pose proof I as HA_certified.")
+        const afterA = regionalSource.replace("  have HA := trivial", "  have HA_certified := trivial")
         ProofEditTransaction.stage({
           sessionID: "region-a-child",
           file,
@@ -573,7 +577,7 @@ describe("proof edit transaction", () => {
             endMarker: endB,
           },
         })
-        const afterB = afterA.replace("  exact I.", "  exact HA_certified.")
+        const afterB = afterA.replace("  exact trivial", "  exact HA_certified")
         ProofEditTransaction.stage({
           sessionID: "region-b-child",
           file,
@@ -613,18 +617,17 @@ describe("proof edit transaction", () => {
 
   test("returns the last lemma transaction to parent theorem finalization scope", async () => {
     await using fixture = await tmpdir({ git: true })
-    const file = path.join(fixture.path, "lemma3.v")
-    const begin = "(* proof_region begin admit_id: region_a *)"
-    const end = "(* proof_region end admit_id: region_a *)"
+    const file = path.join(fixture.path, "lemma3.lean")
+    const begin = "/- proof_region begin admit_id: region_a -/"
+    const end = "/- proof_region end admit_id: region_a -/"
     const admitted = [
-      "Module ResponseTimeAnalysisEDF.",
-      "Lemma Lemma3_05 : True.",
-      "Proof.",
+      "namespace ResponseTimeAnalysisEDF",
+      "theorem Lemma3_05 : True := by",
+      "",
       begin,
-      "  admit.",
+      "  sorry",
       end,
-      "Admitted.",
-      "End ResponseTimeAnalysisEDF.",
+      "end ResponseTimeAnalysisEDF",
       "",
     ].join("\n")
     await fs.writeFile(file, admitted, "utf-8")
@@ -652,7 +655,7 @@ describe("proof edit transaction", () => {
             endMarker: end,
           },
         })
-        const regionSolved = admitted.replace("  admit.", "  exact I.")
+        const regionSolved = admitted.replace("  sorry", "  exact trivial")
         ProofEditTransaction.stage({
           sessionID: "last-lemma-child",
           file,
@@ -666,7 +669,7 @@ describe("proof edit transaction", () => {
         })
         expect(handedOff).toMatchObject({ status: "handed_off", scope: "theorem_body" })
 
-        const finalized = regionSolved.replace("Admitted.", "Qed.")
+        const finalized = regionSolved.replace("", "")
         const staged = ProofEditTransaction.stage({
           sessionID: "parent-prover",
           file,
@@ -682,16 +685,16 @@ describe("proof edit transaction", () => {
 
   test("fresh prover widens a recoverable lemma scope for final Qed", async () => {
     await using fixture = await tmpdir({ git: true })
-    const file = path.join(fixture.path, "lemma3.v")
-    const begin = "(* proof_region begin admit_id: region_a *)"
-    const end = "(* proof_region end admit_id: region_a *)"
+    const file = path.join(fixture.path, "lemma3.lean")
+    const begin = "/- proof_region begin admit_id: region_a -/"
+    const end = "/- proof_region end admit_id: region_a -/"
     const admitted = [
-      "Lemma Lemma3_05 : True.",
-      "Proof.",
+      "theorem Lemma3_05 : True := by",
+      "",
       begin,
-      "  admit.",
+      "  sorry",
       end,
-      "Admitted.",
+      "",
       "",
     ].join("\n")
     await fs.writeFile(file, admitted, "utf-8")
@@ -712,7 +715,7 @@ describe("proof edit transaction", () => {
             endMarker: end,
           },
         })
-        const regionSolved = admitted.replace("  admit.", "  exact I.")
+        const regionSolved = admitted.replace("  sorry", "  exact trivial")
         ProofEditTransaction.stage({
           sessionID: "stopped-last-child",
           file,
@@ -732,7 +735,7 @@ describe("proof edit transaction", () => {
         })
         expect(recovered).toMatchObject({ recovered: true, scope: "theorem_body" })
 
-        const finalized = regionSolved.replace("Admitted.", "Qed.")
+        const finalized = regionSolved.replace("", "")
         expect(() =>
           ProofEditTransaction.stage({
             sessionID: "fresh-parent",
@@ -748,14 +751,14 @@ describe("proof edit transaction", () => {
 
   test("fresh repair recovery forks from the best certified snapshot without deleting the newer draft", async () => {
     await using fixture = await tmpdir({ git: true })
-    const file = path.join(fixture.path, "lemma3.v")
+    const file = path.join(fixture.path, "lemma3.lean")
     await fs.writeFile(file, source, "utf-8")
 
     await Instance.provide({
       directory: fixture.path,
       fn: async () => {
-        const certified = source.replace("  exact I.", "  pose proof I as H.\n  exact H.")
-        const experimental = certified.replace("  exact H.", "  fail.")
+        const certified = source.replace("  exact trivial", "  have H := trivial\n  exact H")
+        const experimental = certified.replace("  exact H", "  fail.")
         await ProofEditTransaction.begin({
           sessionID: "repair-old-root",
           parentSessionID: "",
@@ -807,14 +810,14 @@ describe("proof edit transaction", () => {
 
   test("restores a recovery-only certified snapshot without making it workspace-committable", async () => {
     await using fixture = await tmpdir({ git: true })
-    const file = path.join(fixture.path, "lemma3-recovery-only.v")
+    const file = path.join(fixture.path, "lemma3-recovery-only.lean")
     await fs.writeFile(file, source, "utf-8")
 
     await Instance.provide({
       directory: fixture.path,
       fn: async () => {
-        const certified = source.replace("  exact I.", "  pose proof I as Hcert.\n  exact Hcert.")
-        const failedDraft = certified.replace("  exact Hcert.", "  fail.")
+        const certified = source.replace("  exact trivial", "  have Hcert := trivial\n  exact Hcert")
+        const failedDraft = certified.replace("  exact Hcert", "  fail.")
         await ProofEditTransaction.begin({
           sessionID: "recovery-only-old",
           parentSessionID: "",
@@ -879,15 +882,15 @@ describe("proof edit transaction", () => {
 
   test("restores the snapshot with the most certified regions instead of the latest certified draft", async () => {
     await using fixture = await tmpdir({ git: true })
-    const file = path.join(fixture.path, "lemma3-best-certificate.v")
+    const file = path.join(fixture.path, "lemma3-best-certificate.lean")
     await fs.writeFile(file, source, "utf-8")
 
     await Instance.provide({
       directory: fixture.path,
       fn: async () => {
-        const mostCertified = source.replace("  exact I.", "  pose proof I as Hbest.\n  exact Hbest.")
+        const mostCertified = source.replace("  exact trivial", "  have Hbest := trivial\n  exact Hbest")
         const newerButWorse = mostCertified.replace("Hbest", "Hnewer")
-        const failedDraft = newerButWorse.replace("  exact Hnewer.", "  fail.")
+        const failedDraft = newerButWorse.replace("  exact Hnewer", "  fail.")
         await ProofEditTransaction.begin({
           sessionID: "best-certificate-old",
           parentSessionID: "",
@@ -966,13 +969,13 @@ describe("proof edit transaction", () => {
 
   test("chooses the transaction with the most certified regions before scope or recency", async () => {
     await using fixture = await tmpdir({ git: true })
-    const file = path.join(fixture.path, "lemma3-best-transaction.v")
+    const file = path.join(fixture.path, "lemma3-best-transaction.lean")
     await fs.writeFile(file, source, "utf-8")
 
     await Instance.provide({
       directory: fixture.path,
       fn: async () => {
-        const better = source.replace("  exact I.", "  pose proof I as Hbetter.\n  exact Hbetter.")
+        const better = source.replace("  exact trivial", "  have Hbetter := trivial\n  exact Hbetter")
         await ProofEditTransaction.begin({
           sessionID: "better-body-transaction",
           parentSessionID: "",
@@ -999,7 +1002,7 @@ describe("proof edit transaction", () => {
         })
         expect((await ProofEditTransaction.finalize("better-body-transaction"))?.status).toBe("recoverable")
 
-        const newer = source.replace("  exact I.", "  pose proof I as Hnewer.\n  exact Hnewer.")
+        const newer = source.replace("  exact trivial", "  have Hnewer := trivial\n  exact Hnewer")
         await ProofEditTransaction.begin({
           sessionID: "newer-spine-transaction",
           parentSessionID: "",
@@ -1047,14 +1050,14 @@ describe("proof edit transaction", () => {
 
   test("stalled repair yields the best certified snapshot and preserves the failed draft", async () => {
     await using fixture = await tmpdir({ git: true })
-    const file = path.join(fixture.path, "lemma3.v")
+    const file = path.join(fixture.path, "lemma3.lean")
     await fs.writeFile(file, source, "utf-8")
 
     await Instance.provide({
       directory: fixture.path,
       fn: async () => {
-        const certified = source.replace("  exact I.", "  pose proof I as H.\n  exact H.")
-        const failed = certified.replace("  exact H.", "  fail.")
+        const certified = source.replace("  exact trivial", "  have H := trivial\n  exact H")
+        const failed = certified.replace("  exact H", "  fail.")
         await ProofEditTransaction.begin({
           sessionID: "repair-stalled-child",
           parentSessionID: "repair-stalled-parent",
@@ -1097,13 +1100,13 @@ describe("proof edit transaction", () => {
 
   test("stalled repair without a certificate returns to base and journals the failed draft", async () => {
     await using fixture = await tmpdir({ git: true })
-    const file = path.join(fixture.path, "lemma3.v")
+    const file = path.join(fixture.path, "lemma3.lean")
     await fs.writeFile(file, source, "utf-8")
 
     await Instance.provide({
       directory: fixture.path,
       fn: async () => {
-        const failed = source.replace("  exact I.", "  fail.")
+        const failed = source.replace("  exact trivial", "  fail.")
         await ProofEditTransaction.begin({
           sessionID: "repair-no-cert-child",
           parentSessionID: "repair-no-cert-parent",
@@ -1137,13 +1140,13 @@ describe("proof edit transaction", () => {
 
   test("stalled lemma handoff preserves the exact unaccepted draft for parent review", async () => {
     await using fixture = await tmpdir({ git: true })
-    const file = path.join(fixture.path, "lemma3.v")
+    const file = path.join(fixture.path, "lemma3.lean")
     await fs.writeFile(file, source, "utf-8")
 
     await Instance.provide({
       directory: fixture.path,
       fn: async () => {
-        const failed = source.replace("  exact I.", "  pose proof I as Hroute.\n  fail.")
+        const failed = source.replace("  exact trivial", "  have Hroute := trivial\n  fail")
         await ProofEditTransaction.begin({
           sessionID: "lemma-stalled-child",
           parentSessionID: "lemma-stalled-parent",
@@ -1202,7 +1205,7 @@ describe("proof edit transaction", () => {
 
   test("commits the last compiler-accepted snapshot atomically", async () => {
     await using fixture = await tmpdir({ git: true })
-    const file = path.join(fixture.path, "lemma3.v")
+    const file = path.join(fixture.path, "lemma3.lean")
     await fs.writeFile(file, source, "utf-8")
     await fs.chmod(file, 0o600)
 
@@ -1218,7 +1221,7 @@ describe("proof edit transaction", () => {
           source,
           scope: { kind: "theorem_body", theorem: "Lemma3_05" },
         })
-        const accepted = source.replace("  exact I.", "  constructor.")
+        const accepted = source.replace("  exact trivial", "  constructor")
         ProofEditTransaction.stage({ sessionID, file, before: source, after: accepted })
         ProofEditTransaction.markAccepted({
           sessionID,
@@ -1230,7 +1233,7 @@ describe("proof edit transaction", () => {
 
         // A later failed experiment remains staged, but must not replace the
         // last accepted source selected for commit.
-        const laterFailed = accepted.replace("  constructor.", "  fail.")
+        const laterFailed = accepted.replace("  constructor", "  fail.")
         ProofEditTransaction.stage({ sessionID, file, before: accepted, after: laterFailed })
         const finalized = await ProofEditTransaction.finalize(sessionID)
         expect(finalized?.status).toBe("committed")
@@ -1243,9 +1246,9 @@ describe("proof edit transaction", () => {
 
   test("does not commit a compiler snapshot until the exact source has an AST audit receipt", async () => {
     await using fixture = await tmpdir({ git: true })
-    const file = path.join(fixture.path, "ast_receipt.v")
-    const baseline = "Lemma demo : True.\nProof.\n  admit.\nAdmitted.\n"
-    const proved = "Lemma demo : True.\nProof.\n  exact I.\nQed.\n"
+    const file = path.join(fixture.path, "ast_receipt.lean")
+    const baseline = "theorem demo : True := by\n  sorry\n"
+    const proved = "theorem demo : True := by\n  exact trivial\n"
     await fs.writeFile(file, baseline, "utf-8")
 
     await Instance.provide({
@@ -1279,7 +1282,7 @@ describe("proof edit transaction", () => {
 
   test("apply_patch updates the staged view without touching the workspace file", async () => {
     await using fixture = await tmpdir({ git: true })
-    const file = path.join(fixture.path, "lemma3.v")
+    const file = path.join(fixture.path, "lemma3.lean")
     await fs.writeFile(file, source, "utf-8")
 
     await Instance.provide({
@@ -1299,10 +1302,10 @@ describe("proof edit transaction", () => {
           {
             patchText: [
               "*** Begin Patch",
-              "*** Update File: lemma3.v",
+              "*** Update File: lemma3.lean",
               "@@",
-              "-  exact I.",
-              "+  constructor.",
+              "-  exact trivial",
+              "+  constructor",
               "*** End Patch",
             ].join("\n"),
           },
@@ -1310,7 +1313,7 @@ describe("proof edit transaction", () => {
         )
         expect(result.output).toContain("Staged the authorized proof edit")
         expect(await fs.readFile(file, "utf-8")).toBe(source)
-        expect(ProofEditTransaction.source(sessionID, file)).toContain("constructor.")
+        expect(ProofEditTransaction.source(sessionID, file)).toContain("constructor")
         ProofEditTransaction.abort(sessionID)
       },
     })
@@ -1318,7 +1321,7 @@ describe("proof edit transaction", () => {
 
   test("explicit theorem-spine authorization permits a substantive statement remodel", async () => {
     await using fixture = await tmpdir({ git: true })
-    const file = path.join(fixture.path, "lemma3.v")
+    const file = path.join(fixture.path, "lemma3.lean")
     await fs.writeFile(file, source, "utf-8")
 
     await Instance.provide({
@@ -1334,8 +1337,8 @@ describe("proof edit transaction", () => {
           scope: { kind: "theorem_spine", theorem: "Lemma3_05" },
         })
         const remodeled = source
-          .replace("Lemma Lemma3_05 : True.", "Lemma Lemma3_05 : True /\\ True.")
-          .replace("  exact I.", "  split; exact I.")
+          .replace("theorem Lemma3_05 : True := by", "theorem Lemma3_05 : True /\\ True := by")
+          .replace("  exact trivial", "  split; exact trivial")
         const staged = ProofEditTransaction.stage({ sessionID, file, before: source, after: remodeled })
         expect(staged?.scope).toBe("theorem_spine")
         expect(ProofEditTransaction.source(sessionID, file)).toContain("True /\\ True")
@@ -1345,11 +1348,12 @@ describe("proof edit transaction", () => {
     })
   })
 
-  test("checkpoint compiles staged source and records an accepted snapshot", async () => {
+  test.skipIf(!hasLake)("checkpoint compiles staged source and records an accepted snapshot", async () => {
     await using fixture = await tmpdir({ git: true })
-    const file = path.join(fixture.path, "checkpoint.v")
-    const admitted = "Lemma demo : True.\nProof.\n  admit.\nAdmitted.\n"
-    const proved = "Lemma demo : True.\nProof.\n  exact I.\nQed.\n"
+    await leanProject(fixture.path)
+    const file = path.join(fixture.path, "Checkpoint.lean")
+    const admitted = "theorem demo : True := by\n  sorry\n"
+    const proved = "theorem demo : True := by\n  exact trivial\n"
     await fs.writeFile(file, admitted, "utf-8")
 
     await Instance.provide({
@@ -1375,7 +1379,7 @@ describe("proof edit transaction", () => {
         )
         expect(result.output).toContain("accepted_progress: true")
         expect(result.output).toContain("hard snapshot updated")
-        expect(result.output).toContain("ast_audit: accepted")
+        expect(result.output).toContain("final_gate: accepted")
         expect(await fs.readFile(file, "utf-8")).toBe(admitted)
 
         const finalized = await ProofEditTransaction.finalize(child.id)
@@ -1385,13 +1389,16 @@ describe("proof edit transaction", () => {
         await Session.remove(parent.id)
       },
     })
-  })
+  }, 120_000)
 
-  test("checkpoint rejects a compiling final proof with a proof-body side effect before commit", async () => {
+  // Lean analogue of the Rocq "proof-body side effect" cheat: the proof checks, but `native_decide` adds an axiom
+  // that the final gate refuses (DECISIONS D4).
+  test.skipIf(!hasLake)("checkpoint rejects a compiling final proof whose axioms the final gate refuses", async () => {
     await using fixture = await tmpdir({ git: true })
-    const file = path.join(fixture.path, "checkpoint_cheat.v")
-    const admitted = "Lemma demo : True.\nProof.\n  exact I.\nQed.\n"
-    const cheated = "Lemma demo : True.\nProof.\n  Axiom cheat : True.\n  exact cheat.\nQed.\n"
+    await leanProject(fixture.path)
+    const file = path.join(fixture.path, "CheckpointCheat.lean")
+    const admitted = "theorem demo : True := by\n  exact trivial\n"
+    const cheated = "theorem demo : True := by\n  have h : 2 + 2 = 4 := by native_decide\n  exact trivial\n"
     await fs.writeFile(file, admitted, "utf-8")
 
     await Instance.provide({
@@ -1413,7 +1420,7 @@ describe("proof edit transaction", () => {
         const checkpoint = await CheckpointTool.init()
         const result = await checkpoint.execute({ file, reason: "milestone" }, context(child.id))
         expect(result.metadata.status).toBe("final_gate_rejected")
-        expect(result.output).toContain("PROOF_SIDE_EFFECT")
+        expect(result.output).toContain("[AXIOMS]")
         expect(ProofEditTransaction.active(child.id)?.committable_snapshot).toBe(false)
         expect(await fs.readFile(file, "utf-8")).toBe(admitted)
 
@@ -1423,13 +1430,14 @@ describe("proof edit transaction", () => {
         await Session.remove(parent.id)
       },
     })
-  }, 30_000)
+  }, 120_000)
 
-  test("lean_check rejects the same compiling AST violation before finalizing a handed-off proof", async () => {
+  test.skipIf(!hasLake)("lean_check rejects the same gate violation before finalizing a handed-off proof", async () => {
     await using fixture = await tmpdir({ git: true })
-    const file = path.join(fixture.path, "coqc_cheat.v")
-    const admitted = "Lemma demo : True.\nProof.\n  exact I.\nQed.\n"
-    const cheated = "Lemma demo : True.\nProof.\n  Axiom cheat : True.\n  exact cheat.\nQed.\n"
+    await leanProject(fixture.path)
+    const file = path.join(fixture.path, "LeanCheckCheat.lean")
+    const admitted = "theorem demo : True := by\n  exact trivial\n"
+    const cheated = "theorem demo : True := by\n  have h : 2 + 2 = 4 := by native_decide\n  exact trivial\n"
     await fs.writeFile(file, admitted, "utf-8")
 
     await Instance.provide({
@@ -1451,7 +1459,7 @@ describe("proof edit transaction", () => {
         const leanCheck = await LeanCheckTool.init()
         const result = await leanCheck.execute({ filePath: file }, context(child.id))
         expect(result.metadata.status).toBe("final_gate_rejected")
-        expect(result.output).toContain("PROOF_SIDE_EFFECT")
+        expect(result.output).toContain("[AXIOMS]")
         expect(ProofEditTransaction.active(child.id)?.committable_snapshot).toBe(false)
         expect(await fs.readFile(file, "utf-8")).toBe(admitted)
 
@@ -1461,5 +1469,5 @@ describe("proof edit transaction", () => {
         await Session.remove(parent.id)
       },
     })
-  }, 30_000)
+  }, 120_000)
 })

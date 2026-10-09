@@ -2,15 +2,13 @@ import { describe, expect, test } from "bun:test"
 import { ProofRouteLedger } from "../../src/session/proof-route-ledger"
 import { tmpdir } from "../fixture/fixture"
 
-function source(context = "Context (P : Prop).", body = "exact I.") {
+function source(context = "variable (P : Prop)", body = "  exact trivial") {
   return [
-    "Section Demo.",
+    "section Demo",
     context,
-    "Lemma demo : True.",
-    "Proof.",
+    "theorem demo : True := by",
     body,
-    "Qed.",
-    "End Demo.",
+    "end Demo",
     "",
   ].join("\n")
 }
@@ -85,7 +83,7 @@ function routePlan(
 describe("session.proof-route-ledger", () => {
   test("persists across fresh sessions and deduplicates a verified failure", async () => {
     await using tmp = await tmpdir({ git: true })
-    const file = `${tmp.path}/theorem.v`
+    const file = `${tmp.path}/theorem.lean`
     const theoremSource = source()
     const first = ProofRouteLedger.recordRouteFailure(recordInput(tmp.path, file, theoremSource))
     const repeated = ProofRouteLedger.recordRouteFailure(recordInput(tmp.path, file, theoremSource))
@@ -111,7 +109,7 @@ describe("session.proof-route-ledger", () => {
 
   test("administrative plan, node, and admit renames do not create a fresh semantic failure", async () => {
     await using tmp = await tmpdir({ git: true })
-    const file = `${tmp.path}/theorem.v`
+    const file = `${tmp.path}/theorem.lean`
     const theoremSource = source()
     const first = ProofRouteLedger.recordRouteFailure(recordInput(tmp.path, file, theoremSource))
     const renamed = ProofRouteLedger.recordRouteFailure({
@@ -137,7 +135,7 @@ describe("session.proof-route-ledger", () => {
     await using left = await tmpdir({ git: true })
     await using right = await tmpdir({ git: true })
     const theoremSource = source()
-    const relativeFile = "theorem.v"
+    const relativeFile = "theorem.lean"
     ProofRouteLedger.recordRouteFailure(recordInput(left.path, relativeFile, theoremSource))
 
     expect(
@@ -154,7 +152,7 @@ describe("session.proof-route-ledger", () => {
 
   test("ignores proof-body churn but stales a receipt when theorem context changes", async () => {
     await using tmp = await tmpdir({ git: true })
-    const file = `${tmp.path}/theorem.v`
+    const file = `${tmp.path}/theorem.lean`
     const original = source()
     ProofRouteLedger.recordRouteFailure(recordInput(tmp.path, file, original))
 
@@ -163,7 +161,7 @@ describe("session.proof-route-ledger", () => {
         workspace: tmp.path,
         file,
         theorem: "demo",
-        source: source("Context (P : Prop).", "idtac. exact I."),
+        source: source("variable (P : Prop)", "  skip\n  exact trivial"),
       }),
     ).toHaveLength(1)
     expect(
@@ -171,7 +169,7 @@ describe("session.proof-route-ledger", () => {
         workspace: tmp.path,
         file,
         theorem: "demo",
-        source: source("Context (P Q : Prop)."),
+        source: source("variable (P Q : Prop)"),
       }),
     ).toEqual([])
 
@@ -180,7 +178,7 @@ describe("session.proof-route-ledger", () => {
 
   test("tentative receipts do not constrain a route", async () => {
     await using tmp = await tmpdir({ git: true })
-    const file = `${tmp.path}/theorem.v`
+    const file = `${tmp.path}/theorem.lean`
     const receipt = ProofRouteLedger.recordRouteFailure({
       ...recordInput(tmp.path, file, source()),
       confidence: "tentative",
@@ -195,7 +193,7 @@ describe("session.proof-route-ledger", () => {
 
   test("verified exact-route reuse is blocked until machine evidence validates an override", async () => {
     await using tmp = await tmpdir({ git: true })
-    const file = `${tmp.path}/theorem.v`
+    const file = `${tmp.path}/theorem.lean`
     const receipt = ProofRouteLedger.recordRouteFailure(recordInput(tmp.path, file, source()))
 
     const constrained = ProofRouteLedger.assessKnownRouteReuse([receipt], routePlan())
@@ -216,7 +214,7 @@ describe("session.proof-route-ledger", () => {
 
   test("requires a structured audit before reusing a verified failed lemma through the legacy candidate list", async () => {
     await using tmp = await tmpdir({ git: true })
-    const file = `${tmp.path}/theorem.v`
+    const file = `${tmp.path}/theorem.lean`
     const receipt = ProofRouteLedger.recordRouteFailure(recordInput(tmp.path, file, source()))
     const base = routePlan()
     const plan = {
@@ -240,7 +238,7 @@ describe("session.proof-route-ledger", () => {
 
   test("returns every active verified failure for enforcement instead of truncating at five", async () => {
     await using tmp = await tmpdir({ git: true })
-    const file = `${tmp.path}/theorem.v`
+    const file = `${tmp.path}/theorem.lean`
     const theoremSource = source()
     for (let index = 0; index < 6; index++) {
       ProofRouteLedger.recordRouteFailure({
@@ -264,7 +262,7 @@ describe("session.proof-route-ledger", () => {
 
   test("does not turn a failed lemma into a theorem-context-wide blacklist", async () => {
     await using tmp = await tmpdir({ git: true })
-    const file = `${tmp.path}/theorem.v`
+    const file = `${tmp.path}/theorem.lean`
     const receipt = ProofRouteLedger.recordRouteFailure(recordInput(tmp.path, file, source()))
 
     const assessment = ProofRouteLedger.assessKnownRouteReuse(
@@ -278,7 +276,7 @@ describe("session.proof-route-ledger", () => {
 
   test("a structured persisted override still requires current machine validation", async () => {
     await using tmp = await tmpdir({ git: true })
-    const file = `${tmp.path}/theorem.v`
+    const file = `${tmp.path}/theorem.lean`
     const receipt = ProofRouteLedger.recordRouteFailure(recordInput(tmp.path, file, source()))
     const updated = ProofRouteLedger.recordRouteOverride({
       failure_id: receipt.id,

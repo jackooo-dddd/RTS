@@ -49,9 +49,12 @@ export namespace LeanProject {
     return Number.isFinite(parsed) && parsed > 0 ? parsed : DEFAULT_TIMEOUT_MS
   }
 
-  /** `lake env lean <file>` in the project root. */
+  /**
+   * `lake env lean --json <file>` in the project root. `--json` prints every message (including `#check`, `trace`
+   * and `#print axioms` output, which plain `lean` prints without a position) as one JSON object per line.
+   */
   export function leanFile(root: string, file: string, options: ProcessOptions = {}) {
-    return runProcess([lake(), "env", "lean", file], root, { timeoutMs: timeoutMs(), ...options })
+    return runProcess([lake(), "env", "lean", "--json", file], root, { timeoutMs: timeoutMs(), ...options })
   }
 
   /** `lake build <modules…>` in the project root. */
@@ -78,13 +81,35 @@ export namespace LeanProject {
 
   const DIAGNOSTIC = /^(.+?):(\d+):(\d+): (error|warning|info)(?:\([^)]*\))?: ?/
 
+  type JsonMessage = { fileName?: string; pos?: { line: number; column: number }; severity?: string; data?: string; kind?: string }
+
   /**
-   * Parse `lean` command-line diagnostics (`file:line:col: error: message`, continuation lines indented or
-   * following until the next diagnostic). `renameFrom` → `renameTo` maps a temporary file back to the real one.
+   * Parse `lean --json` messages (one JSON object per line) and, as a fallback, plain `lean` diagnostics
+   * (`file:line:col: error: message`, continuation lines until the next diagnostic). `renameFrom` → `renameTo` maps a
+   * temporary file back to the real one.
    */
   export function parseDiagnostics(output: string, renameFrom?: string, renameTo?: string): Diagnostic[] {
     const out: Diagnostic[] = []
+    const rename = (file: string) =>
+      renameFrom && (file === renameFrom || path.resolve(file) === path.resolve(renameFrom) || path.basename(file) === path.basename(renameFrom))
+        ? (renameTo ?? file)
+        : file
     for (const line of output.split("\n")) {
+      if (line.startsWith("{") && line.includes('"severity"')) {
+        try {
+          const message = JSON.parse(line) as JsonMessage
+          out.push({
+            file: rename(message.fileName ?? ""),
+            line: message.pos?.line ?? 0,
+            column: message.pos?.column ?? 0,
+            severity: message.severity === "error" ? "error" : message.severity === "warning" ? "warning" : "info",
+            message: message.data ?? "",
+          })
+          continue
+        } catch {
+          // not a message object; fall through to the text parser
+        }
+      }
       const match = DIAGNOSTIC.exec(line)
       if (match) {
         let file = match[1]
@@ -152,6 +177,8 @@ export namespace LeanProject {
     const { result, diagnostics } = await checkSource(root, file, source, options)
     const errors = diagnostics.filter((d) => d.severity === "error")
     const warnings = diagnostics.filter((d) => d.severity === "warning")
+    // plain-text output for logs and for messages that are not attached to the file (e.g. lake errors)
+    const plain = diagnostics.map((d) => `${path.basename(file)}:${d.line}:${d.column}: ${d.severity}: ${d.message}`).join("\n")
     return {
       ok: !failed(result) && errors.length === 0,
       errors,
@@ -161,7 +188,7 @@ export namespace LeanProject {
       aborted: result.aborted,
       outputLimitExceeded: result.outputLimitExceeded,
       helpers,
-      output: (result.stdout + "\n" + result.stderr).trim(),
+      output: plain || (result.stdout + "\n" + result.stderr).trim(),
     }
   }
 

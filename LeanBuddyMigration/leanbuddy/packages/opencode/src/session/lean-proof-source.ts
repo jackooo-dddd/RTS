@@ -124,9 +124,26 @@ export namespace LeanProofSource {
           assign: decl.assign,
           proofStart,
           proofEnd,
-          rootGoal: LeanSource.binderSignatureAsType(decl.signature),
+          rootGoal: conclusion(decl.signature),
         }
       })
+  }
+
+  /**
+   * The theorem's conclusion: the signature text after its top-level `:` (binders excluded), as the Rocq workflow's
+   * root goal was. For a benchmark `solution : X_statement.{u, v}` this is the statement constant itself; plans are
+   * compared with it by elaboration (DECISIONS D10).
+   */
+  export function conclusion(signature: string) {
+    const code = LeanSource.blankComments(signature)
+    let depth = 0
+    for (let i = 0; i < code.length; i++) {
+      const c = code[i]
+      if ("([{⦃⟨".includes(c)) depth++
+      else if (")]}⦄⟩".includes(c)) depth--
+      else if (depth === 0 && c === ":" && code[i + 1] !== "=") return signature.slice(i + 1).trim() || undefined
+    }
+    return undefined
   }
 
   /** Unqualified name of a declaration name (`CaseStudies.X.solution` → `solution`). */

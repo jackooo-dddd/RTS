@@ -128,8 +128,8 @@ describe("tool.bash", () => {
 
   test("rejects shell writes to a Coq file with an active proof transaction", async () => {
     await using tmp = await tmpdir({ git: true })
-    const filepath = path.join(tmp.path, "theorem.v")
-    const source = "Lemma demo : True.\nProof.\n  admit.\nAdmitted.\n"
+    const filepath = path.join(tmp.path, "theorem.lean")
+    const source = "theorem demo : True := by\n  sorry\n"
     await Bun.write(filepath, source)
 
     await Instance.provide({
@@ -149,7 +149,7 @@ describe("tool.bash", () => {
           await expect(
             bash.execute(
               {
-                command: "sed -i 's/admit/exact I/' theorem.v",
+                command: "sed -i 's/admit/exact trivial/' theorem.lean",
                 description: "Rewrite theorem proof",
               },
               { ...ctx, sessionID: session.id },
@@ -166,8 +166,8 @@ describe("tool.bash", () => {
 
   test("rejects alternate in-place writes to an active transaction file", async () => {
     await using tmp = await tmpdir({ git: true })
-    const filepath = path.join(tmp.path, "theorem.v")
-    const source = "Lemma demo : True.\nProof.\n  admit.\nAdmitted.\n"
+    const filepath = path.join(tmp.path, "theorem.lean")
+    const source = "theorem demo : True := by\n  sorry\n"
     await Bun.write(filepath, source)
 
     await Instance.provide({
@@ -185,9 +185,9 @@ describe("tool.bash", () => {
           })
           const bash = await BashTool.init()
           for (const command of [
-            "sed -i.bak 's/admit/exact I/' theorem.v",
-            "perl -pi -e 's/admit/exact I/' theorem.v",
-            "python3 -c 'open(\"theorem.v\", \"w\").write(\"\")'",
+            "sed -i.bak 's/admit/exact trivial/' theorem.lean",
+            "perl -pi -e 's/admit/exact trivial/' theorem.lean",
+            "python3 -c 'open(\"theorem.lean\", \"w\").write(\"\")'",
           ]) {
             await expect(
               bash.execute(
@@ -207,8 +207,8 @@ describe("tool.bash", () => {
 
   test("allows read-only shell commands that mention the active transaction file", async () => {
     await using tmp = await tmpdir({ git: true })
-    const filepath = path.join(tmp.path, "theorem.v")
-    const source = "Lemma demo : True.\nProof.\n  admit.\nAdmitted.\n"
+    const filepath = path.join(tmp.path, "theorem.lean")
+    const source = "theorem demo : True := by\n  sorry\n"
     await Bun.write(filepath, source)
 
     await Instance.provide({
@@ -227,7 +227,7 @@ describe("tool.bash", () => {
           const bash = await BashTool.init()
           const result = await bash.execute(
             {
-              command: "rg 'Lemma demo' theorem.v 2>/dev/null",
+              command: "rg 'Lemma demo' theorem.lean 2>/dev/null",
               description: "Search theorem source",
             },
             { ...ctx, sessionID: session.id },

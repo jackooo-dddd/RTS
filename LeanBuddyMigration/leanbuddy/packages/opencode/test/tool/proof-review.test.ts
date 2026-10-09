@@ -56,6 +56,12 @@ function node(overrides: Partial<ProofPlanStepValue> = {}): ProofPlanStepValue {
   }
 }
 
+/** A minimal Lake project (core Lean only) for tests whose premise audit elaborates a probe. */
+async function leanProject(dir: string) {
+  await Bun.write(`${dir}/lakefile.lean`, "import Lake\nopen Lake DSL\npackage review_test\n")
+  await Bun.write(`${dir}/lean-toolchain`, "leanprover/lean4:v4.33.1\n")
+}
+
 describe("tool.proof_plan bounded semantic review", () => {
   test("canonicalizes human proof labels into machine-safe node IDs and rewrites DAG references", () => {
     const first = node({
@@ -514,15 +520,16 @@ describe("tool.proof_plan bounded semantic review", () => {
 
   test("rejects an invented compiler certificate for a residual premise", async () => {
     await using tmp = await tmpdir({ git: true })
+    await leanProject(tmp.path)
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/certificate-audit.v`
+        const file = `${tmp.path}/certificate-audit.lean`
         const source = [
-          "Axiom supporting_fact : forall A B : Prop, A -> B -> B.",
-          "Lemma demo (A B : Prop) (HA : A) : A /\\ B.",
-          "Proof.",
-          "Admitted.",
+          "axiom supporting_fact : ∀ A B : Prop, A → B → B",
+          "theorem demo (A B : Prop) (HA : A) : A ∧ B := by",
+          "  sorry",
+          "",
           "",
         ].join("\n")
         await Bun.write(file, source)
@@ -547,7 +554,7 @@ describe("tool.proof_plan bounded semantic review", () => {
         const result = await tool.execute(
           {
             theorem: "demo",
-            root_goal: "A /\\ B",
+            root_goal: "A ∧ B",
             nodes: [
               node({
                 formal_goal: "B",
@@ -623,8 +630,8 @@ describe("tool.proof_plan bounded semantic review", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/verdict-first.v`
-        await Bun.write(file, "Lemma demo (A B : Prop) : A /\\ B.\nProof.\nAdmitted.\n")
+        const file = `${tmp.path}/verdict-first.lean`
+        await Bun.write(file, "theorem demo (A B : Prop) : A /\\ B := by\n")
         const session = await Session.create({})
         SessionProof.set(session.id, file, { line: 0, character: 0 }, "manual")
         const tool = await ProofPlanTool.init()
@@ -711,8 +718,8 @@ describe("tool.proof_plan bounded semantic review", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/route-budget.v`
-        await Bun.write(file, "Lemma demo (A B : Prop) : A /\\ B.\nProof.\nAdmitted.\n")
+        const file = `${tmp.path}/route-budget.lean`
+        await Bun.write(file, "theorem demo (A B : Prop) : A /\\ B := by\n")
         const session = await Session.create({})
         SessionProof.set(session.id, file, { line: 0, character: 0 }, "manual")
         const tool = await ProofPlanTool.init()
@@ -776,15 +783,15 @@ describe("tool.proof_plan bounded semantic review", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/staged-plan-source.v`
-        const diskSource = "Lemma demo (A B : Prop) : A /\\ B.\nProof.\nAdmitted.\n"
+        const file = `${tmp.path}/staged-plan-source.lean`
+        const diskSource = "theorem demo (A B : Prop) : A /\\ B := by\n  sorry\n"
         const stagedSource = [
-          "Lemma demo (A B : Prop) : A /\\ B.",
-          "Proof.",
-          "(* proof_region begin owner: lemma admit_id: gap-a theorem: demo kind: semantic_bridge target: Ha plan_node: leaf-1 depends_on: none source: context-derived input: A output: Ha layer: semantic expected: local_fact normal_form: \"A\" evidence: mathcomp:I *)",
-          "have Ha : A. { admit. }",
-          "(* proof_region end admit_id: gap-a *)",
-          "Admitted.",
+          "theorem demo (A B : Prop) : A /\\ B := by",
+          "",
+          "/- proof_region begin owner: lemma admit_id: gap-a theorem: demo kind: semantic_bridge target: Ha plan_node: leaf-1 depends_on: none source: context-derived input: A output: Ha layer: semantic expected: local_fact normal_form: \"A\" evidence: mathlib:I -/",
+          "have Ha : A := (by sorry)",
+          "/- proof_region end admit_id: gap-a -/",
+          "",
           "",
         ].join("\n")
         await Bun.write(file, diskSource)
@@ -837,8 +844,8 @@ describe("tool.proof_plan bounded semantic review", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/plan-lock.v`
-        await Bun.write(file, "Lemma demo (A B : Prop) : A /\\ B.\nProof.\nAdmitted.\n")
+        const file = `${tmp.path}/plan-lock.lean`
+        await Bun.write(file, "theorem demo (A B : Prop) : A /\\ B := by\n")
         const session = await Session.create({})
         SessionProof.set(session.id, file, { line: 0, character: 0 }, "manual")
         const tool = await ProofPlanTool.init()
@@ -890,8 +897,8 @@ describe("tool.proof_plan bounded semantic review", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/bounded-materialization.v`
-        const initial = "Lemma demo (A B : Prop) : A /\\ B.\nProof.\nAdmitted.\n"
+        const file = `${tmp.path}/bounded-materialization.lean`
+        const initial = "theorem demo (A B : Prop) : A /\\ B := by\n  sorry\n"
         await Bun.write(file, initial)
         const session = await Session.create({})
         SessionProof.set(session.id, file, { line: 0, character: 0 }, "manual")
@@ -936,15 +943,15 @@ describe("tool.proof_plan bounded semantic review", () => {
         expect(accepted.metadata.recommended_action).toBe("materialize_once")
 
         const materialized = [
-          "Lemma demo (A B : Prop) : A /\\ B.",
-          "Proof.",
-          "(* proof_region begin owner: lemma admit_id: gap-a theorem: demo kind: semantic_bridge target: Hleaf plan_node: leaf-1 depends_on: none source: context-derived input: A output: Hleaf layer: semantic expected: local_fact normal_form: \"A\" evidence: mathcomp:I *)",
-          "have Hleaf : A.",
-          "{ admit. }",
-          "(* proof_region end admit_id: gap-a *)",
-          "split; first exact Hleaf.",
-          "admit.",
-          "Admitted.",
+          "theorem demo (A B : Prop) : A /\\ B := by",
+          "",
+          "/- proof_region begin owner: lemma admit_id: gap-a theorem: demo kind: semantic_bridge target: Hleaf plan_node: leaf-1 depends_on: none source: context-derived input: A output: Hleaf layer: semantic expected: local_fact normal_form: \"A\" evidence: mathlib:I -/",
+          "have Hleaf : A := (by",
+          "  sorry)",
+          "/- proof_region end admit_id: gap-a -/",
+          "split; first exact Hleaf",
+          "sorry",
+          "",
           "",
         ].join("\n")
         await Bun.write(file, materialized)
@@ -986,8 +993,8 @@ describe("tool.proof_plan bounded semantic review", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/accepted-repair.v`
-        const initial = "Lemma demo (A B : Prop) : A /\\ B.\nProof.\nAdmitted.\n"
+        const file = `${tmp.path}/accepted-repair.lean`
+        const initial = "theorem demo (A B : Prop) : A /\\ B := by\n  sorry\n"
         await Bun.write(file, initial)
         const session = await Session.create({})
         SessionProof.set(session.id, file, { line: 0, character: 0 }, "manual")
@@ -1003,12 +1010,12 @@ describe("tool.proof_plan bounded semantic review", () => {
         )
 
         const materialized = [
-          "Lemma demo (A B : Prop) : A /\\ B.",
-          "Proof.",
-          "(* proof_region begin owner: lemma admit_id: gap-a theorem: demo kind: semantic_bridge target: Ha plan_node: leaf-1 depends_on: none source: context-derived input: A output: Ha layer: semantic expected: local_fact normal_form: \"A\" evidence: mathcomp:I *)",
-          "have Ha : A. { admit. }",
-          "(* proof_region end admit_id: gap-a *)",
-          "Admitted.",
+          "theorem demo (A B : Prop) : A /\\ B := by",
+          "",
+          "/- proof_region begin owner: lemma admit_id: gap-a theorem: demo kind: semantic_bridge target: Ha plan_node: leaf-1 depends_on: none source: context-derived input: A output: Ha layer: semantic expected: local_fact normal_form: \"A\" evidence: mathlib:I -/",
+          "have Ha : A := (by sorry)",
+          "/- proof_region end admit_id: gap-a -/",
+          "",
           "",
         ].join("\n")
         await Bun.write(file, materialized)
@@ -1078,15 +1085,16 @@ describe("tool.proof_plan bounded semantic review", () => {
 
   test("keeps an accepted-plan repair open for route-only corrections on the same replacement DAG", async () => {
     await using tmp = await tmpdir({ git: true })
+    await leanProject(tmp.path)
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/accepted-route-repair.v`
+        const file = `${tmp.path}/accepted-route-repair.lean`
         const initial = [
-          "Axiom supporting_fact : forall A B : Prop, A -> B -> B.",
-          "Lemma demo (A B : Prop) (HA : A) : A /\\ B.",
-          "Proof.",
-          "Admitted.",
+          "axiom supporting_fact : ∀ A B : Prop, A → B → B",
+          "theorem demo (A B : Prop) (HA : A) : A ∧ B := by",
+          "  sorry",
+          "",
           "",
         ].join("\n")
         await Bun.write(file, initial)
@@ -1096,7 +1104,7 @@ describe("tool.proof_plan bounded semantic review", () => {
         await tool.execute(
           {
             theorem: "demo",
-            root_goal: "A /\\ B",
+            root_goal: "A ∧ B",
             nodes: [
               node({
                 candidate_lemmas: [],
@@ -1111,13 +1119,13 @@ describe("tool.proof_plan bounded semantic review", () => {
         )
 
         const materialized = [
-          "Axiom supporting_fact : forall A B : Prop, A -> B -> B.",
-          "Lemma demo (A B : Prop) (HA : A) : A /\\ B.",
-          "Proof.",
-          "(* proof_region begin owner: lemma admit_id: gap-a theorem: demo kind: semantic_bridge target: Ha plan_node: leaf-1 depends_on: none source: context-derived input: HA output: Ha layer: semantic expected: local_fact normal_form: \"A\" evidence: local:HA *)",
-          "have Ha : A. { admit. }",
-          "(* proof_region end admit_id: gap-a *)",
-          "Admitted.",
+          "axiom supporting_fact : ∀ A B : Prop, A → B → B",
+          "theorem demo (A B : Prop) (HA : A) : A ∧ B := by",
+          "  sorry",
+          "/- proof_region begin owner: lemma admit_id: gap-a theorem: demo kind: semantic_bridge target: Ha plan_node: leaf-1 depends_on: none source: context-derived input: HA output: Ha layer: semantic expected: local_fact normal_form: \"A\" evidence: local:HA -/",
+          "have Ha : A := (by sorry)",
+          "/- proof_region end admit_id: gap-a -/",
+          "",
           "",
         ].join("\n")
         await Bun.write(file, materialized)
@@ -1147,7 +1155,7 @@ describe("tool.proof_plan bounded semantic review", () => {
         const rejected = await tool.execute(
           {
             theorem: "demo",
-            root_goal: "A /\\ B",
+            root_goal: "A ∧ B",
             nodes: [
               {
                 ...replacementNode,
@@ -1178,7 +1186,7 @@ describe("tool.proof_plan bounded semantic review", () => {
         const corrected = await tool.execute(
           {
             theorem: "demo",
-            root_goal: "A /\\ B",
+            root_goal: "A ∧ B",
             nodes: [{ ...replacementNode, prosa_candidate_lemmas: [] }],
             edges: [],
           },
@@ -1198,8 +1206,8 @@ describe("tool.proof_plan bounded semantic review", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/accepted-repair-existing-skeleton.v`
-        const initial = "Lemma demo (A B : Prop) : A /\\ B.\nProof.\nAdmitted.\n"
+        const file = `${tmp.path}/accepted-repair-existing-skeleton.lean`
+        const initial = "theorem demo (A B : Prop) : A /\\ B := by\n  sorry\n"
         await Bun.write(file, initial)
         const session = await Session.create({})
         SessionProof.set(session.id, file, { line: 0, character: 0 }, "manual")
@@ -1222,14 +1230,14 @@ describe("tool.proof_plan bounded semantic review", () => {
         )
 
         const materialized = [
-          "Lemma demo (A B : Prop) : A /\\ B.",
-          "Proof.",
-          "(* proof_region begin owner: lemma admit_id: gap-a theorem: demo kind: semantic_bridge target: Ha plan_node: leaf-1 depends_on: none source: context-derived input: A output: Ha layer: semantic expected: local_fact normal_form: \"A\" evidence: mathcomp:I *)",
-          "have Ha : A.",
-          "{ admit. }",
-          "(* proof_region end admit_id: gap-a *)",
-          "admit.",
-          "Admitted.",
+          "theorem demo (A B : Prop) : A /\\ B := by",
+          "",
+          "/- proof_region begin owner: lemma admit_id: gap-a theorem: demo kind: semantic_bridge target: Ha plan_node: leaf-1 depends_on: none source: context-derived input: A output: Ha layer: semantic expected: local_fact normal_form: \"A\" evidence: mathlib:I -/",
+          "have Ha : A := (by",
+          "  sorry)",
+          "/- proof_region end admit_id: gap-a -/",
+          "sorry",
+          "",
           "",
         ].join("\n")
         await Bun.write(file, materialized)
@@ -1283,16 +1291,16 @@ describe("tool.proof_plan bounded semantic review", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/accepted-existing-skeleton.v`
+        const file = `${tmp.path}/accepted-existing-skeleton.lean`
         const source = [
-          "Lemma demo (A B : Prop) : A /\\ B.",
-          "Proof.",
-          "(* proof_region begin owner: lemma admit_id: gap-a theorem: demo kind: semantic_bridge target: Ha plan_node: leaf-1 depends_on: none source: context-derived input: A output: Ha layer: semantic expected: local_fact normal_form: \"A\" evidence: mathcomp:I *)",
-          "have Ha : A.",
-          "{ admit. }",
-          "(* proof_region end admit_id: gap-a *)",
-          "admit.",
-          "Admitted.",
+          "theorem demo (A B : Prop) : A /\\ B := by",
+          "",
+          "/- proof_region begin owner: lemma admit_id: gap-a theorem: demo kind: semantic_bridge target: Ha plan_node: leaf-1 depends_on: none source: context-derived input: A output: Ha layer: semantic expected: local_fact normal_form: \"A\" evidence: mathlib:I -/",
+          "have Ha : A := (by",
+          "  sorry)",
+          "/- proof_region end admit_id: gap-a -/",
+          "sorry",
+          "",
           "",
         ].join("\n")
         await Bun.write(file, source)
@@ -1339,16 +1347,16 @@ describe("tool.proof_plan bounded semantic review", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/theorem-scoped-materialization.v`
+        const file = `${tmp.path}/theorem-scoped-materialization.lean`
         const target = [
-          "Lemma demo (A B : Prop) : A /\\ B.",
-          "Proof.",
-          "(* proof_region begin owner: lemma admit_id: gap-a theorem: demo kind: semantic_bridge target: Ha plan_node: leaf-1 depends_on: none source: context-derived input: A output: Ha layer: semantic expected: local_fact normal_form: \"A\" evidence: mathcomp:I *)",
-          "have Ha : A. { admit. }",
-          "(* proof_region end admit_id: gap-a *)",
-          "Admitted.",
+          "theorem demo (A B : Prop) : A /\\ B := by",
+          "",
+          "/- proof_region begin owner: lemma admit_id: gap-a theorem: demo kind: semantic_bridge target: Ha plan_node: leaf-1 depends_on: none source: context-derived input: A output: Ha layer: semantic expected: local_fact normal_form: \"A\" evidence: mathlib:I -/",
+          "have Ha : A := (by sorry)",
+          "/- proof_region end admit_id: gap-a -/",
+          "",
         ].join("\n")
-        const initial = `${target}\nLemma helper : True.\nProof. exact I. Qed.\n`
+        const initial = `${target}\ntheorem helper : True := by exact trivial\n`
         await Bun.write(file, initial)
         const session = await Session.create({})
         SessionProof.set(session.id, file, { line: 0, character: 0 }, "manual")
@@ -1363,7 +1371,7 @@ describe("tool.proof_plan bounded semantic review", () => {
           context(session.id),
         )
 
-        const helperOnlyChange = `${target}\nLemma helper : True.\nProof. idtac; exact I. Qed.\n`
+        const helperOnlyChange = `${target}\ntheorem helper : True := by idtac; exact trivial\n`
         await Bun.write(file, helperOnlyChange)
         const refreshed = SessionProofWorkflow.refresh(session.id, file, helperOnlyChange).state.decomposition_plan
         expect(refreshed?.materialization_review?.status).toBe("matched")
@@ -1381,8 +1389,8 @@ describe("tool.proof_plan bounded semantic review", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/text-draft.v`
-        await Bun.write(file, "Lemma demo (A B : Prop) : A /\\ B.\nProof.\nAdmitted.\n")
+        const file = `${tmp.path}/text-draft.lean`
+        await Bun.write(file, "theorem demo (A B : Prop) : A /\\ B := by\n")
         const session = await Session.create({})
         SessionProof.set(session.id, file, { line: 0, character: 0 }, "manual")
         const tool = await ProofPlanTool.init()
@@ -1415,8 +1423,8 @@ describe("tool.proof_plan bounded semantic review", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/incomplete-materialization.v`
-        const initial = "Lemma demo (A B : Prop) : A /\\ B.\nProof.\nAdmitted.\n"
+        const file = `${tmp.path}/incomplete-materialization.lean`
+        const initial = "theorem demo (A B : Prop) : A /\\ B := by\n  sorry\n"
         await Bun.write(file, initial)
         const session = await Session.create({})
         SessionProof.set(session.id, file, { line: 0, character: 0 }, "manual")
@@ -1434,15 +1442,15 @@ describe("tool.proof_plan bounded semantic review", () => {
           context(session.id),
         )
         const duplicateOnly = [
-          "Lemma demo (A B : Prop) : A /\\ B.",
-          "Proof.",
-          "(* proof_region begin owner: lemma admit_id: gap-a1 theorem: demo kind: semantic_bridge target: Ha1 plan_node: leaf-a depends_on: HA source: context-derived input: A output: Ha1 layer: semantic expected: local_fact normal_form: \"A\" evidence: mathcomp:I *)",
-          "have Ha1 : A. { admit. }",
-          "(* proof_region end admit_id: gap-a1 *)",
-          "(* proof_region begin owner: lemma admit_id: gap-a2 theorem: demo kind: semantic_bridge target: Ha2 plan_node: leaf-a depends_on: HA source: context-derived input: A output: Ha2 layer: semantic expected: local_fact normal_form: \"A\" evidence: mathcomp:I *)",
-          "have Ha2 : A. { admit. }",
-          "(* proof_region end admit_id: gap-a2 *)",
-          "Admitted.",
+          "theorem demo (A B : Prop) : A /\\ B := by",
+          "",
+          "/- proof_region begin owner: lemma admit_id: gap-a1 theorem: demo kind: semantic_bridge target: Ha1 plan_node: leaf-a depends_on: HA source: context-derived input: A output: Ha1 layer: semantic expected: local_fact normal_form: \"A\" evidence: mathlib:I -/",
+          "have Ha1 : A := (by sorry)",
+          "/- proof_region end admit_id: gap-a1 -/",
+          "/- proof_region begin owner: lemma admit_id: gap-a2 theorem: demo kind: semantic_bridge target: Ha2 plan_node: leaf-a depends_on: HA source: context-derived input: A output: Ha2 layer: semantic expected: local_fact normal_form: \"A\" evidence: mathlib:I -/",
+          "have Ha2 : A := (by sorry)",
+          "/- proof_region end admit_id: gap-a2 -/",
+          "",
           "",
         ].join("\n")
         await Bun.write(file, duplicateOnly)
@@ -1461,8 +1469,8 @@ describe("tool.proof_plan bounded semantic review", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/dispatch-gate.v`
-        const initial = "Lemma demo (A B : Prop) : A /\\ B.\nProof.\nAdmitted.\n"
+        const file = `${tmp.path}/dispatch-gate.lean`
+        const initial = "theorem demo (A B : Prop) : A /\\ B := by\n  sorry\n"
         await Bun.write(file, initial)
         const session = await Session.create({})
         SessionProof.set(session.id, file, { line: 0, character: 0 }, "manual")
@@ -1477,15 +1485,15 @@ describe("tool.proof_plan bounded semantic review", () => {
           context(session.id),
         )
         const source = [
-          "Lemma demo (A B : Prop) : A /\\ B.",
-          "Proof.",
-          "(* proof_region begin owner: lemma admit_id: gap-a theorem: demo kind: semantic_bridge target: Ha plan_node: leaf-a depends_on: HA source: context-derived input: A output: Ha layer: semantic expected: local_fact normal_form: \"A\" evidence: mathcomp:I *)",
-          "have Ha : A. { admit. }",
-          "(* proof_region end admit_id: gap-a *)",
-          "(* proof_region begin owner: lemma admit_id: rogue theorem: demo kind: semantic_bridge target: Hrogue plan_node: not-in-plan depends_on: HA source: context-derived input: B output: Hrogue layer: semantic expected: local_fact normal_form: \"B\" evidence: mathcomp:I *)",
-          "have Hrogue : B. { admit. }",
-          "(* proof_region end admit_id: rogue *)",
-          "Admitted.",
+          "theorem demo (A B : Prop) : A /\\ B := by",
+          "",
+          "/- proof_region begin owner: lemma admit_id: gap-a theorem: demo kind: semantic_bridge target: Ha plan_node: leaf-a depends_on: HA source: context-derived input: A output: Ha layer: semantic expected: local_fact normal_form: \"A\" evidence: mathlib:I -/",
+          "have Ha : A := (by sorry)",
+          "/- proof_region end admit_id: gap-a -/",
+          "/- proof_region begin owner: lemma admit_id: rogue theorem: demo kind: semantic_bridge target: Hrogue plan_node: not-in-plan depends_on: HA source: context-derived input: B output: Hrogue layer: semantic expected: local_fact normal_form: \"B\" evidence: mathlib:I -/",
+          "have Hrogue : B := (by sorry)",
+          "/- proof_region end admit_id: rogue -/",
+          "",
           "",
         ].join("\n")
         await Bun.write(file, source)
@@ -1526,8 +1534,8 @@ describe("tool.proof_plan bounded semantic review", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/solved-setup-region.v`
-        const initial = "Lemma demo (A B : Prop) (HA : A) : A /\\ B.\nProof.\nAdmitted.\n"
+        const file = `${tmp.path}/solved-setup-region.lean`
+        const initial = "theorem demo (A B : Prop) (HA : A) : A /\\ B := by\n"
         await Bun.write(file, initial)
         const session = await Session.create({})
         SessionProof.set(session.id, file, { line: 0, character: 0 }, "manual")
@@ -1560,15 +1568,15 @@ describe("tool.proof_plan bounded semantic review", () => {
           context(session.id),
         )
         const source = [
-          "Lemma demo (A B : Prop) (HA : A) : A /\\ B.",
-          "Proof.",
-          "(* proof_region begin owner: lemma admit_id: setup-gap theorem: demo kind: semantic_bridge target: Hsetup plan_node: setup depends_on: none source: context input: HA output: Hsetup layer: semantic expected: local normal_form: \"A\" evidence: coq:exact *)",
-          "have Hsetup : A. { exact HA. }",
-          "(* proof_region end admit_id: setup-gap *)",
-          "(* proof_region begin owner: lemma admit_id: gap-b theorem: demo kind: semantic_bridge target: HB plan_node: leaf-b depends_on: setup source: context input: Hsetup output: HB layer: semantic expected: local normal_form: \"B\" evidence: mathcomp:I *)",
-          "have HB : B. { admit. }",
-          "(* proof_region end admit_id: gap-b *)",
-          "Admitted.",
+          "theorem demo (A B : Prop) (HA : A) : A /\\ B := by",
+          "",
+          "/- proof_region begin owner: lemma admit_id: setup-gap theorem: demo kind: semantic_bridge target: Hsetup plan_node: setup depends_on: none source: context input: HA output: Hsetup layer: semantic expected: local normal_form: \"A\" evidence: coq:exact -/",
+          "have Hsetup : A := (by exact HA)",
+          "/- proof_region end admit_id: setup-gap -/",
+          "/- proof_region begin owner: lemma admit_id: gap-b theorem: demo kind: semantic_bridge target: HB plan_node: leaf-b depends_on: setup source: context input: Hsetup output: HB layer: semantic expected: local normal_form: \"B\" evidence: mathlib:I -/",
+          "have HB : B := (by sorry)",
+          "/- proof_region end admit_id: gap-b -/",
+          "",
           "",
         ].join("\n")
         await Bun.write(file, source)
@@ -1585,8 +1593,8 @@ describe("tool.proof_plan bounded semantic review", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/acceptance-source.v`
-        const initial = "Lemma demo (A B : Prop) : A /\\ B.\nProof.\nAdmitted.\n"
+        const file = `${tmp.path}/acceptance-source.lean`
+        const initial = "theorem demo (A B : Prop) : A /\\ B := by\n  sorry\n"
         await Bun.write(file, initial)
         const session = await Session.create({})
         SessionProof.set(session.id, file, { line: 0, character: 0 }, "manual")
@@ -1601,12 +1609,12 @@ describe("tool.proof_plan bounded semantic review", () => {
           context(session.id),
         )
         const preacceptedSource = [
-          "Lemma demo (A B : Prop) : A /\\ B.",
-          "Proof.",
-          "(* proof_region begin owner: lemma admit_id: gap-a theorem: demo kind: semantic_bridge target: Ha plan_node: leaf-a depends_on: none source: context-derived input: A output: Ha layer: semantic expected: local_fact normal_form: \"A\" evidence: mathcomp:I *)",
-          "have Ha : A. { admit. }",
-          "(* proof_region end admit_id: gap-a *)",
-          "Admitted.",
+          "theorem demo (A B : Prop) : A /\\ B := by",
+          "",
+          "/- proof_region begin owner: lemma admit_id: gap-a theorem: demo kind: semantic_bridge target: Ha plan_node: leaf-a depends_on: none source: context-derived input: A output: Ha layer: semantic expected: local_fact normal_form: \"A\" evidence: mathlib:I -/",
+          "have Ha : A := (by sorry)",
+          "/- proof_region end admit_id: gap-a -/",
+          "",
           "",
         ].join("\n")
         await Bun.write(file, preacceptedSource)
@@ -1638,15 +1646,15 @@ describe("tool.proof_plan bounded semantic review", () => {
 
   test("scopes existing proof regions to the theorem at the proof binding", () => {
     const source = [
-      "Lemma first (A : Prop) : A.",
-      "Proof.",
-      "(* proof_region begin owner: lemma admit_id: first-gap theorem: first kind: semantic_bridge target: Hfirst plan_node: first-leaf depends_on: none source: context input: A output: Hfirst layer: semantic expected: local normal_form: \"A\" evidence: mathcomp:I *)",
-      "have Hfirst : A. { admit. }",
-      "(* proof_region end admit_id: first-gap *)",
-      "Admitted.",
-      "Lemma second (B : Prop) : B.",
-      "Proof.",
-      "Admitted.",
+      "theorem first (A : Prop) : A := by",
+      "",
+      "/- proof_region begin owner: lemma admit_id: first-gap theorem: first kind: semantic_bridge target: Hfirst plan_node: first-leaf depends_on: none source: context input: A output: Hfirst layer: semantic expected: local normal_form: \"A\" evidence: mathlib:I -/",
+      "have Hfirst : A := (by sorry)",
+      "/- proof_region end admit_id: first-gap -/",
+      "",
+      "theorem second (B : Prop) : B := by",
+      "",
+      "",
     ].join("\n")
     const theorem = SessionProofWorkflow.theoremAtProofPosition(source, { line: 6, character: 0 })
     expect(theorem).toBe("second")
@@ -1659,8 +1667,8 @@ describe("tool.proof_plan bounded semantic review", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/bound-anchor.v`
-        await Bun.write(file, "Lemma actual (A B : Prop) : A /\\ B.\nProof.\nAdmitted.\n")
+        const file = `${tmp.path}/bound-anchor.lean`
+        await Bun.write(file, "theorem actual (A B : Prop) : A /\\ B := by\n")
         const session = await Session.create({})
         SessionProof.set(session.id, file, { line: 0, character: 0 }, "manual")
         const tool = await ProofPlanTool.init()
@@ -1691,8 +1699,8 @@ describe("tool.proof_plan bounded semantic review", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/bound-root-formatting.v`
-        await Bun.write(file, "Lemma actual (A B : Prop) : A /\\ B.\nProof.\nAdmitted.\n")
+        const file = `${tmp.path}/bound-root-formatting.lean`
+        await Bun.write(file, "theorem actual (A B : Prop) : A /\\ B := by\n")
         const session = await Session.create({})
         SessionProof.set(session.id, file, { line: 0, character: 0 }, "manual")
         const tool = await ProofPlanTool.init()
@@ -1727,10 +1735,10 @@ describe("tool.proof_plan bounded semantic review", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/bound-root-binder-formatting.v`
+        const file = `${tmp.path}/bound-root-binder-formatting.lean`
         await Bun.write(
           file,
-          "Lemma actual : forall (j: Job) a b, P j a b.\nProof.\nAdmitted.\n",
+          "theorem actual : forall (j: Job) a b, P j a b := by\n",
         )
         const session = await Session.create({})
         SessionProof.set(session.id, file, { line: 0, character: 0 }, "manual")
@@ -1766,16 +1774,16 @@ describe("tool.proof_plan bounded semantic review", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/rebind-plan.v`
+        const file = `${tmp.path}/rebind-plan.lean`
         await Bun.write(
           file,
           [
-            "Lemma first (A B : Prop) : A /\\ B.",
-            "Proof.",
-            "Admitted.",
-            "Lemma second (C D : Prop) : C /\\ D.",
-            "Proof.",
-            "Admitted.",
+            "theorem first (A B : Prop) : A /\\ B := by",
+            "",
+            "",
+            "theorem second (C D : Prop) : C /\\ D := by",
+            "",
+            "",
             "",
           ].join("\n"),
         )
@@ -1827,8 +1835,8 @@ describe("tool.proof_plan bounded semantic review", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/dispatch-gate.v`
-        const initial = "Lemma demo (A B : Prop) : A /\\ B.\nProof.\nAdmitted.\n"
+        const file = `${tmp.path}/dispatch-gate.lean`
+        const initial = "theorem demo (A B : Prop) : A /\\ B := by\n  sorry\n"
         await Bun.write(file, initial)
         const session = await Session.create({})
         SessionProof.set(session.id, file, { line: 0, character: 0 }, "manual")
@@ -1852,12 +1860,12 @@ describe("tool.proof_plan bounded semantic review", () => {
         )
 
         const rogue = [
-          "Lemma demo (A B : Prop) : A /\\ B.",
-          "Proof.",
-          "(* proof_region begin owner: lemma admit_id: rogue theorem: demo kind: semantic_bridge target: HB plan_node: not-in-plan depends_on: none source: context input: B output: HB layer: semantic expected: local normal_form: \"B\" evidence: mathcomp:I *)",
-          "have HB : B. { admit. }",
-          "(* proof_region end admit_id: rogue *)",
-          "Admitted.",
+          "theorem demo (A B : Prop) : A /\\ B := by",
+          "",
+          "/- proof_region begin owner: lemma admit_id: rogue theorem: demo kind: semantic_bridge target: HB plan_node: not-in-plan depends_on: none source: context input: B output: HB layer: semantic expected: local normal_form: \"B\" evidence: mathlib:I -/",
+          "have HB : B := (by sorry)",
+          "/- proof_region end admit_id: rogue -/",
+          "",
           "",
         ].join("\n")
         await Bun.write(file, rogue)
@@ -1866,12 +1874,12 @@ describe("tool.proof_plan bounded semantic review", () => {
         ).rejects.toThrow("accepted plan materialization")
 
         const clean = [
-          "Lemma demo (A B : Prop) : A /\\ B.",
-          "Proof.",
-          "(* proof_region begin owner: lemma admit_id: gap-a theorem: demo kind: semantic_bridge target: HA plan_node: leaf-a depends_on: none source: context input: A output: HA layer: semantic expected: local normal_form: \"A\" evidence: mathcomp:I *)",
-          "have HA : A. { admit. }",
-          "(* proof_region end admit_id: gap-a *)",
-          "Admitted.",
+          "theorem demo (A B : Prop) : A /\\ B := by",
+          "",
+          "/- proof_region begin owner: lemma admit_id: gap-a theorem: demo kind: semantic_bridge target: HA plan_node: leaf-a depends_on: none source: context input: A output: HA layer: semantic expected: local normal_form: \"A\" evidence: mathlib:I -/",
+          "have HA : A := (by sorry)",
+          "/- proof_region end admit_id: gap-a -/",
+          "",
           "",
         ].join("\n")
         await Bun.write(file, clean)
@@ -1887,12 +1895,12 @@ describe("tool.proof_plan bounded semantic review", () => {
           updated: Date.now(),
         })
         const drifted = clean.replace(
-          "Admitted.",
-          [
-            "(* proof_region begin owner: lemma admit_id: rogue theorem: demo kind: semantic_bridge target: HB plan_node: not-in-plan depends_on: none source: context input: B output: HB layer: semantic expected: local normal_form: \"B\" evidence: mathcomp:I *)",
-            "have HB : B. { admit. }",
-            "(* proof_region end admit_id: rogue *)",
-            "Admitted.",
+          ":= by\n",
+          ":= by\n" + [
+            "/- proof_region begin owner: lemma admit_id: rogue theorem: demo kind: semantic_bridge target: HB plan_node: not-in-plan depends_on: none source: context input: B output: HB layer: semantic expected: local normal_form: \"B\" evidence: mathlib:I -/",
+            "have HB : B := (by sorry)",
+            "/- proof_region end admit_id: rogue -/",
+            "",
           ].join("\n"),
         )
         await Bun.write(file, drifted)
@@ -1912,15 +1920,16 @@ describe("tool.proof_plan bounded semantic review", () => {
 
   test("hard-rejects verified cross-session route reuse before materialization", async () => {
     await using tmp = await tmpdir({ git: true })
+    await leanProject(tmp.path)
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/route-ledger.v`
+        const file = `${tmp.path}/route-ledger.lean`
         const theoremSource = [
-          "Axiom supporting_fact : forall A B : Prop, A -> B -> B.",
-          "Lemma demo (A B : Prop) (HA : A) : A /\\ B.",
-          "Proof.",
-          "Admitted.",
+          "axiom supporting_fact : ∀ A B : Prop, A → B → B",
+          "theorem demo (A B : Prop) (HA : A) : A ∧ B := by",
+          "  sorry",
+          "",
           "",
         ].join("\n")
         await Bun.write(file, theoremSource)
@@ -1960,7 +1969,7 @@ describe("tool.proof_plan bounded semantic review", () => {
         const tool = await ProofPlanTool.init()
         const input = {
           theorem: "demo",
-          root_goal: "A /\\ B",
+          root_goal: "A ∧ B",
           nodes: [
             node({
               depends_on: [],

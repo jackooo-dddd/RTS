@@ -542,9 +542,6 @@ export namespace ProofEditTransaction {
     if (!maskedSegment) {
       throw new Error("proof_transaction_structure_rejection: unterminated comment or string in theorem proof body")
     }
-    if (!maskedSegment.trim()) {
-      throw new Error("proof_transaction_structure_rejection: the theorem proof body is empty; keep `sorry` as the placeholder")
-    }
     const commandLine = LeanProofSource.topLevelCommandLine(maskedSegment)
     if (commandLine >= 0) {
       throw new Error(

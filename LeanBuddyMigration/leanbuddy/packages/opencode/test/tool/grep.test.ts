@@ -90,13 +90,13 @@ describe("tool.grep", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = path.join(tmp.path, "theorem.v")
+        const file = path.join(tmp.path, "theorem.lean")
         const diskSource = [
-          "Lemma demo : True.",
-          "Proof.",
-          "  (* disk_only *)",
-          "  exact I.",
-          "Qed.",
+          "theorem demo : True := by",
+          "",
+          "  /- disk_only -/",
+          "  exact trivial",
+          "",
           "",
         ].join("\n")
         const stagedSource = diskSource.replace("disk_only", "staged_only")
@@ -115,7 +115,7 @@ describe("tool.grep", () => {
         const grep = await GrepTool.init()
         const stagedContext = { ...ctx, sessionID }
         const directoryResult = await grep.execute(
-          { pattern: "staged_only", path: tmp.path, include: "*.v" },
+          { pattern: "staged_only", path: tmp.path, include: "*.lean" },
           stagedContext,
         )
         expect(directoryResult.metadata.transaction_revision).toBe(1)
@@ -123,7 +123,7 @@ describe("tool.grep", () => {
         expect(directoryResult.output).toContain("staged proof transaction revision 1")
 
         const staleResult = await grep.execute(
-          { pattern: "disk_only", path: tmp.path, include: "*.v" },
+          { pattern: "disk_only", path: tmp.path, include: "*.lean" },
           stagedContext,
         )
         expect(staleResult.metadata.matches).toBe(0)

@@ -4,6 +4,7 @@ import z from "zod"
 import { and, Database, desc, eq } from "@/storage/db"
 import { ProofRouteFailureTable } from "./proof-route-ledger.sql"
 
+import { LeanProofSource } from "./lean-proof-source"
 export namespace ProofRouteLedger {
   export const FailureKind = z.enum([
     "lemma_missing_premise",
@@ -161,88 +162,44 @@ export namespace ProofRouteLedger {
     return { workspace: normalizedWorkspace, file: normalizedFile }
   }
 
-  function maskCommentsAndStrings(source: string) {
-    const masked = [...source]
-    let commentDepth = 0
-    let inString = false
-    for (let index = 0; index < source.length; index++) {
-      if (commentDepth > 0) {
-        masked[index] = source[index] === "\n" ? "\n" : " "
-        if (source[index] === "(" && source[index + 1] === "*") {
-          masked[index + 1] = " "
-          commentDepth += 1
-          index += 1
-        } else if (source[index] === "*" && source[index + 1] === ")") {
-          masked[index + 1] = " "
-          commentDepth -= 1
-          index += 1
-        }
-        continue
-      }
-      if (inString) {
-        masked[index] = source[index] === "\n" ? "\n" : " "
-        if (source[index] === '"' && source[index - 1] !== "\\") inString = false
-        continue
-      }
-      if (source[index] === "(" && source[index + 1] === "*") {
-        masked[index] = " "
-        masked[index + 1] = " "
-        commentDepth = 1
-        index += 1
-      } else if (source[index] === '"') {
-        masked[index] = " "
-        inString = true
-      }
-    }
-    return masked.join("")
-  }
-
-  function escapeRegExp(value: string) {
-    return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
-  }
-
   /**
-   * Fingerprint only the active Section/Module assumptions and theorem
-   * declaration. Proof bodies are deliberately excluded so local repair edits
-   * do not invalidate useful route evidence.
+   * Fingerprint only the active Lean context of the theorem (enclosing `namespace`/`section` headers and the
+   * `variable`, `open`, `universe`, `include`, `omit` and `set_option` commands in them) and the theorem declaration up
+   * to its `:=`. Proof bodies are deliberately excluded so local repair edits do not invalidate useful route evidence.
    */
   export function theoremContextFingerprint(source: string, theorem: string) {
-    const masked = maskCommentsAndStrings(source)
-    const declaration = new RegExp(
-      `\\b(?:Lemma|Theorem|Corollary|Proposition|Fact|Remark|Example)\\s+${escapeRegExp(theorem)}\\b`,
-      "g",
-    ).exec(masked)
-    if (!declaration) return hash(`unresolved-theorem\n${theorem}`)
-    const prefix = masked.slice(0, declaration.index)
-    const proof = /\bProof\s*\./g.exec(masked.slice(declaration.index))
-    const declarationEnd = proof ? declaration.index + proof.index : masked.length
-    const theoremDeclaration = source.slice(declaration.index, declarationEnd)
+    const span = LeanProofSource.theoremSpans(source).find(
+      (candidate) => LeanProofSource.shortName(candidate.name) === LeanProofSource.shortName(theorem),
+    )
+    if (!span) return hash(`unresolved-theorem\n${theorem}`)
+    const masked = LeanProofSource.maskCommentsAndStrings(source) ?? source
+    const theoremDeclaration = source.slice(span.start, span.assign ?? span.end)
 
     const frames: { name: string; header: string; assumptions: string[] }[] = [
       { name: "<root>", header: "", assumptions: [] },
     ]
-    let commandStart = 0
-    for (let index = 0; index < prefix.length; index++) {
-      if (prefix[index] !== ".") continue
-      const command = prefix.slice(commandStart, index + 1).replace(/\s+/g, " ").trim()
-      commandStart = index + 1
-      if (!command) continue
-      const open = /^(Section|Module(?:\s+Type)?)\s+([A-Za-z0-9_']+)/.exec(command)
+    // Lean commands start at the beginning of a line; a command runs until the next line that starts a command.
+    const lines = masked.slice(0, span.start).split("\n")
+    const commands: string[] = []
+    for (const line of lines) {
+      if (/^\S/.test(line)) commands.push(line)
+      else if (commands.length && line.trim()) commands[commands.length - 1] += " " + line.trim()
+    }
+    for (const raw of commands) {
+      const command = raw.replace(/\s+/g, " ").trim()
+      const open = /^(namespace|section)(?:\s+([^\s]+))?/.exec(command)
       if (open) {
-        frames.push({ name: open[2], header: command, assumptions: [] })
+        frames.push({ name: open[2] ?? "<anonymous>", header: command, assumptions: [] })
         continue
       }
-      const close = /^End\s+([A-Za-z0-9_']+)/.exec(command)
+      const close = /^end(?:\s+([^\s]+))?\s*$/.exec(command)
       if (close) {
-        const match = frames.map((frame) => frame.name).lastIndexOf(close[1])
+        const name = close[1] ?? "<anonymous>"
+        const match = frames.map((frame) => frame.name).lastIndexOf(name)
         if (match > 0) frames.splice(match)
         continue
       }
-      if (
-        /^(?:Context|Variable|Variables|Hypothesis|Hypotheses|Parameter|Parameters|Axiom|Axioms|Implicit\s+Types|Generalizable\s+(?:All\s+)?Variables)\b/.test(
-          command,
-        )
-      ) {
+      if (/^(?:variable|open|universe|include|omit|set_option|local\s+instance|attribute\s+\[local)\b/.test(command)) {
         frames.at(-1)!.assumptions.push(command)
       }
     }

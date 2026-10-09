@@ -109,18 +109,18 @@ describe("tool.edit", () => {
   describe("editing existing files", () => {
     test("transactional takeover releases the stale running lemma owner", async () => {
       await using tmp = await tmpdir({ git: true })
-      const filepath = path.join(tmp.path, "theorem.v")
+      const filepath = path.join(tmp.path, "theorem.lean")
       const source = [
-        "Lemma demo : True.",
-        "Proof.",
-        '(* proof_region begin owner: lemma admit_id: gap_1 theorem: demo kind: pointwise_semantic_bridge target: Hgap plan_node: node_Hgap depends_on: theorem_context source: paper_step_001 input: theorem_context output: Hgap layer: coq_shape expected: local_fact normal_form: "True" evidence: mathcomp:I informal proof: prove the local fact from I. *)',
-        "have Hgap : True.",
-        "{ (* admit_id: gap_1 *)",
-        "  admit.",
-        "}",
-        "(* proof_region end admit_id: gap_1 *)",
-        "exact Hgap.",
-        "Admitted.",
+        "theorem demo : True := by",
+        "",
+        '/- proof_region begin owner: lemma admit_id: gap_1 theorem: demo kind: pointwise_semantic_bridge target: Hgap plan_node: node_Hgap depends_on: theorem_context source: paper_step_001 input: theorem_context output: Hgap layer: lean_shape expected: local_fact normal_form: "True" evidence: mathlib:I informal proof: prove the local fact from I. -/',
+        "have Hgap : True := (by",
+        "  /- admit_id: gap_1 -/",
+        "  sorry",
+        ")",
+        "/- proof_region end admit_id: gap_1 -/",
+        "exact Hgap",
+        "",
         "",
       ].join("\n")
       await fs.writeFile(filepath, source, "utf-8")
@@ -162,8 +162,8 @@ describe("tool.edit", () => {
           const result = await edit.execute(
             {
               filePath: filepath,
-              oldString: "  admit.",
-              newString: "  exact I.",
+              oldString: "  sorry",
+              newString: "  exact trivial",
               takeover_running_region: true,
               takeover_reason: "parent is validating the child-staged replacement",
             },
@@ -175,7 +175,7 @@ describe("tool.edit", () => {
           ])
           expect(SessionProofWorkflow.get(session.id)?.queue[0]?.status).toBe("pending")
           expect(SessionProofWorkflow.get(session.id)?.queue[0]?.task_id).toBeUndefined()
-          expect(ProofEditTransaction.source(session.id, filepath)).toContain("  exact I.")
+          expect(ProofEditTransaction.source(session.id, filepath)).toContain("  exact trivial")
           expect(await fs.readFile(filepath, "utf-8")).toBe(source)
 
           const refreshed = SessionProofWorkflow.refresh(
@@ -195,8 +195,8 @@ describe("tool.edit", () => {
 
     test("rejects bound theorem declaration edits before permission or write", async () => {
       await using tmp = await tmpdir()
-      const filepath = path.join(tmp.path, "theorem.v")
-      const source = "Lemma demo : True.\nProof.\n  admit.\nAdmitted.\n"
+      const filepath = path.join(tmp.path, "theorem.lean")
+      const source = "theorem demo : True := by\n  sorry\n"
       await fs.writeFile(filepath, source, "utf-8")
       let permissionAsked = false
 
@@ -211,8 +211,8 @@ describe("tool.edit", () => {
             edit.execute(
               {
                 filePath: filepath,
-                oldString: "Lemma demo : True.",
-                newString: "Lemma demo : False.",
+                oldString: "theorem demo : True := by",
+                newString: "theorem demo : False := by",
               },
               {
                 ...ctx,
@@ -333,9 +333,9 @@ describe("tool.edit", () => {
 
     test("blocks repeated stale edits until the current file is read again", async () => {
       await using tmp = await tmpdir()
-      const filepath = path.join(tmp.path, "stale.v")
+      const filepath = path.join(tmp.path, "stale.lean")
       const sessionID = "test-edit-stale-livelock"
-      await fs.writeFile(filepath, "Lemma demo : True.\nProof.\n  exact I.\nQed.\n", "utf-8")
+      await fs.writeFile(filepath, "theorem demo : True := by\n  exact trivial\n", "utf-8")
 
       await Instance.provide({
         directory: tmp.path,
@@ -346,20 +346,20 @@ describe("tool.edit", () => {
           for (let attempt = 1; attempt <= 2; attempt++) {
             await expect(
               edit.execute(
-                { filePath: filepath, oldString: "  stale tactic.", newString: "  exact I." },
+                { filePath: filepath, oldString: "  stale tactic.", newString: "  exact trivial" },
                 editContext,
               ),
             ).rejects.toThrow("stale_edit_conflict")
           }
           await expect(
             edit.execute(
-              { filePath: filepath, oldString: "  stale tactic.", newString: "  exact I." },
+              { filePath: filepath, oldString: "  stale tactic.", newString: "  exact trivial" },
               editContext,
             ),
           ).rejects.toThrow("stale_edit_livelock")
           await expect(
             edit.execute(
-              { filePath: filepath, oldString: "  another stale tactic.", newString: "  exact I." },
+              { filePath: filepath, oldString: "  another stale tactic.", newString: "  exact trivial" },
               editContext,
             ),
           ).rejects.toThrow("blocked until the current file is read again")
@@ -368,7 +368,7 @@ describe("tool.edit", () => {
           await read.execute({ filePath: filepath }, editContext)
           await expect(
             edit.execute(
-              { filePath: filepath, oldString: "  stale tactic.", newString: "  exact I." },
+              { filePath: filepath, oldString: "  stale tactic.", newString: "  exact trivial" },
               editContext,
             ),
           ).rejects.toThrow("stale_edit_conflict")

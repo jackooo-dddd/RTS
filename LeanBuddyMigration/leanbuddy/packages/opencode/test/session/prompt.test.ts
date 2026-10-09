@@ -31,8 +31,8 @@ test("controller stop text is completed so the CLI can emit its reason", async (
   await Instance.provide({
     directory: tmp.path,
     fn: async () => {
-      const file = path.join(tmp.path, "theorem.v")
-      await Bun.write(file, "Lemma demo : True. Proof. admit. Admitted.\n")
+      const file = path.join(tmp.path, "theorem.lean")
+      await Bun.write(file, "theorem demo : True := by sorry\n")
       const session = await Session.create({})
       const guard = spyOn(SessionProofWorkflow, "assessFallbackGuard").mockResolvedValue({
         tripped: true,
@@ -132,11 +132,11 @@ describe("session.prompt accepted-plan materialization tool gate", () => {
       } },
     } })
     await Instance.provide({ directory: tmp.path, fn: async () => {
-      const file = path.join(tmp.path, "demo.v")
+      const file = path.join(tmp.path, "demo.lean")
       await Bun.write(file, [
-        "Lemma demo : True.", "Proof.",
-        "(* proof_region begin owner: lemma admit_id: gap theorem: demo kind: semantic_bridge target: Hgap *)",
-        "have Hgap : True. { admit. }", "(* proof_region end admit_id: gap *)", "Admitted.",
+        "theorem demo : True := by", "",
+        "/- proof_region begin owner: lemma admit_id: gap theorem: demo kind: semantic_bridge target: Hgap -/",
+        "have Hgap : True := (by sorry)", "/- proof_region end admit_id: gap -/", "",
       ].join("\n"))
       const session = await Session.create({})
       const spies = [
@@ -163,7 +163,7 @@ describe("session.prompt accepted-plan materialization tool gate", () => {
             tool: index === 0 ? "edit" : "read", callID: `call_lookup_${index}`,
             state: { status: "completed", input: { filePath: file, offset: index % 2 ? 1 : 2 },
               output: index === 0 ? "Edit applied successfully." : "unchanged theorem",
-              title: "demo.v", metadata: {}, time: { start: now, end: now },
+              title: "demo.lean", metadata: {}, time: { start: now, end: now },
             },
           })
         }
@@ -186,7 +186,7 @@ describe("session.prompt accepted-plan materialization tool gate", () => {
   })
 
   test("a fresh compiler certificate resets the lookup window after child progress", () => {
-    const target = "/tmp/demo.v"
+    const target = "/tmp/demo.lean"
     const messages = [10, 20, 30].map((end) => ({ parts: [{
       type: "tool", tool: "read", state: { status: "completed", input: { filePath: target }, time: { start: end - 1, end } },
     }] })) as any
@@ -201,10 +201,10 @@ describe("session.prompt accepted-plan materialization tool gate", () => {
       { kind: "proof_progress", summary: { changed: false } },
     ]) {
       const messages = [{ parts: [
-        { type: "tool", tool: "read", state: { status: "completed", input: { filePath: "/tmp/demo.v" } } },
+        { type: "tool", tool: "read", state: { status: "completed", input: { filePath: "/tmp/demo.lean" } } },
         { type: "tool", tool: "lean_session", state: { status: "completed", input: { op: "step", tactic: "idtac." }, metadata } },
       ] }] as any
-      expect(SessionPrompt.acceptedPlanMaterializationLookupStreakForTest(messages, "/tmp/demo.v")).toBe(1)
+      expect(SessionPrompt.acceptedPlanMaterializationLookupStreakForTest(messages, "/tmp/demo.lean")).toBe(1)
     }
   })
 
@@ -315,14 +315,14 @@ describe("session.prompt accepted-plan materialization tool gate", () => {
   })
 
   test("does not let invalid lookup or validation reset the passive lookup streak", () => {
-    const targetFile = "/tmp/workspace/Lemma4.v"
+    const targetFile = "/tmp/workspace/Lemma4.lean"
     const messages = [
       {
         parts: [
           {
             type: "tool",
             tool: "read",
-            state: { status: "completed", input: { filePath: "/tmp/workspace/prosa/example.v" } },
+            state: { status: "completed", input: { filePath: "/tmp/workspace/prosa/example.lean" } },
           },
           {
             type: "tool",
@@ -350,14 +350,14 @@ describe("session.prompt accepted-plan materialization tool gate", () => {
   })
 
   test("resets the passive lookup streak only after an active proof attempt", () => {
-    const targetFile = "/tmp/workspace/Lemma4.v"
+    const targetFile = "/tmp/workspace/Lemma4.lean"
     const messages = [
       {
         parts: [
           {
             type: "tool",
             tool: "read",
-            state: { status: "completed", input: { filePath: "/tmp/workspace/prosa/example.v" } },
+            state: { status: "completed", input: { filePath: "/tmp/workspace/prosa/example.lean" } },
           },
           {
             type: "tool",
@@ -367,7 +367,7 @@ describe("session.prompt accepted-plan materialization tool gate", () => {
           {
             type: "tool",
             tool: "lean_session",
-            state: { status: "completed", input: { op: "step", tactic: "intros." } },
+            state: { status: "completed", input: { op: "step", tactic: "intros" } },
           },
         ],
       },
@@ -410,7 +410,7 @@ describe("session.prompt missing file", () => {
     await using tmp = await tmpdir({
       git: true,
       init: async (dir) => {
-        await Bun.write(path.join(dir, "Lemma3.v"), "Lemma demo : True. Proof. exact I. Qed.\n")
+        await Bun.write(path.join(dir, "Lemma3.lean"), "theorem demo : True := by exact trivial\n")
       },
     })
 
@@ -426,13 +426,13 @@ describe("session.prompt missing file", () => {
           parts: [
             {
               type: "text",
-              text: "The target file is `Lemma3.v`. The theorem to prove is `demo`. Validate with `coqc Lemma3.v`.",
+              text: "The target file is `Lemma3.lean`. The theorem to prove is `demo`. Validate with `coqc Lemma3.lean`.",
             },
           ],
         })
 
         const binding = SessionProof.get(session.id)
-        expect(binding?.file).toBe(path.join(tmp.path, "Lemma3.v"))
+        expect(binding?.file).toBe(path.join(tmp.path, "Lemma3.lean"))
 
         await Session.remove(session.id)
         SessionProof.clear(session.id)
@@ -444,8 +444,8 @@ describe("session.prompt missing file", () => {
     await using tmp = await tmpdir({
       git: true,
       init: async (dir) => {
-        await Bun.write(path.join(dir, "Lemma4.v"), "Lemma demo : True. Proof. exact I. Qed.\n")
-        await Bun.write(path.join(dir, "DO_NOT_CREATE.v"), "From mathcomp Require Import all_ssreflect.\n")
+        await Bun.write(path.join(dir, "Lemma4.lean"), "theorem demo : True := by exact trivial\n")
+        await Bun.write(path.join(dir, "DO_NOT_CREATE.lean"), "import Mathlib\n")
       },
     })
 
@@ -453,7 +453,7 @@ describe("session.prompt missing file", () => {
       directory: tmp.path,
       fn: async () => {
         const session = await Session.create({})
-        const placeholder = path.join(tmp.path, "DO_NOT_CREATE.v")
+        const placeholder = path.join(tmp.path, "DO_NOT_CREATE.lean")
 
         await SessionPrompt.prompt({
           sessionID: session.id,
@@ -462,18 +462,18 @@ describe("session.prompt missing file", () => {
           parts: [
             {
               type: "file",
-              filename: "DO_NOT_CREATE.v",
+              filename: "DO_NOT_CREATE.lean",
               mime: "text/plain",
               url: `file://${placeholder}`,
             },
             {
               type: "text",
-              text: "The target file is `Lemma4.v`, the theorem is `demo`. Validate with `coqc Lemma4.v`.",
+              text: "The target file is `Lemma4.lean`, the theorem is `demo`. Validate with `coqc Lemma4.lean`.",
             },
           ],
         })
 
-        expect(SessionProof.get(session.id)?.file).toBe(path.join(tmp.path, "Lemma4.v"))
+        expect(SessionProof.get(session.id)?.file).toBe(path.join(tmp.path, "Lemma4.lean"))
         await Session.remove(session.id)
         SessionProof.clear(session.id)
       },
@@ -484,8 +484,8 @@ describe("session.prompt missing file", () => {
     await using tmp = await tmpdir({
       git: true,
       init: async (dir) => {
-        await Bun.write(path.join(dir, "Lemma4.v"), "Lemma demo : True. Proof. exact I. Qed.\n")
-        await Bun.write(path.join(dir, "DO_NOT_CREATE.v"), "From mathcomp Require Import all_ssreflect.\n")
+        await Bun.write(path.join(dir, "Lemma4.lean"), "theorem demo : True := by exact trivial\n")
+        await Bun.write(path.join(dir, "DO_NOT_CREATE.lean"), "import Mathlib\n")
       },
     })
 
@@ -495,7 +495,7 @@ describe("session.prompt missing file", () => {
         const session = await Session.create({})
         SessionProof.set(
           session.id,
-          path.join(tmp.path, "DO_NOT_CREATE.v"),
+          path.join(tmp.path, "DO_NOT_CREATE.lean"),
           { line: 0, character: 0 },
           "auto",
         )
@@ -507,12 +507,12 @@ describe("session.prompt missing file", () => {
           parts: [
             {
               type: "text",
-              text: "The target file is `Lemma4.v`, the theorem is `demo`. Validate with `coqc Lemma4.v`.",
+              text: "The target file is `Lemma4.lean`, the theorem is `demo`. Validate with `coqc Lemma4.lean`.",
             },
           ],
         })
 
-        expect(SessionProof.get(session.id)?.file).toBe(path.join(tmp.path, "Lemma4.v"))
+        expect(SessionProof.get(session.id)?.file).toBe(path.join(tmp.path, "Lemma4.lean"))
         await Session.remove(session.id)
         SessionProof.clear(session.id)
       },

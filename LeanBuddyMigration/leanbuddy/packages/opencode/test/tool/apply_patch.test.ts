@@ -62,8 +62,8 @@ const makeCtx = () => {
 describe("tool.apply_patch freeform", () => {
   test("rejects bound theorem deletion before permission or write", async () => {
     await using fixture = await tmpdir({ git: true })
-    const source = "Lemma demo : True.\nProof.\n  admit.\nAdmitted.\n"
-    const target = path.join(fixture.path, "theorem.v")
+    const source = "theorem demo : True := by\n  sorry\n"
+    const target = path.join(fixture.path, "theorem.lean")
     await fs.writeFile(target, source, "utf-8")
     let permissionAsked = false
     await Instance.provide({
@@ -81,7 +81,7 @@ describe("tool.apply_patch freeform", () => {
         await expect(
           execute(
             {
-              patchText: "*** Begin Patch\n*** Delete File: theorem.v\n*** End Patch",
+              patchText: "*** Begin Patch\n*** Delete File: theorem.lean\n*** End Patch",
             },
             ctx,
           ),

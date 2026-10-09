@@ -23,7 +23,7 @@ describe("session.proof-projection layered proof workflow", () => {
       directory: tmp.path,
       fn: async () => {
         ensureFromBindingSpy = spyOn(ProofContextModule.ProofContext, "ensureFromBinding").mockImplementation(async () => ({
-          file: `${tmp.path}/theorem.v`,
+          file: `${tmp.path}/theorem.lean`,
           position: { line: 9, character: 2 },
           goal: "forall x, P x -> Q x",
           hyps: ["x : nat", "Hx : P x"],
@@ -43,10 +43,10 @@ describe("session.proof-projection layered proof workflow", () => {
         expect(text).toContain("write the accepted DAG promptly instead of continuing broad search")
         expect(text).toContain("write it as its own `proof_region begin/end` unit")
         expect(text).toContain("do not continue proving inside those regions in the prover session")
-        expect(text).toContain("After all regions are solved, the prover owns any theorem-level `Admitted.` -> `Qed.` conversion")
+        expect(text).toContain("After all regions are solved, the prover owns theorem closure")
         expect(text).toContain("runtime scheduling owns serial lemma task enqueueing")
         expect(text).toContain("paper step when applicable or marking it context-derived")
-        expect(text).toContain("Do not add new section-level, theorem-level, or global assumptions")
+        expect(text).toContain("Do not add new `variable`s, theorem-level, or global assumptions")
         expect(text).toContain("PAPER-FAITHFUL MODE IS ACTIVE.")
       },
     })
@@ -58,7 +58,7 @@ describe("session.proof-projection layered proof workflow", () => {
       directory: tmp.path,
       fn: async () => {
         ensureFromBindingSpy = spyOn(ProofContextModule.ProofContext, "ensureFromBinding").mockImplementation(async () => ({
-          file: `${tmp.path}/theorem.v`,
+          file: `${tmp.path}/theorem.lean`,
           position: { line: 9, character: 2 },
           goal: "forall x, P x -> Q x",
           hyps: ["x : nat", "Hx : P x"],
@@ -84,7 +84,7 @@ describe("session.proof-projection layered proof workflow", () => {
       directory: tmp.path,
       fn: async () => {
         ensureFromBindingSpy = spyOn(ProofContextModule.ProofContext, "ensureFromBinding").mockImplementation(async () => ({
-          file: `${tmp.path}/lemma.v`,
+          file: `${tmp.path}/lemma.lean`,
           position: { line: 21, character: 4 },
           goal: "service_bound <= response_bound",
           hyps: ["service_bound : nat", "response_bound : nat"],
@@ -97,10 +97,11 @@ describe("session.proof-projection layered proof workflow", () => {
         const text = result.lines.join("\n")
 
         expect(text).toContain("Treat this as a long-running interactive proof session")
-        expect(text).toContain("Use `lsp proofGoals` and edit/write LSP diagnostics as first-class proof feedback")
-        expect(text).toContain("if it exposes smaller local subclaims, write that local annotated pose/have skeleton immediately inside the assigned gap")
+        expect(text).toContain("Use the `lean_session` goal state and the diagnostics attached to edit results as proof feedback")
+        expect(text).not.toContain("proofGoals")
+        expect(text).toContain("if it exposes smaller local subclaims, write that local annotated `have` skeleton immediately inside the assigned gap")
         expect(text).toContain("Own exactly one assigned frozen local gap")
-        expect(text).toContain("Do not add new section-level, theorem-level, or global assumptions.")
+        expect(text).toContain("Do not add new `variable`s, theorem-level, or global assumptions.")
         expect(text).toContain("PAPER-FAITHFUL MODE IS ACTIVE.")
       },
     })
@@ -111,8 +112,8 @@ describe("session.proof-projection layered proof workflow", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/lemma.v`
-        await Bun.write(file, "Goal old_sibling.\nAdmitted.\n")
+        const file = `${tmp.path}/lemma.lean`
+        await Bun.write(file, "Goal old_sibling.\n")
 
         sessionProofSpy = spyOn(SessionProofModule.SessionProof, "get").mockReturnValue({
           file,
@@ -122,7 +123,7 @@ describe("session.proof-projection layered proof workflow", () => {
           source: "parent",
           locked: false,
           stale: false,
-          canonicalSource: "Goal assigned_region.\nAdmitted.\n",
+          canonicalSource: "Goal assigned_region.\n",
           updated: Date.now(),
         })
         activeAssignmentSpy = spyOn(
@@ -136,7 +137,7 @@ describe("session.proof-projection layered proof workflow", () => {
           goal_fingerprint: "assigned-fingerprint",
           proof_position: { line: 7, character: 2 },
           replace: "replace target_region",
-          skeleton: "have H : assigned_region. { admit. }",
+          skeleton: "have H : assigned_region := (by sorry)",
           done: "compile target_region",
           obligation: {
             kind: "semantic_bridge",

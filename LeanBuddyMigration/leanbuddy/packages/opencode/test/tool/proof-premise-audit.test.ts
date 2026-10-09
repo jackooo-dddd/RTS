@@ -14,143 +14,123 @@ function candidate(name: string, role: "direct_apply" | "rewrite" | "transport" 
   })
 }
 
-describe("tool.proof-premise-audit", () => {
-  test("accepts a candidate whose premises are locally available", async () => {
-    await using tmp = await tmpdir({ git: true })
-    const file = path.join(tmp.path, "audit-usable.v")
-    const source = [
-      "Axiom pair_intro : forall P Q : Prop, P -> Q -> P /\\ Q.",
-      "Lemma demo (P Q : Prop) (HP : P) (HQ : Q) : P /\\ Q.",
-      "Proof.",
-      "Admitted.",
-      "",
-    ].join("\n")
-    await Bun.write(file, source)
+/** A minimal Lake project (core Lean only): the audit elaborates its probe with `lake env lean`. */
+async function project(dir: string) {
+  await Bun.write(path.join(dir, "lakefile.lean"), "import Lake\nopen Lake DSL\npackage audit_test\n")
+  await Bun.write(path.join(dir, "lean-toolchain"), "leanprover/lean4:v4.33.1\n")
+}
 
-    const audit = await Instance.provide({
-      directory: tmp.path,
-      fn: () => auditCandidateLemma({
-        file,
-        source,
-        theorem: "demo",
-        formalGoal: "P /\\ Q",
-        candidate: candidate("pair_intro"),
-      }),
-    })
-    expect(audit.verdict).toBe("usable")
-    expect(audit.residual_premises).toEqual([])
-    expect(audit.instantiation_fingerprint).toBeTruthy()
-  }, 30000)
+async function audit(source: string, fileName: string, theorem: string, formalGoal: string, name: string, role?: Parameters<typeof candidate>[1]) {
+  await using tmp = await tmpdir({ git: true })
+  await project(tmp.path)
+  const file = path.join(tmp.path, fileName)
+  await Bun.write(file, source)
+  // await here: `await using` removes the directory when this function returns
+  return await Instance.provide({
+    directory: tmp.path,
+    fn: () => auditCandidateLemma({ file, source, theorem, formalGoal, candidate: candidate(name, role) }),
+  })
+}
+
+describe.skipIf(!Bun.which("lake"))("tool.proof-premise-audit", () => {
+  test("accepts a candidate whose premises are locally available", async () => {
+    const result = await audit(
+      [
+        "axiom pair_intro : ∀ P Q : Prop, P → Q → P ∧ Q",
+        "theorem demo (P Q : Prop) (HP : P) (HQ : Q) : P ∧ Q := by",
+        "  sorry",
+        "",
+      ].join("\n"),
+      "AuditUsable.lean",
+      "demo",
+      "P ∧ Q",
+      "pair_intro",
+    )
+    expect(result.verdict).toBe("usable")
+    expect(result.residual_premises).toEqual([])
+    expect(result.instantiation_fingerprint).toBeTruthy()
+  }, 120000)
 
   test("reports a residual premise instead of approving an inapplicable route", async () => {
-    await using tmp = await tmpdir({ git: true })
-    const file = path.join(tmp.path, "audit-missing.v")
-    const source = [
-      "Axiom pair_intro : forall P Q : Prop, P -> Q -> P /\\ Q.",
-      "Lemma demo (P Q : Prop) (HP : P) : P /\\ Q.",
-      "Proof.",
-      "Admitted.",
-      "",
-    ].join("\n")
-    await Bun.write(file, source)
-
-    const audit = await Instance.provide({
-      directory: tmp.path,
-      fn: () => auditCandidateLemma({
-        file,
-        source,
-        theorem: "demo",
-        formalGoal: "P /\\ Q",
-        candidate: candidate("pair_intro"),
-      }),
-    })
-    expect(audit.verdict).toBe("bridge_required")
-    expect(audit.residual_premises.length).toBeGreaterThan(0)
-    expect(audit.residual_premise_fingerprints).toHaveLength(audit.residual_premises.length)
-  }, 30000)
+    const result = await audit(
+      [
+        "axiom pair_intro : ∀ P Q : Prop, P → Q → P ∧ Q",
+        "theorem demo (P Q : Prop) (HP : P) : P ∧ Q := by",
+        "  sorry",
+        "",
+      ].join("\n"),
+      "AuditMissing.lean",
+      "demo",
+      "P ∧ Q",
+      "pair_intro",
+    )
+    expect(result.verdict).toBe("bridge_required")
+    expect(result.residual_premises).toEqual(["Q"])
+    expect(result.residual_premise_fingerprints).toHaveLength(result.residual_premises.length)
+  }, 120000)
 
   test("introduces node-local binders before probing the candidate conclusion", async () => {
-    await using tmp = await tmpdir({ git: true })
-    const file = path.join(tmp.path, "audit-quantified.v")
-    const source = [
-      "From mathcomp Require Import ssreflect ssrbool eqtype.",
-      "Section Audit.",
-      "Variable T : eqType.",
-      "Variable P Q : pred T.",
-      "Axiom pointwise : forall x : T, P x -> Q x.",
-      "Lemma demo : True.",
-      "Proof.",
-      "  exact I.",
-      "Qed.",
-      "End Audit.",
-      "",
-    ].join("\n")
-    await Bun.write(file, source)
+    const result = await audit(
+      [
+        "axiom pointwise {T : Type} {P Q : T → Prop} (x : T) : P x → Q x",
+        "theorem demo (T : Type) (P Q : T → Prop) : True := by",
+        "  exact trivial",
+        "",
+      ].join("\n"),
+      "AuditQuantified.lean",
+      "demo",
+      "∀ x : T, P x → Q x",
+      "pointwise",
+    )
+    // `apply` must meet the node conclusion `Q x` after the node's own binders are introduced
+    expect(result.verdict).toBe("usable")
+    expect(result.residual_premises).toEqual([])
+  }, 120000)
 
-    const audit = await Instance.provide({
-      directory: tmp.path,
-      fn: () => auditCandidateLemma({
-        file,
-        source,
-        theorem: "demo",
-        formalGoal: "forall x : T, P x -> Q x",
-        candidate: candidate("pointwise"),
-      }),
-    })
-    expect(audit.verdict).toBe("usable")
-    expect(audit.residual_premises).toEqual([])
-    expect(audit.diagnostic).not.toContain("Equality.sort")
-  }, 30000)
-
-  test("audits Fact declarations as theorem targets", async () => {
-    await using tmp = await tmpdir({ git: true })
-    const file = path.join(tmp.path, "audit-fact.v")
-    const source = [
-      "Axiom identity_fact : forall P : Prop, P -> P.",
-      "Fact demo (P : Prop) (HP : P) : P.",
-      "Proof.",
-      "Admitted.",
-      "",
-    ].join("\n")
-    await Bun.write(file, source)
-
-    const audit = await Instance.provide({
-      directory: tmp.path,
-      fn: () => auditCandidateLemma({
-        file,
-        source,
-        theorem: "demo",
-        formalGoal: "P",
-        candidate: candidate("identity_fact"),
-      }),
-    })
-    expect(audit.verdict).toBe("usable")
-  }, 30000)
+  test("audits private theorem declarations as targets", async () => {
+    const result = await audit(
+      [
+        "axiom identity_fact : ∀ P : Prop, P → P",
+        "private theorem demo (P : Prop) (HP : P) : P := by",
+        "  sorry",
+        "",
+      ].join("\n"),
+      "AuditPrivate.lean",
+      "demo",
+      "P",
+      "identity_fact",
+    )
+    expect(result.verdict).toBe("usable")
+  }, 120000)
 
   test("checks rewrite candidates for availability without requiring whole-node closure", async () => {
-    await using tmp = await tmpdir({ git: true })
-    const file = path.join(tmp.path, "audit-rewrite.v")
-    const source = [
-      "Axiom rewrite_piece : forall P Q : Prop, P = Q.",
-      "Lemma demo (A B : Prop) : A /\\ B.",
-      "Proof.",
-      "Admitted.",
-      "",
-    ].join("\n")
-    await Bun.write(file, source)
+    const result = await audit(
+      [
+        "axiom rewrite_piece : ∀ P Q : Prop, P = Q",
+        "theorem demo (A B : Prop) : A ∧ B := by",
+        "  sorry",
+        "",
+      ].join("\n"),
+      "AuditRewrite.lean",
+      "demo",
+      "A ∧ B",
+      "rewrite_piece",
+      "rewrite",
+    )
+    expect(result.verdict).toBe("available")
+    expect(result.exact_type).toContain("rewrite_piece")
+    expect(result.residual_premises).toEqual([])
+  }, 120000)
 
-    const audit = await Instance.provide({
-      directory: tmp.path,
-      fn: () => auditCandidateLemma({
-        file,
-        source,
-        theorem: "demo",
-        formalGoal: "A /\\ B",
-        candidate: candidate("rewrite_piece", "rewrite"),
-      }),
-    })
-    expect(audit.verdict).toBe("available")
-    expect(audit.exact_type).toContain("rewrite_piece")
-    expect(audit.residual_premises).toEqual([])
-  }, 30000)
+  test("an unknown candidate is an interface mismatch", async () => {
+    const result = await audit(
+      ["theorem demo (P : Prop) (HP : P) : P := by", "  sorry", ""].join("\n"),
+      "AuditUnknown.lean",
+      "demo",
+      "P",
+      "no_such_lemma",
+    )
+    expect(result.verdict).toBe("interface_mismatch")
+    expect(result.diagnostic).toContain("no_such_lemma")
+  }, 120000)
 })

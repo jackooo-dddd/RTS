@@ -83,6 +83,9 @@ export namespace LeanGate {
     }
   }
 
+  /** Reason codes that report a broken environment rather than a property of the proof. */
+  export const INFRASTRUCTURE_CODES = new Set(["NO_LAKE_PROJECT", "BUILD_TIMEOUT", "REGION_CHECK_TIMEOUT", "AXIOMS_UNREADABLE", "GATE_EXECUTION_FAILED"])
+
   export function maxSubmissionRepairs() {
     return positiveInteger(process.env.OPENCODE_LEAN_GATE_MAX_REPAIRS, 2)
   }
@@ -338,7 +341,7 @@ export namespace LeanGate {
         diagnostics: [],
       }
     }
-    const axioms = parseAxioms(result.stdout + result.stderr)
+    const axioms = parseAxioms(diagnostics.map((d) => d.message).join("\n"))
     if (axioms === undefined) {
       return { reasons: [{ code: "AXIOMS_UNREADABLE", message: "could not read the axioms: " + (result.stdout + result.stderr).slice(0, 500) }], diagnostics: [] }
     }
@@ -404,7 +407,7 @@ export namespace LeanGate {
         method: "general",
       }
     }
-    const axioms = parseAxioms(result.stdout + result.stderr)
+    const axioms = parseAxioms(diagnostics.map((d) => d.message).join("\n"))
     if (axioms === undefined) return { reasons: [{ code: "AXIOMS_UNREADABLE", message: "could not read the axioms" }], diagnostics: [], method: "general" }
     const extra = axioms.filter((axiom) => !LeanSource.ALLOWED_AXIOMS.includes(axiom))
     if (extra.length) return { reasons: [{ code: "AXIOMS", message: "uses non-standard axioms: " + extra.join(", ") }], axioms, diagnostics: [], method: "general" }
@@ -531,7 +534,21 @@ export namespace LeanGate {
         input.stage === "final"
           ? await runFinal(input, settings)
           : await runSubmission({ ...input, allowSorry: input.allowSorry ?? false }, settings)
-      return { ...base, ...outcome, status: outcome.reasons.length ? "rejected" : "accepted" }
+      // Missing environment, timeouts and unreadable output are operational errors (as missing Rocq tooling was),
+      // not a verdict on the proof.
+      const infrastructure = outcome.reasons.some((reason) => INFRASTRUCTURE_CODES.has(reason.code))
+      // Like unavailable Rocq tooling: a file outside any Lake project cannot be gated; that disables the gate in
+      // `auto` mode and is an error only when the gate is `required`.
+      const noProject = outcome.reasons.length > 0 && outcome.reasons.every((reason) => reason.code === "NO_LAKE_PROJECT")
+      return {
+        ...base,
+        ...outcome,
+        status: !outcome.reasons.length
+          ? "accepted"
+          : noProject
+            ? settings.mode === "required" ? "error" : "disabled"
+            : infrastructure ? "error" : "rejected",
+      }
     } catch (error) {
       return {
         ...base,

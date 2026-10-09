@@ -94,9 +94,9 @@ describe("tool.write", () => {
   describe("existing file overwrite", () => {
     test("stages bound proof rewrites in the active transaction without touching disk", async () => {
       await using tmp = await tmpdir({ git: true })
-      const filepath = path.join(tmp.path, "theorem.v")
-      const source = "Lemma demo : True.\nProof.\n  admit.\nAdmitted.\n"
-      const replacement = "Lemma demo : True.\nProof.\n  exact I.\nQed.\n"
+      const filepath = path.join(tmp.path, "theorem.lean")
+      const source = "theorem demo : True := by\n  sorry\n"
+      const replacement = "theorem demo : True := by\n  exact trivial\n"
       await fs.writeFile(filepath, source, "utf-8")
 
       await Instance.provide({
@@ -135,8 +135,8 @@ describe("tool.write", () => {
 
     test("rejects destructive bound theorem overwrite before permission or write", async () => {
       await using tmp = await tmpdir()
-      const filepath = path.join(tmp.path, "theorem.v")
-      const source = "Lemma demo : True.\nProof.\n  admit.\nAdmitted.\n"
+      const filepath = path.join(tmp.path, "theorem.lean")
+      const source = "theorem demo : True := by\n  sorry\n"
       await fs.writeFile(filepath, source, "utf-8")
       let permissionAsked = false
 
@@ -152,7 +152,7 @@ describe("tool.write", () => {
             write.execute(
               {
                 filePath: filepath,
-                content: "Lemma replacement : True.\nProof. exact I. Qed.\n",
+                content: "theorem replacement : True := by exact trivial\n",
               },
               {
                 ...ctx,
@@ -173,8 +173,8 @@ describe("tool.write", () => {
 
     test("rejects recreating a missing bound theorem before permission or write", async () => {
       await using tmp = await tmpdir()
-      const filepath = path.join(tmp.path, "theorem.v")
-      const source = "Lemma demo : True.\nProof.\n  admit.\nAdmitted.\n"
+      const filepath = path.join(tmp.path, "theorem.lean")
+      const source = "theorem demo : True := by\n  sorry\n"
       await fs.writeFile(filepath, source, "utf-8")
       let permissionAsked = false
 
@@ -454,7 +454,7 @@ describe("tool.write", () => {
           const result = await write.execute(
             {
               filePath: filepath,
-              content: "export const Button = () => {}",
+              content: "export const Button = () =>   )",
             },
             ctx,
           )

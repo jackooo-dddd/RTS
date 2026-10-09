@@ -127,7 +127,7 @@ function proofResult(payload: Record<string, unknown>) {
     stack_mode: "dfs_lifo",
     informal_proof: "The local proof attempt has a concrete structured outcome.",
     used_helpers: [],
-    validation_plan: ["coqc lemma.v"],
+    validation_plan: ["lean_check lemma.lean"],
     recursion_depth: 1,
     max_recursion_depth: 4,
     ...payload,
@@ -135,22 +135,21 @@ function proofResult(payload: Record<string, unknown>) {
 }
 
 function regionBegin(admitID: string, target = "Hxxx") {
-  return `(* proof_region begin owner: lemma admit_id: ${admitID} theorem: demo kind: pointwise_semantic_bridge target: ${target} plan_node: node_${target} depends_on: theorem_context source: paper_step_001 input: theorem_context output: ${target} layer: coq_shape expected: local_fact normal_form: "True" evidence: mathcomp:I informal proof: prove the local fact from I. *)`
+  return `/- proof_region begin owner: lemma admit_id: ${admitID} theorem: demo kind: pointwise_semantic_bridge target: ${target} plan_node: node_${target} depends_on: theorem_context source: paper_step_001 input: theorem_context output: ${target} layer: lean_shape expected: local_fact normal_form: "True" evidence: mathlib:I informal proof: prove the local fact from I. -/`
 }
 
 function regionSource(admitID = "gap-1", target = "Hxxx") {
   return [
-    "Lemma demo : True.",
-    "Proof.",
+    "theorem demo : True := by",
+    "",
     regionBegin(admitID, target),
-    `assert (${target} : True).`,
-    "{",
-    `  (* admit_id: ${admitID} *)`,
-    "  admit.",
-    "}",
-    `(* proof_region end admit_id: ${admitID} *)`,
-    `exact ${target}.`,
-    "Admitted.",
+    `have ${target} : True := (by`,
+    `  /- admit_id: ${admitID} -/`,
+    "  sorry",
+    ")",
+    `/- proof_region end admit_id: ${admitID} -/`,
+    `exact ${target}`,
+    "",
     "",
   ].join("\n")
 }
@@ -158,7 +157,7 @@ function regionSource(admitID = "gap-1", target = "Hxxx") {
 function regionLemmaAssignment() {
   const beginMarker = regionBegin("gap-1", "Hxxx")
   return {
-    file: "lemma.v",
+    file: "lemma.lean",
     theorem: "demo",
     admit_id: "gap-1",
     goal: "True",
@@ -166,27 +165,27 @@ function regionLemmaAssignment() {
     replace: "Replace pending work for gap-1 inside the proof_region markers only.",
     skeleton: [
       beginMarker,
-      "assert (Hxxx : True).",
-      "{ admit. }",
-      "(* proof_region end admit_id: gap-1 *)",
-      "exact Hxxx.",
+      "have Hxxx : True := (by",
+      "  sorry)",
+      "/- proof_region end admit_id: gap-1 -/",
+      "exact Hxxx",
     ].join("\n"),
     done: "The region validates and contains no pending admit for gap-1.",
     obligation: {
       kind: "pointwise_semantic_bridge" as const,
       target_name: "Hxxx",
-      target_statement: "assert (Hxxx : True).",
+      target_statement: "have Hxxx : True",
       expected_proof_kind: "region_local_proof_with_optional_sibling_helpers",
       dependencies: ["theorem_context"],
       input: ["theorem_context"],
       prosa_candidate_lemmas: [],
       mathlib_candidate_lemmas: ["I"],
-      shape_evidence: ["mathcomp:I"],
+      shape_evidence: ["mathlib:I"],
       locality_check: {
         all_dependencies_available: true,
         may_need_region_helper: false,
         changes_theorem_spine: false,
-        expected_lemma_shape: "assert (Hxxx : True).",
+        expected_lemma_shape: "True",
         risk_level: "low" as const,
       },
     },
@@ -194,9 +193,9 @@ function regionLemmaAssignment() {
       mode: "region" as const,
       start_line: 3,
       end_line: 9,
-      text: "assert (Hxxx : True).\n{ admit. }",
+      text: "have Hxxx : True := (by\n  /- admit_id: gap-1 -/\n  sorry\n)",
       begin_marker: beginMarker,
-      end_marker: "(* proof_region end admit_id: gap-1 *)",
+      end_marker: "/- proof_region end admit_id: gap-1 -/",
       can_add_sibling_helpers: true,
       immutable_prefix_hash: "prefix",
       immutable_suffix_hash: "suffix",
@@ -266,7 +265,7 @@ describe("tool.task recursive proof agents", () => {
       fn: async () => {
         const session = await Session.create({})
         const assistant = await createAssistantMessage(session.id, tmp.path)
-        const theoremFile = `${tmp.path}/lemma.v`
+        const theoremFile = `${tmp.path}/lemma.lean`
         let resolvedPrompt = ""
         let promptInput: any
         let metadataCalls: Array<{ title?: string; metadata?: Record<string, unknown> }> = []
@@ -289,8 +288,8 @@ describe("tool.task recursive proof agents", () => {
           callID: "edit-1",
           toolInput: {
             filePath: theoremFile,
-            oldString: "Proof.",
-            newString: "Proof.",
+            oldString: "",
+            newString: "",
           },
         })
 
@@ -323,14 +322,14 @@ describe("tool.task recursive proof agents", () => {
             prompt: "Solve the local gap.",
             subagent_type: "lemma",
             lemma_assignment: {
-              file: "lemma.v",
+              file: "lemma.lean",
               theorem: "demo",
               admit_id: "gap-1",
               goal: "True",
               proof_position: { line: 2, character: 4 },
               replace: "Replace only admit gap-1.",
-              skeleton: "Proof.\n  admit.\nQed.",
-              done: "coqc lemma.v succeeds.",
+              skeleton: "\n  sorry",
+              done: "lean_check lemma.lean succeeds.",
             },
           },
           baseContext({
@@ -386,7 +385,7 @@ describe("tool.task recursive proof agents", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        await Bun.write(`${tmp.path}/lemma.v`, "Lemma demo : True.\nProof.\n  exact I.\nQed.\n")
+        await Bun.write(`${tmp.path}/lemma.lean`, "theorem demo : True := by\n  exact trivial\n")
 
         const session = await Session.create({})
         const assistant = await createAssistantMessage(session.id, tmp.path)
@@ -399,13 +398,13 @@ describe("tool.task recursive proof agents", () => {
               prompt: "Solve the local gap.",
               subagent_type: "lemma",
               lemma_assignment: {
-                file: "lemma.v",
+                file: "lemma.lean",
                 theorem: "demo",
                 admit_id: "gap-1",
                 goal: "True",
                 replace: "Replace only admit gap-1.",
                 skeleton: "Proof skeleton.",
-                done: "coqc lemma.v succeeds.",
+                done: "lean_check lemma.lean succeeds.",
               },
             },
             baseContext({
@@ -424,24 +423,24 @@ describe("tool.task recursive proof agents", () => {
       directory: tmp.path,
       fn: async () => {
         await Bun.write(
-          `${tmp.path}/lemma.v`,
+          `${tmp.path}/lemma.lean`,
           [
-            "Lemma demo : True.",
-            "Proof.",
-            "(* proof_region begin owner: lemma admit_id: gap_1 theorem: demo kind: pointwise_semantic_bridge target: Hone *)",
-            "have Hone : True.",
-            "{ (* admit_id: gap_1 *)",
-            "  admit.",
-            "}",
-            "(* proof_region end admit_id: gap_1 *)",
-            "(* proof_region begin owner: lemma admit_id: gap_2 theorem: demo kind: pointwise_semantic_bridge target: Htwo *)",
-            "have Htwo : True.",
-            "{ (* admit_id: gap_2 *)",
-            "  admit.",
-            "}",
-            "(* proof_region end admit_id: gap_2 *)",
-            "exact Hone.",
-            "Admitted.",
+            "theorem demo : True := by",
+            "",
+            "/- proof_region begin owner: lemma admit_id: gap_1 theorem: demo kind: pointwise_semantic_bridge target: Hone -/",
+            "have Hone : True := (by",
+            "  /- admit_id: gap_1 -/",
+            "  sorry",
+            ")",
+            "/- proof_region end admit_id: gap_1 -/",
+            "/- proof_region begin owner: lemma admit_id: gap_2 theorem: demo kind: pointwise_semantic_bridge target: Htwo -/",
+            "have Htwo : True := (by",
+            "  /- admit_id: gap_2 -/",
+            "  sorry",
+            ")",
+            "/- proof_region end admit_id: gap_2 -/",
+            "exact Hone",
+            "",
             "",
           ].join("\n"),
         )
@@ -457,13 +456,13 @@ describe("tool.task recursive proof agents", () => {
               prompt: "Solve the later gap.",
               subagent_type: "lemma",
               lemma_assignment: {
-                file: "lemma.v",
+                file: "lemma.lean",
                 theorem: "demo",
                 admit_id: "gap_2",
                 goal: "True",
                 replace: "Replace only gap_2.",
                 skeleton: "proof_region gap_2",
-                done: "coqc lemma.v succeeds.",
+                done: "lean_check lemma.lean succeeds.",
               },
             },
             baseContext({
@@ -484,7 +483,7 @@ describe("tool.task recursive proof agents", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const theoremFile = `${tmp.path}/lemma.v`
+        const theoremFile = `${tmp.path}/lemma.lean`
         await Bun.write(theoremFile, regionSource())
 
         const session = await Session.create({})
@@ -497,7 +496,7 @@ describe("tool.task recursive proof agents", () => {
           tool: "proof_plan",
           callID: "proof-plan-2",
           toolInput: {
-            source: "Step 1. Split off the local trivial goal.",
+            source: "Step 1. Split off the local trivial goal",
             theorem: "demo",
           },
         })
@@ -508,8 +507,8 @@ describe("tool.task recursive proof agents", () => {
           callID: "edit-2",
           toolInput: {
             filePath: theoremFile,
-            oldString: "Proof.",
-            newString: "Proof.",
+            oldString: "",
+            newString: "",
           },
         })
 
@@ -522,7 +521,7 @@ describe("tool.task recursive proof agents", () => {
             promptInput = input
             const before = ProofEditTransaction.source(input.sessionID, theoremFile)
             expect(before).toBe(regionSource())
-            const staged = before!.replace("  admit.", "  exact I.")
+            const staged = before!.replace("  sorry", "  exact trivial")
             ProofEditTransaction.stage({
               sessionID: input.sessionID,
               file: theoremFile,
@@ -534,7 +533,7 @@ describe("tool.task recursive proof agents", () => {
                 {
                   type: "text",
                   text:
-                    '<proof_result>{"status":"solved","goal_id":"goal-1","parent_goal_id":"goal-0","stack_mode":"dfs_lifo","informal_proof":"The gap is trivial.","split_required":false,"split_reason":"","children":[],"proof_text":"exact I.","used_helpers":[],"validation_plan":["coqc lemma.v"],"escalate_reason":""}</proof_result>',
+                    '<proof_result>{"status":"solved","goal_id":"goal-1","parent_goal_id":"goal-0","stack_mode":"dfs_lifo","informal_proof":"The gap is trivial.","split_required":false,"split_reason":"","children":[],"proof_text":"exact trivial.","used_helpers":[],"validation_plan":["lean_check lemma.lean"],"escalate_reason":""}</proof_result>',
                 },
               ],
             } as any
@@ -548,14 +547,14 @@ describe("tool.task recursive proof agents", () => {
             prompt: "Solve the local gap.",
             subagent_type: "lemma",
             lemma_assignment: {
-              file: "lemma.v",
+              file: "lemma.lean",
               theorem: "demo",
               admit_id: "gap-1",
               goal: "True",
               proof_position: { line: 2, character: 4 },
               replace: "Replace only admit gap-1.",
-              skeleton: "Proof.\n  admit.\nQed.",
-              done: "coqc lemma.v succeeds.",
+              skeleton: "\n  sorry",
+              done: "lean_check lemma.lean succeeds.",
             },
           },
           baseContext({
@@ -567,8 +566,9 @@ describe("tool.task recursive proof agents", () => {
         expect(promptInput.agent).toBe("lemma")
         const childBinding = SessionProof.get(result.metadata.sessionId as string)
         expect(childBinding?.file).toBe(theoremFile)
-        expect(childBinding?.line).toBe(2)
-        expect(childBinding?.character).toBe(0)
+        // the region's entry: just after `:= (by` of `have Hxxx : True := (by` (line 3, 0-based)
+        expect(childBinding?.line).toBe(3)
+        expect(childBinding?.character).toBe("have Hxxx : True := (by".length)
         expect(result.metadata.proof_result_validation).toEqual({ valid: true, errors: [] })
         expect(result.metadata.proof_edit_transaction).toMatchObject({
           status: "handed_off",
@@ -577,7 +577,7 @@ describe("tool.task recursive proof agents", () => {
           revision: 1,
         })
         expect(await Bun.file(theoremFile).text()).toBe(regionSource())
-        expect(ProofEditTransaction.source(session.id, theoremFile)).toContain("  exact I.")
+        expect(ProofEditTransaction.source(session.id, theoremFile)).toContain("  exact trivial")
 
         ProofEditTransaction.abort(session.id)
         const childID = result.metadata.sessionId as string
@@ -596,7 +596,7 @@ describe("tool.task recursive proof agents", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const theoremFile = `${tmp.path}/lemma.v`
+        const theoremFile = `${tmp.path}/lemma.lean`
         await Bun.write(theoremFile, regionSource())
 
         const session = await Session.create({})
@@ -613,7 +613,7 @@ describe("tool.task recursive proof agents", () => {
           messageID: assistant.id,
           tool: "edit",
           callID: "edit-ast-retry",
-          toolInput: { filePath: theoremFile, oldString: "Proof.", newString: "Proof." },
+          toolInput: { filePath: theoremFile, oldString: "", newString: "" },
         })
 
         const resolvedPrompts: string[] = []
@@ -636,7 +636,7 @@ describe("tool.task recursive proof agents", () => {
                 sessionID: input.sessionID,
                 file: theoremFile,
                 before,
-                after: before.replace("  admit.", "  exact I."),
+                after: before.replace("  sorry", "  exact trivial"),
               })
             }
             return {
@@ -648,7 +648,7 @@ describe("tool.task recursive proof agents", () => {
                     split_required: false,
                     split_reason: "",
                     children: [],
-                    proof_text: "exact I.",
+                    proof_text: "exact trivial",
                     escalate_reason: "",
                   }),
                 },
@@ -715,8 +715,8 @@ describe("tool.task recursive proof agents", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const theoremFile = `${tmp.path}/lemma.v`
-        const oldSource = "Lemma demo : True.\nProof. exact I. Qed.\n"
+        const theoremFile = `${tmp.path}/lemma.lean`
+        const oldSource = "theorem demo : True := by exact trivial\n"
         const currentSource = regionSource()
         await Bun.write(theoremFile, oldSource)
 
@@ -742,8 +742,8 @@ describe("tool.task recursive proof agents", () => {
           callID: "edit-rebound-source",
           toolInput: {
             filePath: theoremFile,
-            oldString: "Proof.",
-            newString: "Proof.",
+            oldString: "",
+            newString: "",
           },
         })
 
@@ -788,7 +788,7 @@ describe("tool.task recursive proof agents", () => {
             sessionID: childID,
             file: theoremFile,
             before: currentSource,
-            after: currentSource.replace("  admit.", "  exact I."),
+            after: currentSource.replace("  sorry", "  exact trivial"),
           }),
         ).not.toThrow()
 
@@ -807,7 +807,7 @@ describe("tool.task recursive proof agents", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const theoremFile = `${tmp.path}/lemma.v`
+        const theoremFile = `${tmp.path}/lemma.lean`
         await Bun.write(theoremFile, regionSource())
 
         const session = await Session.create({})
@@ -823,9 +823,9 @@ describe("tool.task recursive proof agents", () => {
             escalate_reason: "The exported target needs a preceding same-region bridge.",
             escalation_type: "needs_subgoal_remodel",
             remodel_request: {
-              current_target: "assert (Hxxx : True).",
-              why_current_target_is_wrong: "The target omits a bridge fact needed by the local proof.",
-              proposed_preceding_helper: "assert (Hyyy : True).",
+              current_target: "have Hxxx : True := (by",
+              why_current_target_is_wrong: "The target omits a bridge fact needed by the local proof",
+              proposed_preceding_helper: "have Hyyy : True := (by",
               proposed_region_shape: "Introduce Hyyy before Hxxx inside the same proof_region.",
               should_lift_to_theorem_level: false,
             },
@@ -845,10 +845,10 @@ describe("tool.task recursive proof agents", () => {
             split_required: false,
             split_reason: "",
             children: [],
-            proof_text: "exact I.",
+            proof_text: "exact trivial",
             escalate_reason: "",
             remodel_request: {
-              current_target: "assert (Hxxx : True).",
+              current_target: "have Hxxx : True := (by",
               why_current_target_is_wrong: "Solved results must not ask for remodel.",
               should_lift_to_theorem_level: false,
             },
@@ -872,8 +872,8 @@ describe("tool.task recursive proof agents", () => {
           callID: "edit-region",
           toolInput: {
             filePath: theoremFile,
-            oldString: "Proof.",
-            newString: "Proof.",
+            oldString: "",
+            newString: "",
           },
         })
 
@@ -1004,9 +1004,9 @@ describe("tool.task recursive proof agents", () => {
         const parent = await Session.create({})
         const oldChild = await Session.create({ parentID: parent.id })
         const assistant = await createAssistantMessage(parent.id, tmp.path)
-        const theoremFile = `${tmp.path}/recover.v`
-        const source = "Lemma demo : True.\nProof.\n  admit.\nAdmitted.\n"
-        const staged = source.replace("  admit.", "  pose proof I as staged_fact.\n  admit.")
+        const theoremFile = `${tmp.path}/recover.lean`
+        const source = "theorem demo : True := by\n  sorry\n"
+        const staged = source.replace("  sorry", "  pose proof I as staged_fact.\n  sorry")
         await Bun.write(theoremFile, source)
         SessionProof.set(parent.id, theoremFile, { line: 1, character: 0 }, "manual")
 
@@ -1127,7 +1127,7 @@ describe("tool.task recursive proof agents", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const theoremFile = `${tmp.path}/lemma.v`
+        const theoremFile = `${tmp.path}/lemma.lean`
         await Bun.write(theoremFile, regionSource())
 
         const session = await Session.create({})
@@ -1217,16 +1217,16 @@ describe("tool.task recursive proof agents", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const theoremFile = `${tmp.path}/repair.v`
+        const theoremFile = `${tmp.path}/repair.lean`
         const source = [
-          "Lemma demo : True.",
-          "Proof.",
-          "(* proof_region begin owner: lemma admit_id: gap-1 theorem: demo kind: pointwise_semantic_bridge target: Hxxx *)",
-          "assert (Hxxx : True).",
-          "{ admit. }",
-          "(* proof_region end admit_id: gap-1 *)",
-          "exact Hxxx.",
-          "Admitted.",
+          "theorem demo : True := by",
+          "",
+          "/- proof_region begin owner: lemma admit_id: gap-1 theorem: demo kind: pointwise_semantic_bridge target: Hxxx -/",
+          "have Hxxx : True := (by",
+          "  sorry)",
+          "/- proof_region end admit_id: gap-1 -/",
+          "exact Hxxx",
+          "",
           "",
         ].join("\n")
         await Bun.write(theoremFile, source)

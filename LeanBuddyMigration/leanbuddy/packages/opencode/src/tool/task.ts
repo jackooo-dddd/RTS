@@ -27,6 +27,7 @@ import { Instance } from "@/project/instance"
 import { currentProofState, findContextNormalizationAudit } from "./lean-session"
 import { ProofEditTransaction } from "@/session/proof-edit-transaction"
 import { LeanGate } from "./lean-gate"
+import { LeanProofSource } from "@/session/lean-proof-source"
 
 const assignment = LemmaAssignmentSchema
 
@@ -442,7 +443,8 @@ function findProofTexForTarget(targetFile: string) {
 }
 
 function countExplicitGapPlaceholders(source: string) {
-  return Array.from(source.matchAll(/\bAdmitted\.|\badmit\b/g)).length
+  const masked = LeanProofSource.maskCommentsAndStrings(source) ?? source
+  return Array.from(masked.matchAll(LeanProofSource.PENDING_PLACEHOLDER_GLOBAL)).length
 }
 
 async function collectProverDelegationReadiness(sessionID: string, item: LemmaAssignment, sourceOverride?: string) {
@@ -615,19 +617,18 @@ function withLemmaAssignment(prompt: string, item: LemmaAssignment) {
     "- Replace or update the complete assigned proof_region with a complete proof for its exported target and any same-region helpers.",
     "- Do not discharge sibling regions or batch multiple proof_regions into one lemma session.",
     "- Preserve the surrounding theorem skeleton, sibling proof_regions, and proof order unless the assignment itself says otherwise.",
-    "- For status=solved, proof_text should contain the complete updated assigned proof_region for merge review; the edited .v file and editable_region boundary are the source of truth.",
-    "- Do not change theorem-level terminators such as `Admitted.` or `Qed.`; the prover performs final merge and final validation after all regions are solved.",
+    "- For status=solved, proof_text should contain the complete updated assigned proof_region for merge review; the edited .lean file and editable_region boundary are the source of truth.",
+    "- Do not edit the theorem outside the assigned proof_region (its other `sorry` placeholders and parent composition belong to the prover); the prover performs final merge and final validation after all regions are solved.",
     "- Large local assignments are allowed: solve them by running a long interactive proof loop inside this block, not by widening ownership.",
     "- Do not use the task tool to call another lemma subagent. If the local proof splits, keep the child obligation in this same lemma session and return status=split only for the single immediate next blocker under the same admit_id.",
-    "- Inside the assigned proof_region, use strict prefix-hole order: do not edit or fill a later have/assert/suff proof block while an earlier admit or empty `{}` remains unresolved and unvalidated.",
+    "- Inside the assigned proof_region, use strict prefix-hole order: do not edit or fill a later `have` proof block while an earlier `sorry` remains unresolved and unchecked.",
     "- A failed validation still permits and expects edits inside the current first unresolved block; repair that block before any broad lookup or escalation. Avoid both read-only stalling and disconnected proof edits.",
-    "- Preserve existing proof-block braces as partition boundaries; solve the current block by inserting proof text inside `{ ... }`.",
+    "- Preserve each `have … := (by … )` wrapper as a partition boundary; solve the current block by writing tactics inside its `(by … )`.",
     "- Do not escalate merely because the proof is long, brittle, or difficult to find; escalation must cite concrete evidence such as a stable blocked goal, missing premise, failed local bridge attempt, wrong target shape, or non-local dependency.",
-    "- Use persistent Coq/LSP tools (`lean_session`) to validate small proof steps before committing large scripts.",
-    "- Do not use `rewrite !...` or `rewrite -!...`; write repeated rewrites explicitly one step at a time or introduce a named normalization bridge.",
-    "- Do not use the `intuition` tactic; it generates opaque proof terms and is rejected. Use explicit tactics (`left`/`right`/`split`/`apply`/`exact`) instead.",
+    "- Use `lean_session` to validate small proof steps before committing large scripts.",
+    "- Do not use `native_decide` or other forbidden tokens (`sorry` in a solved region, `admit`, `axiom`, …); the final gate rejects them.",
     "- If you escalate with needs_context_strengthening, it means an explicit bridge must be derived and threaded from existing hypotheses; do not request new section-level, theorem-level, or global assumptions.",
-    "- Use `lean_session inspect` before needs_context_strengthening only when the escalation specifically depends on hidden arguments, Section/Module instantiation, implicit arguments, or alias normalization; do not make this audit a generic prerequisite for other context blockers.",
+    "- Use `lean_session inspect` before needs_context_strengthening only when the escalation specifically depends on hidden arguments, instance or `variable` instantiation, implicit arguments, or alias normalization; do not make this audit a generic prerequisite for other context blockers.",
     "- For that narrow case, record attempt_report.context_mismatch_basis and copy the returned context_audit metadata exactly. A convertible or inconclusive/missing audit triggers at most one targeted same-session retry; after that retry, structured escalation is still allowed. Verified non-convertibility plus attempt_report.failed_local_bridge may escalate immediately.",
     "- If you escalate, include escalation_type. Use needs_subgoal_remodel with a remodel_request when the assigned target statement or region shape is wrong.",
     "</lemma-assignment>",
@@ -1054,7 +1055,7 @@ export const TaskTool = Tool.define("task", async (ctx) => {
               liveProofState && proofEditTransactionStart && !liveProofStateMatchesBaseline
                 ? {
                     reason:
-                      "The parent Coq session belongs to a different source revision. Reopen the staged region and establish a new goal fingerprint before submitting tactics.",
+                      "The parent Lean session belongs to a different source revision. Reopen the staged region and establish a new goal fingerprint before submitting tactics.",
                     parent_source_hash: liveProofState.source_hash,
                     transaction_source_hash: proofEditTransactionStart.source_hash,
                   }

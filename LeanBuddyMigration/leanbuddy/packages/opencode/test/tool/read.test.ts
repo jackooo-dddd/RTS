@@ -27,8 +27,8 @@ describe("tool.read proof transaction source", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = path.join(tmp.path, "theorem.v")
-        const diskSource = "Lemma demo : True.\nProof.\n  (* disk_only *)\n  exact I.\nQed.\n"
+        const file = path.join(tmp.path, "theorem.lean")
+        const diskSource = "theorem demo : True := by\n  /- disk_only -/\n  exact trivial\n"
         const stagedSource = diskSource.replace("disk_only", "recovered_staged_only")
         await Bun.write(file, diskSource)
 
@@ -73,7 +73,7 @@ describe("tool.read proof transaction source", () => {
           { ...ctx, sessionID: "read-fresh-proof-session" },
         )
         expect(result.output).toContain("recovered_staged_only")
-        expect(result.output).not.toContain("disk_only *)")
+        expect(result.output).not.toContain("disk_only -/")
         expect(ProofEditTransaction.requiresStagedRead("read-fresh-proof-session", file)).toBe(false)
         expect(() =>
           ProofEditTransaction.assertStagedReadSynchronized(
@@ -494,7 +494,7 @@ table Monster {
   pos:Vec3;
   name:string;
   inventory:[ubyte];
-}
+)
 
 root_type Monster;`
         await Bun.write(path.join(dir, "schema.fbs"), fbsContent)
