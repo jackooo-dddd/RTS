@@ -5,6 +5,7 @@ Entry point. Folder layout:
 - [`migration-suggestions/`](migration-suggestions/DECISIONS.md) — every suggestion for translating ProsaBuddy to Lean, one subfolder per kind (below).
 - [`prosabuddy-rocq/`](prosabuddy-rocq/BASELINE.md) — the Rocq ProsaBuddy source being translated (pure upstream `8e1de8c`).
 - [`TARGET_ENVIRONMENT.md`](TARGET_ENVIRONMENT.md) — the agent, the translated Lean Prosa and case studies, and the Lean environment the Lean version will run on.
+- [`AGENT_PROMPT.md`](AGENT_PROMPT.md) — the task prompt for the agent that implements the port (phases, rules, done criteria).
 
 Read in this order:
 
