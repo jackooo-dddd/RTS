@@ -1,144 +1,80 @@
 ---
-name: coq-proof-state-discipline
-description: 'Debug Coq and ssreflect proofs by following the exact proof state, choosing rewrites only when their left-hand side literally matches the goal, and adding small bridge lemmas for bigop, iter, and multiplication mismatches. Use when rewrites fail, big_const_ord or big_distrr are involved, or a proof seems mathematically obvious but Coq reports that the lemma does not match any subterm.'
-argument-hint: 'Describe the goal, the failed rewrite, and the current goal shape.'
+name: lean-rewrite-discipline
+description: 'Debug Lean 4 proofs by following the exact goal: choose a rewrite only when its left-hand side occurs in the goal (up to instances), and add a small connecting equality when sums, products, casts or `if`-indicators are in a different form. Use when `rw` reports that it did not find the pattern or that the motive is not type correct, when `simp` makes no progress, or when a step is mathematically obvious but Lean rejects it.'
+argument-hint: 'Describe the goal, the failed rewrite or tactic, and the current goal shape.'
 user-invocable: true
 ---
 
-# Coq Proof-State Discipline
+# Lean Rewrite Discipline
 
 ## When to Use
-- A rewrite should work mathematically, but Coq rejects it.
-- A proof oscillates between `\sum_`, `iter`, addition, and multiplication forms.
-- `mul1n`, `mulnC`, `big_ord_recr`, or `big_const_ord` fail with “does not match any subterm”.
-- You need a small bridge lemma between a local goal shape and the intended algebraic form.
-- A large model is proposing steps from intuition instead of from the literal current goal.
+- A rewrite should work mathematically, but `rw` reports `did not find instance of the pattern in the target expression`.
+- `rw` fails with `motive is not type correct` (the term occurs inside a dependent type or under a binder).
+- `simp only [...]` makes no progress, or `simp` rewrites into a form you did not expect.
+- A proof oscillates between `∑ i ∈ s, f i`, `s.card • c`, `c * s.card`, and `if … then 1 else 0` forms.
+- `linarith`/`omega` fail although the inequality is "obvious": the terms are not in the form the tactic sees (casts, `min`, `-` on `ℕ`, a function application it treats as an atom).
 
 ## Core Rule
-Choose the next lemma from the exact current goal syntax, not from mathematical intent alone.
+Choose the next lemma from the exact current goal, not from mathematical intent alone. Before rewriting, write down the lemma's left-hand side (`#check @lemma`) and find it in the goal. If it is not there, first normalize one side or state a connecting equality.
 
-If the left-hand side of the next lemma is not a literal subterm of the current goal, do not rewrite yet. First normalize one side or add a bridge lemma.
+`rw` matches syntactically (up to reducible unfolding and instances) and cannot rewrite under binders (inside `∑ i ∈ s, …`, `∀`, `fun`). For those, use `simp only [lemma]`, `Finset.sum_congr rfl (fun i hi => …)`, or `conv`.
 
 ## Procedure
-1. Snapshot the exact goal.
-   - Quote the full goal or the smallest relevant subterm.
-   - Record the head form: `bigop`, `iter`, `addn`, `muln`, or boolean-as-nat.
-2. Name the intended rewrite.
-   - Write the lemma you want to use.
-   - Write its exact left-hand side.
-3. Run the shape check.
-   - Ask whether that left-hand side occurs syntactically in the current goal.
-   - If the answer is no, stop and choose a bridge step instead.
-4. Add the smallest bridge lemma that fixes the mismatch.
-   - Prefer a local lemma when the mismatch is specific to a fixed variable, branch, or index.
-   - Prefer a generic lemma only when the same mismatch recurs across proofs.
-5. Normalize inside-out.
-   - First settle constant or boolean-valued inner sums.
-   - Then distribute or factor outer sums.
-   - Use arithmetic rewrites such as `mulnC` only after multiplication is literally present.
-6. Validate after each nontrivial rewrite.
-   - Re-read the new goal head form.
-   - If the goal moved from `bigop` to `iter`, update the plan before continuing.
-7. Keep one stable normal form.
-   - Avoid oscillating between `\sum_(i < n) x`, `iter n (addn x) 0`, `x * n`, and `n * x` in the same branch.
+1. Quote the goal or the smallest relevant subterm (`lean_session` goal state).
+2. Name the intended rewrite and its exact left-hand side (`lean_query #check @Finset.sum_const`).
+3. Check that the left-hand side occurs in the goal, with the same implicit arguments (the same `Finset`, the same function, the same coercion).
+4. If not, add the smallest bridge:
+   - a local `have h : lhs_in_goal = form_you_need := by …` and `rw [h]`;
+   - `show` the goal in the unfolded form you need (it must be definitionally equal);
+   - `simp only [def]` / `unfold def` to expose a definition.
+5. Normalize inside-out: settle inner sums and indicators first, then distribute or factor outer sums; commute products only after the multiplication is literally there.
+6. Re-read the goal after each nontrivial rewrite. If its head form changed, update the plan.
+7. Keep one stable normal form per branch; do not alternate between `s.card • c`, `c * s.card` and `s.card * c`.
 
-## Bridge Lemma Strategy
+## Connecting Equalities
 
-### Prefer a local bridge lemma when
-- The expression depends on a fixed local variable such as `t`, `cpu`, or a branch condition.
-- A boolean-valued term becomes a constant over an index.
-- The proof only needs the lemma once.
+Prefer a local bridge when it depends on fixed local data:
 
-Template:
-
-```coq
-have cpu_sum_of_backlogged t :
-  \sum_(cpu < num_cpus) (backlogged job_arrival job_cost sched j t) =
-  backlogged job_arrival job_cost sched j t * num_cpus.
-Proof.
-  by case: (backlogged job_arrival job_cost sched j t);
-     rewrite big_const_ord ?iter_addn ?mul1n ?mul0n ?addn0.
-Qed.
+```lean
+  have h_cpu_sum : ∑ _cpu ∈ Finset.range num_cpus, (if backlogged sched j t then 1 else 0)
+      = (if backlogged sched j t then 1 else 0) * num_cpus := by
+    rw [Finset.sum_const, Finset.card_range, smul_eq_mul, Nat.mul_comm]
 ```
 
-### Prefer a generic bridge lemma when
-- The same normalization gap appears in multiple proofs.
-- The goal has already become a literal constant sum.
+Useful Mathlib facts (check each with `#check` before use; names and argument order matter):
+- `Finset.sum_const : ∑ _x ∈ s, c = s.card • c`, then `smul_eq_mul`;
+- `Finset.card_range : (Finset.range n).card = n`;
+- `Finset.sum_mul`, `Finset.mul_sum` (pull a constant factor out of a sum);
+- `Finset.sum_comm` (swap two sums), `Finset.sum_add_distrib`;
+- `Finset.sum_boole : ∑ i ∈ s, (if p i then 1 else 0) = (s.filter p).card` (see `lean-count-bridging` for counting proofs);
+- `Finset.sum_le_sum` (pointwise bound), `Finset.sum_congr rfl` (pointwise equality under the binder).
 
-Template:
+Prosa has its own sum and count helpers (for example in `Prosa.Util.Sum`); search them with `lean_query search` and prefer them when the goal is stated with Prosa definitions.
 
-```coq
-Lemma big_const_ord_muln n x :
-  \sum_(i < n) x = x * n.
-Proof.
-  by rewrite big_const_ord iter_addn mulnC.
-Qed.
-```
-
-More ready-to-copy templates are in [bridge-lemma-templates](./assets/bridge-lemma-templates.v).
-
-## Bigop Endgame Discipline
-For ssreflect big operator proofs, use this order.
-
-1. Exchange or rearrange sums only while the goal is still clearly a big operator.
-2. Collapse branch-local constant sums.
-3. Introduce local bridge lemmas for boolean-as-nat constants.
-4. Use `big_distrr` or similar outer distribution only after inner normalization is stable.
-5. Use algebraic rewrites such as `mulnC` only when multiplication is literally present.
+## Arithmetic Endgame
+- `omega` works on `ℕ`/`ℤ` linear arithmetic with `+`, `-` (truncated on `ℕ`), `*` by constants, `/`, `%`, `min`, `max`; it treats other terms (function applications, sums) as atoms, so name them first (`set S := ∑ … with hS`).
+- `linarith` needs the relevant facts as hypotheses or arguments (`linarith [h1, h2]`); it does not unfold definitions.
+- Truncated subtraction on `ℕ`: `a - b + b = a` needs `b ≤ a` (`Nat.sub_add_cancel`); `omega` handles it when the side condition is in context.
+- Casts: move to one type first (`push_cast`, `Nat.cast_le`, `exact_mod_cast`).
 
 ## When To Switch To Count Bridging
-This skill handles generic big-operator, `iter`, and multiplication mismatches.
-
-If the branch has clearly become a counting proof, switch to [ssreflect-count-bridging](./skill_count.md) instead of staying here.
-
-High-signal cues for switching:
-- the branch mixes `big_mkcond`, `sum1_count`, `big_filter`, `count`, and `Nat.min` or `minn`
-- the same quantity appears both as `if P x then 1 else 0` and as a `count`
-- the endgame is no longer a pure big-operator identity, but a bound on how many elements satisfy a predicate
-- the next intended theorem lives in the `count` or `min` layer rather than in the generic `bigop` or `iter` layer
-
-Use this generic skill only up to the point where the proof class is clear. Once the branch is really about indicator-sum to count normalization, the count-bridging skill has the stricter pipeline.
-
-## Side-Specific Normalization
-Sometimes the cleanest fix is to rewrite only one side into the other side’s syntax.
-
-Example:
-
-```coq
-rewrite [in RHS]-big_const_ord.
-```
-
-Use this when the goal is naturally a big operator and forcing the other side into multiplication would create an unstable `iter` intermediate.
-
-## Common Failure Signatures
-See [failure-signatures](./references/failure-signatures.md) for a mapping from common error messages to the missing normalization step.
-
-Short version:
-- `Unable to unify "X * n" with "iter n (addn X) 0"` means the goal is still in `iter` form.
-- `The LHS of mul1n ... does not match any subterm` means there is no literal `1 * _` yet.
-- `The LHS of mulnC ... does not match any subterm` means there is no multiplication node yet, or not the one you think.
-- `The LHS of big_ord_recr ... does not match any subterm` means the goal is no longer a standard ordinal big operator head.
-- `No applicable tactic` after several rewrites usually means the proof drifted across multiple normal forms without a stable bridge.
-
-If the branch now mentions `big_mkcond`, `sum1_count`, filtered sums of ones, or `count` bounds, stop here and switch to [ssreflect-count-bridging](./skill_count.md). That is no longer a generic bigop mismatch; it is a counting-normalization proof.
+If the branch mixes `if … then 1 else 0` sums, `filter`/`countP`/`card`, and a `min` or a bound on how many elements satisfy a predicate, switch to `lean-count-bridging`: that is a counting-normalization proof, not a generic rewrite mismatch.
 
 ## Anti-Patterns
-- Do not rewrite because two expressions are mathematically equal if the target lemma does not literally match the goal.
-- Do not chain `big_const_ord`, `iter_addn`, `mul1n`, and `mulnC` blindly without checking the intermediate goal.
-- Do not use a generic arithmetic lemma when a branch-local bridge lemma is simpler and more robust.
-- Do not switch normal forms repeatedly inside one proof branch.
+- Rewriting because two expressions are mathematically equal when the lemma's left-hand side is not in the goal.
+- Chaining `rw [a, b, c, d]` blindly without checking the intermediate goals.
+- Using a bare `simp` that also rewrites parts you rely on later; prefer `simp only [...]`.
+- Switching normal forms repeatedly inside one branch.
 
 ## Minimal Debug Log
-Keep a short log while debugging.
 
 ```text
 Current goal subterm:
-Desired lemma:
-Lemma left-hand side:
-Literal match in goal: yes/no
-If no, bridge lemma or normalization step:
+Desired lemma and its left-hand side (#check):
+Occurs in goal (same implicit arguments): yes/no
+If no, bridge step:
 Resulting goal head form:
 ```
 
 ## Success Condition
-The proof is on track when each rewrite is justified by a literal syntactic match, and every bridge lemma moves the branch toward a single stable normal form instead of introducing another oscillation.
+Each rewrite's left-hand side was found in the goal before it was applied, each branch keeps one normal form, and the final arithmetic step sees the terms in a form it handles.

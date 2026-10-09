@@ -179,6 +179,7 @@ replacements must pass.
 | V16 | (none) — test harness | — | The PC full suite died in every memory cap: each test `Instance` ran `bun info @opencode-ai/plugin version` (config dependency check, ≈200 MB per process, through the proxy) and 47–134 ran at once. `PackageRegistry.info` is now shared and cached for 10 min per process, and `Config.installDependencies` runs once per directory at a time. Peak bun processes during the suite: 12. The 19:34 OOM incident was most likely this, not Lean. | 5 |
 | V17 | lemma.txt fixes (escalation payload `proposed_bridge`) | new field | the bridge proposition goes into the existing `remodel_request.proposed_preceding_helper` (prompt_revision §2.8: no new result fields merely for the port); lemma.txt asks for it as a Lean proposition with `needs_preceding_bridge`. | 5 |
 | V18 | coqprover / principles notes ("drop the SSReflect and `intuition` rules") | drop | dropped as bans (and `coq-style-guard.ts` with its edit/write/patch calls); the prompts keep a soft preference for explicit `rw`/`simp only` and checked automation. | 5 |
+| V19 | skill-advices/MIGRATION.md (review recommendations) | keep all eight, recommendations only | Lean skills written: `lean-proof-methodology` (guide), `goal-focus-discipline` (goal; the "exactly one goal" hard protocol replaced by focusing rules, as recommended), `lean-rewrite-discipline` (math), `lean-count-bridging` (count-bridging; List vs Finset, Prosa `sumSeq`/`sumFiltered`/`sub_count_seq`/`count_predUI'` checked in the package), `lean-goal-driven-apply` (parameter), `prosabuddy-guard-recovery` (adds amendment, scheduler-status, final-gate rows). Removed: `failure-signature` (deferred until real Lean runs give a diagnostic table, as recommended) and `tactics` (SSReflect-specific, as recommended); the model must not see the Rocq originals (D2). | 5 |
 | V14 | D10 / proof-workflow fixes K7 | `kind`/`layer` not compared | additionally, `refresh` copies `kind`/`layer` from the accepted plan node onto each parsed region, so the locality gate (which needs them) works when the marker omits them (D10 marker fields). File values remain only as a fallback for regions with no plan. | 5 |
 
 **Packaging bug found (needs a user decision):** 19 of the 22 `proof.tex` files of `Deliverables/lean-prosa-v06` have
@@ -320,4 +321,7 @@ K1's general-case rule lets the gate accept package imports. For those tasks the
     `coq-style-guard.ts` and their tests deleted; unused `CoqProjectContext`/`CoqSessionState`/`TacticRecord`
     schemas removed; `coq-skill-hints.ts` → `lean-skill-hints.ts` (Lean diagnostics → Lean skill names).
   - Tests (PC): tool suite 270/271 → fixed the one prompt-text assertion; task 13/13.
+
+
+- 5f (skills): see V19; `lean-skill-hints.ts` points at these names. Skill tests 24/24 on the PC.
 

@@ -1,6 +1,6 @@
 ---
 name: prosabuddy-guard-recovery
-description: Interpret Prosabuddy proof guard, premise-audit, Coq-session desynchronization, proof-transaction recovery, and theorem-region planning feedback and select the next safe proof action. Use when a proof worker receives verified_failed_route_reuse, verified_failed_route_requires_audit, candidate_unresolved_premise, repair_plan_route, proof_transaction_stale_view, proof_transaction_scope_rejection, session_state_desync, debug-only progress, a recoverable transaction, or region-granularity guidance.
+description: Interpret Prosabuddy proof guard, premise-audit, lean_session desynchronization, proof-transaction recovery, scheduler-status, plan-amendment, final-gate, and theorem-region planning feedback and select the next safe proof action. Use when a proof worker receives verified_failed_route_reuse, verified_failed_route_requires_audit, candidate_unresolved_premise, repair_plan_route, revise_amendment, no_ready_region, final_gate_rejected, region-check-rejection, proof_transaction_stale_view, proof_transaction_scope_rejection, session_state_desync, debug-only progress, a recoverable transaction, or region-granularity guidance.
 ---
 
 # Prosabuddy Guard Recovery
@@ -20,9 +20,17 @@ Use the full runtime guard payload as the source of truth. Preserve staged and c
 | `recommended_action: do_not_retry_metadata_only_plan` | The submitted payload has not changed the review-relevant state. If `metadata_repair_repeat_count` is `5/5`, the identical metadata failure has reached its limit. Do not resubmit the same payload or make another wording-only change; re-read `compared_target_field`, normalized values, and hashes, then rebuild the exact rejected fields from authoritative root/producer data. |
 | `recommended_action: revise_semantic_dag` | Submit a materially different dependency/target structure only when the current plan has a structural hard error. The initial plan plus at most four materially distinct revisions is the bounded semantic search space. |
 | `recommended_action: stop_and_report_best_plan` | Do not explore another speculative or still-failing semantic DAG. Report the best rejected plan and its exact hard errors. A stale exhausted verdict may be invalidated only by a candidate that now passes the deterministic review; do not keep submitting rejected candidates to test this exception. |
+| `recommended_action: materialize_accepted_plan` (with `accepted_plan_locked: true`) | The plan is accepted and locked; a whole-plan resubmission does not change it. Materialize it, or, when a region escalated with a missing preceding fact, submit `proof_plan` with action `amend`. |
+| `recommended_action: revise_amendment` | The amendment was rejected and cost nothing; fix the reported hard errors of the bridge node (its Lean statement, candidates, dependencies) and resubmit the amendment. |
+| `recommended_action: materialize_amendment` | Write the new bridge region (with its `plan_node`) before the escalated region, give the escalated region's contract the new dependency, and run checkpoint. |
+| `amendment_rejected` / "not available" | No region is escalated with a missing fact, the bridge does not go before the escalated region, or all 3 amendments are used. Do not resubmit; follow the reason. |
+| `<scheduler-status>` `no_ready_region` | No lemma task will be dispatched until the `required_action` is done (an amendment, a checkpoint, a theorem-level repair, or an explicit wait for a running task). Do it; do not wait for an assignment. |
+| region `escalated 3 times … without a source change` | The region is not re-dispatched unchanged. Amend the plan with the missing bridge or remodel the region (new statement or split). |
+| `status: final_gate_rejected` | The final gate (frozen statement, forbidden tokens, `lake build`, `#print axioms`) rejected the revision. Remove the construct named by the reason code; never change the statement or text outside the proof. |
+| `<region-check-rejection>` | The submission check rejected a region (statement or exterior text changed, forbidden construct, region does not elaborate). Repair the current staged revision from the exact reasons in the same session. |
 | `proof_transaction_stale_view` | Re-read the staged region and build a new patch against the current revision. |
 | `proof_transaction_scope_rejection` | Shrink the patch to the authorized theorem body or proof region and preserve its markers and surrounding source. |
-| `session_state_desync` | Stop submitting tactics, reopen the assigned region-scoped session, and verify the goal fingerprint before continuing. |
+| `session_state_desync` | Stop running tactics, reopen the assigned region with `lean_session` from the current staged source, and check that the goal matches the region's statement before continuing. |
 | `progress_level: debug` | Keep the draft for diagnosis, but do not treat it as route validation or accepted proof progress. |
 | recoverable transaction | Use the active recovery baseline. If `recovery_base` is `best_certified`, continue there while preserving the newer unaccepted draft in the journal; otherwise continue from the current staged draft. |
 
@@ -52,7 +60,7 @@ Set each structured library candidate to `direct_apply`, `rewrite`, `transport`,
 2. Preserve the active transaction baseline, every compiler-certified fragment, and any newer unaccepted draft recorded by revision/hash.
 3. Change only the route, premise mapping, proof state, or edit scope identified by the guard.
 4. Re-read after stale-view or desynchronization errors instead of replaying an old edit or tactic.
-5. Validate the new staged revision with the narrowest suitable `coq_session`, checkpoint, or `coqc` certificate.
+5. Validate the new staged revision with the narrowest suitable `lean_session` step, `lean_check`, or `checkpoint`.
 6. If the guard omits the evidence needed to choose a legal recovery, report the missing field instead of inventing a free-form override.
 
 The skill supplies stable recovery policy only. Runtime prompts must provide concrete transaction IDs, revisions, hashes, goal fingerprints, failure IDs, and premise fingerprints.
