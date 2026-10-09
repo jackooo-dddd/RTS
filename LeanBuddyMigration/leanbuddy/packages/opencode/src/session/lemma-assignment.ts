@@ -115,7 +115,7 @@ export const LemmaObligationSchema = z.object({
   expected: z.string().optional(),
   target_normal_form: z.string().optional(),
   prosa_candidate_lemmas: z.array(z.string()).default([]),
-  mathcomp_candidate_lemmas: z.array(z.string()).default([]),
+  mathlib_candidate_lemmas: z.array(z.string()).default([]),
   shape_evidence: z.array(z.string()).default([]),
   locality_check: z
     .object({

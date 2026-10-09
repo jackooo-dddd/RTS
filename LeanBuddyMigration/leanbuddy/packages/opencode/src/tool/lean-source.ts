@@ -245,4 +245,32 @@ export namespace LeanSource {
     }
     return undefined
   }
+
+  /** Package module roots that may be imported by a solution (KNOWN_PROBLEMS K1). */
+  export function importRoots() {
+    return (process.env.OPENCODE_LEAN_GATE_IMPORT_ROOTS ?? "Prosa,Mathlib,CaseStudies")
+      .split(",")
+      .map((item) => item.trim())
+      .filter(Boolean)
+  }
+
+  /**
+   * `{α} (x : α) : P x` → `∀ {α} (x : α), P x` (the type of a declaration from its binders and result type).
+   * Returns undefined when the signature has no binders (then it is `: T` and the type is `T`).
+   */
+  export function binderSignatureAsType(signature: string) {
+    const code = blankComments(signature)
+    let depth = 0
+    for (let i = 0; i < code.length; i++) {
+      const c = code[i]
+      if ("([{⦃⟨".includes(c)) depth++
+      else if (")]}⦄⟩".includes(c)) depth--
+      else if (depth === 0 && c === ":" && code[i + 1] !== "=") {
+        const binders = signature.slice(0, i).trim()
+        const type = signature.slice(i + 1).trim()
+        return binders ? `∀ ${binders}, ${type}` : type
+      }
+    }
+    return undefined
+  }
 }

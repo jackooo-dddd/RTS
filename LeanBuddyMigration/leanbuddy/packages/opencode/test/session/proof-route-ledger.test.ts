@@ -76,7 +76,7 @@ function routePlan(
             },
           },
         ],
-        mathcomp_candidate_lemmas: [],
+        mathlib_candidate_lemmas: [],
       },
     ],
   }

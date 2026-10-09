@@ -180,7 +180,7 @@ function regionLemmaAssignment() {
       dependencies: ["theorem_context"],
       input: ["theorem_context"],
       prosa_candidate_lemmas: [],
-      mathcomp_candidate_lemmas: ["I"],
+      mathlib_candidate_lemmas: ["I"],
       shape_evidence: ["mathcomp:I"],
       locality_check: {
         all_dependencies_available: true,

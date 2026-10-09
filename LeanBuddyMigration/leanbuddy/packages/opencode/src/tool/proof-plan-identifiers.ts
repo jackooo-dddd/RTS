@@ -71,7 +71,7 @@ export function normalizeProofPlanIdentifiers(
         dependency_node: source.dependency_node ? resolve(source.dependency_node) : undefined,
       })),
     })),
-    mathcomp_candidate_lemmas: (node.mathcomp_candidate_lemmas ?? []).map((candidate) => ({
+    mathlib_candidate_lemmas: (node.mathlib_candidate_lemmas ?? []).map((candidate) => ({
       ...candidate,
       premise_sources: (candidate.premise_sources ?? []).map((source) => ({
         ...source,

@@ -34,32 +34,32 @@ describe("session.proof-workflow lemma scheduling", () => {
   })
 
   function regionBegin(admitID: string, target: string, normalForm = "True") {
-    return `(* proof_region begin owner: lemma admit_id: ${admitID} theorem: demo kind: pointwise_semantic_bridge target: ${target} plan_node: node_${target} depends_on: theorem_context source: paper_step_001 input: theorem_context output: ${target} layer: coq_shape expected: local_fact normal_form: "${normalForm}" evidence: mathcomp:I informal proof: prove the local fact from I. *)`
+    return `/- proof_region begin owner: lemma admit_id: ${admitID} theorem: demo kind: pointwise_semantic_bridge target: ${target} plan_node: node_${target} depends_on: theorem_context source: paper_step_001 input: theorem_context output: ${target} layer: lean_shape expected: local_fact normal_form: "${normalForm}" evidence: mathlib:I informal proof: prove the local fact from I. -/`
   }
 
   function proofRegionText(source: string, admitID: string) {
     const begin = source.indexOf(`proof_region begin owner: lemma admit_id: ${admitID}`)
-    const start = begin < 0 ? -1 : source.lastIndexOf("(*", begin)
-    const endMarker = `(* proof_region end admit_id: ${admitID} *)`
+    const start = begin < 0 ? -1 : source.lastIndexOf("/-", begin)
+    const endMarker = `/- proof_region end admit_id: ${admitID} -/`
     const end = source.indexOf(endMarker, begin)
     if (start < 0 || end < 0) throw new Error(`missing proof region ${admitID}`)
     return source.slice(start, end + endMarker.length)
   }
 
   function regionBeginWithoutInformal(admitID: string, target: string) {
-    return `(* proof_region begin owner: lemma admit_id: ${admitID} theorem: demo kind: pointwise_semantic_bridge target: ${target} plan_node: node_${target} depends_on: theorem_context source: paper_step_001 input: theorem_context output: ${target} layer: coq_shape expected: local_fact normal_form: "True" evidence: mathcomp:I *)`
+    return `/- proof_region begin owner: lemma admit_id: ${admitID} theorem: demo kind: pointwise_semantic_bridge target: ${target} plan_node: node_${target} depends_on: theorem_context source: paper_step_001 input: theorem_context output: ${target} layer: lean_shape expected: local_fact normal_form: "True" evidence: mathlib:I -/`
   }
 
-  function boundedTheorem(body = "  admit.\nAdmitted.") {
+  function boundedTheorem(body = "  sorry") {
     return [
-      "From mathcomp Require Import all_ssreflect.",
+      "import Mathlib",
       "",
-      "Lemma demo : True.",
-      "Proof.",
+      "theorem demo : True := by",
+      "",
       body,
       "",
-      "Lemma untouched : True.",
-      "Proof. exact I. Qed.",
+      "theorem untouched : True := by",
+      "exact trivial",
       "",
     ].join("\n")
   }
@@ -68,7 +68,7 @@ describe("session.proof-workflow lemma scheduling", () => {
     await using tmp = await tmpdir({ git: true })
     await Instance.provide({ directory: tmp.path, fn: async () => {
       const session = await Session.create({})
-      const file = `${tmp.path}/contracts.v`
+      const file = `${tmp.path}/contracts.lean`
       const normalForm = "forall (source : nat) (j' : nat),\n  source * j' = j' * source"
       for (const [declaration, expected] of [
         ["[]", []], ["none", []], ["(none)", []], ["", []],
@@ -76,12 +76,12 @@ describe("session.proof-workflow lemma scheduling", () => {
         ["[node_a,node_b]", ["node_a", "node_b"]],
       ] as const) {
         const source = boundedTheorem([
-          `(* proof_region begin owner: lemma admit_id: gap theorem: demo kind: semantic_bridge target: Hgap`,
+          `/- proof_region begin owner: lemma admit_id: gap theorem: demo kind: semantic_bridge target: Hgap`,
           `plan_node: leaf; depends_on: ${declaration}; source: context-derived fact; input: theorem_context;`,
-          `output: Hgap; layer: semantic; expected: local proof; normal_form: ${normalForm}; evidence: local:commutativity *)`,
-          `have Hgap : ${normalForm}. { admit. }`,
-          "(* proof_region end admit_id: gap *)",
-          "Admitted.",
+          `output: Hgap; layer: semantic; expected: local proof; normal_form: ${normalForm}; evidence: local:commutativity -/`,
+          `have Hgap : ${normalForm} := (by sorry)`,
+          "/- proof_region end admit_id: gap -/",
+          "",
         ].join("\n"))
         const block = SessionProofWorkflow.refresh(session.id, file, source).parsed.get("gap")!
         expect(block.dependsOnDeclared).toBe(true)
@@ -90,9 +90,9 @@ describe("session.proof-workflow lemma scheduling", () => {
         expect(block.sourceRef).toBe("context-derived fact")
         const namespaced = SessionProofWorkflow.refresh(session.id, file, source
           .replace("source: context-derived fact", "source: prosa: interference definition")
-          .replace("evidence: local:commutativity", "evidence: prosa:interference, mathcomp:mulnC")).parsed.get("gap")!
+          .replace("evidence: local:commutativity", "evidence: prosa:interference, mathlib:mulnC")).parsed.get("gap")!
         expect(namespaced.sourceRef).toBe("prosa: interference definition")
-        expect(namespaced.shapeEvidence).toEqual(["prosa:interference", "mathcomp:mulnC"])
+        expect(namespaced.shapeEvidence).toEqual(["prosa:interference", "mathlib:mulnC"])
         const bigShape = "\\big_(i < n) f i = 0"
         const quoted = SessionProofWorkflow.refresh(session.id, file, source
           .replace(`normal_form: ${normalForm}`, `normal_form: "${bigShape}"`)).parsed.get("gap")!
@@ -107,13 +107,13 @@ describe("session.proof-workflow lemma scheduling", () => {
     await using tmp = await tmpdir({ git: true })
     await Instance.provide({ directory: tmp.path, fn: async () => {
       const session = await Session.create({})
-      const file = `${tmp.path}/cached-contract.v`
+      const file = `${tmp.path}/cached-contract.lean`
       const source = boundedTheorem([
         regionBegin("gap", "Hgap").replace("depends_on: theorem_context", "depends_on: []"),
-        "have Hgap : True. { admit. }",
-        "(* proof_region end admit_id: gap *)",
-        "exact Hgap.",
-        "Admitted.",
+        "have Hgap : True := (by sorry)",
+        "/- proof_region end admit_id: gap -/",
+        "exact Hgap",
+        "",
       ].join("\n"))
       await Bun.write(file, source)
       SessionProof.set(session.id, file, { line: 3, character: 0 }, "manual")
@@ -121,7 +121,7 @@ describe("session.proof-workflow lemma scheduling", () => {
         theorem: "demo", root_goal: "True", nodes: [{
           node_id: "node_Hgap", paper_step_id: "step-1", paper_claim: "derive True", formal_goal: "True",
           candidate_lemmas: [], required_hypotheses: [], fallback_plan: [], done_when: "Hgap is proved",
-          depends_on: [], delegation_candidate: true, kind: "pointwise_semantic_bridge", layer: "coq_shape", target_normal_form: "True",
+          depends_on: [], delegation_candidate: true, kind: "pointwise_semantic_bridge", layer: "lean_shape", target_normal_form: "True",
         }], edges: [], planner_contract: { note: "Use complete source-bound contracts." },
       })
       SessionProofWorkflow.recordDecompositionPlanAttempt({
@@ -152,25 +152,25 @@ describe("session.proof-workflow lemma scheduling", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/staged-source.v`
+        const file = `${tmp.path}/staged-source.lean`
         const disk = [
-          "Lemma demo : True.",
-          "Proof.",
+          "theorem demo : True := by",
+          "",
           regionBegin("gap_old", "Hold"),
-          "have Hold : True. { admit. }",
-          "(* proof_region end admit_id: gap_old *)",
-          "exact Hold.",
-          "Admitted.",
+          "have Hold : True := (by sorry)",
+          "/- proof_region end admit_id: gap_old -/",
+          "exact Hold",
+          "",
           "",
         ].join("\n")
         const staged = [
-          "Lemma demo : True.",
-          "Proof.",
+          "theorem demo : True := by",
+          "",
           regionBegin("gap_new", "Hnew"),
-          "have Hnew : True. { admit. }",
-          "(* proof_region end admit_id: gap_new *)",
-          "exact Hnew.",
-          "Admitted.",
+          "have Hnew : True := (by sorry)",
+          "/- proof_region end admit_id: gap_new -/",
+          "exact Hnew",
+          "",
           "",
         ].join("\n")
         await Bun.write(file, disk)
@@ -207,19 +207,19 @@ describe("session.proof-workflow lemma scheduling", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/repair-revision.v`
+        const file = `${tmp.path}/repair-revision.lean`
         const source = [
-          "Lemma demo : True.",
-          "Proof.",
+          "theorem demo : True := by",
+          "",
           regionBegin("gap_1", "Hone"),
-          "have Hone : True.",
-          "{ admit. }",
-          "(* proof_region end admit_id: gap_1 *)",
-          "exact Hone.",
-          "Admitted.",
+          "have Hone : True := (by",
+          "  sorry)",
+          "/- proof_region end admit_id: gap_1 -/",
+          "exact Hone",
+          "",
           "",
         ].join("\n")
-        const staged = source.replace("{ admit. }", "{ first [exact I | admit]. }")
+        const staged = source.replace("  sorry)", "  first | exact trivial | sorry)")
         await Bun.write(file, source)
 
         const session = await Session.create({})
@@ -277,25 +277,25 @@ describe("session.proof-workflow lemma scheduling", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/resumed-staged-source.v`
+        const file = `${tmp.path}/resumed-staged-source.lean`
         const disk = [
-          "Lemma demo : True.",
-          "Proof.",
+          "theorem demo : True := by",
+          "",
           regionBegin("gap_old", "Hold"),
-          "have Hold : True. { admit. }",
-          "(* proof_region end admit_id: gap_old *)",
-          "exact Hold.",
-          "Admitted.",
+          "have Hold : True := (by sorry)",
+          "/- proof_region end admit_id: gap_old -/",
+          "exact Hold",
+          "",
           "",
         ].join("\n")
         const staged = [
-          "Lemma demo : True.",
-          "Proof.",
+          "theorem demo : True := by",
+          "",
           regionBegin("gap_new", "Hnew"),
-          "have Hnew : True. { admit. }",
-          "(* proof_region end admit_id: gap_new *)",
-          "exact Hnew.",
-          "Admitted.",
+          "have Hnew : True := (by sorry)",
+          "/- proof_region end admit_id: gap_new -/",
+          "exact Hnew",
+          "",
           "",
         ].join("\n")
         await Bun.write(file, disk)
@@ -330,27 +330,27 @@ describe("session.proof-workflow lemma scheduling", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/post-marker-contract.v`
+        const file = `${tmp.path}/post-marker-contract.lean`
         const source = [
-          "Lemma demo : True.",
-          "Proof.",
-          "(* proof_region begin owner: lemma admit_id: gap_1 theorem: demo kind: pointwise_semantic_bridge target: Hbridge *)",
-          "(* plan_node: node_Hbridge *)",
-          "(* depends_on: theorem_context *)",
-          "(* source: context-derived local bridge *)",
-          "(* input: theorem_context *)",
-          "(* output: Hbridge *)",
-          "(* layer: coq_shape *)",
-          "(* lemma_ready_layer: coq_shape *)",
-          "(* expected: prove the exported local fact *)",
-          "(* normal_form: True *)",
-          "(* target_shape_review: accepted *)",
-          "(* evidence: mathcomp:I *)",
-          "have Hbridge : True.",
-          "{ (* admit_id: gap_1 *) admit. }",
-          "(* proof_region end admit_id: gap_1 *)",
-          "exact Hbridge.",
-          "Admitted.",
+          "theorem demo : True := by",
+          "",
+          "/- proof_region begin owner: lemma admit_id: gap_1 theorem: demo kind: pointwise_semantic_bridge target: Hbridge -/",
+          "/- plan_node: node_Hbridge -/",
+          "/- depends_on: theorem_context -/",
+          "/- source: context-derived local bridge -/",
+          "/- input: theorem_context -/",
+          "/- output: Hbridge -/",
+          "/- layer: lean_shape -/",
+          "/- lemma_ready_layer: lean_shape -/",
+          "/- expected: prove the exported local fact -/",
+          "/- normal_form: True -/",
+          "/- target_shape_review: accepted -/",
+          "/- evidence: mathlib:I -/",
+          "have Hbridge : True := (by",
+          "  /- admit_id: gap_1 -/ sorry)",
+          "/- proof_region end admit_id: gap_1 -/",
+          "exact Hbridge",
+          "",
           "",
         ].join("\n")
         await Bun.write(file, source)
@@ -367,10 +367,10 @@ describe("session.proof-workflow lemma scheduling", () => {
           source: "context-derived local bridge",
           input: ["theorem_context"],
           output: "Hbridge",
-          layer: "coq_shape",
+          layer: "lean_shape",
           expected: "prove the exported local fact",
           target_normal_form: "True",
-          shape_evidence: ["mathcomp:I"],
+          shape_evidence: ["mathlib:I"],
         })
 
         SessionProofWorkflow.clear(session.id)
@@ -385,16 +385,16 @@ describe("session.proof-workflow lemma scheduling", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/stale-arithmetic-shape.v`
+        const file = `${tmp.path}/stale-arithmetic-shape.lean`
         const source = [
-          "Lemma demo : True.",
-          "Proof.",
-          "(* proof_region begin owner: lemma admit_id: gap_1 theorem: demo kind: final_arithmetic target: Harith plan_node: node_Harith depends_on: theorem_context source: local-arithmetic input: theorem_context output: Harith layer: local_arithmetic expected: local_fact normal_form: \"False\" evidence: mathcomp:I *)",
-          "have Harith : True.",
-          "{ admit. }",
-          "(* proof_region end admit_id: gap_1 *)",
-          "exact Harith.",
-          "Admitted.",
+          "theorem demo : True := by",
+          "",
+          "/- proof_region begin owner: lemma admit_id: gap_1 theorem: demo kind: final_arithmetic target: Harith plan_node: node_Harith depends_on: theorem_context source: local-arithmetic input: theorem_context output: Harith layer: local_arithmetic expected: local_fact normal_form: \"False\" evidence: mathlib:I -/",
+          "have Harith : True := (by",
+          "  sorry)",
+          "/- proof_region end admit_id: gap_1 -/",
+          "exact Harith",
+          "",
           "",
         ].join("\n")
         await Bun.write(file, source)
@@ -412,7 +412,7 @@ describe("session.proof-workflow lemma scheduling", () => {
         expect(assignment.obligation?.target_normal_form).toBe("True")
         expect(assignment.obligation?.locality_check?.expected_lemma_shape).toBe("True")
         expect(assignment.replace).toContain("target_shape_review warning")
-        expect(assignment.replace).toContain("actual exported Coq target as authoritative")
+        expect(assignment.replace).toContain("actual exported Lean target as authoritative")
 
         SessionProofWorkflow.clear(session.id)
         SessionProof.clear(session.id)
@@ -426,16 +426,16 @@ describe("session.proof-workflow lemma scheduling", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/stale-semantic-shape.v`
+        const file = `${tmp.path}/stale-semantic-shape.lean`
         const source = [
-          "Lemma demo : True.",
-          "Proof.",
-          "(* proof_region begin owner: lemma admit_id: gap_1 theorem: demo kind: semantic_bridge target: Hsemantic plan_node: node_Hsemantic depends_on: theorem_context source: paper-step input: theorem_context output: Hsemantic layer: semantic expected: local_fact normal_form: \"False\" evidence: prosa:checked_fact *)",
-          "have Hsemantic : True.",
-          "{ admit. }",
-          "(* proof_region end admit_id: gap_1 *)",
-          "exact Hsemantic.",
-          "Admitted.",
+          "theorem demo : True := by",
+          "",
+          "/- proof_region begin owner: lemma admit_id: gap_1 theorem: demo kind: semantic_bridge target: Hsemantic plan_node: node_Hsemantic depends_on: theorem_context source: paper-step input: theorem_context output: Hsemantic layer: semantic expected: local_fact normal_form: \"False\" evidence: prosa:checked_fact -/",
+          "have Hsemantic : True := (by",
+          "  sorry)",
+          "/- proof_region end admit_id: gap_1 -/",
+          "exact Hsemantic",
+          "",
           "",
         ].join("\n")
         await Bun.write(file, source)
@@ -458,7 +458,7 @@ describe("session.proof-workflow lemma scheduling", () => {
     })
   })
 
-  test("checkpoint scaffold compiles a supplied staged source without mutating stale disk", async () => {
+  test.skipIf(!Bun.which("lake"))("checkpoint scaffold compiles a supplied staged source without mutating stale disk", async () => {
     scaffoldSpy?.mockRestore()
     scaffoldSpy = undefined
     await using tmp = await tmpdir({ git: true })
@@ -466,9 +466,12 @@ describe("session.proof-workflow lemma scheduling", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/staged-scaffold.v`
-        const disk = "This is stale and invalid Coq source.\n"
-        const staged = "Lemma demo : True.\nProof.\nexact I.\nQed.\n"
+        // a minimal Lake project (core Lean only) so the scaffold gate runs the real `lake env lean`
+        await Bun.write(`${tmp.path}/lakefile.lean`, "import Lake\nopen Lake DSL\npackage scaffold_test\n")
+        await Bun.write(`${tmp.path}/lean-toolchain`, "leanprover/lean4:v4.33.1\n")
+        const file = `${tmp.path}/StagedScaffold.lean`
+        const disk = "This is stale and invalid Lean source.\n"
+        const staged = "theorem demo : True := by\n  exact True.intro\n"
         await Bun.write(file, disk)
 
         const result = await SessionProofWorkflow.Validation.scaffold(file, staged)
@@ -484,25 +487,25 @@ describe("session.proof-workflow lemma scheduling", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/staged-dispatch.v`
+        const file = `${tmp.path}/staged-dispatch.lean`
         const disk = [
-          "Lemma demo : True.",
-          "Proof.",
+          "theorem demo : True := by",
+          "",
           regionBegin("gap_old", "Hold"),
-          "have Hold : True. { admit. }",
-          "(* proof_region end admit_id: gap_old *)",
-          "exact Hold.",
-          "Admitted.",
+          "have Hold : True := (by sorry)",
+          "/- proof_region end admit_id: gap_old -/",
+          "exact Hold",
+          "",
           "",
         ].join("\n")
         const staged = [
-          "Lemma demo : True.",
-          "Proof.",
+          "theorem demo : True := by",
+          "",
           regionBegin("gap_new", "Hnew"),
-          "have Hnew : True. { admit. }",
-          "(* proof_region end admit_id: gap_new *)",
-          "exact Hnew.",
-          "Admitted.",
+          "have Hnew : True := (by sorry)",
+          "/- proof_region end admit_id: gap_new -/",
+          "exact Hnew",
+          "",
           "",
         ].join("\n")
         await Bun.write(file, disk)
@@ -541,8 +544,8 @@ describe("session.proof-workflow lemma scheduling", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/route-repair.v`
-        const source = "Lemma demo : True.\nProof.\nAdmitted.\n"
+        const file = `${tmp.path}/route-repair.lean`
+        const source = "theorem demo : True := by\nAdmitted\n"
         await Bun.write(file, source)
         const session = await Session.create({})
         const plan = ProofPlan.parse({
@@ -556,7 +559,7 @@ describe("session.proof-workflow lemma scheduling", () => {
               formal_goal: "True",
               candidate_lemmas: [],
               prosa_candidate_lemmas: [],
-              mathcomp_candidate_lemmas: [],
+              mathlib_candidate_lemmas: [],
               required_hypotheses: [],
               fallback_plan: [],
               done_when: "the local fact is available",
@@ -638,8 +641,8 @@ describe("session.proof-workflow lemma scheduling", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/metadata-repair.v`
-        const source = "Lemma demo : True.\nProof.\nAdmitted.\n"
+        const file = `${tmp.path}/metadata-repair.lean`
+        const source = "theorem demo : True := by\nAdmitted\n"
         await Bun.write(file, source)
         const session = await Session.create({})
         const plan = ProofPlan.parse({
@@ -652,7 +655,7 @@ describe("session.proof-workflow lemma scheduling", () => {
             formal_goal: "True",
             candidate_lemmas: [],
             prosa_candidate_lemmas: [],
-            mathcomp_candidate_lemmas: [],
+            mathlib_candidate_lemmas: [],
             required_hypotheses: [],
             fallback_plan: [],
             done_when: "the theorem closes",
@@ -729,8 +732,8 @@ describe("session.proof-workflow lemma scheduling", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/fresh-plan.v`
-        const source = "Lemma demo : True.\nProof.\nAdmitted.\n"
+        const file = `${tmp.path}/fresh-plan.lean`
+        const source = "theorem demo : True := by\nAdmitted\n"
         await Bun.write(file, source)
         const original = await Session.create({})
         const fresh = await Session.create({})
@@ -748,7 +751,7 @@ describe("session.proof-workflow lemma scheduling", () => {
               formal_goal: "True",
               candidate_lemmas: [],
               prosa_candidate_lemmas: [],
-              mathcomp_candidate_lemmas: [],
+              mathlib_candidate_lemmas: [],
               required_hypotheses: [],
               fallback_plan: [],
               done_when: "the local fact is available",
@@ -807,7 +810,7 @@ describe("session.proof-workflow lemma scheduling", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/theorem.v`
+        const file = `${tmp.path}/theorem.lean`
         const session = await Session.create({})
         const source = boundedTheorem()
         await Bun.write(file, source)
@@ -818,7 +821,7 @@ describe("session.proof-workflow lemma scheduling", () => {
             sessionID: session.id,
             file,
             before: source,
-            after: boundedTheorem("  exact I.\nQed."),
+            after: boundedTheorem("  exact trivial"),
           }),
         ).not.toThrow()
         expect(() =>
@@ -826,7 +829,7 @@ describe("session.proof-workflow lemma scheduling", () => {
             sessionID: session.id,
             file,
             before: source,
-            after: `${boundedTheorem("  exact I.\nQed.")}\n`,
+            after: `${boundedTheorem("  exact trivial")}\n`,
           }),
         ).not.toThrow()
         expect(() =>
@@ -834,7 +837,7 @@ describe("session.proof-workflow lemma scheduling", () => {
             sessionID: session.id,
             file,
             before: source,
-            after: source.replace("Lemma demo : True.", "Lemma demo : False."),
+            after: source.replace("theorem demo : True := by", "theorem demo : False := by"),
           }),
         ).toThrow("proof_scope_integrity_rejection")
         expect(() =>
@@ -842,7 +845,7 @@ describe("session.proof-workflow lemma scheduling", () => {
             sessionID: session.id,
             file,
             before: source,
-            after: source.replace("From mathcomp", "From Coq"),
+            after: source.replace("import Mathlib", "import Lean"),
           }),
         ).toThrow("proof_scope_integrity_rejection")
         expect(() =>
@@ -850,7 +853,7 @@ describe("session.proof-workflow lemma scheduling", () => {
             sessionID: session.id,
             file,
             before: source,
-            after: source.replace("Lemma untouched : True.", "Lemma untouched : False."),
+            after: source.replace("theorem untouched : True := by", "theorem untouched : False := by"),
           }),
         ).toThrow("proof_scope_integrity_rejection")
         expect(() =>
@@ -858,7 +861,7 @@ describe("session.proof-workflow lemma scheduling", () => {
             sessionID: session.id,
             file,
             before: source,
-            after: `${boundedTheorem("  exact I.\nQed.")}\nCheck True.\n`,
+            after: `${boundedTheorem("  exact trivial")}\n#check True\n`,
           }),
         ).toThrow("proof_scope_integrity_rejection")
 
@@ -878,7 +881,7 @@ describe("session.proof-workflow lemma scheduling", () => {
       await Instance.provide({
         directory: tmp.path,
         fn: async () => {
-          const file = `${tmp.path}/exhausted.v`
+          const file = `${tmp.path}/exhausted.lean`
           const session = await Session.create({})
           const source = boundedTheorem()
           await Bun.write(file, source)
@@ -894,7 +897,7 @@ describe("session.proof-workflow lemma scheduling", () => {
                 formal_goal: "True",
                 candidate_lemmas: [],
                 prosa_candidate_lemmas: [],
-                mathcomp_candidate_lemmas: [],
+                mathlib_candidate_lemmas: [],
                 required_hypotheses: [],
                 fallback_plan: [],
                 done_when: "the theorem is delegated",
@@ -975,7 +978,7 @@ describe("session.proof-workflow lemma scheduling", () => {
               sessionID: session.id,
               file,
               before: source,
-              after: boundedTheorem("  exact I.\nQed."),
+              after: boundedTheorem("  exact trivial"),
             }),
           ).toThrow("decomposition_plan_materialization_rejection")
 
@@ -1017,7 +1020,7 @@ describe("session.proof-workflow lemma scheduling", () => {
       await Instance.provide({
         directory: tmp.path,
         fn: async () => {
-          const file = `${tmp.path}/fail-closed.v`
+          const file = `${tmp.path}/fail-closed.lean`
           const session = await Session.create({})
           const source = boundedTheorem()
           await Bun.write(file, source)
@@ -1033,7 +1036,7 @@ describe("session.proof-workflow lemma scheduling", () => {
                 formal_goal: "True",
                 candidate_lemmas: [],
                 prosa_candidate_lemmas: [],
-                mathcomp_candidate_lemmas: [],
+                mathlib_candidate_lemmas: [],
                 required_hypotheses: [],
                 fallback_plan: [],
                 done_when: "the theorem is delegated",
@@ -1075,7 +1078,7 @@ describe("session.proof-workflow lemma scheduling", () => {
               sessionID: session.id,
               file,
               before: source,
-              after: boundedTheorem("  exact I.\nQed."),
+              after: boundedTheorem("  exact trivial"),
             }),
           ).toThrow("decomposition_plan_materialization_rejection")
 
@@ -1095,7 +1098,7 @@ describe("session.proof-workflow lemma scheduling", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/final-exhaustion.v`
+        const file = `${tmp.path}/final-exhaustion.lean`
         const session = await Session.create({})
         const source = boundedTheorem()
         await Bun.write(file, source)
@@ -1110,7 +1113,7 @@ describe("session.proof-workflow lemma scheduling", () => {
             formal_goal: "True",
             candidate_lemmas: [],
             prosa_candidate_lemmas: [],
-            mathcomp_candidate_lemmas: [],
+            mathlib_candidate_lemmas: [],
             required_hypotheses: [],
             fallback_plan: [],
             done_when: "the theorem is delegated",
@@ -1203,18 +1206,18 @@ describe("session.proof-workflow lemma scheduling", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/theorem.v`
+        const file = `${tmp.path}/theorem.lean`
         const session = await Session.create({})
         const source = [
-          "From mathcomp Require Import all_ssreflect.",
+          "import Mathlib",
           "",
-          "Lemma demo : True.",
-          "Proof.",
-          "  admit.",
-          "Admitted.",
+          "theorem demo : True := by",
+          "",
+          "  sorry",
+          "",
           "",
         ].join("\n")
-        const completed = source.replace("  admit.\nAdmitted.", "  exact I.\nQed.")
+        const completed = source.replace("  sorry", "  exact trivial")
         await Bun.write(file, source)
         SessionProof.set(session.id, file, { line: 0, character: 0 }, "auto")
 
@@ -1234,11 +1237,11 @@ describe("session.proof-workflow lemma scheduling", () => {
 
   test("extracts the complete root goal when its conclusion has a top-level forall binder", () => {
     const source = [
-      "Lemma quantified_goal : forall x : nat, x = x.",
-      "Proof.",
-      "move=> x.",
-      "reflexivity.",
-      "Qed.",
+      "theorem quantified_goal : forall x : nat, x = x := by",
+      "",
+      "move=> x",
+      "reflexivity",
+      "",
       "",
     ].join("\n")
 
@@ -1253,11 +1256,11 @@ describe("session.proof-workflow lemma scheduling", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/theorem.v`
+        const file = `${tmp.path}/theorem.lean`
         const parent = await Session.create({})
         const child = await Session.create({ parentID: parent.id })
         const source = boundedTheorem()
-        const bodyEdit = boundedTheorem("  exact I.\nQed.")
+        const bodyEdit = boundedTheorem("  exact trivial")
         await Bun.write(file, source)
         SessionProof.set(parent.id, file, { line: 3, character: 0 }, "manual")
         SessionProof.inherit(parent.id, child.id)
@@ -1274,7 +1277,7 @@ describe("session.proof-workflow lemma scheduling", () => {
             sessionID: child.id,
             file,
             before: bodyEdit,
-            after: bodyEdit.replace("Lemma demo : True.", "Lemma demo : False."),
+            after: bodyEdit.replace("theorem demo : True := by", "theorem demo : False := by"),
           }),
         ).toThrow("proof_scope_integrity_rejection")
 
@@ -1294,14 +1297,14 @@ describe("session.proof-workflow lemma scheduling", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/theorem.v`
+        const file = `${tmp.path}/theorem.lean`
         const session = await Session.create({})
         const source = boundedTheorem()
         const siblingRevision = source.replace(
-          "Lemma demo : True.",
-          "Lemma helper_before_demo : True.\nProof. exact I. Qed.\n\nLemma demo : True.",
+          "theorem demo : True := by",
+          "theorem helper_before_demo : True := by exact trivial\n\ntheorem demo : True := by",
         )
-        const proposed = siblingRevision.replace("  admit.\nAdmitted.", "  exact I.\nQed.")
+        const proposed = siblingRevision.replace("  sorry", "  exact trivial")
         await Bun.write(file, source)
         SessionProof.set(session.id, file, { line: 3, character: 0 }, "manual")
 
@@ -1328,19 +1331,19 @@ describe("session.proof-workflow lemma scheduling", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/theorem.v`
+        const file = `${tmp.path}/theorem.lean`
         const session = await Session.create({})
         const source = boundedTheorem()
         await Bun.write(file, source)
         SessionProof.set(session.id, file, { line: 3, character: 0 }, "manual")
-        const externallyChanged = source.replace("Lemma demo : True.", "Lemma demo : False.")
+        const externallyChanged = source.replace("theorem demo : True := by", "theorem demo : False := by")
 
         expect(() =>
           SessionProofWorkflow.assertBoundProofBodyMutationAllowed({
             sessionID: session.id,
             file,
             before: externallyChanged,
-            after: externallyChanged.replace("  admit.\nAdmitted.", "  exact I.\nQed."),
+            after: externallyChanged.replace("  sorry", "  exact trivial"),
           }),
         ).toThrow("current bound file does not match the immutable session snapshot")
 
@@ -1355,7 +1358,7 @@ describe("session.proof-workflow lemma scheduling", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/theorem.v`
+        const file = `${tmp.path}/theorem.lean`
         const parent = await Session.create({})
         const child = await Session.create({ parentID: parent.id })
         const source = boundedTheorem()
@@ -1375,7 +1378,7 @@ describe("session.proof-workflow lemma scheduling", () => {
             sessionID: child.id,
             file,
             before: source,
-            after: boundedTheorem("  exact I.\nQed."),
+            after: boundedTheorem("  exact trivial"),
           }),
         ).toThrow("bound proof has no canonical source snapshot")
 
@@ -1391,11 +1394,11 @@ describe("session.proof-workflow lemma scheduling", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/theorem.v`
+        const file = `${tmp.path}/theorem.lean`
         const first = await Session.create({})
         const second = await Session.create({})
         const source = boundedTheorem()
-        const independentlyChanged = source.replace("Lemma demo : True.", "Lemma demo : 1 = 1.")
+        const independentlyChanged = source.replace("theorem demo : True := by", "theorem demo : 1 = 1 := by")
         await Bun.write(file, source)
         SessionProof.set(first.id, file, { line: 3, character: 0 }, "manual")
         await Bun.write(file, independentlyChanged)
@@ -1404,7 +1407,7 @@ describe("session.proof-workflow lemma scheduling", () => {
           sessionID: first.id,
           file,
           before: source,
-          after: boundedTheorem("  exact I.\nQed."),
+          after: boundedTheorem("  exact trivial"),
         })
 
         expect(() =>
@@ -1412,7 +1415,7 @@ describe("session.proof-workflow lemma scheduling", () => {
             sessionID: second.id,
             file,
             before: independentlyChanged,
-            after: independentlyChanged.replace("  admit.\nAdmitted.", "  reflexivity.\nDefined."),
+            after: independentlyChanged.replace("  sorry", "  reflexivity\nDefined."),
           }),
         ).not.toThrow()
 
@@ -1432,21 +1435,21 @@ describe("session.proof-workflow lemma scheduling", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/theorem.v`
+        const file = `${tmp.path}/theorem.lean`
         const session = await Session.create({})
         await Bun.write(
           file,
           [
-            "Lemma demo : True.",
-            "Proof.",
+            "theorem demo : True := by",
+            "",
             regionBegin("gap_1", "Hgap"),
-            "have Hgap : True.",
-            "{ (* admit_id: gap_1 *)",
-            "  admit.",
-            "}",
-            "(* proof_region end admit_id: gap_1 *)",
-            "exact Hgap.",
-            "Admitted.",
+            "have Hgap : True := (by",
+            "  /- admit_id: gap_1 -/",
+            "  sorry",
+            ")",
+            "/- proof_region end admit_id: gap_1 -/",
+            "exact Hgap",
+            "",
             "",
           ].join("\n"),
         )
@@ -1476,21 +1479,21 @@ describe("session.proof-workflow lemma scheduling", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/theorem.v`
+        const file = `${tmp.path}/theorem.lean`
         const session = await Session.create({})
         await Bun.write(
           file,
           [
-            "Lemma demo : True.",
-            "Proof.",
+            "theorem demo : True := by",
+            "",
             regionBegin("gap_1", "Hgap"),
-            "have Hgap : True.",
-            "{ (* admit_id: gap_1 *)",
-            "  admit.",
-            "}",
-            "(* proof_region end *)",
-            "exact Hgap.",
-            "Admitted.",
+            "have Hgap : True := (by",
+            "  /- admit_id: gap_1 -/",
+            "  sorry",
+            ")",
+            "/- proof_region end -/",
+            "exact Hgap",
+            "",
             "",
           ].join("\n"),
         )
@@ -1502,7 +1505,7 @@ describe("session.proof-workflow lemma scheduling", () => {
         expect(next?.agent).toBe("lemma")
         expect(next?.description).toBe("Prove gap_1")
         expect(next?.lemma_assignment?.admit_id).toBe("gap_1")
-        expect(next?.lemma_assignment?.skeleton).toContain("(* proof_region end *)")
+        expect(next?.lemma_assignment?.skeleton).toContain("/- proof_region end -/")
 
         const state = SessionProofWorkflow.get(sessionID)
         expect(state?.queue[0]?.owner).toBe("lemma")
@@ -1521,21 +1524,21 @@ describe("session.proof-workflow lemma scheduling", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/theorem.v`
+        const file = `${tmp.path}/theorem.lean`
         const session = await Session.create({})
         await Bun.write(
           file,
           [
-            "Lemma demo : True.",
-            "Proof.",
-            "(* proof_region begin owner: lemma admit_id: gap_1 theorem: demo kind: pointwise_semantic_bridge target: Hgap *)",
-            "have Hgap : True.",
-            "{ (* admit_id: gap_1 *)",
-            "  admit.",
-            "}",
-            "(* proof_region end admit_id: gap_1 *)",
-            "exact Hgap.",
-            "Admitted.",
+            "theorem demo : True := by",
+            "",
+            "/- proof_region begin owner: lemma admit_id: gap_1 theorem: demo kind: pointwise_semantic_bridge target: Hgap -/",
+            "have Hgap : True := (by",
+            "  /- admit_id: gap_1 -/",
+            "  sorry",
+            ")",
+            "/- proof_region end admit_id: gap_1 -/",
+            "exact Hgap",
+            "",
             "",
           ].join("\n"),
         )
@@ -1574,21 +1577,21 @@ describe("session.proof-workflow lemma scheduling", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/theorem.v`
+        const file = `${tmp.path}/theorem.lean`
         const session = await Session.create({})
         await Bun.write(
           file,
           [
-            "Lemma demo : True.",
-            "Proof.",
-            "(* proof_region begin owner: lemma admit_id: gap_1 theorem: demo kind: pointwise_semantic_bridge target: Hgap *)",
-            "have Hgap : True.",
-            "{ (* admit_id: gap_1 *)",
-            "  admit.",
-            "}",
-            "(* proof_region end admit_id: gap_1 *)",
-            "exact Hgap.",
-            "Admitted.",
+            "theorem demo : True := by",
+            "",
+            "/- proof_region begin owner: lemma admit_id: gap_1 theorem: demo kind: pointwise_semantic_bridge target: Hgap -/",
+            "have Hgap : True := (by",
+            "  /- admit_id: gap_1 -/",
+            "  sorry",
+            ")",
+            "/- proof_region end admit_id: gap_1 -/",
+            "exact Hgap",
+            "",
             "",
           ].join("\n"),
         )
@@ -1622,8 +1625,8 @@ describe("session.proof-workflow lemma scheduling", () => {
         expect(baseline?.guard.passive_lookup_streak).toBe(5)
 
         const commentOnly = (await Bun.file(file).text()).replace(
-          "have Hgap : True.",
-          "(* administrative note *)\nhave Hgap : True.",
+          "have Hgap : True := (by",
+          "/- administrative note -/\nhave Hgap : True := (by",
         )
         await Bun.write(file, commentOnly)
         SessionProofWorkflow.recordSourceMutation(file, commentOnly)
@@ -1646,13 +1649,13 @@ describe("session.proof-workflow lemma scheduling", () => {
       await Instance.provide({
         directory: tmp.path,
         fn: async () => {
-          const file = `${tmp.path}/theorem.v`
+          const file = `${tmp.path}/theorem.lean`
           await Bun.write(file, [
-            "Lemma demo : True.", "Proof.",
-            "(* proof_region begin owner: lemma admit_id: gap_1 theorem: demo kind: pointwise_semantic_bridge target: Hgap *)",
-            "have Hgap : True. { admit. }",
-            "(* proof_region end admit_id: gap_1 *)",
-            "exact Hgap.", "Admitted.", "",
+            "theorem demo : True := by", "",
+            "/- proof_region begin owner: lemma admit_id: gap_1 theorem: demo kind: pointwise_semantic_bridge target: Hgap -/",
+            "have Hgap : True := (by sorry)",
+            "/- proof_region end admit_id: gap_1 -/",
+            "exact Hgap", "", "",
           ].join("\n"))
           const session = await Session.create({})
           SessionProof.set(session.id, file, { line: 1, character: 0 }, "manual")
@@ -1664,7 +1667,7 @@ describe("session.proof-workflow lemma scheduling", () => {
               type: "tool", tool: "read",
               state: {
                 status: "completed",
-                input: { filePath: `${tmp.path}/prosa/library.v`, offset: novel === "query" ? index : 1 },
+                input: { filePath: `${tmp.path}/prosa/library.lean`, offset: novel === "query" ? index : 1 },
                 output: novel === "output" ? `new evidence ${index}` : "library signature",
                 metadata: {}, time: { start: index + 1, end: index + 2 },
               },
@@ -1688,13 +1691,13 @@ describe("session.proof-workflow lemma scheduling", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/theorem.v`
+        const file = `${tmp.path}/theorem.lean`
         await Bun.write(file, [
-          "Lemma demo : True.", "Proof.",
-          "(* proof_region begin owner: lemma admit_id: gap_1 theorem: demo kind: pointwise_semantic_bridge target: Hgap *)",
-          "have Hgap : True. { admit. }",
-          "(* proof_region end admit_id: gap_1 *)",
-          "exact Hgap.", "Admitted.", "",
+          "theorem demo : True := by", "",
+          "/- proof_region begin owner: lemma admit_id: gap_1 theorem: demo kind: pointwise_semantic_bridge target: Hgap -/",
+          "have Hgap : True := (by sorry)",
+          "/- proof_region end admit_id: gap_1 -/",
+          "exact Hgap", "", "",
         ].join("\n"))
         const session = await Session.create({})
         SessionProof.set(session.id, file, { line: 1, character: 0 }, "manual")
@@ -1744,21 +1747,21 @@ describe("session.proof-workflow lemma scheduling", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/theorem.v`
+        const file = `${tmp.path}/theorem.lean`
         const session = await Session.create({})
         await Bun.write(
           file,
           [
-            "Lemma demo : True.",
-            "Proof.",
-            "(* proof_region begin owner: lemma admit_id: gap_1 theorem: demo kind: pointwise_semantic_bridge target: Hgap *)",
-            "have Hgap : True.",
-            "{ (* admit_id: gap_1 *)",
-            "  admit.",
-            "}",
-            "(* proof_region end admit_id: gap_1 *)",
-            "exact Hgap.",
-            "Admitted.",
+            "theorem demo : True := by",
+            "",
+            "/- proof_region begin owner: lemma admit_id: gap_1 theorem: demo kind: pointwise_semantic_bridge target: Hgap -/",
+            "have Hgap : True := (by",
+            "  /- admit_id: gap_1 -/",
+            "  sorry",
+            ")",
+            "/- proof_region end admit_id: gap_1 -/",
+            "exact Hgap",
+            "",
             "",
           ].join("\n"),
         )
@@ -1829,21 +1832,21 @@ describe("session.proof-workflow lemma scheduling", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/theorem.v`
+        const file = `${tmp.path}/theorem.lean`
         const session = await Session.create({})
         await Bun.write(
           file,
           [
-            "Lemma demo : True.",
-            "Proof.",
-            "(* proof_region begin owner: lemma admit_id: gap_1 theorem: demo kind: pointwise_semantic_bridge target: Hgap *)",
-            "have Hgap : True.",
-            "{ (* admit_id: gap_1 *)",
-            "  admit.",
-            "}",
-            "(* proof_region end admit_id: gap_1 *)",
-            "exact Hgap.",
-            "Admitted.",
+            "theorem demo : True := by",
+            "",
+            "/- proof_region begin owner: lemma admit_id: gap_1 theorem: demo kind: pointwise_semantic_bridge target: Hgap -/",
+            "have Hgap : True := (by",
+            "  /- admit_id: gap_1 -/",
+            "  sorry",
+            ")",
+            "/- proof_region end admit_id: gap_1 -/",
+            "exact Hgap",
+            "",
             "",
           ].join("\n"),
         )
@@ -1887,7 +1890,7 @@ describe("session.proof-workflow lemma scheduling", () => {
         expect(await SessionProofWorkflow.planNextSubtask(sessionID, [])).toBeUndefined()
         expect(SessionProofWorkflow.get(sessionID)?.fallback_guard?.tripped_at).toBeNumber()
 
-        const changed = (await Bun.file(file).text()).replace("Proof.\n", "Proof.\npose proof I as Hseed.\n")
+        const changed = (await Bun.file(file).text()).replace("\n", "\npose proof I as Hseed.\n")
         await Bun.write(file, changed)
         SessionProofWorkflow.recordSourceMutation(file, changed)
 
@@ -1909,21 +1912,21 @@ describe("session.proof-workflow lemma scheduling", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/theorem.v`
+        const file = `${tmp.path}/theorem.lean`
         const session = await Session.create({})
         await Bun.write(
           file,
           [
-            "Lemma demo : True.",
-            "Proof.",
-            "(* proof_region begin owner: lemma admit_id: gap_1 theorem: demo kind: pointwise_semantic_bridge target: Hgap *)",
-            "have Hgap : True.",
-            "{ (* admit_id: gap_1 *)",
-            "  admit.",
-            "}",
-            "(* proof_region end admit_id: gap_1 *)",
-            "exact Hgap.",
-            "Admitted.",
+            "theorem demo : True := by",
+            "",
+            "/- proof_region begin owner: lemma admit_id: gap_1 theorem: demo kind: pointwise_semantic_bridge target: Hgap -/",
+            "have Hgap : True := (by",
+            "  /- admit_id: gap_1 -/",
+            "  sorry",
+            ")",
+            "/- proof_region end admit_id: gap_1 -/",
+            "exact Hgap",
+            "",
             "",
           ].join("\n"),
         )
@@ -2002,7 +2005,7 @@ describe("session.proof-workflow lemma scheduling", () => {
         SessionProofWorkflow.set(sessionID, locked)
         expect(await SessionProofWorkflow.planNextSubtask(sessionID, messages)).toBeUndefined()
 
-        const remodeled = (await Bun.file(file).text()).replace("Proof.\n", "Proof.\npose proof I as Hseed.\n")
+        const remodeled = (await Bun.file(file).text()).replace("\n", "\npose proof I as Hseed.\n")
         await Bun.write(file, remodeled)
         const released = await SessionProofWorkflow.planNextSubtask(sessionID, messages)
         expect(released?.description).toBe("Repair gap_1")
@@ -2021,19 +2024,19 @@ describe("session.proof-workflow lemma scheduling", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/theorem.v`
+        const file = `${tmp.path}/theorem.lean`
         const session = await Session.create({})
         await Bun.write(
           file,
           [
-            "Lemma demo : True.",
-            "Proof.",
+            "theorem demo : True := by",
+            "",
             regionBegin("gap_1", "Hgap"),
-            "have Hgap : True.",
-            "{ admit. }",
-            "(* proof_region end admit_id: gap_1 *)",
-            "exact Hgap.",
-            "Admitted.",
+            "have Hgap : True := (by",
+            "  sorry)",
+            "/- proof_region end admit_id: gap_1 -/",
+            "exact Hgap",
+            "",
             "",
           ].join("\n"),
         )
@@ -2101,18 +2104,18 @@ describe("session.proof-workflow lemma scheduling", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/theorem.v`
+        const file = `${tmp.path}/theorem.lean`
         const source = [
-          "Lemma demo : True.",
-          "Proof.",
-          "(* proof_region begin owner: lemma admit_id: gap_1 theorem: demo kind: pointwise_semantic_bridge target: Hgap *)",
-          "have Hgap : True.",
-          "{ (* admit_id: gap_1 *)",
-          "  admit.",
-          "}",
-          "(* proof_region end admit_id: gap_1 *)",
-          "exact Hgap.",
-          "Admitted.",
+          "theorem demo : True := by",
+          "",
+          "/- proof_region begin owner: lemma admit_id: gap_1 theorem: demo kind: pointwise_semantic_bridge target: Hgap -/",
+          "have Hgap : True := (by",
+          "  /- admit_id: gap_1 -/",
+          "  sorry",
+          ")",
+          "/- proof_region end admit_id: gap_1 -/",
+          "exact Hgap",
+          "",
           "",
         ].join("\n")
         await Bun.write(file, source)
@@ -2192,21 +2195,21 @@ describe("session.proof-workflow lemma scheduling", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/theorem.v`
+        const file = `${tmp.path}/theorem.lean`
         const parent = await Session.create({})
         await Bun.write(
           file,
           [
-            "Lemma demo : True.",
-            "Proof.",
-            "(* proof_region begin owner: lemma admit_id: gap_1 theorem: demo kind: pointwise_semantic_bridge target: Hgap *)",
-            "have Hgap : True.",
-            "{ (* admit_id: gap_1 *)",
-            "  admit.",
-            "}",
-            "(* proof_region end admit_id: gap_1 *)",
-            "exact Hgap.",
-            "Admitted.",
+            "theorem demo : True := by",
+            "",
+            "/- proof_region begin owner: lemma admit_id: gap_1 theorem: demo kind: pointwise_semantic_bridge target: Hgap -/",
+            "have Hgap : True := (by",
+            "  /- admit_id: gap_1 -/",
+            "  sorry",
+            ")",
+            "/- proof_region end admit_id: gap_1 -/",
+            "exact Hgap",
+            "",
             "",
           ].join("\n"),
         )
@@ -2348,7 +2351,7 @@ describe("session.proof-workflow lemma scheduling", () => {
         expect((planDidNotReset as any)?.repairChildNoMaterialization).toBe(true)
         expect(planDidNotReset?.guard.passive_lookup_streak).toBe(83)
 
-        const repairedSource = (await Bun.file(file).text()).replace("  admit.", "  exact I.")
+        const repairedSource = (await Bun.file(file).text()).replace("  sorry", "  exact trivial")
         await Bun.write(file, repairedSource)
         const refreshedChild = SessionProofWorkflow.refresh(child.id, file, repairedSource).state
         expect(refreshedChild.active_repair).toBeUndefined()
@@ -2382,18 +2385,18 @@ describe("session.proof-workflow lemma scheduling", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/theorem.v`
+        const file = `${tmp.path}/theorem.lean`
         const parent = await Session.create({})
         const child = await Session.create({ parentID: parent.id })
         const source = [
-          "Lemma demo : True.",
-          "Proof.",
+          "theorem demo : True := by",
+          "",
           regionBegin("gap_1", "Hgap"),
-          "have Hgap : True.",
-          "{ admit. }",
-          "(* proof_region end admit_id: gap_1 *)",
-          "exact Hgap.",
-          "Admitted.",
+          "have Hgap : True := (by",
+          "  sorry)",
+          "/- proof_region end admit_id: gap_1 -/",
+          "exact Hgap",
+          "",
           "",
         ].join("\n")
         await Bun.write(file, source)
@@ -2507,20 +2510,20 @@ describe("session.proof-workflow lemma scheduling", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/theorem.v`
+        const file = `${tmp.path}/theorem.lean`
         const session = await Session.create({})
         const source = [
-          "Lemma demo : True.",
-          "Proof.",
+          "theorem demo : True := by",
+          "",
           regionBegin("gap_1", "Hgap"),
-          "have Hgap : True.",
-          "{ admit. }",
-          "(* proof_region end admit_id: gap_1 *)",
-          "exact Hgap.",
-          "Admitted.",
+          "have Hgap : True := (by",
+          "  sorry)",
+          "/- proof_region end admit_id: gap_1 -/",
+          "exact Hgap",
+          "",
           "",
         ].join("\n")
-        const staged = source.replace("{ admit. }", "{ exact I. }")
+        const staged = source.replace("  sorry)", "  exact trivial)")
         await Bun.write(file, source)
 
         SessionProof.set(session.id, file, { line: 1, character: 0 }, "manual")
@@ -2590,18 +2593,18 @@ describe("session.proof-workflow lemma scheduling", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/cross-session-repair.v`
+        const file = `${tmp.path}/cross-session-repair.lean`
         const source = [
-          "Lemma demo : True.",
-          "Proof.",
-          "(* proof_region begin owner: lemma admit_id: gap_1 theorem: demo kind: pointwise_semantic_bridge target: Hgap *)",
-          "have Hgap : True.",
-          "{ (* admit_id: gap_1 *)",
-          "  admit.",
-          "}",
-          "(* proof_region end admit_id: gap_1 *)",
-          "exact Hgap.",
-          "Admitted.",
+          "theorem demo : True := by",
+          "",
+          "/- proof_region begin owner: lemma admit_id: gap_1 theorem: demo kind: pointwise_semantic_bridge target: Hgap -/",
+          "have Hgap : True := (by",
+          "  /- admit_id: gap_1 -/",
+          "  sorry",
+          ")",
+          "/- proof_region end admit_id: gap_1 -/",
+          "exact Hgap",
+          "",
           "",
         ].join("\n")
         await Bun.write(file, source)
@@ -2625,13 +2628,13 @@ describe("session.proof-workflow lemma scheduling", () => {
         expect((takeover as any)?.parentRepairTakeoverRequired).toBe(true)
         expect(takeover?.message).toContain("substantive theorem proof/contract change")
 
-        const commentOnly = source.replace("have Hgap : True.", "(* administrative note *)\nhave Hgap : True.")
+        const commentOnly = source.replace("have Hgap : True := (by", "/- administrative note -/\nhave Hgap : True := (by")
         await Bun.write(file, commentOnly)
         const commentRevisionRepair = await SessionProofWorkflow.planNextSubtask(secondRoot.id, [])
         expect(commentRevisionRepair?.description).toBe("Repair gap_1")
         expect(SessionProofWorkflow.get(secondRoot.id)?.fallback_guard?.dispatch_lock_scope).toBeUndefined()
 
-        const substantive = commentOnly.replace("have Hgap : True.", "have Hgap : True /\\ True.")
+        const substantive = commentOnly.replace("have Hgap : True := (by", "have Hgap : True ∧ True := (by")
         await Bun.write(file, substantive)
         const changedRepair = await SessionProofWorkflow.planNextSubtask(secondRoot.id, [])
         expect(changedRepair?.description).toBe("Repair gap_1")
@@ -2653,22 +2656,22 @@ describe("session.proof-workflow lemma scheduling", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/theorem.v`
+        const file = `${tmp.path}/theorem.lean`
         const parent = await Session.create({})
         const child = await Session.create({ parentID: parent.id })
         await Bun.write(
           file,
           [
-            "Lemma demo : True.",
-            "Proof.",
+            "theorem demo : True := by",
+            "",
             regionBegin("gap_1", "Hgap"),
-            "have Hgap : True.",
-            "{ (* admit_id: gap_1 *)",
-            "  admit.",
-            "}",
-            "(* proof_region end admit_id: gap_1 *)",
-            "exact Hgap.",
-            "Admitted.",
+            "have Hgap : True := (by",
+            "  /- admit_id: gap_1 -/",
+            "  sorry",
+            ")",
+            "/- proof_region end admit_id: gap_1 -/",
+            "exact Hgap",
+            "",
             "",
           ].join("\n"),
         )
@@ -2729,23 +2732,23 @@ describe("session.proof-workflow lemma scheduling", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/theorem.v`
+        const file = `${tmp.path}/theorem.lean`
         const session = await Session.create({})
         await Bun.write(
           file,
           [
-            "Lemma demo : True.",
-            "Proof.",
+            "theorem demo : True := by",
+            "",
             regionBegin("gap_1", "H_left_boundary_capacity", "size carry_in_tasks <= num_cpus - 1"),
             "have H_left_boundary_capacity :",
-            "  size carry_in_tasks <= num_cpus - 1.",
-            "(* paper sentence explaining this local fact. *)",
-            "{",
-            "  admit. (* admit_id: gap_1 *)",
-            "}",
-            "(* proof_region end admit_id: gap_1 *)",
-            "exact H_left_boundary_capacity.",
-            "Admitted.",
+            "  size carry_in_tasks <= num_cpus - 1 := (by",
+            "  /- paper sentence explaining this local fact. -/",
+            "",
+            "  sorry /- admit_id: gap_1 -/",
+            ")",
+            "/- proof_region end admit_id: gap_1 -/",
+            "exact H_left_boundary_capacity",
+            "",
             "",
           ].join("\n"),
         )
@@ -2757,9 +2760,10 @@ describe("session.proof-workflow lemma scheduling", () => {
         expect(next?.lemma_assignment?.goal).toBe("size carry_in_tasks <= num_cpus - 1")
         expect(next?.lemma_assignment?.skeleton).toContain("have H_left_boundary_capacity")
         expect(next?.lemma_assignment?.skeleton).toContain(regionBegin("gap_1", "H_left_boundary_capacity", "size carry_in_tasks <= num_cpus - 1"))
-        expect(next?.lemma_assignment?.replace).toContain("wrap the exported local target statement")
+        expect(next?.lemma_assignment?.replace).toContain("wrap the exported local target")
         expect(next?.lemma_assignment?.replace).toContain("keep its name and proposition unchanged whenever possible")
-        expect(next?.lemma_assignment?.proof_position).toEqual({ line: 6, character: 1 })
+        // entry = just after `:= (by` of the exported target (line 4, 0-based)
+        expect(next?.lemma_assignment?.proof_position).toEqual({ line: 4, character: 44 })
         expect(next?.lemma_assignment?.goal_fingerprint).toBeString()
 
         SessionProofWorkflow.clear(sessionID)
@@ -2775,21 +2779,21 @@ describe("session.proof-workflow lemma scheduling", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/theorem.v`
+        const file = `${tmp.path}/theorem.lean`
         const session = await Session.create({})
         await Bun.write(
           file,
           [
-            "Lemma demo : True.",
-            "Proof.",
+            "theorem demo : True := by",
+            "",
             regionBegin("gap_1", "Hgap"),
-            "have Hgap : True.",
-            "{ (* admit_id: gap_1 *)",
-            "  admit.",
-            "}",
-            "(* proof_region end admit_id: gap_1 *)",
-            "exact Hgap.",
-            "Admitted.",
+            "have Hgap : True := (by",
+            "  /- admit_id: gap_1 -/",
+            "  sorry",
+            ")",
+            "/- proof_region end admit_id: gap_1 -/",
+            "exact Hgap",
+            "",
             "",
           ].join("\n"),
         )
@@ -2819,21 +2823,21 @@ describe("session.proof-workflow lemma scheduling", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/theorem.v`
+        const file = `${tmp.path}/theorem.lean`
         const session = await Session.create({})
         await Bun.write(
           file,
           [
-            "Lemma demo : True.",
-            "Proof.",
+            "theorem demo : True := by",
+            "",
             regionBegin("gap_1", "Hgap"),
-            "have Hgap : True.",
-            "{ (* admit_id: gap_1 *)",
-            "  admit.",
-            "}",
-            "(* proof_region end admit_id: gap_1 *)",
-            "exact Hgap.",
-            "Admitted.",
+            "have Hgap : True := (by",
+            "  /- admit_id: gap_1 -/",
+            "  sorry",
+            ")",
+            "/- proof_region end admit_id: gap_1 -/",
+            "exact Hgap",
+            "",
             "",
           ].join("\n"),
         )
@@ -2888,25 +2892,25 @@ describe("session.proof-workflow lemma scheduling", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/theorem.v`
+        const file = `${tmp.path}/theorem.lean`
         const session = await Session.create({})
         const source = [
-          "Lemma demo : True.",
-          "Proof.",
+          "theorem demo : True := by",
+          "",
           regionBegin("gap_1", "Hone"),
-          "have Hone : True.",
-          "{ (* admit_id: gap_1 *)",
-          "  admit.",
-          "}",
-          "(* proof_region end admit_id: gap_1 *)",
+          "have Hone : True := (by",
+          "  /- admit_id: gap_1 -/",
+          "  sorry",
+          ")",
+          "/- proof_region end admit_id: gap_1 -/",
           regionBegin("gap_2", "Htwo"),
-          "have Htwo : True.",
-          "{ (* admit_id: gap_2 *)",
-          "  admit.",
-          "}",
-          "(* proof_region end admit_id: gap_2 *)",
-          "exact Hone.",
-          "Admitted.",
+          "have Htwo : True := (by",
+          "  /- admit_id: gap_2 -/",
+          "  sorry",
+          ")",
+          "/- proof_region end admit_id: gap_2 -/",
+          "exact Hone",
+          "",
           "",
         ].join("\n")
         await Bun.write(file, source)
@@ -2955,21 +2959,21 @@ describe("session.proof-workflow lemma scheduling", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/theorem.v`
+        const file = `${tmp.path}/theorem.lean`
         const session = await Session.create({})
         const source = [
-          "Lemma demo : True.",
-          "Proof.",
+          "theorem demo : True := by",
+          "",
           regionBegin("gap_1", "Hone").replace("depends_on: theorem_context", "depends_on: node_Htwo"),
-          "have Hone : True.",
-          "{ (* admit_id: gap_1 *) admit. }",
-          "(* proof_region end admit_id: gap_1 *)",
+          "have Hone : True := (by",
+          "  /- admit_id: gap_1 -/ sorry)",
+          "/- proof_region end admit_id: gap_1 -/",
           regionBegin("gap_2", "Htwo"),
-          "have Htwo : True.",
-          "{ (* admit_id: gap_2 *) admit. }",
-          "(* proof_region end admit_id: gap_2 *)",
-          "exact Htwo.",
-          "Admitted.",
+          "have Htwo : True := (by",
+          "  /- admit_id: gap_2 -/ sorry)",
+          "/- proof_region end admit_id: gap_2 -/",
+          "exact Htwo",
+          "",
           "",
         ].join("\n")
         await Bun.write(file, source)
@@ -2994,25 +2998,25 @@ describe("session.proof-workflow lemma scheduling", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/theorem.v`
+        const file = `${tmp.path}/theorem.lean`
         const session = await Session.create({})
         const source = [
-          "Lemma demo : True.",
-          "Proof.",
+          "theorem demo : True := by",
+          "",
           regionBegin("gap_1", "Hone"),
-          "have Hone : True.",
-          "{ (* admit_id: gap_1 *)",
-          "  admit.",
-          "}",
-          "(* proof_region end admit_id: gap_1 *)",
+          "have Hone : True := (by",
+          "  /- admit_id: gap_1 -/",
+          "  sorry",
+          ")",
+          "/- proof_region end admit_id: gap_1 -/",
           regionBegin("gap_2", "Htwo"),
-          "have Htwo : True.",
-          "{ (* admit_id: gap_2 *)",
-          "  admit.",
-          "}",
-          "(* proof_region end admit_id: gap_2 *)",
-          "exact Hone.",
-          "Admitted.",
+          "have Htwo : True := (by",
+          "  /- admit_id: gap_2 -/",
+          "  sorry",
+          ")",
+          "/- proof_region end admit_id: gap_2 -/",
+          "exact Hone",
+          "",
           "",
         ].join("\n")
         await Bun.write(file, source)
@@ -3069,27 +3073,27 @@ describe("session.proof-workflow lemma scheduling", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/theorem.v`
+        const file = `${tmp.path}/theorem.lean`
         const session = await Session.create({})
         await Bun.write(
           file,
           [
-            "Lemma demo : True.",
-            "Proof.",
+            "theorem demo : True := by",
+            "",
             regionBegin("gap_1", "Hone"),
-            "have Hone : True.",
-            "{ (* admit_id: gap_1 *)",
-            "  admit.",
-            "}",
-            "(* proof_region end admit_id: gap_1 *)",
+            "have Hone : True := (by",
+            "  /- admit_id: gap_1 -/",
+            "  sorry",
+            ")",
+            "/- proof_region end admit_id: gap_1 -/",
             regionBegin("gap_2", "Htwo"),
-            "have Htwo : True.",
-            "{ (* admit_id: gap_2 *)",
-            "  admit.",
-            "}",
-            "(* proof_region end admit_id: gap_2 *)",
-            "exact Hone.",
-            "Admitted.",
+            "have Htwo : True := (by",
+            "  /- admit_id: gap_2 -/",
+            "  sorry",
+            ")",
+            "/- proof_region end admit_id: gap_2 -/",
+            "exact Hone",
+            "",
             "",
           ].join("\n"),
         )
@@ -3122,25 +3126,25 @@ describe("session.proof-workflow lemma scheduling", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/theorem.v`
+        const file = `${tmp.path}/theorem.lean`
         const session = await Session.create({})
         const pendingSource = [
-          "Lemma demo : True.",
-          "Proof.",
+          "theorem demo : True := by",
+          "",
           regionBegin("gap_1", "Hone"),
-          "have Hone : True.",
-          "{ (* admit_id: gap_1 *)",
-          "  admit.",
-          "}",
-          "(* proof_region end admit_id: gap_1 *)",
+          "have Hone : True := (by",
+          "  /- admit_id: gap_1 -/",
+          "  sorry",
+          ")",
+          "/- proof_region end admit_id: gap_1 -/",
           regionBegin("gap_2", "Htwo"),
-          "have Htwo : True.",
-          "{ (* admit_id: gap_2 *)",
-          "  admit.",
-          "}",
-          "(* proof_region end admit_id: gap_2 *)",
-          "exact Hone.",
-          "Admitted.",
+          "have Htwo : True := (by",
+          "  /- admit_id: gap_2 -/",
+          "  sorry",
+          ")",
+          "/- proof_region end admit_id: gap_2 -/",
+          "exact Hone",
+          "",
           "",
         ].join("\n")
         await Bun.write(file, pendingSource)
@@ -3152,22 +3156,22 @@ describe("session.proof-workflow lemma scheduling", () => {
         expect(first?.lemma_assignment?.admit_id).toBe("gap_1")
 
         const solvedSource = [
-          "Lemma demo : True.",
-          "Proof.",
+          "theorem demo : True := by",
+          "",
           regionBegin("gap_1", "Hone"),
-          "have Hone : True.",
-          "{",
-          "  exact I.",
-          "}",
-          "(* proof_region end admit_id: gap_1 *)",
+          "have Hone : True := (by",
+          "",
+          "  exact trivial",
+          ")",
+          "/- proof_region end admit_id: gap_1 -/",
           regionBegin("gap_2", "Htwo"),
-          "have Htwo : True.",
-          "{ (* admit_id: gap_2 *)",
-          "  admit.",
-          "}",
-          "(* proof_region end admit_id: gap_2 *)",
-          "exact Hone.",
-          "Admitted.",
+          "have Htwo : True := (by",
+          "  /- admit_id: gap_2 -/",
+          "  sorry",
+          ")",
+          "/- proof_region end admit_id: gap_2 -/",
+          "exact Hone",
+          "",
           "",
         ].join("\n")
         await Bun.write(file, solvedSource)
@@ -3230,20 +3234,20 @@ describe("session.proof-workflow lemma scheduling", () => {
           message: "Error: No applicable tactic in the theorem-level connector.",
         }))
 
-        const file = `${tmp.path}/theorem.v`
+        const file = `${tmp.path}/theorem.lean`
         const session = await Session.create({})
         const pendingSource = [
-          "Lemma demo : True.",
-          "Proof.",
+          "theorem demo : True := by",
+          "",
           regionBegin("gap_1", "Hone"),
-          "have Hone : True.",
-          "{ admit. }",
-          "(* proof_region end admit_id: gap_1 *)",
-          "first [exact Hone | fail].",
-          "Admitted.",
+          "have Hone : True := (by",
+          "  sorry)",
+          "/- proof_region end admit_id: gap_1 -/",
+          "first [exact Hone | fail]",
+          "",
           "",
         ].join("\n")
-        const solvedSource = pendingSource.replace("{ admit. }", "{ exact I. }")
+        const solvedSource = pendingSource.replace("  sorry)", "  exact trivial)")
         await Bun.write(file, pendingSource)
 
         SessionProof.set(session.id, file, { line: 1, character: 0 }, "manual")
@@ -3299,20 +3303,20 @@ describe("session.proof-workflow lemma scheduling", () => {
           message: "Error: The proof term has the wrong type.",
         }))
 
-        const file = `${tmp.path}/theorem.v`
+        const file = `${tmp.path}/theorem.lean`
         const session = await Session.create({})
         const pendingSource = [
-          "Lemma demo : True.",
-          "Proof.",
+          "theorem demo : True := by",
+          "",
           regionBegin("gap_1", "Hone"),
-          "have Hone : True.",
-          "{ admit. }",
-          "(* proof_region end admit_id: gap_1 *)",
-          "exact Hone.",
-          "Admitted.",
+          "have Hone : True := (by",
+          "  sorry)",
+          "/- proof_region end admit_id: gap_1 -/",
+          "exact Hone",
+          "",
           "",
         ].join("\n")
-        const invalidSource = pendingSource.replace("{ admit. }", "{ exact I. }")
+        const invalidSource = pendingSource.replace("  sorry)", "  exact trivial)")
         await Bun.write(file, pendingSource)
 
         SessionProof.set(session.id, file, { line: 1, character: 0 }, "manual")
@@ -3356,22 +3360,22 @@ describe("session.proof-workflow lemma scheduling", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/theorem.v`
+        const file = `${tmp.path}/theorem.lean`
         const session = await Session.create({})
         const pendingSource = [
-          "Lemma demo : True.",
-          "Proof.",
+          "theorem demo : True := by",
+          "",
           regionBegin("gap_1", "Hone"),
-          "have Hone : True.",
-          "{ (* admit_id: gap_1 *)",
-          "  admit.",
-          "}",
-          "(* proof_region end admit_id: gap_1 *)",
-          "exact Hone.",
-          "Admitted.",
+          "have Hone : True := (by",
+          "  /- admit_id: gap_1 -/",
+          "  sorry",
+          ")",
+          "/- proof_region end admit_id: gap_1 -/",
+          "exact Hone",
+          "",
           "",
         ].join("\n")
-        const solvedSource = pendingSource.replace("{ (* admit_id: gap_1 *)\n  admit.\n}", "{\n  exact I.\n}")
+        const solvedSource = pendingSource.replace("  /- admit_id: gap_1 -/\n  sorry\n)", "{\n  exact trivial\n)")
         await Bun.write(file, pendingSource)
 
         SessionProof.set(session.id, file, { line: 1, character: 0 }, "manual")
@@ -3434,21 +3438,21 @@ describe("session.proof-workflow lemma scheduling", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/theorem.v`
+        const file = `${tmp.path}/theorem.lean`
         const session = await Session.create({})
         const source = [
-          "Lemma demo : True.",
-          "Proof.",
+          "theorem demo : True := by",
+          "",
           regionBegin("gap_1", "Hone"),
-          "have Hone : True.",
-          "{ exact I. }",
-          "(* proof_region end admit_id: gap_1 *)",
+          "have Hone : True := (by",
+          "  exact trivial)",
+          "/- proof_region end admit_id: gap_1 -/",
           regionBegin("gap_2", "Htwo"),
-          "have Htwo : True.",
-          "{ admit. }",
-          "(* proof_region end admit_id: gap_2 *)",
-          "exact Hone.",
-          "Admitted.",
+          "have Htwo : True := (by",
+          "  sorry)",
+          "/- proof_region end admit_id: gap_2 -/",
+          "exact Hone",
+          "",
           "",
         ].join("\n")
         await Bun.write(file, source)
@@ -3477,21 +3481,21 @@ describe("session.proof-workflow lemma scheduling", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/theorem.v`
+        const file = `${tmp.path}/theorem.lean`
         const session = await Session.create({})
         const source = [
-          "Lemma demo : True.",
-          "Proof.",
+          "theorem demo : True := by",
+          "",
           regionBegin("gap_1", "Hone"),
-          "have Hone : True.",
-          "{ exact I. }",
-          "(* proof_region end admit_id: gap_1 *)",
+          "have Hone : True := (by",
+          "  exact trivial)",
+          "/- proof_region end admit_id: gap_1 -/",
           regionBegin("gap_2", "Htwo"),
-          "have Htwo : True.",
-          "{ admit. }",
-          "(* proof_region end admit_id: gap_2 *)",
-          "exact Hone.",
-          "Admitted.",
+          "have Htwo : True := (by",
+          "  sorry)",
+          "/- proof_region end admit_id: gap_2 -/",
+          "exact Hone",
+          "",
           "",
         ].join("\n")
         await Bun.write(file, source)
@@ -3527,22 +3531,22 @@ describe("session.proof-workflow lemma scheduling", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/theorem.v`
+        const file = `${tmp.path}/theorem.lean`
         const parent = await Session.create({})
         const child = await Session.create({})
         const source = [
-          "Lemma demo : True.",
-          "Proof.",
+          "theorem demo : True := by",
+          "",
           regionBegin("gap_1", "Hone"),
-          "have Hone : True.",
-          "{ exact I. }",
-          "(* proof_region end admit_id: gap_1 *)",
+          "have Hone : True := (by",
+          "  exact trivial)",
+          "/- proof_region end admit_id: gap_1 -/",
           regionBegin("gap_2", "Htwo"),
-          "have Htwo : True.",
-          "{ admit. }",
-          "(* proof_region end admit_id: gap_2 *)",
-          "exact Hone.",
-          "Admitted.",
+          "have Htwo : True := (by",
+          "  sorry)",
+          "/- proof_region end admit_id: gap_2 -/",
+          "exact Hone",
+          "",
           "",
         ].join("\n")
         await Bun.write(file, source)
@@ -3577,7 +3581,7 @@ describe("session.proof-workflow lemma scheduling", () => {
         expect(repeated.next_action).toContain("exact-prefix proof-region certificates")
         expect(SessionProofWorkflow.get(child.id)?.queue[0]?.status).toBe("solved")
 
-        const status = SessionProofWorkflow.classifyCoqcSuccess(child.id, file, source, repeated)
+        const status = SessionProofWorkflow.classifyCompileSuccess(child.id, file, source, repeated)
         expect(status.proof_progress.status).toBe("baseline")
         expect(status.proof_progress.accepted).toBe(false)
         expect(status.proof_progress.receipt).toBeUndefined()
@@ -3598,31 +3602,31 @@ describe("session.proof-workflow lemma scheduling", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/theorem.v`
+        const file = `${tmp.path}/theorem.lean`
         const parent = await Session.create({})
         const child = await Session.create({ parentID: parent.id })
         const pending = [
-          "Lemma demo : True.",
-          "Proof.",
+          "theorem demo : True := by",
+          "",
           regionBegin("gap_1", "Hone"),
-          "have Hone : True.",
-          "{ admit. }",
-          "(* proof_region end admit_id: gap_1 *)",
+          "have Hone : True := (by",
+          "  sorry)",
+          "/- proof_region end admit_id: gap_1 -/",
           regionBegin("gap_2", "Htwo"),
-          "have Htwo : True.",
-          "{ admit. }",
-          "(* proof_region end admit_id: gap_2 *)",
-          "exact Hone.",
-          "Admitted.",
+          "have Htwo : True := (by",
+          "  sorry)",
+          "/- proof_region end admit_id: gap_2 -/",
+          "exact Hone",
+          "",
           "",
         ].join("\n")
-        const solvedFirst = pending.replace("have Hone : True.\n{ admit. }", "have Hone : True.\n{ exact I. }")
+        const solvedFirst = pending.replace("have Hone : True := (by\n  sorry)", "have Hone : True := (by\n  exact trivial)")
         await Bun.write(file, pending)
 
         SessionProof.set(parent.id, file, { line: 1, character: 0 }, "manual")
         const scheduled = await SessionProofWorkflow.planNextSubtask(parent.id, [], pending)
         if (!scheduled?.lemma_assignment) throw new Error("missing lemma assignment")
-        const parentBaseline = SessionProofWorkflow.classifyCoqcSuccess(parent.id, file, pending, {
+        const parentBaseline = SessionProofWorkflow.classifyCompileSuccess(parent.id, file, pending, {
           action: "unchanged",
           compiler_signature: "compiler-baseline",
           next_action: "retain baseline",
@@ -3638,7 +3642,7 @@ describe("session.proof-workflow lemma scheduling", () => {
           "fresh",
           parent.id,
         )
-        const inherited = SessionProofWorkflow.classifyCoqcSuccess(child.id, file, pending, {
+        const inherited = SessionProofWorkflow.classifyCompileSuccess(child.id, file, pending, {
           action: "unchanged",
           compiler_signature: "compiler-baseline",
           next_action: "retain baseline",
@@ -3658,7 +3662,7 @@ describe("session.proof-workflow lemma scheduling", () => {
           validated_source_current: true,
         })
         expect(lifecycle).toMatchObject({ action: "certified", admit_id: "gap_1" })
-        const progress = SessionProofWorkflow.classifyCoqcSuccess(child.id, file, solvedFirst, lifecycle)
+        const progress = SessionProofWorkflow.classifyCompileSuccess(child.id, file, solvedFirst, lifecycle)
         expect(progress.proof_progress).toMatchObject({
           status: "advanced",
           accepted: true,
@@ -3681,21 +3685,21 @@ describe("session.proof-workflow lemma scheduling", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/theorem.v`
+        const file = `${tmp.path}/theorem.lean`
         const session = await Session.create({})
         const source = [
-          "Lemma demo : True.",
-          "Proof.",
+          "theorem demo : True := by",
+          "",
           regionBegin("gap_1", "Hone"),
-          "have Hone : True.",
-          "{ exact I. }",
-          "(* proof_region end admit_id: gap_1 *)",
+          "have Hone : True := (by",
+          "  exact trivial)",
+          "/- proof_region end admit_id: gap_1 -/",
           regionBegin("gap_2", "Htwo"),
-          "have Htwo : True.",
-          "{ admit. }",
-          "(* proof_region end admit_id: gap_2 *)",
-          "exact Hone.",
-          "Admitted.",
+          "have Htwo : True := (by",
+          "  sorry)",
+          "/- proof_region end admit_id: gap_2 -/",
+          "exact Hone",
+          "",
           "",
         ].join("\n")
         await Bun.write(file, source)
@@ -3712,7 +3716,7 @@ describe("session.proof-workflow lemma scheduling", () => {
         })
         expect(SessionProofWorkflow.get(sessionID)?.queue[0]?.status).toBe("solved")
 
-        const changed = source.replace("{ exact I. }", "{ exact (I : True). }")
+        const changed = source.replace("  exact trivial)", "  exact (trivial : True))")
         await Bun.write(file, changed)
         SessionProofWorkflow.recordSourceMutation(file, changed)
 
@@ -3734,21 +3738,21 @@ describe("session.proof-workflow lemma scheduling", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/theorem.v`
+        const file = `${tmp.path}/theorem.lean`
         const session = await Session.create({})
         const source = [
-          "Lemma demo : True.",
-          "Proof.",
+          "theorem demo : True := by",
+          "",
           regionBegin("gap_1", "Hone"),
-          "have Hone : True.",
-          "{ exact I. }",
-          "(* proof_region end admit_id: gap_1 *)",
+          "have Hone : True := (by",
+          "  exact trivial)",
+          "/- proof_region end admit_id: gap_1 -/",
           regionBegin("gap_2", "Htwo"),
-          "have Htwo : True.",
-          "{ exact I. }",
-          "(* proof_region end admit_id: gap_2 *)",
-          "exact Hone.",
-          "Admitted.",
+          "have Htwo : True := (by",
+          "  exact trivial)",
+          "/- proof_region end admit_id: gap_2 -/",
+          "exact Hone",
+          "",
           "",
         ].join("\n")
         await Bun.write(file, source)
@@ -3798,21 +3802,21 @@ describe("session.proof-workflow lemma scheduling", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/theorem.v`
+        const file = `${tmp.path}/theorem.lean`
         const session = await Session.create({})
         const source = [
-          "Lemma demo : True.",
-          "Proof.",
+          "theorem demo : True := by",
+          "",
           regionBegin("gap_1", "Hone"),
-          "have Hone : True.",
-          "{ exact I. }",
-          "(* proof_region end admit_id: gap_1 *)",
+          "have Hone : True := (by",
+          "  exact trivial)",
+          "/- proof_region end admit_id: gap_1 -/",
           regionBegin("gap_2", "Htwo"),
-          "have Htwo : True.",
-          "{ admit. }",
-          "(* proof_region end admit_id: gap_2 *)",
-          "exact Hone.",
-          "Qed.",
+          "have Htwo : True := (by",
+          "  sorry)",
+          "/- proof_region end admit_id: gap_2 -/",
+          "exact Hone",
+          "",
           "",
         ].join("\n")
         await Bun.write(file, source)
@@ -3825,7 +3829,7 @@ describe("session.proof-workflow lemma scheduling", () => {
           "pending",
         ])
 
-        const qedLine = source.split("\n").findIndex((line) => line === "Qed.") + 1
+        const qedLine = source.split("\n").findIndex((line) => line === "") + 1
         const lifecycle = await SessionProofWorkflow.recordCompilerResult({
           sessionID,
           file,
@@ -3844,7 +3848,7 @@ describe("session.proof-workflow lemma scheduling", () => {
         expect(state?.queue[0]?.validation_certificate).toBeDefined()
         expect(state?.queue[1]?.status).toBe("pending")
 
-        const proofStatus = SessionProofWorkflow.classifyCoqcFailure(sessionID, file, source, {
+        const proofStatus = SessionProofWorkflow.classifyCompileFailure(sessionID, file, source, {
           first_error_line: qedLine,
           first_error_message: "Attempt to save an incomplete proof because of admitted goals.",
           lifecycle,
@@ -3871,20 +3875,20 @@ describe("session.proof-workflow lemma scheduling", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/theorem.v`
+        const file = `${tmp.path}/theorem.lean`
         const session = await Session.create({})
         const compiledSource = [
-          "Lemma demo : True.",
-          "Proof.",
+          "theorem demo : True := by",
+          "",
           regionBegin("gap_1", "Hone"),
-          "have Hone : True.",
-          "{ exact I. }",
-          "(* proof_region end admit_id: gap_1 *)",
-          "exact Hone.",
-          "Admitted.",
+          "have Hone : True := (by",
+          "  exact trivial)",
+          "/- proof_region end admit_id: gap_1 -/",
+          "exact Hone",
+          "",
           "",
         ].join("\n")
-        const changedSource = compiledSource.replace("exact I.", "exact (I : True).")
+        const changedSource = compiledSource.replace("exact trivial", "exact (I : True)")
         await Bun.write(file, compiledSource)
 
         const sessionID = session.id
@@ -3926,21 +3930,21 @@ describe("session.proof-workflow lemma scheduling", () => {
           message: "Error: the replacement proof does not typecheck.",
         }))
 
-        const file = `${tmp.path}/theorem.v`
+        const file = `${tmp.path}/theorem.lean`
         const session = await Session.create({})
         const source = [
-          "Lemma demo : True.",
-          "Proof.",
+          "theorem demo : True := by",
+          "",
           regionBegin("gap_1", "Hone"),
-          "have Hone : True.",
-          "{ exact missing_term. }",
-          "(* proof_region end admit_id: gap_1 *)",
+          "have Hone : True := (by",
+          "  exact missing_term)",
+          "/- proof_region end admit_id: gap_1 -/",
           regionBegin("gap_2", "Htwo"),
-          "have Htwo : True.",
-          "{ admit. }",
-          "(* proof_region end admit_id: gap_2 *)",
-          "exact Hone.",
-          "Admitted.",
+          "have Htwo : True := (by",
+          "  sorry)",
+          "/- proof_region end admit_id: gap_2 -/",
+          "exact Hone",
+          "",
           "",
         ].join("\n")
         await Bun.write(file, source)
@@ -3989,17 +3993,17 @@ describe("session.proof-workflow lemma scheduling", () => {
               },
         )
 
-        const file = `${tmp.path}/theorem.v`
+        const file = `${tmp.path}/theorem.lean`
         const session = await Session.create({})
         const pending = [
-          "Lemma demo : True.",
-          "Proof.",
+          "theorem demo : True := by",
+          "",
           regionBegin("gap_1", "Hone"),
-          "have Hone : True.",
-          "{ admit. }",
-          "(* proof_region end admit_id: gap_1 *)",
-          "exact Hone.",
-          "Admitted.",
+          "have Hone : True := (by",
+          "  sorry)",
+          "/- proof_region end admit_id: gap_1 -/",
+          "exact Hone",
+          "",
           "",
         ].join("\n")
         await Bun.write(file, pending)
@@ -4010,7 +4014,7 @@ describe("session.proof-workflow lemma scheduling", () => {
         expect(SessionProofWorkflow.get(sessionID)?.active_repair?.admit_id).toBe("gap_1")
 
         valid = true
-        const repaired = pending.replace("{ admit. }", "{ exact I. }")
+        const repaired = pending.replace("  sorry)", "  exact trivial)")
         await Bun.write(file, repaired)
 
         expect(await SessionProofWorkflow.planNextSubtask(sessionID, [])).toBeUndefined()
@@ -4027,26 +4031,30 @@ describe("session.proof-workflow lemma scheduling", () => {
     })
   })
 
-  test("treats empty proof blocks as pending lemma holes", async () => {
+  test("treats a sorry placeholder as the pending lemma hole and an empty wrapper as no hole", async () => {
     await using tmp = await tmpdir({ git: true })
 
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/theorem.v`
+        const file = `${tmp.path}/theorem.lean`
         const session = await Session.create({})
-        const source = [
-          "Lemma demo : True.",
-          "Proof.",
+        const region = (body: string) => [
+          "theorem demo : True := by",
+          "",
           regionBegin("gap_1", "Hempty"),
-          "have Hempty : True.",
-          "{",
-          "}",
-          "(* proof_region end admit_id: gap_1 *)",
-          "exact Hempty.",
-          "Admitted.",
+          "have Hempty : True := (by",
+          body,
+          ")",
+          "/- proof_region end admit_id: gap_1 -/",
+          "exact Hempty",
+          "",
           "",
         ].join("\n")
+        // prompt_revision §0.1: an empty `(by )` is not an unfinished proposition; placeholders are `sorry` (R1)
+        expect(SessionProofWorkflow.refresh(session.id, file, region("")).parsed.get("gap_1")?.pending).toBe(false)
+        SessionProofWorkflow.clear(session.id)
+        const source = region("  sorry")
         await Bun.write(file, source)
 
         const sessionID = session.id
@@ -4072,17 +4080,17 @@ describe("session.proof-workflow lemma scheduling", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/theorem.v`
+        const file = `${tmp.path}/theorem.lean`
         const session = await Session.create({})
         const source = [
-          "Lemma demo : True.",
-          "Proof.",
+          "theorem demo : True := by",
+          "",
           regionBegin("gap_1", "Hgap"),
-          "have Hgap : True.",
-          "{ admit. }",
-          "(* proof_region end admit_id: gap_1 *)",
-          "exact Hgap.",
-          "Admitted.",
+          "have Hgap : True := (by",
+          "  sorry)",
+          "/- proof_region end admit_id: gap_1 -/",
+          "exact Hgap",
+          "",
           "",
         ].join("\n")
         await Bun.write(file, source)
@@ -4101,7 +4109,7 @@ describe("session.proof-workflow lemma scheduling", () => {
           active_task_id: "ses_gap_1",
         })
 
-        const changed = source.replace("{ admit. }", "{ pose proof I as Hlocal. admit. }")
+        const changed = source.replace("  sorry)", "  have Hlocal := trivial\n  sorry)")
         await Bun.write(file, changed)
         SessionProofWorkflow.recordSourceMutation(file, changed)
 
@@ -4152,15 +4160,15 @@ describe("session.proof-workflow lemma scheduling", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/theorem.v`
+        const file = `${tmp.path}/theorem.lean`
         const session = await Session.create({})
         const region = [
           regionBegin("gap_1", "Hgap"),
-          "have Hgap : True.",
-          "{ admit. }",
-          "(* proof_region end admit_id: gap_1 *)",
+          "have Hgap : True := (by",
+          "  sorry)",
+          "/- proof_region end admit_id: gap_1 -/",
         ].join("\n")
-        const source = ["Lemma demo : True.", "Proof.", region, "exact Hgap.", "Admitted.", ""].join("\n")
+        const source = ["theorem demo : True := by", "", region, "exact Hgap", "", ""].join("\n")
         await Bun.write(file, source)
 
         const sessionID = session.id
@@ -4195,21 +4203,21 @@ describe("session.proof-workflow lemma scheduling", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/theorem.v`
+        const file = `${tmp.path}/theorem.lean`
         const session = await Session.create({})
         const source = [
-          "Lemma demo : True.",
-          "Proof.",
+          "theorem demo : True := by",
+          "",
           regionBegin("gap_1", "Hfirst"),
-          "have Hfirst : True.",
-          "{",
-          "}",
-          "have Hsecond : True.",
-          "{",
-          "}",
-          "(* proof_region end admit_id: gap_1 *)",
-          "exact Hfirst.",
-          "Admitted.",
+          "have Hfirst : True := (by",
+          "  sorry",
+          ")",
+          "have Hsecond : True := (by",
+          "  sorry",
+          ")",
+          "/- proof_region end admit_id: gap_1 -/",
+          "exact Hfirst",
+          "",
           "",
         ].join("\n")
         await Bun.write(file, source)
@@ -4222,7 +4230,7 @@ describe("session.proof-workflow lemma scheduling", () => {
         const lemmaSessionID = "ses_lemma_prefix_guard"
         SessionProofWorkflow.bindActiveLemmaAssignment(lemmaSessionID, first.lemma_assignment)
 
-        const firstSolved = source.replace("have Hfirst : True.\n{\n}", "have Hfirst : True.\n{\n  exact I.\n}")
+        const firstSolved = source.replace("have Hfirst : True := (by\n  sorry\n)", "have Hfirst : True := (by\n  exact trivial\n)")
         expect(() => SessionProofWorkflow.assertLemmaSequentialEditAllowed({
           sessionID: lemmaSessionID,
           agent: "lemma",
@@ -4231,18 +4239,10 @@ describe("session.proof-workflow lemma scheduling", () => {
           after: firstSolved,
         })).not.toThrow()
 
-        const firstSolvedWithoutBraces = source.replace("have Hfirst : True.\n{\n}", "have Hfirst : True by exact I.")
-        expect(() => SessionProofWorkflow.assertLemmaSequentialEditAllowed({
-          sessionID: lemmaSessionID,
-          agent: "lemma",
-          file,
-          before: source,
-          after: firstSolvedWithoutBraces,
-        })).toThrow("must preserve the partition braces")
-
+        // the exported `have Hfirst` disappears while the text after the hole (`)`, Hsecond, …) is kept
         const firstSolvedWithoutTarget = source.replace(
-          "have Hfirst : True.\n{\n}",
-          "{\n  exact I.\n}",
+          "have Hfirst : True := (by\n  sorry\n)",
+          "(by\n  exact trivial\n)",
         )
         expect(() => SessionProofWorkflow.assertLemmaSequentialEditAllowed({
           sessionID: lemmaSessionID,
@@ -4253,8 +4253,8 @@ describe("session.proof-workflow lemma scheduling", () => {
         })).toThrow("must preserve exported target Hfirst")
 
         const firstSolvedWithChangedTarget = source.replace(
-          "have Hfirst : True.\n{\n}",
-          "have Hfirst : False.\n{\n  exact I.\n}",
+          "have Hfirst : True := (by\n  sorry\n)",
+          "have Hfirst : False := (by\n  exact trivial\n)",
         )
         expect(() => SessionProofWorkflow.assertLemmaSequentialEditAllowed({
           sessionID: lemmaSessionID,
@@ -4264,7 +4264,7 @@ describe("session.proof-workflow lemma scheduling", () => {
           after: firstSolvedWithChangedTarget,
         })).toThrow("must preserve the proposition of exported target Hfirst")
 
-        const firstAdmitted = source.replace("have Hfirst : True.\n{\n}", "have Hfirst : True.\n{\n  admit.\n}")
+        const firstAdmitted = source.replace("have Hfirst : True := (by\n  sorry\n)", "have Hfirst : True := (by\n  skip\n  sorry\n)")
         const admittedPrefixSpy = spyOn(SessionProofWorkflow.Validation, "prefix").mockImplementation(async () => ({
           ok: true,
           validator: "checkpoint-lean",
@@ -4280,7 +4280,7 @@ describe("session.proof-workflow lemma scheduling", () => {
         expect(admittedPrefix?.prefix_complete).toBe(false)
         admittedPrefixSpy.mockRestore()
 
-        const secondSolved = source.replace("have Hsecond : True.\n{\n}", "have Hsecond : True.\n{\n  exact I.\n}")
+        const secondSolved = source.replace("have Hsecond : True := (by\n  sorry\n)", "have Hsecond : True := (by\n  exact trivial\n)")
         expect(() => SessionProofWorkflow.assertLemmaSequentialEditAllowed({
           sessionID: lemmaSessionID,
           agent: "lemma",
@@ -4289,7 +4289,7 @@ describe("session.proof-workflow lemma scheduling", () => {
           after: secondSolved,
         })).toThrow("cannot edit text after the first unresolved local proof hole")
 
-        const bothSolved = firstSolved.replace("have Hsecond : True.\n{\n}", "have Hsecond : True.\n{\n  exact I.\n}")
+        const bothSolved = firstSolved.replace("have Hsecond : True := (by\n  sorry\n)", "have Hsecond : True := (by\n  exact trivial\n)")
         expect(() => SessionProofWorkflow.assertLemmaSequentialEditAllowed({
           sessionID: lemmaSessionID,
           agent: "lemma",
@@ -4299,7 +4299,7 @@ describe("session.proof-workflow lemma scheduling", () => {
         })).toThrow("cannot edit text after the first unresolved local proof hole")
 
         const prefixSpy = spyOn(SessionProofWorkflow.Validation, "prefix").mockImplementation(async (_file, maskedSource) => {
-          expect(maskedSource).toContain("have Hsecond : True.\n{\n  admit.\n}")
+          expect(maskedSource).toContain("have Hsecond : True := (by\n  sorry\n)")
           return { ok: true, validator: "checkpoint-lean", status: "ok" }
         })
         const prefix = await SessionProofWorkflow.recordLemmaPrefixValidation({
@@ -4319,7 +4319,7 @@ describe("session.proof-workflow lemma scheduling", () => {
           after: bothSolved,
         })).not.toThrow()
 
-        const outsideEdit = source.replace("exact Hfirst.", "exact Hsecond.")
+        const outsideEdit = source.replace("exact Hfirst", "exact Hsecond")
         expect(() => SessionProofWorkflow.assertLemmaSequentialEditAllowed({
           sessionID: lemmaSessionID,
           agent: "lemma",
@@ -4342,23 +4342,21 @@ describe("session.proof-workflow lemma scheduling", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/theorem.v`
+        const file = `${tmp.path}/theorem.lean`
         const session = await Session.create({})
         const source = [
-          "Lemma demo : True.",
-          "Proof.",
+          "theorem demo : True := by",
+          "",
           regionBegin("gap_1", "Hfirst"),
-          "have Hfirst : True.",
-          "{",
-          "  admit. (* admit_id: gap_1 *)",
-          "}",
-          "have Hsecond : True.",
-          "{",
-          "  admit.",
-          "}",
-          "(* proof_region end admit_id: gap_1 *)",
-          "exact Hfirst.",
-          "Admitted.",
+          "have Hfirst : True := (by",
+          "  sorry /- admit_id: gap_1 -/",
+          ")",
+          "have Hsecond : True := (by",
+          "  sorry",
+          ")",
+          "/- proof_region end admit_id: gap_1 -/",
+          "exact Hfirst",
+          "",
           "",
         ].join("\n")
         await Bun.write(file, source)
@@ -4371,7 +4369,7 @@ describe("session.proof-workflow lemma scheduling", () => {
         const lemmaSessionID = "ses_inline_admit_marker_guard"
         SessionProofWorkflow.bindActiveLemmaAssignment(lemmaSessionID, first.lemma_assignment)
 
-        const firstSolved = source.replace("  admit. (* admit_id: gap_1 *)", "  exact I.")
+        const firstSolved = source.replace("  sorry /- admit_id: gap_1 -/", "  exact trivial")
         expect(() =>
           SessionProofWorkflow.assertLemmaSequentialEditAllowed({
             sessionID: lemmaSessionID,
@@ -4383,8 +4381,8 @@ describe("session.proof-workflow lemma scheduling", () => {
         ).not.toThrow()
 
         const laterSiblingEdited = source.replace(
-          "have Hsecond : True.\n{\n  admit.\n}",
-          "have Hsecond : True.\n{\n  exact I.\n}",
+          "have Hsecond : True := (by\n  sorry\n)",
+          "have Hsecond : True := (by\n  exact trivial\n)",
         )
         expect(() =>
           SessionProofWorkflow.assertLemmaSequentialEditAllowed({
@@ -4410,21 +4408,21 @@ describe("session.proof-workflow lemma scheduling", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/theorem.v`
+        const file = `${tmp.path}/theorem.lean`
         const session = await Session.create({})
         const source = [
-          "Lemma demo : True.",
-          "Proof.",
+          "theorem demo : True := by",
+          "",
           regionBegin("gap_1", "Hfirst"),
-          "have Hfirst : True.",
-          "{",
-          "}",
-          "have Hsecond : True.",
-          "{",
-          "}",
-          "(* proof_region end admit_id: gap_1 *)",
-          "exact Hfirst.",
-          "Admitted.",
+          "have Hfirst : True := (by",
+          "  sorry",
+          ")",
+          "have Hsecond : True := (by",
+          "  sorry",
+          ")",
+          "/- proof_region end admit_id: gap_1 -/",
+          "exact Hfirst",
+          "",
           "",
         ].join("\n")
         await Bun.write(file, source)
@@ -4437,7 +4435,7 @@ describe("session.proof-workflow lemma scheduling", () => {
         const lemmaSessionID = "ses_resume_prefix_guard"
         SessionProofWorkflow.bindActiveLemmaAssignment(lemmaSessionID, first.lemma_assignment, source, "fresh")
 
-        const firstSolved = source.replace("have Hfirst : True.\n{\n}", "have Hfirst : True.\n{\n  exact I.\n}")
+        const firstSolved = source.replace("have Hfirst : True := (by\n  sorry\n)", "have Hfirst : True := (by\n  exact trivial\n)")
         SessionProofWorkflow.bindActiveLemmaAssignment(
           lemmaSessionID,
           first.lemma_assignment,
@@ -4446,8 +4444,8 @@ describe("session.proof-workflow lemma scheduling", () => {
         )
 
         const bothSolved = firstSolved.replace(
-          "have Hsecond : True.\n{\n}",
-          "have Hsecond : True.\n{\n  exact I.\n}",
+          "have Hsecond : True := (by\n  sorry\n)",
+          "have Hsecond : True := (by\n  exact trivial\n)",
         )
         expect(() =>
           SessionProofWorkflow.assertLemmaSequentialEditAllowed({
@@ -4530,27 +4528,27 @@ describe("session.proof-workflow lemma scheduling", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/theorem.v`
+        const file = `${tmp.path}/theorem.lean`
         const session = await Session.create({})
         await Bun.write(
           file,
           [
-            "Lemma demo : True.",
-            "Proof.",
+            "theorem demo : True := by",
+            "",
             regionBegin("gap_1", "Hone"),
-            "have Hone : True.",
-            "{ (* admit_id: gap_1 *)",
-            "  admit.",
-            "}",
-            "(* proof_region end admit_id: gap_1 *)",
+            "have Hone : True := (by",
+            "  /- admit_id: gap_1 -/",
+            "  sorry",
+            ")",
+            "/- proof_region end admit_id: gap_1 -/",
             regionBegin("gap_2", "Htwo"),
-            "have Htwo : True.",
-            "{ (* admit_id: gap_2 *)",
-            "  admit.",
-            "}",
-            "(* proof_region end admit_id: gap_2 *)",
-            "exact Hone.",
-            "Admitted.",
+            "have Htwo : True := (by",
+            "  /- admit_id: gap_2 -/",
+            "  sorry",
+            ")",
+            "/- proof_region end admit_id: gap_2 -/",
+            "exact Hone",
+            "",
             "",
           ].join("\n"),
         )
@@ -4611,23 +4609,23 @@ describe("session.proof-workflow lemma scheduling", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/theorem.v`
+        const file = `${tmp.path}/theorem.lean`
         const session = await Session.create({})
         await Bun.write(
           file,
           [
-            "Lemma demo : True.",
-            "Proof.",
+            "theorem demo : True := by",
+            "",
             regionBegin("gap_1", "Hxxx"),
             "have Hxxx :",
-            "  True.",
-            "{",
-            "  (* admit_id: gap_1 *)",
-            "  admit.",
-            "}",
-            "(* proof_region end admit_id: gap_1 *)",
-            "exact Hxxx.",
-            "Admitted.",
+            "  True := (by",
+            "",
+            "  /- admit_id: gap_1 -/",
+            "  sorry",
+            ")",
+            "/- proof_region end admit_id: gap_1 -/",
+            "exact Hxxx",
+            "",
             "",
           ].join("\n"),
         )
@@ -4661,20 +4659,20 @@ describe("session.proof-workflow lemma scheduling", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/theorem.v`
+        const file = `${tmp.path}/theorem.lean`
         const session = await Session.create({})
         await Bun.write(
           file,
           [
-            "Lemma demo : True.",
-            "Proof.",
-            '(* proof_region begin owner: lemma admit_id: gap_1 theorem: demo kind: pointwise_semantic_bridge plan_node: node_Hbridge depends_on: theorem_context source: paper_step_001 input: theorem_context output: Hbridge layer: coq_shape expected: local_fact normal_form: "forall x : nat, True" evidence: mathcomp:I',
-            "   target: forall x : nat, True *)",
-            "have Hbridge : forall x : nat, True.",
-            "{ intro x. admit. }",
-            "(* proof_region end admit_id: gap_1 *)",
-            "exact I.",
-            "Admitted.",
+            "theorem demo : True := by",
+            "",
+            '/- proof_region begin owner: lemma admit_id: gap_1 theorem: demo kind: pointwise_semantic_bridge plan_node: node_Hbridge depends_on: theorem_context source: paper_step_001 input: theorem_context output: Hbridge layer: lean_shape expected: local_fact normal_form: "forall x : nat, True" evidence: mathlib:I',
+            "   target: forall x : nat, True -/",
+            "have Hbridge : forall x : nat, True := (by",
+            "  intro x. sorry)",
+            "/- proof_region end admit_id: gap_1 -/",
+            "exact trivial",
+            "",
             "",
           ].join("\n"),
         )
@@ -4701,23 +4699,23 @@ describe("session.proof-workflow lemma scheduling", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/theorem.v`
+        const file = `${tmp.path}/theorem.lean`
         const session = await Session.create({})
         await Bun.write(
           file,
           [
-            "Lemma demo : True.",
-            "Proof.",
+            "theorem demo : True := by",
+            "",
             regionBegin("gap_1", "Hxxx"),
             regionBegin("gap_1", "Hyyy"),
-            "have Hyyy : True.",
-            "{ (* admit_id: gap_1 *) admit. }",
-            "(* proof_region end admit_id: gap_1 *)",
-            "have Hxxx : True.",
-            "{ (* admit_id: gap_1 *) admit. }",
-            "exact Hxxx.",
-            "(* proof_region end admit_id: gap_2 *)",
-            "Admitted.",
+            "have Hyyy : True := (by",
+            "  /- admit_id: gap_1 -/ sorry)",
+            "/- proof_region end admit_id: gap_1 -/",
+            "have Hxxx : True := (by",
+            "  /- admit_id: gap_1 -/ sorry)",
+            "exact Hxxx",
+            "/- proof_region end admit_id: gap_2 -/",
+            "",
             "",
           ].join("\n"),
         )
@@ -4742,23 +4740,23 @@ describe("session.proof-workflow lemma scheduling", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/two-theorems.v`
+        const file = `${tmp.path}/two-theorems.lean`
         const session = await Session.create({})
         await Bun.write(
           file,
           [
-            "Lemma first (A : Prop) : A.",
-            "Proof.",
-            "(* proof_region begin owner: lemma admit_id: first-gap theorem: first kind: semantic_bridge target: HA plan_node: first-leaf depends_on: none source: context input: A output: HA layer: semantic expected: local normal_form: \"A\" evidence: mathcomp:I *)",
-            "have HA : A. { admit. }",
-            "(* proof_region end admit_id: first-gap *)",
-            "Admitted.",
-            "Lemma second (B : Prop) : B.",
-            "Proof.",
-            "(* proof_region begin owner: lemma admit_id: second-gap theorem: second kind: semantic_bridge target: HB plan_node: second-leaf depends_on: none source: context input: B output: HB layer: semantic expected: local normal_form: \"B\" evidence: mathcomp:I *)",
-            "have HB : B. { admit. }",
-            "(* proof_region end admit_id: second-gap *)",
-            "Admitted.",
+            "theorem first (A : Prop) : A := by",
+            "",
+            "/- proof_region begin owner: lemma admit_id: first-gap theorem: first kind: semantic_bridge target: HA plan_node: first-leaf depends_on: none source: context input: A output: HA layer: semantic expected: local normal_form: \"A\" evidence: mathlib:I -/",
+            "have HA : A := (by sorry)",
+            "/- proof_region end admit_id: first-gap -/",
+            "",
+            "theorem second (B : Prop) : B := by",
+            "",
+            "/- proof_region begin owner: lemma admit_id: second-gap theorem: second kind: semantic_bridge target: HB plan_node: second-leaf depends_on: none source: context input: B output: HB layer: semantic expected: local normal_form: \"B\" evidence: mathlib:I -/",
+            "have HB : B := (by sorry)",
+            "/- proof_region end admit_id: second-gap -/",
+            "",
             "",
           ].join("\n"),
         )
@@ -4777,7 +4775,7 @@ describe("session.proof-workflow lemma scheduling", () => {
         expect(next?.task.lemma_assignment?.admit_id).toBe("second-gap")
         expect(next?.task.lemma_assignment?.theorem).toBe("second")
         expect(SessionProofWorkflow.get(session.id)?.queue.map((item) => item.admit_id)).toEqual(["second-gap"])
-        expect(SessionProofWorkflow.classifyCoqcSuccess(session.id, file, await Bun.file(file).text()).theorem).toBe(
+        expect(SessionProofWorkflow.classifyCompileSuccess(session.id, file, await Bun.file(file).text()).theorem).toBe(
           "second",
         )
 
@@ -4794,22 +4792,22 @@ describe("session.proof-workflow lemma scheduling", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/compiler-scope.v`
+        const file = `${tmp.path}/compiler-scope.lean`
         const source = [
-          "Lemma first : True.",
-          "Proof.",
-          "(* proof_region begin owner: lemma admit_id: first-gap theorem: first kind: semantic_bridge target: Hfirst plan_node: first-leaf depends_on: none source: context input: True output: Hfirst layer: semantic expected: local normal_form: \"True\" evidence: mathcomp:I *)",
-          "have Hfirst : True. { exact I. }",
-          "(* proof_region end admit_id: first-gap *)",
-          "exact Hfirst.",
-          "Qed.",
-          "Lemma second : True.",
-          "Proof.",
-          "(* proof_region begin owner: lemma admit_id: second-gap theorem: second kind: semantic_bridge target: Hsecond plan_node: second-leaf depends_on: none source: context input: True output: Hsecond layer: semantic expected: local normal_form: \"True\" evidence: mathcomp:I *)",
-          "have Hsecond : True. { exact I. }",
-          "(* proof_region end admit_id: second-gap *)",
-          "exact Hsecond.",
-          "Qed.",
+          "theorem first : True := by",
+          "",
+          "/- proof_region begin owner: lemma admit_id: first-gap theorem: first kind: semantic_bridge target: Hfirst plan_node: first-leaf depends_on: none source: context input: True output: Hfirst layer: semantic expected: local normal_form: \"True\" evidence: mathlib:I -/",
+          "have Hfirst : True := (by exact trivial)",
+          "/- proof_region end admit_id: first-gap -/",
+          "exact Hfirst",
+          "",
+          "theorem second : True := by",
+          "",
+          "/- proof_region begin owner: lemma admit_id: second-gap theorem: second kind: semantic_bridge target: Hsecond plan_node: second-leaf depends_on: none source: context input: True output: Hsecond layer: semantic expected: local normal_form: \"True\" evidence: mathlib:I -/",
+          "have Hsecond : True := (by exact trivial)",
+          "/- proof_region end admit_id: second-gap -/",
+          "exact Hsecond",
+          "",
           "",
         ].join("\n")
         await Bun.write(file, source)
@@ -4853,49 +4851,49 @@ describe("session.proof-workflow lemma scheduling", () => {
           {
             name: "overlap",
             source: [
-              "Lemma demo (A B : Prop) : A /\\ B.",
-              "Proof.",
-              "(* proof_region begin owner: lemma admit_id: outer theorem: demo kind: semantic_bridge target: HA plan_node: leaf-a depends_on: none source: context input: A output: HA layer: semantic expected: local normal_form: \"A\" evidence: mathcomp:I *)",
-              "(* proof_region begin owner: lemma admit_id: inner theorem: demo kind: semantic_bridge target: HB plan_node: leaf-b depends_on: none source: context input: B output: HB layer: semantic expected: local normal_form: \"B\" evidence: mathcomp:I *)",
-              "have HB : B. { admit. }",
-              "(* proof_region end admit_id: inner *)",
-              "have HA : A. { admit. }",
-              "(* proof_region end admit_id: outer *)",
-              "Admitted.",
+              "theorem demo (A B : Prop) : A /\\ B := by",
+              "",
+              "/- proof_region begin owner: lemma admit_id: outer theorem: demo kind: semantic_bridge target: HA plan_node: leaf-a depends_on: none source: context input: A output: HA layer: semantic expected: local normal_form: \"A\" evidence: mathlib:I -/",
+              "/- proof_region begin owner: lemma admit_id: inner theorem: demo kind: semantic_bridge target: HB plan_node: leaf-b depends_on: none source: context input: B output: HB layer: semantic expected: local normal_form: \"B\" evidence: mathlib:I -/",
+              "have HB : B := (by sorry)",
+              "/- proof_region end admit_id: inner -/",
+              "have HA : A := (by sorry)",
+              "/- proof_region end admit_id: outer -/",
+              "",
               "",
             ].join("\n"),
           },
           {
             name: "duplicate",
             source: [
-              "Lemma demo (A B : Prop) : A /\\ B.",
-              "Proof.",
+              "theorem demo (A B : Prop) : A /\\ B := by",
+              "",
               regionBegin("same-gap", "HA", "A"),
-              "have HA : A. { admit. }",
-              "(* proof_region end admit_id: same-gap *)",
+              "have HA : A := (by sorry)",
+              "/- proof_region end admit_id: same-gap -/",
               regionBegin("same-gap", "HB", "B"),
-              "have HB : B. { admit. }",
-              "(* proof_region end admit_id: same-gap *)",
-              "Admitted.",
+              "have HB : B := (by sorry)",
+              "/- proof_region end admit_id: same-gap -/",
+              "",
               "",
             ].join("\n"),
           },
           {
             name: "spoofed-theorem",
             source: [
-              "Lemma demo : True.",
-              "Proof.",
-              "(* proof_region begin owner: lemma admit_id: spoof theorem: other kind: semantic_bridge target: H plan_node: leaf depends_on: none source: context input: True output: H layer: semantic expected: local normal_form: \"True\" evidence: mathcomp:I *)",
-              "have H : True. { admit. }",
-              "(* proof_region end admit_id: spoof *)",
-              "Admitted.",
+              "theorem demo : True := by",
+              "",
+              "/- proof_region begin owner: lemma admit_id: spoof theorem: other kind: semantic_bridge target: H plan_node: leaf depends_on: none source: context input: True output: H layer: semantic expected: local normal_form: \"True\" evidence: mathlib:I -/",
+              "have H : True := (by sorry)",
+              "/- proof_region end admit_id: spoof -/",
+              "",
               "",
             ].join("\n"),
           },
         ]
 
         for (const entry of cases) {
-          const file = `${tmp.path}/${entry.name}.v`
+          const file = `${tmp.path}/${entry.name}.lean`
           const session = await Session.create({})
           await Bun.write(file, entry.source)
           SessionProof.set(session.id, file, { line: 0, character: 0 }, "manual")
@@ -4915,21 +4913,21 @@ describe("session.proof-workflow lemma scheduling", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/theorem.v`
+        const file = `${tmp.path}/theorem.lean`
         const session = await Session.create({})
         await Bun.write(
           file,
           [
-            "Lemma demo : True.",
-            "Proof.",
-            "have Hxxx : True.",
-            "{",
+            "theorem demo : True := by",
+            "",
+            "have Hxxx : True := (by",
+            "",
             "  " + regionBegin("gap_1", "Hxxx"),
-            "  admit. (* admit_id: gap_1 *)",
-            "  (* proof_region end admit_id: gap_1 *)",
-            "}",
-            "exact Hxxx.",
-            "Admitted.",
+            "  sorry /- admit_id: gap_1 -/",
+            "  /- proof_region end admit_id: gap_1 -/",
+            ")",
+            "exact Hxxx",
+            "",
             "",
           ].join("\n"),
         )
@@ -4962,23 +4960,23 @@ describe("session.proof-workflow lemma scheduling", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/theorem.v`
+        const file = `${tmp.path}/theorem.lean`
         const session = await Session.create({})
         await Bun.write(
           file,
           [
-            "Lemma demo : True.",
-            "Proof.",
+            "theorem demo : True := by",
+            "",
             regionBegin("gap_1", "Hxxx"),
             "have Hxxx :",
-            "  True.",
-            "{",
-            "  (* admit_id: gap_1 *)",
-            "  admit.",
-            "}",
-            "(* proof_region end admit_id: gap_1 *)",
-            "exact Hxxx.",
-            "Admitted.",
+            "  True := (by",
+            "",
+            "  /- admit_id: gap_1 -/",
+            "  sorry",
+            ")",
+            "/- proof_region end admit_id: gap_1 -/",
+            "exact Hxxx",
+            "",
             "",
           ].join("\n"),
         )
@@ -5057,23 +5055,23 @@ describe("session.proof-workflow lemma scheduling", () => {
           message: "Syntax error outside the delegated region.",
         }))
 
-        const file = `${tmp.path}/theorem.v`
+        const file = `${tmp.path}/theorem.lean`
         const session = await Session.create({})
         await Bun.write(
           file,
           [
-            "Lemma demo : True.",
-            "Proof.",
+            "theorem demo : True := by",
+            "",
             regionBegin("gap_1", "Hxxx"),
             "have Hxxx :",
-            "  True.",
-            "{",
-            "  (* admit_id: gap_1 *)",
-            "  admit.",
-            "}",
-            "(* proof_region end admit_id: gap_1 *)",
-            "exact Hxxx.",
-            "Admitted.",
+            "  True := (by",
+            "",
+            "  /- admit_id: gap_1 -/",
+            "  sorry",
+            ")",
+            "/- proof_region end admit_id: gap_1 -/",
+            "exact Hxxx",
+            "",
             "",
           ].join("\n"),
         )
@@ -5114,22 +5112,22 @@ describe("session.proof-workflow lemma scheduling", () => {
           message: "Error: The delegated target is malformed.",
         }))
 
-        const file = `${tmp.path}/theorem.v`
+        const file = `${tmp.path}/theorem.lean`
         const session = await Session.create({})
         await Bun.write(
           file,
           [
-            "Lemma demo : True.",
-            "Proof.",
+            "theorem demo : True := by",
+            "",
             regionBegin("gap_1", "Hxxx"),
             "have Hxxx :",
-            "  True.",
-            "{",
-            "  admit.",
-            "}",
-            "(* proof_region end admit_id: gap_1 *)",
-            "exact Hxxx.",
-            "Admitted.",
+            "  True := (by",
+            "",
+            "  sorry",
+            ")",
+            "/- proof_region end admit_id: gap_1 -/",
+            "exact Hxxx",
+            "",
             "",
           ].join("\n"),
         )
@@ -5164,17 +5162,17 @@ describe("session.proof-workflow lemma scheduling", () => {
           message: "Error: Syntax error outside the delegated region.",
         }))
 
-        const file = `${tmp.path}/theorem.v`
+        const file = `${tmp.path}/theorem.lean`
         const session = await Session.create({})
         const source = [
-          "Lemma demo : True.",
-          "Proof.",
+          "theorem demo : True := by",
+          "",
           regionBegin("gap_1", "Hxxx"),
-          "have Hxxx : True.",
-          "{ admit. }",
-          "(* proof_region end admit_id: gap_1 *)",
-          "exact Hxxx.",
-          "Admitted.",
+          "have Hxxx : True := (by",
+          "  sorry)",
+          "/- proof_region end admit_id: gap_1 -/",
+          "exact Hxxx",
+          "",
           "",
         ].join("\n")
         await Bun.write(file, source)
@@ -5248,17 +5246,17 @@ describe("session.proof-workflow lemma scheduling", () => {
           message: `Error: Distinct scaffold failure ${++failure}.`,
         }))
 
-        const file = `${tmp.path}/theorem.v`
+        const file = `${tmp.path}/theorem.lean`
         const session = await Session.create({})
         const sourceFor = (index: number) => [
-          "Lemma demo : True.",
-          "Proof.",
+          "theorem demo : True := by",
+          "",
           regionBegin(`gap_${index}`, `Hxxx${index}`),
-          `have Hxxx${index} : True.`,
-          "{ admit. }",
-          `(* proof_region end admit_id: gap_${index} *)`,
-          `exact Hxxx${index}.`,
-          "Admitted.",
+          `have Hxxx${index} : True := (by`,
+          "  sorry)",
+          `/- proof_region end admit_id: gap_${index} -/`,
+          `exact Hxxx${index}`,
+          "",
           "",
         ].join("\n")
         await Bun.write(file, sourceFor(0))
@@ -5290,23 +5288,23 @@ describe("session.proof-workflow lemma scheduling", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/theorem.v`
+        const file = `${tmp.path}/theorem.lean`
         const session = await Session.create({})
         await Bun.write(
           file,
           [
-            "Lemma demo : True.",
-            "Proof.",
+            "theorem demo : True := by",
+            "",
             regionBegin("gap_1", "Hxxx"),
             "have Hxxx :",
-            "  True.",
-            "{",
-            "  (* admit_id: gap_1 *)",
-            "  admit.",
-            "}",
-            "(* proof_region end admit_id: gap_1 *)",
-            "exact Hxxx.",
-            "Admitted.",
+            "  True := (by",
+            "",
+            "  /- admit_id: gap_1 -/",
+            "  sorry",
+            ")",
+            "/- proof_region end admit_id: gap_1 -/",
+            "exact Hxxx",
+            "",
             "",
           ].join("\n"),
         )
@@ -5318,18 +5316,18 @@ describe("session.proof-workflow lemma scheduling", () => {
         expect(first?.lemma_assignment?.admit_id).toBe("gap_1")
 
         const nonlocalSource = [
-            "Lemma demo : True.",
-            "Proof.",
+            "theorem demo : True := by",
+            "",
             "pose proof I as Houtside.",
             regionBegin("gap_1", "Hxxx"),
             "have Hxxx :",
-            "  True.",
-            "{",
-            "  exact I.",
-            "}",
-            "(* proof_region end admit_id: gap_1 *)",
-            "exact Hxxx.",
-            "Admitted.",
+            "  True := (by",
+            "",
+            "  exact trivial",
+            ")",
+            "/- proof_region end admit_id: gap_1 -/",
+            "exact Hxxx",
+            "",
             "",
           ].join("\n")
         await Bun.write(file, nonlocalSource)
@@ -5381,23 +5379,23 @@ describe("session.proof-workflow lemma scheduling", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/theorem.v`
+        const file = `${tmp.path}/theorem.lean`
         const session = await Session.create({})
         await Bun.write(
           file,
           [
-            "Lemma demo : True.",
-            "Proof.",
+            "theorem demo : True := by",
+            "",
             regionBegin("gap_1", "Hxxx"),
             "have Hxxx :",
-            "  True.",
-            "{",
-            "  (* admit_id: gap_1 *)",
-            "  admit.",
-            "}",
-            "(* proof_region end admit_id: gap_1 *)",
-            "exact I.",
-            "Qed.",
+            "  True := (by",
+            "",
+            "  /- admit_id: gap_1 -/",
+            "  sorry",
+            ")",
+            "/- proof_region end admit_id: gap_1 -/",
+            "exact trivial",
+            "",
             "",
           ].join("\n"),
         )
@@ -5409,14 +5407,14 @@ describe("session.proof-workflow lemma scheduling", () => {
         expect(first?.lemma_assignment?.obligation?.target_name).toBe("Hxxx")
 
         const retargetedSource = [
-            "Lemma demo : True.",
-            "Proof.",
+            "theorem demo : True := by",
+            "",
             regionBegin("gap_1", "Hxxx"),
-            "have Hyyy : True.",
-            "{ exact I. }",
-            "(* proof_region end admit_id: gap_1 *)",
-            "exact I.",
-            "Qed.",
+            "have Hyyy : True := (by",
+            "  exact trivial)",
+            "/- proof_region end admit_id: gap_1 -/",
+            "exact trivial",
+            "",
             "",
           ].join("\n")
         await Bun.write(file, retargetedSource)
@@ -5469,23 +5467,23 @@ describe("session.proof-workflow lemma scheduling", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/theorem.v`
+        const file = `${tmp.path}/theorem.lean`
         const session = await Session.create({})
         await Bun.write(
           file,
           [
-            "Lemma demo : True.",
-            "Proof.",
+            "theorem demo : True := by",
+            "",
             regionBegin("gap_1", "Hxxx"),
             "have Hxxx :",
-            "  True.",
-            "{",
-            "  (* admit_id: gap_1 *)",
-            "  admit.",
-            "}",
-            "(* proof_region end admit_id: gap_1 *)",
-            "exact Hxxx.",
-            "Qed.",
+            "  True := (by",
+            "",
+            "  /- admit_id: gap_1 -/",
+            "  sorry",
+            ")",
+            "/- proof_region end admit_id: gap_1 -/",
+            "exact Hxxx",
+            "",
             "",
           ].join("\n"),
         )
@@ -5496,17 +5494,17 @@ describe("session.proof-workflow lemma scheduling", () => {
         const first = await SessionProofWorkflow.planNextSubtask(sessionID, [])
         expect(SessionProofWorkflow.get(sessionID)?.active_admit_id).toBe("gap_1")
         const finalSource = [
-            "Lemma demo : True.",
-            "Proof.",
+            "theorem demo : True := by",
+            "",
             regionBegin("gap_1", "Hxxx"),
             "have Hxxx :",
-            "  True.",
-            "{",
-            "  exact I.",
-            "}",
-            "(* proof_region end admit_id: gap_1 *)",
-            "exact Hxxx.",
-            "Qed.",
+            "  True := (by",
+            "",
+            "  exact trivial",
+            ")",
+            "/- proof_region end admit_id: gap_1 -/",
+            "exact Hxxx",
+            "",
             "",
           ].join("\n")
         await Bun.write(file, finalSource)
@@ -5550,29 +5548,29 @@ describe("session.proof-workflow lemma scheduling", () => {
     })
   })
 
-  test("returns to prover finalization when final theorem still uses Admitted", async () => {
+  test("returns to prover finalization when the theorem spine still uses sorry", async () => {
     await using tmp = await tmpdir({ git: true })
 
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/theorem.v`
+        const file = `${tmp.path}/theorem.lean`
         const session = await Session.create({})
         await Bun.write(
           file,
           [
-            "Lemma demo : True.",
-            "Proof.",
+            "theorem demo : True := by",
+            "",
             regionBegin("gap_1", "Hxxx"),
             "have Hxxx :",
-            "  True.",
-            "{",
-            "  (* admit_id: gap_1 *)",
-            "  admit.",
-            "}",
-            "(* proof_region end admit_id: gap_1 *)",
-            "exact Hxxx.",
-            "Admitted.",
+            "  True := (by",
+            "",
+            "  /- admit_id: gap_1 -/",
+            "  sorry",
+            ")",
+            "/- proof_region end admit_id: gap_1 -/",
+            "sorry",
+            "",
             "",
           ].join("\n"),
         )
@@ -5583,17 +5581,17 @@ describe("session.proof-workflow lemma scheduling", () => {
         const first = await SessionProofWorkflow.planNextSubtask(sessionID, [])
         expect(SessionProofWorkflow.get(sessionID)?.active_admit_id).toBe("gap_1")
         const admittedSource = [
-            "Lemma demo : True.",
-            "Proof.",
+            "theorem demo : True := by",
+            "",
             regionBegin("gap_1", "Hxxx"),
             "have Hxxx :",
-            "  True.",
-            "{",
-            "  exact I.",
-            "}",
-            "(* proof_region end admit_id: gap_1 *)",
-            "exact Hxxx.",
-            "Admitted.",
+            "  True := (by",
+            "",
+            "  exact trivial",
+            ")",
+            "/- proof_region end admit_id: gap_1 -/",
+            "sorry",
+            "",
             "",
           ].join("\n")
         await Bun.write(file, admittedSource)
@@ -5634,7 +5632,7 @@ describe("session.proof-workflow lemma scheduling", () => {
         const source = await Bun.file(file).text()
         const report = SessionProofWorkflow.analyzeSource(file, source, state)
         expect(report.final_theorem_gate.ok).toBe(false)
-        expect(report.final_theorem_gate.reason).toContain("requires theorem demo to end with Qed")
+        expect(report.final_theorem_gate.reason).toContain("requires theorem demo to contain no `sorry`")
 
         SessionProofWorkflow.clear(sessionID)
         SessionProof.clear(sessionID)
@@ -5649,21 +5647,21 @@ describe("session.proof-workflow lemma scheduling", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/theorem.v`
+        const file = `${tmp.path}/theorem.lean`
         const session = await Session.create({})
         await Bun.write(
           file,
           [
-            "Lemma demo : True.",
-            "Proof.",
+            "theorem demo : True := by",
+            "",
             regionBegin("gap_1", "Hxxx"),
-            "have Hxxx : True.",
-            "{ (* admit_id: gap_1 *)",
-            "  admit.",
-            "}",
-            "(* proof_region end admit_id: gap_1 *)",
-            "exact Hxxx.",
-            "Admitted.",
+            "have Hxxx : True := (by",
+            "  /- admit_id: gap_1 -/",
+            "  sorry",
+            ")",
+            "/- proof_region end admit_id: gap_1 -/",
+            "exact Hxxx",
+            "",
             "",
           ].join("\n"),
         )
@@ -5720,21 +5718,21 @@ describe("session.proof-workflow lemma scheduling", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/theorem.v`
+        const file = `${tmp.path}/theorem.lean`
         const session = await Session.create({})
         await Bun.write(
           file,
           [
-            "Lemma demo : True.",
-            "Proof.",
+            "theorem demo : True := by",
+            "",
             regionBegin("gap_1", "Hxxx"),
-            "have Hxxx : True.",
-            "{ (* admit_id: gap_1 *)",
-            "  admit.",
-            "}",
-            "(* proof_region end admit_id: gap_1 *)",
-            "exact Hxxx.",
-            "Admitted.",
+            "have Hxxx : True := (by",
+            "  /- admit_id: gap_1 -/",
+            "  sorry",
+            ")",
+            "/- proof_region end admit_id: gap_1 -/",
+            "exact Hxxx",
+            "",
             "",
           ].join("\n"),
         )
@@ -5766,19 +5764,19 @@ describe("session.proof-workflow lemma scheduling", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/theorem.v`
+        const file = `${tmp.path}/theorem.lean`
         const session = await Session.create({})
         const pendingSource = [
-          "Lemma demo : True.",
-          "Proof.",
+          "theorem demo : True := by",
+          "",
           regionBegin("gap_1", "Hxxx"),
-          "have Hxxx : True.",
-          "{ (* admit_id: gap_1 *)",
-          "  admit.",
-          "}",
-          "(* proof_region end admit_id: gap_1 *)",
-          "exact Hxxx.",
-          "Admitted.",
+          "have Hxxx : True := (by",
+          "  /- admit_id: gap_1 -/",
+          "  sorry",
+          ")",
+          "/- proof_region end admit_id: gap_1 -/",
+          "exact Hxxx",
+          "",
           "",
         ].join("\n")
         await Bun.write(file, pendingSource)
@@ -5788,14 +5786,14 @@ describe("session.proof-workflow lemma scheduling", () => {
         const first = await SessionProofWorkflow.planNextSubtask(sessionID, [])
 
         const source = [
-          "Lemma demo : True.",
-          "Proof.",
+          "theorem demo : True := by",
+          "",
           regionBegin("gap_1", "Hxxx"),
-          "have Hxxx : True.",
-          "{ exact I. }",
-          "(* proof_region end admit_id: gap_1 *)",
-          "exact Hxxx.",
-          "Admitted.",
+          "have Hxxx : True := (by",
+          "  exact trivial)",
+          "/- proof_region end admit_id: gap_1 -/",
+          "exact Hxxx",
+          "",
           "",
         ].join("\n")
         await Bun.write(file, source)
@@ -5840,19 +5838,19 @@ describe("session.proof-workflow lemma scheduling", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/theorem.v`
+        const file = `${tmp.path}/theorem.lean`
         const session = await Session.create({})
         const pendingSource = [
-          "Lemma demo : True.",
-          "Proof.",
+          "theorem demo : True := by",
+          "",
           regionBeginWithoutInformal("gap_1", "Hxxx"),
-          "have Hxxx : True.",
-          "{ (* admit_id: gap_1 *)",
-          "  admit.",
-          "}",
-          "(* proof_region end admit_id: gap_1 *)",
-          "exact Hxxx.",
-          "Admitted.",
+          "have Hxxx : True := (by",
+          "  /- admit_id: gap_1 -/",
+          "  sorry",
+          ")",
+          "/- proof_region end admit_id: gap_1 -/",
+          "exact Hxxx",
+          "",
           "",
         ].join("\n")
         await Bun.write(file, pendingSource)
@@ -5862,14 +5860,14 @@ describe("session.proof-workflow lemma scheduling", () => {
         const first = await SessionProofWorkflow.planNextSubtask(sessionID, [])
 
         const source = [
-          "Lemma demo : True.",
-          "Proof.",
+          "theorem demo : True := by",
+          "",
           regionBeginWithoutInformal("gap_1", "Hxxx"),
-          "have Hxxx : True.",
-          "{ exact I. }",
-          "(* proof_region end admit_id: gap_1 *)",
-          "exact Hxxx.",
-          "Admitted.",
+          "have Hxxx : True := (by",
+          "  exact trivial)",
+          "/- proof_region end admit_id: gap_1 -/",
+          "exact Hxxx",
+          "",
           "",
         ].join("\n")
         await Bun.write(file, source)
@@ -5914,51 +5912,52 @@ describe("session.proof-workflow lemma scheduling", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/theorem.v`
+        const file = `${tmp.path}/theorem.lean`
         const session = await Session.create({})
         const sessionID = session.id
         SessionProof.set(sessionID, file, { line: 1, character: 0 }, "manual")
 
+        // Lean: the region is solved, but the theorem spine still has `sorry` (the analogue of `Admitted.`)
         const nonfinal = [
-          "Lemma demo : True.",
-          "Proof.",
+          "theorem demo : True := by",
+          "",
           regionBegin("gap_1", "Hxxx"),
-          "have Hxxx : True.",
-          "{ exact I. }",
-          "(* proof_region end admit_id: gap_1 *)",
-          "exact Hxxx.",
-          "Admitted.",
+          "have Hxxx : True := (by",
+          "  exact trivial)",
+          "/- proof_region end admit_id: gap_1 -/",
+          "sorry",
+          "",
           "",
         ].join("\n")
-        const nonfinalStatus = SessionProofWorkflow.classifyCoqcSuccess(sessionID, file, nonfinal)
+        const nonfinalStatus = SessionProofWorkflow.classifyCompileSuccess(sessionID, file, nonfinal)
         expect(nonfinalStatus.status_detail).toBe("compile_success_nonfinal")
         expect(nonfinalStatus.proof_progress.status).toBe("baseline")
         expect(nonfinalStatus.proof_progress.accepted).toBe(false)
 
         const final = [
-          "Lemma demo : True.",
-          "Proof.",
+          "theorem demo : True := by",
+          "",
           regionBegin("gap_1", "Hxxx"),
-          "have Hxxx : True.",
-          "{ exact I. }",
-          "(* proof_region end admit_id: gap_1 *)",
-          "exact Hxxx.",
-          "Qed.",
+          "have Hxxx : True := (by",
+          "  exact trivial)",
+          "/- proof_region end admit_id: gap_1 -/",
+          "exact Hxxx",
+          "",
           "",
         ].join("\n")
-        const finalStatus = SessionProofWorkflow.classifyCoqcSuccess(sessionID, file, final)
+        const finalStatus = SessionProofWorkflow.classifyCompileSuccess(sessionID, file, final)
         expect(finalStatus.status_detail).toBe("final_theorem_success")
         expect(finalStatus.proof_progress.status).toBe("final_theorem_success")
         expect(finalStatus.proof_progress.accepted).toBe(true)
 
         const bareFinal = [
-          "Lemma demo : True.",
-          "Proof.",
-          "exact I.",
-          "Admitted.",
+          "theorem demo : True := by",
+          "",
+          "sorry",
+          "",
           "",
         ].join("\n")
-        const bareStatus = SessionProofWorkflow.classifyCoqcSuccess(sessionID, file, bareFinal)
+        const bareStatus = SessionProofWorkflow.classifyCompileSuccess(sessionID, file, bareFinal)
         expect(bareStatus.status_detail).toBe("compile_success_nonfinal")
         expect(bareStatus.proof_progress.accepted).toBe(false)
 
@@ -5975,19 +5974,19 @@ describe("session.proof-workflow lemma scheduling", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/theorem.v`
+        const file = `${tmp.path}/theorem.lean`
         const session = await Session.create({})
         const sessionID = session.id
         const source = [
-          "Lemma demo : True.",
-          "Proof.",
+          "theorem demo : True := by",
+          "",
           regionBegin("gap_1", "Hxxx"),
-          "(* The old draft used admit. and corresponded to Lemma 2. *)",
-          "have Hxxx : True.",
-          "{ idtac \"admit. Lemma fake\"; exact I. }",
-          "(* proof_region end admit_id: gap_1 *)",
-          "exact Hxxx.",
-          "Qed.",
+          "/- The old draft used sorry and corresponded to Lemma 2. -/",
+          "have Hxxx : True := (by",
+          "  trace \"sorry theorem fake\"; exact trivial)",
+          "/- proof_region end admit_id: gap_1 -/",
+          "exact Hxxx",
+          "",
           "",
         ].join("\n")
         await Bun.write(file, source)
@@ -5996,7 +5995,7 @@ describe("session.proof-workflow lemma scheduling", () => {
         const refreshed = SessionProofWorkflow.refresh(sessionID, file, source).state
         expect(refreshed.queue[0]?.status).toBe("unvalidated")
 
-        const status = SessionProofWorkflow.classifyCoqcSuccess(sessionID, file, source)
+        const status = SessionProofWorkflow.classifyCompileSuccess(sessionID, file, source)
         expect(status.theorem).toBe("demo")
         expect(status.status_detail).toBe("final_theorem_success")
         expect(status.has_unfinished_proof).toBe(false)
@@ -6015,20 +6014,20 @@ describe("session.proof-workflow lemma scheduling", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/theorem.v`
+        const file = `${tmp.path}/theorem.lean`
         const session = await Session.create({})
         const source = [
-          "Theorem direct_target : True.",
-          "Proof.",
-          "(* This corresponds to Lemma 2; an old draft ended with Admitted. *)",
-          "idtac \"Theorem fake used admit.\".",
-          "exact I.",
-          "Qed.",
+          "theorem direct_target : True := by",
+          "",
+          "/- This corresponds to Lemma 2; an old draft ended with -/",
+          "idtac \"Theorem fake used sorry\".",
+          "exact trivial",
+          "",
           "",
         ].join("\n")
         SessionProof.set(session.id, file, { line: 0, character: 0 }, "manual")
 
-        const status = SessionProofWorkflow.classifyCoqcSuccess(session.id, file, source)
+        const status = SessionProofWorkflow.classifyCompileSuccess(session.id, file, source)
         expect(status.theorem).toBe("direct_target")
         expect(status.final_theorem_gate.ok).toBe(true)
         expect(status.proof_progress.current.unfinished_count).toBe(0)
@@ -6046,23 +6045,23 @@ describe("session.proof-workflow lemma scheduling", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/theorem.v`
+        const file = `${tmp.path}/theorem.lean`
         const session = await Session.create({})
         const sessionID = session.id
         SessionProof.set(sessionID, file, { line: 1, character: 0 }, "manual")
 
         const source = [
-          "Lemma helper : True.",
-          "Proof.",
-          "exact I.",
-          "Qed.",
-          "Theorem direct_target : True.",
-          "Proof.",
-          "exact I.",
-          "Qed.",
+          "theorem helper : True := by",
+          "",
+          "exact trivial",
+          "",
+          "theorem direct_target : True := by",
+          "",
+          "exact trivial",
+          "",
           "",
         ].join("\n")
-        const status = SessionProofWorkflow.classifyCoqcSuccess(sessionID, file, source)
+        const status = SessionProofWorkflow.classifyCompileSuccess(sessionID, file, source)
         expect(status.theorem).toBe("direct_target")
         expect(status.status_detail).toBe("final_theorem_success")
         expect(status.final_theorem_gate.ok).toBe(true)
@@ -6081,18 +6080,18 @@ describe("session.proof-workflow lemma scheduling", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/fact.v`
+        const file = `${tmp.path}/fact.lean`
         const session = await Session.create({})
         const source = [
-          "Fact direct_fact : True.",
-          "Proof.",
-          "exact I.",
-          "Qed.",
+          "theorem direct_fact : True := by",
+          "",
+          "exact trivial",
+          "",
           "",
         ].join("\n")
         SessionProof.set(session.id, file, { line: 0, character: 0 }, "manual")
 
-        const status = SessionProofWorkflow.classifyCoqcSuccess(session.id, file, source)
+        const status = SessionProofWorkflow.classifyCompileSuccess(session.id, file, source)
         expect(status.theorem).toBe("direct_fact")
         expect(status.status_detail).toBe("final_theorem_success")
         expect(status.final_theorem_gate.ok).toBe(true)
@@ -6110,44 +6109,44 @@ describe("session.proof-workflow lemma scheduling", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/theorem.v`
+        const file = `${tmp.path}/theorem.lean`
         const session = await Session.create({})
         const sessionID = session.id
         SessionProof.set(sessionID, file, { line: 1, character: 0 }, "manual")
 
         const twoPending = [
-          "Lemma demo : True.",
-          "Proof.",
+          "theorem demo : True := by",
+          "",
           regionBegin("gap_1", "Hone"),
-          "have Hone : True.",
-          "{ admit. }",
-          "(* proof_region end admit_id: gap_1 *)",
+          "have Hone : True := (by",
+          "  sorry)",
+          "/- proof_region end admit_id: gap_1 -/",
           regionBegin("gap_2", "Htwo"),
-          "have Htwo : True.",
-          "{ admit. }",
-          "(* proof_region end admit_id: gap_2 *)",
-          "exact Hone.",
-          "Admitted.",
+          "have Htwo : True := (by",
+          "  sorry)",
+          "/- proof_region end admit_id: gap_2 -/",
+          "exact Hone",
+          "",
           "",
         ].join("\n")
 
-        const baseline = SessionProofWorkflow.classifyCoqcSuccess(sessionID, file, twoPending)
+        const baseline = SessionProofWorkflow.classifyCompileSuccess(sessionID, file, twoPending)
         expect(baseline.proof_progress.status).toBe("baseline")
         expect(baseline.proof_progress.accepted).toBe(false)
 
-        const repeated = SessionProofWorkflow.classifyCoqcSuccess(sessionID, file, twoPending)
+        const repeated = SessionProofWorkflow.classifyCompileSuccess(sessionID, file, twoPending)
         expect(repeated.proof_progress.status).toBe("stalled")
         expect(repeated.proof_progress.accepted).toBe(false)
 
-        const onePending = twoPending.replace("have Hone : True.\n{ admit. }", "have Hone : True.\n{ exact I. }")
-        const syntacticReduction = SessionProofWorkflow.classifyCoqcSuccess(sessionID, file, onePending)
+        const onePending = twoPending.replace("have Hone : True := (by\n  sorry)", "have Hone : True := (by\n  exact trivial)")
+        const syntacticReduction = SessionProofWorkflow.classifyCompileSuccess(sessionID, file, onePending)
         expect(syntacticReduction.proof_progress.status).toBe("stalled")
         expect(syntacticReduction.proof_progress.accepted).toBe(false)
         expect(syntacticReduction.proof_progress.current.unfinished_count).toBeLessThan(
           baseline.proof_progress.current.unfinished_count,
         )
 
-        const advanced = SessionProofWorkflow.classifyCoqcSuccess(sessionID, file, onePending, {
+        const advanced = SessionProofWorkflow.classifyCompileSuccess(sessionID, file, onePending, {
           action: "certified",
           admit_id: "gap_1",
           old_status: "unvalidated",
@@ -6159,7 +6158,7 @@ describe("session.proof-workflow lemma scheduling", () => {
         expect(advanced.proof_progress.status).toBe("advanced")
         expect(advanced.proof_progress.accepted).toBe(true)
 
-        const repeatedAdvanced = SessionProofWorkflow.classifyCoqcSuccess(sessionID, file, onePending)
+        const repeatedAdvanced = SessionProofWorkflow.classifyCompileSuccess(sessionID, file, onePending)
         expect(repeatedAdvanced.proof_progress.status).toBe("stalled")
         expect(repeatedAdvanced.proof_progress.accepted).toBe(false)
 
@@ -6176,21 +6175,21 @@ describe("session.proof-workflow lemma scheduling", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/failure-frontier.v`
+        const file = `${tmp.path}/failure-frontier.lean`
         const session = await Session.create({})
         const sessionID = session.id
         const source = [
-          "Lemma demo : True.",
-          "Proof.",
+          "theorem demo : True := by",
+          "",
           "pose proof I as Hone.",
           "pose proof I as Htwo.",
-          "exact I.",
-          "Qed.",
+          "exact trivial",
+          "",
           "",
         ].join("\n")
         SessionProof.set(sessionID, file, { line: 1, character: 0 }, "manual")
 
-        const baseline = SessionProofWorkflow.classifyCoqcFailure(sessionID, file, source, {
+        const baseline = SessionProofWorkflow.classifyCompileFailure(sessionID, file, source, {
           first_error_line: 3,
           first_error_message: "Error: first failing sentence",
         })
@@ -6201,7 +6200,7 @@ describe("session.proof-workflow lemma scheduling", () => {
           "pose proof I as Hone.",
           "pose proof I as Hzero.\npose proof I as Hone.",
         )
-        const sameFailingSentence = SessionProofWorkflow.classifyCoqcFailure(
+        const sameFailingSentence = SessionProofWorkflow.classifyCompileFailure(
           sessionID,
           file,
           insertedBeforeSameFailure,
@@ -6213,7 +6212,7 @@ describe("session.proof-workflow lemma scheduling", () => {
         expect(sameFailingSentence.proof_progress.status).toBe("stalled")
         expect(sameFailingSentence.proof_progress.accepted).toBe(false)
 
-        const advanced = SessionProofWorkflow.classifyCoqcFailure(sessionID, file, source, {
+        const advanced = SessionProofWorkflow.classifyCompileFailure(sessionID, file, source, {
           first_error_line: 4,
           first_error_message: "Error: later failing sentence",
         })
@@ -6223,8 +6222,8 @@ describe("session.proof-workflow lemma scheduling", () => {
         expect(advanced.proof_progress.workspace_committable).toBe(false)
         expect(advanced.proof_progress.receipt?.kind).toBe("first_error_advanced")
 
-        const shiftedOnly = source.replace("Proof.\n", "Proof.\n(* line-number-only drift *)\n")
-        const repeatedAnchor = SessionProofWorkflow.classifyCoqcFailure(sessionID, file, shiftedOnly, {
+        const shiftedOnly = source.replace("\n", "\n/- line-number-only drift -/\n")
+        const repeatedAnchor = SessionProofWorkflow.classifyCompileFailure(sessionID, file, shiftedOnly, {
           first_error_line: 5,
           first_error_message: "Error: same later failing sentence",
         })
@@ -6247,20 +6246,20 @@ describe("session.proof-workflow lemma scheduling", () => {
       await Instance.provide({
         directory: tmp.path,
         fn: async () => {
-        const file = `${tmp.path}/persistent-compiler-error.v`
+        const file = `${tmp.path}/persistent-compiler-error.lean`
         const first = await Session.create({})
         const second = await Session.create({})
         const source = [
-          "Lemma demo : True.",
-          "Proof.",
-          "exact I.",
-          "Qed.",
+          "theorem demo : True := by",
+          "",
+          "exact trivial",
+          "",
           "",
         ].join("\n")
         await Bun.write(file, source)
         SessionProofWorkflow.refresh(second.id, file, source)
 
-        SessionProofWorkflow.classifyCoqcFailure(first.id, file, source, {
+        SessionProofWorkflow.classifyCompileFailure(first.id, file, source, {
           first_error_line: 3,
           first_error_message: "Error: persisted failing tactic",
         })
@@ -6275,7 +6274,7 @@ describe("session.proof-workflow lemma scheduling", () => {
           anchor: { line: 3 },
         })
 
-        SessionProofWorkflow.classifyCoqcSuccess(second.id, file, source)
+        SessionProofWorkflow.classifyCompileSuccess(second.id, file, source)
         expect(SessionProofWorkflow.get(first.id)?.latest_compiler_error).toBeUndefined()
         expect(SessionProofWorkflow.latestCompilerError(second.id, file, "demo")).toBeUndefined()
 
@@ -6295,22 +6294,22 @@ describe("session.proof-workflow lemma scheduling", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/theorem.v`
+        const file = `${tmp.path}/theorem.lean`
         const session = await Session.create({})
         const before = [
-          "Lemma demo : True.",
-          "Proof.",
+          "theorem demo : True := by",
+          "",
           regionBegin("gap_1", "Hxxx"),
-          "have Hxxx : True.",
-          "{ (* admit_id: gap_1 *)",
-          "  admit.",
-          "}",
-          "(* proof_region end admit_id: gap_1 *)",
-          "exact Hxxx.",
-          "Admitted.",
+          "have Hxxx : True := (by",
+          "  /- admit_id: gap_1 -/",
+          "  sorry",
+          ")",
+          "/- proof_region end admit_id: gap_1 -/",
+          "exact Hxxx",
+          "",
           "",
         ].join("\n")
-        const after = before.replace("  admit.", "  exact I.")
+        const after = before.replace("  sorry", "  exact trivial")
         await Bun.write(file, before)
 
         const sessionID = session.id
@@ -6362,27 +6361,27 @@ describe("session.proof-workflow lemma scheduling", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/theorem.v`
+        const file = `${tmp.path}/theorem.lean`
         const session = await Session.create({})
         const before = [
-          "Lemma demo : True.",
-          "Proof.",
+          "theorem demo : True := by",
+          "",
           regionBegin("gap_1", "Hone"),
-          "have Hone : True.",
-          "{ exact I. }",
-          "(* proof_region end admit_id: gap_1 *)",
-          "have Hone_done := Hone.",
+          "have Hone : True := (by",
+          "  exact trivial)",
+          "/- proof_region end admit_id: gap_1 -/",
+          "have Hone_done : = Hone := (by",
           regionBegin("gap_2", "Htwo"),
-          "have Htwo : True.",
-          "{ (* admit_id: gap_2 *)",
-          "  admit.",
-          "}",
-          "(* proof_region end admit_id: gap_2 *)",
-          "exact Htwo.",
-          "Admitted.",
+          "have Htwo : True := (by",
+          "  /- admit_id: gap_2 -/",
+          "  sorry",
+          ")",
+          "/- proof_region end admit_id: gap_2 -/",
+          "exact Htwo",
+          "",
           "",
         ].join("\n")
-        const after = before.replace("{ exact I. }", "{ exact I. (* stale rewrite *) }")
+        const after = before.replace("  exact trivial)", "  exact trivial /- stale rewrite -/)")
         await Bun.write(file, before)
 
         const sessionID = session.id
@@ -6417,31 +6416,31 @@ describe("session.proof-workflow lemma scheduling", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/theorem.v`
+        const file = `${tmp.path}/theorem.lean`
         const session = await Session.create({})
         const before = [
-          "Lemma demo : True.",
-          "Proof.",
+          "theorem demo : True := by",
+          "",
           regionBegin("gap_1", "Hone"),
-          "have Hone : True.",
-          "{ exact I. }",
-          "(* proof_region end admit_id: gap_1 *)",
+          "have Hone : True := (by",
+          "  exact trivial)",
+          "/- proof_region end admit_id: gap_1 -/",
           regionBegin("gap_2", "Htwo"),
-          "have Htwo : True.",
-          "{ (* admit_id: gap_2 *)",
-          "  admit.",
-          "}",
-          "(* proof_region end admit_id: gap_2 *)",
-          "exact Htwo.",
-          "Admitted.",
+          "have Htwo : True := (by",
+          "  /- admit_id: gap_2 -/",
+          "  sorry",
+          ")",
+          "/- proof_region end admit_id: gap_2 -/",
+          "exact Htwo",
+          "",
           "",
         ].join("\n")
         const after = before.replace(
-          `${"(* proof_region end admit_id: gap_1 *)\n"}${regionBegin("gap_2", "Htwo")}`,
+          `${"/- proof_region end admit_id: gap_1 -/\n"}${regionBegin("gap_2", "Htwo")}`,
           [
-            "(* proof_region end admit_id: gap_1 *)",
-            "have Hbridge : True.",
-            "{ exact I. }",
+            "/- proof_region end admit_id: gap_1 -/",
+            "have Hbridge : True := (by",
+            "  exact trivial)",
             regionBegin("gap_2", "Htwo"),
           ].join("\n"),
         )
@@ -6506,17 +6505,17 @@ describe("session.proof-workflow lemma scheduling", () => {
         ] as const
 
         for (const [index, variant] of variants.entries()) {
-          const file = `${tmp.path}/context-${variant.name}.v`
+          const file = `${tmp.path}/context-${variant.name}.lean`
           const session = await Session.create({})
           const source = [
-            "Lemma demo : True.",
-            "Proof.",
+            "theorem demo : True := by",
+            "",
             regionBegin("gap_1", "Hgap"),
-            "have Hgap : True.",
-            "{ admit. }",
-            "(* proof_region end admit_id: gap_1 *)",
-            "exact Hgap.",
-            "Admitted.",
+            "have Hgap : True := (by",
+            "  sorry)",
+            "/- proof_region end admit_id: gap_1 -/",
+            "exact Hgap",
+            "",
             "",
           ].join("\n")
           await Bun.write(file, source)
@@ -6593,19 +6592,19 @@ describe("session.proof-workflow lemma scheduling", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/context-nonconvertible.v`
+        const file = `${tmp.path}/context-nonconvertible.lean`
         const session = await Session.create({})
         await Bun.write(
           file,
           [
-            "Lemma demo : True.",
-            "Proof.",
+            "theorem demo : True := by",
+            "",
             regionBegin("gap_1", "Hgap"),
-            "have Hgap : True.",
-            "{ admit. }",
-            "(* proof_region end admit_id: gap_1 *)",
-            "exact Hgap.",
-            "Admitted.",
+            "have Hgap : True := (by",
+            "  sorry)",
+            "/- proof_region end admit_id: gap_1 -/",
+            "exact Hgap",
+            "",
             "",
           ].join("\n"),
         )
@@ -6635,7 +6634,7 @@ describe("session.proof-workflow lemma scheduling", () => {
                         failed_tactics_or_edits: ["exact Hbridge failed"],
                         stable_blocker_goal: "True",
                         context_mismatch_basis: "module_instantiation",
-                        failed_local_bridge: "assert (Hbridge : left = right) by reflexivity failed with Unable to unify.",
+                        failed_local_bridge: "assert (Hbridge : left = right) by reflexivity failed with Unable to unify",
                         proposed_children: [],
                         recommended_action: "strengthen_context",
                       },
@@ -6683,19 +6682,19 @@ describe("session.proof-workflow lemma scheduling", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/missing-premise-route.v`
+        const file = `${tmp.path}/missing-premise-route.lean`
         const session = await Session.create({})
         await Bun.write(
           file,
           [
-            "Lemma demo : True.",
-            "Proof.",
+            "theorem demo : True := by",
+            "",
             regionBegin("gap_1", "Hgap"),
-            "have Hgap : True.",
-            "{ admit. }",
-            "(* proof_region end admit_id: gap_1 *)",
-            "exact Hgap.",
-            "Admitted.",
+            "have Hgap : True := (by",
+            "  sorry)",
+            "/- proof_region end admit_id: gap_1 -/",
+            "exact Hgap",
+            "",
             "",
           ].join("\n"),
         )
@@ -6763,17 +6762,17 @@ describe("session.proof-workflow lemma scheduling", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/dispatch.v`
+        const file = `${tmp.path}/dispatch.lean`
         const session = await Session.create({})
         const source = [
-          "Lemma demo : True.",
-          "Proof.",
-          "(* proof_region begin owner: lemma admit_id: gap_1 theorem: demo kind: pointwise_semantic_bridge target: Hgap *)",
-          "have Hgap : True.",
-          "{ admit. }",
-          "(* proof_region end admit_id: gap_1 *)",
-          "exact Hgap.",
-          "Admitted.",
+          "theorem demo : True := by",
+          "",
+          "/- proof_region begin owner: lemma admit_id: gap_1 theorem: demo kind: pointwise_semantic_bridge target: Hgap -/",
+          "have Hgap : True := (by",
+          "  sorry)",
+          "/- proof_region end admit_id: gap_1 -/",
+          "exact Hgap",
+          "",
           "",
         ].join("\n")
         await Bun.write(file, source)
@@ -6800,7 +6799,7 @@ describe("session.proof-workflow lemma scheduling", () => {
         })
         expect(matching.decision).toBe("allowed_matching_repair")
 
-        const commentOnly = source.replace("have Hgap : True.", "(* administrative note *)\nhave Hgap : True.")
+        const commentOnly = source.replace("have Hgap : True := (by", "/- administrative note -/\nhave Hgap : True := (by")
         await Bun.write(file, commentOnly)
         const commentReleased = await SessionProofWorkflow.assertProofTaskDispatchAllowed({
           sessionID,
@@ -6826,7 +6825,7 @@ describe("session.proof-workflow lemma scheduling", () => {
         expect(SessionProofWorkflow.get(sessionID)?.fallback_guard).toBeUndefined()
         expect(SessionProofWorkflow.get(sessionID)?.queue[0]?.admit_id).toBe("gap_renamed")
 
-        const substantive = markerOnly.replace("{ admit. }", "{ exact I. }")
+        const substantive = markerOnly.replace("  sorry)", "  exact trivial)")
         await Bun.write(file, substantive)
         const substantiveReleased = await SessionProofWorkflow.assertProofTaskDispatchAllowed({
           sessionID,
@@ -6865,17 +6864,17 @@ describe("session.proof-workflow lemma scheduling", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/stale-automatic-repair.v`
+        const file = `${tmp.path}/stale-automatic-repair.lean`
         const session = await Session.create({})
         const source = [
-          "Lemma demo : True.",
-          "Proof.",
-          "(* proof_region begin owner: lemma admit_id: gap_1 theorem: demo kind: pointwise_semantic_bridge target: Hgap *)",
-          "have Hgap : True.",
-          "{ admit. }",
-          "(* proof_region end admit_id: gap_1 *)",
-          "exact Hgap.",
-          "Admitted.",
+          "theorem demo : True := by",
+          "",
+          "/- proof_region begin owner: lemma admit_id: gap_1 theorem: demo kind: pointwise_semantic_bridge target: Hgap -/",
+          "have Hgap : True := (by",
+          "  sorry)",
+          "/- proof_region end admit_id: gap_1 -/",
+          "exact Hgap",
+          "",
           "",
         ].join("\n")
         await Bun.write(file, source)
@@ -6885,7 +6884,7 @@ describe("session.proof-workflow lemma scheduling", () => {
         expect(repair?.proof_repair_assignment?.admit_id).toBe("gap_1")
         expect(SessionProofWorkflow.get(session.id)?.active_repair?.admit_id).toBe("gap_1")
 
-        const completed = "Lemma demo : True.\nProof.\n  exact I.\nQed.\n"
+        const completed = "theorem demo : True := by\n  exact trivial\n"
         await Bun.write(file, completed)
         expect(await SessionProofWorkflow.planNextSubtask(session.id, [])).toBeUndefined()
         expect(SessionProofWorkflow.get(session.id)?.active_repair).toBeUndefined()
@@ -6904,7 +6903,7 @@ describe("session.proof-workflow lemma scheduling", () => {
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/receipt.v`
+        const file = `${tmp.path}/receipt.lean`
         const session = await Session.create({})
         const receipt = {
           id: "receipt-1",
@@ -6948,8 +6947,8 @@ describe("session.proof-workflow lemma scheduling", () => {
       directory: tmp.path,
       fn: async () => {
         const session = await Session.create({})
-        const firstFile = `${tmp.path}/first.v`
-        const secondFile = `${tmp.path}/second.v`
+        const firstFile = `${tmp.path}/first.lean`
+        const secondFile = `${tmp.path}/second.lean`
         SessionProofWorkflow.set(session.id, {
           file: firstFile,
           phase: "prover",

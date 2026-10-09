@@ -40,7 +40,7 @@ function node(overrides: Partial<ProofPlanStepValue> = {}): ProofPlanStepValue {
     formal_goal: "A",
     candidate_lemmas: ["supporting_fact"],
     prosa_candidate_lemmas: [],
-    mathcomp_candidate_lemmas: [],
+    mathlib_candidate_lemmas: [],
     required_hypotheses: ["HA"],
     fallback_plan: [],
     done_when: "The strict child is available.",
@@ -114,7 +114,7 @@ describe("tool.proof_plan bounded semantic review", () => {
           reason: "persisted before premise_sources was introduced",
         },
       ],
-      mathcomp_candidate_lemmas: undefined,
+      mathlib_candidate_lemmas: undefined,
     } as unknown as ProofPlanStepValue
 
     const normalized = normalizeProofPlanIdentifiers([legacy]).nodes[0]!
@@ -122,7 +122,7 @@ describe("tool.proof_plan bounded semantic review", () => {
     expect(normalized.consumers).toEqual([])
     expect(normalized.dependency_uses).toEqual([])
     expect(normalized.prosa_candidate_lemmas[0]?.premise_sources).toEqual([])
-    expect(normalized.mathcomp_candidate_lemmas).toEqual([])
+    expect(normalized.mathlib_candidate_lemmas).toEqual([])
     expect(() =>
       reviewProofPlan({
         theorem: "demo",

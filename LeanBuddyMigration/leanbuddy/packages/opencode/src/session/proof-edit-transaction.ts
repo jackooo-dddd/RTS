@@ -9,6 +9,7 @@ import { FileWatcher } from "@/file/watcher"
 import { SessionStatus } from "./status"
 import { and, Database, desc, eq } from "@/storage/db"
 import { SessionProofWorkflow } from "./proof-workflow"
+import { LeanProofSource } from "./lean-proof-source"
 import {
   ProofEditTransactionRevisionTable,
   ProofEditTransactionTable,
@@ -353,7 +354,7 @@ export namespace ProofEditTransaction {
     const kind = typeof record?.kind === "string" ? record.kind : undefined
     const certifiedRegionCount = typeof explicitCount === "number" && Number.isFinite(explicitCount)
       ? Math.max(0, Math.floor(explicitCount))
-      : level === "hard" && ["region_certified", "missing_premise_certified", "semantic_debt_reduced", "final_qed"].includes(kind ?? "")
+      : level === "hard" && ["region_certified", "missing_premise_certified", "semantic_debt_reduced", "final_theorem"].includes(kind ?? "")
         ? 1
         : 0
     return {
@@ -501,90 +502,31 @@ export namespace ProofEditTransaction {
   }
 
   function maskCoqCommentsAndStrings(source: string) {
-    const masked = source.split("")
-    let commentDepth = 0
-    let inString = false
-    for (let index = 0; index < source.length; index++) {
-      const pair = source.slice(index, index + 2)
-      if (commentDepth > 0) {
-        if (pair === "(*") {
-          masked[index] = masked[index + 1] = " "
-          commentDepth++
-          index++
-          continue
-        }
-        if (pair === "*)") {
-          masked[index] = masked[index + 1] = " "
-          commentDepth--
-          index++
-          continue
-        }
-        if (source[index] !== "\n" && source[index] !== "\r") masked[index] = " "
-        continue
-      }
-      if (inString) {
-        if (source[index] === '"' && source[index + 1] === '"') {
-          masked[index] = masked[index + 1] = " "
-          index++
-          continue
-        }
-        if (source[index] === '"') inString = false
-        if (source[index] !== "\n" && source[index] !== "\r") masked[index] = " "
-        continue
-      }
-      if (pair === "(*") {
-        masked[index] = masked[index + 1] = " "
-        commentDepth = 1
-        index++
-        continue
-      }
-      if (source[index] === '"') {
-        masked[index] = " "
-        inString = true
-      }
-    }
-    if (commentDepth !== 0 || inString) return undefined
-    return masked.join("")
+    return LeanProofSource.maskCommentsAndStrings(source)
   }
 
+  /** Lean theorem boundary: prefix through `:= by` (or `:=`), suffix from the next top-level command. */
   function theoremBoundary(source: string, theorem: string): TheoremBoundary {
     const masked = maskCoqCommentsAndStrings(source)
     if (!masked) {
-      throw new Error("proof_transaction_structure_rejection: unterminated Coq comment or string")
+      throw new Error("proof_transaction_structure_rejection: unterminated Lean comment or string")
     }
-    const declaration = new RegExp(
-      `\\b(?:Lemma|Theorem|Corollary|Proposition|Fact|Remark|Example)\\s+${escapeRegExp(theorem)}\\b`,
-      "g",
+    const declarations = LeanProofSource.theoremSpans(source).filter(
+      (span) => LeanProofSource.shortName(span.name) === LeanProofSource.shortName(theorem),
     )
-    const declarations = [...masked.matchAll(declaration)]
     if (declarations.length !== 1) {
       throw new Error(
         `proof_transaction_structure_rejection: expected one declaration for theorem ${theorem}, found ${declarations.length}`,
       )
     }
-    const theoremStart = declarations[0].index
-    const nextDeclaration = /\b(?:Lemma|Theorem|Corollary|Proposition|Fact|Remark|Example)\s+[A-Za-z0-9_']+\b/g
-    nextDeclaration.lastIndex = theoremStart + declarations[0][0].length
-    const next = nextDeclaration.exec(masked)?.index ?? source.length
-    const theoremText = masked.slice(theoremStart, next)
-    const proofs = [...theoremText.matchAll(/\bProof\s*\./g)]
-    if (proofs.length !== 1) {
-      throw new Error(
-        `proof_transaction_structure_rejection: theorem ${theorem} must contain exactly one explicit Proof command`,
-      )
+    const span = declarations[0]
+    if (span.proofStart === undefined) {
+      throw new Error(`proof_transaction_structure_rejection: theorem ${theorem} must have a \`:=\` proof`)
     }
-    const proofEnd = theoremStart + proofs[0].index + proofs[0][0].length
-    const terminator = /\b(?:Qed|Defined|Admitted|Abort)\s*\./g.exec(masked.slice(proofEnd, next))
-    if (!terminator) {
-      throw new Error(
-        `proof_transaction_structure_rejection: theorem ${theorem} must contain a proof terminator`,
-      )
-    }
-    const terminatorEnd = proofEnd + terminator.index + terminator[0].length
     return {
-      theoremPrefix: source.slice(0, theoremStart),
-      prefix: source.slice(0, proofEnd),
-      suffix: source.slice(terminatorEnd),
+      theoremPrefix: source.slice(0, span.start),
+      prefix: source.slice(0, span.proofStart),
+      suffix: source.slice(span.end),
     }
   }
 
@@ -600,18 +542,14 @@ export namespace ProofEditTransaction {
     if (!maskedSegment) {
       throw new Error("proof_transaction_structure_rejection: unterminated comment or string in theorem proof body")
     }
-    if (/\bProof\s*\./.test(maskedSegment) || /\bEnd\s+[A-Za-z0-9_']+\s*\./.test(maskedSegment)) {
+    if (!maskedSegment.trim()) {
+      throw new Error("proof_transaction_structure_rejection: the theorem proof body is empty; keep `sorry` as the placeholder")
+    }
+    const commandLine = LeanProofSource.topLevelCommandLine(maskedSegment)
+    if (commandLine >= 0) {
       throw new Error(
-        "proof_transaction_structure_rejection: a theorem proof body cannot contain a copied Proof or End command",
+        "proof_transaction_structure_rejection: a top-level command appears inside the theorem proof body; indent proof text and keep declarations outside the theorem",
       )
-    }
-    const terminators = [...maskedSegment.matchAll(/\b(?:Qed|Defined|Admitted|Abort)\s*\./g)]
-    if (terminators.length !== 1) {
-      throw new Error("proof_transaction_structure_rejection: staged theorem body must contain exactly one terminator")
-    }
-    const afterTerminator = maskedSegment.slice(terminators[0].index + terminators[0][0].length)
-    if (afterTerminator.trim()) {
-      throw new Error("proof_transaction_structure_rejection: tactic or command text appears after the proof terminator")
     }
   }
 
@@ -637,8 +575,8 @@ export namespace ProofEditTransaction {
   }
 
   function assertAuthorized(transaction: Transaction, candidate: string) {
-    // This also rejects duplicated Qed./End suffixes and post-terminator tactic
-    // text even when an edit happens to preserve the file's outer prefix/suffix.
+    // This also rejects a duplicated or missing theorem declaration even when an edit happens to preserve the file's
+    // outer prefix/suffix.
     const candidateBoundary = theoremBoundary(candidate, transaction.scope.theorem)
 
     if (transaction.scope.kind === "proof_region") {
@@ -679,8 +617,10 @@ export namespace ProofEditTransaction {
         candidate.length - boundary.suffix.length,
       )
       const maskedTheorem = maskCoqCommentsAndStrings(theoremSegment)
-      if (!maskedTheorem || /\bEnd\s+[A-Za-z0-9_']+\s*\./.test(maskedTheorem)) {
-        throw new Error("proof_transaction_structure_rejection: an End command was copied into the theorem repair")
+      // the segment starts with the theorem declaration itself; no other top-level command may follow it
+      const afterDeclaration = maskedTheorem?.split("\n").slice(1).join("\n")
+      if (!maskedTheorem || (afterDeclaration !== undefined && LeanProofSource.topLevelCommandLine(afterDeclaration) >= 0)) {
+        throw new Error("proof_transaction_structure_rejection: a top-level command was copied into the theorem repair")
       }
       return
     }
@@ -1073,7 +1013,7 @@ export namespace ProofEditTransaction {
     preferCertifiedBaseline?: boolean
   }) {
     const file = normalize(input.file)
-    if (!file.endsWith(".v")) return undefined
+    if (!file.endsWith(".lean")) return undefined
     const recovered = restore({ ...input, file })
     if (recovered) {
       state().set(input.sessionID, recovered)
@@ -1231,7 +1171,7 @@ export namespace ProofEditTransaction {
     const normalized = [...new Set(files.map((file) => normalize(file)))]
     if (normalized.length !== 1 || normalized[0] !== transaction.file) {
       throw new Error(
-        "proof_transaction_scope_rejection: a proof child patch must atomically target only its authorized Coq file",
+        "proof_transaction_scope_rejection: a proof child patch must atomically target only its authorized Lean file",
       )
     }
   }

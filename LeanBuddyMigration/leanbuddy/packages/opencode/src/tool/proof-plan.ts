@@ -586,7 +586,7 @@ export function reviewProofPlan(plan: ProofPlanValue) {
     const evidence = [
       ...(node.candidate_lemmas ?? []),
       ...(node.prosa_candidate_lemmas ?? []).map((entry) => entry.name),
-      ...(node.mathcomp_candidate_lemmas ?? []).map((entry) => entry.name),
+      ...(node.mathlib_candidate_lemmas ?? []).map((entry) => entry.name),
       ...(node.target?.evidence ?? []),
     ]
     if (node.evidence_status !== "negative_search" && evidence.length === 0) {
@@ -599,7 +599,7 @@ export function reviewProofPlan(plan: ProofPlanValue) {
         ),
       )
     }
-    for (const candidate of [...(node.prosa_candidate_lemmas ?? []), ...(node.mathcomp_candidate_lemmas ?? [])]) {
+    for (const candidate of [...(node.prosa_candidate_lemmas ?? []), ...(node.mathlib_candidate_lemmas ?? [])]) {
       const audit = candidate.audit
       if (!candidate.role) {
         warnings.push(
@@ -758,7 +758,7 @@ function extractNodes(text: string) {
     formal_goal: line,
     candidate_lemmas: [],
     prosa_candidate_lemmas: [],
-    mathcomp_candidate_lemmas: [],
+    mathlib_candidate_lemmas: [],
     required_hypotheses: [],
     fallback_plan: [],
     done_when: "The corresponding Coq-shaped node is materialized and connected to its consumer.",
@@ -785,7 +785,7 @@ export const ProofPlanTool = Tool.define("proof_plan", {
       binding = undefined
     }
     const boundProofFile = Boolean(
-      binding?.file.endsWith(".v") && (await Filesystem.exists(binding.file)),
+      binding?.file.endsWith(".lean") && (await Filesystem.exists(binding.file)),
     )
     if (boundProofFile && binding) {
       ProofEditTransaction.assertStagedReadSynchronized(ctx.sessionID, binding.file, "submitting a proof plan")
@@ -903,7 +903,7 @@ export const ProofPlanTool = Tool.define("proof_plan", {
         const id = nodeID(node)
         for (const candidate of [
           ...(node.prosa_candidate_lemmas ?? []),
-          ...(node.mathcomp_candidate_lemmas ?? []),
+          ...(node.mathlib_candidate_lemmas ?? []),
         ]) {
           const residual = new Set(candidate.audit?.residual_premise_fingerprints ?? [])
           for (const source of candidate.premise_sources ?? []) {
@@ -946,7 +946,7 @@ export const ProofPlanTool = Tool.define("proof_plan", {
         const candidate = (plan.nodes ?? [])
           .flatMap((node) => [
             ...(node.prosa_candidate_lemmas ?? []),
-            ...(node.mathcomp_candidate_lemmas ?? []),
+            ...(node.mathlib_candidate_lemmas ?? []),
           ])
           .find(
             (entry) =>

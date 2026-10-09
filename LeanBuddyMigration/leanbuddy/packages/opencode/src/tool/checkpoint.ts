@@ -153,7 +153,7 @@ export const CheckpointTool = Tool.define("checkpoint", {
         ok: true,
         validated_source_current: stagedTransaction,
       })
-      const proofStatus = SessionProofWorkflow.classifyCoqcSuccess(
+      const proofStatus = SessionProofWorkflow.classifyCompileSuccess(
         ctx.sessionID,
         filepath,
         compiledSource,
@@ -326,9 +326,10 @@ export const CheckpointTool = Tool.define("checkpoint", {
       first_error_file: firstFile ?? undefined,
       first_error_line: firstLine ?? undefined,
       first_error_message: firstMsg ?? undefined,
+      error_lines: compiled.errors.map((error) => error.line),
       validated_source_current: stagedTransaction,
     })
-    const proofStatus = SessionProofWorkflow.classifyCoqcFailure(ctx.sessionID, filepath, compiledSource, {
+    const proofStatus = SessionProofWorkflow.classifyCompileFailure(ctx.sessionID, filepath, compiledSource, {
       first_error_line: firstLine ?? undefined,
       first_error_message: firstMsg ?? undefined,
       lifecycle: proofRegionLifecycle,

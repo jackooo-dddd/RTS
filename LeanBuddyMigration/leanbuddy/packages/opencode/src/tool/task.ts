@@ -281,7 +281,7 @@ async function beginProofEditTransaction(input: {
   repairAssignment?: SessionProofWorkflow.ProofRepairAssignment
 }) {
   const binding = SessionProof.get(input.sessionID)
-  if (!binding?.file.endsWith(".v")) return undefined
+  if (!binding?.file.endsWith(".lean")) return undefined
   const requestedFile = input.lemmaAssignment?.file ?? input.repairAssignment?.file ?? binding.file
   const file = path.isAbsolute(requestedFile) ? requestedFile : path.resolve(Instance.directory, requestedFile)
   if (!(await Filesystem.exists(file))) return undefined
@@ -587,7 +587,7 @@ function withLemmaAssignment(prompt: string, item: LemmaAssignment) {
         item.obligation.expected ? `- expected: ${item.obligation.expected}` : undefined,
         item.obligation.target_normal_form ? `- target_normal_form: ${item.obligation.target_normal_form}` : undefined,
         (item.obligation.prosa_candidate_lemmas?.length ?? 0) > 0 ? `- prosa_candidate_lemmas: ${item.obligation.prosa_candidate_lemmas!.join(", ")}` : undefined,
-        (item.obligation.mathcomp_candidate_lemmas?.length ?? 0) > 0 ? `- mathcomp_candidate_lemmas: ${item.obligation.mathcomp_candidate_lemmas!.join(", ")}` : undefined,
+        (item.obligation.mathlib_candidate_lemmas?.length ?? 0) > 0 ? `- mathlib_candidate_lemmas: ${item.obligation.mathlib_candidate_lemmas!.join(", ")}` : undefined,
         (item.obligation.shape_evidence?.length ?? 0) > 0 ? `- shape_evidence: ${item.obligation.shape_evidence!.join(", ")}` : undefined,
         item.obligation.locality_check
           ? `- locality_check: ${JSON.stringify(item.obligation.locality_check)}`

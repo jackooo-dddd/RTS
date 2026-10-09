@@ -2,16 +2,19 @@ import z from "zod"
 import { ObligationKind } from "../session/lemma-assignment"
 import { ProofRouteLedger } from "../session/proof-route-ledger"
 
-export const ProofPlanLayer = z.enum([
-  "semantic",
-  "shape",
-  "paper",
-  "prosa",
-  "mathcomp",
-  "coq_shape",
-  "local_arithmetic",
-  "theorem_spine",
-])
+/**
+ * Library/shape vocabulary of the Lean version (DECISIONS D13): `mathlib` and `lean_shape` replace the Rocq-era
+ * `mathcomp` and `coq_shape`. Legacy values are still accepted on input and mapped to the Lean names.
+ */
+const LEGACY_LIBRARY_NAMES: Record<string, string> = { mathcomp: "mathlib", coq_shape: "lean_shape", coq: "lean" }
+function legacyLibraryName(value: unknown) {
+  return typeof value === "string" && value in LEGACY_LIBRARY_NAMES ? LEGACY_LIBRARY_NAMES[value] : value
+}
+
+export const ProofPlanLayer = z.preprocess(
+  legacyLibraryName,
+  z.enum(["semantic", "shape", "paper", "prosa", "mathlib", "lean_shape", "local_arithmetic", "theorem_spine"]),
+)
 export type ProofPlanLayer = z.infer<typeof ProofPlanLayer>
 
 export const PremiseSourceStatus = z.enum([
@@ -60,7 +63,7 @@ export type ProofPlanCandidateRole = z.infer<typeof ProofPlanCandidateRole>
 
 export const ProofPlanCandidateLemma = z.object({
   name: z.string().min(1),
-  library: z.enum(["prosa", "mathcomp", "local", "unknown"]),
+  library: z.preprocess(legacyLibraryName, z.enum(["prosa", "mathlib", "local", "unknown"])),
   role: ProofPlanCandidateRole.optional().describe(
     "How this candidate participates in the node. Only direct_apply candidates are required to close the complete node target during premise audit; omitted legacy roles are audited conservatively as local_fact and produce a planning warning.",
   ),
@@ -71,7 +74,7 @@ export const ProofPlanCandidateLemma = z.object({
 export type ProofPlanCandidateLemma = z.infer<typeof ProofPlanCandidateLemma>
 
 export const ProofPlanSource = z.object({
-  kind: z.enum(["paper", "proof_text", "context", "prosa", "mathcomp", "inferred"]),
+  kind: z.preprocess(legacyLibraryName, z.enum(["paper", "proof_text", "context", "prosa", "mathlib", "inferred"])),
   label: z.string().min(1),
   excerpt: z.string().min(1),
 })
@@ -147,7 +150,7 @@ export const ProofPlanStep = z.object({
   formal_goal: z.string(),
   candidate_lemmas: z.array(z.string()),
   prosa_candidate_lemmas: z.array(ProofPlanCandidateLemma).default([]),
-  mathcomp_candidate_lemmas: z.array(ProofPlanCandidateLemma).default([]),
+  mathlib_candidate_lemmas: z.array(ProofPlanCandidateLemma).default([]),
   required_hypotheses: z.array(z.string()),
   source: ProofPlanSource.optional(),
   input: ProofPlanIO.optional(),

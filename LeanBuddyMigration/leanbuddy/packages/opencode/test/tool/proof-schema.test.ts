@@ -80,7 +80,7 @@ describe("proof-schema", () => {
           formal_goal: "True",
           candidate_lemmas: ["I"],
           prosa_candidate_lemmas: [],
-          mathcomp_candidate_lemmas: [{ name: "I", library: "mathcomp", reason: "fixture" }],
+          mathlib_candidate_lemmas: [{ name: "I", library: "mathcomp", reason: "fixture" }],
           required_hypotheses: [],
           fallback_plan: [],
           done_when: "Qed succeeds",

@@ -203,10 +203,18 @@ export namespace SessionPrompt {
   const proofAgents = new Set(["prover", "fixer", "lemma", "whole-lemma", "explorer"])
   const proofEditTools = new Set(["edit", "multiedit", "write"])
 
+  /**
+   * Lean proof source files (gap-revisions §1 item 1). A benchmark `Statement.lean` is read-only and is never bound
+   * as the proof file (DECISIONS D4).
+   */
+  export function isProofSourceFile(file: string | undefined) {
+    return Boolean(file && file.endsWith(".lean") && path.basename(file) !== "Statement.lean")
+  }
+
   async function recoverProofEditTransaction(sessionID: string, parentSessionID: string, agent: string) {
     if (agent !== "prover") return
     const binding = SessionProof.get(sessionID)
-    if (!binding?.file.endsWith(".v") || !(await Filesystem.exists(binding.file))) return
+    if (!isProofSourceFile(binding?.file) || !binding || !(await Filesystem.exists(binding.file))) return
     // Recovery must compare the persisted transaction against the current
     // workspace file. Transaction-aware reads are used only after recovery.
     const source = await Filesystem.readText(binding.file)
@@ -273,15 +281,16 @@ export namespace SessionPrompt {
     const candidates = new Set<string>()
     for (const part of parts) {
       if (part.type !== "text") continue
-      for (const match of part.text.matchAll(/\btarget file\b[^\n`]*`([^`]+\.v)`/gi)) candidates.add(match[1])
-      for (const match of part.text.matchAll(/\btarget file\b[^\n]*?([A-Za-z0-9_./-]+\.v)\b/gi)) candidates.add(match[1])
-      for (const match of part.text.matchAll(/\bcoqc\s+([A-Za-z0-9_./-]+\.v)\b/gi)) candidates.add(match[1])
+      for (const match of part.text.matchAll(/\btarget file\b[^\n`]*`([^`]+\.lean)`/gi)) candidates.add(match[1])
+      for (const match of part.text.matchAll(/\btarget file\b[^\n]*?([A-Za-z0-9_./-]+\.lean)\b/gi)) candidates.add(match[1])
+      for (const match of part.text.matchAll(/\b(?:lean_check|lake\s+env\s+lean)\s+([A-Za-z0-9_./-]+\.lean)\b/gi)) candidates.add(match[1])
     }
 
     for (const candidate of candidates) {
       const resolved = path.isAbsolute(candidate) ? candidate : path.resolve(Instance.directory, candidate)
       const relative = path.relative(Instance.directory, resolved)
       if (relative.startsWith("..") || path.isAbsolute(relative)) continue
+      if (!isProofSourceFile(resolved)) continue
       if (await Filesystem.exists(resolved)) return resolved
     }
 
@@ -363,7 +372,7 @@ export namespace SessionPrompt {
 
   async function proverFinalizationPrompt(sessionID: string) {
     const binding = SessionProof.get(sessionID)
-    if (!binding || !binding.file.endsWith(".v")) return undefined
+    if (!binding || !isProofSourceFile(binding.file)) return undefined
     if (!(await Filesystem.exists(binding.file))) return undefined
 
     const state = SessionProofWorkflow.get(sessionID)
@@ -461,7 +470,7 @@ export namespace SessionPrompt {
           const raw = toolInputString(part.state.input, "filePath")
           if (!raw) continue
           const inspected = resolveWorkspaceFile(raw)
-          if (inspected.endsWith(".v") && inspected !== normalizedTarget) return true
+          if (inspected.endsWith(".lean") && inspected !== normalizedTarget) return true
           continue
         }
         if (part.tool === "lean_query") {
@@ -673,7 +682,7 @@ export namespace SessionPrompt {
     const session = await Session.get(input.sessionID)
     await SessionRevert.cleanup(session)
 
-    // Auto-bind proof context if a .v file is attached or explicitly named in a proof prompt.
+    // Auto-bind proof context if a .lean file is attached or explicitly named in a proof prompt.
     if (!ProofContext.getBinding(input.sessionID)) {
       const existing = SessionProof.get(input.sessionID)
       const inferred = await inferProofFileFromPromptParts(input.parts)
@@ -684,7 +693,7 @@ export namespace SessionPrompt {
       )
       if (inferred && (!existing || replaceStaleAutoBinding)) {
         // Continuation runners may attach a harmless placeholder such as
-        // DO_NOT_CREATE.v while naming the real theorem file in the prompt.
+        // DO_NOT_CREATE.lean while naming the real theorem file in the prompt.
         // The explicit target is authoritative for an automatic binding, and
         // must also repair a persisted placeholder binding in a fresh process.
         ProofContext.setBinding(input.sessionID, inferred, { line: 0, character: 0 })
@@ -693,7 +702,7 @@ export namespace SessionPrompt {
         ProofContext.setBinding(input.sessionID, existing.file, { line: existing.line, character: existing.character })
       } else {
         for (const part of input.parts) {
-          if (part.type === "file" && part.filename?.endsWith(".v")) {
+          if (part.type === "file" && part.filename && isProofSourceFile(part.filename)) {
             const resolved = part.url?.startsWith("file:")
               ? fileURLToPath(part.url)
               : path.resolve(Instance.worktree, part.filename)
@@ -1241,7 +1250,7 @@ export namespace SessionPrompt {
               `validation_pending: ${recoveredProofEditTransaction.validation_pending}`,
               "The recovered staged source exposed by read/edit/multiedit/write/apply_patch/checkpoint/lean_check is the authoritative proof state for this turn.",
               "The ordinary workspace file on disk may intentionally be older until a compiler-accepted transaction snapshot is committed.",
-              "Before lemma dispatch, proof planning, `lean_session` use, or proof edits, read the target .v file through the read tool. The controller will reject those state-dependent actions until this staged-revision resynchronization read occurs. checkpoint/lean_check are safe before that read because they compile the authoritative staged source directly.",
+              "Before lemma dispatch, proof planning, `lean_session` use, or proof edits, read the target \`Solution.lean\` (the bound .lean file) through the read tool. The controller will reject those state-dependent actions until this staged-revision resynchronization read occurs. checkpoint/lean_check are safe before that read because they compile the authoritative staged source directly.",
               "Do not use bash, cat, or a direct disk read to reconstruct proof state, and do not rewrite compiler-certified regions merely because the disk file is stale.",
               "Read the target through the read tool and continue with the smallest edit against that staged revision. If finalization reports only the theorem terminator remains, edit only that terminator and run the final checkpoint/lean_check.",
               recoveredProofEditTransaction.validation_pending

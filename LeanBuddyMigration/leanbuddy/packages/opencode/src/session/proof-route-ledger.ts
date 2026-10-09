@@ -125,7 +125,7 @@ export namespace ProofRouteLedger {
           residual_premise_fingerprints?: string[]
         }
       }[]
-      mathcomp_candidate_lemmas: {
+      mathlib_candidate_lemmas: {
         name: string
         audit?: {
           verdict?: string
@@ -472,7 +472,7 @@ export namespace ProofRouteLedger {
         formal_goal: node.formal_goal,
         structured: true,
       })),
-      ...(node.mathcomp_candidate_lemmas ?? []).map((entry) => ({
+      ...(node.mathlib_candidate_lemmas ?? []).map((entry) => ({
         ...entry,
         node_id: node.node_id,
         formal_goal: node.formal_goal,

@@ -248,7 +248,7 @@ export async function auditPlanLibraryCandidates(input: {
   return mapLimit(input.nodes, 1, async (node) => {
     const candidates = [
       ...(node.prosa_candidate_lemmas ?? []).map((candidate) => ({ kind: "prosa" as const, candidate })),
-      ...(node.mathcomp_candidate_lemmas ?? []).map((candidate) => ({ kind: "mathcomp" as const, candidate })),
+      ...(node.mathlib_candidate_lemmas ?? []).map((candidate) => ({ kind: "mathlib" as const, candidate })),
     ]
     const audited = await mapLimit(candidates, 2, async ({ kind, candidate }) => ({
       kind,
@@ -267,8 +267,8 @@ export async function auditPlanLibraryCandidates(input: {
       prosa_candidate_lemmas: audited
         .filter((entry) => entry.kind === "prosa")
         .map(({ kind: _, ...candidate }) => candidate),
-      mathcomp_candidate_lemmas: audited
-        .filter((entry) => entry.kind === "mathcomp")
+      mathlib_candidate_lemmas: audited
+        .filter((entry) => entry.kind === "mathlib")
         .map(({ kind: _, ...candidate }) => candidate),
     }
   })

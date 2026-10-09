@@ -240,7 +240,7 @@ describe("proof edit transaction", () => {
           file,
           source: parentDraft,
           level: "hard",
-          receipt: { kind: "final_qed" },
+          receipt: { kind: "final_theorem" },
         })
         expect((await ProofEditTransaction.finalizeHandedOffAccepted(parentSessionID))?.status).toBe("committed")
         expect(await fs.readFile(file, "utf-8")).toBe(parentDraft)

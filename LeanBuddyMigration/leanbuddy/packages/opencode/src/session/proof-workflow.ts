@@ -6,7 +6,6 @@ import { rm } from "fs/promises"
 import { LSP } from "@/lsp"
 import path from "path"
 import * as CoqProject from "@/tool/coq-project"
-import { assertNoRewriteBangInCoqFile, assertNoIntuitionInCoqFile } from "@/tool/coq-style-guard"
 import {
   BlockedProofReportSchema,
   EscalationType,
@@ -22,8 +21,9 @@ import { SessionProof } from "./session-proof"
 import { SessionProofWorkflowTable } from "./session-proof-workflow.sql"
 import { ProofRouteLedger } from "./proof-route-ledger"
 import { ProofEditTransaction } from "./proof-edit-transaction"
+import { LeanProofSource } from "./lean-proof-source"
 import { Instance } from "@/project/instance"
-import { parseCoqCompilerOutput } from "@/tool/coq-diagnostics"
+import { LeanProject } from "@/tool/lean-project"
 import { Log } from "@/util/log"
 import {
   MAX_IDENTICAL_PLAN_METADATA_REPAIRS,
@@ -93,7 +93,7 @@ export namespace SessionProofWorkflow {
     "semantic_debt_reduced",
     "locality_validated_split",
     "first_error_advanced",
-    "final_qed",
+    "final_theorem",
   ])
   export type ProofProgressReceiptKind = z.infer<typeof ProofProgressReceiptKind>
 
@@ -403,7 +403,7 @@ export namespace SessionProofWorkflow {
     targetNormalForm?: string
     shapeEvidence: string[]
     prosaCandidateLemmas: string[]
-    mathcompCandidateLemmas: string[]
+    mathlibCandidateLemmas: string[]
     editableMode: "region"
     beginMarker?: string
     endMarker?: string
@@ -511,17 +511,17 @@ export namespace SessionProofWorkflow {
   const boundProofScopes = new Map<string, Map<string, BoundProofScope>>()
   const boundProofScopeRootBySession = new Map<string, string>()
   const boundProofScopeMembersByRoot = new Map<string, Set<string>>()
-  const REGION_BEGIN = /\(\*\s*proof_region\s+begin\s+([\s\S]*?)\s*\*\)/g
-  const REGION_END = /\(\*\s*proof_region\s+end(?:\s+admit_id:\s*([^\s*]+))?\s*\*\)/g
-  const THEOREM_NAME = /\b(?:Lemma|Theorem|Corollary|Proposition|Fact|Remark|Example)\s+([A-Za-z0-9_']+)/g
-  const PENDING_PLACEHOLDER = /\bby\s+admit\.|\badmit\./
-  const PENDING_PLACEHOLDER_GLOBAL = /\bby\s+admit\.|\badmit\./g
-  const EMPTY_PROOF_BLOCK = /\{\s*(?:\(\*[\s\S]*?\*\)\s*)*\}/
-  const EMPTY_PROOF_BLOCK_GLOBAL = /\{\s*(?:\(\*[\s\S]*?\*\)\s*)*\}/g
+  // Lean source model (tools-advices proof-workflow-revision.md §1–§3): see session/lean-proof-source.ts.
+  const REGION_BEGIN = LeanProofSource.REGION_BEGIN
+  const REGION_END = LeanProofSource.REGION_END
+  const PENDING_PLACEHOLDER = LeanProofSource.PENDING_PLACEHOLDER
+  const PENDING_PLACEHOLDER_GLOBAL = LeanProofSource.PENDING_PLACEHOLDER_GLOBAL
+  const EMPTY_PROOF_BLOCK = LeanProofSource.EMPTY_PROOF_BLOCK
+  const EMPTY_PROOF_BLOCK_GLOBAL = LeanProofSource.EMPTY_PROOF_BLOCK_GLOBAL
   const DEFAULT_VALIDATION_TIMEOUT_MS = 120_000
   const DEFAULT_RUNNING_LEASE_MS = 30 * 60_000
-  const INFORMAL_PROOF_COMMENT = /\(\*[\s\S]*?\binformal proof\b[\s\S]*?\*\)/i
-  const UNFINISHED_PROOF = /\bAdmitted\.|\bAbort\.|\bby\s+admit\.|\badmit\./
+  const INFORMAL_PROOF_COMMENT = LeanProofSource.INFORMAL_PROOF_COMMENT
+  const UNFINISHED_PROOF = LeanProofSource.UNFINISHED_PROOF
   const WIDE_PROOF_EDIT_AGENTS = new Set(["prover", "fixer", "whole-lemma"])
   const FALLBACK_LOOKUP_WARNING_LIMIT = 5
   const FALLBACK_LOOKUP_STREAK_LIMIT = 20
@@ -565,6 +565,8 @@ export namespace SessionProofWorkflow {
     first_error_line?: number
     failure_kind?: "compiler_error" | "process_error" | "timeout" | "spawn_error" | "style_guard"
     prefix_complete?: boolean
+    /** Every error line of the checked file (Lean reports all errors, not only the first). */
+    error_lines?: number[]
   }
 
   type ProofProgressMetrics = {
@@ -575,6 +577,7 @@ export namespace SessionProofWorkflow {
     admitted_terminator_count: number
     abort_terminator_count: number
     final_terminator?: string
+    /** 0 = theorem complete, 1 = placeholders remain (Lean has no proof terminator). */
     qed_distance: number
     unresolved_semantic_debt: number
     unresolved_semantic_debt_ids: string[]
@@ -638,61 +641,11 @@ export namespace SessionProofWorkflow {
     return offset + character <= limit ? offset + character : undefined
   }
 
-  function maskCoqCommentsAndStrings(source: string) {
-    const masked = source.split("")
-    let commentDepth = 0
-    let inString = false
-    for (let index = 0; index < source.length; index++) {
-      const pair = source.slice(index, index + 2)
-      if (commentDepth > 0) {
-        if (pair === "(*") {
-          masked[index] = masked[index + 1] = " "
-          commentDepth++
-          index++
-          continue
-        }
-        if (pair === "*)") {
-          masked[index] = masked[index + 1] = " "
-          commentDepth--
-          index++
-          continue
-        }
-        if (source[index] !== "\n" && source[index] !== "\r") masked[index] = " "
-        continue
-      }
-      if (inString) {
-        if (source[index] === '"' && source[index + 1] === '"') {
-          masked[index] = masked[index + 1] = " "
-          index++
-          continue
-        }
-        if (source[index] === '"') inString = false
-        if (source[index] !== "\n" && source[index] !== "\r") masked[index] = " "
-        continue
-      }
-      if (pair === "(*") {
-        masked[index] = masked[index + 1] = " "
-        commentDepth = 1
-        index++
-        continue
-      }
-      if (source[index] === '"') {
-        masked[index] = " "
-        inString = true
-      }
-    }
-    if (commentDepth !== 0 || inString) return undefined
-    return masked.join("")
+  function maskCommentsAndStrings(source: string) {
+    return LeanProofSource.maskCommentsAndStrings(source)
   }
 
-  type TheoremSpan = {
-    name: string
-    start: number
-    end: number
-    proofStart?: number
-    proofEnd?: number
-    rootGoal?: string
-  }
+  type TheoremSpan = LeanProofSource.TheoremSpan
 
   export type BoundTheoremTarget = {
     theorem: string
@@ -701,63 +654,8 @@ export namespace SessionProofWorkflow {
     end: number
   }
 
-  function theoremRootGoal(source: string, masked: string, start: number, proofStart: number) {
-    const declaration = source.slice(start, proofStart)
-    const maskedDeclaration = masked.slice(start, proofStart)
-    const proofCommand = /\bProof\s*\./g.exec(maskedDeclaration)
-    const terminator = maskedDeclaration.lastIndexOf(".", proofCommand?.index ?? maskedDeclaration.length)
-    const limit = terminator >= 0 ? terminator : maskedDeclaration.length
-    let round = 0
-    let square = 0
-    let curly = 0
-    let colon = -1
-    for (let index = 0; index < limit; index++) {
-      const char = maskedDeclaration[index]
-      if (char === "(") round += 1
-      else if (char === ")") round = Math.max(0, round - 1)
-      else if (char === "[") square += 1
-      else if (char === "]") square = Math.max(0, square - 1)
-      else if (char === "{") curly += 1
-      else if (char === "}") curly = Math.max(0, curly - 1)
-      else if (char === ":" && round === 0 && square === 0 && curly === 0) {
-        colon = index
-        break
-      }
-    }
-    if (colon < 0) return undefined
-    const goal = declaration.slice(colon + 1, limit).trim()
-    return goal || undefined
-  }
-
   function theoremSpans(source: string) {
-    const masked = maskCoqCommentsAndStrings(source)
-    if (!masked) return [] as TheoremSpan[]
-    const declarations = [...masked.matchAll(THEOREM_NAME)].map((match) => ({
-      name: match[1],
-      start: match.index,
-    }))
-    return declarations.map<TheoremSpan>((declaration, index) => {
-      const end = declarations[index + 1]?.start ?? source.length
-      const theoremText = masked.slice(declaration.start, end)
-      const proof = /\bProof\s*\./g.exec(theoremText)
-      const proofStart = proof ? declaration.start + proof.index + proof[0].length : undefined
-      const terminator = proofStart === undefined
-        ? undefined
-        : /\b(?:Qed|Defined|Admitted|Abort)\s*\./g.exec(masked.slice(proofStart, end))
-      const proofEnd = terminator && proofStart !== undefined
-        ? proofStart + terminator.index + terminator[0].length
-        : undefined
-      const rootGoal = proofStart === undefined
-        ? undefined
-        : theoremRootGoal(source, masked, declaration.start, proofStart)
-      return {
-        ...declaration,
-        end,
-        proofStart,
-        proofEnd,
-        rootGoal,
-      }
-    })
+    return LeanProofSource.theoremSpans(source)
   }
 
   function theoremSpanAtOffset(spans: TheoremSpan[], offset: number) {
@@ -783,75 +681,46 @@ export namespace SessionProofWorkflow {
   }
 
   function deriveBoundProofScope(file: string, source: string, position: number): BoundProofScope {
-    const masked = maskCoqCommentsAndStrings(source)
+    const masked = maskCommentsAndStrings(source)
     if (!masked) {
-      throw new Error("proof_scope_integrity: cannot derive canonical scope from an unterminated Coq comment or string")
+      throw new Error("proof_scope_integrity: cannot derive canonical scope from an unterminated Lean comment or string")
     }
-
-    const theoremPattern = /\b(?:Lemma|Theorem|Corollary|Proposition|Fact|Remark|Example)\s+([A-Za-z0-9_']+)\b/g
-    const theoremMatches = [...masked.matchAll(theoremPattern)].map((match) => ({
-      start: match.index,
-      theorem: match[1],
-    }))
-    const theoremStarts = theoremMatches.map((match) => match.start)
-    const precedingTheoremStart = theoremStarts.filter((start) => start <= position).at(-1)
-    const theoremStart = precedingTheoremStart ?? (theoremStarts.length === 1 ? theoremStarts[0] : undefined)
-    if (theoremStart === undefined) {
-      throw new Error("proof_scope_integrity: bound position is not inside a uniquely located theorem")
+    const spans = theoremSpans(source)
+    const preceding = spans.filter((span) => span.start <= position).at(-1)
+    const span = preceding ?? (spans.length === 1 ? spans[0] : undefined)
+    if (!span) throw new Error("proof_scope_integrity: bound position is not inside a uniquely located theorem")
+    if (span.assign === undefined || span.proofStart === undefined || span.proofEnd === undefined) {
+      throw new Error("proof_scope_integrity: bound theorem must have a `:=` proof")
     }
-    const effectivePosition = precedingTheoremStart === undefined ? theoremStart : position
-    const nextTheorem = theoremStarts.find((start) => start > theoremStart) ?? source.length
-
-    const proofMatches = [...masked.slice(theoremStart, nextTheorem).matchAll(/\bProof\s*\./g)]
-    if (proofMatches.length !== 1) {
-      throw new Error("proof_scope_integrity: bound theorem must contain exactly one explicit Proof command")
-    }
-    const proofMatch = proofMatches[0]
-    const proofStart = theoremStart + proofMatch.index
-    const bodyStart = proofStart + proofMatch[0].length
-
-    const terminators = [...masked.slice(bodyStart, nextTheorem).matchAll(/\b(?:Qed|Defined|Admitted)\s*\./g)]
-    if (terminators.length !== 1) {
-      throw new Error("proof_scope_integrity: bound theorem must contain exactly one proof terminator")
-    }
-    const terminator = terminators[0]
-    const bodyEnd = bodyStart + terminator.index
-    const terminatorEnd = bodyEnd + terminator[0].length
-    if (effectivePosition < theoremStart || effectivePosition > terminatorEnd) {
+    const effectivePosition = preceding ? position : span.start
+    if (effectivePosition < span.start || effectivePosition > span.end) {
       throw new Error("proof_scope_integrity: bound position disagrees with the located theorem proof span")
     }
-
-    const theorem = theoremMatches.find((match) => match.start === theoremStart)?.theorem
-    if (!theorem) {
-      throw new Error("proof_scope_integrity: could not identify the bound theorem name")
-    }
-
+    // Lean has no Proof./Qed.: the protected prefix ends after `:= by` (or `:=`), the body runs to the end of the
+    // declaration, and the protected suffix starts at the next top-level command.
     return {
       file,
-      theorem,
-      declaration: source.slice(theoremStart, bodyStart),
+      theorem: span.name,
+      declaration: source.slice(span.start, span.proofStart),
       canonicalHash: sourceHash(source),
       canonicalLength: source.length,
-      theoremStart,
-      declarationEnd: proofStart,
-      proofStart,
-      bodyStart,
-      bodyEnd,
-      terminatorEnd,
-      protectedPrefix: source.slice(0, proofStart),
-      protectedSuffix: source.slice(terminatorEnd),
+      theoremStart: span.start,
+      declarationEnd: span.assign,
+      proofStart: span.proofStart,
+      bodyStart: span.proofStart,
+      bodyEnd: span.proofEnd,
+      terminatorEnd: span.end,
+      protectedPrefix: source.slice(0, span.proofStart),
+      protectedSuffix: source.slice(span.end),
     }
   }
 
   function rebaseBoundProofScope(file: string, source: string, previous: BoundProofScope) {
-    const masked = maskCoqCommentsAndStrings(source)
-    if (!masked) return undefined
-    const theoremPattern = /\b(?:Lemma|Theorem|Corollary|Proposition|Fact|Remark|Example)\s+([A-Za-z0-9_']+)\b/g
-    const candidates = [...masked.matchAll(theoremPattern)]
-      .filter((match) => match[1] === previous.theorem)
-      .flatMap((match) => {
+    const candidates = theoremSpans(source)
+      .filter((span) => span.name === previous.theorem)
+      .flatMap((span) => {
         try {
-          const scope = deriveBoundProofScope(file, source, match.index)
+          const scope = deriveBoundProofScope(file, source, span.start)
           return scope.theorem === previous.theorem && scope.declaration === previous.declaration ? [scope] : []
         } catch {
           return []
@@ -906,7 +775,7 @@ export namespace SessionProofWorkflow {
   }) {
     if (input.before === input.after && !input.destinationFile) return
     const binding = SessionProof.get(input.sessionID)
-    if (!binding || !binding.file.endsWith(".v")) return
+    if (!binding || !binding.file.endsWith(".lean")) return
     const boundFile = normalizeBoundProofFile(binding.file)
     const sourceFile = normalizeBoundProofFile(input.file)
     const destinationFile = normalizeBoundProofFile(input.destinationFile ?? input.file)
@@ -953,28 +822,25 @@ export namespace SessionProofWorkflow {
       syncBoundProofLineageCanonicalSource(root, boundFile, input.before)
     }
 
-    const prefixOK = input.after.startsWith(scope.protectedPrefix)
-    const suffixStart = protectedSuffixStart(input.after, scope.protectedSuffix)
+    // KNOWN_PROBLEMS K1: `import` lines of package modules may be added to the protected header.
+    const after = LeanProofSource.stripAllowedAddedImports(input.after, scope.protectedPrefix) ?? input.after
+    const prefixOK = after.startsWith(scope.protectedPrefix)
+    const suffixStart = protectedSuffixStart(after, scope.protectedSuffix)
     const suffixOK = suffixStart !== undefined
     if (prefixOK && suffixStart !== undefined && suffixStart >= scope.protectedPrefix.length) {
-      const proofText = input.after.slice(scope.protectedPrefix.length, suffixStart)
-      const maskedProof = maskCoqCommentsAndStrings(proofText)
+      const proofText = after.slice(scope.protectedPrefix.length, suffixStart)
+      const maskedProof = maskCommentsAndStrings(proofText)
       if (!maskedProof) {
         throw new Error("proof_scope_integrity_rejection: bound theorem proof has an unterminated comment or string")
       }
-      const proofs = [...maskedProof.matchAll(/\bProof\s*\./g)]
-      const terminators = [...maskedProof.matchAll(/\b(?:Qed|Defined|Admitted|Abort)\s*\./g)]
-      if (proofs.length !== 1 || terminators.length !== 1 || terminators[0].index <= proofs[0].index) {
+      if (!maskedProof.trim()) {
+        throw new Error("proof_scope_integrity_rejection: the bound theorem proof is empty; keep `sorry` as the placeholder")
+      }
+      const commandLine = LeanProofSource.topLevelCommandLine(maskedProof)
+      if (commandLine >= 0) {
         throw new Error(
-          "proof_scope_integrity_rejection: bound theorem must retain exactly one Proof command followed by exactly one proof terminator",
+          `proof_scope_integrity_rejection: a top-level command (line ${commandLine + 1} of the proof: \`${maskedProof.split("\n")[commandLine].trim().slice(0, 60)}\`) appears inside the bound theorem proof; indent proof text and keep helper declarations in a separate module`,
         )
-      }
-      if (/\bEnd\s+[A-Za-z0-9_']+\s*\./.test(maskedProof)) {
-        throw new Error("proof_scope_integrity_rejection: an End command was copied into the bound theorem proof")
-      }
-      const trailing = maskedProof.slice(terminators[0].index + terminators[0][0].length)
-      if (trailing.trim()) {
-        throw new Error("proof_scope_integrity_rejection: tactic or command text appears after the proof terminator")
       }
       const plan = getDecompositionPlanState(input.sessionID, boundFile)
       // Once a session has entered structured planning, a rejected or
@@ -997,7 +863,7 @@ export namespace SessionProofWorkflow {
     }
 
     const category = !prefixOK
-      ? input.after.slice(0, scope.theoremStart) !== scope.protectedPrefix.slice(0, scope.theoremStart)
+      ? after.slice(0, scope.theoremStart) !== scope.protectedPrefix.slice(0, scope.theoremStart)
         ? "protected_prefix"
         : "theorem_declaration_or_proof_boundary"
       : "protected_suffix"
@@ -1026,79 +892,66 @@ export namespace SessionProofWorkflow {
   }
 
   function hasPendingProofHole(text: string) {
-    const masked = maskCoqCommentsAndStrings(text)
+    const masked = maskCommentsAndStrings(text)
     if (!masked) return true
     return PENDING_PLACEHOLDER.test(masked) || EMPTY_PROOF_BLOCK.test(masked)
   }
 
   function firstSequentialHole(text: string) {
-    const searchable = maskCoqCommentsAndStrings(text) ?? text
+    const searchable = maskCommentsAndStrings(text) ?? text
     const pending = PENDING_PLACEHOLDER.exec(searchable)
-    const empty = EMPTY_PROOF_BLOCK.exec(searchable)
-    const pendingEnd = pending
-      ? (() => {
-          const end = pending.index + pending[0].length
-          const inlineAdmitMarker = /^[ \t]*\(\*\s*admit_id\s*:\s*[^\s*]+\s*\*\)/.exec(text.slice(end))
-          return end + (inlineAdmitMarker?.[0].length ?? 0)
-        })()
-      : undefined
-    const candidates = [
-      pending ? { start: pending.index, end: pendingEnd!, kind: "admit placeholder" } : undefined,
-      empty ? { start: empty.index, end: empty.index + empty[0].length, kind: "empty proof block" } : undefined,
-    ].filter((candidate): candidate is { start: number; end: number; kind: string } => Boolean(candidate))
-    return candidates.sort((left, right) => left.start - right.start)[0]
+    if (!pending) return undefined
+    // An inline `sorry /- admit_id: X -/` (or `-- admit_id: X`) marker belongs to the hole it labels.
+    const end = pending.index + pending[0].length
+    const inlineMarker = /^[ \t]*(?:\/-\s*admit_id\s*:\s*[^\s-]+\s*-\/|--[ \t]*admit_id[ \t]*:[ \t]*\S+)/.exec(text.slice(end))
+    return { start: pending.index, end: end + (inlineMarker?.[0].length ?? 0), kind: "sorry placeholder" }
   }
 
+  function leanValidationResult(compiled: LeanProject.CompileResult, file: string): ValidationResult {
+    if (compiled.timedOut) {
+      return { ok: false, validator: "checkpoint-lean", status: "error", message: `Lean check timed out after ${validationTimeoutMs()}ms`, failure_kind: "timeout" }
+    }
+    if (compiled.aborted || compiled.outputLimitExceeded) {
+      return {
+        ok: false,
+        validator: "checkpoint-lean",
+        status: "error",
+        message: compiled.aborted ? "Lean check was aborted; process group was killed" : "Lean check exceeded the output limit",
+        failure_kind: "process_error",
+      }
+    }
+    if (compiled.ok) return { ok: true, validator: "checkpoint-lean", status: "ok", error_lines: [] }
+    const first = compiled.errors[0]
+    return {
+      ok: false,
+      validator: "checkpoint-lean",
+      status: "error",
+      first_error_file: first ? file : undefined,
+      first_error_line: first?.line,
+      error_lines: [...new Set(compiled.errors.map((error) => error.line))].sort((a, b) => a - b),
+      failure_kind: first ? "compiler_error" : "process_error",
+      message: compiled.helperFailure
+        ? `helper module build failed: ${compiled.helperFailure.slice(-1000)}`
+        : first?.message ?? (compiled.output.slice(0, 1000) || "Lean failed without diagnostic output."),
+    }
+  }
+
+  /** Check the file (or a staged override) with the project's Lean; the disk file is never modified. */
   async function checkpointScaffold(
     file: string,
     sourceOverride?: string,
     options: CoqProject.ProcessOptions = {},
   ): Promise<ValidationResult> {
-    if (!file.endsWith(".v")) {
-      return {
-        ok: false,
-        validator: "checkpoint-lean",
-        status: "error",
-        message: "scaffold gate only accepts .v files",
-      }
+    if (!file.endsWith(".lean")) {
+      return { ok: false, validator: "checkpoint-lean", status: "error", message: "scaffold gate only accepts .lean files" }
     }
     if (!(await Filesystem.exists(file))) {
       return { ok: false, validator: "checkpoint-lean", status: "error", message: `file not found: ${file}` }
     }
-
     const source = sourceOverride ?? (await Filesystem.readText(file))
     try {
-      assertNoRewriteBangInCoqFile(file, source)
-      assertNoIntuitionInCoqFile(file, source)
-    } catch (error) {
-      return {
-        ok: false,
-        validator: "checkpoint-lean",
-        status: "error",
-        message: error instanceof Error ? error.message : String(error),
-        failure_kind: "style_guard",
-      }
-    }
-
-    if (sourceOverride !== undefined) {
-      const result = await checkpointSourceAs(file, source, [], options)
-      if (result.ok || !result.first_error_file) return result
-
-      const tempFile = path.join(
-        path.dirname(file),
-        `OpencodePrefix_${hashText(file + "\n" + source).slice(0, 12)}.v`,
-      )
-      return diagnosticFileMatches(tempFile, result.first_error_file)
-        ? { ...result, first_error_file: file }
-        : result
-    }
-
-    const resolved = await CoqProject.resolve(file)
-    const args = [...CoqProject.coqcCmd(), ...resolved.flags, file]
-    const timeoutMs = validationTimeoutMs()
-    let result: CoqProject.ProcessResult
-    try {
-      result = await CoqProject.runProcess(args, resolved.cwd, { ...options, timeoutMs })
+      const compiled = await LeanProject.compile(file, source, { ...options, timeoutMs: validationTimeoutMs() })
+      return leanValidationResult(compiled, file)
     } catch (error) {
       return {
         ok: false,
@@ -1108,156 +961,42 @@ export namespace SessionProofWorkflow {
         failure_kind: "spawn_error",
       }
     }
-
-    if (result.timedOut) {
-      return {
-        ok: false,
-        validator: "checkpoint-lean",
-        status: "error",
-        message: `checkpoint scaffold gate timed out after ${timeoutMs}ms`,
-        failure_kind: "timeout",
-      }
-    }
-    if (result.aborted) {
-      return {
-        ok: false,
-        validator: "checkpoint-lean",
-        status: "error",
-        message: "checkpoint scaffold gate was aborted; process group was killed",
-        failure_kind: "process_error",
-      }
-    }
-    if (result.outputLimitExceeded) {
-      return {
-        ok: false,
-        validator: "checkpoint-lean",
-        status: "error",
-        message: `checkpoint scaffold gate exceeded the ${options.maxOutputBytes ?? CoqProject.subprocessMaxOutputBytes()} byte output limit`,
-        failure_kind: "process_error",
-      }
-    }
-
-    if (result.exit === 0) return { ok: true, validator: "checkpoint-lean", status: "ok" }
-
-    const parsed = parseCoqCompilerOutput(result.stdout, result.stderr)
-    const firstError = parsed.firstError
-    return {
-      ok: false,
-      validator: "checkpoint-lean",
-      status: "error",
-      first_error_file: firstError?.file,
-      first_error_line: firstError?.line,
-      failure_kind: firstError ? "compiler_error" : "process_error",
-      message:
-        firstError?.message ?? (parsed.output.slice(0, 1000) || "Coq compiler failed without diagnostic output."),
-    }
   }
 
-  function maskEmptyProofBlock(match: string) {
-    const close = match.lastIndexOf("}")
-    if (close < 0) return match
-    if (!match.includes("\n")) return "{ admit. }"
-
-    const beforeClose = match.slice(0, close).trimEnd()
-    const closeLine = match.slice(0, close).match(/\n([ \t]*)[^\n]*$/)
-    const closeIndent = closeLine?.[1] ?? ""
-    return `${beforeClose}\n${closeIndent}  admit.\n${closeIndent}}`
-  }
-
-  function maskEmptyProofBlocksAfter(source: string, startIndex: number, endIndex = source.length) {
-    return (
-      source.slice(0, startIndex) +
-      source.slice(startIndex, endIndex).replace(EMPTY_PROOF_BLOCK_GLOBAL, maskEmptyProofBlock) +
-      source.slice(endIndex)
-    )
+  /** Lean has no empty-block placeholders to mask; kept for callers. */
+  function maskEmptyProofBlocksAfter(source: string, _startIndex: number, _endIndex = source.length) {
+    return source
   }
 
   async function checkpointSourceAs(
     file: string,
     source: string,
-    extraFlags: string[] = [],
+    _extraFlags: string[] = [],
     options: CoqProject.ProcessOptions = {},
   ): Promise<ValidationResult> {
-    const directory = path.dirname(file)
-    const basename = `OpencodePrefix_${hashText(file + "\n" + source).slice(0, 12)}.v`
-    const tempFile = path.join(directory, basename)
-    const cleanup = [
-      tempFile,
-      tempFile.replace(/\.v$/, ".vo"),
-      tempFile.replace(/\.v$/, ".vos"),
-      tempFile.replace(/\.v$/, ".vok"),
-      tempFile.replace(/\.v$/, ".glob"),
-    ]
+    return checkpointScaffold(file, source, options)
+  }
 
-    try {
-      await Filesystem.write(tempFile, source)
-      const resolved = await CoqProject.resolve(file)
-      const args = [...CoqProject.coqcCmd(), ...resolved.flags, ...extraFlags, tempFile]
-      const timeoutMs = validationTimeoutMs()
-      let result: CoqProject.ProcessResult
-      try {
-        result = await CoqProject.runProcess(args, resolved.cwd, { ...options, timeoutMs })
-      } catch (error) {
-        return {
-          ok: false,
-          validator: "checkpoint-lean",
-          status: "error",
-          message: error instanceof Error ? error.message : String(error),
-          failure_kind: "spawn_error",
-        }
-      }
+  /** Lean diagnostics in the shape of the former compiler-output parser. */
+  function parseLeanCompilerOutput(stdout: string, stderr: string) {
+    const diagnostics = LeanProject.parseDiagnostics(`${stdout}\n${stderr}`)
+    const errors = diagnostics
+      .filter((d) => d.severity === "error")
+      .map((d) => ({ severity: "error" as const, file: d.file, line: d.line, message: d.message }))
+    return { firstError: errors[0], errors, output: `${stdout}\n${stderr}`.trim() }
+  }
 
-      if (result.timedOut) {
-        return {
-          ok: false,
-          validator: "checkpoint-lean",
-          status: "error",
-          message: `lemma prefix checkpoint timed out after ${timeoutMs}ms`,
-          failure_kind: "timeout",
-        }
-      }
-      if (result.aborted) {
-        return {
-          ok: false,
-          validator: "checkpoint-lean",
-          status: "error",
-          message: "lemma prefix checkpoint was aborted; process group was killed",
-          failure_kind: "process_error",
-        }
-      }
-      if (result.outputLimitExceeded) {
-        return {
-          ok: false,
-          validator: "checkpoint-lean",
-          status: "error",
-          message: `lemma prefix checkpoint exceeded the ${options.maxOutputBytes ?? CoqProject.subprocessMaxOutputBytes()} byte output limit`,
-          failure_kind: "process_error",
-        }
-      }
-
-      if (result.exit === 0) return { ok: true, validator: "checkpoint-lean", status: "ok" }
-
-      const parsed = parseCoqCompilerOutput(result.stdout, result.stderr)
-      const firstError = parsed.firstError
-      return {
-        ok: false,
-        validator: "checkpoint-lean",
-        status: "error",
-        first_error_file: firstError?.file,
-        first_error_line: firstError?.line,
-        failure_kind: firstError ? "compiler_error" : "process_error",
-        message:
-          firstError?.message ?? (parsed.output.slice(0, 1000) || "Coq compiler failed without diagnostic output."),
-      }
-    } finally {
-      await Promise.all(cleanup.map((filePath) => rm(filePath, { force: true }).catch(() => undefined)))
-    }
+  /** Whether a failed check has no error inside lines [startLine, endLine] (Lean reports every error). */
+  function errorFreeBetween(result: ValidationResult, startLine: number, endLine: number) {
+    if (result.ok) return true
+    if (result.failure_kind !== "compiler_error" || !result.error_lines) return false
+    return !result.error_lines.some((line) => line >= startLine && line <= endLine)
   }
 
   export const Validation = {
     scaffold: checkpointScaffold,
     prefix: checkpointSourceAs,
-    parseCompilerOutput: parseCoqCompilerOutput,
+    parseCompilerOutput: parseLeanCompilerOutput,
   }
 
   function hashText(text: string) {
@@ -1363,7 +1102,7 @@ export namespace SessionProofWorkflow {
     const save = (end: number) => {
       if (!key) return
       let value = text.slice(start, end).trim().replace(/;\s*$/, "").trim()
-      // These are Coq comments, not JSON strings: keep notation such as \big_
+      // These are Lean comments, not JSON strings: keep notation such as \big_
       // intact instead of decoding \b as a backspace.
       if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
         value = value.slice(1, -1)
@@ -1381,13 +1120,14 @@ export namespace SessionProofWorkflow {
         quote = char
         continue
       }
-      if ("([{".includes(char)) depth++
-      else if (")]}".includes(char)) depth = Math.max(0, depth - 1)
+      if ("([{⟨⦃".includes(char)) depth++
+      else if (")]}⟩⦄".includes(char)) depth = Math.max(0, depth - 1)
       if (depth || (index > 0 && !/[\s;]/.test(text[index - 1]))) continue
       const match = /^([A-Za-z_][A-Za-z0-9_-]*|informal\s+proof)\s*:\s*/.exec(text.slice(index))
       const field = match?.[1].replace(/\s+/g, " ")
       if (!match || !field || !fields.has(field)) continue
-      if (key && (key === "evidence" || index === start) && (field === "prosa" || field === "mathcomp")) continue
+      // D13 evidence prefixes (`prosa:`, `mathlib:`, legacy `mathcomp:`) inside a value do not start a new field
+      if (key && (key === "evidence" || index === start) && (field === "prosa" || field === "mathlib" || field === "mathcomp")) continue
       save(index)
       key = field
       start = index + match[0].length
@@ -1417,9 +1157,10 @@ export namespace SessionProofWorkflow {
     "prosa",
     "prosa_candidates",
     "prosa_candidate_lemmas",
+    "mathlib",
     "mathcomp",
-    "mathcomp_candidates",
-    "mathcomp_candidate_lemmas",
+    "mathlib_candidates",
+    "mathlib_candidate_lemmas",
   ]
 
   function parseContractAttributes(text: string) {
@@ -1427,10 +1168,7 @@ export namespace SessionProofWorkflow {
   }
 
   function nearbyContractAttributes(source: string, markerStart: number) {
-    const window = source.slice(Math.max(0, markerStart - 1800), markerStart)
-    const comments = [...window.matchAll(/\(\*([\s\S]*?)\*\)/g)]
-    for (let index = comments.length - 1; index >= 0; index--) {
-      const text = comments[index][1]
+    for (const text of LeanProofSource.commentsBefore(source, markerStart)) {
       if (
         /\b(?:source|input|output|layer|expected|normal_form|target_normal_form|evidence|plan_node|depends_on)\s*:/.test(
           text,
@@ -1443,26 +1181,11 @@ export namespace SessionProofWorkflow {
   }
 
   function leadingRegionContractAttributes(blockText: string, beginMarkerLength: number) {
-    const tail = blockText.slice(beginMarkerLength)
-    const comments: string[] = []
-    let offset = 0
-
-    // A proof-region contract is commonly formatted as several consecutive
-    // comments immediately after the begin marker.  Keep consuming only that
-    // leading comment prelude; once Coq code starts, later proof comments must
-    // not be mistaken for scheduler metadata.
-    while (offset < tail.length) {
-      const whitespace = /^\s*/.exec(tail.slice(offset))?.[0].length ?? 0
-      offset += whitespace
-      if (!tail.startsWith("(*", offset)) break
-
-      const end = tail.indexOf("*)", offset + 2)
-      if (end < 0) break
-      comments.push(tail.slice(offset + 2, end))
-      offset = end + 2
-    }
-
-    return mergeContractAttributes(...comments.map(parseContractAttributes))
+    // A proof-region contract is commonly formatted as several consecutive comments immediately after the begin
+    // marker (`/- … -/` blocks or `--` lines). Once Lean code starts, later proof comments are not scheduler metadata.
+    return mergeContractAttributes(
+      ...LeanProofSource.leadingComments(blockText.slice(beginMarkerLength)).map(parseContractAttributes),
+    )
   }
 
   function mergeContractAttributes(...sources: Map<string, string>[]) {
@@ -1507,21 +1230,18 @@ export namespace SessionProofWorkflow {
   }
 
   const COQ_TARGET_KEYWORDS = new Set([
-    "as",
     "at",
-    "cofix",
+    "by",
+    "do",
     "else",
-    "end",
     "exists",
-    "fix",
-    "for",
-    "forall",
     "fun",
+    "have",
     "if",
     "in",
     "let",
     "match",
-    "return",
+    "show",
     "then",
     "with",
   ])
@@ -1549,9 +1269,10 @@ export namespace SessionProofWorkflow {
     "prosa",
     "prosa_candidates",
     "prosa_candidate_lemmas",
+    "mathlib",
     "mathcomp",
-    "mathcomp_candidates",
-    "mathcomp_candidate_lemmas",
+    "mathlib_candidates",
+    "mathlib_candidate_lemmas",
   ]
 
   function targetFieldText(markerText: string) {
@@ -1573,34 +1294,7 @@ export namespace SessionProofWorkflow {
   }
 
   function targetDeclarations(blockText: string) {
-    const masked = maskCoqCommentsAndStrings(blockText) ?? blockText
-    const lines = blockText.split("\n")
-    const maskedLines = masked.split("\n")
-    const declarations: { name: string; statement: string; proposition: string }[] = []
-    const declaration = /\b(?:have|suff(?:ices)?|enough)\s+([A-Za-z_][A-Za-z0-9_']*)\b|\bassert\s*\(\s*([A-Za-z_][A-Za-z0-9_']*)\b/
-
-    for (let start = 0; start < maskedLines.length; start++) {
-      const found = declaration.exec(maskedLines[start])
-      const name = found?.[1] ?? found?.[2]
-      if (!found || !name) continue
-
-      const collected: string[] = []
-      for (let index = start; index < lines.length; index++) {
-        collected.push(lines[index].trim())
-        if (maskedLines[index].trim().endsWith(".")) break
-      }
-      const statement = collected.join("\n").trim()
-      const colon = statement.indexOf(":")
-      if (colon < 0) continue
-      const proposition = statement
-        .slice(colon + 1)
-        .replace(/\)\s*\.\s*$/, "")
-        .replace(/\.\s*$/, "")
-        .replace(/\s+/g, " ")
-        .trim()
-      declarations.push({ name, statement, proposition })
-    }
-    return declarations
+    return LeanProofSource.targetDeclarations(blockText)
   }
 
   function resolveTargetName(markerText: string, blockText: string, parsedTarget?: string) {
@@ -1608,14 +1302,14 @@ export namespace SessionProofWorkflow {
     const scalarTarget = fieldText ?? parsedTarget
     if (
       scalarTarget &&
-      /^[A-Za-z_][A-Za-z0-9_']*$/.test(scalarTarget) &&
+      /^[\p{L}_][\p{L}\p{N}_'!?]*$/u.test(scalarTarget) &&
       !COQ_TARGET_KEYWORDS.has(scalarTarget.toLowerCase())
     ) {
       return scalarTarget
     }
 
     const declarations = targetDeclarations(blockText)
-    const normalizedTarget = fieldText?.replace(/\s+/g, " ").replace(/\.\s*$/, "").trim()
+    const normalizedTarget = fieldText?.replace(/\s+/g, " ").trim()
     if (normalizedTarget) {
       const matching = declarations.filter((entry) => entry.proposition === normalizedTarget)
       if (matching.length === 1) return matching[0].name
@@ -1630,17 +1324,17 @@ export namespace SessionProofWorkflow {
   }
 
   function hasOpenSameIDRegionBefore(source: string, index: number, admitID: string) {
-    const begin = /\(\*\s*proof_region\s+begin\s+([\s\S]*?)\s*\*\)/g
-    const end = /\(\*\s*proof_region\s+end(?:\s+admit_id:\s*([^\s*]+))?\s*\*\)/g
+    const begin = new RegExp(REGION_BEGIN.source, "g")
+    const end = new RegExp(REGION_END.source, "g")
     let beginMatch: RegExpExecArray | null
     while ((beginMatch = begin.exec(source))) {
       if (beginMatch.index >= index) break
-      if (parseAttributes(beginMatch[1]).get("admit_id") !== admitID) continue
+      if (parseAttributes(LeanProofSource.beginAttributes(beginMatch)).get("admit_id") !== admitID) continue
 
       end.lastIndex = begin.lastIndex
       let endMatch: RegExpExecArray | null
       while ((endMatch = end.exec(source))) {
-        const endAdmitID = endMatch[1]
+        const endAdmitID = LeanProofSource.endAdmitID(endMatch)
         if (endAdmitID && endAdmitID !== admitID) continue
         if (endMatch.index > index) return true
         break
@@ -1672,7 +1366,8 @@ export namespace SessionProofWorkflow {
     let match: RegExpExecArray | null
 
     while ((match = REGION_BEGIN.exec(source))) {
-      const attrs = parseAttributes(match[1])
+      const markerAttributes = LeanProofSource.beginAttributes(match)
+      const attrs = parseAttributes(markerAttributes)
       const ownerRaw = attrs.get("owner")
       if (ownerRaw !== "lemma") continue
 
@@ -1687,13 +1382,13 @@ export namespace SessionProofWorkflow {
         match.index >= physicalTheorem.proofEnd
       ) continue
       const declaredTheorem = attrs.get("theorem")
-      if (declaredTheorem && declaredTheorem !== physicalTheorem.name) continue
+      if (declaredTheorem && LeanProofSource.shortName(declaredTheorem) !== LeanProofSource.shortName(physicalTheorem.name)) continue
 
       REGION_END.lastIndex = REGION_BEGIN.lastIndex
       let endMatch: RegExpExecArray | null
       let matchedEnd: RegExpExecArray | undefined
       while ((endMatch = REGION_END.exec(source))) {
-        const endAdmitID = endMatch[1]
+        const endAdmitID = LeanProofSource.endAdmitID(endMatch)
         if (!endAdmitID || endAdmitID === admitID) {
           matchedEnd = endMatch
           break
@@ -1705,12 +1400,12 @@ export namespace SessionProofWorkflow {
       const endMarker = matchedEnd[0]
       const regionStart = match.index
       const regionEnd = matchedEnd.index + matchedEnd[0].length
-      const nestedBegin = /\(\*\s*proof_region\s+begin\s+([\s\S]*?)\s*\*\)/g
+      const nestedBegin = new RegExp(REGION_BEGIN.source, "g")
       const nestedText = source.slice(match.index + match[0].length, matchedEnd.index)
       let nestedMatch: RegExpExecArray | null
       let nestedSameID = false
       while ((nestedMatch = nestedBegin.exec(nestedText))) {
-        if (parseAttributes(nestedMatch[1]).get("admit_id") === admitID) {
+        if (parseAttributes(LeanProofSource.beginAttributes(nestedMatch)).get("admit_id") === admitID) {
           nestedSameID = true
           break
         }
@@ -1724,19 +1419,19 @@ export namespace SessionProofWorkflow {
       )
       const rawKind = attrs.get("kind") ?? "unknown"
       const kind = ObligationKind.safeParse(rawKind).success ? (rawKind as ObligationKind) : "unknown"
-      const targetName = resolveTargetName(match[1], blockText, attrs.get("target"))
+      const targetName = resolveTargetName(markerAttributes, blockText, attrs.get("target"))
       const targetStatement = findTargetStatement(blockText, targetName)
       const dependsOnValue = attrValue(attrs, contractAttrs, "depends_on", "depends")
       const prosaCandidateLemmas = attrList(
         attrValue(attrs, contractAttrs, "prosa", "prosa_candidates", "prosa_candidate_lemmas"),
       )
-      const mathcompCandidateLemmas = attrList(
-        attrValue(attrs, contractAttrs, "mathcomp", "mathcomp_candidates", "mathcomp_candidate_lemmas"),
+      const mathlibCandidateLemmas = attrList(
+        attrValue(attrs, contractAttrs, "mathlib", "mathcomp", "mathlib_candidates", "mathlib_candidate_lemmas"),
       )
       const shapeEvidence = [
         ...attrList(attrValue(attrs, contractAttrs, "evidence", "shape_evidence")),
         ...prosaCandidateLemmas.map((lemma) => `prosa:${lemma}`),
-        ...mathcompCandidateLemmas.map((lemma) => `mathcomp:${lemma}`),
+        ...mathlibCandidateLemmas.map((lemma) => `mathlib:${lemma}`),
       ]
 
       regions.push({
@@ -1766,7 +1461,7 @@ export namespace SessionProofWorkflow {
         targetNormalForm: attrValue(attrs, contractAttrs, "normal_form", "normal", "target_normal_form"),
         shapeEvidence,
         prosaCandidateLemmas,
-        mathcompCandidateLemmas,
+        mathlibCandidateLemmas,
         editableMode: "region",
         beginMarker,
         endMarker,
@@ -2763,7 +2458,7 @@ export namespace SessionProofWorkflow {
     const sameWorkflowTarget = Boolean(
       sameWorkflowFile && existingWorkflow?.decomposition_plan?.theorem === input.plan.theorem,
     )
-    // A proof session is bound to one theorem target in one Coq file. Do not
+    // A proof session is bound to one theorem target in one Lean file. Do not
     // let wording-only theorem/root-goal changes manufacture a fresh planning
     // scope and bypass an accepted or exhausted decomposition state.
     let scoped = sameWorkflowTarget ? existingWorkflow?.decomposition_plan : undefined
@@ -3398,7 +3093,7 @@ export namespace SessionProofWorkflow {
   }
 
   export function recordSourceMutation(file: string, source: string) {
-    if (!file.endsWith(".v")) return []
+    if (!file.endsWith(".lean")) return []
     const normalized = normalizedWorkflowFile(file)
     const refreshed: string[] = []
     let states: ReturnType<typeof statesForFile>
@@ -3473,7 +3168,7 @@ export namespace SessionProofWorkflow {
   ) {
     if (!(await Filesystem.exists(file))) {
       throw new Error(
-        `fresh lemma delegation requires an existing Coq file with a locality-checked proof_region; file not found: ${file}`,
+        `fresh lemma delegation requires an existing Lean file with a locality-checked proof_region; file not found: ${file}`,
       )
     }
 
@@ -3481,7 +3176,7 @@ export namespace SessionProofWorkflow {
     const { state, parsed } = refresh(sessionID, file, source)
     if (state.queue.length === 0) {
       throw new Error(
-        `fresh lemma delegation requires a proof_region owner: lemma with a locality certificate in ${file}; a bare admit or theorem-level skeleton is not lemma-ready`,
+        `fresh lemma delegation requires a proof_region owner: lemma with a locality certificate in ${file}; a bare \`sorry\` or theorem-level skeleton is not lemma-ready`,
       )
     }
 
@@ -3603,28 +3298,17 @@ export namespace SessionProofWorkflow {
     return { line, character: index - lineStart }
   }
 
+  /** Entry of a region's proof: just after `:= (by` of its exported `have` (prompt_revision §0.1). */
   function proofBlockEntryPosition(source: string, block: ParsedBlock) {
-    const masked = maskCoqCommentsAndStrings(block.blockText) ?? block.blockText
+    const masked = maskCommentsAndStrings(block.blockText) ?? block.blockText
     const targetPattern = block.targetName
-      ? new RegExp(`\\b(?:have|suff(?:ices)?|assert|enough)\\s+${escapeRegExp(block.targetName)}\\b`)
-      : /\b(?:have|suff(?:ices)?|assert|enough)\b/
+      ? new RegExp(`\\b(?:have|suffices|show)\\s+${escapeRegExp(block.targetName)}(?=[\\s:(])`, "u")
+      : /\b(?:have|suffices|show)\b/
     const target = targetPattern.exec(masked)
-    if (!target || target.index === undefined) return positionOf(source, block.blockStart)
-
-    let terminator = -1
-    for (let index = target.index + target[0].length; index < masked.length; index++) {
-      if (masked[index] !== ".") continue
-      const previous = masked[index - 1]
-      const next = masked[index + 1]
-      if (previous && next && /[A-Za-z0-9_']/.test(previous) && /[A-Za-z0-9_']/.test(next)) continue
-      terminator = index
-      break
-    }
-    if (terminator < 0) return positionOf(source, block.blockStart)
-
-    const opener = masked.indexOf("{", terminator + 1)
-    if (opener < 0) return positionOf(source, block.blockStart)
-    return positionOf(source, block.blockStart + opener + 1)
+    if (!target) return positionOf(source, block.blockStart)
+    const wrapper = /:=\s*\(\s*by\b/.exec(masked.slice(target.index))
+    if (!wrapper) return positionOf(source, block.blockStart)
+    return positionOf(source, block.blockStart + target.index + wrapper.index + wrapper[0].length)
   }
 
   function semanticGoalFingerprint(goal: string) {
@@ -3636,48 +3320,34 @@ export namespace SessionProofWorkflow {
     )
   }
 
-  function skipIgnoredBackward(text: string, index: number) {
-    let cursor = index
-    while (cursor > 0) {
-      while (cursor > 0 && /\s/.test(text[cursor - 1])) cursor -= 1
-      if (text.slice(cursor - 2, cursor) !== "*)") break
-
-      const commentStart = text.lastIndexOf("(*", cursor - 2)
-      if (commentStart < 0) break
-      cursor = commentStart
-    }
-    return cursor
-  }
-
-  function localStatementBefore(source: string, headerStart: number) {
-    const end = skipIgnoredBackward(source, headerStart)
-    if (end <= 0 || source[end - 1] !== ".") return undefined
-
-    const windowStart = Math.max(0, end - 4000)
-    const window = source.slice(windowStart, end)
-    const localStatement = /(^|\n)\s*(?:have|suff(?:ices)?|assert|enough)\b/g
-    const matches = [...window.matchAll(localStatement)]
-    const last = matches.at(-1)
-    if (!last || last.index === undefined) return undefined
-
-    const start = windowStart + last.index + (last[1] === "\n" ? 1 : 0)
-    const statement = source.slice(start, end).trim()
-    const proofPosition = positionOf(source, end)
-    return { statement, proofPosition }
-  }
-
+  /** `have h : P` / `have h (x : T) : P` → `P` (the first `:` at bracket depth 0). */
   function goalFromStatement(statement: string) {
-    const body = statement.endsWith(".") ? statement.slice(0, -1).trim() : statement.trim()
-    const colon = body.indexOf(":")
-    if (colon < 0) return body
-    const goal = body.slice(colon + 1).trim()
-    return /^assert\s*\(/.test(body) && goal.endsWith(")") ? goal.slice(0, -1).trim() : goal
+    const body = statement.trim().replace(/\s*:=[\s\S]*$/, "")
+    let depth = 0
+    for (let index = 0; index < body.length; index++) {
+      const char = body[index]
+      if ("([{⟨⦃".includes(char)) depth++
+      else if (")]}⟩⦄".includes(char)) depth--
+      else if (depth === 0 && char === ":" && body[index + 1] !== "=") return body.slice(index + 1).trim()
+    }
+    return body
   }
 
-  const LEMMA_READY_LAYERS = new Set(["semantic", "shape", "prosa", "mathcomp", "coq_shape", "local_arithmetic"])
+  const LEMMA_READY_LAYERS = new Set(["semantic", "shape", "prosa", "mathlib", "lean_shape", "local_arithmetic", "mathcomp", "coq_shape"])
 
   function normalizeTargetShape(text: string | undefined) {
     return (text ?? "")
+      .replace(/→/g, " -> ")
+      .replace(/↔/g, " <-> ")
+      .replace(/≤/g, " <= ")
+      .replace(/≥/g, " >= ")
+      .replace(/≠/g, " <> ")
+      .replace(/!=/g, " <> ")
+      .replace(/∀/g, " forall ")
+      .replace(/∃/g, " exists ")
+      .replace(/∑/g, " sum ")
+      .replace(/\bλ\b/g, " fun ")
+      .replace(/↦|=>/g, " => ")
       .replace(/\$+/g, " ")
       .replace(/\\leq?|\\le/g, " <= ")
       .replace(/\\geq?|\\ge/g, " >= ")
@@ -3696,9 +3366,10 @@ export namespace SessionProofWorkflow {
 
   function hasGroundedProofEvidence(block: ParsedBlock) {
     return (
-      block.shapeEvidence.some((entry) => /^(?:prosa|mathcomp|local|context|coq|compiler):/i.test(entry)) ||
+      // D13 evidence prefixes; legacy mathcomp:/coq: are still recognised (with a review warning elsewhere)
+      block.shapeEvidence.some((entry) => /^(?:prosa|mathlib|local|context|lean|compiler|mathcomp|coq):/i.test(entry)) ||
       block.prosaCandidateLemmas.length > 0 ||
-      block.mathcompCandidateLemmas.length > 0
+      block.mathlibCandidateLemmas.length > 0
     )
   }
 
@@ -3736,7 +3407,7 @@ export namespace SessionProofWorkflow {
       if (block.targetStatement && LOCALLY_RECONCILABLE_TARGET_SHAPE_KINDS.has(item.kind)) {
         warning =
           `target_shape_review warning: the accepted plan normal form for ${item.admit_id} is missing or stale. ` +
-          "Use the actual exported Coq target as authoritative, keep that target unchanged, and repair only its local proof."
+          "Use the actual exported Lean target as authoritative, keep that target unchanged, and repair only its local proof."
       } else {
         if (!block.targetNormalForm) missing.push("normal_form")
         if (!targetShapeCurrent) missing.push("target_shape_review")
@@ -3787,9 +3458,9 @@ export namespace SessionProofWorkflow {
       goal,
       goal_fingerprint: semanticGoalFingerprint(goal),
       proof_position: proofBlockEntryPosition(source, block),
-      replace: [`Replace or update the entire existing proof_region for admit_id ${item.admit_id}. The region must wrap the exported local target statement ${block.targetName ?? "the assigned target"} together with its complete proof block, not only the text inside that target's braces. Treat that exported target statement as the main prover's split contract: keep its name and proposition unchanged whenever possible, write proof text inside its block, and add same-region helper pose/have/assert statements before it when useful. If the target statement itself is wrong, return needs_subgoal_remodel instead of silently changing it. Preserve all text outside the region, including any parent composition step that uses the exported target after the end marker.`, targetShapeWarning].filter(Boolean).join(" "),
+      replace: [`Replace or update the entire existing proof_region for admit_id ${item.admit_id}. The region must wrap the exported local target \`have ${block.targetName ?? "<target>"} : … := (by … )\` together with its complete proof term, not only the tactics inside \`by\`. Treat that exported target statement as the main prover's split contract: keep its name and proposition unchanged whenever possible, write the proof inside its \`(by … )\` wrapper, and add same-region helper \`have\` statements before it when useful. If the target statement itself is wrong, return needs_subgoal_remodel instead of silently changing it. Preserve all text outside the region, including any parent composition step that uses the exported target after the end marker.`, targetShapeWarning].filter(Boolean).join(" "),
       skeleton: block.blockText,
-      done: `The region is done only when ${file} no longer contains a pending admit for admit_id ${item.admit_id}, the proof_region begin/end markers are still present with the same admit_id around the preserved exported target statement and its proof block, text outside the region is unchanged, and the file validates after merge.`,
+      done: `The region is done only when ${file} no longer contains a \`sorry\` for admit_id ${item.admit_id}, the proof_region begin/end markers are still present with the same admit_id around the preserved exported target statement and its proof block, text outside the region is unchanged, and the file validates after merge.`,
       obligation: {
         kind: item.kind,
         proof_plan_node: block.proofPlanNode,
@@ -3804,7 +3475,7 @@ export namespace SessionProofWorkflow {
         expected: block.expected,
         target_normal_form: targetShapeWarning ? goal : block.targetNormalForm,
         prosa_candidate_lemmas: block.prosaCandidateLemmas,
-        mathcomp_candidate_lemmas: block.mathcompCandidateLemmas,
+        mathlib_candidate_lemmas: block.mathlibCandidateLemmas,
         shape_evidence: block.shapeEvidence,
         locality_check: {
           all_dependencies_available: true,
@@ -3915,7 +3586,7 @@ export namespace SessionProofWorkflow {
       return {
         ok: false,
         escalation_type: "blocked_by_sibling_syntax" as const,
-        reason: `Solved proof_result for admit_id ${admitID} still leaves a pending admit or empty proof block inside the assigned region.`,
+        reason: `Solved proof_result for admit_id ${admitID} still leaves a \`sorry\` inside the assigned region.`,
       }
     }
 
@@ -3937,34 +3608,30 @@ export namespace SessionProofWorkflow {
   }
 
   function finalTheoremGate(source: string, theorem: string) {
-    const text = theoremRange(source, theorem)
-    if (!text) {
+    const span = theoremSpans(source).find((candidate) => candidate.name === theorem)
+    const text = span ? source.slice(span.start, span.end) : undefined
+    if (!text || !span) {
       return {
         ok: false,
         reason: `Final theorem gate could not find theorem ${theorem}.`,
       }
     }
 
-    const masked = maskCoqCommentsAndStrings(text)
+    const masked = maskCommentsAndStrings(text)
     if (!masked) {
       return {
         ok: false,
         reason: `Final theorem gate could not parse theorem ${theorem} because it contains an unterminated comment or string.`,
       }
     }
-    const terminators = [...masked.matchAll(/\b(Qed|Admitted|Abort)\./g)]
-    const final = terminators.at(-1)?.[1]
-    if (final !== "Qed") {
-      return {
-        ok: false,
-        reason: `Final theorem gate requires theorem ${theorem} to end with Qed.; found ${final ? `${final}.` : "no proof terminator"}.`,
-      }
+    if (span.proofStart === undefined) {
+      return { ok: false, reason: `Final theorem gate requires theorem ${theorem} to have a \`:=\` proof.` }
     }
-
-    if (UNFINISHED_PROOF.test(masked) || EMPTY_PROOF_BLOCK.test(masked)) {
+    // Lean has no terminator (DECISIONS R2): the theorem is complete when no `sorry`/`admit` remains in it.
+    if (UNFINISHED_PROOF.test(masked)) {
       return {
         ok: false,
-        reason: `Final theorem gate requires theorem ${theorem} to contain no admit, empty proof block, Admitted., or Abort.`,
+        reason: `Final theorem gate requires theorem ${theorem} to contain no \`sorry\` or \`admit\`.`,
       }
     }
 
@@ -4013,14 +3680,14 @@ export namespace SessionProofWorkflow {
     theorem?: string,
   ): ProofProgressMetrics {
     const text = theorem ? (theoremRange(source, theorem) ?? source) : source
-    const masked = maskCoqCommentsAndStrings(text) ?? text
+    const masked = maskCommentsAndStrings(text) ?? text
+    // Lean: placeholders are `sorry`/`admit`; there are no empty-block holes and no proof terminators.
     const admitCount = countMatches(masked, PENDING_PLACEHOLDER_GLOBAL)
-    const emptyBlockCount = countMatches(masked, EMPTY_PROOF_BLOCK_GLOBAL)
-    const admittedTerminatorCount = countMatches(masked, /\bAdmitted\./g)
-    const abortTerminatorCount = countMatches(masked, /\bAbort\./g)
-    const terminators = [...masked.matchAll(/\b(Qed|Admitted|Abort)\./g)]
-    const finalTerminator = terminators.at(-1)?.[1]
-    const unfinishedCount = admitCount + emptyBlockCount + admittedTerminatorCount + abortTerminatorCount
+    const emptyBlockCount = 0
+    const admittedTerminatorCount = 0
+    const abortTerminatorCount = 0
+    const unfinishedCount = admitCount
+    const finalTerminator = unfinishedCount === 0 ? "complete" : undefined
     const blocks = parseProofObligations(source).filter((block) => !theorem || block.theorem === theorem)
     const state = get(sessionID)
     const items = new Map(
@@ -4042,7 +3709,7 @@ export namespace SessionProofWorkflow {
         unresolvedSemanticDebtIDs.push(debtID)
       }
     }
-    if (finalTerminator !== "Qed") unresolvedSemanticDebtIDs.push(`theorem:${theorem ?? "unknown"}:final_qed`)
+    if (unfinishedCount > 0) unresolvedSemanticDebtIDs.push(`theorem:${theorem ?? "unknown"}:final_theorem`)
 
     return {
       theorem,
@@ -4052,7 +3719,7 @@ export namespace SessionProofWorkflow {
       admitted_terminator_count: admittedTerminatorCount,
       abort_terminator_count: abortTerminatorCount,
       final_terminator: finalTerminator,
-      qed_distance: finalTerminator === "Qed" ? (unfinishedCount === 0 ? 0 : 1) : 2,
+      qed_distance: unfinishedCount === 0 ? 0 : 1,
       unresolved_semantic_debt: unresolvedSemanticDebtIDs.length,
       unresolved_semantic_debt_ids: unresolvedSemanticDebtIDs,
       certified_semantic_debt_ids: certifiedSemanticDebtIDs,
@@ -4130,7 +3797,7 @@ export namespace SessionProofWorkflow {
       level = "hard"
       workspaceCommittable = true
       reason = "target theorem passed the final gate"
-      if (receiptBase) receipt = progressReceipt({ ...receiptBase, kind: "final_qed", level, compiler_signature: lifecycle?.compiler_signature })
+      if (receiptBase) receipt = progressReceipt({ ...receiptBase, kind: "final_theorem", level, compiler_signature: lifecycle?.compiler_signature })
     } else if (lifecycle?.action === "certified") {
       status = "advanced"
       accepted = true
@@ -4195,13 +3862,13 @@ export namespace SessionProofWorkflow {
         "recorded the current nonfinal compile as a baseline; accepted progress requires a progress receipt"
     } else if (current.unfinished_count > previous.unfinished_count || current.qed_distance > previous.qed_distance) {
       status = "regressed"
-      reason = `unfinished proof count or final-Qed distance regressed from ${previous.unfinished_count}/${previous.qed_distance} to ${current.unfinished_count}/${current.qed_distance}`
+      reason = `unfinished proof count regressed from ${previous.unfinished_count} to ${current.unfinished_count}`
     } else {
       status = "stalled"
       reason =
         current.unfinished_count < previous.unfinished_count || current.qed_distance < previous.qed_distance
-          ? "syntactic proof debt decreased, but no new proof_region compiler certificate or final Qed was recorded"
-          : "compile succeeded without a new proof_region compiler certificate or final Qed"
+          ? "fewer `sorry` placeholders remain, but no new proof_region certificate or finished theorem was recorded"
+          : "the file checks, but without a new proof_region certificate or finished theorem"
     }
 
     if (!previous || accepted || level === "structural") {
@@ -4245,7 +3912,7 @@ export namespace SessionProofWorkflow {
     return { theorem, final_theorem_gate: final }
   }
 
-  export function classifyCoqcSuccess(
+  export function classifyCompileSuccess(
     sessionID: string,
     file: string,
     source: string,
@@ -4272,7 +3939,7 @@ export namespace SessionProofWorkflow {
         updated: Date.now(),
       })
     }
-    const maskedTheoremText = maskCoqCommentsAndStrings(theoremText ?? source)
+    const maskedTheoremText = maskCommentsAndStrings(theoremText ?? source)
     const hasUnfinishedProof =
       metrics.unfinished_count > 0 ||
       !maskedTheoremText ||
@@ -4305,14 +3972,15 @@ export namespace SessionProofWorkflow {
     const scopeStart = block?.blockStart ?? span.proofStart ?? span.start
     const scopeEnd = block?.endIndex ?? span.end
     const scopeText = source.slice(scopeStart, scopeEnd)
-    const maskedScope = maskCoqCommentsAndStrings(scopeText) ?? scopeText
+    const maskedScope = maskCommentsAndStrings(scopeText) ?? scopeText
     const relativeOffset = Math.max(0, Math.min(maskedScope.length, offset - scopeStart))
+    // Lean tactic blocks are line-structured: the "sentence" is the non-blank line holding the error.
     const maskedPrefix = maskedScope.slice(0, relativeOffset)
-    const sentenceIndex = [...maskedPrefix.matchAll(/\.(?=\s|$)/g)].length
-    const sentenceStart = maskedPrefix.lastIndexOf(".") + 1
-    const nextTerminator = maskedScope.indexOf(".", relativeOffset)
+    const sentenceIndex = maskedPrefix.split("\n").filter((line) => line.trim()).length
+    const lineStart = maskedPrefix.lastIndexOf("\n") + 1
+    const lineEnd = maskedScope.indexOf("\n", relativeOffset)
     const sentence = maskedScope
-      .slice(sentenceStart, nextTerminator >= 0 ? nextTerminator + 1 : maskedScope.length)
+      .slice(lineStart, lineEnd >= 0 ? lineEnd : maskedScope.length)
       .replace(/\s+/g, " ")
       .trim()
     return ProofErrorAnchor.parse({
@@ -4340,7 +4008,7 @@ export namespace SessionProofWorkflow {
     return current.sentence_index > previous.sentence_index
   }
 
-  export function classifyCoqcFailure(
+  export function classifyCompileFailure(
     sessionID: string,
     file: string,
     source: string,
@@ -4381,7 +4049,7 @@ export namespace SessionProofWorkflow {
             normalized_file: normalizedFile,
             source_hash: sourceHash(source),
             anchor: current,
-            message: input.first_error_message?.trim() || current.normalized_error || "Rocq compiler error",
+            message: input.first_error_message?.trim() || current.normalized_error || "Lean error",
             recorded_at: Date.now(),
           },
           updated: Date.now(),
@@ -4423,8 +4091,8 @@ export namespace SessionProofWorkflow {
         has_unfinished_proof: true,
         proof_progress: {
           ...progress,
-          // The exact region prefix is certified, but the complete staged
-          // theorem still failed at its final Qed. Keep the full draft in the
+          // The region is certified, but the complete staged theorem still
+          // has errors elsewhere. Keep the full draft in the
           // transaction journal instead of publishing it as a committable
           // workspace snapshot.
           workspace_committable: false,
@@ -4502,8 +4170,7 @@ export namespace SessionProofWorkflow {
     const scaffold = await Validation.scaffold(file, source)
     if (
       !scaffold.ok &&
-      !expectedIncompleteQedScaffold(file, source, scaffold) &&
-      !compilerReachedPastRegion(file, item, scaffold)
+      !errorFreeBetween(scaffold, item.region_start_line ?? item.start_line, item.region_end_line ?? item.end_line)
     ) {
       const failure = validationEscalation(file, item, scaffold)
       return {
@@ -4575,9 +4242,10 @@ export namespace SessionProofWorkflow {
       text
         // Region marker IDs and explanatory comments are administrative text;
         // changing them must not evade repeated-blocker detection. Keep all
-        // actual Coq terms and tactic identifiers so a substantive repair gets
-        // a fresh attempt even when the compiler message is unchanged.
-        .replace(/\(\*[\s\S]*?\*\)/g, " ")
+        // actual Lean terms and tactics so a substantive repair gets a fresh
+        // attempt even when the error message is unchanged.
+        .replace(/\/-[\s\S]*?-\//g, " ")
+        .replace(/--[^\n]*/g, " ")
         .replace(/\s+/g, " ")
         .trim(),
     )
@@ -4832,36 +4500,9 @@ export namespace SessionProofWorkflow {
     return result.first_error_line > end
   }
 
-  function expectedIncompleteQedScaffold(file: string, source: string, result: ValidationResult) {
-    if (
-      result.ok ||
-      result.failure_kind !== "compiler_error" ||
-      !diagnosticFileMatches(file, result.first_error_file) ||
-      result.first_error_line === undefined ||
-      !/attempt to save an incomplete proof/i.test(result.message ?? "")
-    ) {
-      return false
-    }
-
-    const errorLine = source.split(/\r?\n/)[result.first_error_line - 1] ?? ""
-    const maskedLine = maskCoqCommentsAndStrings(errorLine) ?? errorLine
-    if (!/\bQed\s*\./.test(maskedLine)) return false
-
-    const errorOffset = sourceOffset(source, result.first_error_line - 1, 0)
-    const theorem = errorOffset === undefined
-      ? undefined
-      : theoremSpanAtOffset(theoremSpans(source), errorOffset)
-    if (!theorem) return false
-
-    const theoremBlocks = parseProofObligations(source).filter((block) => block.theorem === theorem.name)
-    if (
-      theoremBlocks.some(
-        (block) => result.first_error_line! >= block.startLine && result.first_error_line! <= block.endLine,
-      )
-    ) {
-      return false
-    }
-    return theoremBlocks.some((block) => block.pending && block.endLine < result.first_error_line!)
+  /** Rocq's "attempt to save an incomplete proof" has no Lean analogue: `sorry` elsewhere is only a warning. */
+  function expectedIncompleteQedScaffold(_file: string, _source: string, _result: ValidationResult) {
+    return false
   }
 
   function lifecycleTransition(input: ProofRegionLifecycleTransition) {
@@ -4877,6 +4518,8 @@ export namespace SessionProofWorkflow {
     first_error_file?: string
     first_error_line?: number
     first_error_message?: string
+    /** Every error line of the check (Lean reports all errors); defaults to the first error line. */
+    error_lines?: number[]
     validated_source_current?: boolean
   }): Promise<ProofRegionLifecycleTransition> {
     const file = normalizedWorkflowFile(input.file)
@@ -5062,25 +4705,18 @@ export namespace SessionProofWorkflow {
       })
     }
 
-    // Coq checks a file sequentially.  A diagnostic after a hole-free
-    // proof_region is therefore also a compiler certificate for that exact
-    // prefix, even when the whole theorem cannot be closed yet (for example,
-    // Qed. reports an incomplete proof because later sibling regions still
-    // contain admits).  Previously these theorem-spine failures were returned
-    // as unmapped_failure, which left an already checked first region stuck in
-    // "unvalidated" forever and prevented the scheduler from dispatching the
-    // next region.
-    const mappedBlock =
-      diagnosticFileMatches(file, input.first_error_file) && input.first_error_line !== undefined
-        ? parsed.find(
-            (block) =>
-              input.first_error_line! >= block.startLine && input.first_error_line! <= block.endLine,
-          )
-        : undefined
-    const prefixCertifiedBlocks =
-      !mappedBlock && diagnosticFileMatches(file, input.first_error_file) && input.first_error_line !== undefined
-        ? parsed.filter((block) => !block.pending && block.endLine < input.first_error_line!)
-        : []
+    // Lean elaborates the whole file and reports every error; a `sorry` elsewhere is only a warning. A hole-free
+    // proof_region with no error line inside it is therefore certified by this check wherever it is in the file,
+    // even when other parts of the theorem still fail (no Rocq-style "everything before the first error" rule).
+    const errorLines = diagnosticFileMatches(file, input.first_error_file)
+      ? input.error_lines ?? (input.first_error_line !== undefined ? [input.first_error_line] : [])
+      : []
+    const blockHasError = (block: ParsedBlock) =>
+      errorLines.some((line) => line >= block.startLine && line <= block.endLine)
+    const mappedBlock = parsed.find(blockHasError)
+    const prefixCertifiedBlocks = errorLines.length
+      ? parsed.filter((block) => !block.pending && !blockHasError(block))
+      : []
     if (prefixCertifiedBlocks.length > 0) {
       const eligible = new Map(
         prefixCertifiedBlocks.map((block) => [`${block.theorem}\u0000${block.admit_id}`, block]),
@@ -5158,7 +4794,7 @@ export namespace SessionProofWorkflow {
         })
       }
 
-      if (callerChanged || firstChanged) {
+      if ((callerChanged || firstChanged) && !mappedBlock) {
         const changed = callerChanged ?? firstChanged!
         return lifecycleTransition({
           action: callerChanged ? "certified" : "unchanged",
@@ -5167,8 +4803,8 @@ export namespace SessionProofWorkflow {
           new_status: callerChanged?.newStatus,
           compiler_signature: compilerSignature,
           next_action: callerChanged
-            ? "the compiler reached a later failure after this exact proof-region prefix; continue from the first remaining unresolved proof_region"
-            : "a later compiler failure certified a prefix owned by another theorem-local workflow",
+            ? "this proof_region checks without errors although other parts of the file still fail; continue from the first remaining unresolved proof_region"
+            : "the check certified a proof_region owned by another theorem-local workflow",
           affected_sessions: affectedSessions,
         })
       }
@@ -5234,6 +4870,8 @@ export namespace SessionProofWorkflow {
         }
 
         if (!item.validation_certificate && item.status !== "solved") return item
+        // Lean: a later region keeps its certificate unless the check reports an error inside it.
+        if (block && !blockHasError(block)) return item
         changed = true
         return {
           ...item,
@@ -5423,7 +5061,7 @@ export namespace SessionProofWorkflow {
     if (tracked.repeated && tracked.incident) {
       const now = Date.now()
       const reason =
-        "same checkpoint failure recurred without a substantive Coq source change; admit_id, marker, comment, and whitespace changes are not proof progress"
+        "same checkpoint failure recurred without a substantive Lean source change; admit_id, marker, comment, and whitespace changes are not proof progress"
       set(sessionID, {
         ...tracked.state,
         phase: "prover",
@@ -5791,7 +5429,7 @@ export namespace SessionProofWorkflow {
         ? "The verified context audit found the compared expressions convertible. Try one explicit local normalization or bridge that exposes that convertibility in the current goal before escalating again."
         : audit.outcome === "not_convertible"
           ? "The verified audit found the compared expressions non-convertible, but the report did not document a failed concrete local bridge. Attempt that smallest bridge once and record the exact failure if escalation remains necessary."
-          : "The verified context audit was inconclusive. Re-inspect only the exact hidden/implicit/Section/Module/alias mismatch and make one concrete local bridge attempt before returning the best structured result."
+          : "The verified context audit was inconclusive. Re-inspect only the exact hidden/implicit/instance/\`variable\`/namespace/alias mismatch and make one concrete local bridge attempt before returning the best structured result."
       : "The context-normalization evidence was missing or could not be verified. Perform one targeted live-context inspection, or one concrete local normalization bridge attempt, before returning the best structured result."
 
     return {
@@ -5848,13 +5486,13 @@ export namespace SessionProofWorkflow {
       : report.proposed_children.map((child) => child.statement)
     const failedLemma = failedLemmaFromReport(report, [
       ...(block?.prosaCandidateLemmas ?? []),
-      ...(block?.mathcompCandidateLemmas ?? []),
+      ...(block?.mathlibCandidateLemmas ?? []),
     ])
     if (outcome.escalationType === "needs_preceding_bridge" && !failedLemma) return
     const planNode = state.decomposition_plan?.accepted_plan?.nodes.find(
       (node) => (node.node_id ?? node.paper_step_id) === block?.proofPlanNode,
     )
-    const auditedCandidate = [...(planNode?.prosa_candidate_lemmas ?? []), ...(planNode?.mathcomp_candidate_lemmas ?? [])]
+    const auditedCandidate = [...(planNode?.prosa_candidate_lemmas ?? []), ...(planNode?.mathlib_candidate_lemmas ?? [])]
       .find((candidate) => candidate.name === failedLemma)
     const auditedMissingPremises = auditedCandidate?.audit?.verdict === "bridge_required"
       ? auditedCandidate.audit.residual_premises
@@ -6092,11 +5730,12 @@ export namespace SessionProofWorkflow {
   function theoremStructureFingerprint(source: string, theorem?: string) {
     const text = (theorem ? theoremRange(source, theorem) : undefined) ?? source
     const normalized = text
-      .replace(/\(\*[\s\S]*?\*\)/g, " ")
+      .replace(/\/-[\s\S]*?-\//g, " ")
+      .replace(/--[^\n]*/g, " ")
       .replace(/\b(?:admit_id|plan_node|target|owner|theorem)\s*:\s*[^\s*]+/g, " ")
       .replace(/"(?:\\.|[^"\\])*"/g, "STRING")
       .replace(/\b\d+\b/g, "NUMBER")
-      .replace(/\b[A-Za-z_][A-Za-z0-9_']*\b/g, "IDENT")
+      .replace(/[\p{L}_][\p{L}\p{N}_'!?]*/gu, "IDENT")
       .replace(/\s+/g, "")
     return hashText(normalized)
   }
@@ -6697,11 +6336,11 @@ export namespace SessionProofWorkflow {
     const binding = SessionProof.get(input.sessionID)
     const previous = get(input.sessionID)
     const file = binding?.file ?? previous?.file
-    if (!file || !file.endsWith(".v") || !(await Filesystem.exists(file))) {
+    if (!file || !file.endsWith(".lean") || !(await Filesystem.exists(file))) {
       return {
         active: false,
         decision: "allowed_without_bound_proof_workflow",
-        reason: "no live Rocq proof workflow is bound to this task session",
+        reason: "no live Lean proof workflow is bound to this task session",
         source_changed: false,
       }
     }
@@ -6848,7 +6487,7 @@ export namespace SessionProofWorkflow {
     const repairWorkerAssignment = activeRepairWorkerAssignments.get(sessionID)
     if (repairWorkerAssignment) {
       const binding = SessionProof.get(sessionID)
-      if (!binding || !binding.file.endsWith(".v")) return undefined
+      if (!binding || !binding.file.endsWith(".lean")) return undefined
       if (!(await Filesystem.exists(binding.file))) return undefined
 
       const source = await ProofEditTransaction.readSource(sessionID, binding.file)
@@ -6915,7 +6554,7 @@ export namespace SessionProofWorkflow {
     const lemmaWorkerAssignment = activeLemmaAssignments.get(sessionID)
     if (lemmaWorkerAssignment) {
       const binding = SessionProof.get(sessionID)
-      if (!binding || !binding.file.endsWith(".v")) return undefined
+      if (!binding || !binding.file.endsWith(".lean")) return undefined
       if (!(await Filesystem.exists(binding.file))) return undefined
 
       const source = await ProofEditTransaction.readSource(sessionID, binding.file)
@@ -6977,7 +6616,7 @@ export namespace SessionProofWorkflow {
     }
 
     const binding = SessionProof.get(sessionID)
-    if (!binding || !binding.file.endsWith(".v")) return undefined
+    if (!binding || !binding.file.endsWith(".lean")) return undefined
     if (!(await Filesystem.exists(binding.file))) return undefined
     if (ProofEditTransaction.requiresValidation(sessionID, binding.file)) return undefined
 
@@ -7292,10 +6931,10 @@ export namespace SessionProofWorkflow {
       `Obligation kind: ${item.kind}.`,
       item.target_name ? `Exported target: ${item.target_name}.` : undefined,
       "This proof_region is ready because every declared proof-region dependency is compiler-certified. Work only in this assigned region; file order is a priority among ready nodes, not an undeclared semantic dependency.",
-      "Inside this assigned proof_region, treat the first unresolved local admit or empty `{}` as the only writable proof hole. Do not write proof text for later local have/assert/suff blocks until this current hole validates.",
-      "The proof_region must wrap the exported target statement and its complete `{ ... }` proof block, not just the proof body inside braces.",
+      "Inside this assigned proof_region, treat the first unresolved `sorry` as the only writable proof hole. Do not write proof text for later local `have` blocks until this current hole checks.",
+      "The proof_region must wrap the exported target `have h : P := (by … )` with its complete parenthesised proof term, not just the tactics inside `by`.",
       "Treat the exported target statement as the prover-authored subgoal contract: edit the proof block and same-region helpers, but keep the target name and proposition unchanged unless the assignment explicitly requires remodeling.",
-      "You may add sibling helper pose/have/assert statements inside the proof_region before the exported target, but you must not edit text outside the region.",
+      "You may add sibling helper `have` statements inside the proof_region before the exported target, but you must not edit text outside the region.",
       "Do not move the proof_region end marker to include parent composition such as exact/rewrite/apply of the exported target; those steps belong outside the region.",
       "Do not redesign the outer theorem spine.",
       "Return solved, split, or escalate according to the lemma runtime policy. If you split, keep all child obligations inside this same region and this same lemma session; do not launch child lemma subagents, and do not hand control back to prover unless you must escalate.",
@@ -7310,7 +6949,7 @@ export namespace SessionProofWorkflow {
       "Keep the final objective in view: finish the target theorem proof and get the file compiling. Do not respond with read-only stalling or disconnected edits.",
       `Stay inside admit_id ${item.admit_id} in theorem ${item.theorem}.`,
       "Do not skip ahead to any later sibling proof_region; this admit_id remains the scheduling blocker until it is solved, remodeled by Layer 1, or escalated with evidence.",
-      "Resume at the first unresolved local admit or empty `{}` inside this same proof_region; do not fill later local blocks until the current one validates.",
+      "Resume at the first unresolved `sorry` inside this same proof_region; do not fill later local blocks until the current one checks.",
       "If you previously returned split, keep the decomposition inside this same region and this same lemma session, recurse in DFS/LIFO order, and only escalate if the region truly requires theorem-level intervention.",
       item.context_audit_feedback
         ? `Context-audit advisory retry: ${item.context_audit_feedback} This is one bounded corrective resume, not a permanent escalation ban; after one targeted inspection or concrete local bridge attempt, return the best structured result with evidence.`
@@ -7424,8 +7063,17 @@ export namespace SessionProofWorkflow {
 
     const suffixStart = currentRange.end - protectedSuffix.length
     const maskedSource = maskEmptyProofBlocksAfter(input.source, suffixStart, currentRange.end)
-    const result = await Validation.prefix(input.file, maskedSource)
-    if (!result.ok) return result
+    const checked = await Validation.prefix(input.file, maskedSource)
+    // Lean reports every error: only errors inside the assigned region block this lemma's prefix.
+    if (
+      !errorFreeBetween(
+        checked,
+        lineNumberOf(input.source, currentRange.start),
+        lineNumberOf(input.source, Math.max(currentRange.start, currentRange.end - 1)),
+      )
+    )
+      return checked
+    const result: ValidationResult = checked.ok ? checked : { ...checked, ok: true, status: "ok" }
 
     const currentPrefix = currentRange.text.slice(0, suffixStart - currentRange.start)
     const prefixComplete = !hasPendingProofHole(currentPrefix)
@@ -7438,7 +7086,7 @@ export namespace SessionProofWorkflow {
       ...result,
       prefix_complete: false,
       message:
-        "current prefix compiles, but the current first proof hole still contains an admit or empty block; keep repairing this block before moving on",
+        "current prefix checks, but the current first proof hole still contains `sorry`; keep repairing this block before moving on",
     }
   }
 
@@ -7450,7 +7098,7 @@ export namespace SessionProofWorkflow {
     after: string
   }) {
     if (input.agent !== "lemma") return
-    if (!input.file.endsWith(".v")) return
+    if (!input.file.endsWith(".lean")) return
     if (input.before === input.after) return
 
     const assignment = activeLemmaAssignments.get(input.sessionID)
@@ -7491,20 +7139,8 @@ export namespace SessionProofWorkflow {
     const protectedSuffix = (validatedRange?.text ?? beforeRange.text).slice(hole.end)
     if (!afterRange.text.endsWith(protectedSuffix)) {
       throw new Error(
-        `lemma agent cannot edit text after the first unresolved local proof hole in admit_id ${assignment.admit_id}; solve and compile/validate the current ${hole.kind} before writing later have/assert/suff blocks.`,
+        `lemma agent cannot edit text after the first unresolved local proof hole in admit_id ${assignment.admit_id}; solve and check the current ${hole.kind} before writing later \`have\` blocks.`,
       )
-    }
-
-    if (hole.kind === "empty proof block") {
-      const editablePrefix =
-        protectedSuffix.length > 0
-          ? afterRange.text.slice(0, afterRange.text.length - protectedSuffix.length)
-          : afterRange.text
-      if (!editablePrefix.trimEnd().endsWith("}")) {
-        throw new Error(
-          `lemma agent must preserve the partition braces for the current proof block in admit_id ${assignment.admit_id}; fill inside the existing { ... } block instead of replacing it with a by-proof or deleting the braces.`,
-        )
-      }
     }
 
     const targetName = assignment.obligation?.target_name
@@ -7549,7 +7185,7 @@ export namespace SessionProofWorkflow {
     before: string
     after: string
   }) {
-    if (!input.file.endsWith(".v")) return
+    if (!input.file.endsWith(".lean")) return
     if (!WIDE_PROOF_EDIT_AGENTS.has(input.agent)) return
     if (input.before === input.after) return
 
@@ -7577,7 +7213,7 @@ export namespace SessionProofWorkflow {
     takeover?: boolean
     takeoverReason?: string
   }) {
-    if (!input.file.endsWith(".v")) return []
+    if (!input.file.endsWith(".lean")) return []
     if (!WIDE_PROOF_EDIT_AGENTS.has(input.agent)) return []
     if (input.before === input.after) return []
 
@@ -7602,7 +7238,7 @@ export namespace SessionProofWorkflow {
     after: string
     takeoverReason: string
   }) {
-    if (!input.file.endsWith(".v")) return []
+    if (!input.file.endsWith(".lean")) return []
     if (!WIDE_PROOF_EDIT_AGENTS.has(input.agent)) return []
 
     const touched = touchedRunningRegions(input.file, input.before, input.after)
@@ -7650,7 +7286,7 @@ export namespace SessionProofWorkflow {
     if (activeRepairWorkerAssignments.has(sessionID)) return undefined
 
     const binding = SessionProof.get(sessionID)
-    if (!binding || !binding.file.endsWith(".v")) return undefined
+    if (!binding || !binding.file.endsWith(".lean")) return undefined
     if (!(await Filesystem.exists(binding.file))) return undefined
     if (ProofEditTransaction.requiresStagedRead(sessionID, binding.file)) return undefined
 
@@ -8111,7 +7747,7 @@ export namespace SessionProofWorkflow {
     if (activeRepairWorkerAssignments.has(sessionID)) return undefined
 
     const binding = SessionProof.get(sessionID)
-    if (!binding || !binding.file.endsWith(".v")) return undefined
+    if (!binding || !binding.file.endsWith(".lean")) return undefined
     if (!(await Filesystem.exists(binding.file))) return undefined
     if (ProofEditTransaction.requiresStagedRead(sessionID, binding.file)) return undefined
     if (ProofEditTransaction.requiresValidation(sessionID, binding.file)) return undefined

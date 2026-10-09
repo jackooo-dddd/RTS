@@ -96,7 +96,7 @@ export namespace SessionProof {
       if (previous && path.normalize(previous.file) === path.normalize(file)) {
         return previous.canonicalSource
       }
-      if (!file.endsWith(".v")) return undefined
+      if (!file.endsWith(".lean")) return undefined
       try {
         return readFileSync(file, "utf-8")
       } catch {

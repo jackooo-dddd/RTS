@@ -143,7 +143,7 @@ describe("session.proof-projection layered proof workflow", () => {
             dependencies: [],
             input: ["Hctx"],
             prosa_candidate_lemmas: [],
-            mathcomp_candidate_lemmas: [],
+            mathlib_candidate_lemmas: [],
             shape_evidence: [],
           },
         })

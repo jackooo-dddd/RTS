@@ -137,7 +137,7 @@ export const LeanCheckTool = Tool.define("lean_check", {
         ok: true,
         validated_source_current: stagedTransaction,
       })
-      const proofStatus = SessionProofWorkflow.classifyCoqcSuccess(
+      const proofStatus = SessionProofWorkflow.classifyCompileSuccess(
         ctx.sessionID,
         filepath,
         stagedSource,
@@ -259,9 +259,10 @@ export const LeanCheckTool = Tool.define("lean_check", {
       first_error_file: diagnostics.firstError?.file,
       first_error_line: diagnostics.firstError?.line,
       first_error_message: diagnostics.firstError?.message,
+      error_lines: compiled.errors.map((error) => error.line),
       validated_source_current: stagedTransaction,
     })
-    const proofStatus = SessionProofWorkflow.classifyCoqcFailure(ctx.sessionID, filepath, stagedSource, {
+    const proofStatus = SessionProofWorkflow.classifyCompileFailure(ctx.sessionID, filepath, stagedSource, {
       first_error_line: diagnostics.firstError?.line,
       first_error_message: diagnostics.firstError?.message,
       lifecycle: proofRegionLifecycle,
