@@ -1,0 +1,15 @@
+# Fixes: `agent/prompt/prover.txt`
+
+**File**: [`agent/prompt/prover.txt`](../../prosabuddy-rocq/packages/opencode/src/agent/prompt/prover.txt). **Implements**: D9 (K2), D10 (K7), D11 (K4, K8), D13. Apply after
+`prompt-advices/prompt_revision.md` §1.
+
+| Location | Current | Change |
+|---|---|---|
+| rule 2c [#L50](../../prosabuddy-rocq/packages/opencode/src/agent/prompt/prover.txt#L50) | "at most four materially distinct semantic DAG revisions" | keep for planning before acceptance; add: "After acceptance the plan is locked except for up to 3 amendments." |
+| rule 2d [#L51](../../prosabuddy-rocq/packages/opencode/src/agent/prompt/prover.txt#L51) | "Once `proof_plan` accepts a plan, that plan is session-persisted and immutable during normal materialization." | "Once accepted, the plan is shared by all sessions of this theorem and immutable except through `proof_plan` action `amend`: when a lemma escalates with `needs_preceding_bridge`, add exactly that bridge node (statement, dependencies, insert position) and materialise its region. A rejected amendment costs nothing; at most 3 amendments are accepted." |
+| rule 8 [#L70](../../prosabuddy-rocq/packages/opencode/src/agent/prompt/prover.txt#L70) | contract fields include `layer: ...`; evidence `prosa:`, `mathcomp:`, `local:`, `context:`, `coq:`, `compiler:`; "write a Coq-shaped proposition" | fields per D10 (no `layer`); evidence prefixes per D13 (`mathlib:`, `lean:` instead of `mathcomp:`, `coq:`); "`normal_form` is a Lean proposition that elaborates in the theorem's context". |
+| rule 19a [#L82](../../prosabuddy-rocq/packages/opencode/src/agent/prompt/prover.txt#L82) | "Do not delegate a `proof_region` whose `kind` is `paper_bridge`, whose `layer` is `paper`, or whose `layer` is `theorem_spine`" | "… whose plan node has kind `paper_bridge` or layer `paper`/`theorem_spine`" (D10). |
+| rule 21 [#L85](../../prosabuddy-rocq/packages/opencode/src/agent/prompt/prover.txt#L85) | marker "must include `owner: lemma`, `admit_id`, `theorem`, `kind`, and `target`"; contract also `layer`, `normal_form: <coq_goal_shape>`, evidence with `mathcomp:`/`coq:` | marker: `owner: lemma`, `admit_id`, `theorem`, `target`, `plan_node`; contract: the D10 fields; `normal_form: <Lean proposition>`; D13 prefixes. Keep the placement rules unchanged. |
+| rule 22 [#L86](../../prosabuddy-rocq/packages/opencode/src/agent/prompt/prover.txt#L86) | "The `kind` should classify the obligation, for example …" | move into the `proof_plan` guidance: "each plan node's `kind` classifies the obligation (same list)"; the file does not repeat it (D10). |
+| §2 "Every Node Must Have A Contract" [#L120-L128](../../prosabuddy-rocq/packages/opencode/src/agent/prompt/prover.txt#L120) | bullets `source`, `input`, `output` ("exact Coq goal shape"), `layer`, `expected` | delete the `layer` bullet (a `proof_plan` node field, D10); `output`: "the exact Lean proposition it produces". |
+| new rule | — | "If the runtime reports `no_ready_region`, follow its `required_action`. A region escalated three times for the same reason is not re-dispatched; amend or remodel it." |
