@@ -5,7 +5,7 @@ import { createHash } from "crypto"
 import { SessionProof } from "@/session/session-proof"
 import { ProofEditTransaction } from "@/session/proof-edit-transaction"
 import { Filesystem } from "../util/filesystem"
-import { runProcess } from "./coq-project"
+import { runProcess } from "../util/bounded-process"
 import { LeanProject } from "./lean-project"
 import { LeanSource } from "./lean-source"
 

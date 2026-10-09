@@ -12,7 +12,6 @@ import { Filesystem } from "../util/filesystem"
 import { Instance } from "../project/instance"
 import { trimDiff } from "./edit"
 import { assertExternalDirectory } from "./external-directory"
-import { assertNoRewriteBangInCoqFile, assertNoIntuitionInCoqFile } from "./coq-style-guard"
 import { SessionProofWorkflow } from "@/session/proof-workflow"
 import { ProofEditTransaction } from "@/session/proof-edit-transaction"
 
@@ -36,8 +35,6 @@ export const WriteTool = Tool.define("write", {
     const contentOld = ProofEditTransaction.source(ctx.sessionID, filepath) ??
       (exists ? await Filesystem.readText(filepath) : "")
     if (exists) await FileTime.assert(ctx.sessionID, filepath)
-    assertNoRewriteBangInCoqFile(filepath, params.content)
-    assertNoIntuitionInCoqFile(filepath, params.content)
     SessionProofWorkflow.assertLemmaSequentialEditAllowed({
       sessionID: ctx.sessionID,
       agent: ctx.agent,

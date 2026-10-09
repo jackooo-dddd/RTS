@@ -4,7 +4,7 @@ import DESCRIPTION from "./lean-check.txt"
 import { Instance } from "../project/instance"
 import path from "path"
 import { Filesystem } from "../util/filesystem"
-import { formatCoqSkillHints } from "./coq-skill-hints"
+import { formatLeanSkillHints } from "./lean-skill-hints"
 import { SessionProofWorkflow } from "@/session/proof-workflow"
 import { ProofEditTransaction } from "@/session/proof-edit-transaction"
 import { LeanGate } from "./lean-gate"
@@ -318,7 +318,7 @@ export const LeanCheckTool = Tool.define("lean_check", {
         stagedTransaction
           ? `proof_transaction: ${proofStatus.proof_progress.workspace_committable ? `${proofStatus.proof_progress.level} snapshot updated` : "debug draft journaled for further repair"}`
           : undefined,
-        `errors:\n${summary}${formatCoqSkillHints(summary)}`,
+        `errors:\n${summary}${formatLeanSkillHints(summary)}`,
       ].filter((line): line is string => Boolean(line)).join("\n"),
       metadata: {
         status: "fail",

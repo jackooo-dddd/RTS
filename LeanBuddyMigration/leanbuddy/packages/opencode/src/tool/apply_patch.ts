@@ -13,8 +13,7 @@ import { LSP } from "../lsp"
 import { Filesystem } from "../util/filesystem"
 import DESCRIPTION from "./apply_patch.txt"
 import { File } from "../file"
-import { assertNoRewriteBangInCoqFile, assertNoIntuitionInCoqFile } from "./coq-style-guard"
-import { formatCoqSkillHints } from "./coq-skill-hints"
+import { formatLeanSkillHints } from "./lean-skill-hints"
 import { SessionProofWorkflow } from "@/session/proof-workflow"
 import { ProofEditTransaction } from "@/session/proof-edit-transaction"
 import { EditConflictGuard } from "./edit-conflict-guard"
@@ -200,8 +199,6 @@ export const ApplyPatchTool = Tool.define("apply_patch", {
 
     for (const change of fileChanges) {
       if (change.type === "delete") continue
-      assertNoRewriteBangInCoqFile(change.movePath ?? change.filePath, change.newContent)
-      assertNoIntuitionInCoqFile(change.movePath ?? change.filePath, change.newContent)
     }
 
     let proofWorkflowTakeover: Array<{ sessionID: string; admit_id: string }> = []
@@ -388,7 +385,7 @@ export const ApplyPatchTool = Tool.define("apply_patch", {
         const suffix =
           errors.length > MAX_DIAGNOSTICS_PER_FILE ? `\n... and ${errors.length - MAX_DIAGNOSTICS_PER_FILE} more` : ""
         const diagnosticText = limited.map(LSP.Diagnostic.pretty).join("\n")
-        const skillHints = target.endsWith(".v") ? formatCoqSkillHints(diagnosticText) : ""
+        const skillHints = target.endsWith(".lean") ? formatLeanSkillHints(diagnosticText) : ""
         output += `\n\nLSP errors detected in ${path.relative(Instance.worktree, target).replaceAll("\\", "/")}, please fix:\n<diagnostics file="${target}">\n${diagnosticText}${suffix}\n</diagnostics>${skillHints}`
       }
     }

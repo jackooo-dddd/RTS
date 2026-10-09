@@ -5,7 +5,7 @@ import { createHash } from "crypto"
 import { rm } from "fs/promises"
 import { LSP } from "@/lsp"
 import path from "path"
-import * as CoqProject from "@/tool/coq-project"
+import type { ProcessOptions } from "@/util/bounded-process"
 import {
   BlockedProofReportSchema,
   EscalationType,
@@ -962,7 +962,7 @@ export namespace SessionProofWorkflow {
   async function checkpointScaffold(
     file: string,
     sourceOverride?: string,
-    options: CoqProject.ProcessOptions = {},
+    options: ProcessOptions = {},
   ): Promise<ValidationResult> {
     if (!file.endsWith(".lean")) {
       return { ok: false, validator: "checkpoint-lean", status: "error", message: "scaffold gate only accepts .lean files" }
@@ -994,7 +994,7 @@ export namespace SessionProofWorkflow {
     file: string,
     source: string,
     _extraFlags: string[] = [],
-    options: CoqProject.ProcessOptions = {},
+    options: ProcessOptions = {},
   ): Promise<ValidationResult> {
     return checkpointScaffold(file, source, options)
   }

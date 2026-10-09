@@ -3,7 +3,7 @@ import fs from "fs/promises"
 import { createHash } from "crypto"
 import { Filesystem } from "../util/filesystem"
 import { which } from "../util/which"
-import { runProcess, type ProcessOptions, type ProcessResult } from "./coq-project"
+import { runProcess, type ProcessOptions, type ProcessResult } from "../util/bounded-process"
 
 /** Lake project helpers shared by the Lean tools (lean_check, the final gate, lean_session). */
 export namespace LeanProject {

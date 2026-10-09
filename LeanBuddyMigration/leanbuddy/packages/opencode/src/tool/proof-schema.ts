@@ -258,27 +258,6 @@ export const EnvFeedback = z.object({
 })
 export type EnvFeedback = z.infer<typeof EnvFeedback>
 
-/** A single tactic application record */
-export const TacticRecord = z.object({
-  tactic: z.string(),
-  result: z.enum(["success", "failure"]),
-  feedback: EnvFeedback.optional(),
-  time: z.string(),
-})
-export type TacticRecord = z.infer<typeof TacticRecord>
-
-/** Resolved project context for Coq compilation */
-export const CoqProjectContext = z.object({
-  root: z.string(),
-  file: z.string(),
-  theorem: z.string(),
-  project_path: z.string().nullable(),
-  flags: z.array(z.string()),
-  cwd: z.string(),
-  preamble: z.string(),
-})
-export type CoqProjectContext = z.infer<typeof CoqProjectContext>
-
 /** Short-term proof summary updated after each step */
 export const SessionSummary = z.object({
   last_success: z.string().nullable(),
@@ -289,46 +268,6 @@ export const SessionSummary = z.object({
   changed: z.boolean(),
 })
 export type SessionSummary = z.infer<typeof SessionSummary>
-
-/** Coq session state for incremental tactic stepping */
-export const CoqSessionState = z.object({
-  session_id: z.string(),
-  loaded_file: z.string(),
-  focused_goal: z.string(),
-  local_hyps: z.array(z.string()),
-  tactic_history: z.array(TacticRecord),
-  snapshots: z.record(z.string(), z.object({
-    id: z.string(),
-    goal: z.string(),
-    hyps: z.array(z.string()),
-    tactic_index: z.number(),
-    context: z.string(),
-    goal_fingerprint: z.string().optional(),
-    semantic_goal_fingerprint: z.string().optional(),
-    summary: SessionSummary.optional(),
-  })),
-  last_error: z.string().nullable(),
-  warning_summary: z.array(z.string()),
-  project: CoqProjectContext.optional(),
-  source_file: z.string().optional(),
-  open_context: z.string().optional(),
-  source_hash: z.string().optional(),
-  certified_prefix_fingerprint: z.string().optional(),
-  region_admit_id: z.string().optional(),
-  region_binding: z.enum(["assigned", "explicit", "compiler_error"]).optional(),
-  proof_position: z.object({ line: z.number().int().nonnegative(), character: z.number().int().nonnegative() }).optional(),
-  compiler_error_line: z.number().int().positive().optional(),
-  compiler_error_message: z.string().optional(),
-  compiler_error_source_hash: z.string().optional(),
-  resynchronized_line: z.number().int().positive().optional(),
-  goal_fingerprint: z.string().optional(),
-  semantic_goal_fingerprint: z.string().optional(),
-  expected_goal: z.string().optional(),
-  expected_goal_fingerprint: z.string().optional(),
-  desync_count: z.number().int().nonnegative().default(0),
-  summary: SessionSummary.optional(),
-})
-export type CoqSessionState = z.infer<typeof CoqSessionState>
 
 /** Compiler checkpoint result */
 export const CheckpointResult = z.object({

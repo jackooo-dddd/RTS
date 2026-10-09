@@ -227,7 +227,7 @@ export namespace SessionCompaction {
   - failed edits, failed proof attempts, diagnostics, rollbacks, and lessons that should guide the next attempt
   - validation state: last successful proof step or checkpoint, latest goal/hypotheses/error if available, current lean_session goal state or tactic position if available, and the next validation action
 
-  Treat the active proof transaction's staged revision as the source of truth when one exists; otherwise use the current .v file on disk. Do not rewrite, normalize, or replace proof text in the summary. Instead, record which transaction revision, .v file, proof_regions, admit IDs, validated fragments, or frozen boundaries must remain unchanged.
+  Treat the active proof transaction's staged revision as the source of truth when one exists; otherwise use the current .lean file on disk. Do not rewrite, normalize, or replace proof text in the summary. Instead, record which transaction revision, .lean file, proof_regions, admit IDs, validated fragments, or frozen boundaries must remain unchanged.
 
   If live proof state, todo state, assignment metadata, or other structured proof context is provided below, preserve it explicitly and do not contradict it. If a fact is unknown from the available conversation, say it is unknown instead of inventing it.
 
@@ -247,12 +247,12 @@ export namespace SessionCompaction {
 
   ## Frozen / Current File State
 
-  - [Which .v files, proof_regions, admit IDs, validated fragments, or boundaries are the source of truth and must remain unchanged]
+  - [Which .lean files, proof_regions, admit IDs, validated fragments, or boundaries are the source of truth and must remain unchanged]
   - [Whether any proof text is validated, merely in-file but unvalidated, commented out, moved to scratch, or reverted]
 
   ## Local Goal And Proof State
 
-  [For proof subagents: current concrete goal, important hypotheses, local definitions, current case/branch/bullet/focus state, live proof error, and lean_session goal state or tactic position if known.]
+  [For proof subagents: current concrete goal, important hypotheses, local definitions, current case/branch and focused goal, live Lean error, and lean_session goal state or tactic position if known.]
 
   ## Owned Proof Plan And Trace
 
@@ -387,7 +387,7 @@ export namespace SessionCompaction {
       )
     }
 
-    // Live proof snapshot (most recent real-time state from rocq-lsp)
+    // Live proof snapshot (goals from lean_session, diagnostics from the Lean server)
     const snap = ProofContext.cached(input.sessionID)
     if (snap) {
       const parts = ["<proof-live-summary>", "## Live Proof State (MUST preserve in summary)"]

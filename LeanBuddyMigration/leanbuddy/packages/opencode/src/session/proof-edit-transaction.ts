@@ -501,13 +501,13 @@ export namespace ProofEditTransaction {
     return text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
   }
 
-  function maskCoqCommentsAndStrings(source: string) {
+  function maskCommentsAndStrings(source: string) {
     return LeanProofSource.maskCommentsAndStrings(source)
   }
 
   /** Lean theorem boundary: prefix through `:= by` (or `:=`), suffix from the next top-level command. */
   function theoremBoundary(source: string, theorem: string): TheoremBoundary {
-    const masked = maskCoqCommentsAndStrings(source)
+    const masked = maskCommentsAndStrings(source)
     if (!masked) {
       throw new Error("proof_transaction_structure_rejection: unterminated Lean comment or string")
     }
@@ -538,7 +538,7 @@ export namespace ProofEditTransaction {
       )
     }
     const proofSegment = candidate.slice(boundary.prefix.length, suffixStart)
-    const maskedSegment = maskCoqCommentsAndStrings(proofSegment)
+    const maskedSegment = maskCommentsAndStrings(proofSegment)
     if (!maskedSegment) {
       throw new Error("proof_transaction_structure_rejection: unterminated comment or string in theorem proof body")
     }
@@ -613,7 +613,7 @@ export namespace ProofEditTransaction {
         boundary.theoremPrefix.length,
         candidate.length - boundary.suffix.length,
       )
-      const maskedTheorem = maskCoqCommentsAndStrings(theoremSegment)
+      const maskedTheorem = maskCommentsAndStrings(theoremSegment)
       // the segment starts with the theorem declaration itself; no other top-level command may follow it
       const afterDeclaration = maskedTheorem?.split("\n").slice(1).join("\n")
       if (!maskedTheorem || (afterDeclaration !== undefined && LeanProofSource.topLevelCommandLine(afterDeclaration) >= 0)) {

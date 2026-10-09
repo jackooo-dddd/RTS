@@ -145,7 +145,7 @@ export type EditableRegion = z.infer<typeof EditableRegionSchema>
 
 export const LemmaAssignmentSchema = z
   .object({
-    file: z.string().min(1).describe("Workspace-relative Coq file path containing the assigned proof_region to replace or update"),
+    file: z.string().min(1).describe("Workspace-relative Lean file path containing the assigned proof_region to replace or update"),
     theorem: z.string().min(1).describe("Enclosing theorem or lemma name for the assigned proof_region"),
     admit_id: z.string().min(1).describe("Stable identifier for the single proof_region this lemma session owns"),
     goal: z.string().min(1).describe("Concrete local goal statement for the assigned proof_region"),

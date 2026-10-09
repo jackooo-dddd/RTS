@@ -177,6 +177,8 @@ replacements must pass.
 | V13 | D9 / proof-workflow fixes K2 | amendment unlocked by `needs_preceding_bridge` (or a remodel naming a missing fact) | unlocked by `needs_preceding_bridge`, `needs_uniqueness_bridge` (also a missing bridge fact), `needs_subgoal_remodel` (text detection of "names a missing fact" would be fragile), and by a K8 repeated-escalation block. The old one-shot whole-plan replacement after acceptance is removed (D9: locked except amendments); its three tests were rewritten as amendment tests. | 5 |
 | V15 | D10 (comparison "through `lean_session`, i.e. Pantograph") | Pantograph goal state | `tool/lean-statement-check.ts` decides equivalence with the compiler (`lake env lean` on a probe of the staged file): root goal = `theorem probe <binders> : (submitted) ↔ (conclusion) := Iff.rfl` after the file prefix; region target = `have probe : (target) ↔ (normal form) := by first \| (exact Iff.rfl; trace EQ) \| (trace NE; sorry)` inserted before the region (proofs masked to `sorry`). This gives the exact context (opens, section variables, local `intro`s before the region), which a closed Pantograph `goal.start` lacks; one compile covers all regions. Verdicts are cached; the materialization review consults the cache and is redone when new verdicts arrive; checks run at checkpoint/`lean_check`. A plain probe `:= Iff.rfl` was tried first: a failing probe stops the tactic block and drops earlier probes' messages, hence `first`. | 5 |
 | V16 | (none) — test harness | — | The PC full suite died in every memory cap: each test `Instance` ran `bun info @opencode-ai/plugin version` (config dependency check, ≈200 MB per process, through the proxy) and 47–134 ran at once. `PackageRegistry.info` is now shared and cached for 10 min per process, and `Config.installDependencies` runs once per directory at a time. Peak bun processes during the suite: 12. The 19:34 OOM incident was most likely this, not Lean. | 5 |
+| V17 | lemma.txt fixes (escalation payload `proposed_bridge`) | new field | the bridge proposition goes into the existing `remodel_request.proposed_preceding_helper` (prompt_revision §2.8: no new result fields merely for the port); lemma.txt asks for it as a Lean proposition with `needs_preceding_bridge`. | 5 |
+| V18 | coqprover / principles notes ("drop the SSReflect and `intuition` rules") | drop | dropped as bans (and `coq-style-guard.ts` with its edit/write/patch calls); the prompts keep a soft preference for explicit `rw`/`simp only` and checked automation. | 5 |
 | V14 | D10 / proof-workflow fixes K7 | `kind`/`layer` not compared | additionally, `refresh` copies `kind`/`layer` from the accepted plan node onto each parsed region, so the locality gate (which needs them) works when the marker omits them (D10 marker fields). File values remain only as a fallback for regions with no plan. | 5 |
 
 **Packaging bug found (needs a user decision):** 19 of the 22 `proof.tex` files of `Deliverables/lean-prosa-v06` have
@@ -306,4 +308,16 @@ K1's general-case rule lets the gate accept package imports. For those tasks the
     check is Phase 8).
   - Tests (PC): new `lean-lsp.integration.test.ts` (real `lake serve`: diagnostics + S25 hash), LSP/projection/
     compaction/known-problem 40/40, prompt 18/18.
+- 5e (prompts and helper modules):
+  - Agent prompts rewritten for Lean per prompt_revision §0–§7 and the K-fixes: `prover.txt` (D9 amendments, D10
+    field lists, D13 prefixes, `<scheduler-status>`/K8 rule, `:= (by … )` wrapper rules with an example),
+    `lemma.txt`, `whole-lemma.txt`, `fixer.txt` (Lean error patterns), `diagnoser.txt`, `explore.txt`,
+    `compaction.txt`. `session/prompt/coqprover.txt` → `leanprover.txt` ("You are LeanProver"),
+    `proof-workflow-principles.txt` line by line per its note, `system.ts` imports.
+  - Tool descriptions: `bash.txt` (no `lean`/`lake`), `task.txt`, `edit/write/apply_patch.txt` (style-guard lines
+    removed), `lsp.txt`.
+  - Helper modules: `runProcess` moved to `util/bounded-process.ts`; `coq-project.ts`, `coq-diagnostics.ts`,
+    `coq-style-guard.ts` and their tests deleted; unused `CoqProjectContext`/`CoqSessionState`/`TacticRecord`
+    schemas removed; `coq-skill-hints.ts` → `lean-skill-hints.ts` (Lean diagnostics → Lean skill names).
+  - Tests (PC): tool suite 270/271 → fixed the one prompt-text assertion; task 13/13.
 

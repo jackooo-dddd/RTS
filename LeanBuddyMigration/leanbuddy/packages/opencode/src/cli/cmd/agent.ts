@@ -126,7 +126,7 @@ const AgentCreateCommand = cmd({
         const generated = {
           identifier: description.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "").slice(0, 30),
           whenToUse: description,
-          systemPrompt: `You are a Coq theorem proving assistant. ${description}`,
+          systemPrompt: `You are a Lean 4 theorem proving assistant. ${description}`,
         }
         spinner.stop(`Agent ${generated.identifier} generated`)
 

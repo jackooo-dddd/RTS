@@ -17,8 +17,7 @@ import { Filesystem } from "../util/filesystem"
 import { Instance } from "../project/instance"
 import { Snapshot } from "@/snapshot"
 import { assertExternalDirectory } from "./external-directory"
-import { assertNoRewriteBangInCoqFile, assertNoIntuitionInCoqFile } from "./coq-style-guard"
-import { formatCoqSkillHints } from "./coq-skill-hints"
+import { formatLeanSkillHints } from "./lean-skill-hints"
 import { SessionProofWorkflow } from "@/session/proof-workflow"
 import { ProofEditTransaction } from "@/session/proof-edit-transaction"
 import { EditConflictGuard } from "./edit-conflict-guard"
@@ -72,8 +71,6 @@ export const EditTool = Tool.define("edit", {
         contentOld = ProofEditTransaction.source(ctx.sessionID, filePath) ??
           (existed ? await Filesystem.readText(filePath) : "")
         contentNew = params.newString
-        assertNoRewriteBangInCoqFile(filePath, contentNew)
-        assertNoIntuitionInCoqFile(filePath, contentNew)
         SessionProofWorkflow.assertLemmaSequentialEditAllowed({
           sessionID: ctx.sessionID,
           agent: ctx.agent,
@@ -172,8 +169,6 @@ export const EditTool = Tool.define("edit", {
         throw error
       }
       EditConflictGuard.recordSuccess(ctx.sessionID, filePath)
-      assertNoRewriteBangInCoqFile(filePath, contentNew)
-      assertNoIntuitionInCoqFile(filePath, contentNew)
       SessionProofWorkflow.assertLemmaSequentialEditAllowed({
         sessionID: ctx.sessionID,
         agent: ctx.agent,
@@ -284,7 +279,7 @@ export const EditTool = Tool.define("edit", {
       const suffix =
         errors.length > MAX_DIAGNOSTICS_PER_FILE ? `\n... and ${errors.length - MAX_DIAGNOSTICS_PER_FILE} more` : ""
       const diagnosticText = limited.map(LSP.Diagnostic.pretty).join("\n")
-      const skillHints = filePath.endsWith(".v") ? formatCoqSkillHints(diagnosticText) : ""
+      const skillHints = filePath.endsWith(".lean") ? formatLeanSkillHints(diagnosticText) : ""
       output += `\n\nLSP errors detected in this file, please fix:\n<diagnostics file="${filePath}">\n${diagnosticText}${suffix}\n</diagnostics>${skillHints}`
     }
 

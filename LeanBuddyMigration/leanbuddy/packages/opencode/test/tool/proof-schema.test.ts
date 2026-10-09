@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test"
-import { ProofPlan, ProofPlanReview, ProofPlanStep, EnvFeedback, CheckpointResult, CoqProjectContext, SessionSummary, CoqSessionState } from "../../src/tool/proof-schema"
+import { ProofPlan, ProofPlanReview, ProofPlanStep, EnvFeedback, CheckpointResult, SessionSummary } from "../../src/tool/proof-schema"
 
 describe("proof-schema", () => {
   test("upgrades persisted proof reviews to the current four-revision budget", () => {
@@ -127,33 +127,6 @@ describe("proof-schema", () => {
     expect(valid.same_as_previous).toBe(true)
   })
 
-  test("CoqProjectContext validates resolved context", () => {
-    const valid = CoqProjectContext.parse({
-      root: "/workspace",
-      file: "/workspace/test.v",
-      theorem: "add_comm",
-      project_path: "/workspace/_CoqProject",
-      flags: ["-Q", ".", "MyLib"],
-      cwd: "/workspace",
-      preamble: "Require Import Arith.",
-    })
-    expect(valid.theorem).toBe("add_comm")
-    expect(valid.flags).toHaveLength(3)
-  })
-
-  test("CoqProjectContext allows null project_path", () => {
-    const valid = CoqProjectContext.parse({
-      root: "/workspace",
-      file: "/workspace/test.v",
-      theorem: "add_comm",
-      project_path: null,
-      flags: [],
-      cwd: "/workspace",
-      preamble: "",
-    })
-    expect(valid.project_path).toBeNull()
-  })
-
   test("SessionSummary validates frontier data", () => {
     const valid = SessionSummary.parse({
       last_success: "intros.",
@@ -167,65 +140,4 @@ describe("proof-schema", () => {
     expect(valid.changed).toBe(true)
   })
 
-  test("CoqSessionState includes project and summary", () => {
-    const valid = CoqSessionState.parse({
-      session_id: "s1",
-      loaded_file: "test content",
-      focused_goal: "forall n, n + 0 = n",
-      local_hyps: [],
-      tactic_history: [],
-      snapshots: {},
-      last_error: null,
-      warning_summary: [],
-      project: {
-        root: "/w",
-        file: "/w/t.v",
-        theorem: "th",
-        project_path: null,
-        flags: [],
-        cwd: "/w",
-        preamble: "",
-      },
-      summary: {
-        last_success: null,
-        last_failure: null,
-        last_error_class: null,
-        remaining_goals: null,
-        frontier: null,
-        changed: false,
-      },
-    })
-    expect(valid.project?.theorem).toBe("th")
-    expect(valid.summary?.changed).toBe(false)
-  })
-
-  test("CoqSessionState snapshot includes summary", () => {
-    const valid = CoqSessionState.parse({
-      session_id: "s1",
-      loaded_file: "",
-      focused_goal: "",
-      local_hyps: [],
-      tactic_history: [],
-      snapshots: {
-        snap1: {
-          id: "snap1",
-          goal: "test",
-          hyps: [],
-          tactic_index: 0,
-          context: "",
-          summary: {
-            last_success: "intros.",
-            last_failure: null,
-            last_error_class: null,
-            remaining_goals: 1,
-            frontier: "Goal: test",
-            changed: false,
-          },
-        },
-      },
-      last_error: null,
-      warning_summary: [],
-    })
-    expect(valid.snapshots.snap1.summary?.last_success).toBe("intros.")
-  })
 })

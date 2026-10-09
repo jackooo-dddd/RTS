@@ -252,7 +252,7 @@ describe("tool.task recursive proof agents", () => {
         expect(lemmaTaskTool.description).toContain("- explorer:")
 
         expect(fixer).toBeDefined()
-        expect(fixer?.prompt).toContain("Do not remove, reorder, merge, or rewrite the surrounding `pose` / `have` skeleton.")
+        expect(fixer?.prompt).toContain("Do not remove, reorder, merge, or rewrite the surrounding `let` / `have` skeleton")
         expect(PermissionNext.evaluate("task", "*", fixer!.permission).action).toBe("deny")
       },
     })

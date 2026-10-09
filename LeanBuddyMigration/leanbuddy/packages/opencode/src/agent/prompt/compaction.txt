@@ -9,13 +9,13 @@ Core requirements:
 - If the current agent is a subagent, summarize the subagent task, not the parent conversation. Preserve parent context only when it constrains the subagent's owned task.
 - Preserve task ownership: current agent, parent/caller if known, task id if known, target file, enclosing theorem or lemma, owned admit id or goal id, replacement contract, phase, and sibling work that must remain untouched.
 - Preserve all user requests, constraints, limitations, and preferences that the next agent must continue obeying.
-- Treat current `.v` file contents as the source of truth. Do not rewrite, normalize, improve, or replace proof text in the summary. Instead, record which `.v` files, proof_regions, admit IDs, validated fragments, or frozen boundaries must remain unchanged.
+- Treat the current `.lean` source as the source of truth; when a proof edit transaction is active, its staged revision (and hash) is authoritative, not the older file on disk. Do not rewrite, normalize, improve, or replace proof text in the summary. Instead, record which `.lean` files, proof_regions, admit IDs, validated fragments, or frozen boundaries must remain unchanged.
 - If the current agent is a proof subagent, preserve the assigned local goal or subgoal only: the concrete local goal, key hypotheses, local definitions, current case or branch, the non-formal proof framework for that local target, completed formal proof fragments for that local target, remaining local obligations, and whether the current attempt is still on-scope or has drifted.
 - Summarize the earlier model interaction trace for the current owned task, including current progress, what remains unfinished, which attempts succeeded, which attempts failed, whether the work appears to have drifted from the owned goal, and what guidance the next agent should follow.
 - Preserve important findings from file reads that materially affect this owned task, especially relevant definitions, imported facts, lemma types, equations, nearby proof patterns, paper-aligned local proof steps, and any file content that changed the local proof strategy.
 - Distinguish clearly between validated or compiled progress and speculative, incomplete, reverted, or failed attempts.
 - If earlier edits or proof attempts failed, record where they failed, why they failed, whether they were reverted or commented out, and what should not be retried.
-- Preserve validation state: last successful proof step or checkpoint, latest goal/hypotheses/error if available, current coq_session/petanque snapshot or tactic position if available, and the next validation action.
+- Preserve validation state: last successful proof step or checkpoint, latest goal/hypotheses/error if available, the staged source revision/hash the last check covered, the last `lean_session` position if available, and the next validation action. A summary is a handoff note, not a restorable proof state: `lean_session` states and snapshots do not survive a restart; reopen them from the current source.
 - If live proof state, todo state, assignment metadata, or similar structured context is provided, preserve it explicitly and do not contradict it.
 - If a fact is unknown from the available conversation, say it is unknown instead of inventing it.
 
@@ -35,12 +35,12 @@ Use this structure when possible:
 
 ## Frozen / Current File State
 
-- [Which `.v` files, proof_regions, admit IDs, validated fragments, or boundaries are the current source of truth and must remain unchanged]
+- [Which `.lean` files, proof_regions, admit IDs, validated fragments, or boundaries are the current source of truth and must remain unchanged]
 - [Whether any proof text is validated, merely in-file but unvalidated, commented out, moved to scratch, or reverted]
 
 ## Local Goal And Proof State
 
-[For proof subagents: current concrete goal, important hypotheses, local definitions, current case/branch/bullet/focus state, live proof error, and coq_session/petanque snapshot or tactic position if known.]
+[For proof subagents: current concrete goal, important hypotheses, local definitions, current case/branch and focused goal (`·`/`case`), live Lean error, and the `lean_session` position and source revision if known.]
 
 ## Owned Proof Plan And Trace
 
@@ -48,7 +48,7 @@ Use this structure when possible:
 
 ## Formal Progress
 
-- validated: [Proof fragments or tactics validated by coq_session, petanque, LSP, coqc, or checkpoint]
+- validated: [Proof fragments or tactics validated by lean_session, diagnostics, lean_check, or checkpoint — say whether the evidence covers a tactic prefix, a complete region, or the final theorem, and which `sorry` placeholders remain]
 - in_file_but_unvalidated: [Proof text currently in the file but not yet validated]
 - speculative_or_reverted: [Attempts that should not be treated as completed proof]
 
