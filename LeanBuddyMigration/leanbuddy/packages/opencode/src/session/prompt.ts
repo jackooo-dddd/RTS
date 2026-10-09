@@ -3,6 +3,7 @@ import os from "os"
 import fs from "fs/promises"
 import z from "zod"
 import { Filesystem } from "../util/filesystem"
+import { Hash } from "../util/hash"
 import { Identifier } from "../id/id"
 import { MessageV2 } from "./message-v2"
 import { Log } from "../util/log"
@@ -370,6 +371,20 @@ export namespace SessionPrompt {
       .join("\n")
   }
 
+  function schedulerStatusPrompt(status: SessionProofWorkflow.SchedulerStatus) {
+    return [
+      "<scheduler-status>",
+      `status: ${status.kind}`,
+      `reason: ${status.reason}`,
+      `required_action: ${status.required_action}`,
+      status.admit_ids.length > 0 ? `admit_ids: ${status.admit_ids.join(", ")}` : undefined,
+      "No lemma task is dispatched until this is resolved. Follow required_action; do not wait for an assignment.",
+      "</scheduler-status>",
+    ]
+      .filter((line): line is string => Boolean(line))
+      .join("\n")
+  }
+
   async function proverFinalizationPrompt(sessionID: string) {
     const binding = SessionProof.get(sessionID)
     if (!binding || !isProofSourceFile(binding.file)) return undefined
@@ -392,9 +407,8 @@ export namespace SessionPrompt {
       `All lemma-owned proof_regions in ${display} are solved. Do not dispatch a final lemma task for theorem closure.`,
       `Final theorem gate still fails: ${finalGate.reason}`,
       "Return to Layer 1 now: review the merged skeleton, parent composition outside the regions, and the final theorem goal.",
-      "The theorem-level terminator and any `Admitted.` -> `Qed.` conversion are prover-owned, because they are outside every lemma editable region.",
+      "Theorem closure is prover-owned: the theorem body is complete only when no `sorry` remains outside and inside the regions and the final gate (frozen statement check, `lake build`, `#print axioms`) passes.",
       "Do not edit inside solved lemma-owned proof_regions unless you first remodel ownership in Layer 1.",
-      "Change the theorem terminator to `Qed.` only after the complete theorem body has no remaining goals, admits, or aborts and validates with Coq.",
       "</prover-finalization-reminder>",
     ].join("\n")
   }
@@ -427,6 +441,48 @@ export namespace SessionPrompt {
       ...(task.lemma_assignment ? { lemma_assignment: task.lemma_assignment } : {}),
       ...(task.proof_repair_assignment ? { proof_repair_assignment: task.proof_repair_assignment } : {}),
     } satisfies MessageV2.SubtaskPart)
+  }
+
+  /** S14: sessions/source hashes already reminded, so an unchecked stop is nudged once per source revision. */
+  const finalValidationReminded = new Set<string>()
+
+  /** S14: a direct proof is legitimate (D12), but the prover ends only after its current source was checked. */
+  async function finalValidationReminder(sessionID: string) {
+    const binding = SessionProof.get(sessionID)
+    if (!binding || !isProofSourceFile(binding.file) || !(await Filesystem.exists(binding.file))) return undefined
+    const source = await ProofEditTransaction.readSource(sessionID, binding.file)
+    if (SessionProofWorkflow.sourceChecked(binding.file, source)) return undefined
+    const key = `${sessionID}\u0000${Hash.fast(source)}`
+    if (finalValidationReminded.has(key)) return undefined
+    finalValidationReminded.add(key)
+    const display = path.relative(Instance.worktree, binding.file) || path.basename(binding.file)
+    return [
+      "<final-validation-required>",
+      `The current source of ${display} has not been compiled by checkpoint or lean_check.`,
+      "Run checkpoint on it before ending. The run is judged by the final gate (frozen statement, `lake build`, `#print axioms`); an unchecked stop is not a result.",
+      "If checkpoint reports errors, fix them and check again.",
+      "</final-validation-required>",
+    ].join("\n")
+  }
+
+  async function enqueueRuntimeUserMessage(sessionID: string, lastUser: MessageV2.User, text: string) {
+    const msg = await Session.updateMessage({
+      id: Identifier.ascending("message"),
+      role: "user",
+      sessionID,
+      time: { created: Date.now() },
+      agent: lastUser.agent,
+      model: lastUser.model,
+      variant: lastUser.variant,
+    })
+    await Session.updatePart({
+      id: Identifier.ascending("part"),
+      messageID: msg.id,
+      sessionID,
+      type: "text",
+      text,
+      synthetic: true,
+    } satisfies MessageV2.TextPart)
   }
 
   function resolveWorkspaceFile(file: string) {
@@ -893,6 +949,11 @@ export namespace SessionPrompt {
           await enqueueScheduledSubtask(sessionID, lastUser, scheduledLemma)
           continue
         }
+        const validationReminder = lastUser.agent === "prover" ? await finalValidationReminder(sessionID) : undefined
+        if (validationReminder) {
+          await enqueueRuntimeUserMessage(sessionID, lastUser, validationReminder)
+          continue
+        }
         log.info("exiting loop", { sessionID })
         break
       }
@@ -1165,6 +1226,20 @@ export namespace SessionPrompt {
             })
           : undefined
         const now = Date.now()
+        // K3: a stop names an action the model can take; a missing bridge against a locked plan is an amendment.
+        const stopAmendment = SessionProofWorkflow.getPlanAmendmentEligibility(sessionID, fallbackGuard.assignment.file)
+        const stopReason = repairChildNoMaterialization
+          ? "repair_child_no_materialization"
+          : lemmaChildNoMaterialization
+            ? "lemma_child_no_materialization"
+            : "stalled_wide_fallback"
+        const stopRequiredAction = repairChildNoMaterialization
+          ? "parent prover: continue from the yielded transaction snapshot and materialise the diagnosed theorem-level remodel"
+          : lemmaChildNoMaterialization
+            ? "parent prover: read the preserved staged region, validate or repair that draft, or change the route"
+            : stopAmendment.available
+              ? `submit a proof_plan amendment (action "amend") adding the missing bridge before ${stopAmendment.admit_id}`
+              : "make a theorem-level edit that changes the stale blocker contract or remodels the region inside its plan node, then run checkpoint"
         const assistantMessage = (await Session.updateMessage({
           id: Identifier.ascending("message"),
           sessionID,
@@ -1211,10 +1286,17 @@ export namespace SessionPrompt {
               ? "next_action: parent prover must continue from the yielded certified/base transaction snapshot and materialize the diagnosed theorem-level remodel directly; the failed draft remains journaled, and the unchanged repair child must not be redispatched."
               : lemmaChildNoMaterialization
                 ? "next_action: the parent prover must first read and inspect the preserved staged region, use its compiler diagnostic, and either validate/repair that draft or change the route. A fresh child is only a bounded fallback; five identical no-certificate children force parent-side remodeling and block unchanged redispatch."
-              : "next_action: make a theorem-level edit that changes the stale blocker contract, adds the missing bridge, or remodels the region before restarting fallback search.",
+              : `next_action: ${stopRequiredAction}.`,
           ].filter((line): line is string => Boolean(line)).join("\n"),
           synthetic: true,
           time: { start: now, end: now },
+          metadata: {
+            controller_stop: {
+              reason: stopReason,
+              required_action: stopRequiredAction,
+              admit_id: fallbackGuard.assignment.admit_id,
+            },
+          },
         } satisfies MessageV2.TextPart)
         break
       }
@@ -1252,7 +1334,7 @@ export namespace SessionPrompt {
               "The ordinary workspace file on disk may intentionally be older until a compiler-accepted transaction snapshot is committed.",
               "Before lemma dispatch, proof planning, `lean_session` use, or proof edits, read the target \`Solution.lean\` (the bound .lean file) through the read tool. The controller will reject those state-dependent actions until this staged-revision resynchronization read occurs. checkpoint/lean_check are safe before that read because they compile the authoritative staged source directly.",
               "Do not use bash, cat, or a direct disk read to reconstruct proof state, and do not rewrite compiler-certified regions merely because the disk file is stale.",
-              "Read the target through the read tool and continue with the smallest edit against that staged revision. If finalization reports only the theorem terminator remains, edit only that terminator and run the final checkpoint/lean_check.",
+              "Read the target through the read tool and continue with the smallest edit against that staged revision. If finalization reports that only the final `sorry`-free closure remains, finish the parent composition and run the final checkpoint/lean_check.",
               recoveredProofEditTransaction.validation_pending
                 ? "The controller will not dispatch an ordinary lemma task from this draft until the exact staged revision receives a compiler-backed checkpoint/lean_check receipt."
                 : undefined,
@@ -1466,9 +1548,9 @@ export namespace SessionPrompt {
         currentProofFile && currentProofSource && hasAcceptedProofPlan
           ? SessionProofWorkflow.previewDecompositionMaterialization(sessionID, currentProofFile, currentProofSource)
           : undefined
-      const acceptedPlanRepair =
+      const planAmendment =
         currentProofFile && currentProofSource && hasAcceptedProofPlan
-          ? SessionProofWorkflow.getAcceptedPlanRepairEligibility(sessionID, currentProofFile, currentProofSource)
+          ? SessionProofWorkflow.getPlanAmendmentEligibility(sessionID, currentProofFile)
           : undefined
       const administrativeReconciliationAvailable = Boolean(
         decompositionMaterialization?.review?.status === "drifted" &&
@@ -1482,7 +1564,7 @@ export namespace SessionPrompt {
           hasProofFileEdit &&
           decompositionMaterialization &&
           !decompositionMaterialization.review &&
-          !acceptedPlanRepair?.available,
+          !planAmendment?.available,
       )
       // The evidence window starts again after a new accepted plan or a fresh
       // compiler certificate, including progress made by a child session.
@@ -1560,6 +1642,18 @@ export namespace SessionPrompt {
           ].join("\n"),
           synthetic: true,
           time: { start: now, end: now },
+          metadata: {
+            // K3: machine-readable stop so the runner starts a free recovery instead of charging a retry (D5).
+            controller_stop: {
+              reason: passiveLookupLivelock ? "passive_lookup_stagnation" : "materialization_livelock",
+              required_action: planAmendment?.available
+                ? `submit a proof_plan amendment (action "amend") adding the missing bridge before ${planAmendment.admit_id}`
+                : materializationLivelock
+                  ? `materialise the missing plan nodes ${materializationLivelock.missing_plan_nodes.join(", ")} with their exact plan_node IDs, then run checkpoint`
+                  : "make one edit, active proof step, or checkpoint against the current source instead of further lookups",
+              admit_id: planAmendment?.available ? planAmendment.admit_id : undefined,
+            },
+          },
         } satisfies MessageV2.TextPart)
         break
       }
@@ -1585,6 +1679,11 @@ export namespace SessionPrompt {
         agent.name === "whole-lemma" && !hasProofFileEdit ? wholeLemmaPassiveLookupStreak(msgs, currentProofFile) : 0
       const lemmaContinuation = agent.name === "prover" ? await lemmaContinuationPrompt(sessionID, msgs) : undefined
       const proverFinalization = agent.name === "prover" ? await proverFinalizationPrompt(sessionID) : undefined
+      // K4: never leave the prover with neither an assignment nor a reason.
+      const schedulerStatus =
+        agent.name === "prover" && !lemmaContinuation && !proverFinalization && !directProsaProbe
+          ? await SessionProofWorkflow.schedulerStatus(sessionID, stagedPlanningSource(sessionID))
+          : undefined
 
       // Build system prompt, adding structured output instruction if needed
       const system = restored
@@ -1596,6 +1695,9 @@ export namespace SessionPrompt {
       }
       if (directProsaProbe) {
         system.push(directProsaProbePrompt())
+      }
+      if (schedulerStatus) {
+        runtimeContext.push(runtimeContextMessage(schedulerStatusPrompt(schedulerStatus)))
       }
       if (lemmaContinuation) {
         runtimeContext.push(runtimeContextMessage(lemmaContinuation))
@@ -1644,14 +1746,14 @@ export namespace SessionPrompt {
         runtimeContext.push(runtimeContextMessage(
           [
             "<proof-tex-skeleton-required>",
-            "You have read proof.tex but have not yet written the theorem-level skeleton to the current Coq proof file.",
+            "You have read proof.tex but have not yet written the theorem-level skeleton to the current Lean proof file.",
             planGenerationRecoveryAvailable
               ? "The current planning generation exhausted its bounded revisions, but one recovery generation is available. Call `proof_plan` with a materially corrected DAG based on the persisted best rejected plan and its blockers; do not merely rename nodes or rewrite metadata."
               : planRevisionExhausted
               ? "The semantic revision budget is exhausted. Do not explore another speculative split. You may resubmit only a candidate that directly fixes the exact reported hard errors and is expected to pass the deterministic review; otherwise stop and report the best rejected plan."
               : hasProofPlan
                 ? "A bounded proof plan is accepted and locked for normal materialization. Materialize it now; call `proof_plan` again only if the workflow later exposes its evidence-backed accepted-plan repair revision."
-                : "Your next non-validation action must call `proof_plan` on the proof.tex content. Mark strict delegation candidates, their claim deltas, transformations, dependencies, and parent consumers before editing Coq.",
+                : "Your next non-validation action must call `proof_plan` on the proof.tex content. Mark strict delegation candidates, their claim deltas, transformations, dependencies, and parent consumers before editing the Lean proof.",
             "Resolve semantic hard errors with at most four materially distinct DAG revisions after the initial plan. Deterministic identifier, edge, anchor, declared-target, and composition-output corrections do not consume this budget. Follow the returned repair_hint and exact normalized fields instead of guessing. Warnings are advisory and must not cause an open-ended planning loop.",
             "Do not continue broad search, and do not call `lemma` until the file contains the first-level gap boundaries implied by proof.tex.",
             "</proof-tex-skeleton-required>",
@@ -1689,7 +1791,7 @@ export namespace SessionPrompt {
             "The accepted semantic DAG remains authoritative, and the evidence pass is now sufficient to begin a reversible proof transaction.",
             "Your next non-validation action must materialize the smallest useful first-level skeleton in the target theorem, or make one concrete `lean_session` proof step for the first planned region and immediately transfer the validated fragment into that skeleton.",
             "Do not issue another broad `read`, `grep`, `glob`, or `lean_query` burst before that concrete attempt. If the attempt exposes one exact missing identifier, premise, or target-shape error, perform only the narrow lookup needed for that blocker and then return to materialization.",
-            "Temporary admits are permitted only inside the accepted first-level proof regions while establishing the Phase-1 scaffold; they are not proof success and must later be discharged before final `Qed.`.",
+            "Temporary `sorry` placeholders are permitted only inside accepted `:= (by …)` regions while establishing the Phase-1 scaffold; they are not proof success and must later be discharged before the final gate.",
             "This is a liveness reminder, not a semantic-route lock: compiler evidence may still justify the workflow's bounded accepted-plan repair revision.",
             "</accepted-plan-materialization-liveness>",
           ].join("\n"),
@@ -1728,7 +1830,7 @@ export namespace SessionPrompt {
           [
             "<decomposition-evidence-required>",
             "Before the first skeleton edit, perform one bounded semantic inspection tied to the theorem's conclusion or hypotheses.",
-            "Open one directly relevant Prosa/MathComp declaration or analogous proof, or inspect the exact live goal with `lean_session`/`lean_query`.",
+            "Open one directly relevant Prosa/Mathlib declaration or analogous proof, or inspect the exact live goal with `lean_session`/`lean_query`.",
             "A grep listing alone is candidate discovery, not an evidence receipt. Do not perform a broad search batch.",
             "</decomposition-evidence-required>",
           ].join("\n"),
@@ -1748,7 +1850,7 @@ export namespace SessionPrompt {
         runtimeContext.push(runtimeContextMessage(
           [
             "<decomposition-plan-required>",
-            "Your next non-validation action must call `proof_plan` with a structured theorem-level DAG before editing Coq.",
+            "Your next non-validation action must call `proof_plan` with a structured theorem-level DAG before editing the Lean proof.",
             "Mark meaningful single-output, dependency-complete, locally certifiable nodes as delegation_candidate; do not create tactic-sized leaves to satisfy a count. State claim_delta, consumers, and the relevant transformations.",
             "Use at most four materially distinct semantic DAG revisions after the initial plan. Deterministic schema corrections use repair_plan_metadata and do not consume this budget. Do not treat evidence wording, marker text, or comments as DAG progress.",
             "</decomposition-plan-required>",
@@ -1824,7 +1926,7 @@ export namespace SessionPrompt {
         !hasExistingProofRegions &&
         !hasProofFileEdit &&
         hasProofPlan &&
-        !acceptedPlanRepair?.available
+        !planAmendment?.available
       ) {
         runtimeContext.push(runtimeContextMessage(
           [
@@ -1843,7 +1945,7 @@ export namespace SessionPrompt {
         hasProofFileEdit &&
         decompositionMaterialization &&
         !decompositionMaterialization.review &&
-        !acceptedPlanRepair?.available
+        !planAmendment?.available
       ) {
         runtimeContext.push(runtimeContextMessage(
           [
@@ -1869,26 +1971,17 @@ export namespace SessionPrompt {
         agent.name === "prover" &&
         currentProofFile &&
         hasAcceptedProofPlan &&
-        acceptedPlanRepair?.available
+        planAmendment?.available
       ) {
         runtimeContext.push(runtimeContextMessage(
-          acceptedPlanRepair.mode === "route_repair"
-            ? [
-                "<decomposition-route-repair-required>",
-                "The one accepted-plan replacement DAG is already reserved, but its candidate route or premise audit was mechanically rejected.",
-                `Evidence: ${acceptedPlanRepair.reason}`,
-                "Resubmit the same semantic DAG with a different audited lemma, genuinely different instantiation, explicit dependency for the residual premise, or a current compiler certificate.",
-                "Do not change node targets, dependencies, or the semantic leaf set during this route-only correction.",
-                "</decomposition-route-repair-required>",
-              ].join("\n")
-            : [
-                "<decomposition-repair-revision-available>",
-                "The accepted plan has concrete structural evidence that its current DAG cannot remain frozen.",
-                `Evidence: ${acceptedPlanRepair.reason}`,
-                "Exactly one accepted-plan repair revision is available. Submit one structured `proof_plan` candidate that changes only the semantic DAG needed to resolve this evidence.",
-                "This is not permission for wording-only, evidence-only, or marker-only replanning. If the replacement DAG is rejected only by a route or premise audit, keep that same DAG and correct the audited route instead of spending another structural revision.",
-                "</decomposition-repair-revision-available>",
-              ].join("\n"),
+          [
+            "<plan-amendment-available>",
+            `Evidence: ${planAmendment.reason}`,
+            `The accepted plan is locked. It can take an amendment now (${planAmendment.remaining} left): call \`proof_plan\` with action "amend" and an \`amendment\` that adds exactly the missing bridge node (its Lean statement, \`depends_on\`, and \`inserts_before: ${planAmendment.admit_id}\`).`,
+            "After the amendment is accepted, materialise the new region before the escalated one and run checkpoint. A rejected amendment costs nothing; fix the reported errors and resubmit.",
+            "Do not resubmit the whole plan: outside amendments the accepted plan does not change.",
+            "</plan-amendment-available>",
+          ].join("\n"),
         ))
       }
       if (
@@ -1896,7 +1989,7 @@ export namespace SessionPrompt {
         currentProofFile &&
         hasAcceptedProofPlan &&
         decompositionMaterialization?.review &&
-        !acceptedPlanRepair?.available
+        !planAmendment?.available
       ) {
         const review = decompositionMaterialization.review
         runtimeContext.push(runtimeContextMessage(

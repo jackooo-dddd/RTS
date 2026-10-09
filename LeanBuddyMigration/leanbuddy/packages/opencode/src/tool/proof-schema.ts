@@ -187,6 +187,32 @@ export type ProofPlanReviewIssue = z.infer<typeof ProofPlanReviewIssue>
 
 export const MAX_SEMANTIC_PLAN_REVISIONS = 4 as const
 export const MAX_IDENTICAL_PLAN_METADATA_REPAIRS = 5 as const
+/** D9: an accepted plan is locked except for this many accepted amendments; rejected amendments are free. */
+export const MAX_PLAN_AMENDMENTS = 3 as const
+
+/** D9 (K2): one bridge node added to a locked plan in front of an escalated region. */
+export const ProofPlanAmendment = z.object({
+  node: ProofPlanStep.describe(
+    "The bridge node to add. Its formal_goal / target_normal_form is a Lean proposition that elaborates in the theorem's context.",
+  ),
+  depends_on: z
+    .array(z.string().min(1))
+    .default([])
+    .describe("Plan node IDs of the accepted plan that the bridge node consumes."),
+  inserts_before: z
+    .string()
+    .min(1)
+    .describe("admit_id of the escalated proof_region that consumes the bridge; the new region is materialised before it."),
+  addresses_escalation: z
+    .string()
+    .min(1)
+    .optional()
+    .describe("task_id of the lemma task whose escalation this amendment answers."),
+  consumer_composition_certificate: ProofPlanCompositionCertificate.optional().describe(
+    "Only when the consuming node is a root or semantic join: its composition certificate updated to consume the bridge output.",
+  ),
+})
+export type ProofPlanAmendment = z.infer<typeof ProofPlanAmendment>
 
 export const ProofPlanReview = z.object({
   status: z.enum(["ready", "revise", "reject"]),

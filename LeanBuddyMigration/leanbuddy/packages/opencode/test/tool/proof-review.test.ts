@@ -988,297 +988,199 @@ describe("tool.proof_plan bounded semantic review", () => {
     })
   })
 
-  test("allows one evidence-backed accepted-plan repair revision and locks the replacement", async () => {
+  /** An accepted one-node plan for `demo`, materialised as region gap-a and escalated with `escalation`. */
+  async function escalatedAcceptedPlan(
+    tmpPath: string,
+    name: string,
+    escalation: "needs_preceding_bridge" | "needs_subgoal_remodel" | "not_local" = "needs_preceding_bridge",
+    header: string[] = [],
+  ) {
+    const file = `${tmpPath}/${name}.lean`
+    await Bun.write(file, [...header, "theorem demo (A B : Prop) (HA : A) : A ∧ B := by", "  sorry", ""].join("\n"))
+    const session = await Session.create({})
+    SessionProof.set(session.id, file, { line: header.length, character: 0 }, "manual")
+    const tool = await ProofPlanTool.init()
+    const accepted = await tool.execute(
+      {
+        theorem: "demo",
+        root_goal: "A ∧ B",
+        nodes: [node({ candidate_lemmas: [], depends_on: [], required_hypotheses: [], target_normal_form: "A" })],
+        edges: [],
+      },
+      context(session.id),
+    )
+    expect(accepted.metadata.planning_status).toBe("accepted")
+    const materialized = [
+      ...header,
+      "theorem demo (A B : Prop) (HA : A) : A ∧ B := by",
+      "/- proof_region begin owner: lemma admit_id: gap-a theorem: demo target: Ha plan_node: leaf-1 -/",
+      "/- contract plan_node: leaf-1 depends_on: none source: context-derived input: HA output: Ha expected: local_fact normal_form: \"A\" evidence: local:HA -/",
+      "have Ha : A := (by sorry)",
+      "/- proof_region end admit_id: gap-a -/",
+      "  sorry",
+      "",
+    ].join("\n")
+    await Bun.write(file, materialized)
+    const state = SessionProofWorkflow.refresh(session.id, file, materialized).state
+    SessionProofWorkflow.set(session.id, {
+      ...state,
+      queue: state.queue.map((item) => ({
+        ...item,
+        status: "escalated" as const,
+        escalation_type: escalation,
+        escalation_reason: "the region needs B before it can close",
+        task_id: "task-gap-a",
+      })),
+      updated: Date.now(),
+    })
+    return { file, session, tool, materialized }
+  }
+
+  function bridge(overrides: Partial<ProofPlanStepValue> = {}) {
+    return node({
+      node_id: "bridge-1",
+      paper_step_id: "bridge",
+      formal_goal: "B",
+      paper_claim: "The missing preceding fact B.",
+      claim_delta: "Add the bridge B consumed by leaf-1.",
+      candidate_lemmas: [],
+      depends_on: [],
+      required_hypotheses: [],
+      target_normal_form: "B",
+      ...overrides,
+    })
+  }
+
+  test("accepts one bridge amendment in front of an escalated region and keeps the plan otherwise locked", async () => {
     await using tmp = await tmpdir({ git: true })
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/accepted-repair.lean`
-        const initial = "theorem demo (A B : Prop) : A /\\ B := by\n  sorry\n"
-        await Bun.write(file, initial)
-        const session = await Session.create({})
-        SessionProof.set(session.id, file, { line: 0, character: 0 }, "manual")
-        const tool = await ProofPlanTool.init()
-        await tool.execute(
-          {
-            theorem: "demo",
-            root_goal: "A /\\ B",
-            nodes: [node({ depends_on: [], required_hypotheses: [], target_normal_form: "A" })],
-            edges: [],
-          },
-          context(session.id),
-        )
+        const { file, session, tool } = await escalatedAcceptedPlan(tmp.path, "amend-accept")
 
-        const materialized = [
-          "theorem demo (A B : Prop) : A /\\ B := by",
-          "",
-          "/- proof_region begin owner: lemma admit_id: gap-a theorem: demo kind: semantic_bridge target: Ha plan_node: leaf-1 depends_on: none source: context-derived input: A output: Ha layer: semantic expected: local_fact normal_form: \"A\" evidence: mathlib:I -/",
-          "have Ha : A := (by sorry)",
-          "/- proof_region end admit_id: gap-a -/",
-          "",
-          "",
-        ].join("\n")
-        await Bun.write(file, materialized)
-        const state = SessionProofWorkflow.refresh(session.id, file, materialized).state
-        SessionProofWorkflow.set(session.id, {
-          ...state,
-          queue: state.queue.map((item) => ({
-            ...item,
-            status: "escalated" as const,
-            escalation_type: "needs_subgoal_remodel" as const,
-            escalation_reason: "the accepted leaf contract is too strong after compiler inspection",
-          })),
-          updated: Date.now(),
-        })
-
+        // D9: a whole-plan resubmission after acceptance does not change the locked plan
         const replacement = await tool.execute(
           {
             theorem: "demo",
-            root_goal: "A /\\ B",
-            nodes: [
-              node({
-                node_id: "leaf-2",
-                paper_step_id: "step-2",
-                formal_goal: "B",
-                paper_claim: "Use the compiler-backed weaker local contract.",
-                claim_delta: "Replace the failed child A with child B.",
-                depends_on: [],
-                required_hypotheses: [],
-                target_normal_form: "B",
-              }),
-            ],
+            root_goal: "A ∧ B",
+            nodes: [node({ node_id: "leaf-9", formal_goal: "B", target_normal_form: "B", depends_on: [], required_hypotheses: [] })],
             edges: [],
           },
           context(session.id),
         )
-        expect(replacement.metadata.recommended_action).toBe("materialize_once")
-        expect(replacement.metadata.nodes[0]?.node_id).toBe("leaf-2")
-        expect(SessionProofWorkflow.getDecompositionPlanState(session.id, file)?.repair_revision_number).toBe(1)
-        expect(SessionProofWorkflow.getDecompositionPlanState(session.id, file)?.materialization_review).toBeUndefined()
+        expect(replacement.metadata.accepted_plan_locked).toBe(true)
+        expect(replacement.metadata.recommended_action).toBe("materialize_accepted_plan")
+        expect(replacement.metadata.nodes.map((entry) => entry.node_id)).toEqual(["leaf-1"])
+
+        const amended = await tool.execute(
+          { action: "amend", amendment: { node: bridge(), depends_on: [], inserts_before: "gap-a" } },
+          context(session.id),
+        )
+        expect(amended.metadata.submission_kind).toBe("amendment")
+        expect(amended.metadata.recommended_action).toBe("materialize_amendment")
+        expect(amended.metadata.nodes.map((entry) => entry.node_id)).toEqual(["bridge-1", "leaf-1"])
+        expect(amended.metadata.nodes[1]?.depends_on).toContain("bridge-1")
+        expect(amended.metadata.edges).toContainEqual({ from: "bridge-1", to: "leaf-1" })
+        expect(amended.output).toContain("accepted_amendments: 1/3")
+        const plan = SessionProofWorkflow.getDecompositionPlanState(session.id, file)
+        expect(plan?.accepted_amendments).toBe(1)
+        expect(plan?.amendments?.[0]).toMatchObject({ node_id: "bridge-1", inserts_before: "gap-a", addresses_escalation: "task-gap-a" })
+        expect(plan?.materialization_review).toBeUndefined()
         expect(SessionProofWorkflow.get(session.id)?.queue).toEqual([])
 
-        const secondReplacement = await tool.execute(
-          {
-            theorem: "demo",
-            root_goal: "A /\\ B",
-            nodes: [
-              node({
-                node_id: "leaf-3",
-                paper_step_id: "step-3",
-                formal_goal: "A",
-                depends_on: [],
-                required_hypotheses: [],
-                target_normal_form: "A",
-              }),
-            ],
-            edges: [],
-          },
+        // the escalation was consumed: a second amendment has nothing to answer
+        const second = await tool.execute(
+          { action: "amend", amendment: { node: bridge({ node_id: "bridge-2" }), depends_on: [], inserts_before: "gap-a" } },
           context(session.id),
-        )
-        expect(secondReplacement.metadata.accepted_plan_locked).toBe(true)
-        expect(secondReplacement.metadata.nodes[0]?.node_id).toBe("leaf-2")
+        ).catch((error: Error) => error)
+        expect(String(second)).toContain("no proof_region is escalated")
+        expect(SessionProofWorkflow.getDecompositionPlanState(session.id, file)?.accepted_amendments).toBe(1)
 
         await Session.remove(session.id)
       },
     })
   })
 
-  test("keeps an accepted-plan repair open for route-only corrections on the same replacement DAG", async () => {
+  test("a rejected amendment costs nothing and the corrected amendment is accepted", async () => {
     await using tmp = await tmpdir({ git: true })
     await leanProject(tmp.path)
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/accepted-route-repair.lean`
-        const initial = [
+        const { file, session, tool } = await escalatedAcceptedPlan(tmp.path, "amend-reject", "needs_subgoal_remodel", [
           "axiom supporting_fact : ∀ A B : Prop, A → B → B",
-          "theorem demo (A B : Prop) (HA : A) : A ∧ B := by",
-          "  sorry",
-          "",
-          "",
-        ].join("\n")
-        await Bun.write(file, initial)
-        const session = await Session.create({})
-        SessionProof.set(session.id, file, { line: 1, character: 0 }, "manual")
-        const tool = await ProofPlanTool.init()
-        await tool.execute(
-          {
-            theorem: "demo",
-            root_goal: "A ∧ B",
-            nodes: [
-              node({
-                candidate_lemmas: [],
-                depends_on: [],
-                required_hypotheses: [],
-                target_normal_form: "A",
-              }),
-            ],
-            edges: [],
-          },
-          context(session.id),
-        )
+        ])
+        const before = SessionProofWorkflow.getDecompositionPlanState(session.id, file)
 
-        const materialized = [
-          "axiom supporting_fact : ∀ A B : Prop, A → B → B",
-          "theorem demo (A B : Prop) (HA : A) : A ∧ B := by",
-          "  sorry",
-          "/- proof_region begin owner: lemma admit_id: gap-a theorem: demo kind: semantic_bridge target: Ha plan_node: leaf-1 depends_on: none source: context-derived input: HA output: Ha layer: semantic expected: local_fact normal_form: \"A\" evidence: local:HA -/",
-          "have Ha : A := (by sorry)",
-          "/- proof_region end admit_id: gap-a -/",
-          "",
-          "",
-        ].join("\n")
-        await Bun.write(file, materialized)
-        const state = SessionProofWorkflow.refresh(session.id, file, materialized).state
-        SessionProofWorkflow.set(session.id, {
-          ...state,
-          queue: state.queue.map((item) => ({
-            ...item,
-            status: "escalated" as const,
-            escalation_type: "needs_subgoal_remodel" as const,
-            escalation_reason: "compiler evidence requires a different local target",
-          })),
-          updated: Date.now(),
-        })
-
-        const replacementNode = node({
-          node_id: "leaf-2",
-          paper_step_id: "step-2",
-          formal_goal: "B",
-          paper_claim: "Use a different compiler-backed local target.",
-          claim_delta: "Replace child A with child B.",
-          candidate_lemmas: [],
-          depends_on: [],
-          required_hypotheses: [],
-          target_normal_form: "B",
-        })
         const rejected = await tool.execute(
           {
-            theorem: "demo",
-            root_goal: "A ∧ B",
-            nodes: [
-              {
-                ...replacementNode,
+            action: "amend",
+            amendment: {
+              node: bridge({
                 prosa_candidate_lemmas: [
-                  {
-                    name: "supporting_fact",
-                    library: "prosa" as const,
-                    reason: "candidate requires a premise audit",
-                    premise_sources: [],
-                  },
+                  { name: "supporting_fact", library: "prosa" as const, reason: "needs a premise audit", premise_sources: [] },
                 ],
-              },
-            ],
-            edges: [],
+              }),
+              depends_on: [],
+              inserts_before: "gap-a",
+            },
           },
           context(session.id),
         )
+        expect(rejected.metadata.recommended_action).toBe("revise_amendment")
+        expect(rejected.metadata.review?.hard_errors.map((entry) => entry.code)).toContain("candidate_unresolved_premise")
+        const after = SessionProofWorkflow.getDecompositionPlanState(session.id, file)
+        expect(after?.accepted_amendments ?? 0).toBe(0)
+        expect(after?.accepted_semantic_fingerprint).toBe(before?.accepted_semantic_fingerprint)
+        expect(after?.accepted_plan?.nodes.map((entry) => entry.node_id)).toEqual(["leaf-1"])
 
-        expect(rejected.metadata.recommended_action).toBe("repair_plan_route")
-        expect(rejected.metadata.nodes[0]?.node_id).toBe("leaf-2")
-        expect(rejected.metadata.review?.hard_errors.map((entry) => entry.code)).toContain(
-          "candidate_unresolved_premise",
-        )
-        const eligibility = SessionProofWorkflow.getAcceptedPlanRepairEligibility(session.id, file, materialized)
-        expect(eligibility.available).toBe(true)
-        expect(eligibility.mode).toBe("route_repair")
+        const wrongRegion = await tool.execute(
+          { action: "amend", amendment: { node: bridge(), depends_on: [], inserts_before: "gap-z" } },
+          context(session.id),
+        ).catch((error: Error) => error)
+        expect(String(wrongRegion)).toContain("gap-z")
 
         const corrected = await tool.execute(
-          {
-            theorem: "demo",
-            root_goal: "A ∧ B",
-            nodes: [{ ...replacementNode, prosa_candidate_lemmas: [] }],
-            edges: [],
-          },
+          { action: "amend", amendment: { node: bridge(), depends_on: [], inserts_before: "gap-a" } },
           context(session.id),
         )
-        expect(corrected.metadata.recommended_action).toBe("materialize_once")
-        expect(corrected.metadata.nodes[0]?.node_id).toBe("leaf-2")
-        expect(SessionProofWorkflow.getDecompositionPlanState(session.id, file)?.repair_revision_number).toBe(1)
+        expect(corrected.metadata.recommended_action).toBe("materialize_amendment")
+        expect(SessionProofWorkflow.getDecompositionPlanState(session.id, file)?.accepted_amendments).toBe(1)
 
         await Session.remove(session.id)
       },
     })
   })
 
-  test("reuses an already matching skeleton after an accepted-plan repair revision", async () => {
+  test("an amended plan schedules the bridge region before the escalated one", async () => {
     await using tmp = await tmpdir({ git: true })
     await Instance.provide({
       directory: tmp.path,
       fn: async () => {
-        const file = `${tmp.path}/accepted-repair-existing-skeleton.lean`
-        const initial = "theorem demo (A B : Prop) : A /\\ B := by\n  sorry\n"
-        await Bun.write(file, initial)
-        const session = await Session.create({})
-        SessionProof.set(session.id, file, { line: 0, character: 0 }, "manual")
-        const tool = await ProofPlanTool.init()
+        const { file, session, tool } = await escalatedAcceptedPlan(tmp.path, "amend-schedule")
         await tool.execute(
-          {
-            theorem: "demo",
-            root_goal: "A /\\ B",
-            nodes: [
-              node({
-                depends_on: [],
-                required_hypotheses: [],
-                consumers: ["parent_composition"],
-                target_normal_form: "A",
-              }),
-            ],
-            edges: [],
-          },
+          { action: "amend", amendment: { node: bridge(), depends_on: [], inserts_before: "gap-a" } },
           context(session.id),
         )
-
-        const materialized = [
-          "theorem demo (A B : Prop) : A /\\ B := by",
-          "",
-          "/- proof_region begin owner: lemma admit_id: gap-a theorem: demo kind: semantic_bridge target: Ha plan_node: leaf-1 depends_on: none source: context-derived input: A output: Ha layer: semantic expected: local_fact normal_form: \"A\" evidence: mathlib:I -/",
-          "have Ha : A := (by",
-          "  sorry)",
+        const withBridge = [
+          "theorem demo (A B : Prop) (HA : A) : A ∧ B := by",
+          "/- proof_region begin owner: lemma admit_id: gap-b theorem: demo target: Hb plan_node: bridge-1 -/",
+          "/- contract plan_node: bridge-1 depends_on: none source: context-derived input: HA output: Hb expected: local_fact normal_form: \"B\" evidence: local:HA -/",
+          "have Hb : B := (by sorry)",
+          "/- proof_region end admit_id: gap-b -/",
+          "/- proof_region begin owner: lemma admit_id: gap-a theorem: demo target: Ha plan_node: leaf-1 -/",
+          "/- contract plan_node: leaf-1 depends_on: bridge-1 source: context-derived input: HA, Hb output: Ha expected: local_fact normal_form: \"A\" evidence: local:HA -/",
+          "have Ha : A := (by sorry)",
           "/- proof_region end admit_id: gap-a -/",
-          "sorry",
-          "",
+          "  sorry",
           "",
         ].join("\n")
-        await Bun.write(file, materialized)
-        const state = SessionProofWorkflow.refresh(session.id, file, materialized).state
-        expect(state.decomposition_plan?.materialization_review?.status).toBe("matched")
-        SessionProofWorkflow.set(session.id, {
-          ...state,
-          queue: state.queue.map((item) => ({
-            ...item,
-            status: "escalated" as const,
-            escalation_type: "needs_subgoal_remodel" as const,
-            escalation_reason: "compiler evidence requires revising the accepted DAG",
-          })),
-          updated: Date.now(),
-        })
-
-        const replacement = await tool.execute(
-          {
-            theorem: "demo",
-            root_goal: "A /\\ B",
-            nodes: [
-              node({
-                depends_on: [],
-                required_hypotheses: [],
-                consumers: ["theorem"],
-                target_normal_form: "A",
-              }),
-            ],
-            edges: [],
-          },
-          context(session.id),
-        )
-        expect(replacement.metadata.recommended_action).toBe("materialize_once")
-        expect(SessionProofWorkflow.getDecompositionPlanState(session.id, file)?.materialization_review?.status).toBe(
-          "matched",
-        )
-
-        const refreshed = SessionProofWorkflow.refresh(session.id, file, materialized).state
-        expect(refreshed.queue.map((item) => item.admit_id)).toEqual(["gap-a"])
+        await Bun.write(file, withBridge)
+        const refreshed = SessionProofWorkflow.refresh(session.id, file, withBridge).state
+        expect(refreshed.queue.map((item) => item.admit_id)).toEqual(["gap-b", "gap-a"])
+        expect(refreshed.decomposition_plan?.materialization_review?.status).toBe("matched")
         expect((await SessionProofWorkflow.suggestNextSubtask(session.id, []))?.task.lemma_assignment?.admit_id).toBe(
-          "gap-a",
+          "gap-b",
         )
 
         await Session.remove(session.id)
@@ -1523,7 +1425,7 @@ describe("tool.proof_plan bounded semantic review", () => {
             proofProducing: true,
             lemmaAssignment: { file, theorem: "demo", admit_id: "gap-a" } as any,
           }),
-        ).rejects.toThrow("call proof_plan with the one evidence-backed structural repair revision")
+        ).rejects.toThrow('call proof_plan with action "amend"')
         await Session.remove(session.id)
       },
     })

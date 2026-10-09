@@ -173,6 +173,9 @@ replacements must pass.
 | V10 | BACKEND_DECISION (Pantograph commands) | `env.catalog {}` returns the names | in 0.3.19 `env.catalog` takes a required `filename` and writes one name per line to it (the README example is outdated); the JSON decoder also requires fields that have defaults (`frontend.process` needs `newConstants`, `env.catalog` needs `invertFilter`). The client passes all of them. | 4 |
 | V11 | coqtop note (`state`, `eval` commands) | port them | `lean_query` has `check`, `print`, `search` only: goals come from `lean_session`, and `#eval` is forbidden by D4. | 4 |
 | V9 | gate (D4) | — | the gate returns `disabled` (`GATE_NOT_LEAN`) for non-`.lean` files instead of judging them (two task tests with Rocq fixtures regressed otherwise; the fixtures are ported in Phase 5). | 3 |
+| V12 | proof-workflow fixes K4 | `planNextSubtask`/`suggestNextSubtask` return `{kind: "assignment"} \| {kind: "no_ready_region", …}` | the two functions keep returning an assignment or `undefined` (≈100 test call sites); a separate `schedulerStatus()` computes `{kind: "no_ready_region", reason, required_action, admit_ids}` from the same refreshed state, and `prompt.ts` injects it as `<scheduler-status>` whenever the prover has neither a lemma assignment nor a finalization reminder. Same information, same moment. | 5 |
+| V13 | D9 / proof-workflow fixes K2 | amendment unlocked by `needs_preceding_bridge` (or a remodel naming a missing fact) | unlocked by `needs_preceding_bridge`, `needs_uniqueness_bridge` (also a missing bridge fact), `needs_subgoal_remodel` (text detection of "names a missing fact" would be fragile), and by a K8 repeated-escalation block. The old one-shot whole-plan replacement after acceptance is removed (D9: locked except amendments); its three tests were rewritten as amendment tests. | 5 |
+| V14 | D10 / proof-workflow fixes K7 | `kind`/`layer` not compared | additionally, `refresh` copies `kind`/`layer` from the accepted plan node onto each parsed region, so the locality gate (which needs them) works when the marker omits them (D10 marker fields). File values remain only as a fallback for regions with no plan. | 5 |
 
 **Packaging bug found (needs a user decision):** 19 of the 22 `proof.tex` files of `Deliverables/lean-prosa-v06` have
 CRLF line endings in the Mac working tree, and `benchmark/frozen_sha256.json` was computed from those bytes, but git
@@ -260,3 +263,28 @@ K1's general-case rule lets the gate accept package imports. For those tasks the
 - Tool descriptions (`lean-session.txt`, `lean-query.txt`, `lean-check.txt`, `checkpoint.txt`) rewritten for Lean.
 - Tests on the PC (built package): lean-tools.integration 2, lean-session 8, lean-gate 14, lean-region 6,
   lean-term 5 = **35/35 pass**.
+
+### Phase 5 — rest of the app (in progress, PC)
+
+- 5a (commit 9eb24a16): source model, premise audit, review/task/projection/ledger ported; session/tool fixtures in Lean.
+  `LeanProject` reads diagnostics with `lake env lean --json` (info messages carry positions, so `#print axioms`
+  output is parsed from messages). proof-review 39/39.
+- 5b (known-problem fixes, this commit):
+  - K2/D9: `proof_plan` action `amend` (`amendment: {node, depends_on, inserts_before, addresses_escalation,
+    consumer_composition_certificate?}`); the bridge node is inserted before the escalated region's plan node, the
+    consumer gets the dependency and edge; only the new node is premise-audited. `accepted_amendments` ≤ 3
+    (`MAX_PLAN_AMENDMENTS`), rejections free, whole-plan resubmissions after acceptance are locked (V13).
+  - K3: both controller stops (`stalled_wide_fallback` family and `materialization_livelock`) carry
+    `metadata.controller_stop = {reason, required_action, admit_id}`; a missing bridge against a locked plan names an
+    amendment.
+  - K4: `<scheduler-status>` (V12). K8: per-region escalation history keyed by region fingerprint; 3 same-type
+    escalations without a change block dispatch and unlock an amendment.
+  - K7 (part): plan-owned `kind`/`layer` (V14); `normal_form` compared with Lean-aware normalisation
+    (`normalizeTargetShape`). Elaboration-based comparison: pending.
+  - S14: before a prover run ends, the current source must have been compiled by `checkpoint`/`lean_check`; otherwise
+    one `<final-validation-required>` reminder per source revision.
+  - prompt.ts gap-revision §1 wording (R2 closure, `sorry`, Lean proof file, Prosa/Mathlib).
+  - Tests (PC): proof-review 39/39; proof-workflow + prompt + task 139/139.
+- Full-suite runs on the PC die in the 24 GB cap: the OOM dump shows 127 `bun` processes of ≈650 MB each in the scope
+  (not Lean). Being traced with a per-second sampler (`run-tests-sampled.sh`).
+

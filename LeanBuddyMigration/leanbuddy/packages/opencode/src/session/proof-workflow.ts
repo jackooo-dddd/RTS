@@ -27,6 +27,7 @@ import { LeanProject } from "@/tool/lean-project"
 import { Log } from "@/util/log"
 import {
   MAX_IDENTICAL_PLAN_METADATA_REPAIRS,
+  MAX_PLAN_AMENDMENTS,
   MAX_SEMANTIC_PLAN_REVISIONS,
   ProofPlan,
   ProofPlanReview,
@@ -158,6 +159,8 @@ export namespace SessionProofWorkflow {
     region_end_line: z.number().int().positive().optional(),
     escalation_type: EscalationType.optional(),
     escalation_reason: z.string().optional(),
+    /** K8: escalation history of this region; `source_hash` is the region fingerprint at escalation time. */
+    escalations: z.array(z.object({ type: EscalationType, source_hash: z.string() })).optional(),
     remodel_request: RemodelRequestSchema.optional(),
     attempt_report: BlockedProofReportSchema.optional(),
     region_fingerprint: z.string().optional(),
@@ -322,6 +325,8 @@ export namespace SessionProofWorkflow {
     "do_not_retry_metadata_only_plan",
     "start_new_plan_generation",
     "stop_and_report_best_plan",
+    "materialize_amendment",
+    "revise_amendment",
   ])
   export type DecompositionPlanAction = z.infer<typeof DecompositionPlanAction>
 
@@ -346,8 +351,22 @@ export namespace SessionProofWorkflow {
     accepted_at: z.number().int().positive().optional(),
     exhausted_at: z.number().int().positive().optional(),
     theorem_source_hash_before_materialization: z.string().min(1).optional(),
+    /** Legacy single accepted-plan repair counter (pre-D9 state rows); no longer written. */
     repair_revision_number: z.number().int().nonnegative().optional(),
     repair_revision_reason: z.string().min(1).optional(),
+    /** D9: accepted amendments of the locked plan (at most MAX_PLAN_AMENDMENTS); rejections are not counted. */
+    accepted_amendments: z.number().int().nonnegative().optional(),
+    amendments: z
+      .array(
+        z.object({
+          node_id: z.string().min(1),
+          inserts_before: z.string().min(1),
+          addresses_escalation: z.string().min(1).optional(),
+          reason: z.string().min(1),
+          accepted_at: z.number().int().positive(),
+        }),
+      )
+      .optional(),
     administrative_reconciliation_count: z.number().int().nonnegative().optional(),
     materialization_review: DecompositionMaterializationReview.optional(),
     terminal_verdict: DecompositionTerminalVerdict.optional(),
@@ -1567,6 +1586,18 @@ export namespace SessionProofWorkflow {
     return (value ?? "").replace(/\s+/g, " ").trim().toLowerCase()
   }
 
+  /** D10: a region's `kind` and `layer` come from its accepted plan node; file values are only a legacy fallback. */
+  function withPlanLabels(blocks: ParsedBlock[], plan: DecompositionPlanState | undefined) {
+    const nodes = plan?.status === "accepted" ? plan.accepted_plan?.nodes : undefined
+    if (!nodes) return blocks
+    const byID = new Map(nodes.map((node) => [node.node_id ?? node.paper_step_id, node]))
+    return blocks.map((block) => {
+      const node = block.proofPlanNode ? byID.get(block.proofPlanNode) : undefined
+      if (!node) return block
+      return { ...block, kind: node.kind ?? block.kind, layer: node.layer ?? block.layer }
+    })
+  }
+
   function materializationTheoremSourceHash(source: string, theorem: string) {
     const span = theorem === "unspecified-theorem"
       ? undefined
@@ -1632,16 +1663,11 @@ export namespace SessionProofWorkflow {
           observed: normalizedMetadataList(block.dependsOn),
         })
       }
-      if (node.kind && block.kind !== node.kind) {
-        metadataMismatches.push(`${id}: kind expected ${node.kind}, observed ${block.kind}`)
-      }
-      if (node.layer && normalizedMetadataText(block.layer) !== normalizedMetadataText(node.layer)) {
-        metadataMismatches.push(`${id}: layer expected ${node.layer}, observed ${block.layer ?? "missing"}`)
-      }
+      // D10/K7: kind and layer are owned by the plan node and never compared with the file.
       const expectedNormalForm = node.target_normal_form ?? node.target?.normal_form
       if (
         expectedNormalForm &&
-        normalizedMetadataText(expectedNormalForm) !== normalizedMetadataText(block.targetNormalForm)
+        normalizeTargetShape(expectedNormalForm) !== normalizeTargetShape(block.targetNormalForm ?? "")
       ) {
         metadataMismatches.push(`${id}: target normal form differs from the accepted plan`)
       }
@@ -1664,7 +1690,7 @@ export namespace SessionProofWorkflow {
       structurallyComplete ||
       (sourceChanged &&
         (missingPlanNodes.length === 0 || Boolean(planState.materialization_review))) ||
-      ((planState.repair_revision_number ?? 0) > 0 && status === "matched")
+      ((planState.accepted_amendments ?? 0) > 0 && status === "matched")
     const review = ready
       ? DecompositionMaterializationReview.parse({
           status,
@@ -1831,11 +1857,9 @@ export namespace SessionProofWorkflow {
     if (planState.status !== "accepted" || !planState.accepted_plan) {
       return { ok: false as const, reason: `decomposition plan is ${planState.status}` }
     }
-    const repairEvidence = (planState.repair_revision_number ?? 0) < 1
-      ? acceptedPlanRepairEvidence(state, planState, source)
-      : undefined
-    const structuralRepairGuidance = repairEvidence
-      ? `accepted-plan structural repair revision is available (${repairEvidence}); call proof_plan with the one evidence-backed structural repair revision, and do not dispatch a lemma until the revised DAG is accepted and materialized`
+    const amendment = planAmendmentEligibility(state, planState)
+    const structuralRepairGuidance = amendment.available
+      ? `a plan amendment is available (${amendment.reason}); call proof_plan with action "amend" adding the missing bridge node before ${amendment.admit_id}, and do not dispatch a lemma until the amended region is materialized`
       : undefined
 
     // The persisted review remains one-time, but dispatch must audit the live
@@ -2010,6 +2034,10 @@ export namespace SessionProofWorkflow {
         region_end_line: block.editableMode === "region" ? block.endLine : undefined,
         escalation_type: contentCarried?.escalation_type,
         escalation_reason: contentCarried?.escalation_reason,
+        // K8: only escalations against the current region text count towards the repeated-escalation block.
+        escalations: sameLogicalRegion
+          ? nonEmpty(before?.escalations?.filter((entry) => entry.source_hash === block.regionFingerprint))
+          : undefined,
         remodel_request: contentCarried?.remodel_request,
         attempt_report: contentCarried?.attempt_report,
         region_fingerprint: block.regionFingerprint,
@@ -2308,28 +2336,85 @@ export namespace SessionProofWorkflow {
     )[0]
   }
 
-  function acceptedPlanRepairEvidence(state: State, plan: DecompositionPlanState, source: string) {
+  /** K8: escalations of one region with the same type and no source change before re-dispatch stops. */
+  export const REPEATED_ESCALATION_LIMIT = 3
+
+  function nonEmpty<T>(items: T[] | undefined) {
+    return items && items.length > 0 ? items : undefined
+  }
+
+  /** K8: the last REPEATED_ESCALATION_LIMIT escalations share one type and the region text has not changed since. */
+  export function repeatedEscalationBlocked(item: Pick<QueueItem, "escalations" | "region_fingerprint">) {
+    const recent = (item.escalations ?? []).slice(-REPEATED_ESCALATION_LIMIT)
+    if (recent.length < REPEATED_ESCALATION_LIMIT || !item.region_fingerprint) return false
+    return recent.every((entry) => entry.type === recent[0].type && entry.source_hash === item.region_fingerprint)
+  }
+
+  function repeatedEscalationReason(item: QueueItem) {
+    const type = item.escalations?.at(-1)?.type ?? item.escalation_type
+    return `proof_region ${item.admit_id} escalated ${REPEATED_ESCALATION_LIMIT} times with ${type} without a source change`
+  }
+
+  /** D9: escalation types that name a missing preceding fact and so unlock an amendment of the locked plan. */
+  const AMENDMENT_ESCALATIONS = new Set<EscalationType>([
+    "needs_preceding_bridge",
+    "needs_uniqueness_bridge",
+    "needs_subgoal_remodel",
+  ])
+
+  /** The escalated region (if any) whose escalation unlocks a plan amendment. */
+  function amendmentTrigger(state: State, plan: DecompositionPlanState) {
     if (state.queue.some((item) => item.theorem === plan.theorem && (item.status === "running" || item.status === "split"))) {
       return undefined
     }
     const repair = state.active_repair
-    if (repair?.theorem === plan.theorem && structuralEscalation(repair.escalation_type)) {
-      return `active theorem repair ${repair.escalation_type}: ${repair.reason}`
+    if (repair?.theorem === plan.theorem && AMENDMENT_ESCALATIONS.has(repair.escalation_type)) {
+      return {
+        admit_id: repair.admit_id,
+        escalation_type: repair.escalation_type,
+        task_id: state.latest_escalation?.admit_id === repair.admit_id ? state.latest_escalation.task_id : undefined,
+        reason: `active theorem repair ${repair.escalation_type}: ${repair.reason}`,
+      }
     }
     const escalated = state.queue.find(
-      (item) => item.theorem === plan.theorem && item.status === "escalated" && structuralEscalation(item.escalation_type),
+      (item) =>
+        item.theorem === plan.theorem &&
+        item.status === "escalated" &&
+        ((item.escalation_type && AMENDMENT_ESCALATIONS.has(item.escalation_type)) || repeatedEscalationBlocked(item)),
     )
-    if (escalated?.escalation_type) {
-      return `proof_region ${escalated.admit_id} escalated with ${escalated.escalation_type}: ${escalated.escalation_reason ?? "structural remodel required"}`
+    if (!escalated) return undefined
+    return {
+      admit_id: escalated.admit_id,
+      escalation_type: escalated.escalation_type,
+      task_id: escalated.task_id,
+      reason: repeatedEscalationBlocked(escalated)
+        ? repeatedEscalationReason(escalated)
+        : `proof_region ${escalated.admit_id} escalated with ${escalated.escalation_type}: ${escalated.escalation_reason ?? "missing preceding fact"}`,
     }
-    const preview = materializationPreviewFromBlocks(plan, parseProofObligations(source), source)
-    if (
-      preview?.review?.status === "drifted" &&
-      (plan.administrative_reconciliation_count ?? 0) >= 1
-    ) {
-      return "materialization remains structurally drifted after the one administrative marker reconciliation"
+  }
+
+  function planAmendmentEligibility(state: State, plan: DecompositionPlanState, insertsBefore?: string) {
+    const used = plan.accepted_amendments ?? 0
+    const remaining = Math.max(0, MAX_PLAN_AMENDMENTS - used)
+    if (remaining === 0) {
+      return { available: false as const, remaining, reason: `all ${MAX_PLAN_AMENDMENTS} plan amendments have been accepted; the plan is locked` }
     }
-    return undefined
+    const trigger = amendmentTrigger(state, plan)
+    if (!trigger) {
+      return {
+        available: false as const,
+        remaining,
+        reason: "no proof_region is escalated with a missing preceding fact (needs_preceding_bridge, needs_uniqueness_bridge, needs_subgoal_remodel) or blocked by repeated escalation",
+      }
+    }
+    if (insertsBefore && insertsBefore !== trigger.admit_id) {
+      return {
+        available: false as const,
+        remaining,
+        reason: `the amendment must insert its bridge before the escalated region ${trigger.admit_id}, not ${insertsBefore}`,
+      }
+    }
+    return { available: true as const, remaining, ...trigger }
   }
 
   const ROUTE_REPAIR_HARD_ERRORS = new Set([
@@ -2362,14 +2447,6 @@ export namespace SessionProofWorkflow {
 
   function hasOnlyMechanicalPlanHardErrors(review: ProofPlanReviewValue) {
     return review.hard_errors.length > 0 && review.hard_errors.every((issue) => MECHANICAL_PLAN_HARD_ERRORS.has(issue.code))
-  }
-
-  function hasPendingAcceptedPlanRouteRepair(plan: DecompositionPlanState) {
-    return Boolean(
-      (plan.repair_revision_number ?? 0) >= 1 &&
-      plan.last_review.semantic_fingerprint !== plan.accepted_semantic_fingerprint &&
-      hasOnlyRouteRepairHardErrors(plan.last_review),
-    )
   }
 
   function rejectedPlanScore(review: ProofPlanReviewValue) {
@@ -2407,7 +2484,8 @@ export namespace SessionProofWorkflow {
     }))
   }
 
-  export function getAcceptedPlanRepairEligibility(sessionID: string, file: string, source: string) {
+  /** D9: whether the locked plan bound to this file may take an amendment now, and for which region. */
+  export function getPlanAmendmentEligibility(sessionID: string, file: string) {
     const state = get(sessionID)
     const plan = state?.decomposition_plan
     if (
@@ -2417,32 +2495,9 @@ export namespace SessionProofWorkflow {
       !plan.accepted_plan ||
       normalizedWorkflowFile(state.file) !== normalizedWorkflowFile(file)
     ) {
-      return { available: false as const, mode: undefined, reason: "no accepted plan is bound to this theorem" }
+      return { available: false as const, remaining: 0, reason: "no accepted plan is bound to this theorem" }
     }
-    if ((plan.repair_revision_number ?? 0) >= 1 && !hasPendingAcceptedPlanRouteRepair(plan)) {
-      return {
-        available: false as const,
-        mode: undefined,
-        reason: "the one accepted-plan repair revision has already been used",
-      }
-    }
-    if (hasPendingAcceptedPlanRouteRepair(plan)) {
-      return {
-        available: true as const,
-        mode: "route_repair" as const,
-        reason:
-          "the single accepted-plan repair DAG is already reserved; correct only its candidate lemma, instantiation, or premise-source audit without changing that DAG",
-      }
-    }
-    const evidence = acceptedPlanRepairEvidence(state, plan, source)
-    if (!evidence) {
-      return {
-        available: false as const,
-        mode: undefined,
-        reason: "no compiler, remodel, or post-reconciliation drift evidence permits reopening the accepted plan",
-      }
-    }
-    return { available: true as const, mode: "structural_revision" as const, reason: evidence }
+    return planAmendmentEligibility(state, plan)
   }
 
   export function recordDecompositionPlanAttempt(input: {
@@ -2451,6 +2506,8 @@ export namespace SessionProofWorkflow {
     source: string
     plan: ProofPlanValue
     review: ProofPlanReviewValue
+    /** D9: the submission is an amendment of the locked plan (`proof_plan` action `amend`). */
+    amendment?: { node_id: string; inserts_before: string; addresses_escalation?: string }
   }) {
     const file = normalizedWorkflowFile(input.file)
     const existingWorkflow = get(input.sessionID)
@@ -2467,23 +2524,27 @@ export namespace SessionProofWorkflow {
 
     if (scoped?.status === "accepted" && scoped.accepted_plan) {
       const sameSemanticPlan = scoped.accepted_semantic_fingerprint === input.review.semantic_fingerprint
-      const pendingRouteRepair = hasPendingAcceptedPlanRouteRepair(scoped)
-      const samePendingRepair = Boolean(
-        pendingRouteRepair &&
-        scoped.last_review.semantic_fingerprint === input.review.semantic_fingerprint,
-      )
-      const repairEvidence = (existingWorkflow
-        ? acceptedPlanRepairEvidence(existingWorkflow, scoped, input.source)
-        : undefined) ?? scoped.repair_revision_reason
-      if (
-        sameSemanticPlan ||
-        ((scoped.repair_revision_number ?? 0) >= 1 && !samePendingRepair) ||
-        !repairEvidence
-      ) {
+      // D9: an accepted plan is locked; only an amendment answering an escalated region may change it.
+      const eligibility = input.amendment && existingWorkflow
+        ? planAmendmentEligibility(existingWorkflow, scoped, input.amendment.inserts_before)
+        : undefined
+      if (!input.amendment || !eligibility?.available) {
         return {
           state: scoped,
           recommended_action: "materialize_accepted_plan" as const,
           same_semantic_plan: sameSemanticPlan,
+          accepted_plan_locked: true,
+          amendment_rejection: input.amendment
+            ? eligibility?.reason ?? "no accepted plan is bound to this theorem"
+            : undefined,
+        }
+      }
+      if (!input.review.materialization_allowed) {
+        // A rejected amendment costs nothing and leaves the locked plan unchanged (D9).
+        return {
+          state: scoped,
+          recommended_action: "revise_amendment" as const,
+          same_semantic_plan: false,
           accepted_plan_locked: true,
         }
       }
@@ -2492,31 +2553,6 @@ export namespace SessionProofWorkflow {
       const attempted = scoped.attempted_semantic_fingerprints.includes(input.review.semantic_fingerprint)
         ? scoped.attempted_semantic_fingerprints
         : [...scoped.attempted_semantic_fingerprints, input.review.semantic_fingerprint]
-      if (!input.review.materialization_allowed) {
-        const rejectedRepair = DecompositionPlanState.parse({
-          ...scoped,
-          attempted_semantic_fingerprints: attempted,
-          last_candidate_plan: reviewedPlan,
-          last_review: input.review,
-          repair_revision_number: 1,
-          repair_revision_reason: repairEvidence,
-          updated: now,
-        })
-        set(input.sessionID, {
-          ...existingWorkflow!,
-          decomposition_plan: rejectedRepair,
-          updated: now,
-        })
-        return {
-          state: rejectedRepair,
-          recommended_action: hasOnlyRouteRepairHardErrors(input.review)
-            ? "repair_plan_route" as const
-            : "stop_and_report_best_plan" as const,
-          same_semantic_plan: false,
-          accepted_plan_locked: true,
-        }
-      }
-
       const replacementBaseline = DecompositionPlanState.parse({
         ...scoped,
         root_goal: input.plan.root_goal,
@@ -2528,8 +2564,17 @@ export namespace SessionProofWorkflow {
         accepted_plan: reviewedPlan,
         accepted_semantic_fingerprint: input.review.semantic_fingerprint,
         accepted_at: now,
-        repair_revision_number: 1,
-        repair_revision_reason: repairEvidence,
+        accepted_amendments: (scoped.accepted_amendments ?? 0) + 1,
+        amendments: [
+          ...(scoped.amendments ?? []),
+          {
+            node_id: input.amendment.node_id,
+            inserts_before: input.amendment.inserts_before,
+            addresses_escalation: input.amendment.addresses_escalation ?? eligibility.task_id,
+            reason: eligibility.reason,
+            accepted_at: now,
+          },
+        ],
         administrative_reconciliation_count: 0,
         materialization_review: undefined,
         terminal_verdict: undefined,
@@ -2560,7 +2605,7 @@ export namespace SessionProofWorkflow {
       })
       return {
         state: replacement,
-        recommended_action: "materialize_once" as const,
+        recommended_action: "materialize_amendment" as const,
         same_semantic_plan: false,
         accepted_plan_locked: true,
       }
@@ -2738,7 +2783,6 @@ export namespace SessionProofWorkflow {
       accepted_semantic_fingerprint: accepted ? input.review.semantic_fingerprint : undefined,
       accepted_at: accepted ? now : undefined,
       exhausted_at: exhausted ? now : undefined,
-      repair_revision_number: 0,
       administrative_reconciliation_count: 0,
       terminal_verdict: terminalVerdict,
       updated: now,
@@ -2943,15 +2987,16 @@ export namespace SessionProofWorkflow {
   export function refresh(sessionID: string, file: string, source: string) {
     const previous = get(sessionID)
     const target = boundTheoremTarget(sessionID, file, source)
-    const parsedBlocks = parseProofObligations(source).filter(
-      (block) => !target || block.theorem === target.theorem,
-    )
-    const merged = mergeQueue(previous, parsedBlocks, file, source, target?.theorem)
     let decompositionPlan = previous?.decomposition_plan
     if (!decompositionPlan && target) {
       decompositionPlan = recoverAcceptedDecompositionPlan(file, source, target.theorem)
     }
     if (target && decompositionPlan?.theorem !== target.theorem) decompositionPlan = undefined
+    const parsedBlocks = withPlanLabels(
+      parseProofObligations(source).filter((block) => !target || block.theorem === target.theorem),
+      decompositionPlan,
+    )
+    const merged = mergeQueue(previous, parsedBlocks, file, source, target?.theorem)
     if (
       decompositionPlan?.status === "accepted" &&
       normalizedWorkflowFile(decompositionPlan.file) === normalizedWorkflowFile(file)
@@ -4509,6 +4554,20 @@ export namespace SessionProofWorkflow {
     return ProofRegionLifecycleTransition.parse(input)
   }
 
+  /** S14: source hashes of a file that checkpoint/lean_check has compiled (any outcome), newest last. */
+  const checkedSources = new Map<string, string[]>()
+
+  function noteCheckedSource(file: string, source: string) {
+    const hash = sourceHash(source)
+    const seen = (checkedSources.get(file) ?? []).filter((entry) => entry !== hash)
+    checkedSources.set(file, [...seen, hash].slice(-20))
+  }
+
+  /** S14: whether checkpoint or lean_check has compiled exactly this source of the file. */
+  export function sourceChecked(file: string, source: string) {
+    return (checkedSources.get(normalizedWorkflowFile(file)) ?? []).includes(sourceHash(source))
+  }
+
   export async function recordCompilerResult(input: {
     sessionID: string
     file: string
@@ -4543,6 +4602,7 @@ export namespace SessionProofWorkflow {
       })
     }
 
+    noteCheckedSource(file, input.source)
     const binding = SessionProof.get(input.sessionID)
     if (binding && normalizedWorkflowFile(binding.file) === file && !get(input.sessionID)) {
       refresh(input.sessionID, file, input.source)
@@ -5016,6 +5076,10 @@ export namespace SessionProofWorkflow {
             status: "escalated" as const,
             escalation_type: escalationType,
             escalation_reason: reason,
+            escalations: [
+              ...(entry.escalations ?? []),
+              { type: escalationType, source_hash: entry.region_fingerprint ?? "" },
+            ].slice(-10),
           }
         : entry,
     )
@@ -6365,6 +6429,11 @@ export namespace SessionProofWorkflow {
       if (!item || !block || block.theorem !== input.lemmaAssignment.theorem) {
         throw new Error(
           `proof_task_dispatch_blocked: lemma assignment ${input.lemmaAssignment.theorem}:${input.lemmaAssignment.admit_id} is not a live proof_region in the bound theorem`,
+        )
+      }
+      if (repeatedEscalationBlocked(item)) {
+        throw new Error(
+          `proof_task_dispatch_blocked: ${repeatedEscalationReason(item)}; submit a proof_plan amendment (action "amend") or remodel the region before dispatching it again`,
         )
       }
       const dispatch = decompositionDispatchCheck(state, [...refreshed.parsed.values()], block, source)
@@ -7855,5 +7924,119 @@ export namespace SessionProofWorkflow {
         lemma_assignment: checked.assignment,
       },
     }
+  }
+  /** K4: why the scheduler has no lemma assignment for the prover, and the action that unblocks it. */
+  export type SchedulerStatus = {
+    kind: "no_ready_region"
+    reason: string
+    required_action: string
+    admit_ids: string[]
+  }
+
+  /** K4: explain an empty schedule. Returns undefined when there is nothing to report: no regions, every region
+   * solved (the finalization reminder takes over), or a region is dispatchable (the scheduler dispatches it). */
+  export async function schedulerStatus(sessionID: string, sourceOverride?: string): Promise<SchedulerStatus | undefined> {
+    if (activeRepairWorkerAssignments.has(sessionID)) return undefined
+    const binding = SessionProof.get(sessionID)
+    if (!binding || !binding.file.endsWith(".lean")) return undefined
+    if (!(await Filesystem.exists(binding.file))) return undefined
+    const status = (reason: string, required_action: string, admit_ids: string[] = []): SchedulerStatus => ({
+      kind: "no_ready_region",
+      reason,
+      required_action,
+      admit_ids,
+    })
+    if (ProofEditTransaction.requiresStagedRead(sessionID, binding.file)) {
+      return status(
+        "the staged proof revision has not been read in this session",
+        "read the target file through the read tool",
+      )
+    }
+    if (ProofEditTransaction.requiresValidation(sessionID, binding.file)) {
+      return status(
+        "the staged proof revision is waiting for validation",
+        "run checkpoint (or lean_check) on the target file",
+      )
+    }
+    const source = sourceOverride ?? await ProofEditTransaction.readSource(sessionID, binding.file)
+    const { state, parsed } = refresh(sessionID, binding.file, source)
+    const unresolved = state.queue.filter((item) => item.status !== "solved")
+    if (unresolved.length === 0) return undefined
+
+    const plan = state.decomposition_plan
+    const amendment = plan?.status === "accepted" && plan.accepted_plan ? planAmendmentEligibility(state, plan) : undefined
+    const amendAction = amendment?.available
+      ? `submit a proof_plan amendment (action "amend") that adds the missing bridge node before ${amendment.admit_id} (${amendment.remaining} of ${MAX_PLAN_AMENDMENTS} amendments left)`
+      : undefined
+
+    const running = unresolved.filter((item) => item.status === "running")
+    if (running.length > 0) {
+      return status(
+        `lemma task running for ${running.map((item) => item.admit_id).join(", ")}`,
+        "none: wait for the running task's structured result; the scheduler resumes automatically",
+        running.map((item) => item.admit_id),
+      )
+    }
+    const repair = state.active_repair
+    if (repair) {
+      return status(
+        `theorem repair for ${repair.admit_id} is active (${repair.escalation_type}: ${repair.reason})`,
+        amendAction ?? `repair the theorem-level blocker of ${repair.admit_id} outside the lemma regions, then run checkpoint`,
+        [repair.admit_id],
+      )
+    }
+    const blocked = unresolved.filter((item) => item.status === "escalated" && repeatedEscalationBlocked(item))
+    if (blocked.length > 0) {
+      return status(
+        blocked.map(repeatedEscalationReason).join("; "),
+        amendAction ??
+          `remodel ${blocked.map((item) => item.admit_id).join(", ")} (change its statement or split it) or add the missing fact before it; it is not re-dispatched unchanged`,
+        blocked.map((item) => item.admit_id),
+      )
+    }
+    const unvalidated = unresolved.filter((item) => item.status === "unvalidated")
+    if (unvalidated.length > 0) {
+      return status(
+        `proof_region ${unvalidated.map((item) => item.admit_id).join(", ")} has no sorry left but no compiler certificate for the current source`,
+        "run checkpoint (or lean_check) on the target file",
+        unvalidated.map((item) => item.admit_id),
+      )
+    }
+    const pending = pendingDelegationItems(state.queue)
+    if (pending.length === 0) {
+      const escalated = unresolved.filter((item) => item.status === "escalated")
+      if (escalated.length > 0) {
+        return status(
+          `every remaining region is escalated or waits on an escalated dependency: ${escalated
+            .map((item) => `${item.admit_id} (${item.escalation_type ?? "escalated"})`)
+            .join(", ")}`,
+          amendAction ?? `repair or remodel ${escalated[0].admit_id} at theorem level, then run checkpoint`,
+          escalated.map((item) => item.admit_id),
+        )
+      }
+      return status(
+        `no remaining region has all declared dependencies compiler-certified: ${unresolved.map((item) => item.admit_id).join(", ")}`,
+        "run checkpoint so the solved dependencies are certified, or fix the depends_on fields of the waiting regions",
+        unresolved.map((item) => item.admit_id),
+      )
+    }
+    const next = pending[0]
+    const block = parsed.get(next.admit_id)
+    if (!block) {
+      return status(
+        `proof_region ${next.admit_id} is in the queue but not in the current source`,
+        "read the target file and restore or remodel that region",
+        [next.admit_id],
+      )
+    }
+    const checked = checkedLemmaAssignment(state, [...parsed.values()], binding.file, next, block, source)
+    if (!checked.ok) {
+      return status(
+        `proof_region ${next.admit_id} cannot be dispatched: ${checked.reason}`,
+        amendAction ?? "fix the reported region contract or materialization drift at theorem level, then run checkpoint",
+        [next.admit_id],
+      )
+    }
+    return undefined
   }
 }

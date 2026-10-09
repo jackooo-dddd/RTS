@@ -3,8 +3,10 @@ import { createHash } from "crypto"
 import { Tool } from "./tool"
 import {
   MAX_IDENTICAL_PLAN_METADATA_REPAIRS,
+  MAX_PLAN_AMENDMENTS,
   MAX_SEMANTIC_PLAN_REVISIONS,
   ProofPlan,
+  ProofPlanAmendment,
   ProofPlanReview,
   ProofPlanStep,
   type ProofPlan as ProofPlanValue,
@@ -25,10 +27,17 @@ const Edge = z.object({ from: z.string().min(1), to: z.string().min(1) })
 
 const Parameters = z
   .object({
+    action: z
+      .enum(["plan", "amend"])
+      .optional()
+      .describe(
+        `"plan" (default) submits or revises the plan before acceptance. "amend" adds one bridge node to the accepted, locked plan in front of an escalated region (at most ${MAX_PLAN_AMENDMENTS} accepted amendments; a rejected amendment costs nothing).`,
+      ),
+    amendment: ProofPlanAmendment.optional().describe('Required with action "amend": the bridge node and where it goes.'),
     text: z.string().optional().describe("Natural-language proof text to extract when no structured nodes are supplied."),
     theorem: z.string().optional().describe("The theorem being decomposed."),
-    root_goal: z.string().optional().describe("The exact theorem goal or its stable Coq-shaped summary."),
-    nodes: z.array(ProofPlanStep).optional().describe("A structured candidate proof DAG to review before editing Coq."),
+    root_goal: z.string().optional().describe("The exact theorem conclusion as a Lean proposition."),
+    nodes: z.array(ProofPlanStep).optional().describe("A structured candidate proof DAG to review before editing the Lean proof."),
     edges: z.array(Edge).optional().describe("Directed dependency edges from prerequisite node to consumer node."),
     addresses_failure_ids: z
       .array(z.string().min(1))
@@ -39,9 +48,11 @@ const Parameters = z
       .optional()
       .describe("Evidence-backed reasons for deliberately retrying a verified failed route."),
   })
-  .refine((input) => Boolean(input.text?.trim()) || Boolean(input.nodes?.length), {
-    message: "provide non-empty text or at least one structured node",
-  })
+  .refine(
+    (input) =>
+      input.action === "amend" ? Boolean(input.amendment) : Boolean(input.text?.trim()) || Boolean(input.nodes?.length),
+    { message: 'provide non-empty text or at least one structured node (or, with action "amend", an amendment)' },
+  )
 
 const planHistory = new Map<string, { attemptedFingerprints: string[] }>()
 
@@ -56,7 +67,9 @@ type RecommendedAction =
   | "start_new_plan_generation"
   | "stop_and_report_best_plan"
   | "submit_structured_plan"
-type SubmissionKind = "structured_plan" | "text_draft" | "text_fallback"
+  | "materialize_amendment"
+  | "revise_amendment"
+type SubmissionKind = "structured_plan" | "text_draft" | "text_fallback" | "amendment"
 type ProofPlanMetadata = ProofPlanValue & {
   same_semantic_plan: boolean
   semantic_revision_number: number
@@ -68,6 +81,8 @@ type ProofPlanMetadata = ProofPlanValue & {
   submitted_semantic_fingerprint: string
   recommended_action: RecommendedAction
   route_failure_review: RouteFailureReview
+  amendment_rejection?: string
+  accepted_amendments?: number
   metadata_repair_repeat_count?: number
   metadata_repair_retry_limit?: number
   terminal_verdict?: {
@@ -104,6 +119,8 @@ type ProofPlanConvergence = Pick<
   | "submitted_semantic_fingerprint"
   | "recommended_action"
   | "route_failure_review"
+  | "amendment_rejection"
+  | "accepted_amendments"
   | "metadata_repair_repeat_count"
   | "metadata_repair_retry_limit"
   | "terminal_verdict"
@@ -149,6 +166,10 @@ function formatProofPlanOutput(plan: ProofPlanValue, convergence: ProofPlanConve
       ? `metadata_repair_repeat_count: ${convergence.metadata_repair_repeat_count}/${convergence.metadata_repair_retry_limit ?? MAX_IDENTICAL_PLAN_METADATA_REPAIRS}`
       : undefined,
     `submission_kind: ${convergence.submission_kind}`,
+    convergence.accepted_amendments !== undefined
+      ? `accepted_amendments: ${convergence.accepted_amendments}/${MAX_PLAN_AMENDMENTS}`
+      : undefined,
+    convergence.amendment_rejection ? `amendment_rejected: ${convergence.amendment_rejection}` : undefined,
     convergence.terminal_verdict ? `terminal_status: ${convergence.terminal_verdict.status}` : undefined,
     convergence.terminal_verdict ? `terminal_recoverable: ${convergence.terminal_verdict.recoverable === true}` : undefined,
     visibleHardErrors.length > 0 ? "distinct_hard_errors:" : undefined,
@@ -162,11 +183,12 @@ function formatProofPlanOutput(plan: ProofPlanValue, convergence: ProofPlanConve
 
 function normalizeGoal(text: string | undefined) {
   return (text ?? "")
-    .replace(/\(\*[\s\S]*?\*\)/g, " ")
+    .replace(/\/-[\s\S]*?-\//g, " ")
+    .replace(/--[^\n]*/g, " ")
     .trim()
     .replace(/\.\s*$/, "")
     .replace(/[{}()]/g, " ")
-    // Coq accepts arbitrary whitespace around binder/type colons. Removing
+    // Lean accepts arbitrary whitespace around binder/type colons. Removing
     // parentheses above can otherwise turn equivalent forms such as
     // `(j : Job)` and `(j: Job)` into different normalized strings.
     .replace(/\s*:\s*/g, ":")
@@ -332,7 +354,7 @@ function reviewCompositionDataflow(
       "composition_certificate_missing",
       critical
         ? "This root or semantic-join node must show how branch hypotheses and dependency outputs reach its target before materialization."
-        : "Add composition dataflow when useful, but this non-root semantic node may be materialized incrementally and validated by Coq.",
+        : "Add composition dataflow when useful, but this non-root semantic node may be materialized incrementally and validated by Lean.",
     )
     return issues
   }
@@ -440,7 +462,7 @@ function reviewCompositionDataflow(
     add(
       "composition_target_mismatch",
       critical
-        ? "The final composition step must produce the root or semantic-join target. Harmless textual normalization is advisory; final acceptance is determined by Coq."
+        ? "The final composition step must produce the root or semantic-join target. Harmless textual normalization is advisory; final acceptance is determined by Lean."
         : "The final composition description differs from the node target; validate the actual connection while materializing the region.",
       {
         repair_hint:
@@ -761,7 +783,7 @@ function extractNodes(text: string) {
     mathlib_candidate_lemmas: [],
     required_hypotheses: [],
     fallback_plan: [],
-    done_when: "The corresponding Coq-shaped node is materialized and connected to its consumer.",
+    done_when: "The corresponding Lean-shaped node is materialized and connected to its consumer.",
     source: { kind: "proof_text" as const, label: `line-${index + 1}`, excerpt: line },
     confidence: "low" as const,
     depends_on: index === 0 ? [] : [`node-${index}`],
@@ -773,9 +795,79 @@ function extractNodes(text: string) {
   }))
 }
 
+/**
+ * D9 (K2): the accepted plan plus one bridge node, inserted before the plan node of the escalated region it feeds.
+ * Only the new node is premise-audited; the accepted nodes keep their audits.
+ */
+async function amendedPlanNodes(input: {
+  amendment: ProofPlanAmendment
+  sessionID: string
+  binding: ReturnType<typeof SessionProof.get>
+  boundSource: string | undefined
+  boundTarget: { theorem: string; root_goal: string } | undefined
+  signal: AbortSignal
+}) {
+  const { amendment, binding, boundSource, boundTarget } = input
+  if (!binding || !boundSource || !boundTarget) {
+    throw new Error("proof_plan amend: no Lean proof file and theorem are bound to this session")
+  }
+  const planState = SessionProofWorkflow.getDecompositionPlanState(input.sessionID, binding.file, boundTarget.theorem)
+  const base = planState?.status === "accepted" ? planState.accepted_plan : undefined
+  if (!base) {
+    throw new Error('proof_plan amend: there is no accepted plan to amend; submit the plan with action "plan" first')
+  }
+  const eligibility = SessionProofWorkflow.getPlanAmendmentEligibility(input.sessionID, binding.file)
+  if (!eligibility.available) throw new Error(`proof_plan amend: not available: ${eligibility.reason}`)
+  const consumer = SessionProofWorkflow.get(input.sessionID)?.queue.find(
+    (item) => item.theorem === boundTarget.theorem && item.admit_id === amendment.inserts_before,
+  )?.proof_plan_node
+  if (!consumer || !base.nodes.some((node) => nodeID(node) === consumer)) {
+    throw new Error(
+      `proof_plan amend: ${amendment.inserts_before} is not a proof_region of ${boundTarget.theorem} that maps to an accepted plan node`,
+    )
+  }
+  const normalized = normalizeProofPlanIdentifiers(
+    [...base.nodes, { ...amendment.node, depends_on: amendment.depends_on, consumers: [consumer] }],
+    base.edges,
+  )
+  const unaudited = normalized.nodes.at(-1)!
+  const bridgeID = nodeID(unaudited)
+  const [audited] = await auditPlanLibraryCandidates({
+    file: binding.file,
+    source: boundSource,
+    theorem: boundTarget.theorem,
+    nodes: [unaudited],
+    signal: input.signal,
+  })
+  const bridge: z.infer<typeof ProofPlanStep> = { ...unaudited, ...audited, node_id: bridgeID }
+  type Step = z.infer<typeof ProofPlanStep>
+  const nodes = normalized.nodes.slice(0, -1).flatMap((node): Step[] => {
+    if (nodeID(node) !== consumer) return [node]
+    const updated = {
+      ...node,
+      depends_on: [...new Set([...(node.depends_on ?? []), bridgeID])],
+      dependency_uses: [...(node.dependency_uses ?? []), { producer_node: bridgeID, output_anchor: bridgeID }],
+      composition_certificate: amendment.consumer_composition_certificate ?? node.composition_certificate,
+    }
+    return [bridge, updated]
+  })
+  const edges = [
+    ...(normalized.edges ?? base.edges),
+    ...amendment.depends_on.map((from) => ({ from, to: bridgeID })),
+    { from: bridgeID, to: consumer },
+  ]
+  return {
+    nodes,
+    edges,
+    node_id: bridgeID,
+    inserts_before: amendment.inserts_before,
+    addresses_escalation: amendment.addresses_escalation,
+  }
+}
+
 export const ProofPlanTool = Tool.define("proof_plan", {
   description:
-    "Create and review a bounded theorem-level proof DAG before editing Coq. Accepts natural-language proof text for extraction or structured nodes for semantic-risk review.",
+    `Create and review a bounded theorem-level proof DAG before editing the Lean proof. Accepts natural-language proof text for extraction or structured nodes for semantic-risk review. After acceptance the plan is locked; action "amend" adds one bridge node in front of an escalated region (at most ${MAX_PLAN_AMENDMENTS} accepted amendments).`,
   parameters: Parameters,
   async execute(params, ctx): Promise<{ title: string; metadata: ProofPlanMetadata; output: string }> {
     let binding: ReturnType<typeof SessionProof.get>
@@ -801,12 +893,16 @@ export const ProofPlanTool = Tool.define("proof_plan", {
       : undefined
     const submittedTheorem = params.theorem?.trim() || undefined
     const submittedRootGoal = params.root_goal?.trim() || undefined
-    const normalizedIdentifiers = normalizeProofPlanIdentifiers(
+    const amendment = params.action === "amend" ? params.amendment : undefined
+    const amended = amendment
+      ? await amendedPlanNodes({ amendment, sessionID: ctx.sessionID, binding, boundSource, boundTarget, signal: ctx.abort })
+      : undefined
+    const normalizedIdentifiers = amended ?? normalizeProofPlanIdentifiers(
       params.nodes ?? extractNodes(params.text ?? ""),
       params.edges,
     )
     let nodes = normalizedIdentifiers.nodes
-    if (boundProofFile && boundTarget && binding && boundSource && params.nodes?.length) {
+    if (!amended && boundProofFile && boundTarget && binding && boundSource && params.nodes?.length) {
       nodes = normalizeProofPlanIdentifiers(
         await auditPlanLibraryCandidates({
           file: binding.file,
@@ -838,7 +934,6 @@ export const ProofPlanTool = Tool.define("proof_plan", {
           "source",
           "input",
           "output",
-          "layer",
           "expected",
           "normal_form",
           "evidence",
@@ -847,7 +942,7 @@ export const ProofPlanTool = Tool.define("proof_plan", {
           "Resolve semantic and graph hard errors before materialization. Candidate roles are audited differently: direct_apply candidates are application-probed with residual premises, while rewrite/transport/local_fact/automation_hint candidates are checked for availability and validated in their concrete proof use. Composition certificates are required only for theorem-root or multi-branch semantic joins; other nodes may be materialized incrementally with advisory dataflow warnings. Verified exact route failures remain hard materialization constraints.",
       },
     })
-    const structuredSubmission = Boolean(params.nodes?.length)
+    const structuredSubmission = Boolean(params.nodes?.length) || Boolean(amended)
     const rawReview = reviewProofPlan(plan)
     const hasDelegationCandidate = plan.nodes.some((node) => node.delegation_candidate)
     const hasExplicitLayer1Closure = plan.nodes.some(
@@ -1072,15 +1167,9 @@ export const ProofPlanTool = Tool.define("proof_plan", {
     let metadataRepairRepeatCount = 0
     let terminalVerdict: ProofPlanMetadata["terminal_verdict"]
     let planningStatus: "planning" | "accepted" | "exhausted" | "unbound" = "unbound"
-    let action:
-      | "materialize_once"
-      | "materialize_accepted_plan"
-      | "revise_semantic_dag"
-      | "repair_plan_route"
-      | "repair_plan_metadata"
-      | "do_not_retry_metadata_only_plan"
-      | "start_new_plan_generation"
-      | "stop_and_report_best_plan"
+    let amendmentRejection: string | undefined
+    let acceptedAmendments: number | undefined
+    let action: Exclude<RecommendedAction, "submit_structured_plan">
 
     if (boundProofFile && binding) {
       const recorded = SessionProofWorkflow.recordDecompositionPlanAttempt({
@@ -1089,15 +1178,17 @@ export const ProofPlanTool = Tool.define("proof_plan", {
         source: boundSource!,
         plan: reviewedPlan,
         review,
+        amendment: amended
+          ? {
+              node_id: amended.node_id,
+              inserts_before: amended.inserts_before,
+              addresses_escalation: amended.addresses_escalation,
+            }
+          : undefined,
       })
-      const rejectedAcceptedRepair = Boolean(
-        recorded.state.accepted_plan &&
-        recorded.state.accepted_semantic_fingerprint !== review.semantic_fingerprint &&
-        recorded.state.last_review.semantic_fingerprint === review.semantic_fingerprint &&
-        !review.materialization_allowed,
-      )
-      effectivePlan = rejectedAcceptedRepair
-        ? recorded.state.last_candidate_plan
+      // A rejected amendment leaves the locked plan unchanged; show the reviewed candidate so its errors are visible.
+      effectivePlan = recorded.recommended_action === "revise_amendment"
+        ? reviewedPlan
         : recorded.state.accepted_plan ??
           (recorded.state.status === "exhausted" ? recorded.state.best_rejected_plan : undefined) ??
           recorded.state.last_candidate_plan
@@ -1110,6 +1201,8 @@ export const ProofPlanTool = Tool.define("proof_plan", {
       terminalVerdict = recorded.state.terminal_verdict
       planningStatus = recorded.state.status
       action = recorded.recommended_action
+      amendmentRejection = "amendment_rejection" in recorded ? recorded.amendment_rejection : undefined
+      acceptedAmendments = amended ? recorded.state.accepted_amendments ?? 0 : undefined
     } else {
       const historyKey = `${ctx.sessionID}:${reviewedPlan.theorem}`
       const previous = planHistory.get(historyKey)
@@ -1150,10 +1243,12 @@ export const ProofPlanTool = Tool.define("proof_plan", {
         revision_budget_exhausted: revisionBudgetExhausted,
         accepted_plan_locked: acceptedPlanLocked,
         planning_status: planningStatus,
-        submission_kind: structuredSubmission ? "structured_plan" as const : "text_fallback" as const,
+        submission_kind: amended ? "amendment" as const : structuredSubmission ? "structured_plan" as const : "text_fallback" as const,
         submitted_semantic_fingerprint: review.semantic_fingerprint,
         recommended_action: action,
         route_failure_review: routeFailureReview,
+        amendment_rejection: amendmentRejection,
+        accepted_amendments: acceptedAmendments,
         metadata_repair_repeat_count: metadataRepairRepeatCount || undefined,
         metadata_repair_retry_limit: MAX_IDENTICAL_PLAN_METADATA_REPAIRS,
         terminal_verdict: terminalVerdict,
@@ -1165,10 +1260,12 @@ export const ProofPlanTool = Tool.define("proof_plan", {
         revision_budget_exhausted: revisionBudgetExhausted,
         accepted_plan_locked: acceptedPlanLocked,
         planning_status: planningStatus,
-        submission_kind: structuredSubmission ? "structured_plan" : "text_fallback",
+        submission_kind: amended ? "amendment" : structuredSubmission ? "structured_plan" : "text_fallback",
         submitted_semantic_fingerprint: review.semantic_fingerprint,
         recommended_action: action,
         route_failure_review: routeFailureReview,
+        amendment_rejection: amendmentRejection,
+        accepted_amendments: acceptedAmendments,
         metadata_repair_repeat_count: metadataRepairRepeatCount || undefined,
         metadata_repair_retry_limit: MAX_IDENTICAL_PLAN_METADATA_REPAIRS,
         terminal_verdict: terminalVerdict,

@@ -144,7 +144,8 @@ describe("session.prompt accepted-plan materialization tool gate", () => {
         spyOn(SessionProofWorkflow, "planNextSubtask").mockResolvedValue(undefined),
         spyOn(SessionProofWorkflow, "getDecompositionPlanState").mockReturnValue({ status: "accepted", theorem: "demo", accepted_at: 1 } as any),
         spyOn(SessionProofWorkflow, "previewDecompositionMaterialization").mockReturnValue({ review: { status: "matched" } } as any),
-        spyOn(SessionProofWorkflow, "getAcceptedPlanRepairEligibility").mockReturnValue({ available: false } as any),
+        spyOn(SessionProofWorkflow, "getPlanAmendmentEligibility").mockReturnValue({ available: false } as any),
+        spyOn(SessionProofWorkflow, "schedulerStatus").mockResolvedValue(undefined),
         spyOn(SessionProofWorkflow, "currentValidationCertificates").mockReturnValue([]),
       ]
       try {
