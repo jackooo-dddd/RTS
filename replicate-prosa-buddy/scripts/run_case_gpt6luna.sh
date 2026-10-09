@@ -18,6 +18,7 @@ PYTHON_BIN="${PYTHON_BIN:-/opt/homebrew/bin/python3.13}"
 BUN_BIN="$R/.tools/bin/bun"
 ROCQ_BIN_DIR="${ROCQ_BIN_DIR:-$(opam var --switch=prosa-0.6 bin)}"
 PROXY_ENV="${PROXY_ENV:-$R/gptAPITest/.env}"          # CLIPROXY_BASE_URL + local proxy key
+PROSABUDDY_DIR="${PROSABUDDY_DIR:-$R/prosabuddy}"   # ProsaBuddy app tree (e.g. $R/prosabuddy-8e1de8c for the 8e1de8c-based build)
 MODEL="${MODEL:-codexproxy/gpt-6-luna}"
 MODEL_ID="${MODEL#*/}"
 VARIANT="${VARIANT:-max}"
@@ -65,6 +66,7 @@ provider_config="$(printf '{"provider":{"codexproxy":{"npm":"@ai-sdk/openai","na
 {
   echo "case=$CASE_NAME"
   echo "model=$MODEL variant=$VARIANT reasoning_effort=$REASONING_EFFORT"
+  echo "prosabuddy_dir=$PROSABUDDY_DIR"
   echo "max_total_tokens=$MAX_TOTAL_TOKENS max_retries=$MAX_RETRIES run_timeout_seconds=$RUN_TIMEOUT_SECONDS"
   echo "coqc=$ROCQ_BIN_DIR/coqc ($("$ROCQ_BIN_DIR/coqc" --version | head -1))"
   echo "bun=$("$BUN_BIN" --version)"
@@ -76,7 +78,7 @@ echo "supervisor_dir=$SUPERVISOR_DIR"
 exec env -u OPENCODE_MODEL -u OPENCODE_VARIANT -u COQPATH -u ROCQPATH \
   "PATH=$ROCQ_BIN_DIR:$(dirname "$BUN_BIN"):/usr/bin:/bin:/usr/sbin:/sbin:/opt/homebrew/bin" \
   "BUN_BIN=$BUN_BIN" \
-  "OPENCODE_DIR=$R/prosabuddy/packages/opencode" \
+  "OPENCODE_DIR=$PROSABUDDY_DIR/packages/opencode" \
   "OPENCODE_BIN=$SCRIPT_DIR/opencode_our_local.sh" \
   "OPENCODE_RUN_CONFIG=$SCRIPT_DIR/opencode_runner_config.env" \
   "XDG_DATA_HOME=$WORKER_ROOT/data" \

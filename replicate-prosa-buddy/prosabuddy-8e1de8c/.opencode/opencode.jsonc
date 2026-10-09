@@ -1,0 +1,32 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "provider": {
+    "opencode": {
+      "options": {},
+    },
+  },
+  "permission": {
+    "external_directory": "deny",
+  },
+  "mcp": {},
+  "skills": {
+    "paths": [".opencode/skill"],
+  },
+  "tools": {
+    "github-triage": false,
+    "github-pr-search": false,
+  },
+  // Only the built-in agents with .txt prompts (packages/opencode/src/agent/prompt/*.txt) are used:
+  // prover, lemma, fixer, diagnoser, explorer, whole-lemma (+ internal compaction, title).
+  // The markdown agents in .opencode/agent/*.md are disabled so they are never registered.
+  "agent": {
+    "casestudy-prover": { "disable": true },
+    "coq-prover": { "disable": true },
+    "docs": { "disable": true },
+    "duplicate-pr": { "disable": true },
+    "paper-analyst": { "disable": true },
+    "proof-orchestrator": { "disable": true },
+    "translator": { "disable": true },
+    "triage": { "disable": true },
+  },
+}
