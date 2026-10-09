@@ -1967,19 +1967,34 @@ export namespace SessionProofWorkflow {
         // dispatched. Soundness is unchanged: regions must still compile and the theorem must end in Qed.
         // [replicate-prosa-buddy patch 11b] First ignore pure formatting (doubled backslashes,
         // parentheses, spacing, binder types, final period), and report the first real difference.
-        if (NormalFormText.sameModuloFormatting(expectedNormalForm, block.targetNormalForm)) {
-          log.info("patch 11b: region normal_form differs from the locked plan only in formatting", {
+        // [replicate-prosa-buddy patch 15] Patch 11's acceptance is withdrawn: in the 2026-10-08 fleet it
+        // accepted real statement changes (2015-BOOK-Lemma18.1 `pointwise_cap` bounded
+        // `interference_bound_generic` instead of the planned `total_interference_bound`, and later lemmas
+        // escalated because the cap did not cover the planned function). Only differences in formatting
+        // and bound-variable names are accepted now (`sameStatement`, which keeps grouping parentheses).
+        if (NormalFormText.sameStatement(expectedNormalForm, block.targetNormalForm)) {
+          log.info("patch 15: region normal_form equals the locked plan up to formatting and bound-variable names", {
             plan_node: id,
             plan_normal_form: expectedNormalForm,
             region_normal_form: block.targetNormalForm,
           })
-        } else if (targetShapeMatches(block)) {
-          log.info("patch 11: accepted region normal_form that differs from the locked plan", {
+        } else if (
+          (NormalFormText.looksLikeProse(expectedNormalForm) || NormalFormText.looksTruncated(block.targetNormalForm)) &&
+          targetShapeMatches(block)
+        ) {
+          log.info("patch 15: plan normal_form is prose or region normal_form is truncated; accepted the region by its own target shape", {
             plan_node: id,
             plan_normal_form: expectedNormalForm,
             region_normal_form: block.targetNormalForm,
           })
         } else {
+          if (targetShapeMatches(block)) {
+            log.info("patch 15: rejected a region normal_form change that patch 11 used to accept", {
+              plan_node: id,
+              plan_normal_form: expectedNormalForm,
+              region_normal_form: block.targetNormalForm,
+            })
+          }
           metadataMismatches.push(
             `${id}: target normal form differs from the accepted plan; ` +
               NormalFormText.describeDifference(expectedNormalForm, block.targetNormalForm),

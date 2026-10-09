@@ -189,6 +189,33 @@ plan repair removed node `pointwise_cap`, but the `fp_aggregate`/`gn_aggregate` 
 attempts used five retries in ~30 minutes. Dependencies naming a step that is not in the current plan are now
 ignored (logged as `patch 14: ...`); mismatches between existing plan steps are still reported.
 
+**Patch 15: strict statement comparison; patch 11 withdrawn** (`session/normal-form.ts` `statement`/`sameStatement`,
+`session/proof-workflow.ts` materialization review; diff `patches/07-strict-statement-review.patch`, 2026-10-08
+21:22). In the 2026-10-08 four-agent fleet, patch 11 accepted real statement changes: 2015-BOOK-Lemma18.1
+`pointwise_cap` bounded `interference_bound_generic` instead of the planned `total_interference_bound`, and later
+lemmas escalated because that cap did not cover the planned function. Patch 11b dropped all parentheses, so it
+would also equate `a - (b - c)` with `a - b - c`. The review now accepts a region normal_form only when it equals
+the plan's after removing formatting: doubled backslashes, spacing, binder types, a final period, and parentheses
+around one atom, around the whole text, or around a whole side of a relation when nothing inside binds more
+loosely. Bound variables (forall/exists/fun and MathComp bigops) are renamed canonically, so Rocq's `k` -> `k0`
+renaming no longer counts as a change. A region that states the plan's conclusion with its leading binders and
+premises already introduced (`forall t, P t -> Q t` vs `Q t`, same names) is also accepted (added 22:11 after
+2009-RTSS-Lemma3 `clipped_sum_bound`). When the plan's normal_form is English prose rather than Coq ("for each
+admissible t and pair in hp_bounds, ...", "response time of j > R"; detected by `looksLikeProse`), no Coq text
+can equal it. Such nodes fall back to patch 11's own-target-shape check (added 22:23), and so do region contracts
+that arrive truncated because only the first line of a multi-line `normal_form:` marker is parsed (`looksTruncated`,
+added 23:01). Everything else is reported as drift with the first normalized difference.
+Former patch 11 acceptances are logged as `patch 15: rejected ...`. Live-goal matching in `coq_session` (patch 12)
+still uses the looser comparison, because Rocq drops parentheses when it prints goals.
+
+**Patch 16: AST audit load paths for fcc** (`tool/coq-ast-audit.ts`, `fccLoadpathFlags`; diff
+`patches/08-ast-audit-fcc-loadpath.patch`, 2026-10-08 21:49). The final-gate AST audit passed the coqc-style
+`_CoqProject` flags (`-R prosa prosa`) to coq-lsp 0.2.5's `fcc`, which accepts only `-R DIR,LP`. Every audit therefore
+failed with `AST_AUDIT_EXECUTION_FAILED` ("option '-R': invalid value 'prosa', missing a ',' separator"), and complete
+proofs were rejected and never committed: 5 times in Lemma3 run `20261007_191146`, and in 2015-BOOK-Lemma18.1 run
+`20261008_174953`. For Lemma18.1, the complete revision 115 was recovered from the session database and verified
+independently (`results/Lemma18_1_proved_pc_20261008.v`). Load-path pairs are now joined as `-R DIR,LP` / `-Q DIR,LP`.
+
 Patches 1-6 were active in the successful Theorem3 attempt; patches 7-10 fix failures observed in run 07 and were
 written while its final attempt was already running, so they have not yet been exercised in a successful run.
 

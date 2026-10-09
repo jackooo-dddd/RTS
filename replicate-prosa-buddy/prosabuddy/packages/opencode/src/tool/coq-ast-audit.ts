@@ -95,6 +95,26 @@ export namespace CoqAstAudit {
     }
   }
 
+  // [replicate-prosa-buddy patch 16] _CoqProject flags are coqc-style (`-R DIR LP`), but coq-lsp's fcc
+  // (0.2.5) accepts load paths only as `-R DIR,LP` / `-Q DIR,LP`. Passing them unchanged made every audit
+  // fail with "fcc: option '-R': invalid value 'prosa', missing a ',' separator"
+  // (AST_AUDIT_EXECUTION_FAILED), so complete proofs were rejected at the final gate: 2005-ECRTS-Lemma3 run
+  // 20261007_191146 (5 times) and 2015-BOOK-Lemma18.1 run 20261008_174953 (revision 115, which compiles,
+  // is closed under the global context, and passes validate_classified_ast.py --stage final).
+  export function fccLoadpathFlags(flags: string[]) {
+    const out: string[] = []
+    for (let i = 0; i < flags.length; i++) {
+      const flag = flags[i]
+      if ((flag === "-R" || flag === "-Q") && i + 2 < flags.length && !flags[i + 1].includes(",")) {
+        out.push(flag, `${flags[i + 1]},${flags[i + 2]}`)
+        i += 2
+        continue
+      }
+      out.push(flag)
+    }
+    return out
+  }
+
   export function maxSubmissionRepairs() {
     return positiveInteger(process.env.OPENCODE_COQ_AST_AUDIT_MAX_REPAIRS, 2)
   }
@@ -312,7 +332,7 @@ export namespace CoqAstAudit {
       await fs.writeFile(candidateFile, input.candidateSource, "utf8")
 
       const resolved = await CoqProject.resolve(input.file)
-      const flags = [...resolved.flags, ...(input.extraFlags ?? [])]
+      const flags = fccLoadpathFlags([...resolved.flags, ...(input.extraFlags ?? [])])
       const fcc = settings.fcc!
       await runChecked(
         "baseline astdump",
