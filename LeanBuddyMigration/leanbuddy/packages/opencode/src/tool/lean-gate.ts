@@ -306,11 +306,11 @@ export namespace LeanGate {
         }
       }
     }
-    const uni = statement.universes.length ? `.{${statement.universes.join(", ")}}` : ""
-    const universeLine = statement.universes.length ? `universe ${statement.universes.join(" ")}\n` : ""
+    // Fresh universe names: the candidate may already declare `universe u v` at top level.
+    const levels = statement.universes.map((_, i) => `lb_gate_u${i}`)
+    const uni = levels.length ? `.{${levels.join(", ")}}` : ""
     const probe =
       input.candidateSource.replace(/\s*$/, "\n\n") +
-      universeLine +
       `theorem gate_check${uni} : ${statement.text}${uni} := ${statement.solution}\n\n` +
       "#print axioms gate_check\n"
     const { result, diagnostics } = await LeanProject.checkSource(root, input.file, probe, {
@@ -572,6 +572,18 @@ export namespace LeanGate {
     allowSorry?: boolean
   }): Promise<Result> {
     const settings = config()
+    if (!input.file.endsWith(".lean")) {
+      // The gate certifies Lean sources only; other files (e.g. legacy fixtures) are outside its scope.
+      return {
+        status: "disabled",
+        stage: input.stage,
+        mode: settings.mode,
+        theorem: input.theorem,
+        reasons: [{ code: "GATE_NOT_LEAN", message: `${path.basename(input.file)} is not a Lean source file` }],
+        diagnostics: [],
+        candidate_hash: hash(input.candidateSource),
+      }
+    }
     const transaction = ProofEditTransaction.auditContext(input.sessionID, input.file)
     const binding = SessionProof.get(input.sessionID)
     const bindingMatches = binding && path.normalize(binding.file) === path.normalize(input.file)

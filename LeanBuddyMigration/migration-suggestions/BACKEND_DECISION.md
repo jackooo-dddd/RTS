@@ -116,3 +116,27 @@ On the PC, with the package built and Pantograph `92d4818` built, check with sma
    `Sort _`), and rejects `f _ x`, `?x`, `?_` and `sorry`.
 6. **Limits**: a deliberately slow `simp`/`decide` under `options.set {"timeout": …}` and `maxHeartbeats`; the
    process memory under one full Mathlib + Prosa import.
+
+## Spike results (run 2026-10-09 on the CityU PC; scripts `leanbuddy/scripts/pantograph-spike/`)
+
+Pantograph `92d4818` (0.3.19) against the built package (task 2005-ECRTS-Lemma3, staged per D14). All checks pass;
+two answers above change (marked **changed**).
+
+| # | Check | Result |
+|---|---|---|
+| 1 | Goal order of `frontend.distil` | **changed**: goals come back in **reverse** source order (trailing goal, then the last region, …, then the first region); same for `cases` branches. Map goals by reversed order and confirm each with `show <region statement>`. |
+| 1b | Focusing one goal | `goal.tactic` with `goalId` on a multi-goal `distil` state replaces only that goal; the other regions' goals stay, with their names (`_uniq.N`). A region session tracks "its" goals by name. |
+| 2 | Header | confirmed: text with `import` lines fails ("invalid 'import' command"); without them a name from a not-yet-imported module is unknown; after restarting with that import it resolves. |
+| 3 | Broken region | confirmed: one error aborts `distil`; masking the region's proof to `(by sorry)` brings all goals back. |
+| 4 | Root goal | confirmed: `goal.start {"expr": "<statement>.{u, v}", "levels": ["u","v"]}` + `unfold <statement>` gives the `∀ …` goal (4,582 characters pretty-printed); `show <that pretty-printed text>` re-elaborates and succeeds; the `Type 0` variant is rejected. |
+| 5 | Holes | confirmed `show _` and `show ?x` succeed on any goal. **changed**: the stand-alone `expr.echo {"expr": "_", "type": "Prop"}` backstop does **not** fail (it returns a metavariable); the `have _probe : (…) := sorry` probe does fail. The token scanner (`tool/lean-term.ts`) is therefore the primary rule, the `have` probe the backstop. |
+| 6 | Limits | `options.set {"timeout": 2000}` interrupts a looping `repeat skip` after 2.1 s ("interrupt"); the default `maxHeartbeats` stops it after 4.8 s. One REPL with the task's imports: 6.7 GB resident (mostly shared memory-mapped `.olean`s), start-up 1.5–3.4 s. |
+
+Final gate (D4) end to end, `check.py` in a fresh verification copy: reference solution **PASS** (7.5 s; axioms
+`Classical.choice`, `Quot.sound`, `propext`); `sorry` and an added `axiom` FAIL (forbidden token); `native_decide` FAIL
+(non-standard axiom — on Lean 4.33 an auxiliary `<decl>._native.native_decide.ax_…`, not `Lean.ofReduceBool`); a
+changed `Statement.lean` FAIL (frozen file).
+
+**Operational rule from the spike:** every Lean/Pantograph process on the shared PC runs in a memory-capped cgroup
+(`~/research/leanbuddy-work/capped.sh <MemoryMax> <cmd>`, `systemd-run --scope -p MemoryMax=…`). Without it, Lean
+jobs plus Pantograph REPLs next to the fleet runs triggered the kernel OOM killer once (see MIGRATION_LOG).

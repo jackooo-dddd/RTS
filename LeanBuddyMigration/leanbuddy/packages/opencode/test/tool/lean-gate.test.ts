@@ -178,7 +178,8 @@ describe.skipIf(!integration)("LeanGate integration (built package)", () => {
         reference.slice(alias).replace(":=\n", ":= by\n  have _h := gate_nd_helper\n  exact\n")
       const result = await run(nd)
       expect(result.reasons[0].code).toBe("AXIOMS")
-      expect(result.reasons[0].message).toContain("Lean.ofReduceBool")
+      // Lean 4.33: native_decide adds an auxiliary axiom `<decl>._native.native_decide.ax_…`
+      expect(result.reasons[0].message).toContain("native_decide")
     },
     30 * 60_000,
   )

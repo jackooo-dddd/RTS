@@ -3,6 +3,22 @@
 Implementation log for [AGENT_PROMPT.md](AGENT_PROMPT.md). Branch `leanbuddy-migration`. Newest entries at the
 bottom of each section. Scratch and build material lives outside git in `~/leanbuddy-work/`.
 
+## Where the work runs (from 2026-10-09 19:20, user request)
+
+All builds, tests, the spike and later runs execute on the **CityU PC** (WSL Ubuntu, 28 cores, 47 GB; `ssh cityu-wsl`):
+
+| Item | PC path |
+|---|---|
+| Git clone (branch `leanbuddy-migration`) | `~/research/leanbuddy-migration/` (separate from the fleet's `~/research/RTS`, which is not touched) |
+| Lean package master build (no `Solutions/`) | `~/research/leanbuddy-work/lean-prosa-v06-master/` (`build-master.sh`, 14 cores, `nice 10`) |
+| Pantograph `92d4818` (0.3.19) | `~/research/leanbuddy-work/Pantograph/` |
+| Pristine-tree baseline worktree | `~/research/leanbuddy-work/baseline-11856eeb/` |
+| Logs | `~/research/logs/leanbuddy-*.log` |
+
+Files are edited in the Mac checkout (git authority) and mirrored with `~/leanbuddy-sync/sync-to-pc.sh` (rsync,
+no `node_modules`); commits are made on the Mac. The Mac's `~/leanbuddy-work/` (partial build, stopped at 269
+modules) is no longer used.
+
 ## Phase 0 — workspace baseline (2026-10-09, Mac: Apple M4, 16 GB, macOS 15 / Darwin 24.6)
 
 - `leanbuddy/` = copy of `prosabuddy-rocq/` (706 files; `BASELINE.md` dropped, `.gitignore` kept).
@@ -152,6 +168,22 @@ replacements must pass.
 | V4 | gap-revisions §4, K9 ("in benchmark mode the gate calls `check.py` itself") | gate = `check.py` | `check.py` reads the solution from disk, but `checkpoint` gates the *staged* (uncommitted) source. The gate runs `check.py` itself when the candidate equals the file on disk, and otherwise the same five checks in TypeScript on a temporary sibling copy (statement probe and `#print axioms` appended). A unit test keeps the token list and allowed axioms identical to `check.py`; the integration test checks the verdicts on the reference and on the `sorry`/`axiom`/`native_decide` variants. The runner's success test stays `check.py` in a fresh verification copy (D14). | 3 |
 | V5 | task.ts audit revision (`sorry` allowed "only where the assignment allows a split") | — | the submission stage allows `sorry` in the proof (a `split` result legitimately leaves sub-regions open); "solved" is decided from the source (S26), not by this check. | 3 |
 | V6 | D2 (`coq-check` → `lean-check-file` or merge) | prefer merging | the custom tool `.opencode/tool/coq-check.ts` was deleted; `lean_check` covers it. | 2 |
+| V7 | `lean_session-equivalence.md` (backstop `expr.echo` fails on holes) | `expr.echo` rejects a hole | it does not (returns a metavariable); the `have _probe` probe does. Token scanner = primary rule. BACKEND_DECISION *Spike results* 5. | 1 |
+| V8 | gate test expectation | `native_decide` shows as `Lean.ofReduceBool` | Lean 4.33 adds an auxiliary axiom `<decl>._native.native_decide.ax_…`; both the gate and `check.py` reject it as non-standard. | 1 |
+| V9 | gate (D4) | — | the gate returns `disabled` (`GATE_NOT_LEAN`) for non-`.lean` files instead of judging them (two task tests with Rocq fixtures regressed otherwise; the fixtures are ported in Phase 5). | 3 |
+
+**Packaging bug found (needs a user decision):** 19 of the 22 `proof.tex` files of `Deliverables/lean-prosa-v06` have
+CRLF line endings in the Mac working tree, and `benchmark/frozen_sha256.json` was computed from those bytes, but git
+(`core.autocrlf=input`) stores them with LF. Every fresh checkout (the PC clone, any runner copy made from git) fails
+`check.py`'s frozen-file check before anything else. Worked around on the PC by copying the Mac's exact bytes for those
+19 files into the master copy (all 600 frozen hashes match). Fix options: regenerate the hashes from the LF files, or
+add `*.tex -text` to `.gitattributes` and recommit the CRLF bytes.
+
+**Incident (2026-10-09 19:34–19:37, PC):** while the spike's Pantograph REPLs, the gate check's parallel `lake build`
+and the Bun test suite ran next to the 4 fleet runs, the kernel OOM killer fired twice; it killed a user `systemd`
+process and one `coq-lsp` process (pid 11084, most likely a fleet run's). The fleet runners stayed alive. Since then
+every Lean job runs in a memory-capped cgroup (`capped.sh`, verified: an over-limit process is killed inside its own
+scope only).
 
 **Needs a user decision (reported, not blocking):** the 130-theorem benchmark's `prosa-theorems/check.py` requires the
 task file to differ from the prepared file *only inside the proof* (rule 2), so an added `import` fails there, while
@@ -160,7 +192,16 @@ K1's general-case rule lets the gate accept package imports. For those tasks the
 
 ## Phase log
 
-### Phase 1 (in progress) — Lean environment and Pantograph
+### Phase 1 — done on the PC (19:25–19:55)
+
+- Master build on the PC: `lake exe cache get` + `lake build` (14 cores): **266 s**, 9,279 jobs; `.lake/build` 3.1 GB,
+  `.lake/packages` 7.5 GB; staging a run copy (D14) takes 2 s. Pantograph built in 17 s.
+- Spike: all checks pass; results and the two changed answers in BACKEND_DECISION *Spike results* (V1 confirmed on the
+  real file, V7). Gate end to end: reference PASS, `sorry`/`axiom`/`native_decide`/statement change FAIL (V8).
+- PC test baseline of the unmodified tree: **1,501 pass, 9 skip, 21 fail** (the PC has Rocq, `rg` and `setsid`, so
+  fewer environmental failures than on the Mac); log `~/research/logs/leanbuddy-test-baseline-pc.log`.
+
+### Phase 1 (Mac attempt, abandoned) — Lean environment and Pantograph
 
 - Master copy `~/leanbuddy-work/lean-prosa-v06-master/` (no `Solutions/`); `lake exe cache get`: 8,690 Mathlib files.
   `lake build` is slow on the Mac: 4–7 parallel `lean` processes of 1.2–3.3 GB each on 16 GB RAM (plus IDEs) swap,
@@ -193,5 +234,7 @@ K1's general-case rule lets the gate accept package imports. For those tasks the
   `<region-check-rejection>`, V5). Vocabulary renamed (`markGateChecked`, `requireGate`, …).
 - Deleted: `coq-ast-audit.ts` and its test; `scripts/` OCaml classifier, Python validator, its tests/examples/docs,
   and the elaboration-dump plugin (gap-revisions §4 `removed-files.md`).
-- Tests: `test/tool/lean-gate.test.ts` — 11 unit tests pass (token parity with `check.py`, header, declarations,
-  exterior rules incl. K1 imports, reason mapping, axioms parsing); 3 integration tests wait for the built package.
+- Tests: `test/tool/lean-gate.test.ts` — 11 unit tests (token parity with `check.py`, header, declarations, exterior
+  rules incl. K1 imports, reason mapping, axioms parsing) and 3 integration tests on the built package (PC): **14/14
+  pass**. Integration found one bug (the probe re-declared `universe u v`; now fresh universe names). `task.test.ts`
+  13/13 on the PC after V9.

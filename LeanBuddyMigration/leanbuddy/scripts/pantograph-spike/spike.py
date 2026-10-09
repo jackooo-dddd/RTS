@@ -85,6 +85,18 @@ def main():
             "source_order_is_A_then_B": True, "returned_reversed": (ib is not None and ia is not None and ib < ia),
             "error": r.get("desc")})
 
+    # 1b. Focusing one goal of a multi-goal distil state (needed by lean_session regions) -------------------
+    if "targets" in r and r["targets"]:
+        st0 = r["targets"][0]
+        names = [g["name"] for g in st0["goals"]]
+        ib_goal = next((i for i, g in enumerate(st0["goals"]) if "job_arrival j + 0" in g["target"]["pp"]), None)
+        focus = pg.send("goal.tactic", {"stateId": st0["stateId"], "goalId": ib_goal, "tactic": "intro j"}) if ib_goal is not None else {}
+        after = [(g["name"], g["target"]["pp"][:60]) for g in focus.get("goals", [])]
+        kept = [n for n, _ in after if n in names]
+        report("1b_goal_focus", "goals" in focus and len(kept) == len(names) - 1,
+               {"before": [(g["name"], g["target"]["pp"][:60]) for g in st0["goals"]], "after": after,
+                "other_goals_kept_by_name": kept})
+
     # 2. Header ----------------------------------------------------------------------------------------------
     with_header = header + "\n" + two
     r_hdr = pg.send("frontend.distil", {"file": with_header, "ignoreValues": False})
@@ -95,7 +107,9 @@ def main():
     pg.close()
     pg = Pantograph(args.repl, project, modules + [new_mod])
     r_imp = pg.send("frontend.distil", {"file": uses_new_import, "ignoreValues": False})
-    report("2_header", "error" in r_hdr and "import" in r_hdr.get("desc", "") and "error" in r_noimp and "targets" in r_imp,
+    # after the restart the new name must resolve (any remaining error must not be an unknown identifier)
+    resolved_after = "targets" in r_imp or "unknownIdentifier" not in r_imp.get("desc", "")
+    report("2_header", "error" in r_hdr and "import" in r_hdr.get("desc", "") and "unknownIdentifier" in r_noimp.get("desc", "") and resolved_after,
            {"with_import_lines": r_hdr.get("desc", "")[:200],
             "new_decl_before_restart": (r_noimp.get("desc") or "ok")[:200],
             "new_decl_after_restart_with_import": "ok" if "targets" in r_imp else r_imp.get("desc", "")[:200]})
@@ -130,7 +144,8 @@ def main():
     echo_hole = pg.send("expr.echo", {"expr": "_", "type": "Prop"})
     echo_app = pg.send("expr.echo", {"expr": "(1 : Nat) = _", "type": "Prop"})
     probe = pg.send("goal.tactic", {"stateId": sid, "tactic": "have _probe : (_ = (1 : Nat)) := sorry"})
-    report("5_holes", "goals" in sh and "goals" in sx and "error" in echo_hole and "error" in echo_app,
+    # holes must be rejected before the check: `show _`/`show ?x` succeed on any goal; record what each backstop does
+    report("5_holes", "goals" in sh and "goals" in sx and "goals" not in probe,
            {"show_": "accepted" if "goals" in sh else "rejected", "show_?x": "accepted" if "goals" in sx else "rejected",
             "echo_hole": echo_hole.get("desc", "ok")[:160], "echo_app_hole": echo_app.get("desc", "ok")[:160],
             "have_probe": "accepted" if "goals" in probe else (probe.get("messages") or [{}])[0].get("data", "")[:160]})
@@ -147,7 +162,7 @@ def main():
     t_hb = time.time() - t0
     rss_task = pg.rss_mb()
     pg.close()
-    pg_full = Pantograph(args.repl, project, ["Mathlib", "Prosa"])
+    pg_full = Pantograph(args.repl, project, ["Mathlib", "CaseStudies"])
     rss_full = pg_full.rss_mb()
     full_start = pg_full.startup_seconds
     pg_full.close()
@@ -161,8 +176,8 @@ def main():
     report("6_limits", t_to < 60 and t_hb < 60,
            {"timeout_2000ms_decide": {"seconds": round(t_to, 1), "reply": msg(r_to)},
             "maxHeartbeats_2000_decide": {"seconds": round(t_hb, 1), "reply": msg(r_hb)},
-            "rss_mb_task_imports": round(rss_task or 0), "rss_mb_Mathlib_and_Prosa": round(rss_full or 0),
-            "startup_seconds_Mathlib_and_Prosa": round(full_start, 1)})
+            "rss_mb_task_imports": round(rss_task or 0), "rss_mb_Mathlib_and_CaseStudies": round(rss_full or 0),
+            "startup_seconds_Mathlib_and_CaseStudies": round(full_start, 1)})
 
     Path(args.out).write_text(json.dumps(res, indent=1, ensure_ascii=False))
     print("results:", args.out)
